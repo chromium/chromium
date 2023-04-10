@@ -730,6 +730,7 @@
 <translation id="2718207025093645426">受管使用者或裝置未載入政策。</translation>
 <translation id="2721148159707890343">要求成功</translation>
 <translation id="2723669454293168317">在 Chrome 設定中執行安全檢查</translation>
+<translation id="2725492561136085792">㩒 Enter 掣就可以啟用呢項操作。</translation>
 <translation id="2726001110728089263">側匣</translation>
 <translation id="2728127805433021124">伺服器憑證以防護力較弱的簽章演算法簽署。</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />執行連線診斷<ph name="END_LINK" /></translation>
@@ -826,6 +827,7 @@
 <translation id="299990983510665749">掀背車</translation>
 <translation id="3002501248619246229">檢查輸入紙匣媒體</translation>
 <translation id="3005723025932146533">顯示儲存的複本</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒 Tab 掣就可以瀏覽可以用嘅操作，然後㩒 Enter 掣就可以執行揀咗嘅操作。</translation>
 <translation id="3013291976881901233">MIDI 裝置</translation>
 <translation id="301521992641321250">已自動封鎖</translation>
 <translation id="3016780570757425217">掌握您的位置</translation>
@@ -1986,6 +1988,7 @@
 <translation id="5872692522325383488">已儲存 IBAN</translation>
 <translation id="5873013647450402046">銀行要確認您的身分。</translation>
 <translation id="5877831137320480913">美容和健身</translation>
+<translation id="5879989559903563723">在訪客模式下無法使用</translation>
 <translation id="5884465125445718607">Chinese #6 信封</translation>
 <translation id="5887400589839399685">已儲存的付款卡</translation>
 <translation id="5887687176710214216">上次瀏覽日期：昨天</translation>
@@ -3227,6 +3230,7 @@
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">法律和政府</translation>
 <translation id="8957210676456822347">網頁驗證入口授權</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">前往網站設定</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />建議：<ph name="MARKUP_2" />請確保您已建立數據連線<ph name="MARKUP_3" />請稍後重新載入此網頁<ph name="MARKUP_4" />請檢查您輸入的網址<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">儲存付款卡</translation>

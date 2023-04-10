@@ -730,6 +730,7 @@
 <translation id="2718207025093645426">לא נטענה מדיניות למכשיר או למשתמש המנוהל.</translation>
 <translation id="2721148159707890343">הבקשה בוצעה בהצלחה</translation>
 <translation id="2723669454293168317">‏הרצה של בדיקת אבטחה בהגדרות Chrome</translation>
+<translation id="2725492561136085792">‏צריך להקיש על Enter כדי להפעיל את הפעולה הזו.</translation>
 <translation id="2726001110728089263">מגש צידי</translation>
 <translation id="2728127805433021124">האישור של השרת נחתם באמצעות אלגוריתם של חתימה חלשה.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />מפעיל את אבחון הקישוריות<ph name="END_LINK" /></translation>
@@ -826,6 +827,7 @@
 <translation id="299990983510665749">מכוניות האצ'בק</translation>
 <translation id="3002501248619246229">בדיקת מדיה במגש קלט</translation>
 <translation id="3005723025932146533">הצגת עותק שמור</translation>
+<translation id="3009036448238594149">‏<ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, צריך להקיש על מקש Tab כדי לעיין בפעולות הזמינות, ואז על Enter כדי לבצע את הפעולה שנבחרה.</translation>
 <translation id="3013291976881901233">‏התקני MIDI</translation>
 <translation id="301521992641321250">נחסמה אוטומטית</translation>
 <translation id="3016780570757425217">לדעת מה המיקום שלך</translation>
@@ -1744,6 +1746,8 @@ Del</translation>
 <translation id="5234764350956374838">סגירה</translation>
 <translation id="5239623327352565343">יש הרשאת גישה למיקום</translation>
 <translation id="5242889659037569123">מזוודות ואביזרים לנסיעה</translation>
+<translation id="5244732203286792411">בטעינה…
+    הפעולה עשויה להימשך כמה רגעים.</translation>
 <translation id="5250209940322997802">"יש להתחבר לרשת"</translation>
 <translation id="52517543715119994">‏מידע על התכונות של Chrome</translation>
 <translation id="5251803541071282808">ענן</translation>

@@ -4,6 +4,8 @@
 <translation id="1012876632442809908">USB-C 裝置 (前方連接埠)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> 已變更為 <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz)。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>
 <translation id="1013923882670373915">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限，請在裝置上輸入以下 PIN：<ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">這項操作會允許「<ph name="APP_NAME" />」、具有位置存取權的所有應用程式/網站和 ChromeOS 使用 Wi-Fi 和行動網路的位置資訊。</translation>
+<translation id="1017556409696559990">當 Chrome 沒有返回記錄時，就將頂層視窗縮到最小</translation>
 <translation id="1024364763893396229">儲存 <ph name="NAME" /></translation>
 <translation id="1032891413405719768">觸控筆電量偏低</translation>
 <translation id="1036073649888683237">如要管理通知，請前往「設定」應用程式</translation>
@@ -191,6 +193,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">以太網：<ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">開啟位置存取權</translation>
 <translation id="1830308660060964064">已經將<ph name="ITEM_TITLE" />取消置頂</translation>
 <translation id="1838895407229022812">「夜燈模式」已關閉。</translation>
 <translation id="1854180393107901205">停止投放</translation>
@@ -344,6 +347,7 @@
 <translation id="2620436844016719705">系統</translation>
 <translation id="2621713457727696555">已受保護</translation>
 <translation id="263399434338050016">「全選」</translation>
+<translation id="2644422758626431000">將視窗固定至左邊</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2647092942972307022">還有 <ph name="USED_MEMORY" /> 可用空間，共 <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2653019840645008922">視窗擷取</translation>
@@ -467,6 +471,7 @@
 <translation id="3255483164551725916">你可以做咩嘢？</translation>
 <translation id="3256109297135787951">取消捷徑列上項目的突顯狀態</translation>
 <translation id="3260969790895726815">語音會在本機處理，而語音聽寫可離線運作，但部分語音指令無法使用。</translation>
+<translation id="3265032511221679826">要開啟精確位置存取權嗎？</translation>
 <translation id="3269597722229482060">按滑鼠右鍵</translation>
 <translation id="3289364673986435196">電源選單</translation>
 <translation id="3289544412142055976">目前不支援 Linux 應用程式</translation>
@@ -577,6 +582,7 @@
 <translation id="366222428570480733">受管理嘅使用者：<ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">滑動即可隱藏浮動視窗</translation>
 <translation id="367531336287639526">選取網址列左方的第一個圖示</translation>
+<translation id="3677931086890821290">這項操作會允許具有位置存取權的所有應用程式/網站和 ChromeOS 使用 Wi-Fi 和行動網路的位置資訊。</translation>
 <translation id="3679827876008292680">前往視窗中的最後一個分頁</translation>
 <translation id="36813544980941320">您的手機和 <ph name="DEVICE_NAME" /> 將共用 Wi-Fi 網絡</translation>
 <translation id="3694122362646626770">網站</translation>
@@ -1055,6 +1061,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5920710855273935292">咪高風校咗靜音。</translation>
+<translation id="5922962980596822074">從最近使用的視窗開始略過</translation>
 <translation id="5924855612669061715">「熱點」已開啟</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" />功能已開啟。</translation>
 <translation id="5947494881799873997">還原</translation>
@@ -1144,6 +1151,7 @@
 <translation id="6352082849089527770">不明網絡</translation>
 <translation id="6359587239691116345">取得最新功能和改善安全性的資訊。如果拒絕此更新，裝置可能無法再正常運作，您亦可能會遇到安全性和效能問題。</translation>
 <translation id="6376931439017688372">藍牙已開啟</translation>
+<translation id="6378515133128829137">將視窗固定至右邊</translation>
 <translation id="6381109794406942707">如要解鎖裝置，請輸入 PIN。</translation>
 <translation id="638716340450135524">開啟相機存取權</translation>
 <translation id="639644700271529076">大寫鍵已關閉</translation>
@@ -1163,6 +1171,7 @@
 <translation id="6459472438155181876">正在擴充 <ph name="DISPLAY_NAME" /> 螢幕</translation>
 <translation id="6477681113376365978">無法下載檔案</translation>
 <translation id="6482559668224714696">全螢幕放大鏡</translation>
+<translation id="6483727822843292440">從最少用的視窗開始略過</translation>
 <translation id="6490471652906364588">USB-C 裝置 (右側連接埠)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> 要求您在期限前更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="649452524636452238">智能卡 PIN</translation>
@@ -1215,6 +1224,7 @@
 <translation id="6683022854667115063">耳機</translation>
 <translation id="6696025732084565524">您的拆除式鍵盤需執行重要更新</translation>
 <translation id="6700713906295497288">IME 選單按鈕</translation>
+<translation id="6705577071209924099">調整亮度</translation>
 <translation id="6707693040195709527">未在期限內將裝置回復為先前的版本</translation>
 <translation id="6710213216561001401">上一個</translation>
 <translation id="6723839937902243910">電源</translation>
@@ -1739,6 +1749,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> 的解像度已變更為 <ph name="RESOLUTION" />。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>
 <translation id="9201044636667689546">請將 <ph name="NAME" /> 連結至 Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />，由管理員管理</translation>
+<translation id="9207682216934703221">這項操作會允許「<ph name="APP_NAME" />」、「<ph name="APP2_NAME" />」、具有位置存取權的所有應用程式/網站和 ChromeOS 使用 Wi-Fi 和行動網路的位置資訊。</translation>
 <translation id="9210037371811586452">正在退出統一桌面模式</translation>
 <translation id="9211490828691860325">所有桌面</translation>
 <translation id="9211681782751733685">電池仲有 <ph name="TIME_REMAINING" />就差滿電。</translation>

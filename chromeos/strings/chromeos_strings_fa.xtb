@@ -140,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">تنظیمات بیشتر</translation>
 <translation id="2085089206770112532">کاهش روشنایی نمایشگر</translation>
+<translation id="209751264101900360">از بامداد تا شامگاه - گردش ابرها</translation>
 <translation id="2102231663024125441">ویرایش نوشتار</translation>
 <translation id="2105810540595158374">دستگاه کنترل بازی است.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />، نسخه <ph name="MILESTONE_VERSION" /></translation>
@@ -370,6 +371,7 @@
 <translation id="4275663329226226506">رسانه</translation>
 <translation id="4289540628985791613">نمای کلی</translation>
 <translation id="4289849978083912975">نمایش اسلاید</translation>
+<translation id="4293621540182258188">از بامداد تا شامگاه - گردش زمین</translation>
 <translation id="4297501883039923494">متوقف شد - خطای نامشخص</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> تصویر</translation>
 <translation id="4311195029067684288">پر</translation>
@@ -544,6 +546,7 @@
 <translation id="576835345334454681">افزایش روشنایی نمایشگر</translation>
 <translation id="57838592816432529">بی‌صدا کردن</translation>
 <translation id="5784136236926853061">‏تأخیر زیاد HTTP</translation>
+<translation id="5809090008577139505">شفق قطبی</translation>
 <translation id="5826644637650799838">درباره اثر هنری</translation>
 <translation id="5832805196449965646">افزودن شخص</translation>
 <translation id="583281660410589416">ناشناس</translation>
@@ -562,6 +565,7 @@
 <translation id="5907649332524363701">رنگ کلید</translation>
 <translation id="5916084858004523819">ممنوع</translation>
 <translation id="5916664084637901428">روشن</translation>
+<translation id="5918201491776799918">‏انتخاب کار هنری Chromebook Plus اختصاصی</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{فایل شما باموفقیت اسکن شد و در <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ذخیره شد.}one{فایل شما باموفقیت اسکن شد و در <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ذخیره شد.}other{فایل‌های شما باموفقیت اسکن شد و در <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ذخیره شد.}}</translation>
 <translation id="5931523347251946569">فایل پیدا نشد</translation>
 <translation id="5939518447894949180">بازنشانی</translation>
@@ -818,6 +822,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">انتخاب <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">ابزارهای برنامه‌نویس</translation>
+<translation id="8153923300383192510">‏Chromebook Plus اختصاصی</translation>
 <translation id="8179976553408161302">ورود</translation>
 <translation id="8183974620058026102">پیوست</translation>
 <translation id="8206859287963243715">سلولی</translation>

@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C デバイス（前面のポート）</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> を <ph name="RESOLUTION" />（<ph name="REFRESH_RATE" /> Hz）に変更しました。変更を保存するには確定してください。<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
 <translation id="1013923882670373915">Bluetooth デバイス「<ph name="DEVICE_NAME" />」がペア設定の権限をリクエストしています。このデバイスに次の PIN コードを入力してください: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Chrome に戻る操作の履歴がない場合にトップ ウィンドウを最小化する</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> を保存</translation>
 <translation id="1032891413405719768">タッチペンのバッテリー残量が少なくなっています</translation>
 <translation id="1036073649888683237">通知の管理は設定アプリで行うことができす</translation>
@@ -234,7 +235,7 @@
 <translation id="2023558322300866873">パケット キャプチャはいつでも停止できます</translation>
 <translation id="2034971124472263449">このまま保存</translation>
 <translation id="2049240716062114887">デスクの名前を <ph name="DESK_NAME" /> に変更しました</translation>
-<translation id="2050339315714019657">縦向き</translation>
+<translation id="2050339315714019657">ポートレート</translation>
 <translation id="2064048859448024834">カメラ プレビューがオンになっています</translation>
 <translation id="2067602449040652523">キーボードの明るさ</translation>
 <translation id="2078034614700056995">次のデスクに切り替えるには 4 本の指で右にスワイプします</translation>
@@ -343,6 +344,7 @@
 <translation id="2620436844016719705">システム</translation>
 <translation id="2621713457727696555">保護あり</translation>
 <translation id="263399434338050016">"すべて選択"</translation>
+<translation id="2644422758626431000">ウィンドウを左に固定する</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2647092942972307022"><ph name="TOTAL_MEMORY" /> 中 <ph name="USED_MEMORY" /> 使用</translation>
 <translation id="2653019840645008922">ウィンドウ キャプチャ</translation>
@@ -1054,6 +1056,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" />（<ph name="MAIL" />）</translation>
 <translation id="5916664084637901428">オン</translation>
 <translation id="5920710855273935292">マイクはミュートです。</translation>
+<translation id="5922962980596822074">最近使用したウィンドウからウィンドウを表示する</translation>
 <translation id="5924855612669061715">アクセス ポイントはオンです</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> はオンになっています。</translation>
 <translation id="5947494881799873997">元に戻す</translation>
@@ -1143,6 +1146,7 @@
 <translation id="6352082849089527770">不明なネットワーク</translation>
 <translation id="6359587239691116345">最新の機能を入手しセキュリティを強化しましょう。このアップデートを承認しない場合、デバイスが正しく動作せず、セキュリティやパフォーマンス上の問題が発生する可能性があります。</translation>
 <translation id="6376931439017688372">Bluetooth はオンです</translation>
+<translation id="6378515133128829137">ウィンドウを右に固定する</translation>
 <translation id="6381109794406942707">デバイスのロックを解除するには PIN を入力してください。</translation>
 <translation id="638716340450135524">カメラへのアクセスをオンにする</translation>
 <translation id="639644700271529076">CapsLock 機能はオフになっています</translation>
@@ -1162,6 +1166,7 @@
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" /> へ画面を拡張しています</translation>
 <translation id="6477681113376365978">ファイルをダウンロードできません</translation>
 <translation id="6482559668224714696">全画面拡大鏡</translation>
+<translation id="6483727822843292440">最も使用頻度の低いウィンドウからウィンドウを表示する</translation>
 <translation id="6490471652906364588">USB-C デバイス（右側面のポート）</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> が期限までに <ph name="DEVICE_TYPE" /> を更新するよう求めています</translation>
 <translation id="649452524636452238">スマートカードの PIN</translation>
@@ -1215,6 +1220,7 @@
 <translation id="6683022854667115063">ヘッドフォン</translation>
 <translation id="6696025732084565524">お使いのキーボード（取り外し可能）に重要なアップデートを適用する必要があります</translation>
 <translation id="6700713906295497288">IME メニューボタン</translation>
+<translation id="6705577071209924099">照明を調整</translation>
 <translation id="6707693040195709527">デバイスを以前のバージョンに戻す期限が過ぎています</translation>
 <translation id="6710213216561001401">前へ</translation>
 <translation id="6723839937902243910">電源</translation>

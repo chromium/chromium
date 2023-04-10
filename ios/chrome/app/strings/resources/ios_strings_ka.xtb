@@ -216,6 +216,7 @@
 <translation id="2482878487686419369">შეტყობინებები</translation>
 <translation id="2496626742194544812">პირველ ჩანართზე გადასვლა</translation>
 <translation id="2500374554657206846">პაროლის შენახვის ვარიანტები</translation>
+<translation id="2502415369140591438"><ph name="COUNT" /> ხელახლა გამოყენებული პაროლი</translation>
 <translation id="2523363575747517183">ეს ვებსაიტი განუწყვეტლივ ცდილობს სხვა აპლიკაციის გახსნას.</translation>
 <translation id="2529021024822217800">ყველას გახსნა</translation>
 <translation id="2547458583188611426">სინქრონიზაცია არ მუშაობს. სინქრონიზაციის დასაწყებად შეიყვანეთ თქვენი საიდუმლო ფრაზა.</translation>
@@ -293,6 +294,7 @@
 <translation id="2932085390869194046">პაროლის შემოთავაზება…</translation>
 <translation id="2932765531295814441">დაამატეთ პაროლები ხელით</translation>
 <translation id="2952581218264071393">1. გახსენით Chrome-ის პარამეტრები</translation>
+<translation id="2953871438216280742">შედით სისტემაში, რომ გახსნათ და შეინახოთ თქვენი საკითხავი სია თქვენს Google ანგარიშში</translation>
 <translation id="2958718410589002129">პაროლები</translation>
 <translation id="2961210776189273067">მიმართვა</translation>
 <translation id="2964349545761222050">მესამე მხარის ქუქი-ჩანაწერების დაბლოკვა</translation>
@@ -386,6 +388,7 @@
 <translation id="3581564640715911333">სხვა ენებზე არსებული გვერდების თარგმნის შემოთავაზება</translation>
 <translation id="3588820906588687999">გამოსახულების გახსნა ახალ ჩანართზე</translation>
 <translation id="3595252146048399851"><ph name="BEGIN_LINK" />პარამეტრებიდან<ph name="END_LINK" /> ნებისმიერ დროს შეგიძლიათ აირჩიოთ, რისი სინქრონიზაცია გსურთ. თქვენი ისტორიის მეშვეობით Google შეძლებს Search-ისა და სხვა სერვისების თქვენზე მორგებას.</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} სუსტი პაროლი}other{{COUNT} სუსტი პაროლი}}</translation>
 <translation id="3603009562372709545">ბმულის URL-ის კოპირება</translation>
 <translation id="3607167657931203000">ავტომატური შევსების მონაცემები</translation>
 <translation id="3608008480985212611">პარამეტრების სამართავად შედით სისტემაში.</translation>
@@ -624,6 +627,7 @@
 <translation id="5197255632782567636">ინტერნეტი</translation>
 <translation id="5211488077761630279">გსურთ, დართოთ ნება „<ph name="SITE_NAME" />“-ს, გამოიყენოს თქვენი <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">ხელი შეუწყვეთ ვებში უსაფრთხოების ყველასთვის გაუმჯობესებას</translation>
+<translation id="5221339005270097309">პაროლების მოწმდება…</translation>
 <translation id="5228579091201413441">სინქრონიზაციის ჩართვა</translation>
 <translation id="5232485538978018676">შედით სისტემაში მართული ანგარიშით</translation>
 <translation id="5234764350956374838">გაუქმება</translation>
@@ -663,6 +667,7 @@
 Handoff ასევე უნდა იყოს ჩართული პარამეტრების სექციაში „ძირითადი“ და მოწყობილობებში უნდა გამოიყენებოდეს ერთი და იგივე iCloud ანგარიში.</translation>
 <translation id="5551897871312988470">თარგმანის შემოთავაზება</translation>
 <translation id="5556459405103347317">ხელახლა ჩატვირთვა</translation>
+<translation id="555749644339804659">პაროლების მოწმდება…</translation>
 <translation id="556042886152191864">ღილაკი</translation>
 <translation id="5597915316964418992">გახსენით ჩანართების ბადე</translation>
 <translation id="560322036295180549">გამორთულია თქვენი ორგანიზაციის მიერ</translation>
@@ -1081,6 +1086,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8136856065410661948">ამის მეშვეობით შესაძლებელი გახდება, Chrome-ისა და Google Lens-ის მეშვეობით შექმნათ მოვლენები თქვენს Apple Calendar-ში.</translation>
 <translation id="8156478151976189188">პაროლების სინქრონიზაცია არ მუშაობს</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> ანგარიში</translation>
+<translation id="8159358225423560600">ახლახან</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />თქვენი მოწყობილობები<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">გვერდის თარგმნა</translation>
@@ -1111,6 +1117,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> დღის განმავლობაში გამოუყენებელი ჩანართები</translation>
 <translation id="8407669440184693619">ამ საიტისთვის პაროლები ვერ მოიძებნა</translation>
 <translation id="842017693807136194">შესულია</translation>
+<translation id="8423121072346537366">ახლახან</translation>
 <translation id="8425693829365242963">თქვენი პაროლები უნიკალურია</translation>
 <translation id="8428045167754449968">ქალაქი/დაბა</translation>
 <translation id="8428213095426709021">პარამეტრები</translation>

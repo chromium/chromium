@@ -216,6 +216,7 @@
 <translation id="2482878487686419369">اطلاعات</translation>
 <translation id="2496626742194544812">پہلے ٹیب پر جائیں</translation>
 <translation id="2500374554657206846">پاس ورڈ محفوظ کرنے کے اختیارات</translation>
+<translation id="2502415369140591438">دوبارہ استعمال کردہ <ph name="COUNT" /> پاس ورڈز</translation>
 <translation id="2523363575747517183">یہ ویب سائٹ بار بار ایک اور ایپلیکیشن کھولنے کی کوشش کر رہی ہے۔</translation>
 <translation id="2529021024822217800">تمام کھولیں</translation>
 <translation id="2547458583188611426">مطابقت پذیری کام نہیں کر رہی ہے۔ مطابقت پذیری شروع کرنے کے لیے اپنا پاس فریز درج کریں۔</translation>
@@ -292,6 +293,7 @@
 <translation id="2932085390869194046">پاس ورڈ تجویز کریں...</translation>
 <translation id="2932765531295814441">دستی طور پر پاس ورڈز شامل کریں</translation>
 <translation id="2952581218264071393">‏1۔ Chrome کی ترتیبات کھولیں</translation>
+<translation id="2953871438216280742">‏اپنے Google اکاؤنٹ میں اپنی پڑھنے کی فہرست کو کھولنے اور محفوظ کرنے کے لیے سائن ان کریں۔</translation>
 <translation id="2958718410589002129">پاس ورڈز</translation>
 <translation id="2961210776189273067">عنوان</translation>
 <translation id="2964349545761222050">فریق ثالث کوکیز کو مسدود کریں</translation>
@@ -385,6 +387,7 @@
 <translation id="3581564640715911333">صفحات کو دیگر زبانوں میں ترجمہ کرنے کی پیشکش کریں</translation>
 <translation id="3588820906588687999">تصویر نئے ٹیب میں کھولیں</translation>
 <translation id="3595252146048399851">‏آپ کسی بھی وقت اس بات کا انتخاب کر سکتے ہیں کہ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں کس چیز کی مطابقت پذیری کرنی ہے۔ Google آپ کی سرگزشت کی بنیاد پر تلاش اور دیگر سروسز کو ذاتی نوعیت کا بنا سکتا ہے۔</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} کمزور پاس ورڈ}other{{COUNT} کمزور پاس ورڈز}}</translation>
 <translation id="3603009562372709545">‏لنک URL کاپی کریں</translation>
 <translation id="3607167657931203000">آٹو فل ڈیٹا</translation>
 <translation id="3608008480985212611">اپنی ترجیحات کا نظم کرنے کے لیے سائن ان کریں۔</translation>
@@ -622,6 +625,7 @@
 <translation id="5197255632782567636">انٹرنیٹ</translation>
 <translation id="5211488077761630279">اپنے <ph name="PERMISSION" /> کا استعمال کرنے کے لیے "<ph name="SITE_NAME" />" کو اجازت دیں؟</translation>
 <translation id="5219295696240154694">سبھی کے لیے ویب پر سیکیورٹی کو بہتر بنانے میں مدد کریں</translation>
+<translation id="5221339005270097309">پاس ورڈز چیک ہو رہے ہیں…</translation>
 <translation id="5228579091201413441">مطابقت پذیری فعال کریں</translation>
 <translation id="5232485538978018676">نظم کردہ اکاؤنٹ کے ساتھ سائن ان کریں</translation>
 <translation id="5234764350956374838">برخاست کریں</translation>
@@ -661,6 +665,7 @@
 Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ضروری ہے اور آپ کے آلات کو وہی iCloud اکاؤنٹ استعمال کرنا چاہیے۔</translation>
 <translation id="5551897871312988470">ترجمہ کی پیشکش کریں</translation>
 <translation id="5556459405103347317">دوبارہ لوڈ کریں</translation>
+<translation id="555749644339804659">پاس ورڈز چیک ہو رہے ہیں…</translation>
 <translation id="556042886152191864">بٹن</translation>
 <translation id="5597915316964418992">ٹیب گرڈ کھولیں</translation>
 <translation id="560322036295180549">آپ کی تنظیم کے ذریعے اف کر دیا گیا</translation>

@@ -140,6 +140,7 @@
 <translation id="2056550196601855911">‏IPv4/‏IPv6</translation>
 <translation id="2080070583977670716">הגדרות נוספות</translation>
 <translation id="2085089206770112532">הפחתת הבהירות של התצוגה</translation>
+<translation id="209751264101900360">מעלות השחר עד לרדת החושך – תנועת העננים</translation>
 <translation id="2102231663024125441">עריכת טקסט</translation>
 <translation id="2105810540595158374">המכשיר הוא שלט לגיימינג.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, גרסה <ph name="MILESTONE_VERSION" /></translation>
@@ -370,6 +371,7 @@
 <translation id="4275663329226226506">מדיה</translation>
 <translation id="4289540628985791613">סקירה כללית</translation>
 <translation id="4289849978083912975">מצגת</translation>
+<translation id="4293621540182258188">מעלות השחר עד לרדת החושך – תנועת כדור הארץ</translation>
 <translation id="4297501883039923494">הפסיקה – שגיאה לא ידועה</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> תמונות</translation>
 <translation id="4311195029067684288">מלא</translation>
@@ -544,6 +546,7 @@
 <translation id="576835345334454681">הגברה של בהירות התצוגה</translation>
 <translation id="57838592816432529">השתקה</translation>
 <translation id="5784136236926853061">‏משך זמן ההמתנה ל-HTTP ארוך</translation>
+<translation id="5809090008577139505">הזוהר הצפוני</translation>
 <translation id="5826644637650799838">מידע על יצירת האומנות</translation>
 <translation id="5832805196449965646">הוספת משתמש</translation>
 <translation id="583281660410589416">לא ידוע</translation>
@@ -562,6 +565,7 @@
 <translation id="5907649332524363701">הצבע העיקרי</translation>
 <translation id="5916084858004523819">אסור</translation>
 <translation id="5916664084637901428">פועל</translation>
+<translation id="5918201491776799918">‏בחירת יצירות אומנות בלעדיות ב-Chromebook Plus</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{הקובץ נסרק בהצלחה ונשמר בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{הקבצים נסרקו בהצלחה ונשמרו בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{הקבצים נסרקו בהצלחה ונשמרו בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{הקבצים נסרקו בהצלחה ונשמרו בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">הקובץ לא נמצא</translation>
 <translation id="5939518447894949180">איפוס</translation>
@@ -818,6 +822,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">בחירת <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">כלים למפתחים</translation>
+<translation id="8153923300383192510">‏בלעדי ב-Chromebook Plus</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">צירוף</translation>
 <translation id="8206859287963243715">סלולארי</translation>

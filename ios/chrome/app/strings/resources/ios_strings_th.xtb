@@ -1022,6 +1022,7 @@
 <translation id="7781011649027948662">แปลหน้าเว็บไหม</translation>
 <translation id="7781069478569868053">หน้าแท็บใหม่</translation>
 <translation id="7781829728241885113">เมื่อวานนี้</translation>
+<translation id="7786246662347093005">{COUNT,plural, =1{หลังจาก 1 วัน}other{หลังจาก {COUNT} วัน}}</translation>
 <translation id="778855399387580014">เริ่มการค้นหาในแท็บใหม่ของ Chrome</translation>
 <translation id="7791543448312431591">เพิ่ม</translation>
 <translation id="7807060072011926525">ให้บริการโดย Google</translation>

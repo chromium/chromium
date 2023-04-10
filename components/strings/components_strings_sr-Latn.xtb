@@ -1987,6 +1987,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5872692522325383488">IBAN je sačuvan</translation>
 <translation id="5873013647450402046">Banka želi da potvrdi da ste to vi.</translation>
 <translation id="5877831137320480913">Lepota i fitnes</translation>
+<translation id="5879989559903563723">Nije dozvoljeno u režimu gosta</translation>
 <translation id="5884465125445718607">Kineska koverta br. 6</translation>
 <translation id="5887400589839399685">Kartica je sačuvana</translation>
 <translation id="5887687176710214216">Poslednja poseta: juče</translation>
@@ -3228,6 +3229,7 @@ Dodatni detalji:
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Zakoni i vlada</translation>
 <translation id="8957210676456822347">Ovlašćenje na ulaznom portalu</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Idite na podešavanja sajta</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Predlozi:<ph name="MARKUP_2" />Proverite da li je uspostavljena veza za prenos podataka<ph name="MARKUP_3" />Ponovo učitajte ovu veb-stranicu kasnije<ph name="MARKUP_4" />Proverite adresu koju ste uneli<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Sačuvaj karticu</translation>

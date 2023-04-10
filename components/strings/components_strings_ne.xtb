@@ -730,6 +730,7 @@
 <translation id="2718207025093645426">सुपरिवेक्षित प्रयोगकर्ता वा डिभाइसका हकमा कुनै पनि नीति लोड गरिएको छैन।</translation>
 <translation id="2721148159707890343">अनुरोध सफल भयो</translation>
 <translation id="2723669454293168317">Chrome का सेटिङमा गई सुरक्षितपनाको जाँच गर्नुहोस्</translation>
+<translation id="2725492561136085792">यो कारबाही एक्टिभेट गर्न Enter थिच्नुहोस्।</translation>
 <translation id="2726001110728089263">छेउको ट्रे</translation>
 <translation id="2728127805433021124">सर्भरको प्रमाणपत्र एक कमजोर हस्ताक्षर अल्गोरिदम प्रयोग गर्दै हस्ताक्षर गरिएको छ।</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />जडान सम्बन्धी निदान चलाएर हेर्नुहोस्<ph name="END_LINK" /></translation>
@@ -826,6 +827,7 @@
 <translation id="299990983510665749">ह्याचब्याक कारहरू</translation>
 <translation id="3002501248619246229">इनपुट ट्रेको मिडिया जाँच्नुहोस्</translation>
 <translation id="3005723025932146533">बचत गरिएको प्रति देखाउनुहोस्</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, गर्न सकिने विभिन्न कारबाहीहरू हेर्न Tab थिच्नुहोस् अनि आफूले चयन गरेको कारबाही कार्यान्वयन गर्न Enter थिच्नुहोस्।</translation>
 <translation id="3013291976881901233">MIDI यन्त्रहरू</translation>
 <translation id="301521992641321250">स्वतः रोक लगाइयो</translation>
 <translation id="3016780570757425217">तपाईँको स्थान जान्नुहोस्</translation>

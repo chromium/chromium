@@ -697,6 +697,7 @@
 <translation id="1593594475886691512">در حال قالب‌بندی...</translation>
 <translation id="159359590073980872">حافظهٔ پنهان تصویر</translation>
 <translation id="1593926297800505364">ذخیره روش پرداخت</translation>
+<translation id="1594703455918849716">رفتن به صفحه «بازبینی»</translation>
 <translation id="1595492813686795610">‏Linux درحال ارتقا است</translation>
 <translation id="1596286373007273895">دردسترس</translation>
 <translation id="1596709061955594992">بلوتوث خاموش است. برای دیدن دستگاه‌های دردسترس، بلوتوث را روشن کنید.</translation>
@@ -1691,6 +1692,7 @@
 <translation id="2399699884460174994">اعلان‌ها روشن شد</translation>
 <translation id="2399939490305346086">داده‌های ورود به سیستم کلید امنیتی</translation>
 <translation id="2400664245143453337">به‌روزرسانی فوری الزامی است</translation>
+<translation id="2402226831639195063">صداها</translation>
 <translation id="2406153734066939945">این نمایه و داده‌های آن حذف شود؟</translation>
 <translation id="2408018932941436077">درحال ذخیره کارت</translation>
 <translation id="2408955596600435184">پین را وارد کنید</translation>
@@ -1702,6 +1704,7 @@
 <translation id="241082044617551207">افزایه ناشناس</translation>
 <translation id="2410940059315936967">سایتی که بازدید می‌کنید می‌تواند از سایت‌های دیگر محتوایی مثل تصویر، آگهی، و نوشتار جاسازی کند. کوکی‌های تنظیم‌شده توسط سایت‌های دیگر کوکی‌های شخص ثالث نامیده می‌شوند.</translation>
 <translation id="2411666601450687801">هیچ «ماشین مجازی‌ای» در این دستگاه مجاز نیست</translation>
+<translation id="2412015533711271895">ولی یا سرپرستتان باید تأیید کند که می‌توانید از این افزونه استفاده کنید</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414886740292270097">تاریک</translation>
 <translation id="2416435988630956212">کلیدهای عملکرد صفحه‌کلید</translation>
@@ -3028,6 +3031,7 @@
 <translation id="3609277884604412258">جستجوی سریع</translation>
 <translation id="3610241585790874201">مجاز نیست در دستگاه داده ذخیره کند</translation>
 <translation id="3610369246614755442">پنکه پایه اتصال نیاز به سرویس دارد</translation>
+<translation id="3610961622607302617">تغییر گذرواژه <ph name="WEBSITE" /></translation>
 <translation id="361106536627977100">داده‌های فلاش</translation>
 <translation id="3611655097742243705">‏برای پیدا کردن برنامه‌های بیشتر، از Play Store بازدید کنید</translation>
 <translation id="3611658447322220736">سایت‌هایی که اخیراً بسته شده‌اند می‌توانند ارسال و دریافت داده را تکمیل کنند</translation>
@@ -3084,6 +3088,7 @@
 <translation id="3651488188562686558">‏قطع اتصال Wi-Fi</translation>
 <translation id="3652817283076144888">مقداردهی اولیه</translation>
 <translation id="3653160965917900914">دستگاه ذخیره‌سازی متصل به شبکه</translation>
+<translation id="3653887973853407813">‏نمی‌توانید از این افزونه استفاده کنید. ولی یا سرپرستتان «اجازه‌های سایت‌ها، برنامه‌ها، و افزونه‌ها» را در Chrome خاموش کرده است.</translation>
 <translation id="3653999333232393305">ادامه اجازه به <ph name="HOST" /> برای دسترسی به میکروفون</translation>
 <translation id="3654045516529121250">خواندن تنظیمات دسترس‌پذیری خودتان</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{به یک فایل دسترسی دائم دارد.}one{به # فایل دسترسی دائم دارد.}other{به # فایل دسترسی دائم دارد.}}</translation>
@@ -5156,6 +5161,7 @@
 <translation id="5517304475148761050">‏این برنامه باید به «فروشگاه Play» دسترسی پیدا کند</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">وقتی سایتی می‌خواهد به نوشتار و تصاویر کپی‌شده در بریده‌دان دسترسی پیدا کند، سؤال شود.</translation>
+<translation id="5518949581554491184">‏راه‌اندازی با تلفن Android</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">آیا این همان صفحه اصلی مورد انتظار شماست؟</translation>
 <translation id="5522156646677899028">این برنامه افزودنی از لحاظ امنیتی اصلاً مطمئن نیست.</translation>
@@ -6045,6 +6051,7 @@
 <translation id="6318125393809743217">‏فایل policies.json به‌همراه پیکربندی‌های خط‌مشی اضافه شود.</translation>
 <translation id="6318407754858604988">بارگیری شروع شد</translation>
 <translation id="6318944945640833942">چاپگر شناسایی نشد لطفاً نشانی چاپگر را دوباره وارد کنید.</translation>
+<translation id="6320808462673705899">هیچ نشانکی با جستجوی شما مطابقت ندارد.</translation>
 <translation id="6322370287306604163">باز کردن سریع‌تر قفل با اثر انگشت</translation>
 <translation id="6322559670748154781">این فایل معمولاً بارگیری نمی‌شود و «محافظت پیشرفته» آن را مسدود کرده است</translation>
 <translation id="6324916366299863871">ویرایش میان‌بر</translation>
@@ -6491,6 +6498,7 @@
 <translation id="6725206449694821596">‏پروتکل چاپ اینترنتی (IPP)</translation>
 <translation id="6725970970008349185">تعداد کاندیداها برای نمایش در هر صفحه</translation>
 <translation id="672609503628871915">مشاهده تازه‌ها</translation>
+<translation id="6726800386221816228">نویسه‌های خاص</translation>
 <translation id="67269783048918309">‏داده‌های استفاده و عیب‌یابی را ارسال کنید. این دستگاه درحال‌حاضر به‌صورت‌ خودکار داده‌های عیب‌یابی و داده‌های استفاده از دستگاه و برنامه را برای Google ارسال می‌کند. این داده‌ها برای شناسایی فرزندتان استفاده نخواهند شد و به بهبود پایداری سیستم و برنامه و موارد دیگر کمک خواهد کرد. بعضی داده‌های انبوهشی نیز به برنامه‌ها و شرکای Google (مانند برنامه‌نویس‌های Android) کمک می‌کند. این <ph name="BEGIN_LINK1" />تنظیم<ph name="END_LINK1" /> توسط مالک اعمال می‌شود. اگر تنظیم «فعالیت وب و برنامه» تکمیلی برای فرزندتان روشن باشد، ممکن است این داده‌ها در حساب Google او ذخیره شود. <ph name="BEGIN_LINK2" />بیشتر بدانید<ph name="END_LINK2" /></translation>
 <translation id="6728528977475057549">‏IBAN با انتهای <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="6729192290958770680">نام کاربری‌تان را وارد کنید</translation>
@@ -6893,6 +6901,7 @@
 <translation id="7063129466199351735">در حال پردازش میان‌برها...</translation>
 <translation id="7063311912041006059">نشانی وب با <ph name="SPECIAL_SYMBOL" /> به‌جای پرسش</translation>
 <translation id="706342288220489463">به «دستیار» اجازه دهید برای ارائه کمک از اطلاعات روی صفحه استفاده کند</translation>
+<translation id="70641621694466590">رفتن به صفحه «گذرواژه‌ها»</translation>
 <translation id="7064734931812204395">‏درحال پیکربندی محتوی Linux. این کار ممکن است تا ۳۰ دقیقه طول بکشد.</translation>
 <translation id="7065223852455347715">این دستگاه در حالتی قفل شده است که از ثبت‌نام شرکتی جلوگیری می‌کند. اگر می‌خواهید دستگاه را ثبت‌نام کنید ابتدا باید دستگاه را بازیابی کنید.</translation>
 <translation id="7065534935986314333">درباره سیستم</translation>
@@ -7394,6 +7403,7 @@
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> با برنامه <ph name="APP_NAME" /></translation>
 <translation id="754207240458482646">با دستگاه‌های دیگر در حسابتان همگام‌سازی شده است. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">فعال کردن ویژگی‌های رفع اشکال در این دستگاه <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
+<translation id="7544977292347272434">از ولی‌تان بخواهید افزونه‌ای را مجاز کند</translation>
 <translation id="7545466883021407599">‏اتصال با سرور برقرار نشد. اتصال شبکه‌تان را بررسی و دوباره امتحان کنید. اگر همچنان با مشکل روبرو هستید، Chromebook را بازراه‌اندازی کنید. کد خطا: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">اخطار: تنظیمات <ph name="PRODUCT_NAME" /> شما در درایو شبکه ذخیره می‌شود. این کار ممکن است منجر به از دست رفتن دادهٰ‌ها٬ کند شدن و خرابی شود.</translation>
 <translation id="7548856833046333824">لیموناد</translation>
@@ -7622,6 +7632,7 @@
 <translation id="7728668285692163452">تغییر کانال بعداً اعمال خواهد شد</translation>
 <translation id="7730449930968088409">ثبت محتوا از صفحه شما</translation>
 <translation id="7730683939467795481">افزونه «<ph name="EXTENSION_NAME" />» این صفحه را تغییر داد</translation>
+<translation id="773511996612364297">نشانه‌های تکیه</translation>
 <translation id="7735165285389721951">‏راه‌اندازی Steam دیگری درحال اجرا است. قبل‌از امتحان دوباره، منتظر بمانید تا این راه‌اندازی تکمیل شود.</translation>
 <translation id="7737115349420013392">درحال مرتبط‌سازی با «<ph name="DEVICE_NAME" />» …</translation>
 <translation id="7737203573077018777">دستورالعمل <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> دریافت شده است</translation>
@@ -7703,6 +7714,7 @@
 <translation id="7792388396321542707">توقف هم‌رسانی</translation>
 <translation id="779308894558717334">سبز روشن</translation>
 <translation id="7793098747275782155">آبی تیره</translation>
+<translation id="7796453472368605346">آوانماها</translation>
 <translation id="7797571222998226653">خاموش</translation>
 <translation id="7798504574384119986">مشاهده اجازه‌های وب</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> به‌طور خودکار مسدود‌ شده است</translation>
@@ -7787,6 +7799,7 @@
 <translation id="7876027585589532670">نمی‌توان میان‌بر را ویرایش کرد</translation>
 <translation id="7877451762676714207">خطای سرور ناشناس. لطفاً دوباره سعی کنید یا با سرپرست سرور تماس بگیرید.</translation>
 <translation id="7878945852730162014">فایل‌ها را هنگام بارگیری مدیریت کنید و آن‌ها را بعداز بارگیری باز کنید</translation>
+<translation id="7879172417209159252">نمی‌توان از این افزونه استفاده کرد</translation>
 <translation id="7879478708475862060">پیروی از روش ورودی</translation>
 <translation id="7879631849810108578">میان‌بر تنظیم شد: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880823633812189969">وقتی بازراه‌اندازی کنید، داده‌های محلی حذف می‌شود</translation>

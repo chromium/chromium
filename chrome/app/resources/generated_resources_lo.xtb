@@ -4965,6 +4965,7 @@
 <translation id="5338503421962489998">ບ່ອນເກັບມ້ຽນຂໍ້ມູນໃນເຄື່ອງ</translation>
 <translation id="5339031667684712858">ເວັບໄຊທີ່ທ່ານລຶບອອກແລ້ວ</translation>
 <translation id="5340638867532133571">ອະນຸຍາດໃຫ້ເວັບໄຊຕິດຕັ້ງຕົວຈັດການການຈ່າຍເງິນ (ແນະນຳ)</translation>
+<translation id="5340787663756381836">&amp;ຊອກຫາ ແລະ ແກ້ໄຂ</translation>
 <translation id="5341793073192892252">ບລັອກຄຸກກີ້ຕໍ່ໄປນີ້ໄວ້ແລ້ວ (ຄຸກກີ້ພາກສ່ວນທີສາມຖືກບລັອກໄວ້ໂດຍບໍ່ມີຂໍ້ຍົກເວັ້ນ)</translation>
 <translation id="5342091991439452114">PIN ຕ້ອງມີຢ່າງໜ້ອຍ <ph name="MINIMUM" /> ຕົວເລກ</translation>
 <translation id="5344036115151554031">ກຳລັງກູ້ຄືນ Linux</translation>
@@ -9352,6 +9353,7 @@
 <translation id="939401694733344652">ບັນຊີເຫຼົ່ານີ້ບໍ່ໄດ້ຖືກໃຊ້ກັບແອັບ Android ໃນຕອນນີ້ເທື່ອ. ຫາກທ່ານເລືອກບັນຊີໃດໜຶ່ງເພື່ອໃຊ້ກັບແອັບ Android ນີ້, ບັນຊີດັ່ງກ່າວສາມາດຖືກໃຊ້ກັບແອັບ Android ອື່ນໄດ້ນຳ. ທ່ານສາມາດປ່ຽນສິດເຂົ້າເຖິງແອັບ Android ໄດ້ໃນ <ph name="LINK_BEGIN" />ການຕັ້ງຄ່າ &gt; ບັນຊີ<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">ປ້ອນວະລີຜ່ານໃສ່</translation>
 <translation id="939736085109172342">ໂຟລເດີ​ໃຫມ່</translation>
+<translation id="940212040923880623">&amp;ຊອກຫາ ແລະ ແກ້ໄຂ</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> ກຳລັງແບ່ງປັນແຖບ Chrome ແລະ ສຽງ.</translation>
 <translation id="944799160843436808">ເກີດບັນຫາໃນການຕັ້ງຄ່າ Steam ຢູ່ Chromebook</translation>
 <translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>

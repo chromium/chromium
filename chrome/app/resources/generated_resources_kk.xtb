@@ -693,6 +693,7 @@
 <translation id="1593594475886691512">Пішімделуде…</translation>
 <translation id="159359590073980872">Кескін кэші</translation>
 <translation id="1593926297800505364">Төлеу әдісін сақтау</translation>
+<translation id="1594703455918849716">Тексеру бетіне өту</translation>
 <translation id="1595492813686795610">Linux жүйесінің жаңа нұсқасы орнатылуда</translation>
 <translation id="1596286373007273895">Қолжетімді</translation>
 <translation id="1596709061955594992">Bluetooth өшірулі. Қолжетімді құрылғыларды көру үшін Bluetooth қосыңыз.</translation>
@@ -1676,6 +1677,7 @@
 <translation id="2399699884460174994">Хабарландырулар қосылды</translation>
 <translation id="2399939490305346086">Қауіпсіздік кілтіне кіру деректері</translation>
 <translation id="2400664245143453337">Дереу жаңарту қажет</translation>
+<translation id="2402226831639195063">Сигнал дыбыстары</translation>
 <translation id="2406153734066939945">Бұл профиль және оның деректері жойылсын ба?</translation>
 <translation id="2408018932941436077">Карта сақталуда</translation>
 <translation id="2408955596600435184">PIN кодын енгізіңіз</translation>
@@ -1687,6 +1689,7 @@
 <translation id="241082044617551207">Белгісіз плагин</translation>
 <translation id="2410940059315936967">Сіз кірген сайт басқа сайттардан алынған контентті (мысалы, суреттерді, жарнамаларды және мәтінді) ендіре алады. Осындай басқа сайттар орнатқан cookie файлдары үшінші тарап cookie файлдары деп аталады.</translation>
 <translation id="2411666601450687801">Бұл құрылғыда виртуалды машиналарға рұқсат етілмейді</translation>
+<translation id="2412015533711271895">Ата-анаңыз немесе қамқоршыңыз бұл кеңейтімді пайдалануыңызға рұқсат беруі керек</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414886740292270097">Күңгірт</translation>
 <translation id="2416435988630956212">Пернетақтаның функциялық пернелері</translation>
@@ -3013,6 +3016,7 @@
 <translation id="3609277884604412258">Жылдам іздеу</translation>
 <translation id="3610241585790874201">Құрылғыңызда деректерді сақтауға рұқсаты жоқ</translation>
 <translation id="3610369246614755442">Қондыру станциясының желдеткішін жөндеу керек</translation>
+<translation id="3610961622607302617"><ph name="WEBSITE" /> құпия сөзін өзгерту</translation>
 <translation id="361106536627977100">Flash деректері</translation>
 <translation id="3611655097742243705">Басқа да қолданбаларды табу үшін Play Store-ға өтіңіз.</translation>
 <translation id="3611658447322220736">Соңғы кездері жабылған сайттар деректерді жіберу және қабылдау процесін аяқтай алады</translation>
@@ -3069,6 +3073,7 @@
 <translation id="3651488188562686558">Wi-Fi желісінен ажырату</translation>
 <translation id="3652817283076144888">Жұмысқа дайындалуда</translation>
 <translation id="3653160965917900914">Желінің ортақ каталогтері</translation>
+<translation id="3653887973853407813">Бұл кеңейтімді пайдалана алмайсыз. Ата-анаңыз немесе қамқоршыңыз Chrome үшін "Сайттарға, қолданбаларға және кеңейтімдерге берілген рұқсаттарды" өшірді.</translation>
 <translation id="3653999333232393305"><ph name="HOST" /> хостына берілген микрофоныңызды пайдалану рұқсатын сақтау</translation>
 <translation id="3654045516529121250">Арнайы мүмкіндіктер параметрлерін оқу</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Оның бір файлға тұрақты кіру құқығы бар.}other{Оның # файлға тұрақты кіру құқығы бар.}}</translation>
@@ -5140,6 +5145,7 @@
 <translation id="5517304475148761050">Қолданбаға Play Store дүкеніне кіру рұқсаты қажет</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> – <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Сайт буферге көшірілген мәтінді және кескіндерді көргісі келген кезде сұралсын</translation>
+<translation id="5518949581554491184">Android телефонымен реттеу</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">Бұл сіз күткен бастапқы бет пе?</translation>
 <translation id="5522156646677899028">Бұл кеңейтім өте қауіпсіз.</translation>
@@ -6026,6 +6032,7 @@
 <translation id="6318125393809743217">Саясат конфигурациясында policies.json файлын қамту.</translation>
 <translation id="6318407754858604988">Жүктеп алына бастады</translation>
 <translation id="6318944945640833942">Принтер анықталмады. Принтер мекенжайын қайта енгізіңіз.</translation>
+<translation id="6320808462673705899">Іздеуіңізге сәйкес келетін бетбелгілер жоқ.</translation>
 <translation id="6322370287306604163">Саусақ ізімен құлыпты жылдам ашу</translation>
 <translation id="6322559670748154781">Бұл файл әдетте жүктеп алынбайды, сол себепті "Күшейтілген қорғаныс" функциясы оны бөгеді.</translation>
 <translation id="6324916366299863871">Таңбашаны өзгерту</translation>
@@ -6470,6 +6477,7 @@
 <translation id="6725206449694821596">Internet Printing Protocol (IPP)</translation>
 <translation id="6725970970008349185">Әр бетте көрсетілетін кандидаттар саны</translation>
 <translation id="672609503628871915">Жаңалықтарды қарау</translation>
+<translation id="6726800386221816228">Арнайы таңбалар</translation>
 <translation id="67269783048918309">Пайдаланылуы және диагностикасы туралы деректерді жіберу. Бұл құрылғыдан Google-ға диагностика, құрылғы мен қолданбаны пайдалану деректері автоматты түрде жіберіліп тұрады. Бұл деректер баланың жеке басын анықтауға пайдаланылмайды. Олар жүйе мен қолданбаның тұрақты жұмыс істеуіне және басқа да жақсартулар енгізуге көмектеседі. Кейбір жиынтық деректер Google қолданбаларын жетілдіруге және Android әзірлеушілері сияқты серіктестердің жұмысына көмектеседі. Бұл <ph name="BEGIN_LINK1" />параметрді<ph name="END_LINK1" /> иесі орнатқан. Егер "Интернет пен қолданбаларды пайдаланудың қосымша тарихы" параметрі қосулы болса, бұл деректер балаңыздың Google аккаунтына сақталуы мүмкін. <ph name="BEGIN_LINK2" />Толығырақ<ph name="END_LINK2" /></translation>
 <translation id="6728528977475057549">IBAN нөмірі <ph name="LAST_FOUR_DIGITS" /> болып аяқталады</translation>
 <translation id="6729192290958770680">Пайдаланушы атын енгізіңіз.</translation>
@@ -6872,6 +6880,7 @@
 <translation id="7063129466199351735">Таңбашалар өңделуде…</translation>
 <translation id="7063311912041006059">Сұрау орнындағы <ph name="SPECIAL_SYMBOL" /> таңбасы бар URL сілтемесі</translation>
 <translation id="706342288220489463">Assistant-тің экраныңыздағы ақпаратты пайдалануына рұқсат етіңіз</translation>
+<translation id="70641621694466590">Құпия сөздер бетіне өту</translation>
 <translation id="7064734931812204395">Linux контейнері конфигурацияланып жатыр. Оған 30 минуттай уақыт кетуі мүмкін.</translation>
 <translation id="7065223852455347715">Бұл құрылғы кәсіпорын тіркеуіне жол бермейтін режимде бекітілген. Құрылғыны тіркегіңіз келсе, алдымен құрылғыны қалпына келтіру қажет.</translation>
 <translation id="7065534935986314333">Жүйе туралы</translation>
@@ -7372,6 +7381,7 @@
 <translation id="7541773865713908457"><ph name="APP_NAME" /> қолданбасымен <ph name="ACTION_NAME" /></translation>
 <translation id="754207240458482646">Аккаунтыңыздағы басқа құрылғылармен синхрондалды. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Осы <ph name="IDS_SHORT_PRODUCT_NAME" /> құрылғысындағы түзету мүмкіндіктерін қосу</translation>
+<translation id="7544977292347272434">Ата-анаңыздан кеңейтімге рұқсат беруін сұраңыз</translation>
 <translation id="7545466883021407599">Серверге қосылмады. Желі байланысын тексеріп, қайталап көріңіз. Егер мәселе шешілмесе, Chromebook-ті өшіріп қосыңыз. Қате коды: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Ескерту: <ph name="PRODUCT_NAME" /> параметрлері желілік дискіде сақталады. Бұл баяулауға, бұзылуға немесе деректердің жойылуына себеп болуы мүмкін.</translation>
 <translation id="7548856833046333824">Лимонад</translation>
@@ -7600,6 +7610,7 @@
 <translation id="7728668285692163452">Арна өзгерісі кейінірек қолданылады</translation>
 <translation id="7730449930968088409">Экранның контентін түсіру</translation>
 <translation id="7730683939467795481">Бұл бет "<ph name="EXTENSION_NAME" />" кеңейтімі арқылы өзгертілді.</translation>
+<translation id="773511996612364297">Екпін белгілері</translation>
 <translation id="7735165285389721951">Басқа Steam-ді реттеу процесі орындалып жатыр. Әрекетті қайталамас бұрын, осы процестің аяқталуын күтіңіз.</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" құрылғысымен жұпталуда ...</translation>
 <translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> нұсқауы алынды</translation>
@@ -7682,6 +7693,7 @@
 <translation id="7792388396321542707">Бөлісуді тоқтату</translation>
 <translation id="779308894558717334">Ашық жасыл</translation>
 <translation id="7793098747275782155">Қою көк</translation>
+<translation id="7796453472368605346">Диакритикалық таңбалар</translation>
 <translation id="7797571222998226653">Өшірулі</translation>
 <translation id="7798504574384119986">Веб-рұқсаттарды көру</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> автоматты түрде бөгелді.</translation>
@@ -7766,6 +7778,7 @@
 <translation id="7876027585589532670">Таңбашаны өзгерту мүмкін емес.</translation>
 <translation id="7877451762676714207">Белгісіз сервер қатесі. Әрекетті қайталап көріңіз немесе сервер әкімшісіне хабарласыңыз.</translation>
 <translation id="7878945852730162014">Жүктеп алу кезінде файлдарды басқару және аяқталған кезде ашу</translation>
+<translation id="7879172417209159252">Кеңейтімді пайдалану мүмкін емес</translation>
 <translation id="7879478708475862060">Енгізу режимін қолдану</translation>
 <translation id="7879631849810108578">Пернелер тіркесімі орнатылды: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880823633812189969">Іске қосылған кезде, жергілікті деректер жойылады</translation>

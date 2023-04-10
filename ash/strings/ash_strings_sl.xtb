@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">Naprava USB-C (sprednja vrata)</translation>
 <translation id="1013598600051641573">Ločljivost zaslona <ph name="DISPLAY_NAME" /> je spremenjena na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Kliknite »Potrdi«, če želite ohraniti spremembe. Prejšnja nastavitev bo obnovljena čez <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Naprava Bluetooth »<ph name="DEVICE_NAME" />« želi dovoljenje za seznanjanje. V napravi vnesite ta PIN: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Minimiranje zgornjega okna, ko v Chromu ni zgodovine</translation>
 <translation id="1024364763893396229">Shranite napravo <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Baterija pisala je skoraj izpraznjena</translation>
 <translation id="1036073649888683237">Če želite upravljati obvestila, odprite nastavitve</translation>
@@ -343,6 +344,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2621713457727696555">Varno</translation>
 <translation id="263399434338050016">»Izberi vse«</translation>
+<translation id="2644422758626431000">Pripenjanje okna na levo</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2647092942972307022"><ph name="USED_MEMORY" /> od <ph name="TOTAL_MEMORY" /> na voljo</translation>
 <translation id="2653019840645008922">Zajem okna</translation>
@@ -1054,6 +1056,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Vklopljeno</translation>
 <translation id="5920710855273935292">Zvok mikrofona je izklopljen.</translation>
+<translation id="5922962980596822074">Pomikanje skozi okna od nazadnje uporabljenega okna</translation>
 <translation id="5924855612669061715">Dostopna točka je vklopljena</translation>
 <translation id="5946788582095584774">Funkcija <ph name="FEATURE_NAME" /> je vklopljena.</translation>
 <translation id="5947494881799873997">Razveljavi</translation>
@@ -1143,6 +1146,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="6352082849089527770">Neznana omrežja</translation>
 <translation id="6359587239691116345">Zagotovite si najnovejše funkcije in varnostne izboljšave. Če zavrnete to posodobitev, naprava morda ne bo več delovala pravilno in boste morda naleteli na varnostne težave in težave z zmogljivostjo.</translation>
 <translation id="6376931439017688372">Bluetooth je vklopljen</translation>
+<translation id="6378515133128829137">Pripenjanje okna na desno</translation>
 <translation id="6381109794406942707">Če želite odkleniti napravo, vnesite kodo PIN.</translation>
 <translation id="638716340450135524">Vklopi dostop do kamere</translation>
 <translation id="639644700271529076">Tipka CAPS LOCK je izklopljena</translation>
@@ -1162,6 +1166,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="6459472438155181876">Razširitev zaslon na <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Datoteke ni mogoče prenesti</translation>
 <translation id="6482559668224714696">Celozaslonska lupa</translation>
+<translation id="6483727822843292440">Pomikanje skozi okna od najmanj uporabljanega okna</translation>
 <translation id="6490471652906364588">Naprava USB-C (desna vrata)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> zahteva, da pred rokom posodobite napravo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="649452524636452238">PIN za pametno kartico</translation>

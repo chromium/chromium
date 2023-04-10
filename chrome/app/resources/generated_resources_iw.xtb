@@ -3031,6 +3031,7 @@
 <translation id="3609277884604412258">חיפוש מהיר</translation>
 <translation id="3610241585790874201">אין לאתרים האלה הרשאה לשמור נתונים במכשיר שלך</translation>
 <translation id="3610369246614755442">המאוורר של אביזר העגינה צריך תיקון</translation>
+<translation id="3610961622607302617">שינוי סיסמה לאתר <ph name="WEBSITE" />.</translation>
 <translation id="361106536627977100">‏נתוני Flash</translation>
 <translation id="3611655097742243705">‏אפליקציות נוספות מחכות לך בחנות Play</translation>
 <translation id="3611658447322220736">אתרים שנסגרו לאחרונה יכולים לסיים שליחה וקבלה של נתונים</translation>
@@ -4104,6 +4105,7 @@
 <translation id="4545759655004063573">לא ניתן לשמור עקב הרשאות לא מספיקות. יש לשמור במיקום אחר.</translation>
 <translation id="4546308221697447294">‏גלישה מהירה עם Google Chrome</translation>
 <translation id="4546345569117159016">הלחצן הימני</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> רוצה להשתמש בתוסף הזה:</translation>
 <translation id="4546692474302123343">‏קלט קולי ב-Google Assistant</translation>
 <translation id="4547659257713117923">אין כרטיסיות ממכשירים אחרים</translation>
 <translation id="4547672827276975204">הגדרה באופן אוטומטי</translation>
@@ -6048,6 +6050,7 @@
 <translation id="6318125393809743217">‏הכללה של קובץ policies.json עם הגדרות המדיניות.</translation>
 <translation id="6318407754858604988">ההורדה התחילה</translation>
 <translation id="6318944945640833942">לא אותרה מדפסת. יש להזין שוב את כתובת המדפסת.</translation>
+<translation id="6320808462673705899">אין סימניות שתואמות לחיפוש שביצעת.</translation>
 <translation id="6322370287306604163">ביטול נעילה מהיר יותר באמצעות טביעת אצבע</translation>
 <translation id="6322559670748154781">בדרך כלל לא מורידים את הקובץ הזה ולכן הוא נחסם על ידי ההגנה המתקדמת</translation>
 <translation id="6324916366299863871">עריכת קיצור דרך</translation>

@@ -4,6 +4,8 @@
 <translation id="1012876632442809908">Dispozitiv USB-C (portul din față)</translation>
 <translation id="1013598600051641573">Rezoluția pentru <ph name="DISPLAY_NAME" /> a fost modificată la <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Dă clic pe Confirmă pentru a păstra modificările. Setările anterioare vor fi restabilite în <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Dispozitivul Bluetooth „<ph name="DEVICE_NAME" />” solicită permisiunea de a se conecta. Introduceți acest cod PIN pe dispozitivul respectiv: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">Astfel, <ph name="APP_NAME" /> și toate aplicațiile și site-urile care au permisiunea pentru locație și ChromeOS pot să folosească locația prin Wi-Fi și rețele mobile.</translation>
+<translation id="1017556409696559990">Minimizează fereastra de sus când nu există istoric în Chrome</translation>
 <translation id="1024364763893396229">Salvează <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Bateria creionului este descărcată</translation>
 <translation id="1036073649888683237">Pentru a gestiona notificările, accesează Setările</translation>
@@ -190,6 +192,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Activează accesul la locație</translation>
 <translation id="1830308660060964064">Fixarea pentru <ph name="ITEM_TITLE" /> a fost anulată</translation>
 <translation id="1838895407229022812">Lumina de noapte este dezactivată.</translation>
 <translation id="1854180393107901205">Nu mai trimite</translation>
@@ -343,6 +346,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2621713457727696555">Securizată</translation>
 <translation id="263399434338050016">Selectează tot.</translation>
+<translation id="2644422758626431000">Fixează fereastra la stânga</translation>
 <translation id="2645435784669275700">Sistemul de operare Chrome</translation>
 <translation id="2647092942972307022"><ph name="USED_MEMORY" /> din <ph name="TOTAL_MEMORY" /> disponibili</translation>
 <translation id="2653019840645008922">Capturarea ferestrei</translation>
@@ -466,6 +470,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3255483164551725916">Ce poți face?</translation>
 <translation id="3256109297135787951">Elimină evidențierea de pe un element de pe raft</translation>
 <translation id="3260969790895726815">Vorbirea este procesată local și dictarea funcționează offline, dar unele comenzi vocale nu vor funcționa.</translation>
+<translation id="3265032511221679826">Activezi accesul la locația exactă?</translation>
 <translation id="3269597722229482060">Clic dreapta</translation>
 <translation id="3289364673986435196">Meniul de pornire</translation>
 <translation id="3289544412142055976">Aplicațiile Linux nu sunt acceptate</translation>
@@ -576,6 +581,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="366222428570480733">Utilizatorul gestionat <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Glisează pentru a ascunde fereastra flotantă</translation>
 <translation id="367531336287639526">Selectează prima pictogramă din stânga barei de adrese</translation>
+<translation id="3677931086890821290">Astfel, toate aplicațiile și site-urile care au permisiunea pentru locație și ChromeOS pot să folosească locația prin Wi-Fi și rețele mobile.</translation>
 <translation id="3679827876008292680">Accesează ultima filă din fereastră</translation>
 <translation id="36813544980941320">Se va permite accesul la rețelele Wi-Fi de pe telefon și de pe <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Site-uri</translation>
@@ -1054,6 +1060,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5920710855273935292">Microfonul este dezactivat.</translation>
+<translation id="5922962980596822074">Treci prin ferestre începând de la fereastra folosită cel mai recent</translation>
 <translation id="5924855612669061715">Hotspotul este activat</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> este activat.</translation>
 <translation id="5947494881799873997">Reveniți</translation>
@@ -1143,6 +1150,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6352082849089527770">Rețele necunoscute</translation>
 <translation id="6359587239691116345">Obține cele mai noi funcții și îmbunătățiri ale securității. Dacă refuzi această actualizare, este posibil ca dispozitivul să nu mai funcționeze corespunzător și să întâmpini probleme de securitate și de performanță.</translation>
 <translation id="6376931439017688372">Bluetooth este activat</translation>
+<translation id="6378515133128829137">Fixează fereastra la dreapta</translation>
 <translation id="6381109794406942707">Pentru a debloca dispozitivul, introdu codul PIN.</translation>
 <translation id="638716340450135524">Activează accesul la camera foto</translation>
 <translation id="639644700271529076">Tasta CAPS LOCK este dezactivată</translation>
@@ -1162,6 +1170,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6459472438155181876">Se extinde ecranul pe <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Nu s-a putut descărca fișierul</translation>
 <translation id="6482559668224714696">Lupă de ecran complet</translation>
+<translation id="6483727822843292440">Treci prin ferestre începând de la fereastra folosită cel mai puțin</translation>
 <translation id="6490471652906364588">Dispozitiv USB-C (portul din dreapta)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> solicită să actualizezi dispozitivul <ph name="DEVICE_TYPE" /> înainte de termenul limită</translation>
 <translation id="649452524636452238">Codul PIN al cardului inteligent</translation>
@@ -1737,6 +1746,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="9198992156681343238">Rezoluția pentru <ph name="DISPLAY_NAME" /> a fost modificată la <ph name="RESOLUTION" />. Dă clic pe Confirmă pentru a păstra modificările. Setările anterioare vor fi restabilite în <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Conectează <ph name="NAME" /> la acest Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, gestionată de administratorul tău</translation>
+<translation id="9207682216934703221">Astfel, <ph name="APP_NAME" />, <ph name="APP2_NAME" /> și toate aplicațiile și site-urile care au permisiunea pentru locație și ChromeOS pot să folosească locația prin Wi-Fi și rețele mobile.</translation>
 <translation id="9210037371811586452">Se iese din modul desktop unificat</translation>
 <translation id="9211490828691860325">Toate desktopurile</translation>
 <translation id="9211681782751733685">Timp rămas până la încărcarea completă a bateriei: <ph name="TIME_REMAINING" />.</translation>

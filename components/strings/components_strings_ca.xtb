@@ -1987,6 +1987,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5872692522325383488">L'IBAN s'ha desat</translation>
 <translation id="5873013647450402046">El banc vol confirmar la teva identitat.</translation>
 <translation id="5877831137320480913">Bellesa i fitnes</translation>
+<translation id="5879989559903563723">No es permet en mode de convidat</translation>
 <translation id="5884465125445718607">Sobre xinès número 6</translation>
 <translation id="5887400589839399685">S'ha desat la targeta</translation>
 <translation id="5887687176710214216">Darrera visita: ahir</translation>
@@ -3228,6 +3229,7 @@ Detalls addicionals:
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Legislació i govern</translation>
 <translation id="8957210676456822347">Autorització de portals captius</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Ves a la configuració del lloc web</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Suggeriments:<ph name="MARKUP_2" />Assegureu-vos que teniu connexió de dades<ph name="MARKUP_3" />Torneu a carregar aquesta pàgina web més tard<ph name="MARKUP_4" />Comproveu l'adreça que heu introduït<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Desa la targeta</translation>

@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C 기기(전면 포트)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> 화면이 <ph name="RESOLUTION" />(<ph name="REFRESH_RATE" />Hz) 해상도로 변경되었습니다. 변경사항을 적용하려면 확인을 클릭하세요. <ph name="TIMEOUT_SECONDS" /> 후 이전 설정으로 복원됩니다.</translation>
 <translation id="1013923882670373915">블루투스 기기 '<ph name="DEVICE_NAME" />'에서 페어링 허가를 요청합니다. 기기에서 다음 PIN 코드를 입력하세요. <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Chrome에 뒤로 기록이 없는 경우 상단 창 최소화</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> 저장</translation>
 <translation id="1032891413405719768">스타일러스 배터리 부족</translation>
 <translation id="1036073649888683237">알림을 관리하려면 설정으로 이동하세요.</translation>
@@ -343,6 +344,7 @@
 <translation id="2620436844016719705">시스템</translation>
 <translation id="2621713457727696555">보안</translation>
 <translation id="263399434338050016">"모두 선택"</translation>
+<translation id="2644422758626431000">왼쪽에 창 고정</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022"><ph name="TOTAL_MEMORY" /> 중 <ph name="USED_MEMORY" /> 사용 가능</translation>
 <translation id="2653019840645008922">창 캡처</translation>
@@ -1054,6 +1056,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" />(<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5920710855273935292">마이크가 음소거되어 있습니다.</translation>
+<translation id="5922962980596822074">가장 최근에 사용한 창부터 창 살펴보기</translation>
 <translation id="5924855612669061715">핫스팟 사용 중</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> 기능이 켜져 있습니다.</translation>
 <translation id="5947494881799873997">되돌리기</translation>
@@ -1143,6 +1146,7 @@
 <translation id="6352082849089527770">알 수 없는 네트워크</translation>
 <translation id="6359587239691116345">최신 기능과 보안 개선 사항을 받습니다. 이 업데이트를 거부하면 기기가 더 이상 제대로 작동하지 않을 수 있으며 보안 및 성능 문제가 발생할 수 있습니다.</translation>
 <translation id="6376931439017688372">블루투스 사용 중</translation>
+<translation id="6378515133128829137">오른쪽에 창 고정</translation>
 <translation id="6381109794406942707">기기의 잠금을 해제하려면 PIN을 입력하세요.</translation>
 <translation id="638716340450135524">카메라 액세스 권한 부여</translation>
 <translation id="639644700271529076">CAPS LOCK이 꺼져 있음</translation>
@@ -1162,6 +1166,7 @@
 <translation id="6459472438155181876">화면을 <ph name="DISPLAY_NAME" />(으)로 확장</translation>
 <translation id="6477681113376365978">파일을 다운로드할 수 없음</translation>
 <translation id="6482559668224714696">전체 화면 돋보기</translation>
+<translation id="6483727822843292440">가장 적게 사용된 창부터 창 살펴보기</translation>
 <translation id="6490471652906364588">USB-C 기기(오른쪽 포트)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" />에서 기한 전에 <ph name="DEVICE_TYPE" /> 기기를 업데이트할 것을 요구합니다.</translation>
 <translation id="649452524636452238">스마트 카드 PIN</translation>
@@ -1215,6 +1220,7 @@
 <translation id="6683022854667115063">헤드폰</translation>
 <translation id="6696025732084565524">분리식 키보드에 중요 업데이트 필요</translation>
 <translation id="6700713906295497288">IME 메뉴 버튼</translation>
+<translation id="6705577071209924099">밝기 조정</translation>
 <translation id="6707693040195709527">이전 버전으로 기기를 롤백할 기한 만료됨</translation>
 <translation id="6710213216561001401">이전</translation>
 <translation id="6723839937902243910">전원</translation>

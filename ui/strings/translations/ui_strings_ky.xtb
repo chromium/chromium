@@ -201,6 +201,7 @@
 <translation id="8393700583063109961">Билдирүү жөнөтүү</translation>
 <translation id="8394908167088220973">Медиа файлды ойнотуу/бир азга токтотуу</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 ж.}other{# ж.}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> файл (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> Кб/сек</translation>
 <translation id="8725488761726303204">дагы <ph name="NUMBER" /></translation>

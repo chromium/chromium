@@ -216,6 +216,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2496626742194544812">Go to first tab</translation>
 <translation id="2500374554657206846">Options to save password</translation>
+<translation id="2502415369140591438"><ph name="COUNT" /> reused passwords</translation>
 <translation id="2523363575747517183">This website is repeatedly trying to open another application.</translation>
 <translation id="2529021024822217800">Open All</translation>
 <translation id="2547458583188611426">Sync is not working. To start sync, enter your passphrase.</translation>
@@ -293,6 +294,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2932085390869194046">Suggest password...</translation>
 <translation id="2932765531295814441">Add passwords manually</translation>
 <translation id="2952581218264071393">1. Open Chrome settings</translation>
+<translation id="2953871438216280742">Sign in to open and save your reading list in your Google Account.</translation>
 <translation id="2958718410589002129">Passwords</translation>
 <translation id="2961210776189273067">Title</translation>
 <translation id="2964349545761222050">Block third-party cookies</translation>
@@ -386,6 +388,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3581564640715911333">Offer to translate pages in other languages</translation>
 <translation id="3588820906588687999">Open Image in New Tab</translation>
 <translation id="3595252146048399851">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />. Google may personalise Search and other services based on your history.</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} weak password}other{{COUNT} weak passwords}}</translation>
 <translation id="3603009562372709545">Copy link URL</translation>
 <translation id="3607167657931203000">Auto-fill Data</translation>
 <translation id="3608008480985212611">Sign in to manage your preferences</translation>
@@ -624,6 +627,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5211488077761630279">Allow ‘<ph name="SITE_NAME" />’ to use your <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Help improve security on the web for everyone</translation>
+<translation id="5221339005270097309">Checking passwords…</translation>
 <translation id="5228579091201413441">Enable sync</translation>
 <translation id="5232485538978018676">Sign in with managed account</translation>
 <translation id="5234764350956374838">Dismiss</translation>
@@ -663,6 +667,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 Handoff must also be enabled in the General section of Settings, and your devices must use the same iCloud account.</translation>
 <translation id="5551897871312988470">Offer to translate</translation>
 <translation id="5556459405103347317">Reload</translation>
+<translation id="555749644339804659">Checking passwords…</translation>
 <translation id="556042886152191864">Button</translation>
 <translation id="5597915316964418992">Open the Tab grid</translation>
 <translation id="560322036295180549">Turned off by your organisation</translation>

@@ -146,6 +146,7 @@
 <translation id="1651914502370159744">פתיחת דף ההיסטוריה</translation>
 <translation id="1654477262762802994">הפעלה של שאילתה קולית</translation>
 <translation id="1668469839109562275">‏רשתות VPN מובנות</translation>
+<translation id="1675844249244994876">עדכון החלון הימני</translation>
 <translation id="1677472565718498478">זמן נותר - <ph name="TIME" /></translation>
 <translation id="1677507110654891115">התכונה <ph name="FEATURE_NAME" /> לא מחוברת.</translation>
 <translation id="1677582821739292812">מישהו מביט במסך שלך</translation>
@@ -842,6 +843,7 @@
 <translation id="493076006037866439">הקטנת התצוגה במסך</translation>
 <translation id="4936329710968938986">כולם, במצב כבוי</translation>
 <translation id="4938176435186993759">הסתרה של כל ההצעות</translation>
+<translation id="4943007472417128747">‏הנקודה לשיתוף האינטרנט (Hotspot) כובתה כדי לאפשר שימוש ב-Wi-Fi. כדי להשתמש בנקודה לשיתוף האינטרנט צריך לכבות את ה-Wi-Fi.</translation>
 <translation id="4945196315133970626">השבתת ההתראות</translation>
 <translation id="4946376291507881335">צילום</translation>
 <translation id="495046168593986294">גלילה למעלה</translation>
@@ -1215,6 +1217,7 @@
 <translation id="6683022854667115063">אוזניות</translation>
 <translation id="6696025732084565524">למקלדת הניתנת לניתוק דרוש עדכון קריטי</translation>
 <translation id="6700713906295497288">‏לחצן תפריט IME</translation>
+<translation id="6705577071209924099">שינוי התאורה</translation>
 <translation id="6707693040195709527">מועד שינוי המכשיר לגרסה קודמת כבר חלף</translation>
 <translation id="6710213216561001401">הקודם</translation>
 <translation id="6723839937902243910">חשמל</translation>
@@ -1382,6 +1385,7 @@
 כדי לכבות את המכשיר, יש ללחוץ שוב לחיצה ארוכה על לחצן ההפעלה במכשיר.</translation>
 <translation id="7526573455193969409">ייתכן שהרשת מנוטרת</translation>
 <translation id="7536035074519304529">‏כתובת IP: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">עדכון החלון השמאלי</translation>
 <translation id="7543399541175347147">‏בשלב הזה, אין תמיכה באפליקציות Linux ובחלונות פרטיים. אפליקציות אחרות יישמרו.</translation>
 <translation id="7544300628205093162">התאורה האחורית של המקלדת פועלת</translation>
 <translation id="7548434653388805669">לילה טוב!</translation>
@@ -1464,6 +1468,7 @@
 <translation id="7893503627044934815">אני לא רוצה שהקובץ יוצג</translation>
 <translation id="7895348134893321514">מדף</translation>
 <translation id="7897375687985782769">הקשת על מקש הקיצור של סיבוב המסך. לסובב את המסך?</translation>
+<translation id="7901190436359881020">החלפה בין החלונות</translation>
 <translation id="7901405293566323524">מרכז טלפוני</translation>
 <translation id="7902625623987030061">יש לגעת בחיישן טביעות האצבע</translation>
 <translation id="7904094684485781019">מנהל החשבון הזה אסר על כניסה עם מספר חשבונות.</translation>

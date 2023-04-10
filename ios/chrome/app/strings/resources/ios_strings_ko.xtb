@@ -216,6 +216,7 @@
 <translation id="2482878487686419369">알림</translation>
 <translation id="2496626742194544812">첫 번째 탭으로 이동</translation>
 <translation id="2500374554657206846">비밀번호 저장 옵션</translation>
+<translation id="2502415369140591438">재사용된 비밀번호 <ph name="COUNT" />개</translation>
 <translation id="2523363575747517183">다른 애플리케이션을 열려는 반복적인 시도가 실행되는 웹사이트입니다.</translation>
 <translation id="2529021024822217800">모두 열기</translation>
 <translation id="2547458583188611426">동기화가 작동하지 않습니다. 동기화를 시작하려면 암호를 입력하세요.</translation>
@@ -225,6 +226,7 @@
 <translation id="2576499762020411840">내 Google 계정에서 비밀번호 사용 및 저장</translation>
 <translation id="2578571896248130439">웹페이지 보내기</translation>
 <translation id="2584132361465095047">계정 추가...</translation>
+<translation id="2595587704210555261">{COUNT,plural, =1{1일 이상 사용하지 않는 열린 탭이 비활성 탭으로 이동하므로 가장 많이 사용하는 탭에 쉽게 집중할 수 있습니다. 언제든지 설정에서 변경할 수 있습니다.}other{{COUNT}일 이상 사용하지 않는 열린 탭이 비활성 탭으로 이동하므로 가장 많이 사용하는 탭에 쉽게 집중할 수 있습니다. 언제든지 설정에서 변경할 수 있습니다.}}</translation>
 <translation id="2600682495497606169">사이트 쿠키 삭제</translation>
 <translation id="2609008503159898744">모든 탭을 닫을까요?</translation>
 <translation id="2625189173221582860">비밀번호 복사됨</translation>
@@ -292,6 +294,7 @@
 <translation id="2932085390869194046">비밀번호 추천...</translation>
 <translation id="2932765531295814441">수동으로 비밀번호 추가</translation>
 <translation id="2952581218264071393">1. Chrome 설정 열기</translation>
+<translation id="2953871438216280742">Google 계정에서 읽기 목록을 열고 저장하려면 로그인하세요.</translation>
 <translation id="2958718410589002129">비밀번호</translation>
 <translation id="2961210776189273067">제목</translation>
 <translation id="2964349545761222050">서드 파티 쿠키 차단</translation>
@@ -385,6 +388,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3581564640715911333">다른 언어로 된 페이지의 번역 옵션 제공</translation>
 <translation id="3588820906588687999">새 탭에서 이미지 열기</translation>
 <translation id="3595252146048399851">언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 동기화할 항목을 선택할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{취약한 비밀번호 {COUNT}개}other{취약한 비밀번호 {COUNT}개}}</translation>
 <translation id="3603009562372709545">링크 URL 복사</translation>
 <translation id="3607167657931203000">데이터 자동 완성</translation>
 <translation id="3608008480985212611">환경설정을 관리하려면 로그인하세요.</translation>
@@ -571,6 +575,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4844899002472726590">관심 주제를 보고 수정합니다.</translation>
 <translation id="4848999860252535517"><ph name="WEBSITE" />의 비밀번호를 삭제하시겠습니까?</translation>
 <translation id="4854345657858711387">비밀번호 설정</translation>
+<translation id="4856498338299082007">Google 계정의 북마크</translation>
 <translation id="4858786880085262208">가능하면 HTTPS로 전환하세요. 안전한 사이트에도 안전하지 않은 콘텐츠가 삽입되어 있을 수 있습니다.</translation>
 <translation id="4860895144060829044">전화걸기</translation>
 <translation id="4872323082491632254">비밀번호 확인</translation>
@@ -622,6 +627,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="5197255632782567636">인터넷</translation>
 <translation id="5211488077761630279">"<ph name="SITE_NAME" />"에서 내 <ph name="PERMISSION" />을(를) 사용하도록 허용하시겠습니까?</translation>
 <translation id="5219295696240154694">모든 웹 사용자를 위한 보안 개선에 참여</translation>
+<translation id="5221339005270097309">비밀번호 확인 중…</translation>
 <translation id="5228579091201413441">동기화 사용</translation>
 <translation id="5232485538978018676">관리 계정으로 로그인</translation>
 <translation id="5234764350956374838">닫기</translation>
@@ -661,6 +667,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 또한 Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이때 기기에서 반드시 동일한 iCloud 계정을 사용해야 합니다.</translation>
 <translation id="5551897871312988470">번역 옵션 제공</translation>
 <translation id="5556459405103347317">새로고침</translation>
+<translation id="555749644339804659">비밀번호 확인 중…</translation>
 <translation id="556042886152191864">버튼</translation>
 <translation id="5597915316964418992">탭 그리드 열기</translation>
 <translation id="560322036295180549">조직에서 사용 중지했습니다.</translation>
@@ -1087,6 +1094,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="821809831108207540">디스커버 피드와 Chrome을 맞춤설정하려면 로그인하고 동기화를 사용 설정하세요.</translation>
 <translation id="8225985093977202398">캐시된 이미지 및 파일</translation>
 <translation id="8237382152611443140">AutoFill Passwords(비밀번호 자동 완성) 설정을 엽니다.</translation>
+<translation id="8248969482078657578">집중하는 데 도움이 되는 비활성 탭</translation>
 <translation id="8261506727792406068">삭제</translation>
 <translation id="8264966119170358612">저장된 비밀번호 중 일부가 서드 파티의 정보 유출로 인해 노출되었습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8265018477030547118">이 기기에서만</translation>

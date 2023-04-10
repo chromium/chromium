@@ -147,6 +147,7 @@
 <translation id="1651914502370159744">เปิดหน้าประวัติการเข้าชม</translation>
 <translation id="1654477262762802994">เริ่มการค้นหาด้วยเสียง</translation>
 <translation id="1668469839109562275">VPN ในตัว</translation>
+<translation id="1675844249244994876">อัปเดตหน้าต่างด้านขวา</translation>
 <translation id="1677472565718498478">ใช้ได้อีก <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ไม่เชื่อมต่อ</translation>
 <translation id="1677582821739292812">มีคนกำลังดูหน้าจอของคุณอยู่</translation>
@@ -840,6 +841,7 @@
 <translation id="493076006037866439">ซูมออกนอกหน้าจอ</translation>
 <translation id="4936329710968938986">ทุกคน ปิดอยู่</translation>
 <translation id="4938176435186993759">ซ่อนคำแนะนำทั้งหมด</translation>
+<translation id="4943007472417128747">ปิดฮอตสปอตเพื่อใช้ Wi-Fi แล้ว หากต้องการใช้ฮอตสปอต ให้ปิด Wi-Fi</translation>
 <translation id="4945196315133970626">ปิดการแจ้งเตือน</translation>
 <translation id="4946376291507881335">จับภาพ</translation>
 <translation id="495046168593986294">เลื่อนขึ้น</translation>
@@ -1384,6 +1386,7 @@
 หากต้องการปิดอุปกรณ์ ให้กดปุ่มเปิด/ปิดบนอุปกรณ์ค้างไว้อีกครั้ง</translation>
 <translation id="7526573455193969409">อาจมีการตรวจสอบเครือข่าย</translation>
 <translation id="7536035074519304529">ที่อยู่ IP: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">อัปเดตหน้าต่างด้านซ้าย</translation>
 <translation id="7543399541175347147">ขณะนี้ยังไม่รองรับแอป Linux และหน้าต่างที่ไม่ระบุตัวตน ระบบจะบันทึกแอปอื่นๆ</translation>
 <translation id="7544300628205093162">ไฟแบ็กไลต์ของแป้นพิมพ์เปิดอยู่</translation>
 <translation id="7548434653388805669">ได้เวลาเข้านอนแล้ว</translation>
@@ -1464,6 +1467,7 @@
 <translation id="7893503627044934815">ไม่ต้องการให้แสดงไฟล์นี้</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">คุณกดแป้นพิมพ์ลัดสำหรับการหมุนหน้าจอ จะหมุนหน้าจอไหม</translation>
+<translation id="7901190436359881020">สลับหน้าต่าง</translation>
 <translation id="7901405293566323524">ฮับโทรศัพท์</translation>
 <translation id="7902625623987030061">แตะเซ็นเซอร์ลายนิ้วมือ</translation>
 <translation id="7904094684485781019">ผู้ดูแลระบบของบัญชีนี้ไม่อนุญาตการลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี</translation>

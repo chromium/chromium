@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C түзмөгү (маңдайкы оюкча)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> дааналыгы төмөнкүгө өзгөртүлдү: <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Герц). Өзгөртүүлөрдү сактоо үчүн "Ырастоо" баскычын басыңыз. Мурунку жөндөөлөр <ph name="TIMEOUT_SECONDS" /> кийин калыбына келтирилет.</translation>
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" Bluetooth түзмөгү жупташуу үчүн уруксат сурап жатат. Ал түзмөккө бул PIN кодду киргизиңиз: <ph name="PINCODE" />.</translation>
+<translation id="1017556409696559990">Chrome'до таржымал болбогон учурда жогорку терезени кичирейтүү</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> түзмөгүңүздү сактаңыз</translation>
 <translation id="1032891413405719768">Стилус батареясынын кубаты аз</translation>
 <translation id="1036073649888683237">Билдирүүлөрдү башкаруу үчүн жөндөөлөргө өтүңүз</translation>
@@ -343,6 +344,7 @@
 <translation id="2620436844016719705">Тутум</translation>
 <translation id="2621713457727696555">Корголгон</translation>
 <translation id="263399434338050016">"Баарын тандоо"</translation>
+<translation id="2644422758626431000">Терезени солго кадоо</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022"><ph name="TOTAL_MEMORY" /> ичинен <ph name="USED_MEMORY" /> колдонулду</translation>
 <translation id="2653019840645008922">Терезени сүрөткө тартып алуу</translation>
@@ -1054,6 +1056,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Күйүк</translation>
 <translation id="5920710855273935292">Микрофондун үнү өчүрүлдү.</translation>
+<translation id="5922962980596822074">Терезелерди эң акыркы колдонулган терезеден баштап көрүү</translation>
 <translation id="5924855612669061715">Байланыш түйүнү күйүк</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> күйүк.</translation>
 <translation id="5947494881799873997">Кайтаруу</translation>
@@ -1143,6 +1146,7 @@
 <translation id="6352082849089527770">Белгисиз тармактар</translation>
 <translation id="6359587239691116345">Жаңы функцияларды жана коопсуздук жакшыртууларын алыңыз. Эгер бул жаңыртууну четке какчаңыз, түзмөгүңүз туура иштебей, коопсуздук жана майнаптуулук көйгөйлөрү чыгышы мүмкүн.</translation>
 <translation id="6376931439017688372">Bluetooth күйүк</translation>
+<translation id="6378515133128829137">Терезени оңго кадоо</translation>
 <translation id="6381109794406942707">Түзмөктүн кулпусун ачуу үчүн PIN кодуңузду киргизиңиз.</translation>
 <translation id="638716340450135524">Түзмөктүн микрофонун колдонуу мүмкүнчүлүгүн күйгүзүү</translation>
 <translation id="639644700271529076">CAPS LOCK өчүк</translation>
@@ -1162,6 +1166,7 @@
 <translation id="6459472438155181876">Экран <ph name="DISPLAY_NAME" /> карай кеңейтилүүдө</translation>
 <translation id="6477681113376365978">Файлды жүктөп алууга болбойт</translation>
 <translation id="6482559668224714696">Толук экран режиминдеги лупа</translation>
+<translation id="6483727822843292440">Терезелерди эң аз колдонулган терезеден баштап көрүү</translation>
 <translation id="6490471652906364588">USB-C түзмөгү (оң жактагы оюкча)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> түзмөгүңүздү мөөнөтү бүткөнгө чейин жаңыртууну талап кылууда</translation>
 <translation id="649452524636452238">Акылдуу картанын PIN коду</translation>

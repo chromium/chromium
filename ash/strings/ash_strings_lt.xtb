@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C įrenginys (prievadas priekyje)</translation>
 <translation id="1013598600051641573">„<ph name="DISPLAY_NAME" />“ pakeistas į <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Spustelėkite patvirtinimo mygtuką, kad išsaugotumėte pakeitimus. Ankstesni nustatymai bus atkurti po <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">„Bluetooth“ įrenginys „<ph name="DEVICE_NAME" />“ prašo leidimo susieti. Šiame įrenginyje įveskite šį PIN kodą: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Sumažinti viršutinį langą, kai naršyklėje „Chrome“ nėra istorijos</translation>
 <translation id="1024364763893396229">Išsaugokite „<ph name="NAME" />“</translation>
 <translation id="1032891413405719768">Rašiklio akumuliatorius senka</translation>
 <translation id="1036073649888683237">Norėdami tvarkyti pranešimus, eikite į nustatymus</translation>
@@ -343,6 +344,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2621713457727696555">Apsaugota</translation>
 <translation id="263399434338050016">„Pasirinkti viską“</translation>
+<translation id="2644422758626431000">Prisegti langą kairėje</translation>
 <translation id="2645435784669275700">„Chrome“ OS</translation>
 <translation id="2647092942972307022">Pasiekiama <ph name="USED_MEMORY" /> iš <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2653019840645008922">Lango užfiksavimas</translation>
@@ -1054,6 +1056,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Įjungta</translation>
 <translation id="5920710855273935292">Mikrofonas nutildytas.</translation>
+<translation id="5922962980596822074">Peržiūrėti langus nuo pastarojo naudoto lango</translation>
 <translation id="5924855612669061715">Viešosios interneto prieigos taškas įjungtas</translation>
 <translation id="5946788582095584774">„<ph name="FEATURE_NAME" />“ įjungta.</translation>
 <translation id="5947494881799873997">Grąžinti</translation>
@@ -1143,6 +1146,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="6352082849089527770">Nežinomi tinklai</translation>
 <translation id="6359587239691116345">Gaukite naujausias funkcijas ir saugos patobulinimus. Jei atmesite šį naujinį, įrenginys gali tinkamai nebeveikti ir gali kilti saugos bei našumo problemų.</translation>
 <translation id="6376931439017688372">„Bluetooth“ įjungtas</translation>
+<translation id="6378515133128829137">Prisegti langą dešinėje</translation>
 <translation id="6381109794406942707">Jei norite atrakinti įrenginį, įveskite PIN kodą.</translation>
 <translation id="638716340450135524">Įjungti prieigą prie vaizdo kameros</translation>
 <translation id="639644700271529076">DIDŽIŲJŲ RAIDŽIŲ RAŠYMAS išjungtas</translation>
@@ -1162,6 +1166,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="6459472438155181876">Ekranas išplečiamas į <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Neįmanoma atsiųsti failo</translation>
 <translation id="6482559668224714696">Viso ekrano didintuvas</translation>
+<translation id="6483727822843292440">Peržiūrėti langus nuo rečiausiai naudojamo lango</translation>
 <translation id="6490471652906364588">USB-C įrenginys (prievadas dešinėje)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> reikalauja atnaujinti „<ph name="DEVICE_TYPE" />“ iki termino</translation>
 <translation id="649452524636452238">Išmaniosios kortelės PIN kodas</translation>

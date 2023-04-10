@@ -699,6 +699,7 @@
 <translation id="1593594475886691512">포맷 중...</translation>
 <translation id="159359590073980872">이미지 캐시</translation>
 <translation id="1593926297800505364">결제 수단 저장</translation>
+<translation id="1594703455918849716">진단 페이지로 이동합니다.</translation>
 <translation id="1595492813686795610">Linux 업그레이드 중</translation>
 <translation id="1596286373007273895">사용 가능</translation>
 <translation id="1596709061955594992">블루투스가 사용 중지되어 있습니다. 사용 가능한 기기를 보려면 블루투스를 사용 설정하세요</translation>
@@ -1696,6 +1697,7 @@
 <translation id="2399699884460174994">알림 사용 설정됨</translation>
 <translation id="2399939490305346086">보안 키 로그인 데이터</translation>
 <translation id="2400664245143453337">즉시 업데이트 필요</translation>
+<translation id="2402226831639195063">신호음</translation>
 <translation id="2406153734066939945">프로필과 데이터를 삭제하시겠습니까?</translation>
 <translation id="2408018932941436077">카드 저장 중</translation>
 <translation id="2408955596600435184">PIN 입력</translation>
@@ -1707,6 +1709,7 @@
 <translation id="241082044617551207">알 수 없는 플러그인</translation>
 <translation id="2410940059315936967">내가 방문한 사이트에서 다른 사이트의 콘텐츠(예: 이미지, 광고, 텍스트)를 삽입할 수 있습니다. 다른 사이트에서 설정한 쿠키를 서드 파티 쿠키라고 합니다.</translation>
 <translation id="2411666601450687801">이 기기에서는 가상 머신이 허용되지 않습니다.</translation>
+<translation id="2412015533711271895">이 확장 프로그램을 사용하려면 부모 또는 보호자의 동의가 필요합니다.</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414886740292270097">어둡게</translation>
 <translation id="2416435988630956212">키보드 기능 키</translation>
@@ -3033,6 +3036,7 @@
 <translation id="3609277884604412258">빠른 검색</translation>
 <translation id="3610241585790874201">기기에 데이터를 저장하도록 허용되지 않음</translation>
 <translation id="3610369246614755442">도크 팬 서비스 필요</translation>
+<translation id="3610961622607302617"><ph name="WEBSITE" /> 비밀번호를 변경합니다.</translation>
 <translation id="361106536627977100">Flash 데이터</translation>
 <translation id="3611655097742243705">Play 스토어에 방문하여 더 많은 앱을 찾아보세요.</translation>
 <translation id="3611658447322220736">최근에 닫은 사이트에서 데이터 송수신을 완료할 수 있음</translation>
@@ -3089,6 +3093,7 @@
 <translation id="3651488188562686558">Wi-Fi 연결 해제</translation>
 <translation id="3652817283076144888">초기화 중</translation>
 <translation id="3653160965917900914">네트워크 파일 공유</translation>
+<translation id="3653887973853407813">이 확장 프로그램을 사용할 수 없습니다. 부모 또는 보호자가 Chrome의 '사이트, 앱, 확장 프로그램에 대한 권한'을 사용 중지했습니다.</translation>
 <translation id="3653999333232393305"><ph name="HOST" />에서 마이크에 액세스하도록 계속 허용</translation>
 <translation id="3654045516529121250">접근성 설정 확인</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{파일 1개에 영구적으로 액세스할 수 있습니다.}other{파일 #개에 영구적으로 액세스할 수 있습니다.}}</translation>
@@ -5159,6 +5164,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5517304475148761050">Play 스토어 액세스가 필요한 앱입니다</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">사이트에서 클립보드에 복사된 텍스트 및 이미지를 보려는 경우 확인</translation>
+<translation id="5518949581554491184">Android 휴대전화로 설정</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">설정한 홈페이지가 맞습니까?</translation>
 <translation id="5522156646677899028">이 확장 프로그램에는 보안이 심각하게 취약한 요소가 있습니다.</translation>
@@ -6048,6 +6054,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6318125393809743217">정책 구성이 있는 policies.json 파일을 포함합니다.</translation>
 <translation id="6318407754858604988">다운로드가 시작되었습니다</translation>
 <translation id="6318944945640833942">프린터를 찾을 수 없습니다. 프린터 주소를 다시 입력해 주세요.</translation>
+<translation id="6320808462673705899">검색어와 일치하는 북마크가 없습니다.</translation>
 <translation id="6322370287306604163">지문으로 신속하게 잠금 해제</translation>
 <translation id="6322559670748154781">일반적으로 다운로드하지 않는 파일이며, 고급 보호 기능으로 차단되었습니다</translation>
 <translation id="6324916366299863871">바로가기 수정</translation>
@@ -6492,6 +6499,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6725206449694821596">인터넷 인쇄 프로토콜(IPP)</translation>
 <translation id="6725970970008349185">페이지당 표시할 후보자 수</translation>
 <translation id="672609503628871915">새로운 기능 알아보기</translation>
+<translation id="6726800386221816228">특수문자</translation>
 <translation id="67269783048918309">사용 및 진단 데이터를 보냅니다. 이 기기는 현재 진단, 기기 및 앱 사용 데이터를 Google에 자동으로 보내고 있습니다. 이 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 이 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />은 소유자가 지정합니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK2" />자세히 알아보기<ph name="END_LINK2" /></translation>
 <translation id="6728528977475057549">끝자리가 <ph name="LAST_FOUR_DIGITS" />인 IBAN</translation>
 <translation id="6729192290958770680">사용자 이름을 입력하세요.</translation>
@@ -6894,6 +6902,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7063129466199351735">바로가기 처리 중...</translation>
 <translation id="7063311912041006059">URL(검색어 자리에 <ph name="SPECIAL_SYMBOL" /> 입력)</translation>
 <translation id="706342288220489463">어시스턴트가 화면에 표시된 정보를 사용하여 지원하도록 허용하기</translation>
+<translation id="70641621694466590">비밀번호 페이지로 이동</translation>
 <translation id="7064734931812204395">Linux 컨테이너를 설정하는 중입니다. 여기에는 최대 30분이 걸릴 수 있습니다.</translation>
 <translation id="7065223852455347715">이 기기는 엔터프라이즈 등록을 방지하는 모드로 잠긴 상태입니다. 기기를 등록하려면 먼저 기기를 복구해야 합니다.</translation>
 <translation id="7065534935986314333">시스템 정보</translation>
@@ -7394,6 +7403,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7541773865713908457"><ph name="APP_NAME" /> 앱으로 <ph name="ACTION_NAME" /></translation>
 <translation id="754207240458482646">계정에 연결된 다른 기기와 동기화되어 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">이 <ph name="IDS_SHORT_PRODUCT_NAME" /> 기기에서 디버깅 기능을 사용 설정하세요.</translation>
+<translation id="7544977292347272434">부모님께 확장 프로그램을 허용해 달라고 요청하기</translation>
 <translation id="7545466883021407599">서버에 연결할 수 없습니다. 네트워크 연결을 확인한 후 다시 시도해 보세요. 문제가 해결되지 않는 경우 Chromebook을 다시 시작해 보세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="7547317915858803630">경고: <ph name="PRODUCT_NAME" /> 설정이 네트워크 드라이브에 저장되었습니다. 이로 인해 속도 저하, 비정상 종료 그리고 데이터 손실까지 발생할 수 있습니다.</translation>
 <translation id="7548856833046333824">레모네이드</translation>
@@ -7622,6 +7632,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7728668285692163452">채널 변경 추후 적용</translation>
 <translation id="7730449930968088409">화면의 콘텐츠 캡쳐</translation>
 <translation id="7730683939467795481">'<ph name="EXTENSION_NAME" />' 확장 프로그램에서 이 페이지를 변경했습니다.</translation>
+<translation id="773511996612364297">악센트 기호</translation>
 <translation id="7735165285389721951">다른 Steam 설정이 실행 중입니다. 완료될 때까지 기다린 후 다시 시도해 주세요.</translation>
 <translation id="7737115349420013392">‘<ph name="DEVICE_NAME" />’ 페어링 중...</translation>
 <translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> 안내 받음</translation>
@@ -7704,6 +7715,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7792388396321542707">공유 중지</translation>
 <translation id="779308894558717334">연한 녹색</translation>
 <translation id="7793098747275782155">진한 파란색</translation>
+<translation id="7796453472368605346">발음 구별 부호</translation>
 <translation id="7797571222998226653">꺼짐</translation>
 <translation id="7798504574384119986">웹 권한 보기</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> 권한이 자동으로 차단됨</translation>
@@ -7789,6 +7801,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7876027585589532670">바로가기를 수정할 수 없음</translation>
 <translation id="7877451762676714207">알 수 없는 서버 오류입니다. 다시 시도하거나 서버 관리자에게 문의하시기 바랍니다.</translation>
 <translation id="7878945852730162014">다운로드하는 파일 관리 및 완료 시 열기</translation>
+<translation id="7879172417209159252">확장 프로그램을 사용할 수 없음</translation>
 <translation id="7879478708475862060">입력 모드 따라하기</translation>
 <translation id="7879631849810108578">단축키 조합: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880823633812189969">다시 시작하면 로컬 데이터가 삭제됩니다</translation>

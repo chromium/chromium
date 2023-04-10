@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">ອຸ​ປະ​ກອນ USB-C (ຜອດດ້ານໜ້າ)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> ໄດ້ປ່ຽນເປັນ <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ແລ້ວ. ຄລິກຢືນຢັນເພື່ອຮັກສາການປ່ຽນແປງໄວ້. ລະບົບຈະກູ້ຄືນການຕັ້ງຄ່າກ່ອນໜ້າໃນ <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">ອຸປະກອນ Bluetooth "<ph name="DEVICE_NAME" />" ຢາກຂໍອະນຸຍາດຈັບຄູ່. ກະລຸນາປ້ອນລະຫັດ PIN ນີ້ເຂົ້າໄປໃນອຸປະກອນນັ້ນ: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">ການດຳເນີນການນີ້ຈະອະນຸຍາດໃຫ້ <ph name="APP_NAME" /> ພ້ອມທັງແອັບ ແລະ ເວັບໄຊທັງໝົດທີ່ມີການອະນຸຍາດເຂົ້າເຖິງສະຖານທີ່ ແລະ ChromeOS ສາມາດໃຊ້ສະຖານທີ່ Wi-Fi ແລະ ເຄືອຂ່າຍມືຖືໄດ້.</translation>
 <translation id="1017556409696559990">ຫຍໍ້ໜ້າຈໍເທິງສຸດເມື່ອບໍ່ມີປະຫວັດຄືນຫຼັງໃນ Chrome</translation>
 <translation id="1024364763893396229">ບັນທຶກ <ph name="NAME" /> ຂອງທ່ານ</translation>
 <translation id="1032891413405719768">ແບັດເຕີຣີປາຍປາກກາເຫຼືອໜ້ອຍ</translation>
@@ -191,6 +192,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ອີເທີເນັດ: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">ເປີດສິດເຂົ້າເຖິງສະຖານທີ່</translation>
 <translation id="1830308660060964064">ຖອນປັກໝຸດ <ph name="ITEM_TITLE" /> ແລ້ວ</translation>
 <translation id="1838895407229022812">ແສງກາງຄືນປິດຢູ່.</translation>
 <translation id="1854180393107901205">ຢຸດ​ການ​ຄາສທ໌</translation>
@@ -468,6 +470,7 @@
 <translation id="3255483164551725916">ທ່ານເຮັດຫຍັງໄດ້ແດ່?</translation>
 <translation id="3256109297135787951">ລຶບໄຮໄລ້ອອກຈາກລາຍການໃນຖ້ານຂອງທ່ານ</translation>
 <translation id="3260969790895726815">ຄຳເວົ້າຈະຖືກປະມວນຜົນໃນເຄື່ອງ ແລະ ການປ້ອນຂໍ້ມູນດ້ວຍສຽງຈະເຮັດວຽກແບບອອບລາຍ, ແຕ່ບາງຄຳສັ່ງສຽງຈະບໍ່ເຮັດວຽກ.</translation>
+<translation id="3265032511221679826">ເປີດສິດເຂົ້າເຖິງສະຖານທີ່ແບບລະອຽດບໍ?</translation>
 <translation id="3269597722229482060">ຄລິກຂວາ</translation>
 <translation id="3289364673986435196">ເມນູເປີດປິດ</translation>
 <translation id="3289544412142055976">ຕອນນີ້ບໍ່ຮອງຮັບແອັບ Linux ເທື່ອ</translation>
@@ -578,6 +581,7 @@
 <translation id="366222428570480733">ຜູ້ໃຊ້ທີ່ມີການຈັດການ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">ປັດເພື່ອເຊື່ອງໜ້າຈໍແບບລອຍຂອງທ່ານ</translation>
 <translation id="367531336287639526">ເລືອກໄອຄອນທຳອິດໄປທາງຊ້າຍຂອງແຖບທີ່ຢູ່</translation>
+<translation id="3677931086890821290">ການດຳເນີນການນີ້ຈະອະນຸຍາດໃຫ້ແອັບ ແລະ ເວັບໄຊທັງໝົດທີ່ມີການອະນຸຍາດເຂົ້າເຖິງສະຖານທີ່ ແລະ ChromeOS ສາມາດໃຊ້ສະຖານທີ່ Wi-Fi ແລະ ເຄືອຂ່າຍມືຖືໄດ້.</translation>
 <translation id="3679827876008292680">ເຂົ້າໄປແຖບສຸດທ້າຍໃນໜ້າຈໍ</translation>
 <translation id="36813544980941320">ຈະມີການແບ່ງປັນເຄືອຂ່າຍ Wi-Fi ລະຫວ່າງໂທລະສັບຂອງທ່ານກັບ <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">ເວັບໄຊທ໌</translation>
@@ -1743,6 +1747,7 @@
 <translation id="9198992156681343238">ປ່ຽນຄວາມລະອຽດ <ph name="DISPLAY_NAME" /> ເປັນ <ph name="RESOLUTION" /> ແລ້ວ. ຄລິກຢືນຢັນເພື່ອຮັກສາການປ່ຽນແປງໄວ້. ລະບົບຈະກູ້ຄືນການຕັ້ງຄ່າກ່ອນໜ້າໃນ <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">ເຊື່ອມຕໍ່ <ph name="NAME" /> ຫາ Chromebook ນີ້</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
+<translation id="9207682216934703221">ການດຳເນີນການນີ້ຈະອະນຸຍາດໃຫ້ <ph name="APP_NAME" />, <ph name="APP2_NAME" />ພ້ອມທັງແອັບ ແລະ ເວັບໄຊທັງໝົດທີ່ມີການອະນຸຍາດເຂົ້າເຖິງສະຖານທີ່ ແລະ ChromeOS ສາມາດໃຊ້ສະຖານທີ່ Wi-Fi ແລະ ເຄືອຂ່າຍມືຖືໄດ້.</translation>
 <translation id="9210037371811586452">ກຳລັງອອກຈາກໂໝດເດັສທັອບທີ່ຖືກໂຮມເຂົ້າກັນ</translation>
 <translation id="9211490828691860325">ໂຕະທັງໝົດ</translation>
 <translation id="9211681782751733685">ຍັງເຫຼືອ <ph name="TIME_REMAINING" /> ຈົນກວ່າແບັດເຕີຣີຈະສາກເຕັມ.</translation>

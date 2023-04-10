@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C పరికరం (ముందువైపు పోర్ట్)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz)కు మార్చబడింది. మార్పులను అలాగే ఉంచడానికి 'నిర్ధారించు'ను క్లిక్ చేయండి. మునుపటి సెట్టింగ్‌లు <ph name="TIMEOUT_SECONDS" />లో రీస్టోర్ చేయబడతాయి.</translation>
 <translation id="1013923882670373915">బ్లూటూత్ పరికరం "<ph name="DEVICE_NAME" />" జత కావడానికి అనుమతి కోరుతోంది. దయచేసి ఆ పరికరంలో ఈ PIN కోడ్‌ను నమోదు చేయండి: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Chromeలో బ్యాక్ హిస్టరీ లేనప్పుడు టాప్ విండోను కుదించండి</translation>
 <translation id="1024364763893396229">మీ <ph name="NAME" />‌ను సేవ్ చేయండి</translation>
 <translation id="1032891413405719768">స్టైలస్ బ్యాటరీ తక్కువగా ఉంది</translation>
 <translation id="1036073649888683237">నోటిఫికేషన్‌లను మేనేజ్ చేయడానికి, సెట్టింగ్‌లకు వెళ్లండి</translation>
@@ -343,6 +344,7 @@
 <translation id="2620436844016719705">సిస్టమ్</translation>
 <translation id="2621713457727696555">సురక్షితమైంది</translation>
 <translation id="263399434338050016">"అన్నింటినీ ఎంచుకోండి"</translation>
+<translation id="2644422758626431000">విండోను ఎడమ వైపునకు పిన్ చేయండి</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022"><ph name="TOTAL_MEMORY" />లో <ph name="USED_MEMORY" /> అందుబాటులో ఉంది</translation>
 <translation id="2653019840645008922">విండోను క్యాప్చర్ చేయండి</translation>
@@ -1055,6 +1057,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ఆన్ చేయి</translation>
 <translation id="5920710855273935292">మైక్ మ్యూట్ చేయబడింది.</translation>
+<translation id="5922962980596822074">అత్యంత ఇటీవల ఉపయోగించబడిన విండో నుండి విండోలను బ్రౌజ్ చేయండి</translation>
 <translation id="5924855612669061715">హాట్‌స్పాట్ ఆన్‌లో ఉంది</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ఆన్‌లో ఉంది.</translation>
 <translation id="5947494881799873997">తిరిగి పూర్వ స్థితికి మార్చు</translation>
@@ -1144,6 +1147,7 @@
 <translation id="6352082849089527770">తెలియని నెట్‌వర్క్‌లు</translation>
 <translation id="6359587239691116345">తాజా ఫీచర్‌లు, సెక్యూరిటీ మెరుగుదలలను పొందండి. మీరు ఈ అప్‌డేట్‌ను తిరస్కరిస్తే, మీ పరికరం ఇకపై సరిగ్గా పని చేయకపోవచ్చు, మీరు సెక్యూరిటీ, అలాగే పనితీరుకు సంబంధించిన సమస్యలను ఎదుర్కోవచ్చు.</translation>
 <translation id="6376931439017688372">బ్లూటూత్ ఆన్ చేయబడింది</translation>
+<translation id="6378515133128829137">విండోను కుడి వైపునకు పిన్ చేయండి</translation>
 <translation id="6381109794406942707">పరికరాన్ని అన్‌లాక్ చేయడానికి, మీ పిన్‌ను ఎంటర్ చేయండి.</translation>
 <translation id="638716340450135524">కెమెరా యాక్సెస్‌ను ఆన్ చేయండి</translation>
 <translation id="639644700271529076">CAPS LOCK ఆపివేయబడింది</translation>
@@ -1163,6 +1167,7 @@
 <translation id="6459472438155181876"><ph name="DISPLAY_NAME" />కు స్క్రీన్‌ను విస్తరిస్తోంది</translation>
 <translation id="6477681113376365978">ఫైల్‌ను డౌన్‌లోడ్ చేయలేకపోయింది</translation>
 <translation id="6482559668224714696">ఫుల్-స్క్రీన్‌‌ మాగ్నిఫైయర్</translation>
+<translation id="6483727822843292440">అతి తక్కువగా ఉపయోగించబడిన విండో నుండి విండోలను బ్రౌజ్ చేయండి</translation>
 <translation id="6490471652906364588">USB-C పరికరం (కుడి పోర్ట్)</translation>
 <translation id="6491071886865974820">గడువుకు ముందే ఈ <ph name="DEVICE_TYPE" />ను అప్‌డేట్ చేయమని <ph name="MANAGER" /> మిమ్మల్ని కోరుతోంది</translation>
 <translation id="649452524636452238">స్మార్ట్ కార్డ్ పిన్</translation>

@@ -216,6 +216,7 @@ Các trang web không thể dùng cookie để giám sát hoạt động duyệt
 <translation id="2482878487686419369">Thông báo</translation>
 <translation id="2496626742194544812">Chuyển đến thẻ đầu tiên</translation>
 <translation id="2500374554657206846">Các tùy chọn lưu mật khẩu</translation>
+<translation id="2502415369140591438"><ph name="COUNT" /> Mật khẩu trùng lặp</translation>
 <translation id="2523363575747517183">Trang web này đang liên tục tìm cách mở một ứng dụng khác.</translation>
 <translation id="2529021024822217800">Mở tất cả</translation>
 <translation id="2547458583188611426">Tính năng đồng bộ hoá không hoạt động. Để bắt đầu đồng bộ hoá, hãy nhập cụm mật khẩu của bạn.</translation>
@@ -293,6 +294,7 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xoá nh�
 <translation id="2932085390869194046">Đề xuất mật khẩu...</translation>
 <translation id="2932765531295814441">Thêm mật khẩu theo cách thủ công</translation>
 <translation id="2952581218264071393">1. Mở phần Cài đặt của Chrome</translation>
+<translation id="2953871438216280742">Đăng nhập để mở và lưu danh sách đọc trong Tài khoản Google của bạn.</translation>
 <translation id="2958718410589002129">Mật khẩu</translation>
 <translation id="2961210776189273067">Danh xưng</translation>
 <translation id="2964349545761222050">Chặn cookie của bên thứ ba</translation>
@@ -386,6 +388,7 @@ Bạn đang dùng công cụ tìm kiếm <ph name="DSE_NAME" />. Để xoá nh�
 <translation id="3581564640715911333">Đề xuất dịch trang bằng các ngôn ngữ khác</translation>
 <translation id="3588820906588687999">Mở ảnh trong thẻ mới</translation>
 <translation id="3595252146048399851">Bạn có thể chọn nội dung muốn đồng bộ hoá trong phần <ph name="BEGIN_LINK" />cài đặt<ph name="END_LINK" /> bất cứ lúc nào. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} Mật khẩu yếu}other{{COUNT} Mật khẩu yếu}}</translation>
 <translation id="3603009562372709545">Sao chép URL liên kết</translation>
 <translation id="3607167657931203000">Dữ liệu tự động điền</translation>
 <translation id="3608008480985212611">Đăng nhập để quản lý lựa chọn ưu tiên của bạn.</translation>
@@ -624,6 +627,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5211488077761630279">Cho phép "<ph name="SITE_NAME" />" sử dụng <ph name="PERMISSION" /> của bạn?</translation>
 <translation id="5219295696240154694">Giúp tăng cường bảo mật cho mọi người trên mạng</translation>
+<translation id="5221339005270097309">Đang kiểm tra mật khẩu…</translation>
 <translation id="5228579091201413441">Bật đồng bộ hóa</translation>
 <translation id="5232485538978018676">Đăng nhập bằng Tài khoản được quản lý</translation>
 <translation id="5234764350956374838">Bỏ qua</translation>
@@ -663,6 +667,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 Đồng thời, bạn phải bật tính năng tiếp nối trong phần Chung của cài đặt và thiết bị của bạn phải sử dụng cùng một tài khoản iCloud.</translation>
 <translation id="5551897871312988470">Đề xuất dịch</translation>
 <translation id="5556459405103347317">Tải lại</translation>
+<translation id="555749644339804659">Đang kiểm tra mật khẩu…</translation>
 <translation id="556042886152191864">Nút</translation>
 <translation id="5597915316964418992">Mở lưới thẻ</translation>
 <translation id="560322036295180549">Do tổ chức của bạn tắt</translation>

@@ -730,6 +730,7 @@
 <translation id="2718207025093645426">Басқарылатын пайдаланушыда немесе құрылғыда саясат жүктелмеген.</translation>
 <translation id="2721148159707890343">Сұрау сәтті жіберілді</translation>
 <translation id="2723669454293168317">Chrome параметрлерінен қауіпсіздік тексерісін іске қосу</translation>
+<translation id="2725492561136085792">Бұл әрекетті белсендіру үшін Enter пернесін басыңыз.</translation>
 <translation id="2726001110728089263">Бүйірлік науа</translation>
 <translation id="2728127805433021124">Сервер сертификаты әлсіз қолтаңба алгоритмін пайдалану арқылы қол қойылған.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Connectivity Diagnostics құралын қосу<ph name="END_LINK" /></translation>
@@ -826,6 +827,7 @@
 <translation id="299990983510665749">Хэтчбектер</translation>
 <translation id="3002501248619246229">Кіріс науасының деректерін тексеру</translation>
 <translation id="3005723025932146533">Сақталған көшірмені көрсету</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, қолжетімді әрекеттерді шолу үшін Tab пернесін басып, таңдалған әрекетті орындау үшін Enter пернесін басыңыз.</translation>
 <translation id="3013291976881901233">MIDI құрылғылары</translation>
 <translation id="301521992641321250">Автоматты түрде бөгелген</translation>
 <translation id="3016780570757425217">Орналасқан жеріңізді білу</translation>
@@ -1984,6 +1986,7 @@
 <translation id="5872692522325383488">IBAN сақталды</translation>
 <translation id="5873013647450402046">Банк жеке басыңызды растауды сұрайды.</translation>
 <translation id="5877831137320480913">Сұлулық және фитнес</translation>
+<translation id="5879989559903563723">Қонақ режимінде рұқсат етілмеген</translation>
 <translation id="5884465125445718607">Chinese #6 хатқалтасы</translation>
 <translation id="5887400589839399685">Карта сақталды</translation>
 <translation id="5887687176710214216">Соңғы кіру: кеше</translation>
@@ -3225,6 +3228,7 @@
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Заң және үкімет</translation>
 <translation id="8957210676456822347">Байланысқан портал авторизациясы</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Сайт параметрлеріне өту</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Ұсыныстар:<ph name="MARKUP_2" />Деректер қосылымы бар екендігін тексеріңіз<ph name="MARKUP_3" />Бұл веб-бетті кейінірек қайта жүктеңіз<ph name="MARKUP_4" />Енгізген мекенжайды тексеріңіз<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Картаны сақтау</translation>

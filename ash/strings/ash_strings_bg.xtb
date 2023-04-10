@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C устройство (предният порт)</translation>
 <translation id="1013598600051641573">Разделителната способност на <ph name="DISPLAY_NAME" /> бе променена на <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Хц). Кликнете върху бутона за потвърждаване, за да запазите промените. Предишните настройки ще бъдат възстановени след <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Устройството с Bluetooth „<ph name="DEVICE_NAME" />“ иска разрешение за сдвояване. Моля, въведете на него следния ПИН код: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Намаляване на прозореца от първо ниво, когато в Chrome няма история за връщане назад</translation>
 <translation id="1024364763893396229">Запазете устройството си <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Батериите на писалката са изтощени</translation>
 <translation id="1036073649888683237">За да управлявате известията, отворете настройките</translation>
@@ -146,6 +147,7 @@
 <translation id="1651914502370159744">Отваряне на страницата „История“</translation>
 <translation id="1654477262762802994">Стартиране на гласова заявка</translation>
 <translation id="1668469839109562275">Вградена VPN</translation>
+<translation id="1675844249244994876">Актуализиране на десния прозорец</translation>
 <translation id="1677472565718498478">Оставащо време: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Функцията „<ph name="FEATURE_NAME" />“ не е свързана.</translation>
 <translation id="1677582821739292812">Някой гледа в екрана ви</translation>
@@ -343,6 +345,7 @@
 <translation id="2620436844016719705">Система</translation>
 <translation id="2621713457727696555">защитена</translation>
 <translation id="263399434338050016">„Select all“</translation>
+<translation id="2644422758626431000">Фиксиране на прозореца отляво</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2647092942972307022">Използвана памет: <ph name="USED_MEMORY" /> от <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2653019840645008922">Заснемане на прозореца</translation>
@@ -842,6 +845,7 @@
 <translation id="493076006037866439">Отдалечаване на екрана</translation>
 <translation id="4936329710968938986">Всички, изключено</translation>
 <translation id="4938176435186993759">Скриване на всички предложения</translation>
+<translation id="4943007472417128747">Точката за достъп е изключена с цел ползване на Wi-Fi. За да я използвате, изключете Wi-Fi.</translation>
 <translation id="4945196315133970626">Изключване на известията</translation>
 <translation id="4946376291507881335">Заснемане</translation>
 <translation id="495046168593986294">Превъртане нагоре</translation>
@@ -1054,6 +1058,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Включено</translation>
 <translation id="5920710855273935292">Микрофонът е заглушен.</translation>
+<translation id="5922962980596822074">Превключване на прозорците, като започнете от най-скоро използвания</translation>
 <translation id="5924855612669061715">Точката за достъп е включена</translation>
 <translation id="5946788582095584774">„<ph name="FEATURE_NAME" />“ е включено.</translation>
 <translation id="5947494881799873997">Възстановяване</translation>
@@ -1143,6 +1148,7 @@
 <translation id="6352082849089527770">Неизвестни мрежи</translation>
 <translation id="6359587239691116345">Получавайте най-новите функции и подобрения в сигурността. Ако отхвърлите тази актуализация, устройството ви може вече да не работи правилно и може да имате проблеми със сигурността и производителността.</translation>
 <translation id="6376931439017688372">Функцията за Bluetooth е включена</translation>
+<translation id="6378515133128829137">Фиксиране на прозореца отдясно</translation>
 <translation id="6381109794406942707">Въведете ПИН кода си, за да отключите устройството.</translation>
 <translation id="638716340450135524">Разрешаване на достъпа до камерата</translation>
 <translation id="639644700271529076">„CAPS LOCK“ е изключен</translation>
@@ -1162,6 +1168,7 @@
 <translation id="6459472438155181876">Екранът се разширява на „<ph name="DISPLAY_NAME" />“</translation>
 <translation id="6477681113376365978">Файлът не може да бъде изтеглен</translation>
 <translation id="6482559668224714696">Лупа за увеличаване на целия екран</translation>
+<translation id="6483727822843292440">Превключване на прозорците, като започнете от най-малко използвания</translation>
 <translation id="6490471652906364588">USB-C устройство (десният порт)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> изисква да актуализирате устройството си <ph name="DEVICE_TYPE" /> преди крайния срок</translation>
 <translation id="649452524636452238">ПИН за смарткартата</translation>
@@ -1215,6 +1222,7 @@
 <translation id="6683022854667115063">Слушалки</translation>
 <translation id="6696025732084565524">Вашата отделяща се клавиатура се нуждае от критична актуализация</translation>
 <translation id="6700713906295497288">Бутон за меню на редактора за метод на въвеждане</translation>
+<translation id="6705577071209924099">Коригиране на осветлението</translation>
 <translation id="6707693040195709527">Срокът за връщане на устройството към предишна версия е изтекъл</translation>
 <translation id="6710213216561001401">Предишно</translation>
 <translation id="6723839937902243910">Захранване</translation>
@@ -1382,6 +1390,7 @@
 За да го изключите, отново натиснете бутона за захранване и го задръжте.</translation>
 <translation id="7526573455193969409">Мрежата може да е под наблюдение</translation>
 <translation id="7536035074519304529">IP адрес: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Актуализиране на левия прозорец</translation>
 <translation id="7543399541175347147">Понастоящем не се поддържат приложения за Linux и прозорци в режим „инкогнито“. Другите приложения ще бъдат запазени.</translation>
 <translation id="7544300628205093162">Фоновото осветление на клавиатурата е включено</translation>
 <translation id="7548434653388805669">Време е за сън</translation>
@@ -1462,6 +1471,7 @@
 <translation id="7893503627044934815">Не искам този файл да се показва</translation>
 <translation id="7895348134893321514">Кутия</translation>
 <translation id="7897375687985782769">Използвахте клавишната комбинация за завъртане на екрана. Искате ли да промените ориентацията му?</translation>
+<translation id="7901190436359881020">Размяна на прозорците</translation>
 <translation id="7901405293566323524">Център за телефоните</translation>
 <translation id="7902625623987030061">Докоснете сензора за отпечатъци</translation>
 <translation id="7904094684485781019">Администраторът на този профил е забранил централизирания вход.</translation>

@@ -216,6 +216,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2482878487686419369">Notificări</translation>
 <translation id="2496626742194544812">Accesează prima filă</translation>
 <translation id="2500374554657206846">Opțiuni pentru Salvarea parolei</translation>
+<translation id="2502415369140591438"><ph name="COUNT" /> parole refolosite</translation>
 <translation id="2523363575747517183">Acest site încearcă în mod repetat să deschidă altă aplicație.</translation>
 <translation id="2529021024822217800">Deschide-le pe toate</translation>
 <translation id="2547458583188611426">Sincronizarea nu funcționează. Pentru a porni sincronizarea, introdu expresia de acces.</translation>
@@ -292,6 +293,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="2932085390869194046">Sugerează o parolă...</translation>
 <translation id="2932765531295814441">Adaugă manual parole</translation>
 <translation id="2952581218264071393">1. deschide setările Chrome;</translation>
+<translation id="2953871438216280742">Conectează-te pentru a deschide și a salva lista de lecturi în Contul Google.</translation>
 <translation id="2958718410589002129">Parole</translation>
 <translation id="2961210776189273067">Titlu</translation>
 <translation id="2964349545761222050">Blochează cookie-urile terță parte</translation>
@@ -385,6 +387,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3581564640715911333">Oferă traducerea paginilor în alte limbi</translation>
 <translation id="3588820906588687999">Deschide imaginea într-o filă nouă</translation>
 <translation id="3595252146048399851">Poți să alegi oricând ce să sincronizezi în <ph name="BEGIN_LINK" />setări<ph name="END_LINK" />. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} parolă slabă}few{{COUNT} parole slabe}other{{COUNT} de parole slabe}}</translation>
 <translation id="3603009562372709545">Copiază adresa URL a linkului</translation>
 <translation id="3607167657931203000">Datele de completare automată</translation>
 <translation id="3608008480985212611">Conectează-te pentru a-ți gestiona preferințele.</translation>
@@ -622,6 +625,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5211488077761630279">Permiți ca <ph name="SITE_NAME" /> să-ți folosească <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Contribuie la îmbunătățirea securității pe web pentru toată lumea</translation>
+<translation id="5221339005270097309">Se verifică parolele…</translation>
 <translation id="5228579091201413441">Activează sincronizarea</translation>
 <translation id="5232485538978018676">Conectează-te cu un cont gestionat</translation>
 <translation id="5234764350956374838">Închide</translation>
@@ -661,6 +665,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitivele trebuie să folosească același cont iCloud.</translation>
 <translation id="5551897871312988470">Oferă traducerea</translation>
 <translation id="5556459405103347317">Reîncarcă</translation>
+<translation id="555749644339804659">Se verifică parolele…</translation>
 <translation id="556042886152191864">Buton</translation>
 <translation id="5597915316964418992">Deschide grila cu file</translation>
 <translation id="560322036295180549">Dezactivată de organizație</translation>
@@ -1079,6 +1084,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8136856065410661948">Acesta se va folosi pentru a crea evenimente în Apple Calendar din Chrome și Google Lens.</translation>
 <translation id="8156478151976189188">Sincronizarea parolelor nu funcționează</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> (de) conturi</translation>
+<translation id="8159358225423560600">adineauri</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Dispozitivele tale<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Tradu pagina</translation>
@@ -1108,6 +1114,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8393889347136007944">Filele nu au fost folosite de <ph name="THRESHOLD" /> zile</translation>
 <translation id="8407669440184693619">Nu s-au găsit parole pentru acest site</translation>
 <translation id="842017693807136194">Conectat(ă) cu</translation>
+<translation id="8423121072346537366">Adineauri</translation>
 <translation id="8425693829365242963">Parolele sunt unice</translation>
 <translation id="8428045167754449968">Oraș</translation>
 <translation id="8428213095426709021">Setări</translation>

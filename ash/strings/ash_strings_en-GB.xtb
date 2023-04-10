@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C device (front port)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> changed to <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair. Please enter this PIN code on that device: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Minimise top window when there's no back history in Chrome</translation>
 <translation id="1024364763893396229">Save your <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Stylus battery is low</translation>
 <translation id="1036073649888683237">To manage notifications, go to Settings</translation>
@@ -343,6 +344,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2621713457727696555">Secured</translation>
 <translation id="263399434338050016">'Select all'</translation>
+<translation id="2644422758626431000">Pin window to left</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2647092942972307022"><ph name="USED_MEMORY" /> of <ph name="TOTAL_MEMORY" /> available</translation>
 <translation id="2653019840645008922">Window capture</translation>
@@ -1054,6 +1056,7 @@ Connect your device to power.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5920710855273935292">Mic is muted.</translation>
+<translation id="5922962980596822074">Go through windows from the most recently used window</translation>
 <translation id="5924855612669061715">Hotspot is on</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> is on.</translation>
 <translation id="5947494881799873997">Revert</translation>
@@ -1143,6 +1146,7 @@ Connect your device to power.</translation>
 <translation id="6352082849089527770">Unknown networks</translation>
 <translation id="6359587239691116345">Get the latest features and security improvements. If you decline this update, your device may no longer work properly and you may experience security and performance issues.</translation>
 <translation id="6376931439017688372">Bluetooth is on</translation>
+<translation id="6378515133128829137">Pin window to right</translation>
 <translation id="6381109794406942707">To unlock the device, enter your PIN.</translation>
 <translation id="638716340450135524">Turn on camera access</translation>
 <translation id="639644700271529076">CAPS LOCK is off</translation>
@@ -1162,6 +1166,7 @@ Connect your device to power.</translation>
 <translation id="6459472438155181876">Extending screen to <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Can’t download file</translation>
 <translation id="6482559668224714696">Full-screen magnifier</translation>
+<translation id="6483727822843292440">Go through windows from the least-used window</translation>
 <translation id="6490471652906364588">USB-C device (right port)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> requires you to update your <ph name="DEVICE_TYPE" /> before the deadline</translation>
 <translation id="649452524636452238">Smart card PIN</translation>

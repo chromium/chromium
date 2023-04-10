@@ -216,6 +216,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2496626742194544812">Ir para o primeiro separador</translation>
 <translation id="2500374554657206846">Opções para Guardar palavra-passe</translation>
+<translation id="2502415369140591438"><ph name="COUNT" /> palavras-passe reutilizadas</translation>
 <translation id="2523363575747517183">Este Website está a tentar repetidamente abrir outra aplicação.</translation>
 <translation id="2529021024822217800">Abrir todos</translation>
 <translation id="2547458583188611426">A sincronização não está a funcionar. Para iniciar a sincronização, introduza a sua frase de acesso.</translation>
@@ -292,6 +293,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="2932085390869194046">Sugerir palavra-passe…</translation>
 <translation id="2932765531295814441">Adicione palavras-passe manualmente</translation>
 <translation id="2952581218264071393">1. Abra as definições do Chrome.</translation>
+<translation id="2953871438216280742">Inicie sessão para abrir e guardar a sua Lista de leitura na Conta Google.</translation>
 <translation id="2958718410589002129">Palavras-passe</translation>
 <translation id="2961210776189273067">Título</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
@@ -385,6 +387,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3581564640715911333">Proponha a tradução de páginas noutros idiomas</translation>
 <translation id="3588820906588687999">Abrir imagem num novo separador</translation>
 <translation id="3595252146048399851">Pode escolher o que quer sincronizar nas <ph name="BEGIN_LINK" />definições<ph name="END_LINK" />. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} palavra-passe fraca}other{{COUNT} palavras-passe fracas}}</translation>
 <translation id="3603009562372709545">Copiar URL do Link</translation>
 <translation id="3607167657931203000">Dados de preenchimento automático</translation>
 <translation id="3608008480985212611">Iniciar sessão para gerir as suas preferências.</translation>
@@ -622,6 +625,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5211488077761630279">Permitir que "<ph name="SITE_NAME" />" use a autorização <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Ajude a melhorar a segurança na Web para todos</translation>
+<translation id="5221339005270097309">A verificar palav.-passe…</translation>
 <translation id="5228579091201413441">Ativar a sincronização</translation>
 <translation id="5232485538978018676">Inicie sessão com uma conta gerida</translation>
 <translation id="5234764350956374838">Ignorar</translation>
@@ -661,6 +665,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 A Entrega também tem de estar ativada na secção Geral das Definições e os seus dispositivos têm de utilizar a mesma conta iCloud.</translation>
 <translation id="5551897871312988470">Propor tradução</translation>
 <translation id="5556459405103347317">Recarregar</translation>
+<translation id="555749644339804659">A verificar palav.-passe…</translation>
 <translation id="556042886152191864">Botão</translation>
 <translation id="5597915316964418992">Abra a grelha de separadores</translation>
 <translation id="560322036295180549">Desativado pela sua entidade</translation>

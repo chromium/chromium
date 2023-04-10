@@ -216,6 +216,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2482878487686419369">Notificacions</translation>
 <translation id="2496626742194544812">Ves a la primera pestanya</translation>
 <translation id="2500374554657206846">Opcions per desar la contrasenya</translation>
+<translation id="2502415369140591438"><ph name="COUNT" /> contrasenyes reutilitzades</translation>
 <translation id="2523363575747517183">Aquest lloc web està provant d'obrir una altra aplicació repetidament.</translation>
 <translation id="2529021024822217800">Obre-les totes</translation>
 <translation id="2547458583188611426">La sincronització no funciona. Per iniciar la sincronització, introdueix la frase de contrasenya.</translation>
@@ -293,6 +294,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2932085390869194046">Suggereix una contrasenya...</translation>
 <translation id="2932765531295814441">Afegeix contrasenyes manualment</translation>
 <translation id="2952581218264071393">1. Obre la configuració de Chrome.</translation>
+<translation id="2953871438216280742">Inicia la sessió per obrir i desar la llista de lectura al teu Compte de Google.</translation>
 <translation id="2958718410589002129">Contrasenyes</translation>
 <translation id="2961210776189273067">Títol</translation>
 <translation id="2964349545761222050">Bloqueja les galetes de tercers</translation>
@@ -386,6 +388,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3581564640715911333">Proposa traduir les pàgines en altres idiomes</translation>
 <translation id="3588820906588687999">Obre la imatge en una pestanya nova</translation>
 <translation id="3595252146048399851">Pots anar a la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" /> en qualsevol moment per decidir què vols sincronitzar. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} contrasenya poc segura}other{{COUNT} contrasenyes poc segures}}</translation>
 <translation id="3603009562372709545">Copia l'URL de l'enllaç</translation>
 <translation id="3607167657931203000">Dades d'Emplenament automàtic</translation>
 <translation id="3608008480985212611">Inicia la sessió per gestionar les teves preferències.</translation>
@@ -624,6 +627,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5211488077761630279">Vols permetre que "<ph name="SITE_NAME" />" utilitzi <ph name="PERMISSION" /> del teu dispositiu?</translation>
 <translation id="5219295696240154694">Ajuda a millorar la seguretat al web per a tothom</translation>
+<translation id="5221339005270097309">Comprovant contrasenyes…</translation>
 <translation id="5228579091201413441">Activa la sincronització</translation>
 <translation id="5232485538978018676">Inicia la sessió amb un compte gestionat</translation>
 <translation id="5234764350956374838">Ignora</translation>
@@ -663,6 +667,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 Handoff també ha d'estar activat a la secció General de Configuració, i els vostres dispositius han de fer servir el mateix compte d'iCloud.</translation>
 <translation id="5551897871312988470">Proposa traduir aquest idioma</translation>
 <translation id="5556459405103347317">Torna a carregar</translation>
+<translation id="555749644339804659">Comprovant contrasenyes…</translation>
 <translation id="556042886152191864">Botó</translation>
 <translation id="5597915316964418992">Obre la quadrícula de pestanyes</translation>
 <translation id="560322036295180549">Desactivat per l'organització</translation>

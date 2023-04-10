@@ -1987,6 +1987,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5872692522325383488">IBAN saved</translation>
 <translation id="5873013647450402046">Your bank wants to confirm that it's you.</translation>
 <translation id="5877831137320480913">Beauty and fitness</translation>
+<translation id="5879989559903563723">Not allowed in Guest mode</translation>
 <translation id="5884465125445718607">Envelope Chinese no.6</translation>
 <translation id="5887400589839399685">Card saved</translation>
 <translation id="5887687176710214216">Last visited yesterday</translation>
@@ -3228,6 +3229,7 @@ Additional details:
 <translation id="8949493680961858543">A1 x 4</translation>
 <translation id="8951415078585015151">Law and government</translation>
 <translation id="8957210676456822347">Captive Portal Authorisation</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Go to site settings</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Suggestions:<ph name="MARKUP_2" />Make sure that you have a data connection<ph name="MARKUP_3" />Reload this web page later<ph name="MARKUP_4" />Check the address that you entered<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Save card</translation>

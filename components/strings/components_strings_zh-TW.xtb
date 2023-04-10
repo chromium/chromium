@@ -730,6 +730,7 @@
 <translation id="2718207025093645426">受管理的使用者或裝置未載入政策。</translation>
 <translation id="2721148159707890343">要求成功</translation>
 <translation id="2723669454293168317">在 Chrome 設定中執行安全檢查</translation>
+<translation id="2725492561136085792">按下 Enter 鍵可啟用這項動作。</translation>
 <translation id="2726001110728089263">側匣</translation>
 <translation id="2728127805433021124">伺服器憑證是以防護力較弱的簽章演算法進行簽署。</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />執行連線診斷<ph name="END_LINK" /></translation>
@@ -826,6 +827,7 @@
 <translation id="299990983510665749">掀背車款</translation>
 <translation id="3002501248619246229">檢查輸入紙匣媒體</translation>
 <translation id="3005723025932146533">顯示儲存的複本</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />，按下 Tab 鍵瀏覽可用動作，按下 Enter 鍵則可執行所選動作。</translation>
 <translation id="3013291976881901233">MIDI 裝置</translation>
 <translation id="301521992641321250">已自動封鎖</translation>
 <translation id="3016780570757425217">存取您的位置資訊</translation>
@@ -1739,6 +1741,8 @@
 <translation id="5234764350956374838">關閉</translation>
 <translation id="5239623327352565343">允許存取位置資訊</translation>
 <translation id="5242889659037569123">行李箱與旅遊配備</translation>
+<translation id="5244732203286792411">載入中...
+    請稍候。</translation>
 <translation id="5250209940322997802">「連線至網路」</translation>
 <translation id="52517543715119994">瞭解 Chrome 功能</translation>
 <translation id="5251803541071282808">雲端</translation>
@@ -1984,6 +1988,7 @@
 <translation id="5872692522325383488">已儲存 IBAN</translation>
 <translation id="5873013647450402046">銀行希望確認你的身分。</translation>
 <translation id="5877831137320480913">美容與健身</translation>
+<translation id="5879989559903563723">在訪客模式下無法使用</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
 <translation id="5887400589839399685">已儲存卡片</translation>
 <translation id="5887687176710214216">上次造訪日期：昨天</translation>
@@ -3225,6 +3230,7 @@
 <translation id="8949493680961858543">A1 x 4</translation>
 <translation id="8951415078585015151">法律與政府</translation>
 <translation id="8957210676456822347">監控式入口網站授權</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">前往網站設定</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />建議：<ph name="MARKUP_2" />確認您的數據連線狀態正常<ph name="MARKUP_3" />稍後再重新載入這個網頁<ph name="MARKUP_4" />檢查您輸入的網址是否正確<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">儲存卡片</translation>

@@ -1988,6 +1988,7 @@ Poleg tega lahko v nastavitvah Chroma kadar koli blokirate, da bi spletno mesto 
 <translation id="5872692522325383488">Številka IBAN je shranjena</translation>
 <translation id="5873013647450402046">Vaša banka želi potrditi vašo identiteto.</translation>
 <translation id="5877831137320480913">Lepota in fitnes</translation>
+<translation id="5879989559903563723">Ni dovoljeno v načinu za goste</translation>
 <translation id="5884465125445718607">Kitajska kuverta št. 6</translation>
 <translation id="5887400589839399685">Kartica je shranjena</translation>
 <translation id="5887687176710214216">Nazadnje obiskano včeraj</translation>
@@ -3229,6 +3230,7 @@ Dodatne podrobnosti:
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Zakonodaja in država</translation>
 <translation id="8957210676456822347">Odobritev prestreznega portala</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Na nastavitve spletnega mesta</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Predlogi:<ph name="MARKUP_2" />Poskrbite, da imate podatkovno povezavo<ph name="MARKUP_3" />Znova naložite to spletno stran pozneje<ph name="MARKUP_4" />Preverite naslov, ki ste ga vnesli<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Shrani kartico</translation>

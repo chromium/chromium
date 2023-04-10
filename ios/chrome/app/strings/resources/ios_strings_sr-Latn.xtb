@@ -216,6 +216,7 @@ Sajtovi ne mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja
 <translation id="2482878487686419369">Obaveštenja</translation>
 <translation id="2496626742194544812">Ide na prvu karticu</translation>
 <translation id="2500374554657206846">Opcije za čuvanje lozinke</translation>
+<translation id="2502415369140591438">Lozinki koje koristite za više naloga: <ph name="COUNT" /></translation>
 <translation id="2523363575747517183">Ovaj veb-sajt neprekidno pokušava da otvori drugu aplikaciju.</translation>
 <translation id="2529021024822217800">Otvori sve</translation>
 <translation id="2547458583188611426">Sinhronizacija ne radi. Da biste pokrenuli sinhronizaciju, unesite pristupnu frazu.</translation>
@@ -293,6 +294,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Pogledajte uputstva tog pretraživ
 <translation id="2932085390869194046">Predloži lozinku...</translation>
 <translation id="2932765531295814441">Dodajte lozinke ručno</translation>
 <translation id="2952581218264071393">1. Otvorite podešavanja Chrome-a</translation>
+<translation id="2953871438216280742">Prijavite se da biste otvorili i sačuvali listu za čitanje na Google nalogu.</translation>
 <translation id="2958718410589002129">Lozinke</translation>
 <translation id="2961210776189273067">Zvanje</translation>
 <translation id="2964349545761222050">Blokiraj kolačiće treće strane</translation>
@@ -386,6 +388,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3581564640715911333">Ponudi prevod stranica na drugim jezicima</translation>
 <translation id="3588820906588687999">Otvori sliku na novoj kartici</translation>
 <translation id="3595252146048399851">Uvek možete da odaberete šta ćete sinhronizovati u <ph name="BEGIN_LINK" />podešavanjima<ph name="END_LINK" />. Google može da personalizuje Pretragu i druge usluge na osnovu istorije.</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} slaba lozinka}one{{COUNT} slaba lozinka}few{{COUNT} slabe lozinke}other{{COUNT} slabih lozinki}}</translation>
 <translation id="3603009562372709545">Kopiraj URL adresu linka</translation>
 <translation id="3607167657931203000">Podaci automatskog popunjavanja</translation>
 <translation id="3608008480985212611">Prijavite se da biste upravljali podešavanjima.</translation>
@@ -624,6 +627,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5211488077761630279">Želite da dozvolite da <ph name="SITE_NAME" /> koristi dozvolu <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Poboljšajte bezbednost na vebu za svakoga</translation>
+<translation id="5221339005270097309">Proveravaju se lozinke…</translation>
 <translation id="5228579091201413441">Omogući sinhronizaciju</translation>
 <translation id="5232485538978018676">Prijavite se pomoću upravljanog naloga</translation>
 <translation id="5234764350956374838">Odbaci</translation>
@@ -663,6 +667,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Podešavanja), a uređaji moraju da koriste isti iCloud nalog.</translation>
 <translation id="5551897871312988470">Ponudi prevod</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
+<translation id="555749644339804659">Proveravaju se lozinke…</translation>
 <translation id="556042886152191864">Dugme</translation>
 <translation id="5597915316964418992">Otvorite mrežu za kartice</translation>
 <translation id="560322036295180549">Isključila je organizacija</translation>
@@ -1081,6 +1086,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8136856065410661948">Ovo će se koristiti za pravljenje događaja u Apple Calendar-u iz Chrome-a i Google objektiva.</translation>
 <translation id="8156478151976189188">Sinhronizacija lozinki ne radi</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> naloga</translation>
+<translation id="8159358225423560600">malopre</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Uređaji<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Prevedi stranicu</translation>
@@ -1111,6 +1117,7 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="8393889347136007944">Kartice se ne koriste <ph name="THRESHOLD" /> dana</translation>
 <translation id="8407669440184693619">Nije pronađena nijedna lozinka za ovaj sajt</translation>
 <translation id="842017693807136194">Prijavljeni ste pomoću:</translation>
+<translation id="8423121072346537366">Malopre</translation>
 <translation id="8425693829365242963">Vaše lozinke su jedinstvene</translation>
 <translation id="8428045167754449968">Grad/mesto</translation>
 <translation id="8428213095426709021">Podešavanja</translation>

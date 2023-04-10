@@ -696,6 +696,7 @@
 <translation id="1593594475886691512">フォーマット中...</translation>
 <translation id="159359590073980872">画像キャッシュ</translation>
 <translation id="1593926297800505364">お支払い方法を保存</translation>
+<translation id="1594703455918849716">チェックアップ ページに移動</translation>
 <translation id="1595492813686795610">Linux をアップグレードしています</translation>
 <translation id="1596286373007273895">使用可能</translation>
 <translation id="1596709061955594992">Bluetooth　がオフになっています。使用可能なデバイスを表示するには、Bluetooth をオンにしてください。</translation>
@@ -1233,7 +1234,7 @@
 <translation id="2048554637254265991">コンテナ マネージャーの起動中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="2048653237708779538">操作できません</translation>
 <translation id="204914487372604757">ショートカットを作成</translation>
-<translation id="2050339315714019657">縦向き</translation>
+<translation id="2050339315714019657">ポートレート</translation>
 <translation id="2051555741181591333">アクセス ポイントを自動的に無効にする</translation>
 <translation id="2052572566310583903">他のデバイスにインストール済み</translation>
 <translation id="2053105195397337973">Google では、サイトが広告のスパムと不正行為を防止できるようにしながら、トラッキングを制限する方法を模索しています。</translation>
@@ -1674,6 +1675,7 @@
 <translation id="2399699884460174994">通知をオンにしました</translation>
 <translation id="2399939490305346086">セキュリティ キーのログインデータ</translation>
 <translation id="2400664245143453337">今すぐ更新が必要です</translation>
+<translation id="2402226831639195063">通知音</translation>
 <translation id="2406153734066939945">このプロフィールとデータを削除しますか？</translation>
 <translation id="2408018932941436077">カードを保存しています</translation>
 <translation id="2408955596600435184">PIN を入力してください</translation>
@@ -1685,6 +1687,7 @@
 <translation id="241082044617551207">不明なプラグイン</translation>
 <translation id="2410940059315936967">アクセスしたサイトに他のサイトのコンテンツ（画像、広告、テキストなど）が埋め込まれている場合があります。こうした他のサイトによって設定された Cookie は「サードパーティ Cookie」と呼ばれます。</translation>
 <translation id="2411666601450687801">このデバイスでは仮想マシンは許可されていません</translation>
+<translation id="2412015533711271895">この拡張機能を使用するは、保護者の同意が必要です</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414886740292270097">暗</translation>
 <translation id="2416435988630956212">キーボードのファンクション キー</translation>
@@ -3009,6 +3012,7 @@
 <translation id="3609277884604412258">すばやく検索</translation>
 <translation id="3610241585790874201">デバイスへのデータの保存を許可しない</translation>
 <translation id="3610369246614755442">ドックのファンに問題があります</translation>
+<translation id="3610961622607302617"><ph name="WEBSITE" /> のパスワードを変更</translation>
 <translation id="361106536627977100">Flash データ</translation>
 <translation id="3611655097742243705">Play ストアでアプリを探しましょう</translation>
 <translation id="3611658447322220736">最近閉じたサイトがデータの送受信を完了できるようにする</translation>
@@ -3065,6 +3069,7 @@
 <translation id="3651488188562686558">Wi-Fi から切断します</translation>
 <translation id="3652817283076144888">初期化しています</translation>
 <translation id="3653160965917900914">ネットワーク ファイル共有</translation>
+<translation id="3653887973853407813">この拡張機能は使用できません。保護者が Chrome の [サイト、アプリ、拡張機能の権限] をオフにしています。</translation>
 <translation id="3653999333232393305"><ph name="HOST" /> によるマイクへのアクセスを引き続き許可する</translation>
 <translation id="3654045516529121250">ユーザー補助設定の読み取り</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{1 個のファイルに永続的にアクセスできます。}other{# 個のファイルに永続的にアクセスできます。}}</translation>
@@ -5133,6 +5138,7 @@
 <translation id="5517304475148761050">このアプリは、Play ストアへのアクセスが必要です</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">クリップボードにコピーされているテキストや画像にサイトがアクセスする際に確認する</translation>
+<translation id="5518949581554491184">Android スマートフォンで設定</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">このホーム ページでよろしいですか？</translation>
 <translation id="5522156646677899028">この拡張機能にはセキュリティ上の重大な問題があります。</translation>
@@ -6022,6 +6028,7 @@
 <translation id="6318125393809743217">ポリシー設定の policies.json ファイルを含める。</translation>
 <translation id="6318407754858604988">ダウンロードを開始しました</translation>
 <translation id="6318944945640833942">プリンタを検出できませんでした。プリンタのアドレスをもう一度入力してください。</translation>
+<translation id="6320808462673705899">検索条件に一致するブックマークはありません。</translation>
 <translation id="6322370287306604163">指紋を使ってロックをすばやく解除できます</translation>
 <translation id="6322559670748154781">このファイルは一般的にダウンロードされているファイルではないため、高度な保護機能でブロックされました</translation>
 <translation id="6324916366299863871">ショートカットの編集</translation>
@@ -6465,6 +6472,7 @@
 <translation id="6725206449694821596">インターネット印刷プロトコル（IPP）</translation>
 <translation id="6725970970008349185">1 ページに表示する候補数</translation>
 <translation id="672609503628871915">新機能を確認する</translation>
+<translation id="6726800386221816228">特殊文字</translation>
 <translation id="67269783048918309">使用状況データや診断データを送信します。このデバイスは現在、診断データやデバイスとアプリの使用状況データを Google に自動送信するように設定されています。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />は所有者によって管理されています。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。<ph name="BEGIN_LINK2" />詳細<ph name="END_LINK2" /></translation>
 <translation id="6728528977475057549">末尾が <ph name="LAST_FOUR_DIGITS" /> の IBAN</translation>
 <translation id="6729192290958770680">ユーザー名を入力してください</translation>
@@ -6866,6 +6874,7 @@
 <translation id="7063129466199351735">ショートカットを処理しています...</translation>
 <translation id="7063311912041006059">URL（<ph name="SPECIAL_SYMBOL" />=検索語句）</translation>
 <translation id="706342288220489463">アシスタントに画面上の情報を使用したサポートを許可する</translation>
+<translation id="70641621694466590">パスワード ページに移動</translation>
 <translation id="7064734931812204395">Linux コンテナを設定しています。最長で 30 分ほどかかります。</translation>
 <translation id="7065223852455347715">このデバイスは企業の登録を防止するモードでロックされています。このデバイスを登録するにはまずデバイスの復元を行ってください。</translation>
 <translation id="7065534935986314333">システムについて</translation>
@@ -7366,6 +7375,7 @@
 <translation id="7541773865713908457"><ph name="APP_NAME" /> アプリで <ph name="ACTION_NAME" /></translation>
 <translation id="754207240458482646">アカウントの他のデバイスと同期しています。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">この <ph name="IDS_SHORT_PRODUCT_NAME" /> デバイスでデバッグ機能を有効にします</translation>
+<translation id="7544977292347272434">保護者に拡張機能の許可をリクエスト</translation>
 <translation id="7545466883021407599">サーバーに接続できませんでした。ネットワーク接続を確認して、もう一度お試しください。接続を確認しても問題が解決しない場合は、Chromebook を再起動してみてください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="7547317915858803630">警告: お使いの <ph name="PRODUCT_NAME" /> の設定はネットワーク ドライブに保存されています。遅延、クラッシュ、データ損失が生じる場合があります。</translation>
 <translation id="7548856833046333824">レモネード</translation>
@@ -7594,6 +7604,7 @@
 <translation id="7728668285692163452">チャンネルの変更は後で適用されます</translation>
 <translation id="7730449930968088409">画面のコンテンツをキャプチャする</translation>
 <translation id="7730683939467795481">このページは「<ph name="EXTENSION_NAME" />」拡張機能によって変更されました</translation>
+<translation id="773511996612364297">アクセント記号</translation>
 <translation id="7735165285389721951">別の Steam セットアップが実行中です。完了してから、もう一度お試しください</translation>
 <translation id="7737115349420013392">「<ph name="DEVICE_NAME" />」とペア設定しています…</translation>
 <translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> の指示を受信しました</translation>
@@ -7675,6 +7686,7 @@
 <translation id="7792388396321542707">共有を停止</translation>
 <translation id="779308894558717334">明るい緑</translation>
 <translation id="7793098747275782155">暗い青</translation>
+<translation id="7796453472368605346">分音符号</translation>
 <translation id="7797571222998226653">オフ</translation>
 <translation id="7798504574384119986">ウェブ権限を表示</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" />を自動ブロック</translation>
@@ -7759,6 +7771,7 @@
 <translation id="7876027585589532670">ショートカットの編集はできません</translation>
 <translation id="7877451762676714207">不明なサーバー エラーが発生しました。もう一度お試しになるか、サーバー管理者にご連絡ください。</translation>
 <translation id="7878945852730162014">ダウンロードしたファイルを管理して、完了したら開きます</translation>
+<translation id="7879172417209159252">拡張機能を使用できません</translation>
 <translation id="7879478708475862060">入力モードのとおり</translation>
 <translation id="7879631849810108578">ショートカットが設定されました: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880823633812189969">再起動すると、ローカルデータが削除されます</translation>

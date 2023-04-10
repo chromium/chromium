@@ -5463,6 +5463,7 @@ Jika kebijakan ini tidak disetel, semua domain tidak akan dapat mengakses URL fi
 <translation id="6049117606554031363">Aktifkan pelaporan status board perangkat</translation>
 <translation id="6050796253724099706">Aktifkan respons lisan di layar login</translation>
 <translation id="605132676434455096">Larang penambahan profil baru</translation>
+<translation id="6053260874233331700">Larang akses geolokasi di layar login.</translation>
 <translation id="6053681087509103368">Izinkan WebRTC menggunakan versi protokol TLS/DTLS yang usang</translation>
 <translation id="6056517174496942473">Mengaktifkan alur pengesahan <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> untuk daftar URL</translation>
 <translation id="6058879286588763839">Menyetel <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> akan menentukan kebijakan pengelolaan daya mode pengisian daya baterai (jika didukung di perangkat), kecuali <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> yang menggantikan <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> ditentukan. Untuk memperpanjang masa pakai baterai, kebijakan secara dinamis mengontrol pengisian daya baterai dengan meminimalkan ketegangan dan keausan.
@@ -7230,6 +7231,29 @@ Perilaku ini akan menggantikan kebijakan <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_
 <translation id="759957074386651883">Setelan Safe Browsing</translation>
 <translation id="7602621823177962064">Nonaktifkan pelaporan info memori perangkat</translation>
 <translation id="7604169113182304895">Aplikasi Android dapat memilih untuk menerima daftar ini secara sukarela. Anda tidak dapat memaksa aplikasi untuk menerimanya.</translation>
+<translation id="7605203688694672897">Menyetel tingkat akses geolokasi tingkat perangkat untuk
+sistem <ph name="PRODUCT_OS_NAME" />, yang
+berlaku sebelum pengguna login. Setelah login, pengguna dapat mengontrol
+tingkat akses geolokasi melalui setelan masing-masing pengguna.
+
+Jika tidak disetel atau disetel ke <ph name="ALLOW" />, akses geolokasi layar login
+akan diizinkan untuk perangkat terkelola. Jika nilai kebijakan yang tidak valid dikirim,
+akses akan disetel ke
+<ph name="DISALLOW" />. Untuk perangkat tidak terkelola, akses selalu
+disetel ke <ph name="DISALLOW" />.
+
+PERINGATAN: Hati-hati saat mengubah setelan ini karena dapat melanggar kebijakan lain
+yang melibatkan geolokasi
+(mis. <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />)!
+Khususnya, jika kebijakan ini disetel ke <ph name="DISALLOW" />,
+opsi
+<ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" />
+dan
+<ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" />
+kebijakan
+<ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />
+akan gagal berfungsi dan hanya menggunakan resolusi lokasi berbasis <ph name="IP" />
+di layar <ph name="LOG_IN" />.</translation>
 <translation id="7608186022704392724">Fitur kirim otomatis PIN akan mengubah cara memasukkan PIN di <ph name="PRODUCT_OS_NAME" />.
           Fitur ini akan menampilkan UI khusus yang dengan jelas memperlihatkan kepada pengguna berapa
           digit yang diperlukan untuk PIN mereka,
@@ -8041,6 +8065,7 @@ Kebijakan ini harus disetel ke Nonaktif jika salah satu kebijakan berikut disete
       Jika kebijakan ini disetel ke Nonaktif, dialog peringatan tidak akan ditampilkan saat pengguna mencoba menutup browser.</translation>
 <translation id="830440838848984847">Izinkan pengguna login ke <ph name="PRODUCT_NAME" /></translation>
 <translation id="8306117673860983372">Setelan login</translation>
+<translation id="8307340233340602723">Mengizinkan atau menolak akses geolokasi perangkat</translation>
 <translation id="830819203330820450">Jika diaktifkan atau tidak dikonfigurasi (default), suatu Halaman web dapat menggunakan
       API berbagi layar (misalnya, getDisplayMedia() atau API ekstensi Desktop Capture)
       untuk meminta pengguna memilih tab, jendela, atau desktop yang akan direkam.
@@ -9054,6 +9079,7 @@ Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan mengumpulkan dan m
 <translation id="9213751049772256263">Nonaktifkan semua variasi</translation>
 <translation id="9217154963008402249">Frekuensi paket jaringan pemantauan</translation>
 <translation id="9220314833408124365">Gunakan kebijakan perujuk default untuk no-referrer-when-downgrade</translation>
+<translation id="9221827710437832530">Izinkan akses geolokasi di layar login.</translation>
 <translation id="922540222991413931">Konfigurasi sumber pemasangan skrip pengguna, aplikasi, dan ekstensi</translation>
 <translation id="924557436754151212">Impor sandi yang disimpan dari browser default saat pertama kali dijalankan</translation>
 <translation id="926104720905645793">Kebijakan ini mengontrol pelaporan cloud <ph name="PRODUCT_NAME" /> yang mengupload informasi tentang operasi browser ke <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.

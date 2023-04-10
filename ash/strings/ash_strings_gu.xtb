@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C ઉપકરણ (આગળનું પોર્ટ)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> બદલાઈને <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) થયું. ફેરફારો રાખવા માટે કન્ફર્મ કરો પર ક્લિક કરો. અગાઉના સેટિંગ <ph name="TIMEOUT_SECONDS" />માં રિસ્ટોર કરવામાં આવશે.</translation>
 <translation id="1013923882670373915">Bluetooth ડિવાઇસ "<ph name="DEVICE_NAME" />" ને જોડી બનાવવા માટે પરવાનગી જોઈએ છે. કૃપા કરીને તે ડિવાઇસ પર આ PIN કોડ દાખલ કરો: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">જ્યારે Chromeમાં પાછળનો કોઈ ઇતિહાસ ન હોય, ત્યારે સૌથી ઉપરની વિન્ડો નાની કરો</translation>
 <translation id="1024364763893396229">તમારું <ph name="NAME" /> સાચવો</translation>
 <translation id="1032891413405719768">સ્ટાઇલસની બૅટરી ઓછી છે</translation>
 <translation id="1036073649888683237">નોટિફિકેશન મેનેજ કરવા માટે, સેટિંગ પર જાઓ</translation>
@@ -343,6 +344,7 @@
 <translation id="2620436844016719705">સિસ્ટમ</translation>
 <translation id="2621713457727696555">સુરક્ષિત</translation>
 <translation id="263399434338050016">"તમામ પસંદ કરો"</translation>
+<translation id="2644422758626431000">વિન્ડોને ડાબી બાજુ પિન કરો</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022">ઉપલબ્ધ <ph name="TOTAL_MEMORY" />માંથી <ph name="USED_MEMORY" /></translation>
 <translation id="2653019840645008922">વિન્ડો કૅપ્ચર</translation>
@@ -1054,6 +1056,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ચાલુ</translation>
 <translation id="5920710855273935292">માઇક્રોફોન મ્યૂટ કરેલો છે.</translation>
+<translation id="5922962980596822074">સૌથી વધુ વપરાયેલી વિન્ડોથી શરૂ કરીને એક પછી એક બધી વિન્ડો પર જાઓ</translation>
 <translation id="5924855612669061715">હૉટસ્પૉટ ચાલુ છે</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ચાલુ છે.</translation>
 <translation id="5947494881799873997">પાછા ફરો</translation>
@@ -1143,6 +1146,7 @@
 <translation id="6352082849089527770">અજાણ્યા નેટવર્ક</translation>
 <translation id="6359587239691116345">નવીનતમ સુવિધાઓ અને સુરક્ષા સંબંધિત સુધારણાઓ મેળવો. જો તમે આ અપડેટ નકારશો, તો તમારું ડિવાઇસ હવે કદાચ યોગ્ય રીતે કામ કરશે નહીં અને તમે સુરક્ષા તથા પર્ફોર્મન્સ સંબંધિત સમસ્યાઓ અનુભવી શકો છો.</translation>
 <translation id="6376931439017688372">બ્લૂટૂથ ચાલુ છે</translation>
+<translation id="6378515133128829137">વિન્ડોને જમણી બાજુ પિન કરો</translation>
 <translation id="6381109794406942707">ડિવાઇસને અનલૉક કરવા માટે. તમારો પિન દાખલ કરો.</translation>
 <translation id="638716340450135524">કૅમેરાનો ઍક્સેસ ચાલુ કરો</translation>
 <translation id="639644700271529076">CAPS LOCK બંધ છે</translation>
@@ -1162,6 +1166,7 @@
 <translation id="6459472438155181876">સ્ક્રીનને <ph name="DISPLAY_NAME" /> પર વિસ્તૃત કરી રહ્યાં છે</translation>
 <translation id="6477681113376365978">ફાઇલ ડાઉનલોડ કરી શકાતી નથી</translation>
 <translation id="6482559668224714696">પૂર્ણ-સ્ક્રીન મૅગ્નિફાયર</translation>
+<translation id="6483727822843292440">સૌથી ઓછી વપરાયેલી વિન્ડોથી શરૂ કરીને એક પછી એક બધી વિન્ડો પર જાઓ</translation>
 <translation id="6490471652906364588">USB-C ઉપકરણ (જમણું પોર્ટ)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> માટે જરૂરી છે કે તમે સમયસીમા સમાપ્ત થાય તે પહેલાં તમારું <ph name="DEVICE_TYPE" /> અપડેટ કરો</translation>
 <translation id="649452524636452238">સ્માર્ટ કાર્ડ પિન</translation>
@@ -1215,6 +1220,7 @@
 <translation id="6683022854667115063">હૅડફોન</translation>
 <translation id="6696025732084565524">અલગ પાડી શકાય તેવા તમારા કીબોર્ડ માટે મહત્ત્વપૂર્ણ અપડેટ જરૂરી છે</translation>
 <translation id="6700713906295497288">IME મેનૂ બટન</translation>
+<translation id="6705577071209924099">લાઇટિંગ ગોઠવો</translation>
 <translation id="6707693040195709527">ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરવા માટે નિયત કરતાં વધુ સમય થઈ ગયો છે</translation>
 <translation id="6710213216561001401">પાછલી</translation>
 <translation id="6723839937902243910">પાવર</translation>

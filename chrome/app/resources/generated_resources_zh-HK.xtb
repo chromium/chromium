@@ -699,6 +699,7 @@
 <translation id="1593594475886691512">正在格式化…</translation>
 <translation id="159359590073980872">圖片快取</translation>
 <translation id="1593926297800505364">儲存付款方法</translation>
+<translation id="1594703455918849716">去檢查頁面</translation>
 <translation id="1595492813686795610">正在升級 Linux</translation>
 <translation id="1596286373007273895">可用</translation>
 <translation id="1596709061955594992">藍牙已關閉。如要查看可用的裝置，請開啟藍牙。</translation>
@@ -1694,6 +1695,7 @@
 <translation id="2399699884460174994">已開啟通知</translation>
 <translation id="2399939490305346086">安全密鑰登入資料</translation>
 <translation id="2400664245143453337">必須立即更新</translation>
+<translation id="2402226831639195063">音調</translation>
 <translation id="2406153734066939945">要刪除此設定檔和相關資料嗎？</translation>
 <translation id="2408018932941436077">正在儲存信用卡</translation>
 <translation id="2408955596600435184">請輸入您的 PIN</translation>
@@ -1705,6 +1707,7 @@
 <translation id="241082044617551207">不明的外掛程式</translation>
 <translation id="2410940059315936967">您瀏覽的網站可以嵌入其他網站的內容，例如圖片、廣告和文字。其他網站設定的 Cookie 就稱為第三方 Cookie。</translation>
 <translation id="2411666601450687801">此裝置不允許「虛擬機器」</translation>
+<translation id="2412015533711271895">您需要家長或監護人同意才能使用此擴充程式</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414886740292270097">灰暗</translation>
 <translation id="2416435988630956212">鍵盤功能鍵</translation>
@@ -3031,6 +3034,7 @@
 <translation id="3609277884604412258">快速搜尋</translation>
 <translation id="3610241585790874201">無法將資料儲存至裝置</translation>
 <translation id="3610369246614755442">插座風扇需要維修</translation>
+<translation id="3610961622607302617">改 <ph name="WEBSITE" /> 嘅密碼</translation>
 <translation id="361106536627977100">Flash 數據</translation>
 <translation id="3611655097742243705">請前往「Play 商店」尋找更多應用程式</translation>
 <translation id="3611658447322220736">最近關閉的網站可完成傳送和接受資料</translation>
@@ -3087,6 +3091,7 @@
 <translation id="3651488188562686558">中斷 Wi-Fi 連線</translation>
 <translation id="3652817283076144888">正在初始化</translation>
 <translation id="3653160965917900914">網絡檔案共用</translation>
+<translation id="3653887973853407813">您無法使用此擴充程式，因為您的家長或監護人已關閉 Chrome 的「網站、應用程式和擴充程式權限」。</translation>
 <translation id="3653999333232393305">繼續允許 <ph name="HOST" /> 存取您的麥克風</translation>
 <translation id="3654045516529121250">讀取您的協助工具設定</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{應用程式可永久存取 1 個檔案。}other{應用程式可永久存取 # 個檔案。}}</translation>
@@ -4962,6 +4967,7 @@
 <translation id="5338503421962489998">本機儲存空間</translation>
 <translation id="5339031667684712858">您已移除的網站</translation>
 <translation id="5340638867532133571">允許網站安裝付款處理常式 (建議)</translation>
+<translation id="5340787663756381836">尋找並編輯(&amp;F)</translation>
 <translation id="5341793073192892252">已封鎖下列 Cookie (所有第三方 Cookie 都會被封鎖)</translation>
 <translation id="5342091991439452114">PIN 必須至少有 <ph name="MINIMUM" /> 位數字</translation>
 <translation id="5344036115151554031">正在還原 Linux</translation>
@@ -5160,6 +5166,7 @@
 <translation id="5517304475148761050">此應用程式需要存取「Play 商店」才能執行</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">在網站要求查看複製到剪貼簿的文字和圖片時詢問您</translation>
+<translation id="5518949581554491184">透過 Android 手機設定</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">這是您想要的首頁嗎？</translation>
 <translation id="5522156646677899028">這個擴充功能內含嚴重安全性漏洞。</translation>
@@ -6047,6 +6054,7 @@
 <translation id="6318125393809743217">包括具有政策設定的 policies.json 檔案。</translation>
 <translation id="6318407754858604988">已開始下載</translation>
 <translation id="6318944945640833942">偵測不到打印機，請再次輸入打印機位址。</translation>
+<translation id="6320808462673705899">沒有與搜尋相符的書籤。</translation>
 <translation id="6322370287306604163">指紋加快解鎖速度</translation>
 <translation id="6322559670748154781">此檔案不常下載，因此已被進階保護功能封鎖</translation>
 <translation id="6324916366299863871">編輯捷徑</translation>
@@ -6491,6 +6499,7 @@
 <translation id="6725206449694821596">Internet Printing Protocol (IPPS)</translation>
 <translation id="6725970970008349185">每頁顯示的候選字個數</translation>
 <translation id="672609503628871915">查看最新內容</translation>
+<translation id="6726800386221816228">特殊字元</translation>
 <translation id="67269783048918309">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這些資料不會用來識別您子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。擁有者可強制執行此<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />。如果已為子女開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至其 Google 帳戶。<ph name="BEGIN_LINK2" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="6728528977475057549">IBAN 最後嘅數字係 <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="6729192290958770680">請輸入您的使用者名稱</translation>
@@ -6893,6 +6902,7 @@
 <translation id="7063129466199351735">正在處理捷徑…</translation>
 <translation id="7063311912041006059">以 <ph name="SPECIAL_SYMBOL" /> 取代查詢的網址</translation>
 <translation id="706342288220489463">讓「Google 助理」使用畫面上的資料提供協助</translation>
+<translation id="70641621694466590">去密碼頁面</translation>
 <translation id="7064734931812204395">正在設定 Linux 容器。過程可能需時 30 分鐘。</translation>
 <translation id="7065223852455347715">這部裝置已鎖定為防止企業註冊的模式。如果您要使用該裝置註冊，必須先完成裝置復原操作。</translation>
 <translation id="7065534935986314333">關於系統</translation>
@@ -7393,6 +7403,7 @@
 <translation id="7541773865713908457">使用「<ph name="APP_NAME" />」應用程式<ph name="ACTION_NAME" /></translation>
 <translation id="754207240458482646">已與您帳戶上的其他裝置同步。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">在這部 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置上啟用偵錯功能</translation>
+<translation id="7544977292347272434">徵求家長同意啟用擴充程式</translation>
 <translation id="7545466883021407599">無法連線至伺服器。請檢查您的網絡連線，然後再試一次。如果問題仍未解決，請嘗試重新啟動 Chromebook。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="7547317915858803630">警告：您的 <ph name="PRODUCT_NAME" /> 設定均儲存在網絡硬碟中。這樣可能導致速度變慢、當機，甚至數據遺失。</translation>
 <translation id="7548856833046333824">檸檬水</translation>
@@ -7621,6 +7632,7 @@
 <translation id="7728668285692163452">系統會在稍後套用版本變更</translation>
 <translation id="7730449930968088409">擷取您的螢幕內容</translation>
 <translation id="7730683939467795481">「<ph name="EXTENSION_NAME" />」擴充程式已變更此頁面</translation>
+<translation id="773511996612364297">重音符號</translation>
 <translation id="7735165285389721951">正在執行另一項 Steam 設定，請等到該設定完成後再試</translation>
 <translation id="7737115349420013392">正在與「<ph name="DEVICE_NAME" />」配對…</translation>
 <translation id="7737203573077018777">已接收「<ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" />」指示</translation>
@@ -7703,6 +7715,7 @@
 <translation id="7792388396321542707">停止共用</translation>
 <translation id="779308894558717334">淺綠色</translation>
 <translation id="7793098747275782155">深藍色</translation>
+<translation id="7796453472368605346">變音符號</translation>
 <translation id="7797571222998226653">關閉</translation>
 <translation id="7798504574384119986">查看網絡權限</translation>
 <translation id="7798844538707273832">已自動封鎖<ph name="PERMISSION" /></translation>
@@ -7787,6 +7800,7 @@
 <translation id="7876027585589532670">無法編輯捷徑</translation>
 <translation id="7877451762676714207">不明的伺服器錯誤。請再試一次，或與伺服器管理員聯絡。</translation>
 <translation id="7878945852730162014">管理下載中的檔案，並在下載完成後開啟</translation>
+<translation id="7879172417209159252">無法使用擴充程式</translation>
 <translation id="7879478708475862060">按照輸入模式</translation>
 <translation id="7879631849810108578">快速鍵組合：<ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880823633812189969">系統會在您重新啟動時刪除本機資料</translation>
@@ -9342,6 +9356,7 @@
 <translation id="939401694733344652">這些帳戶目前並未使用 Android 應用程式。如果您選取帳戶以使用此 Android 應用程式，該帳戶亦可使用其他 Android 應用程式。如要變更 Android 應用程式存取權，請前往 <ph name="LINK_BEGIN" />[設定] &gt; [帳戶]<ph name="LINK_END" /></translation>
 <translation id="939598580284253335">請輸入複雜密碼</translation>
 <translation id="939736085109172342">新增資料夾</translation>
+<translation id="940212040923880623">尋找並編輯(&amp;F)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> 正在共用 Chrome 分頁和音效。</translation>
 <translation id="944799160843436808">在 Chromebook 上設定 Steam 時發生問題</translation>
 <translation id="945522503751344254">提供意見反映</translation>

@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">Peranti USB-C (port depan)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> diubah kepada <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik sahkan untuk menyimpan perubahan. Tetapan terdahulu akan dipulihkan dalam masa <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Peranti Bluetooth "<ph name="DEVICE_NAME" />" ingin kebenaran untuk berpasangan. Sila masukkan kod PIN ini pada peranti tersebut: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Minimumkan tetingkap pada bahagian atas jika tiada sejarah lama pada Chrome</translation>
 <translation id="1024364763893396229">Simpan <ph name="NAME" /> anda</translation>
 <translation id="1032891413405719768">Bateri stilus lemah</translation>
 <translation id="1036073649888683237">Untuk mengurus pemberitahuan, pergi ke Tetapan</translation>
@@ -343,6 +344,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2621713457727696555">Selamat</translation>
 <translation id="263399434338050016">"Pilih semua"</translation>
+<translation id="2644422758626431000">Sematkan tetingkap pada bahagian kiri</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2647092942972307022"><ph name="USED_MEMORY" /> daripada <ph name="TOTAL_MEMORY" /> tersedia</translation>
 <translation id="2653019840645008922">Tangkapan tetingkap</translation>
@@ -1055,6 +1057,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Hidupkan</translation>
 <translation id="5920710855273935292">Mikrofon diredamkan.</translation>
+<translation id="5922962980596822074">Semak semua tetingkap bermula daripada tetingkap yang digunakan baru-baru ini</translation>
 <translation id="5924855612669061715">Tempat liputan dihidupkan</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> dihidupkan.</translation>
 <translation id="5947494881799873997">Berbalik</translation>
@@ -1144,6 +1147,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6352082849089527770">Rangkaian tidak diketahui</translation>
 <translation id="6359587239691116345">Dapatkan ciri terkini dan peningkatan keselamatan. Jika anda menolak kemaskinian ini, peranti anda mungkin tidak lagi berfungsi dengan betul dan anda mungkin mengalami isu keselamatan dan prestasi.</translation>
 <translation id="6376931439017688372">Bluetooth dihidupkan</translation>
+<translation id="6378515133128829137">Sematkan tetingkap pada bahagian kanan</translation>
 <translation id="6381109794406942707">Untuk membuka kunci peranti, masukkan PIN anda.</translation>
 <translation id="638716340450135524">Hidupkan akses kamera</translation>
 <translation id="639644700271529076">Kekunci CAPS LOCK dimatikan</translation>
@@ -1163,6 +1167,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6459472438155181876">Melanjutkan skrin ke <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Tidak dapat memuat turun fail</translation>
 <translation id="6482559668224714696">Penggadang skrin penuh</translation>
+<translation id="6483727822843292440">Semak semua tetingkap bermula daripada tetingkap yang paling kurang digunakan</translation>
 <translation id="6490471652906364588">Peranti USB-C (port kanan)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> menghendaki anda mengemas kini <ph name="DEVICE_TYPE" /> anda sebelum tarikh akhir</translation>
 <translation id="649452524636452238">PIN kad pintar</translation>
@@ -1216,6 +1221,7 @@ Pemasangan baharu</translation>
 <translation id="6683022854667115063">Fon kepala</translation>
 <translation id="6696025732084565524">Papan kekunci anda yang boleh dicabut memerlukan kemas kini kritikal</translation>
 <translation id="6700713906295497288">Butang menu IME</translation>
+<translation id="6705577071209924099">Laraskan Pencahayaan</translation>
 <translation id="6707693040195709527">Penukaran peranti kepada versi sebelumnya sudah terlewat</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="6723839937902243910">Kuasa</translation>

@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C-enhed (port foran)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> blev ændret til <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik på Bekræft for at gemme ændringerne. De tidligere indstillinger gendannes om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth-enheden "<ph name="DEVICE_NAME" />" vil gerne have parringstilladelse. Angiv denne pinkode på den pågældende enhed: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Minimer det øverste vindue, når der ikke er noget at gå tilbage til i Chrome</translation>
 <translation id="1024364763893396229">Gem dine <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Styluspennen er ved at løbe tør for batteri</translation>
 <translation id="1036073649888683237">Gå til Indstillinger for at administrere notifikationer</translation>
@@ -343,6 +344,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2621713457727696555">Beskyttet</translation>
 <translation id="263399434338050016">"Vælg alle"</translation>
+<translation id="2644422758626431000">Fastgør vinduet til venstre side</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022"><ph name="USED_MEMORY" /> af <ph name="TOTAL_MEMORY" /> tilgængelig</translation>
 <translation id="2653019840645008922">Tag et screenshot af et vindue</translation>
@@ -1054,6 +1056,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Til</translation>
 <translation id="5920710855273935292">Mikrofonen er slået fra.</translation>
+<translation id="5922962980596822074">Gennemse vinduer fra det senest anvendte vindue</translation>
 <translation id="5924855612669061715">Hotspottet er aktiveret</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> er aktiveret.</translation>
 <translation id="5947494881799873997">Fortryd</translation>
@@ -1143,6 +1146,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="6352082849089527770">Ukendte netværk</translation>
 <translation id="6359587239691116345">Få de nyeste funktioner og sikkerhedsforbedringer. Hvis du afviser denne opdatering, fungerer din enhed muligvis ikke længere korrekt, og du kan opleve problemer med sikkerheden og ydeevnen.</translation>
 <translation id="6376931439017688372">Bluetooth er slået til</translation>
+<translation id="6378515133128829137">Fastgør vinduet til højre side</translation>
 <translation id="6381109794406942707">Angiv din pinkode for at låse enheden op.</translation>
 <translation id="638716340450135524">Aktivér kameraadgang</translation>
 <translation id="639644700271529076">CAPS LOCK er deaktiveret</translation>
@@ -1162,6 +1166,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="6459472438155181876">Udvider skærmen til <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Filen kan ikke downloades</translation>
 <translation id="6482559668224714696">Forstørrelse af fuld skærm</translation>
+<translation id="6483727822843292440">Gennemse vinduer fra det mindst anvendte vindue</translation>
 <translation id="6490471652906364588">USB-C-enhed (højre port)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> kræver, at du opdaterer din <ph name="DEVICE_TYPE" />, før fristen udløber</translation>
 <translation id="649452524636452238">Pinkode til chipkort</translation>
@@ -1215,6 +1220,7 @@ Installeret for nylig</translation>
 <translation id="6683022854667115063">Høretelefoner</translation>
 <translation id="6696025732084565524">Dit aftagelige tastatur kræver en vigtig opdatering</translation>
 <translation id="6700713906295497288">IME-menuknap</translation>
+<translation id="6705577071209924099">Juster lys</translation>
 <translation id="6707693040195709527">Der skal skiftes til en tidligere version af enheden</translation>
 <translation id="6710213216561001401">Forrige</translation>
 <translation id="6723839937902243910">Strøm</translation>

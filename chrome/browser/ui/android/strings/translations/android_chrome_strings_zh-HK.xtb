@@ -108,6 +108,7 @@
 <translation id="1493287004536771723">您正在追蹤「<ph name="SITE_NAME" />」</translation>
 <translation id="1502010315804028179">如要管理密碼，請更新 Google Play 服務</translation>
 <translation id="1506061864768559482">搜尋引擎</translation>
+<translation id="1508960385613684700">隱私權指南 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="1513352483775369820">書籤和網頁記錄</translation>
 <translation id="1513814250881909472">進行同步處理，取得您在其他裝置上的分頁</translation>
 <translation id="1513858653616922153">刪除密碼</translation>
@@ -543,6 +544,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="3999683152997576765">您可以查看及移除網站用來向您顯示廣告的感興趣主題。Chrome 會根據您最近的瀏覽記錄，推測您感興趣的主題。</translation>
 <translation id="4000212216660919741">離線首頁</translation>
 <translation id="4016425174436051808">無法追蹤，發生錯誤。</translation>
+<translation id="4024768890073681126">瀏覽器由家長管理</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# 小時}other{# 小時}}</translation>
 <translation id="4035877632587724847">不允許</translation>
 <translation id="4036177530563778041">輕鬆繼續未完成的操作</translation>

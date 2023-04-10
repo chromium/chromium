@@ -1987,6 +1987,7 @@
 <translation id="5872692522325383488">IBAN је сачуван</translation>
 <translation id="5873013647450402046">Банка жели да потврди да сте то ви.</translation>
 <translation id="5877831137320480913">Лепота и фитнес</translation>
+<translation id="5879989559903563723">Није дозвољено у режиму госта</translation>
 <translation id="5884465125445718607">Кинеска коверта бр. 6</translation>
 <translation id="5887400589839399685">Картица је сачувана</translation>
 <translation id="5887687176710214216">Последња посета: јуче</translation>
@@ -3228,6 +3229,7 @@
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Закони и влада</translation>
 <translation id="8957210676456822347">Овлашћење на улазном порталу</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Идите на подешавања сајта</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Предлози:<ph name="MARKUP_2" />Проверите да ли је успостављена веза за пренос података<ph name="MARKUP_3" />Поново учитајте ову веб-страницу касније<ph name="MARKUP_4" />Проверите адресу коју сте унели<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Сачувај картицу</translation>

@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C құрылғысы (алдыңғы ұяшық)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> дисплейі <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц) ажыратымдылығына өзгерді. Өзгерістерді сақтау үшін "Растау" түймесін басыңыз. Алдыңғы параметрлер <ph name="TIMEOUT_SECONDS" /> кейін қалпына келтіріледі.</translation>
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" Bluetooth құрылғысы жұптауды сұрайды. Аталмыш құрылғыда осы PIN кодын енгізіңіз. <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Chrome браузерінде бұрынғы тарих болмаған кезде жоғарғы терезені кішірейту</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> құрылғысын сақтаңыз</translation>
 <translation id="1032891413405719768">Стилус батареясының заряды аз қалды</translation>
 <translation id="1036073649888683237">Хабарландыруларды басқару үшін "Параметрлер" бөліміне өтіңіз.</translation>
@@ -343,6 +344,7 @@
 <translation id="2620436844016719705">Жүйе</translation>
 <translation id="2621713457727696555">Қорғалған</translation>
 <translation id="263399434338050016">"Барлығын таңдау"</translation>
+<translation id="2644422758626431000">Терезені солға бекіту</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022"><ph name="USED_MEMORY" />/<ph name="TOTAL_MEMORY" /> қолжетімді.</translation>
 <translation id="2653019840645008922">Терезені түсіру</translation>
@@ -1054,6 +1056,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Қосулы</translation>
 <translation id="5920710855273935292">Микрофон дыбысы өшірулі.</translation>
+<translation id="5922962980596822074">Ең соңғы пайдаланылған терезеден терезелер арқылы өту</translation>
 <translation id="5924855612669061715">Хотспот қосулы</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> қосулы.</translation>
 <translation id="5947494881799873997">Қайтару</translation>
@@ -1143,6 +1146,7 @@
 <translation id="6352082849089527770">Белгісіз желілер</translation>
 <translation id="6359587239691116345">Соңғы шыққан функцияларды және қауіпсіздікті жақсарту мүмкіндіктерін пайдаланыңыз. Бұл жаңартуды қабылдамасаңыз, құрылғыңыз дұрыс жұмыс істемей, қауіпсіздік пен өнімділікке қатысты ақаулар туындауы мүмкін.</translation>
 <translation id="6376931439017688372">Bluetooth қосулы</translation>
+<translation id="6378515133128829137">Терезені оңға бекіту</translation>
 <translation id="6381109794406942707">Құрылғының құлпын ашу үшін PIN кодын енгізіңіз.</translation>
 <translation id="638716340450135524">Камераны пайдалану рұқсатын қосу</translation>
 <translation id="639644700271529076">CAPS LOCK өшірулі</translation>
@@ -1162,6 +1166,7 @@
 <translation id="6459472438155181876">Экранды <ph name="DISPLAY_NAME" /> дисплейіне кеңейту</translation>
 <translation id="6477681113376365978">Файлды жүктеп алу мүмкін емес</translation>
 <translation id="6482559668224714696">Толық экран ұлғайтқышы</translation>
+<translation id="6483727822843292440">Ең аз пайдаланылған терезеден терезелер арқылы өту</translation>
 <translation id="6490471652906364588">USB-C құрылғысы (оң жақ ұяшық)</translation>
 <translation id="6491071886865974820">Мерзім аяқталғанға дейін, <ph name="MANAGER" /> сізден <ph name="DEVICE_TYPE" /> құрылғысын жаңартуыңызды талап етеді.</translation>
 <translation id="649452524636452238">Смарт картаның PIN коды</translation>
@@ -1215,6 +1220,7 @@
 <translation id="6683022854667115063">Құлақаспап</translation>
 <translation id="6696025732084565524">Алынбалы пернетақтаны жаңарту қажет</translation>
 <translation id="6700713906295497288">IME мәзір түймесі</translation>
+<translation id="6705577071209924099">Жарықтықты реттеу</translation>
 <translation id="6707693040195709527">Құрылғыны алдыңғы нұсқаға қайтару мерзімі өтіп кетті</translation>
 <translation id="6710213216561001401">Алдыңғы</translation>
 <translation id="6723839937902243910">Күш</translation>

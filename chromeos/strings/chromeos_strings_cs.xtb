@@ -140,6 +140,7 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Další nastavení</translation>
 <translation id="2085089206770112532">Snížit jas displeje</translation>
+<translation id="209751264101900360">Od úsvitu do setmění – plynoucí oblaka</translation>
 <translation id="2102231663024125441">Úprava textu</translation>
 <translation id="2105810540595158374">Zařízení je herní ovladač.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verze <ph name="MILESTONE_VERSION" /></translation>
@@ -370,6 +371,7 @@
 <translation id="4275663329226226506">Média</translation>
 <translation id="4289540628985791613">Přehled</translation>
 <translation id="4289849978083912975">Prezentace</translation>
+<translation id="4293621540182258188">Od úsvitu do setmění – plynoucí Země</translation>
 <translation id="4297501883039923494">Zastaveno – neznámá chyba</translation>
 <translation id="4300073214558989">Počet obrázků: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4311195029067684288">Plné</translation>
@@ -544,6 +546,7 @@
 <translation id="576835345334454681">Zvýšit jas displeje</translation>
 <translation id="57838592816432529">Ztlumit</translation>
 <translation id="5784136236926853061">Vysoká latence požadavků HTTP</translation>
+<translation id="5809090008577139505">Polární záře</translation>
 <translation id="5826644637650799838">O tomto uměleckém dílu</translation>
 <translation id="5832805196449965646">Přidat uživatele</translation>
 <translation id="583281660410589416">Neznámé</translation>
@@ -562,6 +565,7 @@
 <translation id="5907649332524363701">barva klíče</translation>
 <translation id="5916084858004523819">Zakázáno</translation>
 <translation id="5916664084637901428">Zapnuto</translation>
+<translation id="5918201491776799918">Vybrat umělecké dílo dostupné pouze na Chromeboocích Plus</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Soubor byl úspěšně naskenován a uložen do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Soubor nebyl nalezen</translation>
 <translation id="5939518447894949180">Resetovat</translation>
@@ -818,6 +822,7 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Vybrat možnost <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Nástroje pro vývojáře</translation>
+<translation id="8153923300383192510">Exkluzivně na Chromeboocích Plus</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Připojit</translation>
 <translation id="8206859287963243715">Mobil</translation>

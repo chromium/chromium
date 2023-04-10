@@ -696,6 +696,7 @@
 <translation id="1593594475886691512">فارمیٹ کیا جا رہا ہے…</translation>
 <translation id="159359590073980872">تصویر کیش</translation>
 <translation id="1593926297800505364">ادائیگی کا طریقہ محفوظ کریں</translation>
+<translation id="1594703455918849716">چیک اپ کے صفحے پر جائیں</translation>
 <translation id="1595492813686795610">‏Linux اپ گریڈ ہو رہا ہے</translation>
 <translation id="1596286373007273895">دستیاب</translation>
 <translation id="1596709061955594992">بلوٹوتھ آف ہے۔ دستیاب آلات دیکھنے کے لیے بلوٹوتھ آن کریں۔</translation>
@@ -1681,6 +1682,7 @@
 <translation id="2399699884460174994">اطلاعات آن کر دی گئیں</translation>
 <translation id="2399939490305346086">سیکیورٹی کلید کا سائن ان ڈیٹا</translation>
 <translation id="2400664245143453337">فوری طور پر اپ ڈیٹ درکار ہے</translation>
+<translation id="2402226831639195063">ٹونز</translation>
 <translation id="2406153734066939945">اس پروفائل اور اس کے ڈیٹا کو حذف کریں؟</translation>
 <translation id="2408018932941436077">کارڈ محفوظ ہو رہا ہے</translation>
 <translation id="2408955596600435184">‏اپنا PIN درج کریں</translation>
@@ -1692,6 +1694,7 @@
 <translation id="241082044617551207">نامعلوم پلگ ان</translation>
 <translation id="2410940059315936967">آپ کی ملاحظہ کی جانے والی سائٹ دوسری سائٹس سے مواد کو سرایت کر سکتی ہے، مثال کے طور پر تصاویر، اشتہارات اور ٹیکسٹ۔ ان دیگر سائٹس کے ذریعے سیٹ کردہ کوکیز کو فریق ثالث کوکیز کہا جاتا ہے۔</translation>
 <translation id="2411666601450687801">اس آلے پر کسی بھی ورچوئل مشین کی اجازت نہیں ہے</translation>
+<translation id="2412015533711271895">آپ کے والدین یا سرپرست کو یہ کہنا ہوگا کہ آپ کے لیے اس ایکسٹینشن کا استعمال ٹھیک ہے</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414886740292270097">گہری</translation>
 <translation id="2416435988630956212">کی بورڈ کی فنکشن کلیدیں</translation>
@@ -3074,6 +3077,7 @@
 <translation id="3651488188562686558">‏Wi-Fi سے منقطع کریں</translation>
 <translation id="3652817283076144888">شروع کیا جا رہا ہے</translation>
 <translation id="3653160965917900914">نیٹ ورک فائل کے اشتراکات</translation>
+<translation id="3653887973853407813">‏آپ اس ایکسٹینشن کو استعمال نہیں کر سکتے۔ آپ کے والدین یا سرپرست نے Chrome کے لیے "سائٹس، ایپس اور ایکسٹینشنز کی اجازتوں" کو آف کر دیا ہے۔</translation>
 <translation id="3653999333232393305"><ph name="HOST" /> کو اپنے مائیکروفون تک رسائی حاصل کرنے کی اجازت دینا جاری رکھیں</translation>
 <translation id="3654045516529121250">اپنی ایکسیسبیلٹی ترتیبات پڑھیں</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{اسے ایک فائل تک مستقل رسائی ہے۔}other{اسے # فائلوں تک مستقل رسائی ہے۔}}</translation>
@@ -5144,6 +5148,7 @@
 <translation id="5517304475148761050">‏اس ایپ کو Play اسٹور تک رسائی درکار ہے</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">جب کوئی سائٹ کلپ بورڈ میں کاپی کیے گئے متن اور تصاویر دیکھنا چاہے تو پوچھیں</translation>
+<translation id="5518949581554491184">‏Android فون کے ساتھ سیٹ اپ کریں</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">کیا یہی وہ ہوم صفحہ ہے جس کی آپ توقع کر رہے تھے؟</translation>
 <translation id="5522156646677899028">اس ایکسٹینشن میں ایک سنگین سیکیورٹی خطرہ شامل ہے۔</translation>
@@ -6477,6 +6482,7 @@
 <translation id="6725206449694821596">‏انٹرنیٹ پرنٹنگ پروٹوکول (IPP)</translation>
 <translation id="6725970970008349185">فی صفحہ ڈسپلے کرنے کیلئے امیدواروں کی تعداد</translation>
 <translation id="672609503628871915">دیکھیں کہ نیا کیا ہے</translation>
+<translation id="6726800386221816228">مخصوص حروف</translation>
 <translation id="67269783048918309">‏استعمال اور ڈائیگناسٹک کا ڈیٹا بھیجیں۔ فی الوقت یہ آلہ خود کار طور پر ڈائیگناسٹک، آلے اور ایپ کے استعمال کا ڈیٹا Google کو بھیج رہا ہے۔ اس کا استعمال آپ کے بچے کی شناخت کیلئے نہیں کیا جائے گا اور اس سے سسٹم اور ایپ کے استحکام اور دیگر بہتریوں میں مدد ملے گی۔ کچھ مجموعی ڈیٹا Google ایپس اور پارٹنرز، جیسے Android ڈیولپرز، کی مدد بھی کرے گا۔ اس <ph name="BEGIN_LINK1" />ترتیب<ph name="END_LINK1" /> کو مالک نافذ کرتا ہے۔ اگر آپ کے بچے کیلئے ویب اور ایپ کی اضافی سرگرمی کی ترتیب آن ہے تو اس ڈیٹا کو اس کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔ <ph name="BEGIN_LINK2" />مزید جانیں<ph name="END_LINK2" /></translation>
 <translation id="6728528977475057549">‏<ph name="LAST_FOUR_DIGITS" /> پر ختم ہونے والا IBAN</translation>
 <translation id="6729192290958770680">اپنا صارف نام درج کریں</translation>
@@ -6879,6 +6885,7 @@
 <translation id="7063129466199351735">شارٹ کٹس پر کارروائی کی جا رہی ہے…</translation>
 <translation id="7063311912041006059">‏استفسار کی جگہ <ph name="SPECIAL_SYMBOL" /> کے ساتھ URL</translation>
 <translation id="706342288220489463">مدد کرنے کیلئے اپنی اسسٹنٹ کو اپنی اسکرین پر معلومات استعمال کرنے کی اجازت دیں</translation>
+<translation id="70641621694466590">پاس ورڈز کے صفحے پر جائیں</translation>
 <translation id="7064734931812204395">‏Linux کنٹینر کو کنفیگر کیا جا رہا ہے۔ اس میں 30 منٹس تک کا وقت لگ سکتا ہے۔</translation>
 <translation id="7065223852455347715">یہ آلہ ایسی وضع میں مقفل ہوا ہے جو انٹرپرائز اندراج کو روکتا ہے۔  اگر آپ آلہ کا اندراج کرنا چاہتے ہیں تو آپ کو سب سے پہلے آلہ کی بازیابی سے گزرنے کی ضرورت ہے۔</translation>
 <translation id="7065534935986314333">سسٹم کے بارے میں</translation>
@@ -7380,6 +7387,7 @@
 <translation id="7541773865713908457"><ph name="APP_NAME" /> ایپ کے ساتھ <ph name="ACTION_NAME" /></translation>
 <translation id="754207240458482646">آپ کے اکاؤنٹ پر موجود دیگر آلات کے ساتھ مطابقت پذیر۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">اس <ph name="IDS_SHORT_PRODUCT_NAME" /> آلہ پر ڈیبگ کرنے کی خصوصیات فعال کریں</translation>
+<translation id="7544977292347272434">اپنے والدین سے ایکسٹینشن کی اجازت دینے کو کہیں</translation>
 <translation id="7545466883021407599">‏سرور سے منسلک نہیں ہو سکا۔ اپنا نیٹ ورک کنکشن چیک کریں اور دوبارہ کوشش کریں۔ اگر آپ کو اب بھی مشکل درپیش ہے تو اپنا Chromebook ری سٹارٹ کرنے کی کوشش کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="7547317915858803630">وارننگ: آپ کی <ph name="PRODUCT_NAME" /> ترتیبات ایک نیٹ ورک ڈرائیو پر محفوظ ہیں۔ اس کا نتیجہ رفتار میں کمی، کریشز یا ڈیٹا سے محرومی ہو سکتا ہے۔</translation>
 <translation id="7548856833046333824">لیمونیڈ</translation>
@@ -7608,6 +7616,7 @@
 <translation id="7728668285692163452">چینل میں تبدیلی بعد میں لاگو کی جائے گی</translation>
 <translation id="7730449930968088409">اپنی سکرین کا مواد کیپچر کریں</translation>
 <translation id="7730683939467795481">یہ صفحہ "<ph name="EXTENSION_NAME" />" ایکسٹینشن کے ذریعے تبدیل کیا گیا</translation>
+<translation id="773511996612364297">تلفظ کے نشانات</translation>
 <translation id="7735165285389721951">‏دوسرا Steam سیٹ اپ چل رہا ہے۔ دوبارہ کوشش کرنے سے پہلے براہ کرم اس کے مکمل ہونے کا انتظار کریں</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" کے ساتھ جوڑا بنایا جا رہا ہے ...</translation>
 <translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> کی ہدایت موصول ہو گئی</translation>
@@ -7690,6 +7699,7 @@
 <translation id="7792388396321542707">اشتراک روکیں</translation>
 <translation id="779308894558717334">ہلکا سبز</translation>
 <translation id="7793098747275782155">گہرا نیلا</translation>
+<translation id="7796453472368605346">تفریقی نشانات</translation>
 <translation id="7797571222998226653">آف</translation>
 <translation id="7798504574384119986">ویب کی اجازتیں دیکھیں</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> خود کار طور پر مسدود کر دی گئی</translation>
@@ -7774,6 +7784,7 @@
 <translation id="7876027585589532670">شارٹ کٹ میں ترمیم نہیں ہو سکتی</translation>
 <translation id="7877451762676714207">سرور کی نامعلوم  خرابی۔ براہ کرم دوبارہ کوشش کریں یا سرور کے منتظم سے رابطہ کریں۔</translation>
 <translation id="7878945852730162014">ڈاؤن لوڈ ہوتے وقت فائلز کا نظم کریں اور ڈاؤن لوڈ مکمل ہونے پر انہیں کھولیں</translation>
+<translation id="7879172417209159252">ایکسٹینشن استعمال نہیں کر سکتے</translation>
 <translation id="7879478708475862060">اندراج کی وض‏ع کی پیروی کریں</translation>
 <translation id="7879631849810108578">شارٹ کٹ کا سیٹ: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880823633812189969">جب آپ دوبارہ شروع کریں گے تو مقامی ڈیٹا حذف ہو جائے گا</translation>

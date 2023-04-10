@@ -730,6 +730,7 @@
 <translation id="2718207025093645426">За управлявания потребител или устройство не са заредени правила.</translation>
 <translation id="2721148159707890343">Заявката е успешна</translation>
 <translation id="2723669454293168317">Стартиране на проверка на безопасността от настройките на Chrome</translation>
+<translation id="2725492561136085792">Натиснете Enter, за да активирате това действие.</translation>
 <translation id="2726001110728089263">Странична тава</translation>
 <translation id="2728127805433021124">Сертификатът на сървъра е подписан със слаб алгоритъм.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Стартирайте диагностика на свързаността<ph name="END_LINK" /></translation>
@@ -826,6 +827,7 @@
 <translation id="299990983510665749">Хечбек</translation>
 <translation id="3002501248619246229">Проверете хартията във входната тава</translation>
 <translation id="3005723025932146533">Показване на запазено копие</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab, за да видите наличните действия, и след това Enter, за да изпълните избраното.</translation>
 <translation id="3013291976881901233">MIDI устройства</translation>
 <translation id="301521992641321250">Автоматично блокирано</translation>
 <translation id="3016780570757425217">Достъп до местоположението ви.</translation>
@@ -1740,6 +1742,8 @@
 <translation id="5234764350956374838">Отхвърляне</translation>
 <translation id="5239623327352565343">Достъпът до местоположението е разрешен</translation>
 <translation id="5242889659037569123">Багаж и пътнически принадлежности</translation>
+<translation id="5244732203286792411">Зарежда се...
+    Това може да отнеме минута.</translation>
 <translation id="5250209940322997802">„Свързване с мрежа“</translation>
 <translation id="52517543715119994">Научете повече за функциите на Chrome</translation>
 <translation id="5251803541071282808">Облак</translation>
@@ -1985,6 +1989,7 @@
 <translation id="5872692522325383488">IBAN номерът е запазен</translation>
 <translation id="5873013647450402046">Банката иска да потвърди самоличността ви.</translation>
 <translation id="5877831137320480913">Козметика и фитнес</translation>
+<translation id="5879989559903563723">Не е разрешено в режим на гост</translation>
 <translation id="5884465125445718607">Плик, китайски №6</translation>
 <translation id="5887400589839399685">Картата бе запазена</translation>
 <translation id="5887687176710214216">Последно посещение: вчера</translation>
@@ -3226,6 +3231,7 @@
 <translation id="8949493680961858543">A1 x 4</translation>
 <translation id="8951415078585015151">Законови и правителствени органи</translation>
 <translation id="8957210676456822347">Упълномощаване в портал за удостоверяване</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Към настройките за сайта</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Предложения:<ph name="MARKUP_2" />Уверете се, че имате връзка за данни.<ph name="MARKUP_3" />Презаредете тази уеб страница по-късно.<ph name="MARKUP_4" />Проверете въведения от вас адрес.<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Запазване на картата</translation>

@@ -693,6 +693,7 @@
 <translation id="1593594475886691512">ફોર્મેટિંગ...</translation>
 <translation id="159359590073980872">ફોટો કૅશ મેમરી</translation>
 <translation id="1593926297800505364">ચુકવણી પદ્ધતિ સાચવો</translation>
+<translation id="1594703455918849716">ચેકઅપ પેજ પર જાઓ</translation>
 <translation id="1595492813686795610">Linux અપગ્રેડ થાય છે</translation>
 <translation id="1596286373007273895">ઉપલબ્ધ</translation>
 <translation id="1596709061955594992">બ્લૂટૂથ બંધ છે. ઉપલબ્ધ ડિવાઇસ જોવા માટે, બ્લૂટૂથ ચાલુ કરો.</translation>
@@ -1677,6 +1678,7 @@
 <translation id="2399699884460174994">નોટિફિકેશન ચાલુ કર્યા</translation>
 <translation id="2399939490305346086">સુરક્ષા કોડનો સાઇન ઇન ડેટા</translation>
 <translation id="2400664245143453337">તાત્કાલિક અપડેટ આવશ્યક છે</translation>
+<translation id="2402226831639195063">ટોન</translation>
 <translation id="2406153734066939945">આ પ્રોફાઇલ અને તેનો ડેટા ડિલીટ કરીએ?</translation>
 <translation id="2408018932941436077">કાર્ડ સાચવી રહ્યાં છીએ</translation>
 <translation id="2408955596600435184">તમારો PIN દાખલ કરો</translation>
@@ -1688,6 +1690,7 @@
 <translation id="241082044617551207">અજ્ઞાત પ્લગિન</translation>
 <translation id="2410940059315936967">તમે મુલાકાત લેતા હો એવી કોઈ સાઇટ અન્ય સાઇટમાંનું કન્ટેન્ટ શામેલ કરી શકે છે, ઉદાહરણ તરીકે છબીઓ, જાહેરાતો અને ટેક્સ્ટ. આવી અન્ય સાઇટ દ્વારા સેટ કરવામાં આવતી કુકીને ત્રીજા પક્ષની કુકી તરીકે ઓળખવામાં આવે છે.</translation>
 <translation id="2411666601450687801">આ ડિવાઇસ પર કોઈ વર્ચ્યુઅલ મશીનને મંજૂરી નથી</translation>
+<translation id="2412015533711271895">તમારા માતાપિતા અથવા વાલીએ કહેવાનું રહેશે કે તમે આ એક્સ્ટેન્શનનો ઉપયોગ કરો તે બરાબર છે</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414886740292270097">ઘાટું</translation>
 <translation id="2416435988630956212">કીબોર્ડની ફંકશન કી</translation>
@@ -3014,6 +3017,7 @@
 <translation id="3609277884604412258">ઝડપી શોધ</translation>
 <translation id="3610241585790874201">તમારા ડિવાઇસ પર ડેટા સાચવવાની મંજૂરી નથી</translation>
 <translation id="3610369246614755442">ડૉકના પંખાને સર્વિસની જરૂર છે</translation>
+<translation id="3610961622607302617"><ph name="WEBSITE" /> માટેનો પાસવર્ડ બદલો</translation>
 <translation id="361106536627977100">ફ્લૅશ ડેટા</translation>
 <translation id="3611655097742243705">વધુ ઍપ શોધવા માટે, Play સ્ટોરની મુલાકાત લો</translation>
 <translation id="3611658447322220736">તાજેતરમાં બંધ કરેલી સાઇટ ડેટા મોકલવાનું અને મેળવવાનું પૂર્ણ કરી શકે છે</translation>
@@ -3070,6 +3074,7 @@
 <translation id="3651488188562686558">વાઇ-ફાઇથી ડિસ્કનેક્ટ કરો</translation>
 <translation id="3652817283076144888">પ્રારંભ થઈ રહ્યું છે</translation>
 <translation id="3653160965917900914">નેટવર્ક ફાઇલ શેર</translation>
+<translation id="3653887973853407813">તમે આ એક્સ્ટેન્શનનો ઉપયોગ કરી શકતા નથી. તમારા માતા-પિતા અથવા વાલીએ Chrome માટે “સાઇટ, ઍપ અને એક્સ્ટેન્શન માટેની પરવાનગીઓ” બંધ કરી છે.</translation>
 <translation id="3653999333232393305"><ph name="HOST" /> ને તમારા માઇક્રોફોનને ઍક્સેસ કરવા દેવાનું ચાલુ રાખો</translation>
 <translation id="3654045516529121250">તમારા ઍક્સેસિબિલિટી સેટિંગ વાંચો</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{તેને એક ફાઇલ માટે કાયમી ઍક્સેસ છે.}one{તેને # ફાઇલ માટે કાયમી ઍક્સેસ છે.}other{તેને # ફાઇલ માટે કાયમી ઍક્સેસ છે.}}</translation>
@@ -5141,6 +5146,7 @@
 <translation id="5517304475148761050">આ ઍપ માટે Play સ્ટોરનો ઍક્સેસ આવશ્યક છે</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">જ્યારે સાઇટ ક્લિપબોર્ડ પર કૉપિ કરેલી ટેક્સ્ટ અને છબીઓને જોવા માંગે ત્યારે પૂછો</translation>
+<translation id="5518949581554491184">Android ફોન વડે સેટઅપ કરો</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">શું આ તમારી અપેક્ષા મુજબનું હોમપેજ છે?</translation>
 <translation id="5522156646677899028">આ એક્સટેન્શનમાં ગંભીર સુરક્ષા ભેદ્યતા છે.</translation>
@@ -6032,6 +6038,7 @@ USB ડિવાઇસ</translation>
 <translation id="6318125393809743217">નીતિની ગોઠવણ ધરાવતી policies.json ફાઇલનો સમાવેશ કરો.</translation>
 <translation id="6318407754858604988">ડાઉનલોડ શરૂ થયું</translation>
 <translation id="6318944945640833942">પ્રિન્ટરની જાણકારી મેળવી ન શકાઈ. કૃપા કરીને પ્રિન્ટરનું ઍડ્રેસ ફરી દાખલ કરો.</translation>
+<translation id="6320808462673705899">તમારી શોધ સાથે મેળ ખાતું કોઈ બુકમાર્ક નથી.</translation>
 <translation id="6322370287306604163">ફિંગરપ્રિન્ટ વડે વધુ ઝડપથી ખોલો</translation>
 <translation id="6322559670748154781">આ ફાઇલ સામાન્ય રીતે ડાઉનલોડ કરવામાં આવતી નથી અને તેને વિગતવાર સુરક્ષા દ્વારા બ્લૉક કરવામાં આવી છે</translation>
 <translation id="6324916366299863871">શૉર્ટકટમાંમાં ફેરફાર કરો</translation>
@@ -6478,6 +6485,7 @@ USB ડિવાઇસ</translation>
 <translation id="6725206449694821596">ઇન્ટરનેટ પ્રિંટિંગ પ્રોટોકોલ (IPP)</translation>
 <translation id="6725970970008349185">પેજ દીઠ ડિસ્પ્લે કરવાના ઉમેદવારોની સંખ્યા</translation>
 <translation id="672609503628871915">શું નવું છે તે જુઓ</translation>
+<translation id="6726800386221816228">વિશિષ્ટ અક્ષરો</translation>
 <translation id="67269783048918309">વપરાશ અને નિદાનનો ડેટા મોકલો. આ ડિવાઇસ હાલમાં Googleને નિદાન, ડિવાઇસ અને ઍપ વપરાશનો ડેટા ઑટોમૅટિક રીતે મોકલી રહ્યું છે. આનો ઉપયોગ તમારા બાળકને ઓળખવા માટે થશે નહીં અને સિસ્ટમ અને ઍપની સ્થિરતા અને અન્ય સુધારણાઓમાં સહાય કરશે. એકત્રીકરણ કરેલો કેટલોક ડેટા Google ઍપ અને ભાગીદારોને પણ મદદ કરશે, જેમ કે Android ડેવલપર. આ <ph name="BEGIN_LINK1" />સેટિંગ<ph name="END_LINK1" /> માલિક દ્વારા લાગુ કરવામાં આવેલ છે. જો તમારા બાળક માટે વધારાની વેબ અને ઍપ પ્રવૃત્તિ સેટિંગ ચાલુ હોય, તો આ ડેટા તેમના Google એકાઉન્ટમાં સાચવવામાં આવી શકે છે. <ph name="BEGIN_LINK2" />વધુ જાણો<ph name="END_LINK2" /></translation>
 <translation id="6728528977475057549"><ph name="LAST_FOUR_DIGITS" />થી અંત થતા IBAN નંબર</translation>
 <translation id="6729192290958770680">તમારું વપરાશકર્તાનું નામ દાખલ કરો</translation>
@@ -6880,6 +6888,7 @@ USB ડિવાઇસ</translation>
 <translation id="7063129466199351735">શોર્ટકટ્સની પ્રક્રિયા કરી રહ્યું છે...</translation>
 <translation id="7063311912041006059">ક્વેરીના બદલે <ph name="SPECIAL_SYMBOL" /> વાળું URL</translation>
 <translation id="706342288220489463">સહાય માટે તમારા Assistantને તમારી સ્ક્રીન પરની માહિતીનો ઉપયોગ કરવાની મંજૂરી આપો</translation>
+<translation id="70641621694466590">પાસવર્ડના પેજ પર જાઓ</translation>
 <translation id="7064734931812204395">Linux કંટેનરની ગોઠવણી કરી રહ્યાં છીએ. આમાં 30 મિનિટ સુધીનો સમય લાગી શકે છે.</translation>
 <translation id="7065223852455347715">આ ઉપકરણ એન્ટરપ્રાઇઝ નોંધણી અટકાવતા મોડ પર લોક કરવામાં આવેલ છે.  જો તમે ઉપકરણની નોંધણી કરવા માંગતા હોય તો તમારે પહેલાં ઉપકરણ પુનઃપ્રાપ્તિ પર જવાની જરૂર છે.</translation>
 <translation id="7065534935986314333">સિસ્ટમ વિષે</translation>
@@ -7381,6 +7390,7 @@ USB ડિવાઇસ</translation>
 <translation id="7541773865713908457"><ph name="APP_NAME" /> ઍપ વડે <ph name="ACTION_NAME" /></translation>
 <translation id="754207240458482646">તમારા એકાઉન્ટ પરના અન્ય ડિવાઇસ સાથે સિંક કરેલું. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">આ <ph name="IDS_SHORT_PRODUCT_NAME" /> ડિવાઇસ પર ડિબગીંગ સુવિધાઓ ચાલુ કરો</translation>
+<translation id="7544977292347272434">તમારા માતાપિતાને એક્સ્ટેન્શનની મંજૂરી આપવા કહો</translation>
 <translation id="7545466883021407599">સર્વર સાથે કનેક્ટ કરી શકાયું નથી. તમારું નેટવર્ક કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો. જો તમને હજી પણ મુશ્કેલી આવી રહી હોય, તો તમારી Chromebookને ફરી શરૂ કરવાનો પ્રયાસ કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">ચેતવણી: <ph name="PRODUCT_NAME" /> સેટિંગ નેટવર્ક ડ્રાઇવ પર સ્ટોર કર્યું છે. આનું પરિણામ ધીમી ગતિ, ક્રૅશ અથવા ડેટાનું નુકસાન પણ હોઈ શકે છે.</translation>
 <translation id="7548856833046333824">લેમોનેડ</translation>
@@ -7609,6 +7619,7 @@ USB ડિવાઇસ</translation>
 <translation id="7728668285692163452">ચૅનલ ફેરફાર પછીથી લાગુ થશે</translation>
 <translation id="7730449930968088409">તમારી સ્ક્રીનની કન્ટેન્ટ કેપ્ચર કરો</translation>
 <translation id="7730683939467795481">પેજને "<ph name="EXTENSION_NAME" />" એક્સ્ટેન્શન દ્વારા બદલવામાં આવ્યું હતું</translation>
+<translation id="773511996612364297">ઍક્સેન્ટ માટેના ચિહ્નો</translation>
 <translation id="7735165285389721951">Steamના સેટઅપની અન્ય પ્રક્રિયા ચાલી રહી છે. કૃપા કરીને ફરી પ્રયાસ કરતા પહેલાં, તેના પૂર્ણ થવાની રાહ જુઓ</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />"ની સાથે જોડી બનાવો…</translation>
 <translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> સૂચના મેળવી</translation>
@@ -7690,6 +7701,7 @@ USB ડિવાઇસ</translation>
 <translation id="7792388396321542707">શેર કરવાનું રોકો</translation>
 <translation id="779308894558717334">આછો લીલો</translation>
 <translation id="7793098747275782155">ઘેરો વાદળી</translation>
+<translation id="7796453472368605346">ડાયાક્રિટિક</translation>
 <translation id="7797571222998226653">બંધ</translation>
 <translation id="7798504574384119986">વેબની પરવાનગીઓ જુઓ</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> ઑટોમૅટિક રીતે બ્લૉક થઈ</translation>
@@ -7774,6 +7786,7 @@ USB ડિવાઇસ</translation>
 <translation id="7876027585589532670">શૉર્ટકટમાં ફેરફાર કરી શકાતો નથી</translation>
 <translation id="7877451762676714207">અજ્ઞાત સર્વર ભૂલ. કૃપા કરી ફરીથી પ્રયત્ન કરો અથવા સર્વર વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="7878945852730162014">ફાઇલો ડાઉનલોડ થતી હોય, ત્યારે તેને મેનેજ કરો અને તે ડાઉનલોડ થઈ જાય, ત્યારે તેને ખોલો</translation>
+<translation id="7879172417209159252">એક્સ્ટેન્શનનો ઉપયોગ કરી શકતા નથી</translation>
 <translation id="7879478708475862060">ઇનપુટ મોડને અનુસરો</translation>
 <translation id="7879631849810108578">શૉર્ટકટ સેટ થયો: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880823633812189969">તમે ફરી શરૂ કરશો ત્યારે સ્થાનિક ડેટા ડિલીટ કરવામાં આવશે</translation>

@@ -730,6 +730,7 @@
 <translation id="2718207025093645426">İdarə olunan istifadəçi və ya cihazda yüklənmiş siyasət yoxdur.</translation>
 <translation id="2721148159707890343">Sorğu uğurlu oldu</translation>
 <translation id="2723669454293168317">Chrome ayarlarında Təhlükəsizlik Yoxlanışı icra edin</translation>
+<translation id="2725492561136085792">Bu əməliyyatı aktivləşdirmək üçün Enter üzərinə basın.</translation>
 <translation id="2726001110728089263">Yan Qab</translation>
 <translation id="2728127805433021124">Server sertifikatı zəif imza alqoritmi istifadə olunaraq daxil edildi.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Bağlantı Diaqnostikası İşləyir<ph name="END_LINK" /></translation>
@@ -826,6 +827,7 @@
 <translation id="299990983510665749">Hetçbeklər</translation>
 <translation id="3002501248619246229">Daxiletmə qabı mediasını yoxlayın</translation>
 <translation id="3005723025932146533">Saxlanılmış kopyanı göstərin</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, əlçatan əməliyyatlara baxmaq üçün Tab, seçilmiş əməliyyatı icra etmək üçün Enter üzərinə basın.</translation>
 <translation id="3013291976881901233">MIDI (Musiqi Alətləri Rəqəmsal İnterfeysi) cihazları</translation>
 <translation id="301521992641321250">Avtomatik olaraq blok edildi</translation>
 <translation id="3016780570757425217">Məkanınızı bilin</translation>
@@ -1981,6 +1983,7 @@
 <translation id="5872692522325383488">IBAN yadda saxlanıldı</translation>
 <translation id="5873013647450402046">Bankınız bunun siz olduğunuzu təsdiq etmək istəyir.</translation>
 <translation id="5877831137320480913">Gözəllik və fitnes</translation>
+<translation id="5879989559903563723">Qonaq rejimində icazə verilmir</translation>
 <translation id="5884465125445718607">Zərf Çin #6</translation>
 <translation id="5887400589839399685">Kart yadda saxlanıldı</translation>
 <translation id="5887687176710214216">Son ziyarət dünən olub</translation>
@@ -3222,6 +3225,7 @@
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Hüquq və hökümət</translation>
 <translation id="8957210676456822347">Kaptiv Portal Doğrulanması</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Sayt ayarlarına keçin</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Təkliflər:<ph name="MARKUP_2" />Data bağlantınızın olduğuna əmin olun<ph name="MARKUP_3" />Bu veb səhifəni daha sonra yenidən yükləyin<ph name="MARKUP_4" />Daxil etdiyiniz ünvanları yoxlayın<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Kartı yadda saxlayın</translation>

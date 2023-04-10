@@ -216,6 +216,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="2482878487686419369">Oznámení</translation>
 <translation id="2496626742194544812">Přejít na první kartu</translation>
 <translation id="2500374554657206846">Možnosti uložení hesla</translation>
+<translation id="2502415369140591438">Opakovaně použitá hesla: <ph name="COUNT" /></translation>
 <translation id="2523363575747517183">Tento web se opakovaně pokouší otevřít jinou aplikaci.</translation>
 <translation id="2529021024822217800">Otevřít vše</translation>
 <translation id="2547458583188611426">Synchronizace nefunguje. Zadejte heslovou frázi.</translation>
@@ -225,6 +226,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="2576499762020411840">Používání a ukládání hesel v účtu Google</translation>
 <translation id="2578571896248130439">Odeslat webovou stránku</translation>
 <translation id="2584132361465095047">Přidat účet...</translation>
+<translation id="2595587704210555261">{COUNT,plural, =1{Otevřené karty, které jste den nebo déle nepoužili, se přesunou do části Neaktivní karty, abyste se mohli soustředit na ty, které používáte nejčastěji. V nastavení to můžete kdykoliv změnit.}few{Otevřené karty, které jste {COUNT} dny nebo déle nepoužili, se přesunou do části Neaktivní karty, abyste se mohli soustředit na ty, které používáte nejčastěji. V nastavení to můžete kdykoliv změnit.}many{Otevřené karty, které jste {COUNT} dne nebo déle nepoužili, se přesunou do části Neaktivní karty, abyste se mohli soustředit na ty, které používáte nejčastěji. V nastavení to můžete kdykoliv změnit.}other{Otevřené karty, které jste {COUNT} dní nebo déle nepoužili, se přesunou do části Neaktivní karty, abyste se mohli soustředit na ty, které používáte nejčastěji. V nastavení to můžete kdykoliv změnit.}}</translation>
 <translation id="2600682495497606169">Vymazat soubory cookie webu</translation>
 <translation id="2609008503159898744">Zavřít všechny karty?</translation>
 <translation id="2625189173221582860">Heslo bylo zkopírováno</translation>
@@ -292,6 +294,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="2932085390869194046">Navrhnout heslo...</translation>
 <translation id="2932765531295814441">Ruční přidání hesel</translation>
 <translation id="2952581218264071393">1. Otevřít nastavení Chromu</translation>
+<translation id="2953871438216280742">Pokud chcete otevřít a uložit seznam četby ve svém účtu Google, přihlaste se.</translation>
 <translation id="2958718410589002129">Hesla</translation>
 <translation id="2961210776189273067">Název</translation>
 <translation id="2964349545761222050">Blokovat soubory cookie třetích stran</translation>
@@ -385,6 +388,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3581564640715911333">Nabízet překlad stránek v jiných jazycích</translation>
 <translation id="3588820906588687999">Otevřít obrázek na nové kartě</translation>
 <translation id="3595252146048399851">Synchronizované položky můžete kdykoliv vybrat v <ph name="BEGIN_LINK" />nastavení<ph name="END_LINK" />. Google může personalizovat Vyhledávání a další služby na základě vaší historie.</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} slabé heslo}few{{COUNT} slabá hesla}many{{COUNT} slabého hesla}other{{COUNT} slabých hesel}}</translation>
 <translation id="3603009562372709545">Kopírovat adresu URL odkazu</translation>
 <translation id="3607167657931203000">Data automatického vyplňování</translation>
 <translation id="3608008480985212611">Pokud chcete spravovat své preference, přihlaste se.</translation>
@@ -571,6 +575,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="4844899002472726590">Zobrazení a úprava témat, která vás zajímají</translation>
 <translation id="4848999860252535517">Smazat heslo domény <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Nastavte heslo</translation>
+<translation id="4856498338299082007">Ve vašem účtu Google</translation>
 <translation id="4858786880085262208">Pokud je to možné, upgradujte na HTTPS. Na zabezpečených webech může být vložen nezabezpečený obsah.</translation>
 <translation id="4860895144060829044">Volat</translation>
 <translation id="4872323082491632254">Zkontrolovat hesla</translation>
@@ -622,6 +627,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5211488077761630279">Povolit webu <ph name="SITE_NAME" /> používat <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Pomáhejte se zlepšováním bezpečnosti internetu pro všechny</translation>
+<translation id="5221339005270097309">Kontrola hesel…</translation>
 <translation id="5228579091201413441">Aktivace synchronizace</translation>
 <translation id="5232485538978018676">Přihlášení pomocí spravovaného účtu</translation>
 <translation id="5234764350956374838">Zavřít</translation>
@@ -661,6 +667,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zařízení musejí používat stejný účet iCloud.</translation>
 <translation id="5551897871312988470">Nabízet překlad</translation>
 <translation id="5556459405103347317">Načíst znovu</translation>
+<translation id="555749644339804659">Kontrola hesel…</translation>
 <translation id="556042886152191864">Tlačítko</translation>
 <translation id="5597915316964418992">Otevřít mřížku karet</translation>
 <translation id="560322036295180549">Vypnuto vaší organizací</translation>
@@ -1087,6 +1094,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="821809831108207540">Pokud chcete personalizovat kanál Objevit a Chrome, přihlaste se a zapněte synchronizaci.</translation>
 <translation id="8225985093977202398">Obrázky a soubory v mezipaměti</translation>
 <translation id="8237382152611443140">Otevřete nastavení automatického vyplňování hesel.</translation>
+<translation id="8248969482078657578">Neaktivní karty vám pomohou soustředit se</translation>
 <translation id="8261506727792406068">Smazat</translation>
 <translation id="8264966119170358612">Při porušení zabezpečení údajů třetí strany byla vyzrazena některá vaše uložená hesla. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="8265018477030547118">Pouze na tomto zařízení</translation>

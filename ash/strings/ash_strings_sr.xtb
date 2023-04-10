@@ -4,6 +4,8 @@
 <translation id="1012876632442809908">Уређај са USB прикључком типа C (предњи порт)</translation>
 <translation id="1013598600051641573">Резолуција приказа <ph name="DISPLAY_NAME" /> је промењена у <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Кликните на Потврди да бисте задржали промене. Претходна подешавања ће бити враћена за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth уређај „<ph name="DEVICE_NAME" />“ жели дозволу за упаривање. Унесите овај PIN кôд на том уређају: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">Ово омогућава да <ph name="APP_NAME" /> и све апликације и веб-сајтови са дозволом за локацију и ChromeOS-ом користе локацију WiFi-ја и мобилних мрежа.</translation>
+<translation id="1017556409696559990">Смањи горњи прозор када нема претходне историје у Chrome-у</translation>
 <translation id="1024364763893396229">Сачувајте уређај <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Батерија писаљке је скоро празна</translation>
 <translation id="1036073649888683237">Да бисте управљали обавештењима, идите у подешавања</translation>
@@ -190,6 +192,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Етернет: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Укључи приступ локацији</translation>
 <translation id="1830308660060964064">Ставка <ph name="ITEM_TITLE" /> је откачена</translation>
 <translation id="1838895407229022812">Ноћно светло је искључено.</translation>
 <translation id="1854180393107901205">Заустави пребацивање</translation>
@@ -343,6 +346,7 @@
 <translation id="2620436844016719705">Систем</translation>
 <translation id="2621713457727696555">Заштићено</translation>
 <translation id="263399434338050016">„Изабери све“</translation>
+<translation id="2644422758626431000">Закачи прозор налево</translation>
 <translation id="2645435784669275700">Chrome ОС</translation>
 <translation id="2647092942972307022">Доступно је <ph name="USED_MEMORY" /> од <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2653019840645008922">Снимање прозора</translation>
@@ -466,6 +470,7 @@
 <translation id="3255483164551725916">Шта можеш да радиш?</translation>
 <translation id="3256109297135787951">Уклоните истицање са ставке на полици</translation>
 <translation id="3260969790895726815">Говор се обрађује локално и диктирање ради офлајн, али неке гласовне команде не раде.</translation>
+<translation id="3265032511221679826">Желите да укључите приступ прецизној локацији?</translation>
 <translation id="3269597722229482060">Десни клик</translation>
 <translation id="3289364673986435196">Мени дугмета за укључивање</translation>
 <translation id="3289544412142055976">Linux апликације тренутно нису подржане</translation>
@@ -576,6 +581,7 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Корисник којим се управља</translation>
 <translation id="3666266999138159418">Превуците да бисте сакрили плутајући прозор</translation>
 <translation id="367531336287639526">Изаберите прву икону са леве стране траке за адресу</translation>
+<translation id="3677931086890821290">Ово омогућава свим апликацијама и веб-сајтовима са дозволом за локацију и ChromeOS-ом да користе локацију WiFi-ја и мобилних мрежа.</translation>
 <translation id="3679827876008292680">Иди на последњу картицу у прозору</translation>
 <translation id="36813544980941320">WiFi мреже ће се делити између вашег телефона и уређаја <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Веб-сајтови</translation>
@@ -1055,6 +1061,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Укључено</translation>
 <translation id="5920710855273935292">Микрофон је искључен.</translation>
+<translation id="5922962980596822074">Прођи кроз прозоре од најскорије коришћеног прозора</translation>
 <translation id="5924855612669061715">Хотспот је укључен</translation>
 <translation id="5946788582095584774">Функција <ph name="FEATURE_NAME" /> је укључена.</translation>
 <translation id="5947494881799873997">Врати</translation>
@@ -1144,6 +1151,7 @@
 <translation id="6352082849089527770">Непознате мреже</translation>
 <translation id="6359587239691116345">Добијајте најновије функције и безбедносна побољшања. Ако одбијете ово ажурирање, уређај можда више неће радити како треба, а ви можете да имате проблема са безбедношћу и перформансама.</translation>
 <translation id="6376931439017688372">Bluetooth је укључен</translation>
+<translation id="6378515133128829137">Закачи прозор надесно</translation>
 <translation id="6381109794406942707">Да бисте откључали уређај, унесите PIN.</translation>
 <translation id="638716340450135524">Укључи приступ камери</translation>
 <translation id="639644700271529076">CAPS LOCK је искључен</translation>
@@ -1163,6 +1171,7 @@
 <translation id="6459472438155181876">Проширивање екрана у <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Преузимање фајла није успело</translation>
 <translation id="6482559668224714696">Лупа за цео екран</translation>
+<translation id="6483727822843292440">Прођи кроз прозоре од најмање коришћеног прозора</translation>
 <translation id="6490471652906364588">Уређај са USB прикључком типа C (десни порт)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> тражи да ажурирате <ph name="DEVICE_TYPE" /> пре истека рока</translation>
 <translation id="649452524636452238">PIN паметне картице</translation>
@@ -1739,6 +1748,7 @@
 <translation id="9198992156681343238">Резолуција екрана <ph name="DISPLAY_NAME" /> је промењена у <ph name="RESOLUTION" />. Кликните на Потврди да бисте задржали промене. Претходна подешавања ће бити враћена за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Повежите <ph name="NAME" /> са овим Chromebook-ом</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, управља администратор</translation>
+<translation id="9207682216934703221">Ово омогућава да <ph name="APP_NAME" />, <ph name="APP2_NAME" /> и све апликације и веб-сајтови са дозволом за локацију и ChromeOS-ом користе локацију WiFi-ја и мобилних мрежа.</translation>
 <translation id="9210037371811586452">Излазак из режима спојених радних површина</translation>
 <translation id="9211490828691860325">Све радне површине</translation>
 <translation id="9211681782751733685">Још <ph name="TIME_REMAINING" /> и батерија ће се у потпуности напунити.</translation>

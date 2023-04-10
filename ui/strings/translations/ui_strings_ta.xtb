@@ -201,6 +201,7 @@
 <translation id="8393700583063109961">செய்தி அனுப்பு</translation>
 <translation id="8394908167088220973">ஊடகத்தை இயக்கு/இடைநிறுத்து</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1ஆ}other{#ஆ}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" />ஃபைல்(.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> கி.பை./வி</translation>
 <translation id="8725488761726303204">மேலும் <ph name="NUMBER" /></translation>

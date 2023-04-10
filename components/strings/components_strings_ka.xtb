@@ -1987,6 +1987,7 @@
 <translation id="5872692522325383488">IBAN შენახულია</translation>
 <translation id="5873013647450402046">თქვენს ბანკს სურს, დაადასტუროს, რომ ეს ნამდვილად თქვენ ხართ.</translation>
 <translation id="5877831137320480913">სილამაზე და ფიტნესი</translation>
+<translation id="5879989559903563723">დაუშვებელია სტუმრის რეჟიმში</translation>
 <translation id="5884465125445718607">კონვერტი Chinese 6</translation>
 <translation id="5887400589839399685">ბარათი შენახულია</translation>
 <translation id="5887687176710214216">ბოლო ვიზიტი იყო გუშინ</translation>
@@ -3228,6 +3229,7 @@
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">სამართალი და მთავრობა</translation>
 <translation id="8957210676456822347">დაკავებული პორტალების ავტორიზაცია</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">საიტის პარამეტრებზე გადასვლა</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />მითითებები:<ph name="MARKUP_2" />დარწმუნდით, რომ მონაცემთა კავშირი გაქვთ<ph name="MARKUP_3" />ხელახლა ჩატვირთეთ გვერდი მოგვიანებით<ph name="MARKUP_4" />შეამოწმეთ თქვენ მიერ შეყვანილი მისამართი<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">ბარათის შენახვა</translation>

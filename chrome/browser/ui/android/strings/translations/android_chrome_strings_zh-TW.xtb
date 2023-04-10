@@ -108,6 +108,7 @@
 <translation id="1493287004536771723">你正在追蹤「<ph name="SITE_NAME" />」</translation>
 <translation id="1502010315804028179">如要管理密碼，請更新 Google Play 服務</translation>
 <translation id="1506061864768559482">搜尋引擎</translation>
+<translation id="1508960385613684700">隱私權指南 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="1513352483775369820">書籤與網頁記錄</translation>
 <translation id="1513814250881909472">進行同步處理，取得你在其他裝置上的分頁</translation>
 <translation id="1513858653616922153">刪除密碼</translation>
@@ -163,6 +164,7 @@
 <translation id="1910950723001426294">分享選項清單已關閉。</translation>
 <translation id="1919130412786645364">允許登入 Chrome</translation>
 <translation id="1922362554271624559">建議的語言</translation>
+<translation id="1924255092154549435">已展開分頁</translation>
 <translation id="1925021887439448749">輸入自訂網址</translation>
 <translation id="1928696683969751773">更新</translation>
 <translation id="19288952978244135">重新開啟 Chrome。</translation>
@@ -543,6 +545,7 @@
 <translation id="3999683152997576765">你可以查看網站用於顯示廣告的興趣主題，並且視需要移除。Chrome 會根據近期瀏覽記錄推測你可能感興趣的主題。</translation>
 <translation id="4000212216660919741">離線首頁</translation>
 <translation id="4016425174436051808">無法追蹤，發生錯誤。</translation>
+<translation id="4024768890073681126">瀏覽器由家長管理</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# 小時}other{# 小時}}</translation>
 <translation id="4035877632587724847">不允許</translation>
 <translation id="4036177530563778041">輕鬆繼續未完成的操作</translation>
@@ -768,6 +771,7 @@
 <translation id="5161254044473106830">請輸入標題</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5171045022955879922">搜尋或輸入網址</translation>
+<translation id="5174700554036517242">分頁已恢復初始高度</translation>
 <translation id="5184329579814168207">在 Chrome 中開啟</translation>
 <translation id="5191251636205085390">進一步瞭解用於取代第三方 Cookie 的全新技術並進行控管</translation>
 <translation id="5193988420012215838">已複製到剪貼簿</translation>
@@ -1250,6 +1254,7 @@
 <translation id="7686086654630106285">進一步瞭解網站建議廣告</translation>
 <translation id="768618399695552958">系統會預先載入你要造訪的部分網頁。當你從 Google 網站連到這些網頁時，系統可能會透過 Google 伺服器預先載入網頁內容。</translation>
 <translation id="7691043218961417207">探索值得追蹤的內容</translation>
+<translation id="7697383401610880082">拖曳控點</translation>
 <translation id="7698359219371678927">在「<ph name="APP_NAME" />」中建立電子郵件</translation>
 <translation id="7707922173985738739">使用行動數據</translation>
 <translation id="7709094866268987903">你移除的興趣喜好會顯示在這裡</translation>

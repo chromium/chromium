@@ -4,6 +4,8 @@
 <translation id="1012876632442809908">Uređaj sa USB priključkom tipa C (prednji port)</translation>
 <translation id="1013598600051641573">Rezolucija prikaza <ph name="DISPLAY_NAME" /> je promenjena u <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Kliknite na Potvrdi da biste zadržali promene. Prethodna podešavanja će biti vraćena za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth uređaj „<ph name="DEVICE_NAME" />“ želi dozvolu za uparivanje. Unesite ovaj PIN kôd na tom uređaju: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">Ovo omogućava da <ph name="APP_NAME" /> i sve aplikacije i veb-sajtovi sa dozvolom za lokaciju i ChromeOS-om koriste lokaciju WiFi-ja i mobilnih mreža.</translation>
+<translation id="1017556409696559990">Smanji gornji prozor kada nema prethodne istorije u Chrome-u</translation>
 <translation id="1024364763893396229">Sačuvajte uređaj <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Baterija pisaljke je skoro prazna</translation>
 <translation id="1036073649888683237">Da biste upravljali obaveštenjima, idite u podešavanja</translation>
@@ -190,6 +192,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Eternet: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Uključi pristup lokaciji</translation>
 <translation id="1830308660060964064">Stavka <ph name="ITEM_TITLE" /> je otkačena</translation>
 <translation id="1838895407229022812">Noćno svetlo je isključeno.</translation>
 <translation id="1854180393107901205">Zaustavi prebacivanje</translation>
@@ -343,6 +346,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2621713457727696555">Zaštićeno</translation>
 <translation id="263399434338050016">„Izaberi sve“</translation>
+<translation id="2644422758626431000">Zakači prozor nalevo</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2647092942972307022">Dostupno je <ph name="USED_MEMORY" /> od <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2653019840645008922">Snimanje prozora</translation>
@@ -466,6 +470,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3255483164551725916">Šta možeš da radiš?</translation>
 <translation id="3256109297135787951">Uklonite isticanje sa stavke na polici</translation>
 <translation id="3260969790895726815">Govor se obrađuje lokalno i diktiranje radi oflajn, ali neke glasovne komande ne rade.</translation>
+<translation id="3265032511221679826">Želite da uključite pristup preciznoj lokaciji?</translation>
 <translation id="3269597722229482060">Desni klik</translation>
 <translation id="3289364673986435196">Meni dugmeta za uključivanje</translation>
 <translation id="3289544412142055976">Linux aplikacije trenutno nisu podržane</translation>
@@ -576,6 +581,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Korisnik kojim se upravlja</translation>
 <translation id="3666266999138159418">Prevucite da biste sakrili plutajući prozor</translation>
 <translation id="367531336287639526">Izaberite prvu ikonu sa leve strane trake za adresu</translation>
+<translation id="3677931086890821290">Ovo omogućava svim aplikacijama i veb-sajtovima sa dozvolom za lokaciju i ChromeOS-om da koriste lokaciju WiFi-ja i mobilnih mreža.</translation>
 <translation id="3679827876008292680">Idi na poslednju karticu u prozoru</translation>
 <translation id="36813544980941320">WiFi mreže će se deliti između vašeg telefona i uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Veb-sajtovi</translation>
@@ -1055,6 +1061,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Uključeno</translation>
 <translation id="5920710855273935292">Mikrofon je isključen.</translation>
+<translation id="5922962980596822074">Prođi kroz prozore od najskorije korišćenog prozora</translation>
 <translation id="5924855612669061715">Hotspot je uključen</translation>
 <translation id="5946788582095584774">Funkcija <ph name="FEATURE_NAME" /> je uključena.</translation>
 <translation id="5947494881799873997">Vrati</translation>
@@ -1144,6 +1151,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="6352082849089527770">Nepoznate mreže</translation>
 <translation id="6359587239691116345">Dobijajte najnovije funkcije i bezbednosna poboljšanja. Ako odbijete ovo ažuriranje, uređaj možda više neće raditi kako treba, a vi možete da imate problema sa bezbednošću i performansama.</translation>
 <translation id="6376931439017688372">Bluetooth je uključen</translation>
+<translation id="6378515133128829137">Zakači prozor nadesno</translation>
 <translation id="6381109794406942707">Da biste otključali uređaj, unesite PIN.</translation>
 <translation id="638716340450135524">Uključi pristup kameri</translation>
 <translation id="639644700271529076">CAPS LOCK je isključen</translation>
@@ -1163,6 +1171,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="6459472438155181876">Proširivanje ekrana u <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Preuzimanje fajla nije uspelo</translation>
 <translation id="6482559668224714696">Lupa za ceo ekran</translation>
+<translation id="6483727822843292440">Prođi kroz prozore od najmanje korišćenog prozora</translation>
 <translation id="6490471652906364588">Uređaj sa USB priključkom tipa C (desni port)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> traži da ažurirate <ph name="DEVICE_TYPE" /> pre isteka roka</translation>
 <translation id="649452524636452238">PIN pametne kartice</translation>
@@ -1739,6 +1748,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="9198992156681343238">Rezolucija ekrana <ph name="DISPLAY_NAME" /> je promenjena u <ph name="RESOLUTION" />. Kliknite na Potvrdi da biste zadržali promene. Prethodna podešavanja će biti vraćena za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Povežite <ph name="NAME" /> sa ovim Chromebook-om</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, upravlja administrator</translation>
+<translation id="9207682216934703221">Ovo omogućava da <ph name="APP_NAME" />, <ph name="APP2_NAME" /> i sve aplikacije i veb-sajtovi sa dozvolom za lokaciju i ChromeOS-om koriste lokaciju WiFi-ja i mobilnih mreža.</translation>
 <translation id="9210037371811586452">Izlazak iz režima spojenih radnih površina</translation>
 <translation id="9211490828691860325">Sve radne površine</translation>
 <translation id="9211681782751733685">Još <ph name="TIME_REMAINING" /> i baterija će se u potpunosti napuniti.</translation>

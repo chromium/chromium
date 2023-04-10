@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">Perangkat USB-C (port depan)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> diubah ke <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik konfirmasi untuk menyimpan perubahan. Setelan sebelumnya akan dipulihkan dalam <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Perangkat Bluetooth "<ph name="DEVICE_NAME" />" meminta izin untuk bersanding. Masukan kode PIN ini pada perangkat tersebut: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Minimalkan jendela atas saat tidak ada histori sebelumnya di Chrome</translation>
 <translation id="1024364763893396229">Simpan <ph name="NAME" /> Anda</translation>
 <translation id="1032891413405719768">Baterai stilus lemah</translation>
 <translation id="1036073649888683237">Untuk mengelola notifikasi, buka Setelan</translation>
@@ -343,6 +344,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2620436844016719705">Sistem</translation>
 <translation id="2621713457727696555">Aman</translation>
 <translation id="263399434338050016">"Pilih semua"</translation>
+<translation id="2644422758626431000">Sematkan jendela ke kiri</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022"><ph name="USED_MEMORY" /> dari <ph name="TOTAL_MEMORY" /> tersedia</translation>
 <translation id="2653019840645008922">Tangkapan jendela</translation>
@@ -1054,6 +1056,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aktif</translation>
 <translation id="5920710855273935292">Mikrofon dibisukan.</translation>
+<translation id="5922962980596822074">Buka dari jendela yang paling terakhir digunakan</translation>
 <translation id="5924855612669061715">Hotspot aktif</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> aktif.</translation>
 <translation id="5947494881799873997">Kembalikan</translation>
@@ -1143,6 +1146,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="6352082849089527770">Jaringan tidak dikenal</translation>
 <translation id="6359587239691116345">Dapatkan fitur dan peningkatan keamanan terbaru. Jika Anda menolak update ini, perangkat mungkin tidak lagi berfungsi dengan baik dan Anda mungkin mengalami masalah keamanan dan performa.</translation>
 <translation id="6376931439017688372">Bluetooth aktif</translation>
+<translation id="6378515133128829137">Sematkan jendela ke kanan</translation>
 <translation id="6381109794406942707">Untuk membuka kunci perangkat, masukkan PIN Anda.</translation>
 <translation id="638716340450135524">Aktifkan akses kamera</translation>
 <translation id="639644700271529076">CAPS LOCK tidak aktif</translation>
@@ -1162,6 +1166,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="6459472438155181876">Memperpanjang layar ke <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Tidak dapat mendownload file</translation>
 <translation id="6482559668224714696">Kaca pembesar layar penuh</translation>
+<translation id="6483727822843292440">Buka dari jendela yang paling jarang digunakan</translation>
 <translation id="6490471652906364588">Perangkat USB-C (port sebelah kanan)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> mengharuskan Anda mengupdate <ph name="DEVICE_TYPE" /> sebelum tiba batas waktu</translation>
 <translation id="649452524636452238">PIN kartu smart</translation>
@@ -1215,6 +1220,7 @@ Baru diinstal</translation>
 <translation id="6683022854667115063">Headphone</translation>
 <translation id="6696025732084565524">Keyboard yang dapat dilepas memerlukan update penting</translation>
 <translation id="6700713906295497288">Tombol menu IME</translation>
+<translation id="6705577071209924099">Sesuaikan Pencahayaan</translation>
 <translation id="6707693040195709527">Perubahan perangkat ke versi sebelumnya sudah lewat batas waktu</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>
 <translation id="6723839937902243910">Daya</translation>
