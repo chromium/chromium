@@ -824,8 +824,8 @@ public class FeedSurfaceMediator
         mSectionHeaderModel.set(SectionHeaderListProperties.IS_LOGO_KEY,
                 !isGoogleSearchEngine && isSignedIn && suggestionsVisible);
         ViewVisibility indicatorState;
-        if (!isSignedIn || !suggestionsVisible) {
-            // Gone when not signed in or feed off to align text to far left.
+        if (!isTabMode) {
+            // Gone when the following/for you tab switcher header is not shown
             indicatorState = ViewVisibility.GONE;
         } else if (!isGoogleSearchEngine) {
             // Visible when Google is not the search engine (show logo).
