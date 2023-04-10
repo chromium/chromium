@@ -34,6 +34,12 @@ class ASH_EXPORT GlanceablesTasksClient {
   virtual void GetTasks(const std::string& task_list_id,
                         GetTasksCallback callback) = 0;
 
+  // Marks the specified task in the specified task list as completed. Only root
+  // tasks can be marked as completed (all subtasks will be marked as completed
+  // automatically by the API).
+  virtual void MarkAsCompleted(const std::string& task_list_id,
+                               const std::string& task_id) = 0;
+
  protected:
   virtual ~GlanceablesTasksClient() = default;
 };

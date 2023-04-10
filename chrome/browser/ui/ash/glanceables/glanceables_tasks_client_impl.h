@@ -56,6 +56,8 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
       GlanceablesTasksClient::GetTaskListsCallback callback) override;
   void GetTasks(const std::string& task_list_id,
                 GlanceablesTasksClient::GetTasksCallback callback) override;
+  void MarkAsCompleted(const std::string& task_list_id,
+                       const std::string& task_id) override;
 
  private:
   // Fetches one page of task lists data.
@@ -106,6 +108,12 @@ class GlanceablesTasksClientImpl : public GlanceablesTasksClient {
       GlanceablesTasksClient::GetTasksCallback callback,
       base::expected<std::unique_ptr<google_apis::tasks::Tasks>,
                      google_apis::ApiErrorCode> result);
+
+  // Callback for `MarkAsCompleted()` request. Removes the task from
+  // `tasks_in_task_lists_` if succeeded.
+  void OnMarkedAsCompleted(const std::string& task_list_id,
+                           const std::string& task_id,
+                           google_apis::ApiErrorCode status_code);
 
   // Returns lazily initialized `request_sender_`.
   google_apis::RequestSender* GetRequestSender();

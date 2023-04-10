@@ -13,6 +13,7 @@
 #include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_command_line.h"
@@ -35,6 +36,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/list_model.h"
+#include "ui/base/models/list_model_observer.h"
 
 namespace ash {
 namespace {
@@ -44,10 +46,12 @@ using ::base::test::TestFuture;
 using ::google_apis::ApiErrorCode;
 using ::google_apis::util::FormatTimeAsString;
 using ::net::test_server::BasicHttpResponse;
+using ::net::test_server::HttpMethod;
 using ::net::test_server::HttpRequest;
 using ::net::test_server::HttpResponse;
 using ::testing::_;
 using ::testing::ByMove;
+using ::testing::Eq;
 using ::testing::Field;
 using ::testing::HasSubstr;
 using ::testing::Not;
@@ -128,6 +132,18 @@ class TestRequestHandler {
   MOCK_METHOD(std::unique_ptr<HttpResponse>,
               HandleRequest,
               (const HttpRequest&));
+};
+
+// Observer for `ui::ListModel` changes.
+class TestListModelObserver : public ui::ListModelObserver {
+ public:
+  MOCK_METHOD(void, ListItemsAdded, (size_t start, size_t count), (override));
+  MOCK_METHOD(void, ListItemsRemoved, (size_t start, size_t count), (override));
+  MOCK_METHOD(void,
+              ListItemMoved,
+              (size_t index, size_t target_index),
+              (override));
+  MOCK_METHOD(void, ListItemsChanged, (size_t start, size_t count), (override));
 };
 
 }  // namespace
@@ -405,6 +421,88 @@ TEST_F(GlanceablesTasksClientImplTest, GetTasksFetchesAllPages) {
   EXPECT_EQ(root_tasks->GetItemAt(0)->subtasks.at(0)->id,
             "child-task-from-page-1");
   EXPECT_EQ(root_tasks->GetItemAt(1)->id, "parent-task-from-page-3");
+}
+
+TEST_F(GlanceablesTasksClientImplTest, MarkAsCompleted) {
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#tasks",
+            "items": [
+              {
+                "id": "task-1",
+                "status": "needsAction"
+              },
+              {
+                "id": "task-2",
+                "status": "needsAction"
+              }
+            ]
+          }
+        )"))));
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_PATCH))))
+      .WillOnce(
+          Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(""))));
+
+  TestFuture<ui::ListModel<GlanceablesTask>*> future;
+  client()->GetTasks("test-task-list-id", future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  auto* const tasks = future.Get();
+  EXPECT_EQ(tasks->item_count(), 2u);
+
+  testing::StrictMock<TestListModelObserver> observer;
+  tasks->AddObserver(&observer);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, ListItemsRemoved(/*start=*/1, /*count=*/1))
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+  client()->MarkAsCompleted("test-task-list-id", "task-2");
+  run_loop.Run();
+
+  EXPECT_EQ(tasks->item_count(), 1u);
+  EXPECT_EQ(tasks->GetItemAt(0)->id, "task-1");
+}
+
+TEST_F(GlanceablesTasksClientImplTest, MarkAsCompletedOnHttpError) {
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
+          {
+            "kind": "tasks#tasks",
+            "items": [
+              {
+                "id": "task-1",
+                "status": "needsAction"
+              },
+              {
+                "id": "task-2",
+                "status": "needsAction"
+              }
+            ]
+          }
+        )"))));
+  EXPECT_CALL(
+      request_handler(),
+      HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_PATCH))))
+      .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
+
+  TestFuture<ui::ListModel<GlanceablesTask>*> future;
+  client()->GetTasks("test-task-list-id", future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  const auto* const tasks = future.Get();
+  EXPECT_EQ(tasks->item_count(), 2u);
+
+  client()->MarkAsCompleted("test-task-list-id", "task-2");
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(tasks->item_count(), 2u);
 }
 
 }  // namespace ash

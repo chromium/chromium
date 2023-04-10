@@ -30,6 +30,7 @@ namespace {
 using ::google_apis::ApiErrorCode;
 using ::google_apis::tasks::ListTaskListsRequest;
 using ::google_apis::tasks::ListTasksRequest;
+using ::google_apis::tasks::PatchTaskRequest;
 using ::google_apis::tasks::Task;
 using ::google_apis::tasks::TaskList;
 using ::google_apis::tasks::TaskLists;
@@ -152,6 +153,20 @@ void GlanceablesTasksClientImpl::GetTasks(
                  std::move(callback));
 }
 
+void GlanceablesTasksClientImpl::MarkAsCompleted(
+    const std::string& task_list_id,
+    const std::string& task_id) {
+  CHECK(!task_list_id.empty());
+  CHECK(!task_id.empty());
+
+  GetRequestSender()->StartRequestWithAuthRetry(
+      std::make_unique<PatchTaskRequest>(
+          request_sender_.get(),
+          base::BindOnce(&GlanceablesTasksClientImpl::OnMarkedAsCompleted,
+                         weak_factory_.GetWeakPtr(), task_list_id, task_id),
+          task_list_id, task_id, Task::Status::kCompleted));
+}
+
 void GlanceablesTasksClientImpl::FetchTaskListsPage(
     const std::string& page_token,
     GlanceablesTasksClient::GetTaskListsCallback callback) {
@@ -224,6 +239,29 @@ void GlanceablesTasksClientImpl::OnTasksPageFetched(
     FetchTasksPage(task_list_id, result.value()->next_page_token(),
                    std::move(accumulated_raw_tasks), std::move(callback));
   }
+}
+
+void GlanceablesTasksClientImpl::OnMarkedAsCompleted(
+    const std::string& task_list_id,
+    const std::string& task_id,
+    ApiErrorCode status_code) {
+  if (status_code != ApiErrorCode::HTTP_SUCCESS) {
+    return;
+  }
+
+  const auto task_list_iter = tasks_in_task_lists_.find(task_list_id);
+  if (task_list_iter == tasks_in_task_lists_.end()) {
+    return;
+  }
+  const auto task_iter = std::find_if(
+      task_list_iter->second->begin(), task_list_iter->second->end(),
+      [&task_id](const auto& task) { return task->id == task_id; });
+  if (task_iter == task_list_iter->second->end()) {
+    return;
+  }
+
+  const auto task_index = task_iter - task_list_iter->second->begin();
+  task_list_iter->second->RemoveAt(task_index);
 }
 
 google_apis::RequestSender* GlanceablesTasksClientImpl::GetRequestSender() {
