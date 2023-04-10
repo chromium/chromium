@@ -418,7 +418,9 @@
       <message desc="Label for spoken feedback to read out switch to take portrait (bokeh effect, background blur) photo mode button." name="IDS_SWITCH_TAKE_PORTRAIT_BOKEH_PHOTO_BUTTON">
         Switch to take portrait photo
       </message>
-      <message desc="Label for switch to take portrait (bokeh effect, background blur) photo mode button." name="IDS_LABEL_SWITCH_TAKE_PORTRAIT_BOKEH_PHOTO_BUTTON">
+      <message desc="Label for switch to take portrait (bokeh effect, background blur) photo mode button."
+               meaning="Short for Portrait mode: a camera mode that uses machine learning to synthetically blur our backgrounds in a photo and create a pleasing bokeh effect."
+               name="IDS_LABEL_SWITCH_TAKE_PORTRAIT_BOKEH_PHOTO_BUTTON">
         Portrait
       </message>
       <message desc="Label for spoken feedback to read out for switch to scan mode button." name="IDS_SWITCH_SCAN_MODE_BUTTON">
