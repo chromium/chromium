@@ -9,12 +9,12 @@
 
   #container {
     align-items: center;
+    aspect-ratio: 1 / 1;
     border-radius: 8px;
     display: flex;
-    height: 32px;
     justify-content: center;
     overflow: hidden;
-    width: 32px;
+    width: 100%;
   }
 
   /* Entities may feature a dominant color background until image loads. */
@@ -32,8 +32,9 @@
 
   #image {
     display: none;
-    max-height: 32px;
-    max-width: 32px;
+    height: 100%;
+    object-fit: contain;
+    width: 100%;
   }
 
   :host-context(cr-realbox-match[has-image]) #image {
