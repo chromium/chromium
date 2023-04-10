@@ -308,9 +308,9 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
     info.name = registrar.GetAppShortName(app_id);
     info.enabled = registrar.IsLocallyInstalled(app_id);
     info.install_type =
-        extensions::api::management::EXTENSION_INSTALL_TYPE_OTHER;
+        extensions::api::management::ExtensionInstallType::kOther;
     info.is_app = true;
-    info.type = extensions::api::management::EXTENSION_TYPE_HOSTED_APP;
+    info.type = extensions::api::management::ExtensionType::kHostedApp;
     info.app_launch_url = registrar.GetAppStartUrl(app_id).spec();
 
     info.icons.emplace();
@@ -328,23 +328,23 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
     switch (registrar.GetAppDisplayMode(app_id)) {
       case web_app::DisplayMode::kBrowser:
         info.launch_type =
-            extensions::api::management::LAUNCH_TYPE_OPEN_AS_REGULAR_TAB;
+            extensions::api::management::LaunchType::kOpenAsRegularTab;
         break;
       case web_app::DisplayMode::kMinimalUi:
       case web_app::DisplayMode::kStandalone:
         info.launch_type =
-            extensions::api::management::LAUNCH_TYPE_OPEN_AS_WINDOW;
+            extensions::api::management::LaunchType::kOpenAsWindow;
         break;
       case web_app::DisplayMode::kFullscreen:
         info.launch_type =
-            extensions::api::management::LAUNCH_TYPE_OPEN_FULL_SCREEN;
+            extensions::api::management::LaunchType::kOpenFullScreen;
         break;
       // These modes are not supported by the extension app backend.
       case web_app::DisplayMode::kWindowControlsOverlay:
       case web_app::DisplayMode::kTabbed:
       case web_app::DisplayMode::kBorderless:
       case web_app::DisplayMode::kUndefined:
-        info.launch_type = extensions::api::management::LAUNCH_TYPE_NONE;
+        info.launch_type = extensions::api::management::LaunchType::kNone;
         break;
     }
 
