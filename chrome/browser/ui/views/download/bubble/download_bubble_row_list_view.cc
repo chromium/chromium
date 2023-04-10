@@ -7,10 +7,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
+#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
+#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -20,9 +23,49 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/vector_icons.h"
+
+namespace {
+
+// 7.5 rows * 60 px per row = 450;
+constexpr int kMaxHeightForRowList = 450;
+
+}  // namespace
+
+//  static
+std::unique_ptr<views::View> DownloadBubbleRowListView::CreateWithScroll(
+    bool is_partial_view,
+    Browser* browser,
+    DownloadBubbleUIController* bubble_controller,
+    DownloadBubbleNavigationHandler* navigation_handler,
+    std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
+    int fixed_width,
+    base::OnceClosure on_mouse_entered_closure) {
+  if (is_partial_view && rows.empty())
+    return nullptr;
+
+  auto row_list_view = std::make_unique<DownloadBubbleRowListView>(
+      is_partial_view, browser, std::move(on_mouse_entered_closure));
+  for (DownloadUIModel::DownloadUIModelPtr& model : rows) {
+    // raw pointer is safe as the toolbar owns the bubble, which owns an
+    // individual row view.
+    row_list_view->AddChildView(std::make_unique<DownloadBubbleRowView>(
+        std::move(model), row_list_view.get(), bubble_controller,
+        navigation_handler, browser, fixed_width));
+  }
+
+  auto scroll_view = std::make_unique<views::ScrollView>();
+  scroll_view->SetContents(std::move(row_list_view));
+  scroll_view->ClipHeightTo(0, kMaxHeightForRowList);
+  scroll_view->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
+  scroll_view->SetVerticalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kEnabled);
+  return scroll_view;
+}
 
 DownloadBubbleRowListView::DownloadBubbleRowListView(
     bool is_partial_view,

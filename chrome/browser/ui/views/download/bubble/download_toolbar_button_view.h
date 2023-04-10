@@ -112,9 +112,6 @@ class DownloadToolbarButtonView : public ToolbarButton,
 
   // Get the primary view, which may be the full or the partial view.
   std::unique_ptr<View> GetPrimaryView();
-  // Create a scrollable row list view for either the full or the partial view.
-  std::unique_ptr<View> CreateRowListView(
-      std::vector<DownloadUIModel::DownloadUIModelPtr> model_list);
 
   // If |has_pending_download_started_animation_| is true, shows an animation of
   // a download icon moving upwards towards the toolbar icon.

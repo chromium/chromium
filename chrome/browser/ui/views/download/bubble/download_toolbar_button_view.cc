@@ -69,8 +69,6 @@ namespace {
 constexpr int kProgressRingRadius = 9;
 constexpr int kProgressRingRadiusTouchMode = 12;
 constexpr float kProgressRingStrokeWidth = 1.7f;
-// 7.5 rows * 60 px per row = 450;
-constexpr int kMaxHeightForRowList = 450;
 
 // Close the partial bubble after 5 seconds if the user doesn't interact with
 // it.
@@ -382,12 +380,24 @@ bool DownloadToolbarButtonView::ShouldShowInkdropAfterIphInteraction() {
 
 std::unique_ptr<views::View> DownloadToolbarButtonView::GetPrimaryView() {
   if (is_primary_partial_view_) {
-    return CreateRowListView(bubble_controller_->GetPartialView());
-  } else {
-    // raw ptr is safe as the toolbar view owns the bubble.
-    return std::make_unique<DownloadDialogView>(
-        browser_, CreateRowListView(bubble_controller_->GetMainView()), this);
+    return DownloadBubbleRowListView::CreateWithScroll(
+        /*is_partial_view=*/true, browser_, bubble_controller_.get(), this,
+        bubble_controller_->GetPartialView(),
+        ChromeLayoutProvider::Get()->GetDistanceMetric(
+            views::DISTANCE_BUBBLE_PREFERRED_WIDTH),
+        base::BindOnce(&DownloadToolbarButtonView::DeactivateAutoClose,
+                       base::Unretained(this)));
   }
+
+  std::unique_ptr<views::View> rows_with_scroll =
+      DownloadBubbleRowListView::CreateWithScroll(
+          /*is_partial_view=*/false, browser_, bubble_controller_.get(), this,
+          bubble_controller_->GetMainView(),
+          ChromeLayoutProvider::Get()->GetDistanceMetric(
+              views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
+  // raw ptr is safe as the toolbar view owns the bubble.
+  return std::make_unique<DownloadDialogView>(
+      browser_, std::move(rows_with_scroll), this);
 }
 
 void DownloadToolbarButtonView::OpenPrimaryDialog() {
@@ -520,36 +530,6 @@ void DownloadToolbarButtonView::ButtonPressed() {
 void DownloadToolbarButtonView::OnThemeChanged() {
   ToolbarButton::OnThemeChanged();
   UpdateIcon();
-}
-
-std::unique_ptr<views::View> DownloadToolbarButtonView::CreateRowListView(
-    std::vector<DownloadUIModel::DownloadUIModelPtr> model_list) {
-  // Do not create empty partial view.
-  if (is_primary_partial_view_ && model_list.empty())
-    return nullptr;
-
-  auto row_list_view = std::make_unique<DownloadBubbleRowListView>(
-      is_primary_partial_view_, browser_,
-      base::BindOnce(&DownloadToolbarButtonView::DeactivateAutoClose,
-                     base::Unretained(this)));
-  const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
-  for (DownloadUIModel::DownloadUIModelPtr& model : model_list) {
-    // raw pointer is safe as the toolbar owns the bubble, which owns an
-    // individual row view.
-    row_list_view->AddChildView(std::make_unique<DownloadBubbleRowView>(
-        std::move(model), row_list_view.get(), bubble_controller_.get(), this,
-        browser_, bubble_width));
-  }
-
-  auto scroll_view = std::make_unique<views::ScrollView>();
-  scroll_view->SetContents(std::move(row_list_view));
-  scroll_view->ClipHeightTo(0, kMaxHeightForRowList);
-  scroll_view->SetHorizontalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kDisabled);
-  scroll_view->SetVerticalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kEnabled);
-  return std::move(scroll_view);
 }
 
 void DownloadToolbarButtonView::ShowPendingDownloadStartedAnimation() {
