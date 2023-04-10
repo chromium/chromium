@@ -269,7 +269,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   bool is_in_back_forward_cache() const { return is_in_back_forward_cache_; }
 
   void SetLifecycleState(mojom::FrameLifecycleState);
-  void NotifyContextDestroyed();
+  virtual void NotifyContextDestroyed();
 
   using ConsoleLogger::AddConsoleMessage;
 

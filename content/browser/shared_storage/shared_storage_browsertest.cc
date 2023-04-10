@@ -6380,18 +6380,28 @@ INSTANTIATE_TEST_SUITE_P(All,
                          describe_shared_storage_worklet_impl_param);
 
 class SharedStoragePrivateAggregationDisabledBrowserTest
-    : public SharedStorageBrowserTestBase {
+    : public SharedStorageBrowserTestBase,
+      public testing::WithParamInterface<bool> {
  public:
   SharedStoragePrivateAggregationDisabledBrowserTest() {
+    shared_storage_feature_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{blink::features::kSharedStorageAPI,
+          {{"SharedStorageWorkletImplementationType",
+            BlinkStyleWorkletImplementation() ? "blink_style" : "legacy"}}}},
+        /*disabled_features=*/{});
     private_aggregation_feature_.InitAndDisableFeature(
         blink::features::kPrivateAggregationApi);
   }
 
+  bool BlinkStyleWorkletImplementation() override { return GetParam(); }
+
  private:
+  base::test::ScopedFeatureList shared_storage_feature_;
   base::test::ScopedFeatureList private_aggregation_feature_;
 };
 
-IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationDisabledBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationDisabledBrowserTest,
                        PrivateAggregationNotDefined) {
   EXPECT_TRUE(NavigateToURL(shell(),
                             https_server()->GetURL("a.test", kSimplePagePath)));
@@ -6405,26 +6415,41 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationDisabledBrowserTest,
                          &out_script_url);
 
   ASSERT_EQ(1u, console_observer.messages().size());
-  EXPECT_EQ("ReferenceError: privateAggregation is not defined",
-            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_THAT(base::UTF16ToUTF8(console_observer.messages()[0].message),
+              testing::HasSubstr("privateAggregation is not defined"));
   EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError,
             console_observer.messages()[0].log_level);
 }
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         SharedStoragePrivateAggregationDisabledBrowserTest,
+                         testing::Bool(),
+                         describe_shared_storage_worklet_impl_param);
+
 class SharedStoragePrivateAggregationDisabledForSharedStorageOnlyBrowserTest
-    : public SharedStorageBrowserTestBase {
+    : public SharedStorageBrowserTestBase,
+      public testing::WithParamInterface<bool> {
  public:
   SharedStoragePrivateAggregationDisabledForSharedStorageOnlyBrowserTest() {
+    shared_storage_feature_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{blink::features::kSharedStorageAPI,
+          {{"SharedStorageWorkletImplementationType",
+            BlinkStyleWorkletImplementation() ? "blink_style" : "legacy"}}}},
+        /*disabled_features=*/{});
     private_aggregation_feature_.InitAndEnableFeatureWithParameters(
         blink::features::kPrivateAggregationApi,
         {{"enabled_in_shared_storage", "false"}});
   }
 
+  bool BlinkStyleWorkletImplementation() override { return GetParam(); }
+
  private:
+  base::test::ScopedFeatureList shared_storage_feature_;
   base::test::ScopedFeatureList private_aggregation_feature_;
 };
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SharedStoragePrivateAggregationDisabledForSharedStorageOnlyBrowserTest,
     PrivateAggregationNotDefined) {
   EXPECT_TRUE(NavigateToURL(shell(),
@@ -6439,14 +6464,21 @@ IN_PROC_BROWSER_TEST_F(
                          &out_script_url);
 
   ASSERT_EQ(1u, console_observer.messages().size());
-  EXPECT_EQ("ReferenceError: privateAggregation is not defined",
-            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_THAT(base::UTF16ToUTF8(console_observer.messages()[0].message),
+              testing::HasSubstr("privateAggregation is not defined"));
   EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError,
             console_observer.messages()[0].log_level);
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SharedStoragePrivateAggregationDisabledForSharedStorageOnlyBrowserTest,
+    testing::Bool(),
+    describe_shared_storage_worklet_impl_param);
+
 class SharedStoragePrivateAggregationEnabledBrowserTest
-    : public SharedStorageBrowserTestBase {
+    : public SharedStorageBrowserTestBase,
+      public testing::WithParamInterface<bool> {
  public:
   // TODO(alexmt): Consider factoring out along with FLEDGE definition.
   class TestPrivateAggregationManagerImpl
@@ -6461,6 +6493,12 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
   };
 
   SharedStoragePrivateAggregationEnabledBrowserTest() {
+    shared_storage_feature_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{blink::features::kSharedStorageAPI,
+          {{"SharedStorageWorkletImplementationType",
+            BlinkStyleWorkletImplementation() ? "blink_style" : "legacy"}}}},
+        /*disabled_features=*/{});
     private_aggregation_feature_.InitAndEnableFeature(
         blink::features::kPrivateAggregationApi);
   }
@@ -6500,12 +6538,15 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
     return *browser_client_;
   }
 
+  bool BlinkStyleWorkletImplementation() override { return GetParam(); }
+
  protected:
   url::Origin a_test_origin_;
 
  private:
   raw_ptr<PrivateAggregationHost, DanglingUntriaged> private_aggregation_host_;
 
+  base::test::ScopedFeatureList shared_storage_feature_;
   base::test::ScopedFeatureList private_aggregation_feature_;
 
   base::MockRepeatingCallback<void(AggregatableReportRequest,
@@ -6516,7 +6557,7 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
       browser_client_;
 };
 
-IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationEnabledBrowserTest,
                        BasicTest) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -6560,7 +6601,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationEnabledBrowserTest,
                        RejectedTest) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -6585,13 +6626,21 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                          &out_script_url);
 
   ASSERT_EQ(1u, console_observer.messages().size());
-  EXPECT_EQ("TypeError: BigInt must be non-negative",
-            base::UTF16ToUTF8(console_observer.messages()[0].message));
+
+  if (BlinkStyleWorkletImplementation()) {
+    EXPECT_THAT(
+        base::UTF16ToUTF8(console_observer.messages()[0].message),
+        testing::HasSubstr(
+            "contribution['bucket'] is negative or does not fit in 128 bits"));
+  } else {
+    EXPECT_EQ("TypeError: BigInt must be non-negative",
+              base::UTF16ToUTF8(console_observer.messages()[0].message));
+  }
   EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError,
             console_observer.messages()[0].log_level);
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationEnabledBrowserTest,
                        MultipleRequests) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -6638,7 +6687,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationEnabledBrowserTest,
                        PrivateAggregationPermissionsPolicyNone) {
   GURL url = https_server()->GetURL(
       "a.test",
@@ -6669,14 +6718,14 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                          &out_script_url);
 
   EXPECT_EQ(1u, console_observer.messages().size());
-  EXPECT_EQ(
-      "TypeError: The \"private-aggregation\" Permissions Policy denied the "
-      "method on privateAggregation",
-      base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_THAT(
+      base::UTF16ToUTF8(console_observer.messages()[0].message),
+      testing::HasSubstr("The \"private-aggregation\" Permissions Policy "
+                         "denied the method on privateAggregation"));
 }
 
 // This is a regression test for crbug.com/1428110.
-IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
+IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationEnabledBrowserTest,
                        SimultaneousOperationsReportsArentBatchedTogether) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -6741,6 +6790,11 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
   // for the slow operations).
   EXPECT_EQ(num_one_contribution_reports, 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SharedStoragePrivateAggregationEnabledBrowserTest,
+                         testing::Bool(),
+                         describe_shared_storage_worklet_impl_param);
 
 class SharedStorageSelectURLLimitBrowserTest
     : public SharedStorageBrowserTestBase,

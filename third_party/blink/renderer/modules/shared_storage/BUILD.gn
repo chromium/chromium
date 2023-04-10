@@ -11,6 +11,8 @@ blink_modules_sources("shared_storage") {
   ]
 
   sources = [
+    "private_aggregation.cc",
+    "private_aggregation.h",
     "shared_storage.cc",
     "shared_storage.h",
     "shared_storage_operation_definition.cc",
