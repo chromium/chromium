@@ -708,6 +708,11 @@ TEST_F(StorageKeyTest, DeserializeAncestorChainBits) {
             "https://example.com/^30",
             absl::nullopt,
         },
+        // An origin cannot be serialized with a malformed CrossSite bit.
+        {
+            "https://example.com/^301",
+            absl::nullopt,
+        },
         // An origin can be serialized with a CrossSite bit.
         {
             "https://example.com/^31",
