@@ -284,6 +284,11 @@ vars = {
   # reclient CIPD package version
   'reclient_version': 're_client_version:0.100.2.1c70bb9-gomaip',
 
+  # Fetch siso CIPD package
+  'checkout_siso': False,
+  # siso CIPD package version.
+  'siso_version': 'latest',
+
   # Fetch dependencies needed to build Rust toolchain. Not needed if developing
   # Rust code in Chromium; instead enable checkout_rust
   # (which is gradually being made the default across different platforms).
@@ -1658,7 +1663,16 @@ deps = {
     ],
     'dep_type': 'cipd',
   },
-
+  'src/third_party/siso': {
+    'packages': [
+      {
+        'package': 'infra/build/siso/${{platform}}',
+	'version': Var('siso_version'),
+      }
+    ],
+    'dep_type': 'cipd',
+    'condition': 'checkout_siso',
+  },
   'src/third_party/objenesis': {
       'packages': [
           {

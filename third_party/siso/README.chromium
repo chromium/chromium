@@ -1,0 +1,16 @@
+Name: siso
+Short Name: siso
+URL: https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/build/siso/
+Version: v0.0
+License: Apache License 2.0
+License File: https://chromium.googlesource.com/infra/infra/+/refs/heads/main/LICENSE
+Security Critical: no
+
+Description:
+Siso is an experimental build tool that aims to significantly speed up
+Chromium's build.
+
+The CIPD packages are built using the infra pipeline.
+
+Local Modifications:
+None
