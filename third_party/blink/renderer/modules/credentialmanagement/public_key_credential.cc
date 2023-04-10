@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -113,6 +114,12 @@ ScriptPromise PublicKeyCredential::isConditionalMediationAvailable(
       },
       std::make_unique<ScopedPromiseResolver>(resolver)));
   return promise;
+}
+
+const V8UnionAuthenticationResponseJSONOrRegistrationResponseJSON*
+PublicKeyCredential::toJSON(ScriptState* script_state) const {
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 void PublicKeyCredential::Trace(Visitor* visitor) const {

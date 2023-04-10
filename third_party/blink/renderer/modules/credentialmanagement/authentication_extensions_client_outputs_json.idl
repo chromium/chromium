@@ -1,0 +1,29 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://w3c.github.io/webauthn/#dictdef-authenticationextensionsclientoutputsjson
+
+dictionary AuthenticationExtensionsClientOutputsJSON {
+  boolean appid;
+
+  // https://fidoalliance.org/specs/fido-v2.0-rd-20180702/fido-client-to-authenticator-protocol-v2.0-rd-20180702.html#sctn-hmac-secret-extension
+  boolean hmacCreateSecret;
+
+  // https://w3c.github.io/webauthn/#sctn-authenticator-credential-properties-extension
+  CredentialPropertiesOutput credProps;
+
+  // https://w3c.github.io/webauthn/#sctn-large-blob-extension
+  [RuntimeEnabled=WebAuthenticationLargeBlobExtension] object largeBlob;
+
+  // https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension
+  boolean credBlob;
+  Base64URLString getCredBlob;
+
+  // Device-bound public-key support.
+  // https://github.com/w3c/webauthn/pull/1663
+  [RuntimeEnabled=WebAuthenticationDevicePublicKey] object devicePubKey;
+
+  // https://w3c.github.io/webauthn/#prf-extension
+  [RuntimeEnabled=WebAuthenticationPRF] object prf;
+};

@@ -3621,6 +3621,13 @@
       status: "experimental",
       base_feature: "none",
     },
+    // https://w3c.github.io/webauthn/#dom-publickeycredential-tojson
+    // https://w3c.github.io/webauthn/#sctn-parseCreationOptionsFromJSON
+    // https://w3c.github.io/webauthn/#sctn-parseRequestOptionsFromJSON
+    {
+      name: "WebAuthenticationJSONSerialization",
+      status: "experimental",
+    },
     {
       name: "WebAuthenticationLargeBlobExtension",
       status: "stable",

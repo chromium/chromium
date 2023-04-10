@@ -23,6 +23,7 @@ enum class AuthenticatorAttachment;
 class AuthenticatorResponse;
 class ScriptPromise;
 class ScriptState;
+class V8UnionAuthenticationResponseJSONOrRegistrationResponseJSON;
 
 class MODULES_EXPORT PublicKeyCredential : public Credential {
   DEFINE_WRAPPERTYPEINFO();
@@ -45,6 +46,8 @@ class MODULES_EXPORT PublicKeyCredential : public Credential {
       ScriptState*);
   AuthenticationExtensionsClientOutputs* getClientExtensionResults() const;
   static ScriptPromise isConditionalMediationAvailable(ScriptState*);
+  const V8UnionAuthenticationResponseJSONOrRegistrationResponseJSON* toJSON(
+      ScriptState*) const;
 
   // Credential:
   void Trace(Visitor*) const override;

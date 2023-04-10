@@ -7190,6 +7190,7 @@ interface PublicKeyCredential : Credential
     getter response
     method constructor
     method getClientExtensionResults
+    method toJSON
 interface PushManager
     static getter supportedContentEncodings
     attribute @@toStringTag

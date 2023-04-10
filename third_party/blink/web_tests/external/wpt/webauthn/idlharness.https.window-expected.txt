@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 87 tests; 83 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 87 tests; 84 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial dictionary CredentialCreationOptions: original dictionary defined
@@ -55,7 +55,7 @@ PASS PublicKeyCredential interface: attribute response
 PASS PublicKeyCredential interface: attribute authenticatorAttachment
 PASS PublicKeyCredential interface: operation getClientExtensionResults()
 PASS PublicKeyCredential interface: operation isConditionalMediationAvailable()
-FAIL PublicKeyCredential interface: operation toJSON() assert_own_property: interface prototype object missing non-static operation expected property "toJSON" missing
+PASS PublicKeyCredential interface: operation toJSON()
 PASS PublicKeyCredential interface: operation isUserVerifyingPlatformAuthenticatorAvailable()
 FAIL PublicKeyCredential interface: operation parseCreationOptionsFromJSON(PublicKeyCredentialCreationOptionsJSON) assert_own_property: interface object missing static operation expected property "parseCreationOptionsFromJSON" missing
 FAIL PublicKeyCredential interface: operation parseRequestOptionsFromJSON(PublicKeyCredentialRequestOptionsJSON) assert_own_property: interface object missing static operation expected property "parseRequestOptionsFromJSON" missing
