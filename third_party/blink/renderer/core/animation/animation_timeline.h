@@ -140,7 +140,8 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   unsigned outdated_animation_count_;
   // Animations which will be updated on the next frame
   // i.e. current, in effect, or had timing changed
-  HeapHashSet<Member<Animation>> animations_needing_update_;
+  HeapHashSet<Member<Animation>, WTF::MemberHashRecordReplayId<Animation>>
+      animations_needing_update_;
   // All animations attached to this timeline.
   HeapHashSet<WeakMember<Animation>, WTF::MemberHashRecordReplayId<Animation>> animations_;
 
