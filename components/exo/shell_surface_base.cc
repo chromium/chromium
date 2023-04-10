@@ -1287,6 +1287,9 @@ views::FocusTraversable* ShellSurfaceBase::GetFocusTraversable() {
 
 void ShellSurfaceBase::OnWindowDestroying(aura::Window* window) {
   surface_destroyed_callback_.Reset();
+  if (!close_callback_.is_null()) {
+    close_callback_.Run();
+  }
 
   if (window == parent_)
     SetParentInternal(nullptr);

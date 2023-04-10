@@ -127,9 +127,11 @@ class ShellClientData : public test::TestClient::CustomData {
 };
 
 enum TestCases {
+  XdgByClient,
   XdgWidgetClose,
   XdgWidgetCloseNow,
   XdgWindowDelete,
+  RemoteByClient,
   RemoteWidgetClose,
   RemoteWidgetCloseNow,
   RemoteWindowDelete,
@@ -154,18 +156,23 @@ class ShellTest : public test::WaylandServerTest,
   bool IsWidgetClose() {
     return GetParam() == XdgWidgetClose || GetParam() == RemoteWidgetClose;
   }
+  bool IsByClient() {
+    return GetParam() == XdgByClient || GetParam() == RemoteByClient;
+  }
 };
 
 }  // namespace
 
 INSTANTIATE_TEST_SUITE_P(Xdg,
                          ShellTest,
-                         testing::Values(XdgWidgetClose,
+                         testing::Values(XdgByClient,
+                                         XdgWidgetClose,
                                          XdgWidgetCloseNow,
                                          XdgWindowDelete));
 INSTANTIATE_TEST_SUITE_P(Remote,
                          ShellTest,
-                         testing::Values(RemoteWidgetClose,
+                         testing::Values(RemoteByClient,
+                                         RemoteWidgetClose,
                                          RemoteWidgetCloseNow,
                                          RemoteWindowDelete));
 
@@ -195,16 +202,33 @@ TEST_P(ShellTest, ShellDestruction) {
       server_.get(), surface_key);
   auto* shell_surface =
       GetShellSurfaceBaseForWindow(surface->window()->GetToplevelWindow());
+  auto widget_weak_ptr = shell_surface->GetWidget()->GetWeakPtr();
   ASSERT_TRUE(shell_surface);
   ASSERT_TRUE(shell_surface->GetWidget()->IsVisible());
+
   if (IsWidgetClose()) {
     shell_surface->GetWidget()->Close();
     base::RunLoop().RunUntilIdle();
   } else if (IsWidgetCloseNow()) {
     shell_surface->GetWidget()->CloseNow();
+  } else if (IsByClient()) {
+    PostToClientAndWait([&](test::TestClient* client) {
+      auto* data_ptr = client->GetDataAs<ShellClientData>();
+      data_ptr->Close();
+    });
   } else {
     delete shell_surface->GetWidget()->GetNativeWindow();
   }
+
+  PostToClientAndWait([&](test::TestClient* client) {
+    EXPECT_TRUE(client->GetDataAs<ShellClientData>()->close_called());
+  });
+
+  // Widget should be deleted.
+  EXPECT_FALSE(widget_weak_ptr);
+  // The surface resource should also be destroyed.
+  EXPECT_FALSE(test::server_util::GetUserDataForResource<Surface>(server_.get(),
+                                                                  surface_key));
 }
 
 using RemoteShellTest = test::WaylandServerTest;
