@@ -10,7 +10,6 @@
 #include <list>
 #include <map>
 #include <set>
-#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -41,7 +40,6 @@ typedef std::list<TabId> TabIdList;
 
 class ThumbnailCacheObserver {
  public:
-  virtual void OnThumbnailAddedToCache(TabId tab_id) = 0;
   virtual void OnFinishedThumbnailRead(TabId tab_id) = 0;
 };
 
@@ -75,8 +73,7 @@ class ThumbnailCache : ThumbnailDelegate {
 
   void InvalidateThumbnailIfChanged(TabId tab_id, const GURL& url);
   bool CheckAndUpdateThumbnailMetaData(TabId tab_id, const GURL& url);
-  void UpdateVisibleIds(const std::vector<TabId>& priority,
-                        TabId primary_tab_id);
+  void UpdateVisibleIds(const TabIdList& priority, TabId primary_tab_id);
   void DecompressThumbnailFromFile(
       TabId tab_id,
       double jpeg_aspect_ratio,
@@ -179,7 +176,6 @@ class ThumbnailCache : ThumbnailDelegate {
                     sk_sp<SkPixelRef> compressed_data,
                     float scale,
                     const gfx::Size& content_size);
-  void NotifyObserversOfThumbnailAddedToCache(TabId tab_id);
   void NotifyObserversOfThumbnailRead(TabId tab_id);
   void RemoveOnMatchedTimeStamp(TabId tab_id, const base::Time& time_stamp);
   static std::pair<SkBitmap, float> CreateApproximation(const SkBitmap& bitmap,

@@ -53,8 +53,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.resources.ResourceManager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
@@ -221,7 +222,7 @@ public class TabSwitcherLayout extends Layout {
             LayoutTab sourceLayoutTab = createLayoutTab(
                     mTabModelSelector.getCurrentTabId(), mTabModelSelector.isIncognitoSelected());
             sourceLayoutTab.setDecorationAlpha(0);
-            updateCacheVisibleIds(Collections.singletonList(mTabModelSelector.getCurrentTabId()));
+
             mLayoutTabs = new LayoutTab[] {sourceLayoutTab};
 
             boolean quick = mGridTabListDelegate.prepareTabSwitcherView();
@@ -299,9 +300,7 @@ public class TabSwitcherLayout extends Layout {
             sourceLayoutTab.setDecorationAlpha(0);
 
             List<LayoutTab> layoutTabs = new ArrayList<>();
-            List<Integer> tabIds = new ArrayList<>();
             layoutTabs.add(sourceLayoutTab);
-            tabIds.add(sourceLayoutTab.getId());
 
             if (sourceTabId != mTabModelSelector.getCurrentTabId()) {
                 // Keep the original tab in mLayoutTabs to unblock thumbnail taking at the end of
@@ -311,10 +310,10 @@ public class TabSwitcherLayout extends Layout {
                 originalTab.setScale(0);
                 originalTab.setDecorationAlpha(0);
                 layoutTabs.add(originalTab);
-                tabIds.add(originalTab.getId());
             }
             mLayoutTabs = layoutTabs.toArray(new LayoutTab[0]);
-            updateCacheVisibleIds(tabIds);
+
+            updateCacheVisibleIds(new LinkedList<>(Arrays.asList(sourceTabId)));
 
             mIsAnimatingHide = true;
             if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {

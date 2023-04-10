@@ -13,10 +13,8 @@
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -172,24 +170,18 @@ scoped_refptr<cc::slim::Layer> TabContentManager::GetLiveLayer(int tab_id) {
   return live_layer_list_[tab_id];
 }
 
-ThumbnailLayer* TabContentManager::GetStaticLayer(int tab_id) {
-  if (tab_id == -1) {
-    return nullptr;
-  }
-  scoped_refptr<ThumbnailLayer> static_layer = static_layer_cache_[tab_id];
-  if (base::FeatureList::IsEnabled(thumbnail::kThumbnailCacheRefactor)) {
-    DCHECK(static_layer) << "Static layer should be created with "
-                            "UpdateVisibleIds before being requested";
-  }
-  return static_layer.get();
+scoped_refptr<ThumbnailLayer> TabContentManager::GetStaticLayer(int tab_id) {
+  return static_layer_cache_[tab_id];
 }
 
-ThumbnailLayer* TabContentManager::GetOrCreateStaticLayer(
+// TODO(crbug.com/1402843): ThumbnailCache::PruneCache() shouldn't cause issues
+// with `static_layer_cache_` as Thumbnails referenced by this cache may already
+// expire even without eager pruning. Investigate whether entries in
+// `static_layer_cache_` can and should be removed when their thumbnail is
+// dropped from the ThumbnailCache.
+scoped_refptr<ThumbnailLayer> TabContentManager::GetOrCreateStaticLayer(
     int tab_id,
     bool force_disk_read) {
-  if (base::FeatureList::IsEnabled(thumbnail::kThumbnailCacheRefactor)) {
-    return GetStaticLayer(tab_id);
-  }
   thumbnail::Thumbnail* thumbnail =
       thumbnail_cache_->Get(tab_id, force_disk_read, true);
   scoped_refptr<ThumbnailLayer> static_layer = static_layer_cache_[tab_id];
@@ -208,7 +200,7 @@ ThumbnailLayer* TabContentManager::GetOrCreateStaticLayer(
   }
 
   static_layer->SetThumbnail(thumbnail);
-  return static_layer.get();
+  return static_layer;
 }
 
 void TabContentManager::AttachTab(JNIEnv* env,
@@ -337,30 +329,15 @@ void TabContentManager::UpdateVisibleIds(
     JNIEnv* env,
     const JavaParamRef<jintArray>& priority,
     jint primary_tab_id) {
-  std::vector<int> priority_ids;
-  base::android::JavaIntArrayToIntVector(env, priority, &priority_ids);
+  std::list<int> priority_ids;
+  jsize length = env->GetArrayLength(priority);
+  jint* ints = env->GetIntArrayElements(priority, nullptr);
+  for (jsize i = 0; i < length; ++i) {
+    priority_ids.push_back(static_cast<int>(ints[i]));
+  }
+
+  env->ReleaseIntArrayElements(priority, ints, JNI_ABORT);
   thumbnail_cache_->UpdateVisibleIds(priority_ids, primary_tab_id);
-  if (!base::FeatureList::IsEnabled(thumbnail::kThumbnailCacheRefactor)) {
-    return;
-  }
-  std::erase_if(static_layer_cache_, [priority_ids](const auto& pair) {
-    bool not_priority = !base::Contains(priority_ids, pair.first);
-    if (not_priority) {
-      pair.second->layer()->RemoveFromParent();
-    }
-    return not_priority;
-  });
-  for (int tab_id : priority_ids) {
-    auto it = static_layer_cache_.find(tab_id);
-    if (it == static_layer_cache_.end()) {
-      it = static_layer_cache_.insert({tab_id, ThumbnailLayer::Create()}).first;
-    }
-    thumbnail::Thumbnail* thumbnail =
-        thumbnail_cache_->Get(tab_id, false, false);
-    if (thumbnail) {
-      it->second->SetThumbnail(thumbnail);
-    }
-  }
 }
 
 void TabContentManager::NativeRemoveTabThumbnail(int tab_id) {
@@ -391,18 +368,6 @@ void TabContentManager::GetEtc1TabThumbnail(
 
 void TabContentManager::OnUIResourcesWereEvicted() {
   thumbnail_cache_->OnUIResourcesWereEvicted();
-}
-
-void TabContentManager::OnThumbnailAddedToCache(int tab_id) {
-  if (!base::FeatureList::IsEnabled(thumbnail::kThumbnailCacheRefactor)) {
-    return;
-  }
-  auto it = static_layer_cache_.find(tab_id);
-  if (it != static_layer_cache_.end()) {
-    thumbnail::Thumbnail* thumbnail =
-        thumbnail_cache_->Get(tab_id, false, false);
-    it->second->SetThumbnail(thumbnail);
-  }
 }
 
 void TabContentManager::OnFinishedThumbnailRead(int tab_id) {
