@@ -272,7 +272,7 @@ TEST_P(AppListViewLauncherSearchIphTest, Basic) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "launcher_search_iph", /*revision_number=*/0, search_box_view));
+      "launcher_search_iph", /*revision_number=*/1, search_box_view));
 }
 
 class AppListViewTabletPixelTest

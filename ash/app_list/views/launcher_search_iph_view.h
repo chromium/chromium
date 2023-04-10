@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ui/events/event.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/view.h"
 
@@ -38,7 +39,7 @@ class LauncherSearchIphView : public views::View {
 
   enum ViewId {
     kSelf = 1,
-    kDescriptionLabel,
+    kDescriptionLinkLabel,
     kAssistant,
     // Do not put a new id after `kChipStart`. Numbers after `kChipStart`
     // will be used for chips.
@@ -62,11 +63,7 @@ class LauncherSearchIphView : public views::View {
 
   std::unique_ptr<ScopedIphSession> scoped_iph_session_;
   raw_ptr<Delegate> delegate_;
-  raw_ptr<views::StyledLabel> description_label_;
-
-  // Ranges for text part and link part in the text of `description_label_`.
-  gfx::Range text_range_;
-  gfx::Range link_range_;
+  raw_ptr<views::Link> link_label_;
 
   base::WeakPtrFactory<LauncherSearchIphView> weak_ptr_factory_{this};
 };

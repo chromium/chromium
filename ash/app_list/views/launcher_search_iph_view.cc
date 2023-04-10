@@ -25,6 +25,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -39,7 +40,6 @@ constexpr int kActionContainerBetweenChildSpacing = 8;
 
 constexpr char16_t kTitleTextPlaceholder[] = u"Title text";
 constexpr char16_t kDescriptionTextPlaceholder[] = u"Description text";
-constexpr char16_t kSeparator[] = u" ";
 constexpr char16_t kLinkTextPlaceholder[] = u"Link text";
 
 constexpr char16_t kChipOneQueryPlaceholder[] = u"Weather";
@@ -111,29 +111,33 @@ LauncherSearchIphView::LauncherSearchIphView(
   title_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
   title_label->SetEnabledColorId(kColorAshTextColorPrimary);
 
-  std::u16string text(kDescriptionTextPlaceholder);
-  text.append(kSeparator);
-  text_range_ = gfx::Range(0, text.size());
+  // Add a description text and a link into another container to have a
+  // different between-child-spacing.
+  raw_ptr<views::BoxLayoutView> description_container =
+      text_container->AddChildView(std::make_unique<views::BoxLayoutView>());
+  description_container->SetOrientation(
+      views::BoxLayout::Orientation::kVertical);
+  description_container->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
 
-  std::u16string link(kLinkTextPlaceholder);
-  link_range_ = gfx::Range(text.size(), text.size() + link.size());
+  raw_ptr<views::Label> description_label = description_container->AddChildView(
+      std::make_unique<views::Label>(kDescriptionTextPlaceholder));
+  description_label->SetEnabledColorId(kColorAshTextColorPrimary);
 
-  description_label_ =
-      text_container->AddChildView(std::make_unique<views::StyledLabel>());
-  description_label_->SetID(kDescriptionLabel);
-  description_label_->SetDefaultTextStyle(
-      views::style::TextStyle::STYLE_PRIMARY);
-  description_label_->SetHorizontalAlignment(
-      gfx::HorizontalAlignment::ALIGN_LEFT);
-  description_label_->SetText(text + link);
+  link_label_ = description_container->AddChildView(
+      std::make_unique<views::Link>(kLinkTextPlaceholder));
+  link_label_->SetID(ViewId::kDescriptionLinkLabel);
+  link_label_->SetCallback(base::BindRepeating(
+      &LauncherSearchIphView::OnLinkClicked, weak_ptr_factory_.GetWeakPtr()));
 
   raw_ptr<const TypographyProvider> typography_provider =
       TypographyProvider::Get();
   DCHECK(typography_provider) << "TypographyProvider must not be null";
   if (typography_provider) {
     typography_provider->StyleLabel(TypographyToken::kCrosTitle1, *title_label);
-    description_label_->SetLineHeight(
-        typography_provider->ResolveLineHeight(TypographyToken::kCrosBody2));
+    typography_provider->StyleLabel(TypographyToken::kCrosBody2,
+                                    *description_label);
+    typography_provider->StyleLabel(TypographyToken::kCrosBody2, *link_label_);
   }
 
   raw_ptr<views::BoxLayoutView> actions_container =
@@ -186,49 +190,13 @@ LauncherSearchIphView::~LauncherSearchIphView() = default;
 void LauncherSearchIphView::OnThemeChanged() {
   views::View::OnThemeChanged();
 
-  description_label_->ClearStyleRanges();
-
-  // Apply no style if ranges are not initialized for a fail-safe behavior.
-  DCHECK(!text_range_.is_empty());
-  DCHECK(!link_range_.is_empty());
-  if (text_range_.is_empty() || link_range_.is_empty()) {
-    return;
-  }
-
-  views::StyledLabel::RangeStyleInfo text_range_style_info;
-  text_range_style_info.text_style = views::style::TextStyle::STYLE_PRIMARY;
-
-  views::StyledLabel::RangeStyleInfo link_range_style_info;
-  link_range_style_info.text_style = views::style::TextStyle::STYLE_LINK;
-  link_range_style_info.callback = base::BindRepeating(
-      &LauncherSearchIphView::OnLinkClicked, weak_ptr_factory_.GetWeakPtr());
-  raw_ptr<ui::ColorProvider> color_provider =
-      description_label_->GetColorProvider();
+  raw_ptr<ui::ColorProvider> color_provider = link_label_->GetColorProvider();
   DCHECK(color_provider) << "ColorProvider must not be null";
   if (color_provider) {
-    // `TextStyle::STYLE_LINK` has a different color from
-    // `ui::ColorIds::kColorLabelForeground`.
-    link_range_style_info.override_color =
-        description_label_->GetColorProvider()->GetColor(
-            ui::ColorIds::kColorLabelForeground);
+    // TODO(b/277380563): `views::Link::SetEnabledColorId` does not work.
+    link_label_->SetEnabledColor(
+        color_provider->GetColor(ui::ColorIds::kColorLabelForeground));
   }
-
-  raw_ptr<const TypographyProvider> typography_provider =
-      TypographyProvider::Get();
-  DCHECK(typography_provider) << "TypographyProvider must not be null";
-  if (typography_provider) {
-    // `TextStyle::STYLE_PRIMARY` is different from
-    // `TypographyToken::kCrosBody2`.
-    text_range_style_info.custom_font =
-        typography_provider->ResolveTypographyToken(
-            TypographyToken::kCrosBody2);
-
-    // TODO(b/272370530): We cannot set `custom_font` for the link range.
-    // Consult with UX about this limitation.
-  }
-
-  description_label_->AddStyleRange(text_range_, text_range_style_info);
-  description_label_->AddStyleRange(link_range_, link_range_style_info);
 }
 
 void LauncherSearchIphView::RunLauncherSearchQuery(
