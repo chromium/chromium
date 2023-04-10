@@ -96,21 +96,6 @@
             ]
         }
     ],
-    "AllowQt": [
-        {
-            "platforms": [
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AllowQt"
-                    ]
-                }
-            ]
-        }
-    ],
     "AllowSpeechSynthesisIntoBFCache": [
         {
             "platforms": [
