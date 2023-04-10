@@ -1472,6 +1472,7 @@
 //content/test/data/service_worker/fetch_event_response_via_cache.js
 //content/test/data/service_worker/fetch_event_set_in_install_event.js
 //content/test/data/service_worker/fetch_event_set_in_install_event.js.mock-http-headers
+//content/test/data/service_worker/fetch_event_with_handle_event_property.js
 //content/test/data/service_worker/fetch_event_worker_clients.js
 //content/test/data/service_worker/fetch_from_page.html
 //content/test/data/service_worker/fetch_from_service_worker.html
