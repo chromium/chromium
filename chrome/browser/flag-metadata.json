@@ -875,6 +875,14 @@
     "expiry_milestone": 122
   },
   {
+    "name": "bounce-tracking-mitigations",
+    "owners": [
+      "wanderview@chromium.org",
+      "njeunje@chromium.org",
+      "//chrome/browser/dips/OWNERS"],
+      "expiry_milestone": 119
+  },
+  {
     "name": "bring-your-own-tabs-ios",
     "owners": [ "ginnyhuang@chromium.org", "hiramahmood@google.com", "bling-get-set-up@google.com" ],
     "expiry_milestone": 120

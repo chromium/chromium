@@ -180,6 +180,13 @@ const char kDebugHistoryInterventionNoUserActivationDescription[] =
     "is able to work around the history intervention which is not the expected "
     "behavior";
 
+const char kDIPSName[] = "Bounce Tracking Mitigations";
+const char kDIPSDescription[] =
+    "This flag controls bounce tracking mitigations. Setting the flag to "
+    "\"Enabled With Deletion\" will cause the browser to delete state for "
+    "sites that appear to be performing cross-site tracking using the bounce "
+    "tracking technique.";
+
 const char kDocumentPictureInPictureApiName[] =
     "Document Picture-in-Picture API";
 const char kDocumentPictureInPictureApiDescription[] =

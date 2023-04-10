@@ -61292,6 +61292,7 @@ from previous Chrome versions.
   <int value="-354783358" label="NTPSaveToOffline:disabled"/>
   <int value="-353182790" label="ConsistentOmniboxGeolocation:disabled"/>
   <int value="-353180213" label="DevicePosture:disabled"/>
+  <int value="-352731236" label="DIPS:enabled"/>
   <int value="-351830087" label="AssistantConsentSimplifiedText:enabled"/>
   <int value="-351744276"
       label="ExperimentalAccessibilityDictationContextChecking:enabled"/>
@@ -62977,6 +62978,7 @@ from previous Chrome versions.
   <int value="564522013" label="Av1Decoder:disabled"/>
   <int value="565254510" label="LensRegionSearchStaticPage:disabled"/>
   <int value="565406673" label="EnableVirtualKeyboardMdUi:enabled"/>
+  <int value="566031886" label="DIPS:disabled"/>
   <int value="567368307" label="enable-experimental-canvas-features"/>
   <int value="570469494" label="LoginDetection:disabled"/>
   <int value="570882482" label="CrOSDspBasedAecAllowed:enabled"/>

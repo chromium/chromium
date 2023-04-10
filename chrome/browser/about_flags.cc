@@ -33,6 +33,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/companion/core/features.h"
+#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/flag_descriptions.h"
@@ -3428,6 +3429,15 @@ const FeatureEntry::FeatureVariation kWebAuthFlowInBrowserTabVariations[]{
      std::size(kWebAuthFlowInPopupWindow), nullptr},
 };
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+const FeatureEntry::FeatureParam kDIPSWithDeletion[] = {
+    {"persist_database", "true"},
+    {"delete", "true"},
+    {"triggering_action", "stateful_bounce"}};
+
+const FeatureEntry::FeatureVariation kDIPSVariations[] = {
+    {"With Deletion", kDIPSWithDeletion, std::size(kDIPSWithDeletion),
+     nullptr}};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::FeatureParam kVcSegmentationModelHighResolution[] = {
@@ -8586,6 +8596,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kThirdPartyStoragePartitioningName,
      flag_descriptions::kThirdPartyStoragePartitioningDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kThirdPartyStoragePartitioning)},
+
+    {"bounce-tracking-mitigations", flag_descriptions::kDIPSName,
+     flag_descriptions::kDIPSDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(dips::kFeature, kDIPSVariations, "DIPS")},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {kBorealisBigGlInternalName, flag_descriptions::kBorealisBigGlName,
