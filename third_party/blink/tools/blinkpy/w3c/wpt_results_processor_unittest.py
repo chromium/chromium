@@ -255,16 +255,21 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 ],
             })
 
-    def test_report_expected_subtest_fail(self):
+    def test_report_subtest_fail_all_expected(self):
         """Subtest failures should be promoted to the test level.
 
-        The subtest failure should override the test-level harness OK.
+        When there are only expected subtest failures and expected subtest passes,
+        the overall result reported is expected failure.
         """
         self._event(action='test_start', test='/test.html')
         self._event(action='test_status',
                     test='/test.html',
                     subtest='fail',
                     status='FAIL')
+        self._event(action='test_status',
+                    test='/test.html',
+                    subtest='pass',
+                    status='PASS')
         self._event(action='test_end', test='/test.html', status='OK')
 
         result = self.processor.sink.report_individual_test_result.call_args.kwargs[
@@ -273,6 +278,31 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertEqual(result.actual, 'FAIL')
         self.assertEqual(result.expected, {'FAIL'})
         self.assertFalse(result.unexpected)
+
+    def test_report_subtest_upexpected_pass(self):
+        """Unexpected subtest pass should be promoted to the test level.
+
+        An unexpected subtest pass has priority over an expected subtest fail, and
+        the overall result reported is unexpected pass.
+        """
+        self._event(action='test_start', test='/test.html')
+        self._event(action='test_status',
+                    test='/test.html',
+                    subtest='fail',
+                    status='FAIL')
+        self._event(action='test_status',
+                    test='/test.html',
+                    subtest='pass',
+                    status='PASS',
+                    expected='FAIL')
+        self._event(action='test_end', test='/test.html', status='OK')
+
+        result = self.processor.sink.report_individual_test_result.call_args.kwargs[
+            'result']
+        self.assertEqual(result.name, 'test.html')
+        self.assertEqual(result.actual, 'PASS')
+        self.assertEqual(result.expected, {'PASS'})
+        self.assertTrue(result.unexpected)
 
     def test_report_unexpected_subtest_fail(self):
         self._event(action='test_start', test='/test.html')
@@ -295,6 +325,43 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     status='PASS',
                     expected='FAIL')
         self._event(action='test_end', test='/test.html', status='OK')
+
+        result = self.processor.sink.report_individual_test_result.call_args.kwargs[
+            'result']
+        self.assertEqual(result.name, 'test.html')
+        self.assertEqual(result.actual, 'FAIL')
+        self.assertEqual(result.expected, {'PASS'})
+        self.assertTrue(result.unexpected)
+
+    def test_report_unexpected_pass_against_notrun(self):
+        """Any result against NOTRUN is an unexpected pass."""
+        self._event(action='test_start', test='/test.html')
+        self._event(action='test_status',
+                    test='/test.html',
+                    subtest='notrun',
+                    status='FAIL',
+                    expected='NOTRUN')
+        self._event(action='test_end', test='/test.html', status='OK')
+
+        result = self.processor.sink.report_individual_test_result.call_args.kwargs[
+            'result']
+        self.assertEqual(result.name, 'test.html')
+        self.assertEqual(result.actual, 'PASS')
+        self.assertEqual(result.expected, {'PASS'})
+        self.assertTrue(result.unexpected)
+
+    def test_report_unexpected_fail_for_notrun(self):
+        """A NOTRUN against other results is an unexpected fail."""
+        self._event(action='test_start', test='/test.html')
+        self._event(action='test_status',
+                    test='/test.html',
+                    subtest='notrun',
+                    status='NOTRUN',
+                    expected='FAIL')
+        self._event(action='test_end',
+                    test='/test.html',
+                    status='ERROR',
+                    expected='OK')
 
         result = self.processor.sink.report_individual_test_result.call_args.kwargs[
             'result']
