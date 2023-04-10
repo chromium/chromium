@@ -148,7 +148,14 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, BlockingDisabled) {
 // ==================== Pixel tests ====================
 
 // Test opening cookie controls bubble.
-IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, InvokeUi_CookiesBlocked) {
+// TODO(crbug.com/1432008): Failing on Linux ChromeOS debug build.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_InvokeUi_CookiesBlocked DISABLED_InvokeUi_CookiesBlocked
+#else
+#define MAYBE_InvokeUi_CookiesBlocked InvokeUi_CookiesBlocked
+#endif
+IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest,
+                       MAYBE_InvokeUi_CookiesBlocked) {
   SetThirdPartyCookieBlocking(true);
   ShowAndVerifyUi();
 }
