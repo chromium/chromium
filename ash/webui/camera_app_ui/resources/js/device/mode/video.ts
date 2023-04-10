@@ -419,6 +419,11 @@ export class Video extends ModeBase {
       return this.togglePausedInternal;
     }
     this.everPaused = true;
+
+    if (this.recordingType === RecordType.TIME_LAPSE) {
+      return this.togglePausedTimeLapse();
+    }
+
     const waitable = new WaitableEvent();
     this.togglePausedInternal = waitable.wait();
 
@@ -427,13 +432,11 @@ export class Video extends ModeBase {
     const toBePaused = this.mediaRecorder.state !== 'paused';
     const toggledEvent = toBePaused ? 'pause' : 'resume';
 
-    if (!toBePaused) {
-      const canResume = await this.startMonitorStorage();
-      if (!canResume) {
-        this.autoStopped = true;
-        this.stop();
-        return;
-      }
+    if (!toBePaused && !(await this.resumeMonitorStorage())) {
+      // Keep |togglePausedInternal| non-null to prevent pause/resume while
+      // stopping the recording.
+      waitable.signal();
+      return;
     }
 
     const onToggled = () => {
@@ -443,25 +446,64 @@ export class Video extends ModeBase {
       this.togglePausedInternal = null;
       waitable.signal();
     };
-    async function playEffect() {
-      state.set(state.State.RECORDING_UI_PAUSED, toBePaused);
-      await sound.play(dom.get(
-          toBePaused ? '#sound-rec-pause' : '#sound-rec-start',
-          HTMLAudioElement));
-    }
 
     this.mediaRecorder.addEventListener(toggledEvent, onToggled);
     if (toBePaused) {
-      waitable.wait().then(playEffect);
+      waitable.wait().then(() => this.playPauseEffect(toBePaused));
       this.recordTime.stop({pause: true});
       this.mediaRecorder.pause();
     } else {
-      await playEffect();
+      await this.playPauseEffect(toBePaused);
       this.recordTime.start({resume: true});
       this.mediaRecorder.resume();
     }
 
     return waitable.wait();
+  }
+
+  private async togglePausedTimeLapse(): Promise<void> {
+    const toggleDone = new WaitableEvent();
+    this.togglePausedInternal = toggleDone.wait();
+    const toBePaused = !state.get(state.State.RECORDING_PAUSED);
+
+    if (!toBePaused && !(await this.resumeMonitorStorage())) {
+      toggleDone.signal();
+      return;
+    }
+
+    // Pause: Pause -> Update Timer -> Sound/Button UI
+    // Resume: Sound/Button UI -> Update Timer -> Resume
+    if (toBePaused) {
+      state.set(state.State.RECORDING_PAUSED, true);
+      this.recordTime.stop({pause: true});
+      await this.playPauseEffect(true);
+    } else {
+      await this.playPauseEffect(false);
+      this.recordTime.start({resume: true});
+      state.set(state.State.RECORDING_PAUSED, false);
+    }
+
+    toggleDone.signal();
+    this.togglePausedInternal = null;
+  }
+
+  private async playPauseEffect(toBePaused: boolean): Promise<void> {
+    state.set(state.State.RECORDING_UI_PAUSED, toBePaused);
+    await sound.play(dom.get(
+        toBePaused ? '#sound-rec-pause' : '#sound-rec-start',
+        HTMLAudioElement));
+  }
+
+  /**
+   * Resumes storage monitoring and returns if the recording can be resumed.
+   */
+  private async resumeMonitorStorage(): Promise<boolean> {
+    const canResume = await this.startMonitorStorage();
+    if (!canResume) {
+      this.autoStopped = true;
+      this.stop();
+    }
+    return canResume;
   }
 
   private getEncoderParameters(): h264.EncoderParameters|null {
@@ -594,7 +636,6 @@ export class Video extends ModeBase {
         assert(param !== null);
         timeLapseSaver = await this.captureTimeLapse(param);
       } finally {
-        // TODO(b/236800499): Handle pause.
         // TODO(b/236800499): Handle video too short.
         state.set(state.State.RECORDING, false);
         this.recordTime.stop({pause: false});
@@ -663,6 +704,8 @@ export class Video extends ModeBase {
     if (this.recordingType === RecordType.GIF ||
         this.recordingType === RecordType.TIME_LAPSE) {
       state.set(state.State.RECORDING, false);
+      state.set(state.State.RECORDING_PAUSED, false);
+      state.set(state.State.RECORDING_UI_PAUSED, false);
     } else {
       sound.cancel(dom.get('#sound-rec-start', HTMLAudioElement));
 
@@ -757,6 +800,10 @@ export class Video extends ModeBase {
       async function updateFrame(): Promise<void> {
         if (!state.get(state.State.RECORDING)) {
           resolve(writtenFrameCount);
+          return;
+        }
+        if (state.get(state.State.RECORDING_PAUSED)) {
+          video.requestVideoFrameCallback(updateFrame);
           return;
         }
         if (frameCount % saver.speed === 0) {
