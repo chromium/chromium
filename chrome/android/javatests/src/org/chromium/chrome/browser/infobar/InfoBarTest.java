@@ -296,7 +296,7 @@ public class InfoBarTest {
                 () -> sActivityTestRule.getInfoBarContainer().addAnimationListener(removeListener));
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
             WebContents newContents = WebContentsFactory.createWebContents(
-                    Profile.getLastUsedRegularProfile(), false);
+                    Profile.getLastUsedRegularProfile(), false, false);
             TabTestUtils.swapWebContents(
                     sActivityTestRule.getActivity().getActivityTab(), newContents, false, false);
         });

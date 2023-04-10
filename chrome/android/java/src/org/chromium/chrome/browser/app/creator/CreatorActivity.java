@@ -145,7 +145,7 @@ public class CreatorActivity extends SnackbarActivity {
 
     // This implements the CreatorWebContents interface.
     public WebContents createWebContents() {
-        return WebContentsFactory.createWebContents(mProfile, true);
+        return WebContentsFactory.createWebContents(mProfile, true, false);
     }
 
     // This implements the CreatorOpenTab interface.

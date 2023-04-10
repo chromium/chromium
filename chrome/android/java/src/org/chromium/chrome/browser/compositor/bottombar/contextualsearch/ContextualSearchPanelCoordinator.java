@@ -89,7 +89,7 @@ public class ContextualSearchPanelCoordinator implements ContextualSearchPanelIn
 
     private void createWebContents() {
         final Profile profile = Profile.getLastUsedRegularProfile();
-        mWebContents = WebContentsFactory.createWebContents(profile, false);
+        mWebContents = WebContentsFactory.createWebContents(profile, false, false);
         mWebContentView = ContentView.createContentView(mContext, null, mWebContents);
         final ViewAndroidDelegate delegate =
                 ViewAndroidDelegate.createBasicDelegate(mWebContentView);

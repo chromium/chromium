@@ -85,7 +85,7 @@ public class SelectPopupOtherContentViewTest {
         // Now create and destroy a different WebContents.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             WebContents webContents = WebContentsFactory.createWebContents(
-                    Profile.getLastUsedRegularProfile(), false);
+                    Profile.getLastUsedRegularProfile(), false, false);
             ChromeActivity activity = mActivityTestRule.getActivity();
 
             ContentView cv = ContentView.createContentView(

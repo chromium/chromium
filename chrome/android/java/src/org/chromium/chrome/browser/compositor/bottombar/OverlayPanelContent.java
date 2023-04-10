@@ -349,7 +349,7 @@ public class OverlayPanelContent {
 
         Profile profile = IncognitoUtils.getProfileFromWindowAndroid(mWindowAndroid, mIsIncognito);
         // Creates an initially hidden WebContents which gets shown when the panel is opened.
-        mWebContents = WebContentsFactory.createWebContents(profile, true);
+        mWebContents = WebContentsFactory.createWebContents(profile, true, false);
 
         ContentView cv = ContentView.createContentView(
                 mActivity, null /* eventOffsetHandler */, mWebContents);

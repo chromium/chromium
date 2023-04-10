@@ -34,16 +34,10 @@ public class WebContentsFactory {
      * A factory method to build a {@link WebContents} object.
      * @param profile         The profile with which the {@link WebContents} should be built.
      * @param initiallyHidden Whether or not the {@link WebContents} should be initially hidden.
+     * @param initializeRenderer Whether or not the {@link WebContents} should initialize renderer.
      * @return                A newly created {@link WebContents} object.
      */
-    // TODO(https://crbug.com/1099138): Remove static for unit-testability.
-    public static WebContents createWebContents(Profile profile, boolean initiallyHidden) {
-        return WebContentsFactoryJni.get().createWebContents(
-                profile, initiallyHidden, false, new WebContentsCreationException());
-    }
-
-    // TODO(https://crbug.com/1033955): Remove after check discard error is fixed.
-    private static WebContents createWebContents(
+    public static WebContents createWebContents(
             Profile profile, boolean initiallyHidden, boolean initializeRenderer) {
         return WebContentsFactoryJni.get().createWebContents(
                 profile, initiallyHidden, initializeRenderer, new WebContentsCreationException());
