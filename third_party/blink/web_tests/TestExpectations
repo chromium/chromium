@@ -5575,9 +5575,6 @@ crbug.com/1269534 fast/spatial-navigation/snav-zero-margin-content.html [ Failur
 crbug.com/1295980 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/user-activation.https.html [ Failure Pass Timeout ]
 crbug.com/1298633 http/tests/inspector-protocol/network/cross-origin-isolation/coep-load-error-reporting-worker.js [ Pass Timeout ]
 
-# Sheriff 2022-03-18
-crbug.com/1290040 external/wpt/service-workers/service-worker/same-site-cookies.https.html [ Crash Failure Pass Timeout ]
-
 # WebAudio flaky timeout (crbug.com/1307741)
 crbug.com/1307741 [ Mac ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-routing.html [ Timeout ]
 crbug.com/1307741 webaudio/AudioParam/audioparam-k-rate.html [ Timeout ]
