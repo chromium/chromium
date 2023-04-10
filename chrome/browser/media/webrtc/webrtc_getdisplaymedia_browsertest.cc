@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/base_switches.h"
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -44,6 +45,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -208,6 +210,16 @@ std::u16string GetSecondaryButtonLabel(content::WebContents* web_contents) {
   DCHECK(HasSecondaryButton(web_contents));  // Test error otherwise.
   return GetDelegate(web_contents)
       ->GetButtonLabel(ConfirmInfoBarDelegate::InfoBarButton::BUTTON_CANCEL);
+}
+
+void AdjustCommandLineForZeroCopyCapture(base::CommandLine* command_line) {
+  CHECK(command_line);
+
+  // TODO(https://crbug.com/1424557): Remove this after fixing feature
+  // detection in 0c tab capture path as it'll no longer be needed.
+  if constexpr (!BUILDFLAG(IS_CHROMEOS)) {
+    command_line->AppendSwitch(switches::kUseGpuInTests);
+  }
 }
 
 }  // namespace
@@ -411,6 +423,8 @@ class WebRtcScreenCaptureBrowserTestWithFakeUI
         switches::kUseFakeDeviceForMediaStream,
         base::StringPrintf("display-media-type=%s",
                            test_config_.display_surface));
+
+    AdjustCommandLineForZeroCopyCapture(command_line);
   }
 
   bool PreferCurrentTab() const override {
@@ -584,6 +598,8 @@ class WebRtcAppWindowCaptureBrowserTestWithPicker
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitchASCII(
         switches::kAutoSelectTabCaptureSourceByTitle, kAppWindowTitle);
+
+    AdjustCommandLineForZeroCopyCapture(command_line);
   }
 
   void SetUpOnMainThread() override {
@@ -649,6 +665,8 @@ class WebRtcSameOriginPolicyBrowserTest
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitchASCII(
         switches::kAutoSelectTabCaptureSourceByTitle, kSameOriginRenamedTitle);
+
+    AdjustCommandLineForZeroCopyCapture(command_line);
   }
 
   void SetUpOnMainThread() override {
@@ -818,6 +836,8 @@ class GetDisplayMediaVideoTrackBrowserTest
         switches::kUseFakeDeviceForMediaStream,
         base::StrCat({"display-media-type=",
                       DisplaySurfaceTypeAsString(display_surface_type_)}));
+
+    AdjustCommandLineForZeroCopyCapture(command_line);
   }
 
   std::string GetVideoTrackType() {
@@ -1114,6 +1134,9 @@ class GetDisplayMediaChangeSourceBrowserTest
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitchASCII(
         switches::kAutoSelectTabCaptureSourceByTitle, kCapturedTabTitle);
+
+    AdjustCommandLineForZeroCopyCapture(command_line);
+
     if (!user_shared_audio_) {
       command_line->AppendSwitch(switches::kScreenCaptureAudioDefaultUnchecked);
     }
@@ -1330,6 +1353,8 @@ class GetDisplayMediaSelfBrowserSurfaceBrowserTest
 
     command_line->AppendSwitchASCII(
         switches::kAutoSelectTabCaptureSourceByTitle, kMainHtmlTitle);
+
+    AdjustCommandLineForZeroCopyCapture(command_line);
   }
 
   std::string GetConstraints(bool prefer_current_tab = false) {
@@ -1367,9 +1392,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          GetDisplayMediaSelfBrowserSurfaceBrowserTest,
                          testing::Values("", "include", "exclude"));
 
-// TODO(1428806) Re-enable flaky test.
 IN_PROC_BROWSER_TEST_P(GetDisplayMediaSelfBrowserSurfaceBrowserTest,
-                       DISABLED_SelfBrowserSurfaceChangesCapturedTab) {
+                       SelfBrowserSurfaceChangesCapturedTab) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // This test relies on |capturing_tab| appearing earlier in the media picker,
@@ -1386,10 +1410,8 @@ IN_PROC_BROWSER_TEST_P(GetDisplayMediaSelfBrowserSurfaceBrowserTest,
   EXPECT_EQ(IsSelfBrowserSurfaceExclude(), other_tab->IsBeingCaptured());
 }
 
-// TODO(1428806) Re-enable flaky test.
-IN_PROC_BROWSER_TEST_P(
-    GetDisplayMediaSelfBrowserSurfaceBrowserTest,
-    DISABLED_SelfBrowserSurfaceInteractionWithPreferCurrentTab) {
+IN_PROC_BROWSER_TEST_P(GetDisplayMediaSelfBrowserSurfaceBrowserTest,
+                       SelfBrowserSurfaceInteractionWithPreferCurrentTab) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // This test relies on |capturing_tab| appearing earlier in the media picker,

@@ -19,6 +19,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/common/switches.h"
+#include "ui/gl/gl_switches.h"
 
 namespace {
 
@@ -73,6 +74,11 @@ class ConditionalFocusBrowserTest : public WebRtcTestBase {
         switches::kAutoSelectTabCaptureSourceByTitle, kCapturedPageTitle);
     command_line->AppendSwitchASCII(blink::switches::kConditionalFocusWindowMs,
                                     "5000");
+    // TODO(https://crbug.com/1424557): Remove this after fixing feature
+    // detection in 0c tab capture path as it'll no longer be needed.
+    if constexpr (!BUILDFLAG(IS_CHROMEOS)) {
+      command_line->AppendSwitch(switches::kUseGpuInTests);
+    }
   }
 
   WebContents* OpenTestPageInNewTab(const std::string& test_url) {
