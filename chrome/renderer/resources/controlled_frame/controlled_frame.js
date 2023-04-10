@@ -4,7 +4,7 @@
 
 // This module implements chrome-specific <controlledframe> Element.
 
-var ChromeWebViewImpl = require('chromeWebViewImpl').ChromeWebViewImpl;
+var ChromeWebViewImpl = require('chromeWebView').ChromeWebViewImpl;
 var registerElement = require('guestViewContainerElement').registerElement;
 var WebViewElement = require('webViewElement').WebViewElement;
 var WebViewAttributeNames = require('webViewConstants').WebViewAttributeNames;
