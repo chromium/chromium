@@ -196,7 +196,8 @@ void DOMTaskSignal::OnSignalSettled(
 
 bool DOMTaskSignal::HasPendingActivity() const {
   if (GetSignalType() != SignalType::kComposite) {
-    DCHECK_EQ(GetSignalType(), SignalType::kController);
+    DCHECK(GetSignalType() == SignalType::kController ||
+           GetSignalType() == SignalType::kInternal);
     return false;
   }
   DCHECK(RuntimeEnabledFeatures::AbortSignalCompositionEnabled());

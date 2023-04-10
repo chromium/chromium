@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -13,6 +14,8 @@
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
@@ -36,6 +39,8 @@ class DOMSchedulerTest : public PageTestBase {
   wtf_size_t GetDynamicPriorityTaskQueueCount() const {
     return scheduler_->signal_to_task_queue_map_.size();
   }
+
+  DOMScheduler* GetScheduler() { return scheduler_.Get(); }
 
  private:
   Persistent<DOMScheduler> scheduler_;
@@ -134,6 +139,24 @@ TEST_F(DOMSchedulerTest, DynamicPriorityTaskQueueGarbageCollection) {
   platform()->RunUntilIdle();
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_EQ(GetDynamicPriorityTaskQueueCount(), 0u);
+}
+
+class DOMSchedulerTestWithCompositionDisabled : public DOMSchedulerTest {
+ public:
+  DOMSchedulerTestWithCompositionDisabled()
+      : scoped_signal_composition_(false) {}
+
+ private:
+  ScopedAbortSignalCompositionForTest scoped_signal_composition_;
+};
+
+TEST_F(DOMSchedulerTestWithCompositionDisabled, FixedPriorirtySignal) {
+  // Regression test for crbug.com/1431940.
+  V8TestingScope scope;
+  auto* signal = GetScheduler()->GetFixedPriorityTaskSignal(
+      scope.GetScriptState(), WebSchedulingPriority::kUserVisiblePriority);
+  // This should not crash.
+  signal->HasPendingActivity();
 }
 
 }  // namespace blink
