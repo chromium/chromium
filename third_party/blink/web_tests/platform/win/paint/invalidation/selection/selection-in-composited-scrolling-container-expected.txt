@@ -8,6 +8,49 @@
       "invalidations": [
         [7, 7, 74, 24]
       ]
+    },
+    {
+      "name": "LayoutNGTextControlInnerEditor DIV",
+      "bounds": [64, 16],
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGTextControlInnerEditor DIV",
+      "bounds": [74, 16],
+      "invalidations": [
+        [0, 0, 74, 16]
+      ],
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGTextControlSingleLine INPUT id='target'",
+      "position": [7, 7],
+      "bounds": [74, 24],
+      "invalidations": [
+        [0, 0, 74, 24]
+      ]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 11, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [-10, 0, 0, 1]
+      ]
     }
   ]
 }

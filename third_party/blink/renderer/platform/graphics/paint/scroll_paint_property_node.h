@@ -27,13 +27,6 @@ class ClipPaintPropertyNode;
 
 using MainThreadScrollingReasons = uint32_t;
 
-// For CompositeScrollAfterPaint.
-enum class CompositedScrollingPreference : uint8_t {
-  kDefault,
-  kPreferred,
-  kNotPreferred,
-};
-
 // A scroll node contains auxiliary scrolling information which includes how far
 // an area can be scrolled, main thread scrolling reasons, etc. Scroll nodes
 // are referenced by TransformPaintPropertyNodes that are used for the scroll
@@ -72,8 +65,7 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
 
     bool max_scroll_offset_affected_by_page_scale = false;
     // Used in CompositeScrollAfterPaint.
-    CompositedScrollingPreference composited_scrolling_preference =
-        CompositedScrollingPreference::kDefault;
+    bool prefers_composited_scrolling = false;
     MainThreadScrollingReasons main_thread_scrolling_reasons =
         cc::MainThreadScrollingReason::kNotScrollingOnMain;
     // The scrolling element id is stored directly on the scroll node and not
@@ -163,9 +155,9 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode
   bool MaxScrollOffsetAffectedByPageScale() const {
     return state_.max_scroll_offset_affected_by_page_scale;
   }
-  CompositedScrollingPreference GetCompositedScrollingPreference() const {
+  bool PrefersCompositedScrolling() const {
     DCHECK(RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled());
-    return state_.composited_scrolling_preference;
+    return state_.prefers_composited_scrolling;
   }
 
   // Return reason bitfield with values from cc::MainThreadScrollingReason.

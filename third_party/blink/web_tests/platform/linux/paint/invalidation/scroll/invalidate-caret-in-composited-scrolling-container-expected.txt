@@ -10,12 +10,25 @@
       "name": "LayoutNGTextControlSingleLine INPUT id='root'",
       "position": [-1, -1],
       "bounds": [67, 24],
-      "contentsOpaqueForText": true,
       "backgroundColor": "#FFFFFF",
       "invalidations": [
         [0, 0, 67, 24]
       ],
       "transform": 1
+    },
+    {
+      "name": "LayoutNGTextControlInnerEditor DIV",
+      "bounds": [57, 16],
+      "drawsContent": false,
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGTextControlInnerEditor DIV",
+      "bounds": [74, 16],
+      "invalidations": [
+        [0, 0, 74, 16]
+      ],
+      "transform": 3
     },
     {
       "name": "Caret",
@@ -55,6 +68,16 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [4, 3, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [-17, 0, 0, 1]
       ]
     }
   ]
