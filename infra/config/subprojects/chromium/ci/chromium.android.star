@@ -60,6 +60,8 @@ ci.builder(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    builderless = False,
+    cores = None,
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "builder|arm",
