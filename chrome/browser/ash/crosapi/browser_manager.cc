@@ -95,6 +95,7 @@
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "components/version_info/version_info.h"
+#include "content/public/common/content_switches.h"
 #include "media/capture/capture_switches.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -1094,13 +1095,19 @@ void BrowserManager::StartWithLogFile(LaunchParamsFromBackground params) {
     // DetermineLoggingDestination in logging_chrome.cc.
     argv.push_back("--enable-logging=stderr");
 
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(switches::kLoggingLevel)) {
+      argv.push_back(base::StringPrintf(
+          "--%s=%s", switches::kLoggingLevel,
+          command_line->GetSwitchValueASCII(switches::kLoggingLevel).c_str()));
+    }
+
     // TODO(crbug.com/1423163): Remove after root causing the issue.
     argv.push_back(
         "--vmodule=command_storage_backend=1,session_service_commands=1");
 
     if (launch_at_login_screen_ &&
-        !base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kDisableLoggingRedirect)) {
+        !command_line->HasSwitch(switches::kDisableLoggingRedirect)) {
       // Redirect logs to cryptohome after login on non-test images.
       argv.push_back(base::StringPrintf(
           "--%s=%s", chromeos::switches::kCrosPostLoginLogFile,
