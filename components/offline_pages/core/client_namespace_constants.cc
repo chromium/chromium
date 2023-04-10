@@ -14,7 +14,6 @@ const char kAsyncNamespace[] = "async_loading";
 const char kCCTNamespace[] = "custom_tabs";
 const char kDownloadNamespace[] = "download";
 const char kNTPSuggestionsNamespace[] = "ntp_suggestions";
-const char kSuggestedArticlesNamespace[] = "suggested_articles";
 const char kBrowserActionsNamespace[] = "browser_actions";
 const char kLivePageSharingNamespace[] = "live_page_sharing";
 const char kAutoAsyncNamespace[] = "auto_async_loading";

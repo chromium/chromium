@@ -25,8 +25,7 @@ class OfflineItemConversions {
   OfflineItemConversions(const OfflineItemConversions&) = delete;
   OfflineItemConversions& operator=(const OfflineItemConversions&) = delete;
 
-  static OfflineItem CreateOfflineItem(const OfflinePageItem& page,
-                                       bool is_suggested);
+  static OfflineItem CreateOfflineItem(const OfflinePageItem& page);
   static OfflineItem CreateOfflineItem(const SavePageRequest& request);
 };
 

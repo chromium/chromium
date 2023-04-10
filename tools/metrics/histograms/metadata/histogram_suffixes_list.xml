@@ -3229,22 +3229,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="OfflinePages.SavePageTime"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="OfflinePrefechItemFinalOutcome" separator=".">
-  <suffix name="Failed"
-      label="For items that failed being prefetched for any reason."/>
-  <suffix name="Successful" label="For items that were completed sucessfully."/>
-  <affected-histogram name="OfflinePages.Prefetching.ItemLifetime"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="OfflinePrefechRetriableAction" separator=".">
-  <suffix name="DownloadInitiation"
-      label="Action: start downloading an archive."/>
-  <suffix name="GeneratePageBundle"
-      label="Action: GeneratePageBundle request."/>
-  <suffix name="GetOperation" label="Action: GetOperation request."/>
-  <affected-histogram name="OfflinePages.Prefetching.ActionAttempts"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="Omnibox_BitmapFetchLatencyCacheSplit" separator=".">
   <suffix name="Cached" label="Bitmaps returned from cache"/>
   <suffix name="Uncached" label="Bitmaps not returned from cache"/>

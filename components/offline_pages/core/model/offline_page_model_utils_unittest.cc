@@ -32,8 +32,6 @@ TEST(OfflinePageModelUtilsTest, ToNamespaceEnum) {
             OfflinePagesNamespaceEnumeration::DOWNLOAD);
   EXPECT_EQ(model_utils::ToNamespaceEnum(kNTPSuggestionsNamespace),
             OfflinePagesNamespaceEnumeration::NTP_SUGGESTION);
-  EXPECT_EQ(model_utils::ToNamespaceEnum(kSuggestedArticlesNamespace),
-            OfflinePagesNamespaceEnumeration::SUGGESTED_ARTICLES);
   EXPECT_EQ(model_utils::ToNamespaceEnum(kBrowserActionsNamespace),
             OfflinePagesNamespaceEnumeration::BROWSER_ACTIONS);
 }

@@ -215,7 +215,6 @@
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
 #include "chrome/browser/offline_pages/prefetch/offline_metrics_collector_impl.h"
-#include "components/offline_pages/core/prefetch/prefetch_prefs.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -820,6 +819,19 @@ const char kBentoBarEnabled[] = "ash.bento_bar.enabled";
 const char kUserHasUsedDesksRecently[] = "ash.user_has_used_desks_recently";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 04/2023.
+#if BUILDFLAG(IS_ANDROID)
+const char kUserSettingEnabled[] = "offline_prefetch.enabled";
+const char kBackoff[] = "offline_prefetch.backoff";
+const char kLimitlessPrefetchingEnabledTimePref[] =
+    "offline_prefetch.limitless_prefetching_enabled_time";
+const char kPrefetchTestingHeaderPref[] =
+    "offline_prefetch.testing_header_value";
+const char kEnabledByServer[] = "offline_prefetch.enabled_by_server";
+const char kNextForbiddenCheckTimePref[] = "offline_prefetch.next_gpb_check";
+const char kPrefetchCachedGCMToken[] = "offline_prefetch.gcm_token";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1115,6 +1127,18 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kBentoBarEnabled, false);
   registry->RegisterBooleanPref(kUserHasUsedDesksRecently, false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 04/2023.
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterListPref(kBackoff);
+  registry->RegisterBooleanPref(kUserSettingEnabled, true);
+  registry->RegisterTimePref(kLimitlessPrefetchingEnabledTimePref,
+                             base::Time());
+  registry->RegisterStringPref(kPrefetchTestingHeaderPref, std::string());
+  registry->RegisterBooleanPref(kEnabledByServer, false);
+  registry->RegisterTimePref(kNextForbiddenCheckTimePref, base::Time());
+  registry->RegisterStringPref(kPrefetchCachedGCMToken, std::string());
+#endif
 }
 
 }  // namespace
@@ -1476,7 +1500,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   offline_pages::OfflineMetricsCollectorImpl::RegisterPrefs(registry);
-  offline_pages::prefetch_prefs::RegisterPrefs(registry);
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -2158,6 +2181,17 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kBentoBarEnabled);
   profile_prefs->ClearPref(kUserHasUsedDesksRecently);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Added 04/2023.
+#if BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kBackoff);
+  profile_prefs->ClearPref(kUserSettingEnabled);
+  profile_prefs->ClearPref(kLimitlessPrefetchingEnabledTimePref);
+  profile_prefs->ClearPref(kPrefetchTestingHeaderPref);
+  profile_prefs->ClearPref(kEnabledByServer);
+  profile_prefs->ClearPref(kNextForbiddenCheckTimePref);
+  profile_prefs->ClearPref(kPrefetchCachedGCMToken);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

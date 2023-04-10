@@ -22,7 +22,6 @@ extern const char kAsyncNamespace[];
 extern const char kCCTNamespace[];
 extern const char kDownloadNamespace[];
 extern const char kNTPSuggestionsNamespace[];
-extern const char kSuggestedArticlesNamespace[];
 extern const char kBrowserActionsNamespace[];
 extern const char kLivePageSharingNamespace[];
 extern const char kAutoAsyncNamespace[];
@@ -39,7 +38,7 @@ enum class OfflinePagesNamespaceEnumeration {
   CUSTOM_TABS = 4,
   DOWNLOAD = 5,
   NTP_SUGGESTION = 6,
-  SUGGESTED_ARTICLES = 7,
+  DEPRECATED_SUGGESTED_ARTICLES = 7,
   BROWSER_ACTIONS = 8,
   LIVE_PAGE_SHARING = 9,
   ASYNC_AUTO_LOADING = 10,

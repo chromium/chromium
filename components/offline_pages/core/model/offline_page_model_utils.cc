@@ -36,8 +36,6 @@ OfflinePagesNamespaceEnumeration ToNamespaceEnum(
     return OfflinePagesNamespaceEnumeration::DOWNLOAD;
   else if (name_space == kNTPSuggestionsNamespace)
     return OfflinePagesNamespaceEnumeration::NTP_SUGGESTION;
-  else if (name_space == kSuggestedArticlesNamespace)
-    return OfflinePagesNamespaceEnumeration::SUGGESTED_ARTICLES;
   else if (name_space == kBrowserActionsNamespace)
     return OfflinePagesNamespaceEnumeration::BROWSER_ACTIONS;
   else if (name_space == kLivePageSharingNamespace)
@@ -45,7 +43,6 @@ OfflinePagesNamespaceEnumeration ToNamespaceEnum(
   else if (name_space == kAutoAsyncNamespace)
     return OfflinePagesNamespaceEnumeration::ASYNC_AUTO_LOADING;
 
-  NOTREACHED();
   return OfflinePagesNamespaceEnumeration::DEFAULT;
 }
 

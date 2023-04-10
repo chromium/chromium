@@ -9,8 +9,6 @@ import("//third_party/protobuf/proto_library.gni")
 
 static_library("prefetch") {
   sources = [
-    "prefetch_prefs.cc",
-    "prefetch_prefs.h",
     "prefetch_service.h",
     "prefetch_service_impl.cc",
     "prefetch_service_impl.h",
