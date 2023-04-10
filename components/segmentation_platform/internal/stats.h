@@ -11,6 +11,7 @@
 #include "components/segmentation_platform/public/model_provider.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
+#include "components/segmentation_platform/public/result.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -119,6 +120,14 @@ void RecordModelExecutionDurationModel(SegmentId segment_id,
 void RecordModelExecutionDurationTotal(SegmentId segment_id,
                                        ModelExecutionStatus status,
                                        base::TimeDelta duration);
+
+// Records the total duration for GetClassificationResult API starting from the
+// time request arrives in segmentation service until the result has been
+// returned. It includes feature processing and model execution as well.
+void RecordClassificationRequestTotalDuration(
+    const std::string& segmentation_key,
+    base::TimeDelta duration);
+
 // Records the total duration of on-demand segment selection which includes
 // running all the models associated with the client and computing result.
 void RecordOnDemandSegmentSelectionDuration(

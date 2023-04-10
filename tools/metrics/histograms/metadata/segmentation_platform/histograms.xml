@@ -161,6 +161,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SegmentationPlatform.ClassificationRequest.TotalDuration.{SegmentationKey}"
+    units="ms" expires_after="2023-10-10">
+  <owner>ritikagup@google.com</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    Records the total duration for Classification API call for the given
+    {SegmentationKey} including the time required for feature processing and
+    model execution as well.
+
+    Starts recording every time the GetClassificationAPI is called for
+    {SegmentationKey}. Records the duration when ClassificationResult is
+    returned.
+  </summary>
+  <token key="SegmentationKey" variants="SegmentationKey"/>
+</histogram>
+
 <histogram name="SegmentationPlatform.DeviceCountByOsType.{OsType}"
     units="devices" expires_after="2023-10-01">
   <owner>junzou@chromium.org</owner>
