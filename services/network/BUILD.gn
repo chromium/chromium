@@ -37,8 +37,6 @@ component("network_service") {
     "cors/preflight_controller.h",
     "cors/preflight_result.cc",
     "cors/preflight_result.h",
-    "crl_set_distributor.cc",
-    "crl_set_distributor.h",
     "data_pipe_element_reader.cc",
     "data_pipe_element_reader.h",
     "disk_cache/mojo_backend_file_operations.cc",

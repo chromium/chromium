@@ -11,7 +11,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/cert/cert_verifier.h"
 #include "net/ssl/ssl_config_service.h"
-#include "services/network/crl_set_distributor.h"
 #include "services/network/public/mojom/ssl_config.mojom.h"
 
 namespace network {
@@ -20,16 +19,13 @@ namespace network {
 // SSLConfig changes on a Mojo pipe, and providing access to the updated config.
 class COMPONENT_EXPORT(NETWORK_SERVICE) SSLConfigServiceMojo
     : public mojom::SSLConfigClient,
-      public net::SSLConfigService,
-      public CRLSetDistributor::Observer {
+      public net::SSLConfigService {
  public:
   // If |ssl_config_client_receiver| is not provided, just sticks with the
   // initial configuration.
-  // Note: |crl_set_distributor| must outlive this object.
   SSLConfigServiceMojo(
       mojom::SSLConfigPtr initial_config,
-      mojo::PendingReceiver<mojom::SSLConfigClient> ssl_config_client_receiver,
-      CRLSetDistributor* crl_set_distributor);
+      mojo::PendingReceiver<mojom::SSLConfigClient> ssl_config_client_receiver);
 
   SSLConfigServiceMojo(const SSLConfigServiceMojo&) = delete;
   SSLConfigServiceMojo& operator=(const SSLConfigServiceMojo&) = delete;
@@ -50,9 +46,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SSLConfigServiceMojo
   bool CanShareConnectionWithClientCerts(
       const std::string& hostname) const override;
 
-  // CRLSetDistributor::Observer implementation:
-  void OnNewCRLSet(scoped_refptr<net::CRLSet> crl_set) override;
-
  private:
   mojo::Receiver<mojom::SSLConfigClient> receiver_{this};
 
@@ -60,7 +53,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SSLConfigServiceMojo
   net::CertVerifier::Config cert_verifier_config_;
 
   raw_ptr<net::CertVerifier> cert_verifier_;
-  raw_ptr<CRLSetDistributor> crl_set_distributor_;
 
   // The list of domains and subdomains from enterprise policy where connection
   // coalescing is allowed when client certs are in use if the hosts being

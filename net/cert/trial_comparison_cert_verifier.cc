@@ -17,6 +17,7 @@
 #include "net/base/net_errors.h"
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_result.h"
+#include "net/cert/crl_set.h"
 #include "net/cert/multi_threaded_cert_verifier.h"
 #include "net/cert/trial_comparison_cert_verifier_util.h"
 #include "net/cert/x509_util.h"
@@ -538,14 +539,16 @@ void TrialComparisonCertVerifier::RemoveObserver(
   primary_verifier_->RemoveObserver(observer);
 }
 
-void TrialComparisonCertVerifier::UpdateChromeRootStoreData(
+void TrialComparisonCertVerifier::UpdateVerifyProcData(
     scoped_refptr<CertNetFetcher> cert_net_fetcher,
+    scoped_refptr<CRLSet> crl_set,
     const ChromeRootStoreData* root_store_data) {
-  primary_verifier_->UpdateChromeRootStoreData(cert_net_fetcher,
-                                               root_store_data);
-  primary_reverifier_->UpdateChromeRootStoreData(cert_net_fetcher,
-                                                 root_store_data);
-  trial_verifier_->UpdateChromeRootStoreData(cert_net_fetcher, root_store_data);
+  primary_verifier_->UpdateVerifyProcData(cert_net_fetcher, crl_set,
+                                          root_store_data);
+  primary_reverifier_->UpdateVerifyProcData(cert_net_fetcher, crl_set,
+                                            root_store_data);
+  trial_verifier_->UpdateVerifyProcData(cert_net_fetcher, crl_set,
+                                        root_store_data);
   // The TrialComparisonCertVerifier is registered as an observer of the
   // underlying verifiers, and so the OnCertVerifierChanged method should be
   // triggered to call NotifyJobsOfConfigChange, so it isn't explicitly called

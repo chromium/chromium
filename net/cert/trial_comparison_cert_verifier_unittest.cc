@@ -18,6 +18,7 @@
 #include "net/base/test_completion_callback.h"
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_result.h"
+#include "net/cert/crl_set.h"
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/trial_comparison_cert_verifier_util.h"
@@ -110,7 +111,8 @@ class RepeatedTestClosure {
 class FakeCertVerifyProc : public CertVerifyProc {
  public:
   FakeCertVerifyProc(const int result_error, const CertVerifyResult& result)
-      : result_error_(result_error),
+      : CertVerifyProc(CRLSet::BuiltinCRLSet()),
+        result_error_(result_error),
         result_(result),
         main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
@@ -132,7 +134,6 @@ class FakeCertVerifyProc : public CertVerifyProc {
                      const std::string& ocsp_response,
                      const std::string& sct_list,
                      int flags,
-                     CRLSet* crl_set,
                      const CertificateList& additional_trust_anchors,
                      CertVerifyResult* verify_result,
                      const NetLogWithSource& net_log) override;
@@ -153,7 +154,6 @@ int FakeCertVerifyProc::VerifyInternal(
     const std::string& ocsp_response,
     const std::string& sct_list,
     int flags,
-    CRLSet* crl_set,
     const CertificateList& additional_trust_anchors,
     CertVerifyResult* verify_result,
     const NetLogWithSource& net_log) {
@@ -171,8 +171,7 @@ void FakeCertVerifyProc::VerifyCalled() {
 // Fake CertVerifyProc that causes a failure if it is called.
 class NotCalledCertVerifyProc : public CertVerifyProc {
  public:
-  NotCalledCertVerifyProc() = default;
-
+  NotCalledCertVerifyProc() : CertVerifyProc(CRLSet::BuiltinCRLSet()) {}
   NotCalledCertVerifyProc(const NotCalledCertVerifyProc&) = delete;
   NotCalledCertVerifyProc& operator=(const NotCalledCertVerifyProc&) = delete;
 
@@ -188,7 +187,6 @@ class NotCalledCertVerifyProc : public CertVerifyProc {
                      const std::string& ocsp_response,
                      const std::string& sct_list,
                      int flags,
-                     CRLSet* crl_set,
                      const CertificateList& additional_trust_anchors,
                      CertVerifyResult* verify_result,
                      const NetLogWithSource& net_log) override;
@@ -200,7 +198,6 @@ int NotCalledCertVerifyProc::VerifyInternal(
     const std::string& ocsp_response,
     const std::string& sct_list,
     int flags,
-    CRLSet* crl_set,
     const CertificateList& additional_trust_anchors,
     CertVerifyResult* verify_result,
     const NetLogWithSource& net_log) {
@@ -214,20 +211,19 @@ void NotCalledCallback(int error) {
 
 class MockCertVerifyProc : public CertVerifyProc {
  public:
-  MockCertVerifyProc() = default;
+  MockCertVerifyProc() : CertVerifyProc(CRLSet::BuiltinCRLSet()) {}
 
   MockCertVerifyProc(const MockCertVerifyProc&) = delete;
   MockCertVerifyProc& operator=(const MockCertVerifyProc&) = delete;
 
   // CertVerifyProc implementation:
   bool SupportsAdditionalTrustAnchors() const override { return false; }
-  MOCK_METHOD9(VerifyInternal,
+  MOCK_METHOD8(VerifyInternal,
                int(X509Certificate* cert,
                    const std::string& hostname,
                    const std::string& ocsp_response,
                    const std::string& sct_list,
                    int flags,
-                   CRLSet* crl_set,
                    const CertificateList& additional_trust_anchors,
                    CertVerifyResult* verify_result,
                    const NetLogWithSource& net_log));
@@ -243,6 +239,7 @@ class SwapWithNewProcFactory : public CertVerifyProcFactory {
 
   scoped_refptr<net::CertVerifyProc> CreateCertVerifyProc(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
+      scoped_refptr<CRLSet> crl_set,
       const ChromeRootStoreData* root_store_data) override {
     return verify_proc_;
   }
@@ -357,7 +354,7 @@ TEST_F(TrialComparisonCertVerifierTest, ObserverIsCalledOnCRSUpdate) {
 
   CertVerifierObserverCounter observer_(&verifier);
   EXPECT_EQ(observer_.change_count(), 0u);
-  verifier.UpdateChromeRootStoreData(nullptr, nullptr);
+  verifier.UpdateVerifyProcData(nullptr, nullptr, nullptr);
   EXPECT_EQ(observer_.change_count(), 1u);
 }
 
@@ -631,7 +628,7 @@ TEST_F(TrialComparisonCertVerifierTest, ConfigChangedBeforeVerification) {
 
   std::vector<TrialReportInfo> reports;
   // Both verifiers are initially NotCalledCertVerifyProc, but should swap to
-  // verify_proc1 and verify_proc2 when UpdateChromeRootStoreData is called.
+  // verify_proc1 and verify_proc2 when UpdateVerifyProcData is called.
   TrialComparisonCertVerifier verifier(
       base::MakeRefCounted<NotCalledCertVerifyProc>(),
       base::MakeRefCounted<SwapWithNewProcFactory>(verify_proc1),
@@ -643,7 +640,7 @@ TEST_F(TrialComparisonCertVerifierTest, ConfigChangedBeforeVerification) {
   // Change the verifier Chrome Root Store data before verification, so the
   // Verify should call the verifiers that were swapped in by the factories
   // instead of the initial ones.
-  verifier.UpdateChromeRootStoreData(nullptr, nullptr);
+  verifier.UpdateVerifyProcData(nullptr, nullptr, nullptr);
 
   CertVerifier::RequestParams params(leaf_cert_1_, "127.0.0.1", /*flags=*/0,
                                      /*ocsp_response=*/std::string(),
@@ -718,7 +715,7 @@ TEST_F(TrialComparisonCertVerifierTest,
 
   // Change the verifier Chrome Root Store data before the primary verification
   // finishes.
-  verifier.UpdateChromeRootStoreData(nullptr, nullptr);
+  verifier.UpdateVerifyProcData(nullptr, nullptr, nullptr);
 
   error = callback.WaitForResult();
   EXPECT_THAT(error, IsOk());
@@ -834,7 +831,7 @@ TEST_F(TrialComparisonCertVerifierTest,
   EXPECT_THAT(error, IsOk());
 
   // Change the verifier Chrome Root Store data during the trial verification.
-  verifier.UpdateChromeRootStoreData(nullptr, nullptr);
+  verifier.UpdateVerifyProcData(nullptr, nullptr, nullptr);
 
   RunUntilIdle();
 
@@ -1228,12 +1225,12 @@ TEST_F(TrialComparisonCertVerifierTest,
       base::MakeRefCounted<MockCertVerifyProc>();
   // Primary verifier returns ok status and chain1 if verifying the leaf alone.
   EXPECT_CALL(*verify_proc1,
-              VerifyInternal(leaf_cert_1_.get(), _, _, _, _, _, _, _, _))
-      .WillOnce(DoAll(SetArgPointee<7>(chain1_result), Return(OK)));
+              VerifyInternal(leaf_cert_1_.get(), _, _, _, _, _, _, _))
+      .WillOnce(DoAll(SetArgPointee<6>(chain1_result), Return(OK)));
   // Primary verifier returns ok status and chain2 if verifying chain2.
   EXPECT_CALL(*verify_proc1,
-              VerifyInternal(cert_chain_2_.get(), _, _, _, _, _, _, _, _))
-      .WillOnce(DoAll(SetArgPointee<7>(chain2_result), Return(OK)));
+              VerifyInternal(cert_chain_2_.get(), _, _, _, _, _, _, _))
+      .WillOnce(DoAll(SetArgPointee<6>(chain2_result), Return(OK)));
 
   // Trial verifier returns ok status and chain2.
   scoped_refptr<FakeCertVerifyProc> verify_proc2 =
@@ -1322,14 +1319,14 @@ TEST_F(TrialComparisonCertVerifierTest,
       base::MakeRefCounted<MockCertVerifyProc>();
   // Primary verifier returns ok status and different_chain if verifying leaf
   // alone, but not is_known_root.
-  EXPECT_CALL(*verify_proc1, VerifyInternal(leaf.get(), _, _, _, _, _, _, _, _))
-      .WillOnce(DoAll(SetArgPointee<7>(different_chain_result_no_known_root),
+  EXPECT_CALL(*verify_proc1, VerifyInternal(leaf.get(), _, _, _, _, _, _, _))
+      .WillOnce(DoAll(SetArgPointee<6>(different_chain_result_no_known_root),
                       Return(OK)));
   // Primary verifier returns ok status and different_chain if verifying
   // cert_chain and with is_known_root..
   EXPECT_CALL(*verify_proc1,
-              VerifyInternal(cert_chain.get(), _, _, _, _, _, _, _, _))
-      .WillOnce(DoAll(SetArgPointee<7>(different_chain_result_known_root),
+              VerifyInternal(cert_chain.get(), _, _, _, _, _, _, _))
+      .WillOnce(DoAll(SetArgPointee<6>(different_chain_result_known_root),
                       Return(OK)));
 
   // Trial verifier returns ok status and chain_result.
@@ -1766,9 +1763,9 @@ TEST_F(TrialComparisonCertVerifierTest, PrimaryRevokedSecondaryOk) {
   // REV_CHECKING_ENABLED was passed.
   scoped_refptr<MockCertVerifyProc> verify_proc2 =
       base::MakeRefCounted<MockCertVerifyProc>();
-  EXPECT_CALL(*verify_proc2, VerifyInternal(_, _, _, _, _, _, _, _, _))
+  EXPECT_CALL(*verify_proc2, VerifyInternal(_, _, _, _, _, _, _, _))
       .Times(1)
-      .WillRepeatedly(DoAll(SetArgPointee<7>(ok_result), Return(OK)));
+      .WillRepeatedly(DoAll(SetArgPointee<6>(ok_result), Return(OK)));
 
   std::vector<TrialReportInfo> reports;
   TrialComparisonCertVerifier verifier(

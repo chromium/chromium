@@ -68,8 +68,9 @@ class TrialComparisonCertVerifierMojo
   void SetConfig(const Config& config) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  void UpdateChromeRootStoreData(
+  void UpdateVerifyProcData(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+      scoped_refptr<net::CRLSet> crl_set,
       const net::ChromeRootStoreData* root_store_data) override;
 
  private:

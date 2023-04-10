@@ -56,8 +56,9 @@ class NET_EXPORT_PRIVATE MultiThreadedCertVerifier
   void SetConfig(const CertVerifier::Config& config) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  void UpdateChromeRootStoreData(
+  void UpdateVerifyProcData(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
+      scoped_refptr<CRLSet> crl_set,
       const ChromeRootStoreData* root_store_data) override;
 
  private:

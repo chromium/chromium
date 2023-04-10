@@ -15,6 +15,7 @@
 #include "net/base/net_errors.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/cert_verify_result.h"
+#include "net/cert/crl_set.h"
 #include "net/cert/ct_serialization.h"
 #include "net/cert/known_roots.h"
 #include "net/cert/test_root_certs.h"
@@ -279,7 +280,8 @@ void GetCertChainInfo(CFArrayRef cert_chain, CertVerifyResult* verify_result) {
 
 }  // namespace
 
-CertVerifyProcIOS::CertVerifyProcIOS() {}
+CertVerifyProcIOS::CertVerifyProcIOS(scoped_refptr<CRLSet> crl_set)
+    : CertVerifyProc(std::move(crl_set)) {}
 
 // static
 CertStatus CertVerifyProcIOS::GetCertFailureStatusFromError(CFErrorRef error) {
@@ -394,7 +396,6 @@ int CertVerifyProcIOS::VerifyInternal(
     const std::string& ocsp_response,
     const std::string& sct_list,
     int flags,
-    CRLSet* crl_set,
     const CertificateList& additional_trust_anchors,
     CertVerifyResult* verify_result,
     const NetLogWithSource& net_log) {

@@ -28,6 +28,7 @@
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_result.h"
+#include "net/cert/crl_set.h"
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log.h"
 #include "net/test/cert_test_util.h"
@@ -106,8 +107,9 @@ class DummyCertVerifier : public net::CertVerifierWithUpdatableProc {
     observer_ = observer;
   }
   void RemoveObserver(Observer* observer) override { observer_ = nullptr; }
-  void UpdateChromeRootStoreData(
+  void UpdateVerifyProcData(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+      scoped_refptr<net::CRLSet> crl_set,
       const net::ChromeRootStoreData* root_store_data) override {}
 
   void RespondToRequest(const net::CertVerifier::RequestParams& params) {

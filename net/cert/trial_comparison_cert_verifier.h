@@ -23,6 +23,7 @@ class CertVerifyProc;
 class CertVerifyProcFactory;
 class CertNetFetcher;
 class ChromeRootStoreData;
+class CRLSet;
 
 // TrialComparisonCertVerifier is a CertVerifier that can be used to compare
 // the results between two different CertVerifyProcs. The results are reported
@@ -91,8 +92,9 @@ class NET_EXPORT TrialComparisonCertVerifier
   void SetConfig(const Config& config) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
-  void UpdateChromeRootStoreData(
+  void UpdateVerifyProcData(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
+      scoped_refptr<CRLSet> crl_set,
       const ChromeRootStoreData* root_store_data) override;
 
  private:

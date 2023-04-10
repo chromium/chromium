@@ -102,7 +102,6 @@ class CertVerifyImpl {
       return true;  // "skipping" is considered a successful return.
     }
 
-    scoped_refptr<net::CRLSet> crl_set = net::CRLSet::BuiltinCRLSet();
     // TODO(mattm): add command line flags to configure VerifyFlags.
     int flags = 0;
     // Don't add any additional trust anchors.
@@ -111,7 +110,7 @@ class CertVerifyImpl {
     // TODO(crbug.com/634484): use a real netlog and print the results?
     *error = proc_->Verify(&x509_target_and_intermediates, hostname,
                            /*ocsp_response=*/std::string(),
-                           /*sct_list=*/std::string(), flags, crl_set.get(),
+                           /*sct_list=*/std::string(), flags,
                            x509_additional_trust_anchors, result,
                            net::NetLogWithSource());
 
@@ -131,8 +130,9 @@ std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
       BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(CHROME_ROOT_STORE_ONLY))
   if (impl_name == "platform") {
     return std::make_unique<CertVerifyImpl>(
-        "CertVerifyProc (system)", net::CertVerifyProc::CreateSystemVerifyProc(
-                                       std::move(cert_net_fetcher)));
+        "CertVerifyProc (system)",
+        net::CertVerifyProc::CreateSystemVerifyProc(
+            std::move(cert_net_fetcher) net::CRLSet::BuiltinCRLSet()));
   }
 #endif
 
@@ -141,7 +141,7 @@ std::unique_ptr<CertVerifyImpl> CreateCertVerifyImplFromName(
     return std::make_unique<CertVerifyImpl>(
         "CertVerifyProcBuiltin",
         net::CreateCertVerifyProcBuiltin(
-            std::move(cert_net_fetcher),
+            std::move(cert_net_fetcher), net::CRLSet::BuiltinCRLSet(),
             net::CreateSslSystemTrustStoreChromeRoot(
                 std::make_unique<net::TrustStoreChrome>())));
 #endif

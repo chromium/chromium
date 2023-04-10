@@ -4,7 +4,6 @@
 
 module cert_verifier.mojom;
 
-import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/network_param.mojom";
@@ -27,7 +26,6 @@ struct CertVerifierConfig {
   bool require_rev_checking_local_anchors;
   bool enable_sha1_local_anchors;
   bool disable_symantec_enforcement;
-  mojo_base.mojom.BigBuffer crl_set;
   array<network.mojom.X509Certificate> additional_trust_anchors;
   array<network.mojom.X509Certificate> additional_untrusted_authorities;
 };
@@ -60,8 +58,7 @@ interface CertVerifierService {
          uint32 netlog_source_id,
          mojo_base.mojom.TimeTicks netlog_source_start_time,
          pending_remote<CertVerifierRequest> cert_verifier_request);
-  // Sets the config for the underlying CertVerifier. Can serialize very large
-  // net::CertVerifier::Config's due to the CRLSet.
+  // Sets the config for the underlying CertVerifier.
   SetConfig(CertVerifierConfig config);
 };
 

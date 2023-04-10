@@ -6,6 +6,7 @@ module cert_verifier.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "services/network/public/mojom/cert_verifier_service.mojom";
 
 [EnableIf=is_trial_comparison_cert_verifier_supported]
@@ -76,6 +77,15 @@ interface CertVerifierServiceFactory {
 
   // Returns the parameters that the service was configured with.
   GetServiceParamsForTesting() => (CertVerifierServiceParams service_params);
+
+  // Updates the CRLSet used in the verification of certificates. CRLSets that
+  // cannot be parsed using net::CRLSet::Parse will be ignored, as will older
+  // CRLSets (where older is determined by the sequence number). All
+  // CertVerifierServices created by the CertVerifierServiceFactory, including
+  // those created after this call, will use the same CRLSet.
+  // TODO(https://crbug.com/1431347): consider using ReadOnlySharedMemoryRegion
+  // or ReadOnlyFile instead of BigBuffer for this and ChromeRootStore.
+  UpdateCRLSet(mojo_base.mojom.BigBuffer crl_set) => ();
 
   // Updates the ChromeRootStore used by the CertVerifierServiceFactory with a
   // new version. The callback will be run once the update has been processed

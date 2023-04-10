@@ -8,6 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "net/base/features.h"
 #include "net/cert/cert_verify_proc.h"
+#include "net/cert/crl_set.h"
 #include "net/cert/multi_threaded_cert_verifier.h"
 #include "net/cert_net/cert_net_fetcher_url_request.h"
 #include "net/net_buildflags.h"
@@ -81,21 +82,23 @@ class OldDefaultCertVerifyProcFactory : public net::CertVerifyProcFactory {
 
   scoped_refptr<net::CertVerifyProc> CreateCertVerifyProc(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+      scoped_refptr<net::CRLSet> crl_set,
       const net::ChromeRootStoreData* root_store_data) override {
     scoped_refptr<net::CertVerifyProc> verify_proc;
 #if BUILDFLAG(IS_CHROMEOS)
     verify_proc = net::CreateCertVerifyProcBuiltin(
-        std::move(cert_net_fetcher),
+        std::move(cert_net_fetcher), std::move(crl_set),
         net::CreateSslSystemTrustStoreNSSWithUserSlotRestriction(
             user_slot_restriction_ ? crypto::ScopedPK11Slot(PK11_ReferenceSlot(
                                          user_slot_restriction_.get()))
                                    : nullptr));
 #elif BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
     verify_proc = net::CreateCertVerifyProcBuiltin(
-        std::move(cert_net_fetcher), net::CreateSslSystemTrustStore());
+        std::move(cert_net_fetcher), std::move(crl_set),
+        net::CreateSslSystemTrustStore());
 #else
     verify_proc = net::CertVerifyProc::CreateSystemVerifyProc(
-        std::move(cert_net_fetcher));
+        std::move(cert_net_fetcher), std::move(crl_set));
 #endif
     return verify_proc;
   }
@@ -125,6 +128,7 @@ class NewCertVerifyProcChromeRootStoreFactory
 
   scoped_refptr<net::CertVerifyProc> CreateCertVerifyProc(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+      scoped_refptr<net::CRLSet> crl_set,
       const net::ChromeRootStoreData* root_store_data) override {
     std::unique_ptr<net::TrustStoreChrome> chrome_root;
     if (!root_store_data) {
@@ -159,6 +163,7 @@ class NewCertVerifyProcChromeRootStoreFactory
     net::InitializeTrustStoreAndroid();
 #endif
     return net::CreateCertVerifyProcBuiltin(std::move(cert_net_fetcher),
+                                            std::move(crl_set),
                                             std::move(trust_store));
   }
 
@@ -185,6 +190,7 @@ bool IsTrialVerificationOn(
 std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateTrialCertVerifier(
     mojom::CertVerifierCreationParams* creation_params,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+    scoped_refptr<net::CRLSet> crl_set,
     const net::ChromeRootStoreData* root_store_data) {
   DCHECK(IsTrialVerificationOn(creation_params));
 
@@ -194,7 +200,7 @@ std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateTrialCertVerifier(
   auto primary_proc_factory =
       base::MakeRefCounted<OldDefaultCertVerifyProcFactory>(creation_params);
   scoped_refptr<net::CertVerifyProc> primary_proc =
-      primary_proc_factory->CreateCertVerifyProc(cert_net_fetcher,
+      primary_proc_factory->CreateCertVerifyProc(cert_net_fetcher, crl_set,
                                                  root_store_data);
 
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
@@ -206,7 +212,7 @@ std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateTrialCertVerifier(
 #endif
 
   scoped_refptr<net::CertVerifyProc> trial_proc =
-      trial_proc_factory->CreateCertVerifyProc(cert_net_fetcher,
+      trial_proc_factory->CreateCertVerifyProc(cert_net_fetcher, crl_set,
                                                root_store_data);
 
   return std::make_unique<TrialComparisonCertVerifierMojo>(
@@ -237,6 +243,7 @@ std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
     mojom::CertVerifierServiceParams* impl_params,
     mojom::CertVerifierCreationParams* creation_params,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+    scoped_refptr<net::CRLSet> crl_set,
     const net::ChromeRootStoreData* root_store_data) {
   DCHECK(cert_net_fetcher || !IsUsingCertNetFetcher());
   std::unique_ptr<net::CertVerifierWithUpdatableProc> cert_verifier;
@@ -251,7 +258,8 @@ std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
         base::MakeRefCounted<NewCertVerifyProcChromeRootStoreFactory>(
             creation_params);
     cert_verifier = std::make_unique<net::MultiThreadedCertVerifier>(
-        proc_factory->CreateCertVerifyProc(cert_net_fetcher, root_store_data),
+        proc_factory->CreateCertVerifyProc(cert_net_fetcher, crl_set,
+                                           root_store_data),
         proc_factory);
   }
 #endif
@@ -259,7 +267,7 @@ std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
   if (!cert_verifier && IsTrialVerificationOn(creation_params)) {
     cert_verifier = CreateTrialCertVerifier(creation_params, cert_net_fetcher,
-                                            root_store_data);
+                                            crl_set, root_store_data);
   }
 #endif
 
@@ -268,7 +276,8 @@ std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
     scoped_refptr<OldDefaultCertVerifyProcFactory> proc_factory =
         base::MakeRefCounted<OldDefaultCertVerifyProcFactory>(creation_params);
     cert_verifier = std::make_unique<net::MultiThreadedCertVerifier>(
-        proc_factory->CreateCertVerifyProc(cert_net_fetcher, root_store_data),
+        proc_factory->CreateCertVerifyProc(cert_net_fetcher, crl_set,
+                                           root_store_data),
         proc_factory);
   }
 #endif

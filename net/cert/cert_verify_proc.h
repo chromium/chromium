@@ -73,13 +73,15 @@ class NET_EXPORT CertVerifyProc
   // Creates and returns a CertVerifyProc that uses the system verifier.
   // |cert_net_fetcher| may not be used, depending on the implementation.
   static scoped_refptr<CertVerifyProc> CreateSystemVerifyProc(
-      scoped_refptr<CertNetFetcher> cert_net_fetcher);
+      scoped_refptr<CertNetFetcher> cert_net_fetcher,
+      scoped_refptr<CRLSet> crl_set);
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(USE_NSS_CERTS)
   // Creates and returns a CertVerifyProcBuiltin using the SSL SystemTrustStore.
   static scoped_refptr<CertVerifyProc> CreateBuiltinVerifyProc(
-      scoped_refptr<CertNetFetcher> cert_net_fetcher);
+      scoped_refptr<CertNetFetcher> cert_net_fetcher,
+      scoped_refptr<CRLSet> crl_set);
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -88,6 +90,7 @@ class NET_EXPORT CertVerifyProc
   // use the default.
   static scoped_refptr<CertVerifyProc> CreateBuiltinWithChromeRootStore(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
+      scoped_refptr<CRLSet> crl_set,
       const ChromeRootStoreData* root_store_data);
 #endif
 
@@ -112,12 +115,7 @@ class NET_EXPORT CertVerifyProc
   //
   // If VERIFY_REV_CHECKING_ENABLED is set in |flags|, online certificate
   // revocation checking is performed (i.e. OCSP and downloading CRLs). CRLSet
-  // based revocation checking is always enabled, regardless of this flag, if
-  // |crl_set| is given.
-  //
-  // |crl_set|, which is required, points to an CRLSet structure which can be
-  // used to avoid revocation checks over the network.  If you do not have one
-  // handy, use CRLSet::BuiltinCRLSet().
+  // based revocation checking is always enabled, regardless of this flag.
   //
   // |additional_trust_anchors| lists certificates that can be trusted when
   // building a certificate chain, in addition to the anchors known to the
@@ -127,7 +125,6 @@ class NET_EXPORT CertVerifyProc
              const std::string& ocsp_response,
              const std::string& sct_list,
              int flags,
-             CRLSet* crl_set,
              const CertificateList& additional_trust_anchors,
              CertVerifyResult* verify_result,
              const NetLogWithSource& net_log);
@@ -138,8 +135,10 @@ class NET_EXPORT CertVerifyProc
   virtual bool SupportsAdditionalTrustAnchors() const = 0;
 
  protected:
-  CertVerifyProc();
+  explicit CertVerifyProc(scoped_refptr<CRLSet> crl_set);
   virtual ~CertVerifyProc();
+
+  CRLSet* crl_set() const { return crl_set_.get(); }
 
   // Record a histogram of whether Name normalization was used in verifying the
   // chain. This should only be called for successfully validated chains.
@@ -181,7 +180,6 @@ class NET_EXPORT CertVerifyProc
                              const std::string& ocsp_response,
                              const std::string& sct_list,
                              int flags,
-                             CRLSet* crl_set,
                              const CertificateList& additional_trust_anchors,
                              CertVerifyResult* verify_result,
                              const NetLogWithSource& net_log) = 0;
@@ -207,15 +205,19 @@ class NET_EXPORT CertVerifyProc
   // requirement they expire within 7 years after the effective date of the BRs
   // (i.e. by 1 July 2019).
   static bool HasTooLongValidity(const X509Certificate& cert);
+
+  const scoped_refptr<CRLSet> crl_set_;
 };
 
 // Factory for creating new CertVerifyProcs when they need to be updated.
 class NET_EXPORT CertVerifyProcFactory
     : public base::RefCountedThreadSafe<CertVerifyProcFactory> {
  public:
-  // Create a new CertVerifyProc that uses the passed in ChromeRootStoreData.
+  // Create a new CertVerifyProc that uses the passed in CRLSet and
+  // ChromeRootStoreData.
   virtual scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
+      scoped_refptr<CRLSet> crl_set,
       const ChromeRootStoreData* root_store_data) = 0;
 
  protected:

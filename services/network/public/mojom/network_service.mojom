@@ -7,7 +7,6 @@ module network.mojom;
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
-import "mojo/public/mojom/base/read_only_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "sandbox/policy/mojom/context.mojom";
@@ -272,13 +271,6 @@ interface NetworkService {
   // The |policy| parameter is a flag that specifies whether to include/exclude
   // network interfaces. Corresponds to enum net::HostAddressSelectionPolicy.
   GetNetworkList(uint32 policy) => (array<NetworkInterface>? networks);
-
-  // Updates the CRLSet used in the verification of certificates. CRLSets that
-  // cannot be parsed using net::CRLSet::Parse will be ignored, as will older
-  // CRLSets (where older is determined by the sequence number). All Network
-  // Contexts created by the Network Service, including those created after
-  // this call, will use the same CRLSet.
-  UpdateCRLSet(mojo_base.mojom.ReadOnlyBuffer crl_set) => ();
 
   // Notification that the certificate database has been modified.
   OnCertDBChanged();

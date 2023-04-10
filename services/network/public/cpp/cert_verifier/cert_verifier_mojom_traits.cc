@@ -10,7 +10,6 @@
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/scoped_refptr.h"
-#include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "net/cert/x509_certificate.h"
 #include "services/network/public/cpp/crash_keys.h"
 
@@ -161,23 +160,13 @@ bool StructTraits<cert_verifier::mojom::CertVerifierConfigDataView,
                   net::CertVerifier::Config>::
     Read(cert_verifier::mojom::CertVerifierConfigDataView data,
          net::CertVerifier::Config* config) {
-  mojo_base::BigBuffer crl_set_buffer;
   std::vector<scoped_refptr<net::X509Certificate>> additional_trust_anchors;
   std::vector<scoped_refptr<net::X509Certificate>>
       additional_untrusted_authorities;
-  if (!data.ReadCrlSet(&crl_set_buffer) ||
-      !data.ReadAdditionalTrustAnchors(&additional_trust_anchors) ||
+  if (!data.ReadAdditionalTrustAnchors(&additional_trust_anchors) ||
       !data.ReadAdditionalUntrustedAuthorities(
-          &additional_untrusted_authorities))
+          &additional_untrusted_authorities)) {
     return false;
-
-  scoped_refptr<net::CRLSet> crl_set;
-  if (crl_set_buffer.size() != 0) {
-    // Make a copy from shared memory so we can avoid double-fetch bugs.
-    std::string crl_set_string(
-        reinterpret_cast<const char*>(crl_set_buffer.data()),
-        crl_set_buffer.size());
-    net::CRLSet::ParseAndStoreUnparsedData(crl_set_string, &crl_set);
   }
 
   config->enable_rev_checking = data.enable_rev_checking();
@@ -185,7 +174,6 @@ bool StructTraits<cert_verifier::mojom::CertVerifierConfigDataView,
       data.require_rev_checking_local_anchors();
   config->enable_sha1_local_anchors = data.enable_sha1_local_anchors();
   config->disable_symantec_enforcement = data.disable_symantec_enforcement();
-  config->crl_set = std::move(crl_set);
   config->additional_trust_anchors = std::move(additional_trust_anchors);
   config->additional_untrusted_authorities =
       std::move(additional_untrusted_authorities);

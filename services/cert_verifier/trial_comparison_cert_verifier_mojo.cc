@@ -10,6 +10,7 @@
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/cert_verify_result.h"
+#include "net/cert/crl_set.h"
 #include "net/cert/trial_comparison_cert_verifier.h"
 #include "net/der/encode_values.h"
 #include "net/der/parse_values.h"
@@ -119,11 +120,12 @@ void TrialComparisonCertVerifierMojo::RemoveObserver(Observer* observer) {
   trial_comparison_cert_verifier_->RemoveObserver(observer);
 }
 
-void TrialComparisonCertVerifierMojo::UpdateChromeRootStoreData(
+void TrialComparisonCertVerifierMojo::UpdateVerifyProcData(
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+    scoped_refptr<net::CRLSet> crl_set,
     const net::ChromeRootStoreData* root_store_data) {
-  trial_comparison_cert_verifier_->UpdateChromeRootStoreData(
-      std::move(cert_net_fetcher), root_store_data);
+  trial_comparison_cert_verifier_->UpdateVerifyProcData(
+      std::move(cert_net_fetcher), std::move(crl_set), root_store_data);
 }
 
 void TrialComparisonCertVerifierMojo::OnTrialConfigUpdated(bool allowed) {

@@ -11,6 +11,7 @@
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_proc_builtin.h"
 #include "net/cert/cert_verify_result.h"
+#include "net/cert/crl_set.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/der/encode_values.h"
 #include "net/der/parse_values.h"
@@ -97,6 +98,9 @@ class FakeReportClient
 
 class NotCalledCertVerifyProc : public net::CertVerifyProc {
  public:
+  NotCalledCertVerifyProc()
+      : net::CertVerifyProc(net::CRLSet::BuiltinCRLSet()) {}
+
   bool SupportsAdditionalTrustAnchors() const override { return false; }
 
  protected:
@@ -108,7 +112,6 @@ class NotCalledCertVerifyProc : public net::CertVerifyProc {
                      const std::string& ocsp_response,
                      const std::string& sct_list,
                      int flags,
-                     net::CRLSet* crl_set,
                      const net::CertificateList& additional_trust_anchors,
                      net::CertVerifyResult* verify_result,
                      const net::NetLogWithSource& net_log) override {
@@ -121,6 +124,7 @@ class NotCalledProcFactory : public net::CertVerifyProcFactory {
  public:
   scoped_refptr<net::CertVerifyProc> CreateCertVerifyProc(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+      scoped_refptr<net::CRLSet> crl_set,
       const net::ChromeRootStoreData* root_store_data) override {
     ADD_FAILURE() << "NotCalledProcFactory was called!";
     return nullptr;
@@ -137,6 +141,7 @@ class SwapWithNewProcFactory : public net::CertVerifyProcFactory {
 
   scoped_refptr<net::CertVerifyProc> CreateCertVerifyProc(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+      scoped_refptr<net::CRLSet> crl_set,
       const net::ChromeRootStoreData* root_store_data) override {
     return verify_proc_;
   }
@@ -293,6 +298,6 @@ TEST(TrialComparisonCertVerifierMojoTest, ObserverIsCalledOnCRSUpdate) {
 
   net::CertVerifierObserverCounter observer_(&tccvm);
   EXPECT_EQ(observer_.change_count(), 0u);
-  tccvm.UpdateChromeRootStoreData(nullptr, nullptr);
+  tccvm.UpdateVerifyProcData(nullptr, nullptr, nullptr);
   EXPECT_EQ(observer_.change_count(), 1u);
 }

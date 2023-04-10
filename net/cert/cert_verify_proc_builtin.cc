@@ -372,7 +372,6 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
     return !deadline_.is_null() && base::TimeTicks::Now() > deadline_;
   }
 
-  // The CRLSet may be null.
   raw_ptr<const CRLSet> crl_set_;
   raw_ptr<CertNetFetcher> net_fetcher_;
   const VerificationType verification_type_;
@@ -387,6 +386,7 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
 class CertVerifyProcBuiltin : public CertVerifyProc {
  public:
   CertVerifyProcBuiltin(scoped_refptr<CertNetFetcher> net_fetcher,
+                        scoped_refptr<CRLSet> crl_set,
                         std::unique_ptr<SystemTrustStore> system_trust_store);
 
   bool SupportsAdditionalTrustAnchors() const override;
@@ -400,19 +400,20 @@ class CertVerifyProcBuiltin : public CertVerifyProc {
                      const std::string& ocsp_response,
                      const std::string& sct_list,
                      int flags,
-                     CRLSet* crl_set,
                      const CertificateList& additional_trust_anchors,
                      CertVerifyResult* verify_result,
                      const NetLogWithSource& net_log) override;
 
-  scoped_refptr<CertNetFetcher> net_fetcher_;
-  std::unique_ptr<SystemTrustStore> system_trust_store_;
+  const scoped_refptr<CertNetFetcher> net_fetcher_;
+  const std::unique_ptr<SystemTrustStore> system_trust_store_;
 };
 
 CertVerifyProcBuiltin::CertVerifyProcBuiltin(
     scoped_refptr<CertNetFetcher> net_fetcher,
+    scoped_refptr<CRLSet> crl_set,
     std::unique_ptr<SystemTrustStore> system_trust_store)
-    : net_fetcher_(std::move(net_fetcher)),
+    : CertVerifyProc(std::move(crl_set)),
+      net_fetcher_(std::move(net_fetcher)),
       system_trust_store_(std::move(system_trust_store)) {
   DCHECK(system_trust_store_);
 }
@@ -709,7 +710,6 @@ int CertVerifyProcBuiltin::VerifyInternal(
     const std::string& ocsp_response,
     const std::string& sct_list,
     int flags,
-    CRLSet* crl_set,
     const CertificateList& additional_trust_anchors,
     CertVerifyResult* verify_result,
     const NetLogWithSource& net_log) {
@@ -832,7 +832,7 @@ int CertVerifyProcBuiltin::VerifyInternal(
     result = TryBuildPath(
         target, &intermediates, &trust_store, der_verification_time, deadline,
         cur_attempt.verification_type, cur_attempt.digest_policy, flags,
-        ocsp_response, crl_set, net_fetcher_.get(), ev_metadata,
+        ocsp_response, crl_set(), net_fetcher_.get(), ev_metadata,
         &checked_revocation_for_some_path);
 
     base::UmaHistogramCounts10000("Net.CertVerifier.PathBuilderIterationCount",
@@ -924,9 +924,11 @@ CertVerifyProcBuiltinResultDebugData::Clone() {
 
 scoped_refptr<CertVerifyProc> CreateCertVerifyProcBuiltin(
     scoped_refptr<CertNetFetcher> net_fetcher,
+    scoped_refptr<CRLSet> crl_set,
     std::unique_ptr<SystemTrustStore> system_trust_store) {
   return base::MakeRefCounted<CertVerifyProcBuiltin>(
-      std::move(net_fetcher), std::move(system_trust_store));
+      std::move(net_fetcher), std::move(crl_set),
+      std::move(system_trust_store));
 }
 
 base::TimeDelta GetCertVerifyProcBuiltinTimeLimitForTesting() {

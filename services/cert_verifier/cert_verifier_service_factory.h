@@ -57,8 +57,11 @@ class CertVerifierServiceFactoryImpl
       mojom::CertVerifierCreationParamsPtr creation_params,
       scoped_refptr<CertNetFetcherURLLoader>* cert_net_fetcher_ptr);
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   // mojom::CertVerifierServiceFactory implementation:
+  void UpdateCRLSet(mojo_base::BigBuffer crl_set,
+                    mojom::CertVerifierServiceFactory::UpdateCRLSetCallback
+                        callback) override;
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   void UpdateChromeRootStore(mojom::ChromeRootStorePtr new_root_store,
                              UpdateChromeRootStoreCallback callback) override;
   void GetChromeRootStoreInfo(GetChromeRootStoreInfoCallback callback) override;
@@ -68,7 +71,15 @@ class CertVerifierServiceFactoryImpl
   void RemoveService(internal::CertVerifierServiceImpl* service_impl);
 
  private:
+  // Update all the `verifier_services_` with the current data.
+  void UpdateVerifierServices();
+
+  void OnCRLSetParsed(scoped_refptr<net::CRLSet> parsed_crl_set);
+
   mojom::CertVerifierServiceParamsPtr service_params_;
+
+  // The most recent version of CRLSet that we've seen.
+  scoped_refptr<net::CRLSet> crl_set_;
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   // The most recent version of the Chrome Root Store that we've seen.

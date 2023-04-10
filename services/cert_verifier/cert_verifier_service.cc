@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
 #include "net/cert/cert_verify_result.h"
+#include "net/cert/crl_set.h"
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
 #include "services/cert_verifier/cert_verifier_service_factory.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
@@ -131,9 +132,11 @@ void CertVerifierServiceImpl::SetCertVerifierServiceFactory(
   service_factory_impl_ = std::move(service_factory_impl);
 }
 
-void CertVerifierServiceImpl::UpdateChromeRootStoreData(
+void CertVerifierServiceImpl::UpdateVerifierData(
+    scoped_refptr<net::CRLSet> crl_set,
     const net::ChromeRootStoreData* root_store_data) {
-  verifier_->UpdateChromeRootStoreData(cert_net_fetcher_, root_store_data);
+  verifier_->UpdateVerifyProcData(cert_net_fetcher_, std::move(crl_set),
+                                  root_store_data);
 }
 
 void CertVerifierServiceImpl::Verify(

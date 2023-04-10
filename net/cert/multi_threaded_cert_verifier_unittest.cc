@@ -14,6 +14,7 @@
 #include "net/base/test_completion_callback.h"
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/cert_verify_result.h"
+#include "net/cert/crl_set.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/x509_certificate.h"
 #include "net/log/net_log_with_source.h"
@@ -43,13 +44,13 @@ void FailTest(int /* result */) {
 
 class MockCertVerifyProc : public CertVerifyProc {
  public:
-  MOCK_METHOD9(VerifyInternal,
+  MockCertVerifyProc() : CertVerifyProc(CRLSet::BuiltinCRLSet()) {}
+  MOCK_METHOD8(VerifyInternal,
                int(X509Certificate*,
                    const std::string&,
                    const std::string&,
                    const std::string&,
                    int,
-                   CRLSet*,
                    const CertificateList&,
                    CertVerifyResult*,
                    const NetLogWithSource&));
@@ -61,7 +62,7 @@ class MockCertVerifyProc : public CertVerifyProc {
 
 ACTION(SetCertVerifyResult) {
   X509Certificate* cert = arg0;
-  CertVerifyResult* result = arg7;
+  CertVerifyResult* result = arg6;
   result->Reset();
   result->verified_cert = cert;
   result->cert_status = CERT_STATUS_COMMON_NAME_INVALID;
@@ -69,7 +70,7 @@ ACTION(SetCertVerifyResult) {
 
 ACTION(SetCertVerifyRevokedResult) {
   X509Certificate* cert = arg0;
-  CertVerifyResult* result = arg7;
+  CertVerifyResult* result = arg6;
   result->Reset();
   result->verified_cert = cert;
   result->cert_status = CERT_STATUS_REVOKED;
@@ -82,6 +83,7 @@ class SwapWithNewProcFactory : public CertVerifyProcFactory {
 
   scoped_refptr<net::CertVerifyProc> CreateCertVerifyProc(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
+      scoped_refptr<CRLSet> crl_set,
       const ChromeRootStoreData* root_store_data) override {
     return mock_verify_proc_;
   }
@@ -104,7 +106,7 @@ class MultiThreadedCertVerifierTest : public TestWithTaskEnvironment {
                 mock_new_verify_proc_))) {
     EXPECT_CALL(*mock_verify_proc_, SupportsAdditionalTrustAnchors())
         .WillRepeatedly(Return(true));
-    EXPECT_CALL(*mock_verify_proc_, VerifyInternal(_, _, _, _, _, _, _, _, _))
+    EXPECT_CALL(*mock_verify_proc_, VerifyInternal(_, _, _, _, _, _, _, _))
         .WillRepeatedly(
             DoAll(SetCertVerifyResult(), Return(ERR_CERT_COMMON_NAME_INVALID)));
   }
@@ -274,9 +276,8 @@ TEST_F(MultiThreadedCertVerifierTest, ConvertsConfigToFlags) {
 
     verifier_->SetConfig(config);
 
-    EXPECT_CALL(
-        *mock_verify_proc_,
-        VerifyInternal(_, _, _, _, test_config.expected_flag, _, _, _, _))
+    EXPECT_CALL(*mock_verify_proc_,
+                VerifyInternal(_, _, _, _, test_config.expected_flag, _, _, _))
         .WillRepeatedly(
             DoAll(SetCertVerifyRevokedResult(), Return(ERR_CERT_REVOKED)));
 
@@ -309,10 +310,10 @@ TEST_F(MultiThreadedCertVerifierTest, VerifyProcChangeChromeRootStore) {
 
   EXPECT_EQ(observer_counter.change_count(), 0u);
 
-  EXPECT_CALL(*mock_new_verify_proc_, VerifyInternal(_, _, _, _, _, _, _, _, _))
+  EXPECT_CALL(*mock_new_verify_proc_, VerifyInternal(_, _, _, _, _, _, _, _))
       .WillRepeatedly(
           DoAll(SetCertVerifyRevokedResult(), Return(ERR_CERT_REVOKED)));
-  verifier_->UpdateChromeRootStoreData(nullptr, nullptr);
+  verifier_->UpdateVerifyProcData(nullptr, nullptr, nullptr);
 
   EXPECT_EQ(observer_counter.change_count(), 1u);
 
@@ -352,7 +353,7 @@ TEST_F(MultiThreadedCertVerifierTest, VerifyProcChangeRequest) {
       &verify_result, callback.callback(), &request, NetLogWithSource());
   ASSERT_THAT(error, IsError(ERR_IO_PENDING));
   EXPECT_TRUE(request);
-  verifier_->UpdateChromeRootStoreData(nullptr, nullptr);
+  verifier_->UpdateVerifyProcData(nullptr, nullptr, nullptr);
   error = callback.WaitForResult();
   EXPECT_TRUE(IsCertificateError(error));
   EXPECT_THAT(error, IsError(ERR_CERT_COMMON_NAME_INVALID));

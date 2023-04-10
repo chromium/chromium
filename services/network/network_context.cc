@@ -2400,8 +2400,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   std::unique_ptr<SSLConfigServiceMojo> ssl_config_service =
       std::make_unique<SSLConfigServiceMojo>(
           std::move(params_->initial_ssl_config),
-          std::move(params_->ssl_config_client_receiver),
-          network_service_->crl_set_distributor());
+          std::move(params_->ssl_config_client_receiver));
   SSLConfigServiceMojo* ssl_config_service_raw = ssl_config_service.get();
   builder.set_ssl_config_service(std::move(ssl_config_service));
 

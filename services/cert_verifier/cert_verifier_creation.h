@@ -15,6 +15,7 @@
 
 namespace net {
 class ChromeRootStoreData;
+class CRLSet;
 }  // namespace net
 
 // Set of utility functions to help with creation of CertVerifiers for
@@ -33,6 +34,7 @@ std::unique_ptr<net::CertVerifierWithUpdatableProc> CreateCertVerifier(
     mojom::CertVerifierServiceParams* impl_params,
     mojom::CertVerifierCreationParams* creation_params,
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+    scoped_refptr<net::CRLSet> crl_set,
     const net::ChromeRootStoreData* root_store_data);
 
 }  // namespace cert_verifier

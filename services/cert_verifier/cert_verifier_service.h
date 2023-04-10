@@ -62,9 +62,9 @@ class CertVerifierServiceImpl : public mojom::CertVerifierService,
       base::WeakPtr<cert_verifier::CertVerifierServiceFactoryImpl>
           service_factory_impl);
 
-  // Update the wrapped verifier with new ChromeRootStoreData.
-  void UpdateChromeRootStoreData(
-      const net::ChromeRootStoreData* root_store_data);
+  // Update the wrapped verifier with CRLSet and ChromeRootStoreData.
+  void UpdateVerifierData(scoped_refptr<net::CRLSet> crl_set,
+                          const net::ChromeRootStoreData* root_store_data);
 
  private:
   ~CertVerifierServiceImpl() override;

@@ -694,9 +694,6 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
     network_service->SetEncryptionKey(OSCrypt::GetRawEncryptionKey());
   }
 
-  // Asynchronously reapply the most recently received CRLSet (if any).
-  component_updater::CRLSetPolicy::ReconfigureAfterNetworkRestart();
-
   // Configure SCT Auditing in the NetworkService.
   SCTReportingService::ReconfigureAfterNetworkRestart();
 
