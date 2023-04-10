@@ -1133,6 +1133,17 @@ TEST_F(TabletWindowFloatTest, TabletClamshellTransition) {
   EXPECT_TRUE(WindowState::Get(window2.get())->IsFloated());
 }
 
+TEST_F(TabletWindowFloatTest, ClamshellToTabletMagnetism) {
+  auto window = CreateFloatedWindow();
+  window->SetBounds(gfx::Rect(300, 300));
+
+  // Verify that on entering tablet mode, since our window's origin was 0,0, the
+  // window is magnetized to the top left.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
+  CheckMagnetized(window.get(), FloatController::MagnetismCorner::kTopLeft);
+}
+
 // Tests that the expected windows are animating duration a tablet <-> clamshell
 // transition.
 TEST_F(TabletWindowFloatTest, TabletClamshellTransitionAnimation) {
