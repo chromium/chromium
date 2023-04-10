@@ -12,6 +12,8 @@ source_set("nearby") {
     "nearby_connections_conversions.h",
     "nearby_connections_stream_buffer_manager.cc",
     "nearby_connections_stream_buffer_manager.h",
+    "nearby_presence.cc",
+    "nearby_presence.h",
     "nearby_shared_remotes.cc",
     "nearby_shared_remotes.h",
     "platform.cc",
@@ -40,6 +42,7 @@ source_set("unit_tests") {
   sources = [
     "nearby_connections_stream_buffer_manager_unittest.cc",
     "nearby_connections_unittest.cc",
+    "nearby_presence_unittest.cc",
   ]
 
   deps = [
