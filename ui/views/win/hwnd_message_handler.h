@@ -557,6 +557,10 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
                                           WPARAM w_param,
                                           LPARAM l_param);
 
+  // Helper to handle client area events of PT_PEN.
+  LRESULT HandlePointerEventTypePen(UINT message,
+                                    UINT32 pointer_id,
+                                    POINTER_PEN_INFO pointer_pen_info);
   // Returns true if the mouse message passed in is an OS synthesized mouse
   // message.
   // |message| identifies the mouse message.

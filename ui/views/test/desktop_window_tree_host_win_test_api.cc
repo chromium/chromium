@@ -36,5 +36,13 @@ void DesktopWindowTreeHostWinTestApi::SetMockCursorPositionForTesting(
   GetHwndMessageHandler()->mock_cursor_position_ = position;
 }
 
+LRESULT DesktopWindowTreeHostWinTestApi::SimulatePenEventForTesting(
+    UINT message,
+    UINT32 pointer_id,
+    POINTER_PEN_INFO pointer_pen_info) {
+  return host_->message_handler_->HandlePointerEventTypePen(message, pointer_id,
+                                                            pointer_pen_info);
+}
+
 }  // namespace test
 }  // namespace views

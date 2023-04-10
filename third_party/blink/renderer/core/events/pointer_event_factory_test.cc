@@ -13,6 +13,12 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/pointer_type_names.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+
+namespace {
+const int32_t kBrowserDeviceId0 = 0;
+const int32_t kBrowserDeviceId1 = 1;
+}  // namespace
 
 namespace blink {
 
@@ -641,6 +647,136 @@ TEST_F(PointerEventFactoryTest, MousePointerKeyStates) {
 
   CreateAndCheckPointerTransitionEvent(pointer_event2,
                                        event_type_names::kPointerover);
+}
+
+class PointerEventFactoryDeviceIdTest : public SimTest {
+ protected:
+  PointerEvent* CreatePointerEvent(
+      WebPointerProperties::PointerType pointer_type,
+      int raw_id,
+      int32_t device_id) {
+    WebPointerEvent web_pointer_event;
+    web_pointer_event.pointer_type = pointer_type;
+    web_pointer_event.id = raw_id;
+    web_pointer_event.SetType(WebInputEvent::Type::kPointerDown);
+    web_pointer_event.SetTimeStamp(WebInputEvent::GetStaticTimeStampForTests());
+    web_pointer_event.SetModifiers(WebInputEvent::kNoModifiers);
+    web_pointer_event.force = 1.0;
+    web_pointer_event.hovering = false;
+    web_pointer_event.button = WebPointerProperties::Button::kNoButton;
+    web_pointer_event.SetPositionInScreen(100, 100);
+    web_pointer_event.device_id = device_id;
+    Vector<WebPointerEvent> coalesced_events;
+    Vector<WebPointerEvent> predicted_events;
+
+    LocalDOMWindow* window = GetDocument().domWindow();
+    return pointer_event_factory_.Create(web_pointer_event, coalesced_events,
+                                         predicted_events, window);
+  }
+
+  int32_t CreatePointerEventAndGetDeviceId(
+      WebPointerProperties::PointerType pointer_type,
+      int raw_id,
+      int32_t device_id) {
+    PointerEvent* pointer_event =
+        CreatePointerEvent(pointer_type, raw_id, device_id);
+    // Pointer events of type eraser are converted to pen events here:
+    // PointerEventFactory::ConvertIdTypeButtonsEvent. Therefore check below to
+    // make sure the conversion is done as expected.
+    if (pointer_type == WebPointerProperties::PointerType::kEraser) {
+      pointer_type = WebPointerProperties::PointerType::kPen;
+    }
+    const String& expected_pointer_type =
+        PointerEventFactory::PointerTypeNameForWebPointPointerType(
+            pointer_type);
+    EXPECT_EQ(expected_pointer_type, pointer_event->pointerType());
+    return pointer_event->deviceId();
+  }
+
+  PointerEventFactory pointer_event_factory_;
+};
+
+// This test validates that the unique device id provided to blink is reset upon
+// a new document being created. Furthermore, it validates that the id is random
+// for the same pen but across different documents.
+TEST_F(PointerEventFactoryDeviceIdTest, DeviceIdResetAfterClear) {
+  int32_t blink_device_id_1 = CreatePointerEventAndGetDeviceId(
+      WebPointerProperties::PointerType::kPen, /* Raw pointer id */ 0,
+      /* Device id */ kBrowserDeviceId0);
+  int32_t blink_device_id_2 = CreatePointerEventAndGetDeviceId(
+      WebPointerProperties::PointerType::kPen, /* Raw pointer id */ 1,
+      /* Device id */ kBrowserDeviceId0);
+  // Id is the same for the same pen.
+  ASSERT_EQ(blink_device_id_1, blink_device_id_2);
+
+  int32_t blink_device_id_3 = CreatePointerEventAndGetDeviceId(
+      WebPointerProperties::PointerType::kPen, /* Raw pointer id */ 2,
+      /* Device id */ kBrowserDeviceId1);
+  // Id is different for a different pen.
+  ASSERT_NE(blink_device_id_1, blink_device_id_3);
+
+  pointer_event_factory_.Clear();
+
+  int32_t blink_device_id_4 = CreatePointerEventAndGetDeviceId(
+      WebPointerProperties::PointerType::kPen, /* Raw pointer id */ 0,
+      /* Device id */ kBrowserDeviceId1);
+  // Id not the same as before clear, even though the pen is the same.
+  ASSERT_NE(blink_device_id_3, blink_device_id_4);
+
+  int32_t blink_device_id_5 = CreatePointerEventAndGetDeviceId(
+      WebPointerProperties::PointerType::kPen, /* Raw pointer id */ 1,
+      /* Device id */ kBrowserDeviceId0);
+  // Id is not the same fore a different pen.
+  ASSERT_NE(blink_device_id_4, blink_device_id_5);
+  // Id not the same as before clear, even though the pen is the same.
+  ASSERT_NE(blink_device_id_5, blink_device_id_1);
+
+  int32_t blink_device_id_6 = CreatePointerEventAndGetDeviceId(
+      WebPointerProperties::PointerType::kPen, /* Raw pointer id */ 2,
+      /* Device id */ kBrowserDeviceId0);
+  // Id is the same for the same pen.
+  ASSERT_EQ(blink_device_id_5, blink_device_id_6);
+  pointer_event_factory_.Clear();
+}
+
+// Erasers on the surface hub have a pointer type of
+// WebPointerProperties::PointerType::kEraser. Verify that an eraser is treated
+// just like a pen event would be.
+TEST_F(PointerEventFactoryDeviceIdTest, DeviceIdForMousePointerType) {
+  int32_t blink_device_id_1 = CreatePointerEventAndGetDeviceId(
+      WebPointerProperties::PointerType::kEraser, /* Raw pointer id */ 0,
+      /* Device id */ kBrowserDeviceId0);
+  int32_t blink_device_id_2 = CreatePointerEventAndGetDeviceId(
+      WebPointerProperties::PointerType::kEraser, /* Raw pointer id */ 1,
+      /* Device id */ kBrowserDeviceId0);
+  // Id is the same for the same pen.
+  ASSERT_EQ(blink_device_id_1, blink_device_id_2);
+  ASSERT_GT(blink_device_id_1, 1);
+
+  int32_t blink_device_id_3 = CreatePointerEventAndGetDeviceId(
+      WebPointerProperties::PointerType::kPen, /* Raw pointer id */ 2,
+      /* Device id */ kBrowserDeviceId0);
+  // Id is same for the same pen.
+  ASSERT_EQ(blink_device_id_1, blink_device_id_3);
+
+  // Different blink device id for different pen id.
+  int32_t blink_device_id_4 = CreatePointerEventAndGetDeviceId(
+      WebPointerProperties::PointerType::kEraser, /* Raw pointer id */ 2,
+      /* Device id */ kBrowserDeviceId1);
+  ASSERT_NE(blink_device_id_1, blink_device_id_4);
+
+  // Invalid device id.
+  int32_t blink_device_id_5 = CreatePointerEventAndGetDeviceId(
+      WebPointerProperties::PointerType::kEraser, /* Raw pointer id */ 2,
+      /* Device id */ -1);
+  ASSERT_EQ(-1, blink_device_id_5);
+
+  // Mouse (device id of the web pointer event does not matter).
+  int32_t blink_device_id_6 = CreatePointerEventAndGetDeviceId(
+      WebPointerProperties::PointerType::kMouse, /* Raw pointer id */ 2,
+      /* Device id */ -1);
+  ASSERT_EQ(1, blink_device_id_6);
+  pointer_event_factory_.Clear();
 }
 
 }  // namespace blink

@@ -24,6 +24,14 @@ bool PenDeviceApiSupported() {
 
 }  // namespace
 
+PenIdHandler::GetPenDeviceStatics get_pen_device_statics = nullptr;
+
+PenIdHandler::ScopedPenIdStaticsForTesting::ScopedPenIdStaticsForTesting(
+    PenIdHandler::GetPenDeviceStatics statics)
+    : resetter_(&get_pen_device_statics, statics) {}
+PenIdHandler::ScopedPenIdStaticsForTesting::~ScopedPenIdStaticsForTesting() =
+    default;
+
 PenIdHandler::PenIdHandler() {
   base::win::AssertComInitialized();
   HRESULT hr = base::win::RoGetActivationFactory(
@@ -55,12 +63,17 @@ absl::optional<int32_t> PenIdHandler::TryGetPenUniqueId(UINT32 pointer_id) {
 }
 
 absl::optional<std::string> PenIdHandler::TryGetGuid(UINT32 pointer_id) const {
-  if (!pen_device_statics_) {
+  // Override pen device statics if in a test.
+  const Microsoft::WRL::ComPtr<ABI::Windows::Devices::Input::IPenDeviceStatics>
+      pen_device_statics = get_pen_device_statics ? (*get_pen_device_statics)()
+                                                  : pen_device_statics_;
+
+  if (!pen_device_statics) {
     return absl::nullopt;
   }
 
   Microsoft::WRL::ComPtr<ABI::Windows::Devices::Input::IPenDevice> pen_device;
-  HRESULT hr = pen_device_statics_->GetFromPointerId(pointer_id, &pen_device);
+  HRESULT hr = pen_device_statics->GetFromPointerId(pointer_id, &pen_device);
   // `pen_device` is null if the pen does not support a unique ID.
   if (FAILED(hr) || !pen_device) {
     return absl::nullopt;

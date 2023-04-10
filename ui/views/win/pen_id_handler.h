@@ -13,6 +13,7 @@
 
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -28,10 +29,21 @@ namespace views {
 // which is ultimately returned.
 class VIEWS_EXPORT PenIdHandler {
  public:
+  using GetPenDeviceStatics = Microsoft::WRL::ComPtr<
+      ABI::Windows::Devices::Input::IPenDeviceStatics> (*)();
+  class VIEWS_EXPORT [[maybe_unused, nodiscard]] ScopedPenIdStaticsForTesting {
+   public:
+    explicit ScopedPenIdStaticsForTesting(
+        GetPenDeviceStatics pen_device_statics);
+    ~ScopedPenIdStaticsForTesting();
+
+   private:
+    base::AutoReset<GetPenDeviceStatics> resetter_;
+  };
+
   PenIdHandler();
   virtual ~PenIdHandler();
   absl::optional<int32_t> TryGetPenUniqueId(UINT32 pointer_id);
-  static void OverrideStaticsForTesting(bool override);
 
  private:
   friend class FakePenIdHandler;

@@ -19,6 +19,14 @@ FakeIPenDeviceStatics* FakeIPenDeviceStatics::GetInstance() {
   return instance.get();
 }
 
+Microsoft::WRL::ComPtr<ABI::Windows::Devices::Input::IPenDeviceStatics>
+FakeIPenDeviceStatics::FakeIPenDeviceStaticsComPtr() {
+  FakeIPenDeviceStatics* instance = GetInstance();
+  return static_cast<
+      Microsoft::WRL::ComPtr<ABI::Windows::Devices::Input::IPenDeviceStatics>>(
+      instance);
+}
+
 HRESULT FakeIPenDeviceStatics::GetFromPointerId(UINT32 pointer_id,
                                                 IPenDevice** result) {
   auto pen_device = pen_device_map_.find(pointer_id);

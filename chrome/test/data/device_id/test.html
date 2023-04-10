@@ -1,0 +1,30 @@
+<!--
+    Copyright 2023 The Chromium Authors
+    Use of this source code is governed by a BSD-style license that can be
+    found in the LICENSE file.
+-->
+
+<html>
+    <head>
+        <!-- Centralizes the canvas element in the middle of the frame. -->
+        <style type="text/css">
+            .canvas {
+                display: block;
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                outline-style: solid;
+                outline-width: 4px;
+                outline-color: red;
+                outline-offset: -4px;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+            }
+        </style>
+    </head>
+    <body onload="init()">
+        <canvas id="test_canvas" class="canvas" ></canvas>
+    </body>
+</html>
