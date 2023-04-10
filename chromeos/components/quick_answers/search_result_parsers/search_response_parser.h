@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace base {
@@ -43,6 +44,8 @@ class SearchResponseParser {
   bool ProcessResult(const base::Value* result, QuickAnswer* quick_answer);
 
   SearchResponseParserCallback complete_callback_;
+
+  base::WeakPtrFactory<SearchResponseParser> weak_factory_{this};
 };
 
 }  // namespace quick_answers

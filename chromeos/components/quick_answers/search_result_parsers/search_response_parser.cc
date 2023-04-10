@@ -42,7 +42,7 @@ void SearchResponseParser::ProcessResponse(
   data_decoder::DataDecoder::ParseJsonIsolated(
       response_body->substr(strlen(kJsonSafetyPrefix)),
       base::BindOnce(&SearchResponseParser::OnJsonParsed,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void SearchResponseParser::OnJsonParsed(
