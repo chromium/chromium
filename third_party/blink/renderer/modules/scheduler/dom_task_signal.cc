@@ -144,10 +144,8 @@ void DOMTaskSignal::SignalPriorityChange(const AtomicString& priority,
             *priority_composition_manager_.Get())) {
       // Dependents can be added while dispatching events, but none are removed
       // since having an active iterator will strongify weak references, making
-      // the following iteration safe.
-      //
-      // TODO(crbug.com/1323391): Should this ignore newly added signals or not?
-      // It probably doesn't matter much, but it should be specced and tested.
+      // the following iteration safe. Signaling priority change on newly added
+      // dependent signals has no effect since the new priority is already set.
       for (auto& abort_signal : source_signal_manager->GetDependentSignals()) {
         To<DOMTaskSignal>(abort_signal.Get())
             ->SignalPriorityChange(priority, exception_state);
