@@ -181,7 +181,7 @@ constant.
 To enable UMA tracking, you need to make the following changes to the metrics
 configuration:
 
-1.  Add feature to the histogram variant `IPHFeatures` in:
+1.  Add feature to the histogram variant `IPHFeature` in:
     `//tools/metrics/histograms/metadata/feature_engagement/histograms.xml`.
     *   The variant name must match the `base::Feature` `name` member of your
         feature.
