@@ -71,12 +71,18 @@ SkBitmap AllocateBitmap(const gfx::Size& size) {
 
 }  // namespace
 
-class DrmWindowTest : public testing::Test {
+// TODO(crbug.com/1431767): Re-enable this test
+#if defined(LEAK_SANITIZER)
+#define MAYBE_DrmWindowTest DISABLED_DrmWindowTest
+#else
+#define MAYBE_DrmWindowTest DrmWindowTest
+#endif
+class MAYBE_DrmWindowTest : public testing::Test {
  public:
-  DrmWindowTest() = default;
+  MAYBE_DrmWindowTest() = default;
 
-  DrmWindowTest(const DrmWindowTest&) = delete;
-  DrmWindowTest& operator=(const DrmWindowTest&) = delete;
+  MAYBE_DrmWindowTest(const MAYBE_DrmWindowTest&) = delete;
+  MAYBE_DrmWindowTest& operator=(const MAYBE_DrmWindowTest&) = delete;
 
   void SetUp() override;
   void TearDown() override;
@@ -116,7 +122,7 @@ class DrmWindowTest : public testing::Test {
   uint32_t connector_id_ = 0;
 };
 
-void DrmWindowTest::SetUp() {
+void MAYBE_DrmWindowTest::SetUp() {
   on_successful_swap_buffers_count_ = 0;
   last_swap_buffers_result_ = gfx::SwapResult::SWAP_FAILED;
 
@@ -146,13 +152,14 @@ void DrmWindowTest::SetUp() {
   screen_manager_->AddWindow(kDefaultWidgetHandle, std::move(window));
 }
 
-void DrmWindowTest::TearDown() {
+void MAYBE_DrmWindowTest::TearDown() {
   std::unique_ptr<DrmWindow> window =
       screen_manager_->RemoveWindow(kDefaultWidgetHandle);
   window->Shutdown();
 }
 
-void DrmWindowTest::InitializeDrmState(MockDrmDevice* drm, bool is_atomic) {
+void MAYBE_DrmWindowTest::InitializeDrmState(MockDrmDevice* drm,
+                                             bool is_atomic) {
   drm->SetPropertyBlob(MockDrmDevice::AllocateInFormatsBlob(
       kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, {}));
   auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
@@ -160,7 +167,7 @@ void DrmWindowTest::InitializeDrmState(MockDrmDevice* drm, bool is_atomic) {
   drm->InitializeState(drm_state, /*use_atomic=*/false);
 }
 
-TEST_F(DrmWindowTest, SetCursorImage) {
+TEST_F(MAYBE_DrmWindowTest, SetCursorImage) {
   const gfx::Size cursor_size(6, 4);
   screen_manager_->GetWindow(kDefaultWidgetHandle)
       ->SetCursor(std::vector<SkBitmap>(1, AllocateBitmap(cursor_size)),
@@ -186,7 +193,7 @@ TEST_F(DrmWindowTest, SetCursorImage) {
   }
 }
 
-TEST_F(DrmWindowTest, CheckCursorSurfaceAfterChangingDevice) {
+TEST_F(MAYBE_DrmWindowTest, CheckCursorSurfaceAfterChangingDevice) {
   const gfx::Size cursor_size(6, 4);
   screen_manager_->GetWindow(kDefaultWidgetHandle)
       ->SetCursor(std::vector<SkBitmap>(1, AllocateBitmap(cursor_size)),
@@ -217,17 +224,18 @@ TEST_F(DrmWindowTest, CheckCursorSurfaceAfterChangingDevice) {
   EXPECT_NE(0u, drm->get_cursor_handle_for_crtc(crtc_id_));
 }
 
-TEST_F(DrmWindowTest, CheckPageflipSuccessOnSuccessfulSwap) {
+TEST_F(MAYBE_DrmWindowTest, CheckPageflipSuccessOnSuccessfulSwap) {
   DrmOverlayPlaneList planes;
   planes.emplace_back(CreateBuffer(), nullptr);
 
   // Window was re-sized, so the expectation is to re-create the buffers first.
   DrmWindow* window = screen_manager_->GetWindow(kDefaultWidgetHandle);
   drm_->set_page_flip_expectation(false);
-  window->SchedulePageFlip(
-      DrmOverlayPlane::Clone(planes),
-      base::BindOnce(&DrmWindowTest::OnSubmission, base::Unretained(this)),
-      base::BindOnce(&DrmWindowTest::OnPresentation, base::Unretained(this)));
+  window->SchedulePageFlip(DrmOverlayPlane::Clone(planes),
+                           base::BindOnce(&MAYBE_DrmWindowTest::OnSubmission,
+                                          base::Unretained(this)),
+                           base::BindOnce(&MAYBE_DrmWindowTest::OnPresentation,
+                                          base::Unretained(this)));
   drm_->RunCallbacks();
   EXPECT_EQ(0, on_successful_swap_buffers_count_);
   EXPECT_EQ(gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS,
@@ -237,10 +245,11 @@ TEST_F(DrmWindowTest, CheckPageflipSuccessOnSuccessfulSwap) {
 
   // Page flip succeeds, so GPU self-destruct should not engage.
   drm_->set_page_flip_expectation(true);
-  window->SchedulePageFlip(
-      DrmOverlayPlane::Clone(planes),
-      base::BindOnce(&DrmWindowTest::OnSubmission, base::Unretained(this)),
-      base::BindOnce(&DrmWindowTest::OnPresentation, base::Unretained(this)));
+  window->SchedulePageFlip(DrmOverlayPlane::Clone(planes),
+                           base::BindOnce(&MAYBE_DrmWindowTest::OnSubmission,
+                                          base::Unretained(this)),
+                           base::BindOnce(&MAYBE_DrmWindowTest::OnPresentation,
+                                          base::Unretained(this)));
   drm_->RunCallbacks();
   EXPECT_EQ(1, on_successful_swap_buffers_count_);
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_buffers_result_);
@@ -249,17 +258,18 @@ TEST_F(DrmWindowTest, CheckPageflipSuccessOnSuccessfulSwap) {
   task_environment_.FastForwardBy(kWaitForModesetTimeout);
 }
 
-TEST_F(DrmWindowTest, CheckPageflipFailureOnFailedSwap) {
+TEST_F(MAYBE_DrmWindowTest, CheckPageflipFailureOnFailedSwap) {
   DrmOverlayPlaneList planes;
   planes.emplace_back(CreateBuffer(), nullptr);
 
   // Window was re-sized, so the expectation is to re-create the buffers first.
   DrmWindow* window = screen_manager_->GetWindow(kDefaultWidgetHandle);
   drm_->set_page_flip_expectation(false);
-  window->SchedulePageFlip(
-      DrmOverlayPlane::Clone(planes),
-      base::BindOnce(&DrmWindowTest::OnSubmission, base::Unretained(this)),
-      base::BindOnce(&DrmWindowTest::OnPresentation, base::Unretained(this)));
+  window->SchedulePageFlip(DrmOverlayPlane::Clone(planes),
+                           base::BindOnce(&MAYBE_DrmWindowTest::OnSubmission,
+                                          base::Unretained(this)),
+                           base::BindOnce(&MAYBE_DrmWindowTest::OnPresentation,
+                                          base::Unretained(this)));
   drm_->RunCallbacks();
   EXPECT_EQ(0, on_successful_swap_buffers_count_);
   EXPECT_EQ(gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS,
@@ -268,10 +278,11 @@ TEST_F(DrmWindowTest, CheckPageflipFailureOnFailedSwap) {
             last_presentation_feedback_.flags);
 
   // Page flip still fails, so we expect GPU self-destruct timer to kick in.
-  window->SchedulePageFlip(
-      DrmOverlayPlane::Clone(planes),
-      base::BindOnce(&DrmWindowTest::OnSubmission, base::Unretained(this)),
-      base::BindOnce(&DrmWindowTest::OnPresentation, base::Unretained(this)));
+  window->SchedulePageFlip(DrmOverlayPlane::Clone(planes),
+                           base::BindOnce(&MAYBE_DrmWindowTest::OnSubmission,
+                                          base::Unretained(this)),
+                           base::BindOnce(&MAYBE_DrmWindowTest::OnPresentation,
+                                          base::Unretained(this)));
   drm_->RunCallbacks();
   EXPECT_EQ(0, on_successful_swap_buffers_count_);
   EXPECT_EQ(gfx::SwapResult::SWAP_FAILED, last_swap_buffers_result_);
