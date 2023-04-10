@@ -68,6 +68,8 @@ class InputDeviceSettingsProvider
   void OnMouseConnected(const ::ash::mojom::Mouse& mouse) override;
   void OnMouseDisconnected(const ::ash::mojom::Mouse& mouse) override;
   void OnMouseSettingsUpdated(const ::ash::mojom::Mouse& mouse) override;
+  void OnMousePoliciesUpdated(
+      const ::ash::mojom::MousePolicies& mouse_policies) override;
 
  private:
   void NotifyKeyboardsUpdated();

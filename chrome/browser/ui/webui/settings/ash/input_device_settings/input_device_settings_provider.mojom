@@ -35,6 +35,9 @@ interface MouseSettingsObserver {
   // Notifies MouseSettingsObserver when the list of connected mice
   // and their settings are updated.
   OnMouseListUpdated(array<ash.mojom.Mouse> mice);
+  // Notifies MouseSettingsObserver whenever the set of policies which
+  // control mouse settings change.
+  OnMousePoliciesUpdated(ash.mojom.MousePolicies policies);
 };
 
 // Interface for fetching and configuring input device settings in OSSettings.

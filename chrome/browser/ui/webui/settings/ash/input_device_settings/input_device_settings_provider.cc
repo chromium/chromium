@@ -142,9 +142,11 @@ void InputDeviceSettingsProvider::ObserveMouseSettings(
   DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   DCHECK(InputDeviceSettingsController::Get());
   const auto id = mouse_settings_observers_.Add(std::move(observer));
-  mouse_settings_observers_.Get(id)->OnMouseListUpdated(
-      SanitizeAndSortDeviceList(
-          InputDeviceSettingsController::Get()->GetConnectedMice()));
+  auto* mouse_settings_observer = mouse_settings_observers_.Get(id);
+  mouse_settings_observer->OnMouseListUpdated(SanitizeAndSortDeviceList(
+      InputDeviceSettingsController::Get()->GetConnectedMice()));
+  mouse_settings_observer->OnMousePoliciesUpdated(
+      InputDeviceSettingsController::Get()->GetMousePolicies().Clone());
 }
 
 void InputDeviceSettingsProvider::OnKeyboardConnected(
@@ -212,6 +214,14 @@ void InputDeviceSettingsProvider::OnMouseDisconnected(
 void InputDeviceSettingsProvider::OnMouseSettingsUpdated(
     const ::ash::mojom::Mouse& mouse) {
   NotifyMiceUpdated();
+}
+
+void InputDeviceSettingsProvider::OnMousePoliciesUpdated(
+    const ::ash::mojom::MousePolicies& mouse) {
+  for (const auto& observer : mouse_settings_observers_) {
+    observer->OnMousePoliciesUpdated(
+        InputDeviceSettingsController::Get()->GetMousePolicies().Clone());
+  }
 }
 
 void InputDeviceSettingsProvider::NotifyKeyboardsUpdated() {

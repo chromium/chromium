@@ -293,7 +293,7 @@ TEST_F(MousePrefHandlerTest, NewSettingAddedRoundTrip) {
   pref_service_->SetDict(prefs::kMouseDeviceSettingsDictPref,
                          std::move(devices_dict));
 
-  // Initialize keyboard settings for the device and check that
+  // Initialize mouse settings for the device and check that
   // "new settings" matches "test_settings".
   mojom::MouseSettingsPtr settings = CallInitializeMouseSettings(kMouseKey1);
   EXPECT_EQ(kDefaultSwapRight, settings->swap_right);
@@ -409,6 +409,92 @@ TEST_F(MousePrefHandlerTest, DefaultNotPersistedUntilUpdated) {
   EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingScrollSensitivity));
   EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingScrollAcceleration));
   CheckMouseSettingsAndDictAreEqual(kMouseSettingsDefault, *settings_dict);
+}
+
+TEST_F(MousePrefHandlerTest, NewMouse_ManagedEnterprisePolicy_GetsDefaults) {
+  mojom::MousePolicies policies;
+  policies.swap_right_policy = mojom::InputDeviceSettingsPolicy::New(
+      mojom::PolicyStatus::kManaged, !kDefaultSwapRight);
+
+  mojom::Mouse mouse;
+  mouse.device_key = kMouseKey1;
+
+  pref_handler_->InitializeMouseSettings(pref_service_.get(), policies, &mouse);
+
+  EXPECT_EQ(!kDefaultSwapRight, mouse.settings->swap_right);
+  mouse.settings->swap_right = kDefaultSwapRight;
+  EXPECT_EQ(kMouseSettingsDefault, *mouse.settings);
+
+  const auto* settings_dict = GetSettingsDict(kMouseKey1);
+  EXPECT_FALSE(settings_dict->contains(prefs::kMouseSettingSwapRight));
+}
+
+TEST_F(MousePrefHandlerTest,
+       NewMouse_RecommendedEnterprisePolicy_GetsDefaults) {
+  mojom::MousePolicies policies;
+  policies.swap_right_policy = mojom::InputDeviceSettingsPolicy::New(
+      mojom::PolicyStatus::kRecommended, !kDefaultSwapRight);
+
+  mojom::Mouse mouse;
+  mouse.device_key = kMouseKey1;
+
+  pref_handler_->InitializeMouseSettings(pref_service_.get(), policies, &mouse);
+
+  EXPECT_EQ(!kDefaultSwapRight, mouse.settings->swap_right);
+  mouse.settings->swap_right = kDefaultSwapRight;
+  EXPECT_EQ(kMouseSettingsDefault, *mouse.settings);
+
+  const auto* settings_dict = GetSettingsDict(kMouseKey1);
+  EXPECT_FALSE(settings_dict->contains(prefs::kMouseSettingSwapRight));
+}
+
+TEST_F(MousePrefHandlerTest,
+       ExistingMouse_RecommendedEnterprisePolicy_GetsNewPolicy) {
+  mojom::MousePolicies policies;
+  policies.swap_right_policy = mojom::InputDeviceSettingsPolicy::New(
+      mojom::PolicyStatus::kRecommended, !kDefaultSwapRight);
+
+  mojom::Mouse mouse;
+  mouse.device_key = kMouseKey1;
+
+  pref_handler_->InitializeMouseSettings(pref_service_.get(),
+                                         /*mouse_policies=*/{}, &mouse);
+  EXPECT_EQ(kMouseSettingsDefault, *mouse.settings);
+
+  pref_handler_->InitializeMouseSettings(pref_service_.get(), policies, &mouse);
+  EXPECT_EQ(!kDefaultSwapRight, mouse.settings->swap_right);
+  mouse.settings->swap_right = kDefaultSwapRight;
+  EXPECT_EQ(kMouseSettingsDefault, *mouse.settings);
+
+  const auto* settings_dict = GetSettingsDict(kMouseKey1);
+  EXPECT_FALSE(settings_dict->contains(prefs::kMouseSettingSwapRight));
+}
+
+TEST_F(MousePrefHandlerTest,
+       ExistingMouse_ManagedEnterprisePolicy_GetsNewPolicy) {
+  mojom::MousePolicies policies;
+  policies.swap_right_policy = mojom::InputDeviceSettingsPolicy::New(
+      mojom::PolicyStatus::kManaged, !kDefaultSwapRight);
+
+  mojom::Mouse mouse;
+  mouse.device_key = kMouseKey1;
+
+  pref_handler_->InitializeMouseSettings(pref_service_.get(),
+                                         /*mouse_policies=*/{}, &mouse);
+  EXPECT_EQ(kMouseSettingsDefault, *mouse.settings);
+
+  mouse.settings->swap_right = !kDefaultSwapRight;
+  CallUpdateMouseSettings(kMouseKey1, *mouse.settings);
+
+  pref_handler_->InitializeMouseSettings(pref_service_.get(), policies, &mouse);
+  EXPECT_EQ(!kDefaultSwapRight, mouse.settings->swap_right);
+  mouse.settings->swap_right = kDefaultSwapRight;
+  EXPECT_EQ(kMouseSettingsDefault, *mouse.settings);
+
+  const auto* settings_dict = GetSettingsDict(kMouseKey1);
+  EXPECT_TRUE(settings_dict->contains(prefs::kMouseSettingSwapRight));
+  EXPECT_EQ(!kDefaultSwapRight,
+            settings_dict->FindBool(prefs::kMouseSettingSwapRight).value());
 }
 
 class MouseSettingsPrefConversionTest

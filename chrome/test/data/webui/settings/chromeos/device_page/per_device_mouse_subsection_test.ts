@@ -4,7 +4,7 @@
 
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {CrToggleElement, FakeInputDeviceSettingsProvider, fakeMice, Mouse, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsDropdownMenuElement, SettingsPerDeviceMouseSubsectionElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
+import {CrToggleElement, FakeInputDeviceSettingsProvider, fakeMice, Mouse, PolicyStatus, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsDropdownMenuElement, SettingsPerDeviceMouseSubsectionElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -223,5 +223,28 @@ suite('<settings-per-device-mouse-subsection>', function() {
 
     assert(mouseAccelerationToggle);
     assertEquals(null, subsection.shadowRoot!.activeElement);
+  });
+
+  /**
+   * Verifies that the policy indicator is properly reflected in the UI.
+   */
+  test('swap right policy reflected in UI', async () => {
+    await initializePerDeviceMouseSubsection();
+    subsection.set('mousePolicies', {
+      swapRightPolicy: {policy_status: PolicyStatus.kManaged, value: false},
+    });
+    await flushTasks();
+    const swapRightDropdown =
+        subsection.shadowRoot!.querySelector('#mouseSwapButtonDropdown');
+    assert(swapRightDropdown);
+    let policyIndicator =
+        swapRightDropdown.shadowRoot!.querySelector('cr-policy-pref-indicator');
+    assertTrue(isVisible(policyIndicator));
+
+    subsection.set('mousePolicies', {swapRightPolicy: undefined});
+    await flushTasks();
+    policyIndicator =
+        swapRightDropdown.shadowRoot!.querySelector('cr-policy-pref-indicator');
+    assertFalse(isVisible(policyIndicator));
   });
 });

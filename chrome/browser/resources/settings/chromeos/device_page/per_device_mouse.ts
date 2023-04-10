@@ -26,7 +26,7 @@ import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route} from '../router.js';
 
-import {Mouse} from './input_device_settings_types.js';
+import {Mouse, MousePolicies} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_mouse.html.js';
 
 const SettingsPerDeviceMouseElementBase = RouteObserverMixin(PolymerElement);
@@ -46,10 +46,15 @@ export class SettingsPerDeviceMouseElement extends
       mice: {
         type: Array,
       },
+
+      mousePolicies: {
+        type: Object,
+      },
     };
   }
 
   protected mice: Mouse[];
+  protected mousePolicies: MousePolicies;
 
   override currentRouteChanged(route: Route): void {
     // Does not apply to this page.

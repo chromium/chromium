@@ -35,6 +35,7 @@ export function settingsAreEqual(
 }
 
 interface PrefPolicyFields {
+  controlledBy?: chrome.settingsPrivate.ControlledBy;
   enforcement?: chrome.settingsPrivate.Enforcement;
   recommendedValue?: boolean;
 }
@@ -45,7 +46,18 @@ export function getPrefPolicyFields(policy?: InputDeviceSettingsPolicy):
     const enforcement = policy.policyStatus === PolicyStatus.kManaged ?
         chrome.settingsPrivate.Enforcement.ENFORCED :
         chrome.settingsPrivate.Enforcement.RECOMMENDED;
-    return {enforcement, recommendedValue: policy.value};
+    return {
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+      enforcement,
+      recommendedValue: policy.value,
+    };
   }
-  return {enforcement: undefined, recommendedValue: undefined};
+
+  // These fields must be set back to undefined so the html badge is properly
+  // removed from the UI.
+  return {
+    controlledBy: undefined,
+    enforcement: undefined,
+    recommendedValue: undefined,
+  };
 }
