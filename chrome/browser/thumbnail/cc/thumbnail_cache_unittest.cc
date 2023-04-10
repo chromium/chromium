@@ -86,6 +86,8 @@ TEST_F(ThumbnailCacheTest, PruneCache) {
   ASSERT_TRUE(bitmap.tryAllocN32Pixels(kDimension * kKiB, kDimension));
   bitmap.setImmutable();
 
+  thumbnail_cache().UpdateVisibleIds(std::vector<TabId>({kTabId1, kTabId2}),
+                                     -1);
   EXPECT_TRUE(thumbnail_cache().CheckAndUpdateThumbnailMetaData(
       kTabId1, GURL("https://www.foo.com/")));
   thumbnail_cache().Put(kTabId1, bitmap,
@@ -131,6 +133,7 @@ TEST_F(ThumbnailCacheTest, MetricsEmission) {
   constexpr int kDimension = 4;
   ASSERT_TRUE(bitmap.tryAllocN32Pixels(kDimension * kKiB, kDimension));
   bitmap.setImmutable();
+  thumbnail_cache().UpdateVisibleIds(std::vector<TabId>({kTabId}), -1);
   EXPECT_TRUE(thumbnail_cache().CheckAndUpdateThumbnailMetaData(
       kTabId, GURL("https://www.foo.com/")));
   thumbnail_cache().Put(kTabId, bitmap,

@@ -28,8 +28,7 @@ StaticTabSceneLayer::StaticTabSceneLayer(JNIEnv* env,
       background_color_(SK_ColorWHITE),
       brightness_(1.f) {}
 
-StaticTabSceneLayer::~StaticTabSceneLayer() {
-}
+StaticTabSceneLayer::~StaticTabSceneLayer() = default;
 
 bool StaticTabSceneLayer::ShouldShowBackground() {
   scoped_refptr<cc::slim::Layer> root = layer_->RootLayer();
@@ -40,17 +39,16 @@ SkColor StaticTabSceneLayer::GetBackgroundColor() {
   return background_color_;
 }
 
-void StaticTabSceneLayer::UpdateTabLayer(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jobj,
-    jint id,
-    jboolean can_use_live_layer,
-    jint default_background_color,
-    jfloat x,
-    jfloat y,
-    jfloat static_to_view_blend,
-    jfloat saturation,
-    jfloat brightness) {
+void StaticTabSceneLayer::UpdateTabLayer(JNIEnv* env,
+                                         const JavaParamRef<jobject>& jobj,
+                                         jint id,
+                                         jboolean can_use_live_layer,
+                                         jint default_background_color,
+                                         jfloat x,
+                                         jfloat y,
+                                         jfloat static_to_view_blend,
+                                         jfloat saturation,
+                                         jfloat brightness) {
   DCHECK(tab_content_manager_)
       << "TabContentManager must be set before updating the layer";
 
@@ -66,10 +64,10 @@ void StaticTabSceneLayer::UpdateTabLayer(
   bool should_override_content_alpha = last_set_tab_id_ != id;
   last_set_tab_id_ = id;
 
-  content_layer_->SetProperties(
-      id, can_use_live_layer, static_to_view_blend,
-      should_override_content_alpha, content_alpha_override, saturation,
-      false, gfx::Rect());
+  content_layer_->SetProperties(id, can_use_live_layer, static_to_view_blend,
+                                should_override_content_alpha,
+                                content_alpha_override, saturation, false,
+                                gfx::Rect());
 
   content_layer_->layer()->SetPosition(gfx::PointF(x, y));
   content_layer_->layer()->SetIsDrawable(true);

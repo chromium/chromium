@@ -60,11 +60,17 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
   // Get the live layer from the cache.
   scoped_refptr<cc::slim::Layer> GetLiveLayer(int tab_id);
 
-  scoped_refptr<ThumbnailLayer> GetStaticLayer(int tab_id);
+  // Returns the static ThumbnailLayer for a `tab_id`. Note that the lifecycle
+  // of the thumbnail is managed by the ThumbnailCache and not the
+  // ThumbnailLayer. When displaying a layer it is important that
+  // UpdateVisibleIds is called with all the Tab IDs that are required for
+  // before calling GetStaticLayer. ThumbnailLayer's should not be retained as
+  // their lifecycle is managed by this class.
+  ThumbnailLayer* GetStaticLayer(int tab_id);
 
+  // Deprecated: This will be replace by just GetStaticLayer soon.
   // Get the static thumbnail from the cache, or the NTP.
-  scoped_refptr<ThumbnailLayer> GetOrCreateStaticLayer(int tab_id,
-                                                       bool force_disk_read);
+  ThumbnailLayer* GetOrCreateStaticLayer(int tab_id, bool force_disk_read);
   // JNI methods.
 
   // Should be called when a tab gets a new live layer that should be served
@@ -108,6 +114,7 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
   jint GetPendingReadbacksForTesting(JNIEnv* env);
 
   // ThumbnailCacheObserver implementation;
+  void OnThumbnailAddedToCache(thumbnail::TabId tab_id) override;
   void OnFinishedThumbnailRead(thumbnail::TabId tab_id) override;
 
  private:
