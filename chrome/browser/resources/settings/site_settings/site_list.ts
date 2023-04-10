@@ -316,7 +316,7 @@ export class SiteListElement extends SiteListElementBase {
   /**
    * A handler for the Add Site button.
    */
-  private onAddSiteTap_() {
+  private onAddSiteClick_() {
     assert(!this.readOnlyList);
     this.showAddSiteDialog_ = true;
   }
@@ -458,22 +458,22 @@ export class SiteListElement extends SiteListElementBase {
         this.category, contentSetting, this.actionMenuSite_!.incognito);
   }
 
-  private onAllowTap_() {
+  private onAllowClick_() {
     this.setContentSettingForActionMenuSite_(ContentSetting.ALLOW);
     this.closeActionMenu_();
   }
 
-  private onBlockTap_() {
+  private onBlockClick_() {
     this.setContentSettingForActionMenuSite_(ContentSetting.BLOCK);
     this.closeActionMenu_();
   }
 
-  private onSessionOnlyTap_() {
+  private onSessionOnlyClick_() {
     this.setContentSettingForActionMenuSite_(ContentSetting.SESSION_ONLY);
     this.closeActionMenu_();
   }
 
-  private onEditTap_() {
+  private onEditClick_() {
     // Close action menu without resetting |this.actionMenuSite_| since it is
     // bound to the dialog.
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
@@ -489,7 +489,7 @@ export class SiteListElement extends SiteListElementBase {
     }
   }
 
-  private onResetTap_() {
+  private onResetClick_() {
     assert(this.actionMenuSite_);
     this.browserProxy.resetCategoryPermissionForPattern(
         this.actionMenuSite_.origin, this.actionMenuSite_.embeddingOrigin,

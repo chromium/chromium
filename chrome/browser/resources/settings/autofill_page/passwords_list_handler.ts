@@ -258,7 +258,7 @@ export class PasswordsListHandlerElement extends
     return !this.activePassword_ || !this.activePassword_.entry.federationText;
   }
 
-  private onMenuEditPasswordTap_() {
+  private onMenuEditPasswordClick_() {
     if (this.isPasswordEditable_()) {
       this.requestPlaintextPassword(
               this.activePassword_!.entry.id,
@@ -296,14 +296,14 @@ export class PasswordsListHandlerElement extends
     this.activePassword_ = null;
   }
 
-  private onMenuSendPasswordTap_() {
+  private onMenuSendPasswordClick_() {
     // TODO(crbug.com/1298608): Implement the logic.
   }
 
   /**
    * Copy selected password to clipboard.
    */
-  private onMenuCopyPasswordButtonTap_() {
+  private onMenuCopyPasswordButtonClick_() {
     // Copy to clipboard occurs inside C++ and we don't expect getting
     // result back to javascript.
     this.requestPlaintextPassword(
@@ -377,7 +377,7 @@ export class PasswordsListHandlerElement extends
   /**
    * Should only be called when |activePassword_| has a device copy.
    */
-  private onMenuMovePasswordToAccountTap_() {
+  private onMenuMovePasswordToAccountClick_() {
     this.$.menu.close();
     this.showPasswordMoveToAccountDialog_ = true;
   }

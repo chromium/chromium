@@ -200,14 +200,14 @@ export class SettingsCreditCardEditDialogElement extends
   /**
    * Handler for tapping the 'cancel' button. Should just dismiss the dialog.
    */
-  private onCancelButtonTap_() {
+  private onCancelButtonClick_() {
     this.$.dialog.cancel();
   }
 
   /**
    * Handler for tapping the save button.
    */
-  private onSaveButtonTap_() {
+  private onSaveButtonClick_() {
     if (!this.saveEnabled_()) {
       return;
     }

@@ -248,7 +248,7 @@ export class SettingsSearchEnginesPageElement extends
     this.extensions = searchEnginesInfo.extensions;
   }
 
-  private onAddSearchEngineTap_(e: Event) {
+  private onAddSearchEngineClick_(e: Event) {
     e.preventDefault();
     this.openEditDialog_(
         null, this.shadowRoot!.querySelector('#addSearchEngine')!);

@@ -429,7 +429,7 @@ export class SettingsClearBrowsingDataDialogElement extends
     }
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.$.clearBrowsingDataDialog.cancel();
   }
 

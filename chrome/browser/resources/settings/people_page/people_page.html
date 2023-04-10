@@ -70,7 +70,7 @@
             syncStatus.syncSystemEnabled, signinAllowed_)]]" restamp>
           <div id="profile-row" class="cr-row first two-line"
                   actionable$="[[isProfileActionable_]]"
-                  on-click="onProfileTap_">
+                  on-click="onProfileClick_">
             <template is="dom-if" if="[[syncStatus]]">
               <div id="profile-icon"
                   style="background-image: [[getIconImageSet_(
@@ -107,7 +107,7 @@ shown on non-ChromeOS platforms -->
         <cr-link-row id="sync-setup"
             label="$i18n{syncAndNonPersonalizedServices}"
             sub-label="[[getSyncAndGoogleServicesSubtext_(syncStatus)]]"
-            on-click="onSyncTap_"
+            on-click="onSyncClick_"
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
 
@@ -121,14 +121,14 @@ shown on non-ChromeOS platforms -->
 
           <cr-link-row id="edit-profile"
               label="$i18n{profileNameAndPicture}"
-              on-click="onProfileTap_" ></cr-link-row>
+              on-click="onProfileClick_" ></cr-link-row>
         </template>
 </if>
 
 <if expr="not is_chromeos">
         <cr-link-row id="importDataDialogTrigger"
             label="$i18n{importTitle}"
-            on-click="onImportDataTap_"></cr-link-row>
+            on-click="onImportDataClick_"></cr-link-row>
 </if>
 
       </div>

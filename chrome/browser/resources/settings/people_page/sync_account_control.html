@@ -126,7 +126,7 @@
         </div>
         <div class="secondary">[[subLabel_]]</div>
       </div>
-      <cr-button class="action-button cr-button-gap" on-click="onSigninTap_"
+      <cr-button class="action-button cr-button-gap" on-click="onSigninClick_"
           id="signIn"
           disabled="[[shouldDisableSyncButton_(showSetupButtons_,
                   syncStatus.firstSetupInProgress,
@@ -170,7 +170,7 @@
         <cr-icon-button class="icon-arrow-dropdown cr-button-gap"
             hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedIn,
                 syncStatus.domain)]]"
-            on-click="onMenuButtonTap_" id="dropdown-arrow"
+            on-click="onMenuButtonClick_" id="dropdown-arrow"
             aria-label="$i18n{useAnotherAccount}">
         </cr-icon-button>
         <div class="separator"
@@ -178,7 +178,7 @@
                 syncStatus.domain)]]"></div>
 </if>
         <cr-button id="sync-button" class="action-button cr-button-gap"
-            hidden="[[syncStatus.signedIn]]" on-click="onSyncButtonTap_"
+            hidden="[[syncStatus.signedIn]]" on-click="onSyncButtonClick_"
             disabled="[[shouldDisableSyncButton_(showSetupButtons_,
                     syncStatus.firstSetupInProgress,
                     prefs.signin.allowed_on_next_startup.value)]]">
@@ -188,14 +188,14 @@
             class="cr-button-gap"
             hidden="[[!shouldShowTurnOffButton_(syncStatus.signedIn,
                 syncStatus.domain, showSetupButtons_)]]"
-            on-click="onTurnOffButtonTap_"
+            on-click="onTurnOffButtonClick_"
             disabled="[[syncStatus.firstSetupInProgress]]">
           $i18n{turnOffSync}
         </cr-button>
         <cr-button id="sync-error-button" class="action-button cr-button-gap"
             hidden="[[!shouldShowErrorActionButton_(syncStatus,
                 showSetupButtons_)]]"
-            on-click="onErrorButtonTap_"
+            on-click="onErrorButtonClick_"
             disabled="[[syncStatus.firstSetupInProgress]]">
           [[syncStatus.statusActionText]]
         </cr-button>
@@ -216,19 +216,19 @@
         <cr-action-menu id="menu" auto-reposition
             role-description="$i18n{menu}">
           <template is="dom-repeat" items="[[storedAccounts_]]">
-            <button class="dropdown-item" on-click="onAccountTap_">
+            <button class="dropdown-item" on-click="onAccountClick_">
               <img class="account-icon small" alt=""
                   src="[[getAccountImageSrc_(item.avatarImage)]]">
               <span>[[item.email]]</span>
             </button>
           </template>
-          <button class="dropdown-item" on-click="onSigninTap_"
+          <button class="dropdown-item" on-click="onSigninClick_"
               disabled="[[syncStatus.firstSetupInProgress]]" id="sign-in-item">
             <img class="account-icon small" alt=""
                 src="chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE">
             <span>$i18n{useAnotherAccount}</span>
           </button>
-          <button class="dropdown-item" on-click="onSignoutTap_"
+          <button class="dropdown-item" on-click="onSignoutClick_"
               disabled="[[syncStatus.firstSetupInProgress]]" id="sign-out-item">
             <iron-icon icon="settings:exit-to-app"></iron-icon>
             <span>$i18n{peopleSignOut}</span>

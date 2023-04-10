@@ -132,7 +132,7 @@ export class SettingsSearchEngineEditDialogElement extends
     this.$.dialog.cancel();
   }
 
-  private onActionButtonTap_() {
+  private onActionButtonClick_() {
     this.browserProxy_.searchEngineEditCompleted(
         this.searchEngine_, this.keyword_, this.queryUrl_);
     this.$.dialog.close();

@@ -99,7 +99,7 @@ export class SettingsStartupUrlsPageElement extends
     });
   }
 
-  private onAddPageTap_(e: Event) {
+  private onAddPageClick_(e: Event) {
     e.preventDefault();
     this.showStartupUrlDialog_ = true;
     this.startupUrlDialogAnchor_ =
@@ -115,7 +115,7 @@ export class SettingsStartupUrlsPageElement extends
     }
   }
 
-  private onUseCurrentPagesTap_() {
+  private onUseCurrentPagesClick_() {
     this.browserProxy_.useCurrentPages();
   }
 

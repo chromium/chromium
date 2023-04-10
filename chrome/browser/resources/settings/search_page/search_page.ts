@@ -99,7 +99,7 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
     }));
   }
 
-  private onManageSearchEnginesTap_() {
+  private onManageSearchEnginesClick_() {
     Router.getInstance().navigateTo(routes.SEARCH_ENGINES);
   }
 

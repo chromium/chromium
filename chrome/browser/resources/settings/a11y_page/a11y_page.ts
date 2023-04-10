@@ -229,7 +229,7 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   // </if>
 
   // <if expr="is_chromeos">
-  private onManageSystemAccessibilityFeaturesTap_() {
+  private onManageSystemAccessibilityFeaturesClick_() {
     window.location.href = 'chrome://os-settings/osAccessibility';
   }
   // </if>

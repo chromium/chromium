@@ -37,27 +37,27 @@
         <div>[[engine.url]]</div>
       </span>
       <span role="cell">
-        <cr-button class="secondary-button" on-click="onActivateTap_"
+        <cr-button class="secondary-button" on-click="onActivateClick_"
             hidden="[[!engine.canBeActivated]]" id="activate">
           $i18n{searchEnginesActivate}
         </cr-button>
-        <cr-icon-button class="icon-edit" on-click="onEditTap_"
+        <cr-icon-button class="icon-edit" on-click="onEditClick_"
             title="$i18n{edit}" hidden="[[engine.canBeActivated]]"
             disabled$="[[!engine.canBeEdited]]" id="editIconButton">
         </cr-icon-button>
-        <cr-icon-button class="icon-more-vert" on-click="onDotsTap_"
+        <cr-icon-button class="icon-more-vert" on-click="onDotsClick_"
             disabled$="[[engine.default]]" title="$i18n{moreActions}">
         </cr-icon-button>
         <cr-action-menu role-description="$i18n{menu}">
-          <button class="dropdown-item" on-click="onMakeDefaultTap_"
+          <button class="dropdown-item" on-click="onMakeDefaultClick_"
               disabled$="[[!engine.canBeDefault]]" id="makeDefault">
             $i18n{searchEnginesMakeDefault}
           </button>
-          <button class="dropdown-item" on-click="onDeactivateTap_"
+          <button class="dropdown-item" on-click="onDeactivateClick_"
               hidden="[[!engine.canBeDeactivated]]" id="deactivate">
             $i18n{searchEnginesDeactivate}
           </button>
-          <button class="dropdown-item" on-click="onDeleteTap_"
+          <button class="dropdown-item" on-click="onDeleteClick_"
               hidden="[[!engine.canBeRemoved]]" id="delete">
             $i18n{delete}
           </button>

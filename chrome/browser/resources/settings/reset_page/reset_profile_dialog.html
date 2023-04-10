@@ -24,11 +24,11 @@
       <div slot="button-container">
         <paper-spinner-lite id="resetSpinner" active="[[clearingInProgress_]]">
         </paper-spinner-lite>
-        <cr-button class="cancel-button" on-click="onCancelTap_"
+        <cr-button class="cancel-button" on-click="onCancelClick_"
             id="cancel" disabled="[[clearingInProgress_]]">
           $i18n{cancel}
         </cr-button>
-        <cr-button class="action-button" on-click="onResetTap_"
+        <cr-button class="action-button" on-click="onResetClick_"
             id="reset" disabled="[[clearingInProgress_]]">
           $i18n{resetDialogCommit}
         </cr-button>

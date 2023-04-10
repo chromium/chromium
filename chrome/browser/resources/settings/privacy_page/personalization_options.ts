@@ -274,7 +274,7 @@ export class SettingsPersonalizationOptionsElement extends
     this.showSignoutDialog_ = false;
   }
 
-  private onRestartTap_(e: Event) {
+  private onRestartClick_(e: Event) {
     e.stopPropagation();
     this.performRestart(RestartType.RESTART);
   }

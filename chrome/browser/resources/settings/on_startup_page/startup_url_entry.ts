@@ -56,13 +56,13 @@ export class SettingsStartupUrlEntryElement extends
   editable: boolean;
   model: StartupPageInfo;
 
-  private onRemoveTap_() {
+  private onRemoveClick_() {
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
     StartupUrlsPageBrowserProxyImpl.getInstance().removeStartupPage(
         this.model.modelIndex);
   }
 
-  private onEditTap_(e: Event) {
+  private onEditClick_(e: Event) {
     e.preventDefault();
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
     this.dispatchEvent(new CustomEvent(EDIT_STARTUP_URL_EVENT, {
@@ -75,7 +75,7 @@ export class SettingsStartupUrlEntryElement extends
     }));
   }
 
-  private onDotsTap_() {
+  private onDotsClick_() {
     const actionMenu =
         this.shadowRoot!
             .querySelector<CrLazyRenderElement<CrActionMenuElement>>(

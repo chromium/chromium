@@ -121,9 +121,9 @@
       </div>
       <div slot="button-container">
         <cr-button id="cancelButton" class="cancel-button"
-            on-click="onCancelButtonTap_">$i18n{cancel}</cr-button>
+            on-click="onCancelButtonClick_">$i18n{cancel}</cr-button>
         <cr-button id="saveButton" class="action-button"
-            on-click="onSaveButtonTap_"
+            on-click="onSaveButtonClick_"
             disabled="[[!saveEnabled_(nicknameInvalid_,
                 expired_, name_, cardNumber_, nickname_)]]">
           $i18n{save}

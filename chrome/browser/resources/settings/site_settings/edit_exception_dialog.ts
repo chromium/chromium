@@ -73,11 +73,11 @@ export class SettingsEditExceptionDialogElement extends PolymerElement {
     this.$.dialog.showModal();
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.$.dialog.close();
   }
 
-  private onActionButtonTap_() {
+  private onActionButtonClick_() {
     if (this.model.origin !== this.origin_) {
       // The way to "edit" an exception is to remove it and and a new one.
       this.browserProxy_.resetCategoryPermissionForPattern(

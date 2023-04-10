@@ -349,7 +349,7 @@ export class SettingsSyncAccountControlElement extends
     return this.syncStatus.signedIn || this.storedAccounts_.length > 0;
   }
 
-  private onErrorButtonTap_() {
+  private onErrorButtonClick_() {
     const router = Router.getInstance();
     const routes = router.getRoutes();
     switch (this.syncStatus.statusAction) {
@@ -371,7 +371,7 @@ export class SettingsSyncAccountControlElement extends
     }
   }
 
-  private onSigninTap_() {
+  private onSigninClick_() {
     // <if expr="not chromeos_ash">
     this.syncBrowserProxy_.startSignIn();
     // </if>
@@ -387,13 +387,13 @@ export class SettingsSyncAccountControlElement extends
   }
 
   // <if expr="not chromeos_ash">
-  private onSignoutTap_() {
+  private onSignoutClick_() {
     this.syncBrowserProxy_.signOut(false /* deleteProfile */);
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
   }
   // </if>
 
-  private onSyncButtonTap_() {
+  private onSyncButtonClick_() {
     assert(this.shownAccount_);
     assert(this.storedAccounts_.length > 0);
     const isDefaultPromoAccount =
@@ -403,13 +403,13 @@ export class SettingsSyncAccountControlElement extends
         this.shownAccount_!.email, isDefaultPromoAccount);
   }
 
-  private onTurnOffButtonTap_() {
+  private onTurnOffButtonClick_() {
     /* This will route to people_page's disconnect dialog. */
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().SIGN_OUT);
   }
 
-  private onMenuButtonTap_() {
+  private onMenuButtonClick_() {
     const actionMenu = this.shadowRoot!.querySelector('cr-action-menu');
     assert(actionMenu);
     const anchor =
@@ -427,7 +427,7 @@ export class SettingsSyncAccountControlElement extends
     }
   }
 
-  private onAccountTap_(e: DomRepeatEvent<StoredAccount>) {
+  private onAccountClick_(e: DomRepeatEvent<StoredAccount>) {
     this.shownAccount_ = e.model.item;
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
   }

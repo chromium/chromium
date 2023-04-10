@@ -29,7 +29,7 @@
     <div class="cr-row continuation">
       <h2 class="flex">$i18n{addresses}</h2>
       <cr-button id="addAddress" class="header-aligned-button"
-          on-click="onAddAddressTap_" aria-label="$i18n{addAddressTitle}"
+          on-click="onAddAddressClick_" aria-label="$i18n{addAddressTitle}"
           hidden$="[[!prefs.autofill.profile_enabled.value]]">
         $i18n{add}
       </cr-button>
@@ -52,7 +52,7 @@
               </iron-icon>
             </div>
             <cr-icon-button class="icon-more-vert address-menu"
-                on-click="onAddressMenuTap_"
+                on-click="onAddressMenuClick_"
                 title="[[moreActionsTitle_(item.metadata.summaryLabel,
                  item.metadata.summarySublabel)]]">
             </cr-icon-button>
@@ -66,9 +66,9 @@
     </div>
     <cr-action-menu id="addressSharedMenu" role-description="$i18n{menu}">
       <button id="menuEditAddress" class="dropdown-item"
-          on-click="onMenuEditAddressTap_">$i18n{edit}</button>
+          on-click="onMenuEditAddressClick_">$i18n{edit}</button>
       <button id="menuRemoveAddress" class="dropdown-item"
-          on-click="onMenuRemoveAddressTap_">$i18n{removeAddress}</button>
+          on-click="onMenuRemoveAddressClick_">$i18n{removeAddress}</button>
     </cr-action-menu>
     <template is="dom-if" if="[[showAddressDialog_]]" restamp>
       <settings-address-edit-dialog address="[[activeAddress]]"

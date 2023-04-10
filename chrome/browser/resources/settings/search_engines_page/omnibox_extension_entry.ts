@@ -51,12 +51,12 @@ export class SettingsOmniboxExtensionEntryElement extends
   private browserProxy_: ExtensionControlBrowserProxy =
       ExtensionControlBrowserProxyImpl.getInstance();
 
-  private onManageTap_() {
+  private onManageClick_() {
     this.closePopupMenu_();
     this.browserProxy_.manageExtension(this.engine.extension!.id);
   }
 
-  private onDisableTap_() {
+  private onDisableClick_() {
     this.closePopupMenu_();
     this.browserProxy_.disableExtension(this.engine.extension!.id);
   }
@@ -65,7 +65,7 @@ export class SettingsOmniboxExtensionEntryElement extends
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
   }
 
-  private onDotsTap_() {
+  private onDotsClick_() {
     const dots = this.shadowRoot!.querySelector('cr-icon-button');
     assert(dots);
     this.shadowRoot!.querySelector('cr-action-menu')!.showAt(dots, {

@@ -519,7 +519,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   /**
    * Fires an event that should delete the password exception.
    */
-  private onRemoveExceptionButtonTap_(
+  private onRemoveExceptionButtonClick_(
       e: DomRepeatEvent<chrome.passwordsPrivate.ExceptionEntry>) {
     const exception = e.model.item;
     this.passwordManager_.removeException(exception.id);
@@ -528,7 +528,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   /**
    * Opens the export/import action menu.
    */
-  private onImportExportMenuTap_() {
+  private onImportExportMenuClick_() {
     const target = this.shadowRoot!.querySelector('#exportImportMenuButton') as
         HTMLElement;
     this.$.exportImportMenu.showAt(target);
@@ -537,7 +537,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   /**
    * Opens the passwords import dialog.
    */
-  private onImportTap_() {
+  private onImportClick_() {
     recordPasswordsImportInteraction(
         PasswordsImportDesktopInteractions.DIALOG_OPENED_FROM_THREE_DOT_MENU);
     this.showPasswordsImportDialog_ = true;
@@ -551,7 +551,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   /**
    * Opens the export passwords dialog.
    */
-  private onExportTap_() {
+  private onExportClick_() {
     this.showPasswordsExportDialog_ = true;
     this.$.exportImportMenu.close();
   }
@@ -560,7 +560,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     this.showPasswordsExportDialog_ = false;
   }
 
-  private onAddPasswordTap_() {
+  private onAddPasswordClick_() {
     chrome.metricsPrivate.recordEnumerationValue(
         'PasswordManager.AddCredentialFromSettings.UserAction2',
         AddCredentialFromSettingsUserInteractions.ADD_DIALOG_OPENED,

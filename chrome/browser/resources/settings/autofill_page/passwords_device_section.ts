@@ -379,7 +379,7 @@ export class PasswordsDeviceSectionElement extends
         loadTimeData.getString('googlePasswordManagerUrl'));
   }
 
-  private onMoveMultiplePasswordsTap_() {
+  private onMoveMultiplePasswordsClick_() {
     this.showMoveMultiplePasswordsDialog_ = true;
   }
 

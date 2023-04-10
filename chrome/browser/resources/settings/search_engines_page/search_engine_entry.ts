@@ -70,7 +70,7 @@ export class SettingsSearchEngineEntryElement extends PolymerElement {
     return this.engine.default;
   }
 
-  private onDeleteTap_(e: Event) {
+  private onDeleteClick_(e: Event) {
     e.preventDefault();
     this.closePopupMenu_();
 
@@ -93,7 +93,7 @@ export class SettingsSearchEngineEntryElement extends PolymerElement {
     }));
   }
 
-  private onDotsTap_() {
+  private onDotsClick_() {
     const dots = this.shadowRoot!.querySelector<HTMLElement>(
         'cr-icon-button.icon-more-vert');
     assert(dots);
@@ -102,7 +102,7 @@ export class SettingsSearchEngineEntryElement extends PolymerElement {
     });
   }
 
-  private onEditTap_(e: Event) {
+  private onEditClick_(e: Event) {
     e.preventDefault();
     this.closePopupMenu_();
     const anchor = this.shadowRoot!.querySelector('cr-icon-button');
@@ -117,18 +117,18 @@ export class SettingsSearchEngineEntryElement extends PolymerElement {
     }));
   }
 
-  private onMakeDefaultTap_() {
+  private onMakeDefaultClick_() {
     this.closePopupMenu_();
     this.browserProxy_.setDefaultSearchEngine(this.engine.modelIndex);
   }
 
-  private onActivateTap_() {
+  private onActivateClick_() {
     this.closePopupMenu_();
     this.browserProxy_.setIsActiveSearchEngine(
         this.engine.modelIndex, /*is_active=*/ true);
   }
 
-  private onDeactivateTap_() {
+  private onDeactivateClick_() {
     this.closePopupMenu_();
     this.browserProxy_.setIsActiveSearchEngine(
         this.engine.modelIndex, /*is_active=*/ false);

@@ -349,7 +349,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     this.browserProxy_.setBlockAutoplayEnabled(target.checked);
   }
 
-  private onClearBrowsingDataTap_() {
+  private onClearBrowsingDataClick_() {
     this.interactedWithPage_();
 
     Router.getInstance().navigateTo(routes.CLEAR_BROWSER_DATA);

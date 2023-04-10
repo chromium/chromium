@@ -105,7 +105,7 @@ export class SettingsDownloadsPageElement extends
   }
   // </if>
 
-  private onClearAutoOpenFileTypesTap_() {
+  private onClearAutoOpenFileTypesClick_() {
     this.browserProxy_.resetAutoOpenFileTypes();
   }
 }

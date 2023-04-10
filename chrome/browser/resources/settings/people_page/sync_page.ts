@@ -548,7 +548,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   /**
    * Sends the user-entered existing password to re-enable sync.
    */
-  private onSubmitExistingPassphraseTap_(e: KeyboardEvent) {
+  private onSubmitExistingPassphraseClick_(e: KeyboardEvent) {
     if (e.type === 'keypress' && e.key !== 'Enter') {
       return;
     }
@@ -609,7 +609,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     }
   }
 
-  private onLearnMoreTap_(event: Event) {
+  private onLearnMoreClick_(event: Event) {
     if ((event.target as HTMLElement).tagName === 'A') {
       // Stop the propagation of events, so that clicking on links inside
       // checkboxes or radio buttons won't change the value.

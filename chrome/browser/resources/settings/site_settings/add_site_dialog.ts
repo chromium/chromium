@@ -120,7 +120,7 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
         });
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.$.dialog.cancel();
   }
 

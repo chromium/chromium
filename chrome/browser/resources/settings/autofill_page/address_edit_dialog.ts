@@ -337,14 +337,14 @@ export class SettingsAddressEditDialogElement extends
         component => !component.isValid && !component.isValidatable);
   }
 
-  private onCancelTap_(): void {
+  private onCancelClick_(): void {
     this.$.dialog.cancel();
   }
 
   /**
    * Handler for tapping the save button.
    */
-  private onSaveButtonTap_(): void {
+  private onSaveButtonClick_(): void {
     this.notifyValidity_();
 
     this.updateCanSave_();

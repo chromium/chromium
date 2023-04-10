@@ -163,7 +163,7 @@ export class SettingsEditDictionaryPageElement extends
   /**
    * Handles tapping on the Add Word button.
    */
-  private onAddWordTap_() {
+  private onAddWordClick_() {
     this.addWordFromInput_();
     this.$.newWord.focus();
   }
@@ -225,7 +225,7 @@ export class SettingsEditDictionaryPageElement extends
   /**
    * Handles tapping on a "Remove word" icon button.
    */
-  private onRemoveWordTap_(e: {model: {item: string}}) {
+  private onRemoveWordClick_(e: {model: {item: string}}) {
     this.languageSettingsPrivate_!.removeSpellcheckWord(e.model.item);
   }
 }

@@ -42,7 +42,7 @@ export class SettingsResetProfileBannerElement extends PolymerElement {
     this.$.dialog.showModal();
   }
 
-  private onOkTap_() {
+  private onOkClick_() {
     this.$.dialog.cancel();
   }
 
@@ -50,7 +50,7 @@ export class SettingsResetProfileBannerElement extends PolymerElement {
     ResetBrowserProxyImpl.getInstance().onHideResetProfileBanner();
   }
 
-  private onResetTap_() {
+  private onResetClick_() {
     this.$.dialog.close();
     Router.getInstance().navigateTo(routes.RESET_DIALOG);
   }

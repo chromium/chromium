@@ -117,7 +117,7 @@ export class SettingsResetProfileDialogElement extends
     });
 
     this.shadowRoot!.querySelector('cr-checkbox a')!.addEventListener(
-        'click', this.onShowReportedSettingsTap_.bind(this));
+        'click', this.onShowReportedSettingsClick_.bind(this));
   }
 
   private showDialog_() {
@@ -148,7 +148,7 @@ export class SettingsResetProfileDialogElement extends
     }
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.cancel();
   }
 
@@ -158,7 +158,7 @@ export class SettingsResetProfileDialogElement extends
     }
   }
 
-  private onResetTap_() {
+  private onResetClick_() {
     this.clearingInProgress_ = true;
     this.browserProxy_
         .performResetProfileSettings(
@@ -176,7 +176,7 @@ export class SettingsResetProfileDialogElement extends
   /**
    * Displays the settings that will be reported in a new tab.
    */
-  private onShowReportedSettingsTap_(e: Event) {
+  private onShowReportedSettingsClick_(e: Event) {
     this.browserProxy_.showReportedSettings();
     e.stopPropagation();
   }

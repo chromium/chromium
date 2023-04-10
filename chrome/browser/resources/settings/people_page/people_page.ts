@@ -338,7 +338,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   }
   // </if>
 
-  private onProfileTap_() {
+  private onProfileClick_() {
     // <if expr="chromeos_ash">
     if (loadTimeData.getBoolean('isAccountManagerEnabled')) {
       // Post-SplitSettings. The browser C++ code loads OS settings in a window.
@@ -359,13 +359,13 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     }
   }
 
-  private onSyncTap_() {
+  private onSyncClick_() {
     // Users can go to sync subpage regardless of sync status.
     Router.getInstance().navigateTo(routes.SYNC);
   }
 
   // <if expr="not is_chromeos">
-  private onImportDataTap_() {
+  private onImportDataClick_() {
     Router.getInstance().navigateTo(routes.IMPORT_DATA);
   }
 
