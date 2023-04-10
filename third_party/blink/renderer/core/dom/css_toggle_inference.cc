@@ -22,7 +22,7 @@ namespace blink {
 
 void CSSToggleInference::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
-  visitor->Trace(element_roles_);
+  visitor->Trace(element_data_);
 }
 
 void CSSToggleInference::RebuildIfNeeded() {
@@ -108,8 +108,8 @@ absl::optional<AtomicString> IsTabsIsh(Element* container) {
         }
       }
     }
-    // TODO(dbaron): Should we have a condition that the number of tabs
-    // and panels are similar or equal?
+    // TODO(https://crbug.com/1250716): Should we have a condition that
+    // the number of tabs and panels are similar or equal?
     if (child_tab_count > 0 && child_panel_count > 0 &&
         (child_tab_count + child_panel_count) * 2 > child_count) {
       return toggle_group.Name();
@@ -215,16 +215,16 @@ bool IsAccordionIsh(
 void CSSToggleInference::Rebuild() {
   DCHECK(!needs_rebuild_) << "Rebuild should be called via RebuildIfNeeded";
 
-  element_roles_.clear();
+  element_data_.clear();
 
   const HeapHashSet<WeakMember<Element>> elements_with_toggles =
       document_->ElementsWithCSSToggles();
 
-  // TODO(dbaron): There are various things here that count siblings and
-  // have thresholds at 50%+1.  We don't currently invalidate (i.e.,
-  // set needs_rebuild_) for many of the cases that could change the
-  // result of these checks, since we only invalidate in response to
-  // changes on things that have toggles.
+  // TODO(https://crbug.com/1250716): There are various things here that
+  // count siblings and have thresholds at 50%+1.  We don't currently
+  // invalidate (i.e., set needs_rebuild_) for many of the cases that
+  // could change the result of these checks, since we only invalidate
+  // in response to changes on things that have toggles.
   //
   // In fact, there are probably other conditions that we don't properly
   // invalidate for as well.  Before this code is every used for
@@ -294,10 +294,12 @@ void CSSToggleInference::Rebuild() {
     Element* parent = toggle_root->parentElement();
     const auto disclosure_ish_iter = disclosure_ish_elements.find(toggle_root);
     if (disclosure_ish_iter != disclosure_ish_elements.end()) {
+      const AtomicString& toggle_name = disclosure_ish_iter->value;
       if (parent && accordion_ish_elements.Contains(parent)) {
         CSSToggleRole parent_role;
         {  // scope for lifetime of add_result
-          auto add_result = element_roles_.insert(parent, CSSToggleRole::kNone);
+          auto add_result = element_data_.insert(
+              parent, ElementData{CSSToggleRole::kNone, g_null_atom});
           // We might have already handled parent as the parent of a
           // different one of its children.
           if (add_result.is_new_entry) {
@@ -316,20 +318,20 @@ void CSSToggleInference::Rebuild() {
             for (Element& child : ElementTraversal::ChildrenOf(*parent)) {
               if (disclosure_ish_elements.Contains(&child)) {
                 DCHECK(child.GetToggleMap());
-                for (const auto& [toggle_name, toggle] :
+                for (const auto& [child_toggle_name, toggle] :
                      child.GetToggleMap()->Toggles()) {
-                  for (Element* e : CSSToggleScopeRange(&child, toggle_name,
-                                                        toggle->Scope())) {
+                  for (Element* e : CSSToggleScopeRange(
+                           &child, child_toggle_name, toggle->Scope())) {
                     const ComputedStyle* e_style = e->GetComputedStyle();
                     if (!e_style) {
                       continue;
                     }
-                    if (e_style->ToggleVisibility() == toggle_name) {
+                    if (e_style->ToggleVisibility() == child_toggle_name) {
                       ++panel_count;
                       if (toggle->IsGroup()) {
                         auto count_add_result =
-                            panel_with_toggle_group_counts.insert(toggle_name,
-                                                                  0);
+                            panel_with_toggle_group_counts.insert(
+                                child_toggle_name, 0);
                         DCHECK(count_add_result.is_new_entry ==
                                (count_add_result.stored_value->value == 0));
                         ++count_add_result.stored_value->value;
@@ -347,6 +349,7 @@ void CSSToggleInference::Rebuild() {
             bool enough_accordions =
                 accordion_ish_panel_count * 2 > panel_count;
             bool enough_toggle_groups = false;
+            AtomicString toggle_group_name = g_null_atom;
             if (const ComputedStyle* parent_style =
                     parent->GetComputedStyle()) {
               if (const ToggleGroupList* parent_groups =
@@ -356,6 +359,7 @@ void CSSToggleInference::Rebuild() {
                   if (iter != panel_with_toggle_group_counts.end()) {
                     if (iter->value * 2 > panel_count) {
                       enough_toggle_groups = true;
+                      toggle_group_name = group.Name();
                     }
                   }
                 }
@@ -364,37 +368,49 @@ void CSSToggleInference::Rebuild() {
             if (enough_accordions ^ enough_toggle_groups) {
               if (enough_accordions) {
                 DCHECK(!enough_toggle_groups);
-                add_result.stored_value->value = CSSToggleRole::kTree;
+                add_result.stored_value->value =
+                    ElementData{CSSToggleRole::kTree, g_null_atom};
               } else {
                 DCHECK(enough_toggle_groups);
-                add_result.stored_value->value = CSSToggleRole::kAccordion;
+                DCHECK_NE(toggle_group_name, g_null_atom);
+                add_result.stored_value->value =
+                    ElementData{CSSToggleRole::kAccordion, toggle_group_name};
               }
             } else {
-              // TODO(dbaron): For now, we don't know what this is, but
-              // maybe we could do better.
-              add_result.stored_value->value = CSSToggleRole::kNone;
+              // TODO(https://crbug.com/1250716): For now, we don't know
+              // what this is, but maybe we could do better.
+              add_result.stored_value->value =
+                  ElementData{CSSToggleRole::kNone, g_null_atom};
             }
           }
-          parent_role = add_result.stored_value->value;
+          parent_role = add_result.stored_value->value.role;
         }
         switch (parent_role) {
           case CSSToggleRole::kTree:
           case CSSToggleRole::kTreeGroup: {
-            // TODO(dbaron): This role assignment is likely wrong!  Need to
-            // examine closely!
+            // TODO(https://crbug.com/1250716): This role assignment is
+            // likely wrong!  Need to examine closely!
             Element* trigger_element =
                 disclosure_ish_element_triggers.at(toggle_root);
-            element_roles_.insert(toggle_root, CSSToggleRole::kTreeGroup);
-            // TODO(dbaron): What if the trigger is just part of the tree item?
-            element_roles_.insert(trigger_element, CSSToggleRole::kTreeItem);
+            element_data_.insert(
+                toggle_root,
+                ElementData{CSSToggleRole::kTreeGroup, toggle_name});
+            // TODO(https://crbug.com/1250716): What if the trigger is
+            // just part of the tree item?
+            element_data_.insert(
+                trigger_element,
+                ElementData{CSSToggleRole::kTreeItem, toggle_name});
             break;
           }
           case CSSToggleRole::kAccordion: {
             Element* trigger_element =
                 disclosure_ish_element_triggers.at(toggle_root);
-            element_roles_.insert(toggle_root, CSSToggleRole::kAccordionItem);
-            element_roles_.insert(trigger_element,
-                                  CSSToggleRole::kAccordionItemButton);
+            element_data_.insert(
+                toggle_root,
+                ElementData{CSSToggleRole::kAccordionItem, toggle_name});
+            element_data_.insert(
+                trigger_element,
+                ElementData{CSSToggleRole::kAccordionItemButton, toggle_name});
             break;
           }
           case CSSToggleRole::kNone:
@@ -403,12 +419,11 @@ void CSSToggleInference::Rebuild() {
           default:
             // This could happen if some other part of the assignment
             // logic touches it.
-            // TODO(dbaron): Do we want to do this?
+            // TODO(https://crbug.com/1250716): Do we want to do this?
             find_trigger_and_make_it_a_button = true;
             break;
         }
       } else {
-        const AtomicString& toggle_name = disclosure_ish_iter->value;
         DCHECK(toggle_root->GetToggleMap());
         CSSToggle* toggle =
             toggle_root->GetToggleMap()->Toggles().at(toggle_name);
@@ -433,12 +448,16 @@ void CSSToggleInference::Rebuild() {
               Element* trigger_element =
                   disclosure_ish_element_triggers.at(toggle_root);
               if (positioned_or_popover) {
-                element_roles_.insert(trigger_element,
-                                      CSSToggleRole::kButtonWithPopup);
+                element_data_.insert(
+                    trigger_element,
+                    ElementData{CSSToggleRole::kButtonWithPopup, toggle_name});
               } else {
-                element_roles_.insert(toggle_root, CSSToggleRole::kDisclosure);
-                element_roles_.insert(trigger_element,
-                                      CSSToggleRole::kDisclosureButton);
+                element_data_.insert(
+                    toggle_root,
+                    ElementData{CSSToggleRole::kDisclosure, toggle_name});
+                element_data_.insert(
+                    trigger_element,
+                    ElementData{CSSToggleRole::kDisclosureButton, toggle_name});
               }
               break;
             }
@@ -465,15 +484,18 @@ void CSSToggleInference::Rebuild() {
                  DCHECK_EQ(toggle->Name(), toggle_name);
                  return toggle;
                }()) {
-      element_roles_.insert(parent, CSSToggleRole::kTabContainer);
-      element_roles_.insert(toggle_root, CSSToggleRole::kTab);
+      element_data_.insert(parent, ElementData{CSSToggleRole::kTabContainer,
+                                               tabs_ish_toggle->Name()});
+      element_data_.insert(toggle_root, ElementData{CSSToggleRole::kTab,
+                                                    tabs_ish_toggle->Name()});
 
       for (Element* e :
            CSSToggleScopeRange(toggle_root, tabs_ish_toggle->Name(),
                                tabs_ish_toggle->Scope())) {
         const ComputedStyle* e_style = e->GetComputedStyle();
         if (e_style && e_style->ToggleVisibility() == tabs_ish_toggle->Name()) {
-          element_roles_.insert(e, CSSToggleRole::kTabPanel);
+          element_data_.insert(e, ElementData{CSSToggleRole::kTabPanel,
+                                              tabs_ish_toggle->Name()});
         }
       }
     } else {
@@ -511,17 +533,36 @@ void CSSToggleInference::Rebuild() {
 
         CSSToggleRole parent_role = CSSToggleRole::kNone;
         if (found_visibility) {
-          // TODO(dbaron): The current spec draft says that this should
-          // be "no pattern detected", but it seems bad to fail to
-          // report something.  I'm going to report button instead.
-          element_roles_.insert(toggle_root, CSSToggleRole::kButton);
+          // TODO(https://crbug.com/1250716): The current spec draft
+          // says that this should be "no pattern detected", but it
+          // seems bad to fail to report something.  I'm going to report
+          // button instead.
+          element_data_.insert(
+              toggle_root, ElementData{CSSToggleRole::kButton, toggle_name});
         } else if (toggle_with_trigger->IsGroup()) {
-          element_roles_.insert(toggle_root, CSSToggleRole::kRadioItem);
+          // TODO(https://crbug.com/1250716): Detecting this pattern as
+          // radio item and radio group is not quite right since the
+          // underlying toggle behavior here doesn't match the normal
+          // interaction of radios.  In particular, this toggle pattern
+          // allows users to unselect a selected radio item by clicking
+          // on it.  The ability to do this leads to a keyboard
+          // interaction behavior that also doesn't really match the
+          // normal interaction for radios (where focus and selection
+          // are the same whenever focused, with the sole exception of
+          // focusing into a radio group with no current selection).
+          // It's not entirely clear if we should change the detection
+          // behavior here or change the keyboard interactions to match
+          // normal radio behavior.  (Changing the keyboard interactions
+          // has the disadvantage that it would then leave keyboard
+          // users without the ability to do something that remains
+          // possible with the mouse.)
+          element_data_.insert(
+              toggle_root, ElementData{CSSToggleRole::kRadioItem, toggle_name});
           if (const ComputedStyle* parent_style = parent->GetComputedStyle()) {
             if (const ToggleGroupList* parent_groups =
                     parent_style->ToggleGroup()) {
               for (const ToggleGroup& group : parent_groups->Groups()) {
-                if (toggle_with_trigger->Name() == group.Name()) {
+                if (toggle_name == group.Name()) {
                   parent_role = CSSToggleRole::kRadioGroup;
                   break;
                 }
@@ -529,30 +570,33 @@ void CSSToggleInference::Rebuild() {
             }
           }
         } else {
-          // TODO(dbaron): Maybe this should be Switch, depending on
-          // device.
-          element_roles_.insert(toggle_root, CSSToggleRole::kCheckbox);
-          // TODO(dbaron): We should only set parent_role here when
-          // there are multiple checkbox siblings with few non-checkbox
-          // siblings!  (Once we do this we can probably remove the
-          // tabs_ish_elements.Contains(parent) test below.)
+          // TODO(https://crbug.com/1250716): Maybe this should be
+          // Switch, depending on device.
+          element_data_.insert(
+              toggle_root, ElementData{CSSToggleRole::kCheckbox, toggle_name});
+          // TODO(https://crbug.com/1250716): We should only set
+          // parent_role here when there are multiple checkbox siblings
+          // with few non-checkbox siblings!  (Once we do this we can
+          // probably remove the tabs_ish_elements.Contains(parent) test
+          // below.)
           parent_role = CSSToggleRole::kCheckboxGroup;
         }
 
-        // TODO(dbaron): Figure out if we need to exclude additional
-        // cases where the parent would be assigned a different role (in
-        // order to ensure that hash map processing order doesn't affect
-        // the result).
+        // TODO(https://crbug.com/1250716): Figure out if we need to
+        // exclude additional cases where the parent would be assigned a
+        // different role (in order to ensure that hash map processing
+        // order doesn't affect the result).
         if (parent_role != CSSToggleRole::kNone && parent &&
             !accordion_ish_elements.Contains(parent) &&
             !tabs_ish_elements.Contains(parent)) {
-          auto parent_add_result = element_roles_.insert(parent, parent_role);
+          ElementData data{parent_role, toggle_name};
+          auto parent_add_result = element_data_.insert(parent, data);
           // prefer checkbox group to radio group if some children
           // lead to either
-          if (parent_add_result.stored_value->value != parent_role &&
-              parent_add_result.stored_value->value ==
+          if (parent_add_result.stored_value->value.role != parent_role &&
+              parent_add_result.stored_value->value.role ==
                   CSSToggleRole::kRadioGroup) {
-            parent_add_result.stored_value->value = parent_role;
+            parent_add_result.stored_value->value = data;
           }
         }
       } else {
@@ -570,7 +614,8 @@ void CSSToggleInference::Rebuild() {
             if (const ToggleTriggerList* triggers = e_style->ToggleTrigger()) {
               for (const ToggleTrigger& trigger : triggers->Triggers()) {
                 if (trigger.Name() == toggle_name) {
-                  element_roles_.insert(e, CSSToggleRole::kButton);
+                  element_data_.insert(
+                      e, ElementData{CSSToggleRole::kButton, toggle_name});
                   break;
                 }
               }
@@ -582,15 +627,28 @@ void CSSToggleInference::Rebuild() {
   }
 }
 
-CSSToggleRole CSSToggleInference::RoleForElement(blink::Element* element) {
+CSSToggleRole CSSToggleInference::RoleForElement(
+    const blink::Element* element) {
   RebuildIfNeeded();
 
-  auto iter = element_roles_.find(element);
-  if (iter == element_roles_.end()) {
+  auto iter = element_data_.find(element);
+  if (iter == element_data_.end()) {
     return CSSToggleRole::kNone;
   }
 
-  return iter->value;
+  return iter->value.role;
+}
+
+AtomicString CSSToggleInference::ToggleNameForElement(
+    const blink::Element* element) {
+  RebuildIfNeeded();
+
+  auto iter = element_data_.find(element);
+  if (iter == element_data_.end()) {
+    return g_null_atom;
+  }
+
+  return iter->value.toggle_name;
 }
 
 }  // namespace blink

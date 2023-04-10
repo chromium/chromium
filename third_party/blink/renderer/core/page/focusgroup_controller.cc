@@ -29,7 +29,10 @@ bool FocusgroupController::HandleArrowKeyboardEvent(KeyboardEvent* event,
   DCHECK(frame);
   DCHECK(frame->DomWindow());
   ExecutionContext* context = frame->DomWindow()->GetExecutionContext();
-  DCHECK(RuntimeEnabledFeatures::FocusgroupEnabled(context));
+  DCHECK(RuntimeEnabledFeatures::FocusgroupEnabled(context) ||
+         RuntimeEnabledFeatures::CSSTogglesEnabled(context));
+  // TODO(https://crbug.com/1250716): Test
+  // RuntimeEnabledFeatures::FocusgroupEnabled(context) elsewhere?
 
   FocusgroupDirection direction = utils::FocusgroupDirectionForEvent(event);
   if (direction == FocusgroupDirection::kNone)

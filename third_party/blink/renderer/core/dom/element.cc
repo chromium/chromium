@@ -84,6 +84,8 @@
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/css_toggle.h"
+#include "third_party/blink/renderer/core/dom/css_toggle_inference.h"
+#include "third_party/blink/renderer/core/dom/css_toggle_key_handling.h"
 #include "third_party/blink/renderer/core/dom/css_toggle_map.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -191,7 +193,8 @@
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/core/style/toggle_root_list.h"
+#include "third_party/blink/renderer/core/style/toggle_trigger.h"
+#include "third_party/blink/renderer/core/style/toggle_trigger_list.h"
 #include "third_party/blink/renderer/core/svg/svg_a_element.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_href.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
@@ -4912,6 +4915,19 @@ void Element::DefaultEventHandler(Event& event) {
         }
       }
     }
+  } else if (event.type() == event_type_names::kKeydown) {
+    auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
+    if (keyboard_event) {
+      bool handled =
+          css_toggle_key_handling::HandleKeydownEvent(this, *keyboard_event);
+      if (handled) {
+        event.SetDefaultHandled();
+        // We don't want to continue to the default handlers for base
+        // classes, because those are likely to treat the same event as
+        // scrolling the page.
+        return;
+      }
+    }
   }
 
   ContainerNode::DefaultEventHandler(event);
@@ -8177,10 +8193,56 @@ bool Element::IsInertRoot() {
 
 FocusgroupFlags Element::GetFocusgroupFlags() const {
   ExecutionContext* context = GetExecutionContext();
-  if (!RuntimeEnabledFeatures::FocusgroupEnabled(context) || !HasRareData()) {
-    return FocusgroupFlags::kNone;
+
+  // Explicit flags from the focusgroup attribute take priority, when present.
+  if (RuntimeEnabledFeatures::FocusgroupEnabled(context) && HasRareData()) {
+    FocusgroupFlags flags = GetElementRareData()->GetFocusgroupFlags();
+    if (flags != FocusgroupFlags::kNone) {
+      return flags;
+    }
   }
-  return GetElementRareData()->GetFocusgroupFlags();
+
+  // We can also have flags from inferred roles from CSS toggles.
+  if (CSSToggleInference* toggle_inference =
+          GetDocument().GetCSSToggleInference()) {
+    DCHECK(RuntimeEnabledFeatures::CSSTogglesEnabled(context));
+    switch (toggle_inference->RoleForElement(this)) {
+      case CSSToggleRole::kNone:
+      case CSSToggleRole::kAccordion:
+      case CSSToggleRole::kAccordionItem:
+      case CSSToggleRole::kAccordionItemButton:
+      case CSSToggleRole::kButton:
+      case CSSToggleRole::kButtonWithPopup:
+      case CSSToggleRole::kCheckbox:
+      case CSSToggleRole::kDisclosure:
+      case CSSToggleRole::kDisclosureButton:
+      case CSSToggleRole::kListboxItem:
+      case CSSToggleRole::kRadioItem:
+      case CSSToggleRole::kTab:
+      case CSSToggleRole::kTabPanel:
+      case CSSToggleRole::kTreeItem:
+        break;
+      case CSSToggleRole::kCheckboxGroup:
+        return FocusgroupFlags::kHorizontal | FocusgroupFlags::kVertical |
+               FocusgroupFlags::kForCSSToggleCheckbox;
+      case CSSToggleRole::kListbox:
+        return FocusgroupFlags::kHorizontal | FocusgroupFlags::kVertical |
+               FocusgroupFlags::kForCSSToggleListboxItem;
+      case CSSToggleRole::kRadioGroup:
+        return FocusgroupFlags::kHorizontal | FocusgroupFlags::kVertical |
+               FocusgroupFlags::kForCSSToggleRadioItem;
+      case CSSToggleRole::kTabContainer:
+        return FocusgroupFlags::kHorizontal | FocusgroupFlags::kVertical |
+               FocusgroupFlags::kForCSSToggleTab;
+      case CSSToggleRole::kTree:
+      case CSSToggleRole::kTreeGroup:
+        // TODO(https://crbug.com/1250716): This needs more work!
+        return FocusgroupFlags::kVertical |
+               FocusgroupFlags::kForCSSToggleTreeItem;
+    }
+  }
+
+  return FocusgroupFlags::kNone;
 }
 
 bool Element::checkVisibility(CheckVisibilityOptions* options) const {
