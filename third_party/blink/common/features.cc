@@ -306,6 +306,15 @@ constexpr base::FeatureParam<bool>
 constexpr base::FeatureParam<int> kPrivateAggregationApiMaxBudgetPerScope{
     &kPrivateAggregationApi, "max_budget_per_scope", /*default_value=*/65536};
 
+// Has the same effect as enabling
+// kPrivateAggregationApiFledgeExtensionsEnabled. This is intended as a
+// convenience for local testing only.
+// TODO(alexmt): Remove when kPrivateAggregationApiFledgeExtensionsEnabled is
+// enabled by default.
+BASE_FEATURE(kPrivateAggregationApiFledgeExtensionsLocalTestingOverride,
+             "PrivateAggregationApiFledgeExtensionsLocalTestingOverride",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable the shared storage API. Note that enabling this feature does not
 // automatically expose this API to the web, it only allows the element to be
 // enabled by the runtime enabled feature, for origin trials.

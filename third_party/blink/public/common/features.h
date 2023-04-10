@@ -89,6 +89,9 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kPrivateAggregationApiMaxBudgetPerScope;
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kPrivateAggregationApiFledgeExtensionsLocalTestingOverride);
+
 enum class SharedStorageWorkletImplementationType {
   // The worklet thread is created via base::SequenceBound, and JS bindings are
   // added with native v8 and/or Gin library.

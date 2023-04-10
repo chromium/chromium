@@ -173,7 +173,11 @@ void Fence::reportPrivateAggregationEvent(ScriptState* script_state,
                                           const String& event,
                                           ExceptionState& exception_state) {
   if (!base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) ||
-      !blink::features::kPrivateAggregationApiFledgeExtensionsEnabled.Get()) {
+      !blink::features::kPrivateAggregationApiEnabledInFledge.Get() ||
+      (!blink::features::kPrivateAggregationApiFledgeExtensionsEnabled.Get() &&
+       !base::FeatureList::IsEnabled(
+           blink::features::
+               kPrivateAggregationApiFledgeExtensionsLocalTestingOverride))) {
     exception_state.ThrowSecurityError(
         "FLEDGE extensions must be enabled to use reportEvent() for private "
         "aggregation events.");

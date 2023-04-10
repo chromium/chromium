@@ -763,7 +763,10 @@ void InterestGroupAuctionReporter::SendPendingReportsIfNavigated() {
 
   if (base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) &&
       blink::features::kPrivateAggregationApiEnabledInFledge.Get() &&
-      blink::features::kPrivateAggregationApiFledgeExtensionsEnabled.Get()) {
+      (blink::features::kPrivateAggregationApiFledgeExtensionsEnabled.Get() ||
+       base::FeatureList::IsEnabled(
+           blink::features::
+               kPrivateAggregationApiFledgeExtensionsLocalTestingOverride))) {
     fenced_frame_reporter_->OnForEventPrivateAggregationRequestsReceived(
         std::move(private_aggregation_requests_non_reserved_));
   }
