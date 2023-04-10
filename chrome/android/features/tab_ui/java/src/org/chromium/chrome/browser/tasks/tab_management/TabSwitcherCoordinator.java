@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabLi
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ShowMode;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorCoordinator.TabSelectionEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabSelectionEditorOpenMetricGroups;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionsOrchestrator;
@@ -91,25 +90,6 @@ public class TabSwitcherCoordinator
         void showIph();
     }
 
-    private class TabGroupManualSelectionMode {
-        public final String actionString;
-        public final int actionButtonDescriptionResourceId;
-        public final int enablingThreshold;
-        public final TabSelectionEditorActionProvider actionProvider;
-        public final TabSelectionEditorCoordinator
-                .TabSelectionEditorNavigationProvider navigationProvider;
-
-        TabGroupManualSelectionMode(String actionString, int actionButtonDescriptionResourceId,
-                int enablingThreshold, TabSelectionEditorActionProvider actionProvider,
-                TabSelectionEditorNavigationProvider navigationProvider) {
-            this.actionString = actionString;
-            this.actionButtonDescriptionResourceId = actionButtonDescriptionResourceId;
-            this.enablingThreshold = enablingThreshold;
-            this.actionProvider = actionProvider;
-            this.navigationProvider = navigationProvider;
-        }
-    }
-
     // TODO(crbug.com/982018): Rename 'COMPONENT_NAME' so as to add different metrics for carousel
     // tab switcher.
     static final String COMPONENT_NAME = "GridTabSwitcher";
@@ -134,8 +114,6 @@ public class TabSwitcherCoordinator
     private final ModalDialogManager mModalDialogManager;
     @Nullable
     private TabSelectionEditorCoordinator mTabSelectionEditorCoordinator;
-    @Nullable
-    private TabGroupManualSelectionMode mTabGroupManualSelectionMode;
     @Nullable
     private List<TabSelectionEditorAction> mTabSelectionEditorActions;
     private TabSuggestionsOrchestrator mTabSuggestionsOrchestrator;
@@ -272,7 +250,8 @@ public class TabSwitcherCoordinator
             mTabListCoordinator = new TabListCoordinator(mode, activity, tabModelSelector,
                     mMultiThumbnailCardProvider, titleProvider, true, mMediator, null,
                     TabProperties.UiType.CLOSABLE, null, this, container, true, COMPONENT_NAME,
-                    mRootView, null, this);
+                    mRootView, null);
+            mTabListCoordinator.setOnLongPressTabItemEventListener(this);
             mContainerViewChangeProcessor = PropertyModelChangeProcessor.create(containerViewModel,
                     mTabListCoordinator.getContainerView(), TabListContainerViewBinder::bind);
 
@@ -362,28 +341,8 @@ public class TabSwitcherCoordinator
                         new MenuOrKeyboardActionController.MenuOrKeyboardActionHandler() {
                             @Override
                             public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
-                                if (id == R.id.menu_group_tabs
-                                        && mTabSelectionEditorCoordinator != null) {
-                                    assert mTabGroupManualSelectionMode != null;
-
-                                    mTabSelectionEditorCoordinator.getController().configureToolbar(
-                                            mTabGroupManualSelectionMode.actionString,
-                                            mTabGroupManualSelectionMode
-                                                    .actionButtonDescriptionResourceId,
-                                            mTabGroupManualSelectionMode.actionProvider,
-                                            mTabGroupManualSelectionMode.enablingThreshold,
-                                            mTabGroupManualSelectionMode.navigationProvider);
-
-                                    mTabSelectionEditorCoordinator.getController().show(
-                                            mTabModelSelector.getTabModelFilterProvider()
-                                                    .getCurrentTabModelFilter()
-                                                    .getTabsWithNoOtherRelatedTabs(),
-                                            /*preSelectedTabCount=*/0,
-                                            /*recyclerViewPosition=*/null);
-                                    RecordUserAction.record("MobileMenuGroupTabs");
-                                    return true;
-                                } else if (id == R.id.menu_select_tabs) {
-                                    showTabSelectionEditorV2();
+                                if (id == R.id.menu_select_tabs) {
+                                    showTabSelectionEditor();
                                     RecordUserAction.record("MobileMenuSelectTabs");
                                     return true;
                                 }
@@ -445,33 +404,15 @@ public class TabSwitcherCoordinator
         try (TraceEvent e = TraceEvent.scoped("TabSwitcherCoordinator.initWithNative")) {
             mTabListCoordinator.initWithNative(mDynamicResourceLoaderSupplier.get());
 
-            // TODO(ckitagawa): TabSelectionEditorV2 lazily loads the TabSelectionEditor which
-            // prevents the CloseTabSuggestions feature from running. Unblock the close suggestions
-            // feature if the V2 editor is enabled.
-            if (!TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mActivity)) {
-                // Selector editor required for tab groups if not using the V2 editor and close tab
-                // suggestions.
-                if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity)
-                        || ChromeFeatureList.sCloseTabSuggestions.isEnabled()) {
-                    setUpTabSelectionEditorCoordinator(mActivity, mTabContentManager);
-                }
-                if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mActivity)) {
-                    setUpTabGroupManualSelectionMode(mActivity);
-                }
-            }
-
-            final TabSelectionEditorController controller = mTabSelectionEditorCoordinator != null
-                    ? mTabSelectionEditorCoordinator.getController()
-                    : null;
-
             if (mMode == TabListCoordinator.TabListMode.GRID) {
-                if (ChromeFeatureList.sCloseTabSuggestions.isEnabled()
-                        && !TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mActivity)) {
+                if (ChromeFeatureList.sCloseTabSuggestions.isEnabled()) {
                     mTabSuggestionsOrchestrator = new TabSuggestionsOrchestrator(
                             mActivity, mTabModelSelector, mLifecycleDispatcher);
                     TabSuggestionMessageService tabSuggestionMessageService =
-                            new TabSuggestionMessageService(
-                                    mActivity, mTabModelSelector, controller);
+                            new TabSuggestionMessageService(mActivity, mTabModelSelector, () -> {
+                                initTabSelectionEditor();
+                                return mTabSelectionEditorCoordinator.getController();
+                            });
                     mTabSuggestionsOrchestrator.addObserver(tabSuggestionMessageService);
                     mMessageCardProviderCoordinator.subscribeMessageService(
                             tabSuggestionMessageService);
@@ -503,7 +444,7 @@ public class TabSwitcherCoordinator
             }
 
             mMultiThumbnailCardProvider.initWithNative();
-            mMediator.initWithNative(controller, mSnackbarManager);
+            mMediator.initWithNative(mSnackbarManager);
             // TODO(crbug.com/1222762): Only call setUpPriceTracking in GRID TabSwitcher.
             setUpPriceTracking(mActivity, mModalDialogManager);
 
@@ -511,34 +452,10 @@ public class TabSwitcherCoordinator
         }
     }
 
-    private void setUpTabGroupManualSelectionMode(Context context) {
-        try (TraceEvent e = TraceEvent.scoped(
-                     "TabSwitcherCoordintor.setUpTabGroupManualSelectionMode")) {
-            mTabGroupManualSelectionMode = new TabGroupManualSelectionMode(
-                    context.getString(R.string.tab_selection_editor_group),
-                    R.plurals.accessibility_tab_selection_editor_group_button, 2,
-                    new TabSelectionEditorActionProvider(
-                            mTabSelectionEditorCoordinator.getController(),
-                            TabSelectionEditorActionProvider.TabSelectionEditorAction.GROUP),
-                    new TabSelectionEditorNavigationProvider(
-                            mActivity, mTabSelectionEditorCoordinator.getController()));
-        }
-    }
-
-    private void setUpTabSelectionEditorCoordinator(
-            Activity activity, TabContentManager tabContentManager) {
-        // For tab switcher in carousel mode, the selection editor should still follow grid
-        // style.
-        int selectionEditorMode = mMode == TabListMode.CAROUSEL ? TabListMode.GRID : mMode;
-        mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(activity,
-                mCoordinatorView, mTabModelSelector, tabContentManager, null, selectionEditorMode,
-                mRootView, /*displayGroups=*/false, mTabSelectionEditorSnackbarManager);
-    }
-
-    private void showTabSelectionEditorV2() {
-        assert TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mActivity);
-
+    private void initTabSelectionEditor() {
         if (mTabSelectionEditorCoordinator == null) {
+            // For tab switcher in carousel mode, the selection editor should still follow grid
+            // style.
             int selectionEditorMode = mMode == TabListMode.CAROUSEL ? TabListMode.GRID : mMode;
             mTabSelectionEditorCoordinator = new TabSelectionEditorCoordinator(mActivity,
                     mCoordinatorView, mTabModelSelector, mTabContentManager,
@@ -547,6 +464,11 @@ public class TabSwitcherCoordinator
             mMediator.setTabSelectionEditorController(
                     mTabSelectionEditorCoordinator.getController());
         }
+    }
+
+    private void showTabSelectionEditor() {
+        // Lazy initialize if required.
+        initTabSelectionEditor();
 
         if (mTabSelectionEditorActions == null) {
             mTabSelectionEditorActions = new ArrayList<>();
@@ -556,15 +478,10 @@ public class TabSwitcherCoordinator
                     mActivity, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
             mTabSelectionEditorActions.add(TabSelectionEditorGroupAction.createAction(
                     mActivity, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
-            if (TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_BOOKMARKS.getValue()) {
-                mTabSelectionEditorActions.add(
-                        TabSelectionEditorBookmarkAction.createAction(mActivity, ShowMode.MENU_ONLY,
-                                ButtonType.ICON_AND_TEXT, IconPosition.START));
-            }
-            if (TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_SHARE.getValue()) {
-                mTabSelectionEditorActions.add(TabSelectionEditorShareAction.createAction(mActivity,
-                        ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
-            }
+            mTabSelectionEditorActions.add(TabSelectionEditorBookmarkAction.createAction(
+                    mActivity, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
+            mTabSelectionEditorActions.add(TabSelectionEditorShareAction.createAction(
+                    mActivity, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
         }
 
         mTabSelectionEditorCoordinator.getController().configureToolbarWithMenuItems(
@@ -823,7 +740,7 @@ public class TabSwitcherCoordinator
     // OnLongPressTabItemEventListener implementation
     @Override
     public void onLongPressEvent(int tabId) {
-        showTabSelectionEditorV2();
+        showTabSelectionEditor();
         RecordUserAction.record("TabMultiSelectV2.OpenLongPressInGrid");
     }
 

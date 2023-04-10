@@ -13,7 +13,6 @@ import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
-import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
@@ -21,7 +20,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -63,7 +61,6 @@ import androidx.test.espresso.ViewAssertion;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
-import androidx.test.uiautomator.UiDevice;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -888,9 +885,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
         + "thumbnail_aspect_ratio/1.0"})
-    // TODO(crbug/1422295): TabSelectionEditorV2 is currently not compatible with TabSuggestions.
-    // TabSuggestions are not launched and need to be reworked to use TabSelectionEditorV2.
-    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testTabSuggestionMessageCard_dismiss() throws InterruptedException {
         // clang-format on
         prepareTabs(3, 0, null);
@@ -923,9 +917,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"
         + "/thumbnail_aspect_ratio/1.0"})
-    // TODO(crbug/1422295): TabSelectionEditorV2 is currently not compatible with TabSuggestions.
-    // TabSuggestions are not launched and need to be reworked to use TabSelectionEditorV2.
-    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testTabSuggestionMessageCard_review() throws InterruptedException {
         // clang-format on
         prepareTabs(3, 0, null);
@@ -959,9 +950,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
         + "thumbnail_aspect_ratio/1.0"})
-    // TODO(crbug/1422295): TabSelectionEditorV2 is currently not compatible with TabSuggestions.
-    // TabSuggestions are not launched and need to be reworked to use TabSelectionEditorV2.
-    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     public void testShowOnlyOneTabSuggestionMessageCard_withSoftCleanup()
             throws InterruptedException {
         // clang-format on
@@ -977,9 +965,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
         + "thumbnail_aspect_ratio/1.0"})
-    // TODO(crbug/1422295): TabSelectionEditorV2 is currently not compatible with TabSuggestions.
-    // TabSuggestions are not launched and need to be reworked to use TabSelectionEditorV2.
-    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     @DisabledTest(message = "https://crbug.com/1198484, crbug.com/1130621")
     public void testShowOnlyOneTabSuggestionMessageCard_withHardCleanup()
             throws InterruptedException {
@@ -996,9 +981,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
         + "thumbnail_aspect_ratio/1.0"})
-    // TODO(crbug/1422295): TabSelectionEditorV2 is currently not compatible with TabSuggestions.
-    // TabSuggestions are not launched and need to be reworked to use TabSelectionEditorV2.
-    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     @DisabledTest(message = "https://crbug.com/1311825")
     public void testTabSuggestionMessageCardDismissAfterTabClosing() throws InterruptedException {
         // clang-format on
@@ -1033,9 +1015,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
         + "thumbnail_aspect_ratio/1.0"})
-    // TODO(crbug/1422295): TabSelectionEditorV2 is currently not compatible with TabSuggestions.
-    // TabSuggestions are not launched and need to be reworked to use TabSelectionEditorV2.
-    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     @DisabledTest(message = "https://crbug.com/1326533")
     public void testTabSuggestionMessageCard_orientation() throws InterruptedException {
         // clang-format on
@@ -1466,26 +1445,22 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
-    // TODO(crbug/1422295): Manual selection for V2 is tested elsewhere in TabSelectionEditorTest.
-    // This can be removed once the feature flag is cleaned up.
-    @DisableFeatures(
-            {ChromeFeatureList.TAB_TO_GTS_ANIMATION, ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    @DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
     @DisabledTest(message = "crbug.com/1096997")
-    public void
-    testTabGroupManualSelection() throws InterruptedException {
+    public void testTabGroupManualSelection() throws InterruptedException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabSelectionEditorTestingRobot robot = new TabSelectionEditorTestingRobot();
         createTabs(cta, false, 3);
         enterTabSwitcher(cta);
         onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(3));
 
-        enterTabGroupManualSelection(cta);
+        enterTabSelectionEditorV2(cta);
         robot.resultRobot.verifyTabSelectionEditorIsVisible();
 
         // Group first two tabs.
         robot.actionRobot.clickItemAtAdapterPosition(0);
         robot.actionRobot.clickItemAtAdapterPosition(1);
-        robot.actionRobot.clickToolbarActionButton();
+        robot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Group tabs");
 
         // Exit manual selection mode, back to tab switcher.
         robot.resultRobot.verifyTabSelectionEditorIsHidden();
@@ -1495,76 +1470,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
-    // TODO(crbug/1422295): Manual selection for V2 is tested elsewhere in TabSelectionEditorTest.
-    // This can be removed once the feature flag is cleaned up.
-    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
-    public void testTabGroupManualSelection_DisabledForSingleTab() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        TabSelectionEditorTestingRobot robot = new TabSelectionEditorTestingRobot();
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 1);
-
-        // Group option should be disabled when there is only one single tab.
-        // We are using UiDevice to finish the click here since there seems to be more than one menu
-        // button in the view hierarchy, and we couldn't locate it using espresso approach. Also,
-        // performClick() won't work as the logic that handles menu button lies in onTouchListener.
-        View menuButton =
-                cta.findViewById(R.id.tab_switcher_toolbar).findViewById(R.id.menu_button);
-        int[] location = new int[2];
-        menuButton.getLocationOnScreen(location);
-        UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-                .click(location[0], location[1]);
-        // Even if we can tell the group option is disabled by looking at the device when the test
-        // is running, the espresso view matcher says it is enabled and all view parameters are the
-        // same with the one when we have two tabs. Thus, we check the item's click response here to
-        // tell if it is enabled.
-        onViewWaiting(withText("Group tabs"))
-                .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
-                .perform(click());
-        robot.resultRobot.verifyTabSelectionEditorIsHidden();
-
-        // Group option should be enabled when there is more than one single tab.
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-        UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-                .click(location[0], location[1]);
-        onViewWaiting(withText("Group tabs"))
-                .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
-                .perform(click());
-        robot.resultRobot.verifyTabSelectionEditorIsVisible();
-    }
-
-    @Test
-    @MediumTest
     // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
-            ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    // TODO(crbug/1422295): System back is partly tested in TabSelectionEditorTest. This test should
-    // stay, but the test fixtures for TabSelectionEditor assume V1 here and need to be updated
-    // during flag cleanup.
-    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
-    public void testTabGroupManualSelection_SystemBackDismiss() {
-        // clang-format on
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        TabSelectionEditorTestingRobot robot = new TabSelectionEditorTestingRobot();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(2));
-        enterTabGroupManualSelection(cta);
-        robot.resultRobot.verifyTabSelectionEditorIsVisible();
-
-        // Pressing system back should dismiss the selection editor.
-        Espresso.pressBack();
-        robot.resultRobot.verifyTabSelectionEditorIsHidden();
-    }
-
-    @Test
-    @MediumTest
-    // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2,
-                     ChromeFeatureList.TAB_TO_GTS_ANIMATION})
+    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
     public void testTabSelectionEditorV2_SystemBackDismiss() {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1586,10 +1493,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study"})
-    // TODO(crbug/1422295): TabSelectionEditorV2 is currently not compatible with TabSuggestions.
-    // TabSuggestions are not launched and need to be reworked to use TabSelectionEditorV2.
-    @DisableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2,
-                      ChromeFeatureList.TAB_TO_GTS_ANIMATION})
+    @DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0" +
             "/thumbnail_aspect_ratio/1.0"})
@@ -1614,11 +1518,10 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         onView(allOf(withId(R.id.action_button), withParent(withId(R.id.tab_grid_message_item))))
                 .perform(click());
 
-        robot.resultRobot.verifyTabSelectionEditorIsVisible()
-                .verifyToolbarActionButtonWithResourceId(
-                        R.string.tab_suggestion_close_tab_action_button);
+        robot.resultRobot.verifyTabSelectionEditorIsVisible().verifyToolbarActionViewEnabled(
+                R.id.tab_selection_editor_close_menu_item);
 
-        robot.actionRobot.clickToolbarActionButton();
+        robot.actionRobot.clickToolbarActionView(R.id.tab_selection_editor_close_menu_item);
         robot.resultRobot.verifyTabSelectionEditorIsHidden();
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(mActivityTestRule.getActivity().getCurrentTabModel().getCount(),
@@ -1629,14 +1532,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         createTabs(cta, false, 3);
 
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
-        enterTabGroupManualSelection(cta);
-        robot.resultRobot.verifyTabSelectionEditorIsVisible()
-                .verifyToolbarActionButtonWithResourceId(R.string.tab_selection_editor_group);
+        enterTabSelectionEditorV2(cta);
+        robot.resultRobot.verifyTabSelectionEditorIsVisible();
 
         // Group first two tabs.
         robot.actionRobot.clickItemAtAdapterPosition(0);
         robot.actionRobot.clickItemAtAdapterPosition(1);
-        robot.actionRobot.clickToolbarActionButton();
+        robot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Group tabs");
 
         // Exit manual selection mode, back to tab switcher.
         robot.resultRobot.verifyTabSelectionEditorIsHidden();
@@ -1830,10 +1732,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     @MediumTest
     public void testLongPressTab_entryInTabSwitcher_verifyNoSelectionOccurs() {
-        TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY.setForTesting(true);
+        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(true);
 
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -1851,14 +1752,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         Criteria.checkThat(
                 mActivityTestRule.getActivity().getCurrentTabModel().index(), Matchers.is(1));
 
-        TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY.setForTesting(false);
+        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(false);
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     @MediumTest
     public void testLongPressTabGroup_entryInTabSwitcher() {
-        TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY.setForTesting(true);
+        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(true);
 
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -1876,14 +1776,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         TabSelectionEditorTestingRobot mSelectionEditorRobot = new TabSelectionEditorTestingRobot();
         mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsVisible();
 
-        TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY.setForTesting(false);
+        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(false);
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
     @MediumTest
     public void testLongPressTab_verifyPostLongPressClickNoSelectionEditor() {
-        TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY.setForTesting(true);
+        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(true);
 
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -1907,7 +1806,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         Criteria.checkThat(
                 mActivityTestRule.getActivity().getCurrentTabModel().index(), Matchers.is(0));
 
-        TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_LONGPRESS_ENTRY.setForTesting(false);
+        TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(false);
     }
 
     @Test
@@ -2015,11 +1914,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                                 mTabSwitcherAndStartSurfaceLayout.getStartSurfaceForTesting()
                                         .getGridTabListDelegate()));
         return tabListDelegate.get();
-    }
-
-    private void enterTabGroupManualSelection(ChromeTabbedActivity cta) {
-        MenuUtils.invokeCustomMenuActionSync(
-                InstrumentationRegistry.getInstrumentation(), cta, R.id.menu_group_tabs);
     }
 
     private void enterTabSelectionEditorV2(ChromeTabbedActivity cta) {

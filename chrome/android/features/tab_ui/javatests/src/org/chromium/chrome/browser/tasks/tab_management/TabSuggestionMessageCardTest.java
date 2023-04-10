@@ -147,9 +147,9 @@ public class TabSuggestionMessageCardTest {
         mTabSelectionEditorTestingRobot.resultRobot.verifyTabSelectionEditorIsVisible();
     }
 
-    private void acceptSuggestion() {
+    private void acceptSuggestion(int id) {
         mTabSelectionEditorTestingRobot.resultRobot.verifyTabSelectionEditorIsVisible();
-        mTabSelectionEditorTestingRobot.actionRobot.clickToolbarActionButton();
+        mTabSelectionEditorTestingRobot.actionRobot.clickToolbarActionView(id);
         mTabSelectionEditorTestingRobot.resultRobot.verifyTabSelectionEditorIsHidden();
     }
 
@@ -173,7 +173,7 @@ public class TabSuggestionMessageCardTest {
 
         enteringTabSwitcherAndVerifySuggestionIsShown(mClosingSuggestionMessage);
         reviewSuggestion();
-        acceptSuggestion();
+        acceptSuggestion(R.id.tab_selection_editor_close_menu_item);
 
         onViewWaiting(allOf(withParent(withId(R.id.snackbar)), withText("3 tabs closed")));
     }
@@ -199,7 +199,7 @@ public class TabSuggestionMessageCardTest {
 
         enteringTabSwitcherAndVerifySuggestionIsShown(mGroupingSuggestionMessage);
         reviewSuggestion();
-        acceptSuggestion();
+        acceptSuggestion(R.id.tab_selection_editor_group_menu_item);
 
         onViewWaiting(allOf(withParent(withId(R.id.snackbar)), withText("3 tabs grouped")));
     }
@@ -287,7 +287,7 @@ public class TabSuggestionMessageCardTest {
 
         enteringTabSwitcherAndVerifySuggestionIsShown(mGroupingSuggestionMessage);
         reviewSuggestion();
-        acceptSuggestion();
+        acceptSuggestion(R.id.tab_selection_editor_group_menu_item);
 
         onView(withId(R.id.tab_grid_message_item)).check(doesNotExist());
     }

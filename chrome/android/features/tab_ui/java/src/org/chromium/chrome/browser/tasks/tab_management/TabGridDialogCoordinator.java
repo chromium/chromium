@@ -96,7 +96,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                     },
                     null, false, gridCardOnClickListenerProvider,
                     mMediator.getTabGridDialogHandler(), TabProperties.UiType.CLOSABLE, null, null,
-                    containerView, false, mComponentName, rootView, null, mMediator);
+                    containerView, false, mComponentName, rootView, null);
+            mTabListCoordinator.setOnLongPressTabItemEventListener(mMediator);
             TabListRecyclerView recyclerView = mTabListCoordinator.getContainerView();
 
             TabGroupUiToolbarView toolbarView =
@@ -105,10 +106,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             toolbarView.setupDialogToolbarLayout();
             if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(activity)) {
                 toolbarView.hideTitleWidget();
-            }
-            if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(activity)
-                    && !TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(activity)) {
-                toolbarView.hideMenuButton();
             }
             mModelChangeProcessor = PropertyModelChangeProcessor.create(mModel,
                     new TabGridPanelViewBinder.ViewHolder(toolbarView, recyclerView, mDialogView),
@@ -131,11 +128,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
     @Nullable
     private TabSelectionEditorController getTabSelectionEditorController() {
-        if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mActivity)
-                && !TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mActivity)) {
-            return null;
-        }
-
         if (mTabSelectionEditorCoordinator == null) {
             @TabListCoordinator.TabListMode
             int mode = TabUiFeatureUtilities.shouldUseListMode(mActivity)

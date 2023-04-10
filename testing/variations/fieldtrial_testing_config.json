@@ -464,26 +464,6 @@
             ]
         }
     ],
-    "AndroidTabSelectionEditorV2": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "enable_bookmarks": "true",
-                        "enable_longpress_entry": "true",
-                        "enable_share": "true"
-                    },
-                    "enable_features": [
-                        "TabSelectionEditorV2"
-                    ]
-                }
-            ]
-        }
-    ],
     "AppCloseRefreshClankStudy": [
         {
             "platforms": [

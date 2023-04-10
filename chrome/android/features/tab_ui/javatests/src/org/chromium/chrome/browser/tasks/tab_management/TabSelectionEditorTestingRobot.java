@@ -129,13 +129,6 @@ public class TabSelectionEditorTestingRobot {
             return this;
         }
 
-        public TabSelectionEditorTestingRobot.Action clickToolbarActionButton() {
-            onView(inTabSelectionEditor(allOf(withId(R.id.action_button),
-                           withParent(withId(R.id.action_view_layout)))))
-                    .perform(click());
-            return this;
-        }
-
         public TabSelectionEditorTestingRobot.Action clickToolbarActionView(int id) {
             onView(inTabSelectionEditor(withId(id))).perform(click());
             return this;
@@ -215,44 +208,14 @@ public class TabSelectionEditorTestingRobot {
             return this;
         }
 
-        public TabSelectionEditorTestingRobot.Result verifyToolbarActionButtonWithResourceId(
-                int resourceId) {
-            onView(inTabSelectionEditor(allOf(withId(R.id.action_button),
-                           withParent(withId(R.id.action_view_layout)))))
-                    .check(matches(withText(resourceId)));
-            return this;
-        }
-
-        public TabSelectionEditorTestingRobot.Result verifyToolbarActionButtonWithText(
-                String text) {
-            onView(inTabSelectionEditor(allOf(withId(R.id.action_button),
-                           withParent(withId(R.id.action_view_layout)))))
-                    .check(matches(withText(text)));
-            return this;
-        }
-
         public TabSelectionEditorTestingRobot.Result verifyToolbarActionViewWithText(
                 int id, String text) {
             onView(inTabSelectionEditor(withId(id))).check(matches(withText(text)));
             return this;
         }
 
-        public TabSelectionEditorTestingRobot.Result verifyToolbarActionButtonDisabled() {
-            onView(inTabSelectionEditor(allOf(withId(R.id.action_button),
-                           withParent(withId(R.id.action_view_layout)))))
-                    .check(matches(not(isEnabled())));
-            return this;
-        }
-
         public TabSelectionEditorTestingRobot.Result verifyToolbarActionViewDisabled(int id) {
             onView(inTabSelectionEditor(withId(id))).check(matches(not(isEnabled())));
-            return this;
-        }
-
-        public TabSelectionEditorTestingRobot.Result verifyToolbarActionButtonEnabled() {
-            onView(inTabSelectionEditor(allOf(withId(R.id.action_button),
-                           withParent(withId(R.id.action_view_layout)))))
-                    .check(matches(isEnabled()));
             return this;
         }
 

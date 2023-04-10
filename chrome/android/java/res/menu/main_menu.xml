@@ -178,9 +178,6 @@ found in the LICENSE file.
         <item android:id="@id/quick_delete_menu_id"
             android:title="@string/menu_quick_delete"
             android:icon="@drawable/quick_delete_trash_bin_icon_24dp"/>
-        <item android:id="@+id/menu_group_tabs"
-            android:title="@string/menu_group_tabs"
-            android:icon="@drawable/ic_widgets" />
         <item android:id="@+id/menu_select_tabs"
             android:title="@string/menu_select_tabs"
             android:icon="@drawable/ic_select_tabs" />

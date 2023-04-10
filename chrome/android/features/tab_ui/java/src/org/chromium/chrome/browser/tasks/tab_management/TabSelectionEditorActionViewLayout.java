@@ -18,7 +18,6 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
-import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -139,30 +138,8 @@ public class TabSelectionEditorActionViewLayout extends LinearLayout {
         }
     }
 
-    private boolean isUsingTabSelectionEditorV2Features() {
-        return TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext) && mDelegate != null
-                && (!mMenuItemsWithActionView.isEmpty() || mHasMenuOnlyItems);
-    }
-
     @Override
     public void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (!isUsingTabSelectionEditorV2Features()) {
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-            final int width = getMeasuredWidth();
-
-            if (getChildCount() < 3 || !(getChildAt(1) instanceof ButtonCompat)) return;
-
-            // Child 1 will be the button.
-            getChildAt(1).measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-            int requiredWidth =
-                    getPaddingLeft() + getPaddingRight() + getChildAt(1).getMeasuredWidth();
-            // Make the number roll view use the remaining space.
-            makeNumberRollViewFill(MathUtils.clamp(width - requiredWidth, 0, width));
-            // Get the final measurement.
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-            return;
-        }
-
         // Get empty size without action views.
         removeAllActionViews();
         mMenuButton.setVisibility(View.VISIBLE);

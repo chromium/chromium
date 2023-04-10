@@ -16,14 +16,6 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
-        <org.chromium.ui.widget.ButtonCompat
-            android:id="@+id/action_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|end"
-            android:enabled="false"
-            android:text="@string/tab_selection_editor_group"
-            style="@style/TextButton.OnAccent1" />
         <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
             style="@style/ToolbarMenuButton"
             android:id="@+id/list_menu_button"

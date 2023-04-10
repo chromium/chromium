@@ -572,27 +572,12 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 && TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)
                 && !DeviceClassManager.enableAccessibilityLayout(mContext);
 
-        boolean isMenuSelectTabsEnabled = false;
-        boolean isMenuSelectTabsVisible = false;
-        boolean isMenuGroupTabsEnabled = false;
-        boolean isMenuGroupTabsVisible = false;
-
-        if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext)) {
-            isMenuSelectTabsVisible = isTabSelectionEditorContext;
-            isMenuSelectTabsEnabled = !isIncognitoReauthShowing && isMenuSelectTabsVisible
-                    && mTabModelSelector.getTabModelFilterProvider()
-                                    .getCurrentTabModelFilter()
-                                    .getCount()
-                            != 0;
-        } else {
-            isMenuGroupTabsVisible = isTabSelectionEditorContext;
-            isMenuGroupTabsEnabled = !isIncognitoReauthShowing && isMenuGroupTabsVisible
-                    && mTabModelSelector.getTabModelFilterProvider()
-                                    .getCurrentTabModelFilter()
-                                    .getTabsWithNoOtherRelatedTabs()
-                                    .size()
-                            > 1;
-        }
+        boolean isMenuSelectTabsVisible = isTabSelectionEditorContext;
+        boolean isMenuSelectTabsEnabled = !isIncognitoReauthShowing && isMenuSelectTabsVisible
+                && mTabModelSelector.getTabModelFilterProvider()
+                                .getCurrentTabModelFilter()
+                                .getCount()
+                        != 0;
 
         boolean hasItemBetweenDividers = false;
 
@@ -636,10 +621,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
             if (item.getItemId() == R.id.recent_tabs_menu_id) {
                 item.setVisible(!isIncognito);
-            }
-            if (item.getItemId() == R.id.menu_group_tabs) {
-                item.setVisible(isMenuGroupTabsVisible);
-                item.setEnabled(isMenuGroupTabsEnabled);
             }
             if (item.getItemId() == R.id.menu_select_tabs) {
                 item.setVisible(isMenuSelectTabsVisible);

@@ -290,7 +290,7 @@ public class TabGridDialogMediator
         mToolbarMenuCallback = result -> {
             if (result == R.id.ungroup_tab || result == R.id.select_tabs) {
                 mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
-                if (setupAndShowTabSelectionEditorV2(mCurrentTabId)) {
+                if (setupAndShowTabSelectionEditor(mCurrentTabId)) {
                     TabUiMetricsHelper.recordSelectionEditorOpenMetrics(
                             TabSelectionEditorOpenMetricGroups.OPEN_FROM_DIALOG, mContext);
                 }
@@ -309,15 +309,9 @@ public class TabGridDialogMediator
         if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(mContext)) {
             // Setup toolbar edit text.
             setupToolbarEditText();
-            if (!TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext)) {
-                // Eagerly set up the dialog selection editor to measure performance difference.
-                setupDialogSelectionEditor();
-            }
-
-            mModel.set(TabGridPanelProperties.MENU_CLICK_LISTENER, getMenuButtonClickListener());
-        } else if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext)) {
-            mModel.set(TabGridPanelProperties.MENU_CLICK_LISTENER, getMenuButtonClickListener());
         }
+
+        mModel.set(TabGridPanelProperties.MENU_CLICK_LISTENER, getMenuButtonClickListener());
     }
 
     void hideDialog(boolean showAnimation) {
@@ -497,36 +491,18 @@ public class TabGridDialogMediator
 
         mTabSelectionEditorSetup = true;
 
-        if (TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext)) {
-            List<TabSelectionEditorAction> actions = new ArrayList<>();
-            actions.add(TabSelectionEditorSelectionAction.createAction(
-                    mContext, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.END));
-            actions.add(TabSelectionEditorCloseAction.createAction(
-                    mContext, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
-            actions.add(TabSelectionEditorUngroupAction.createAction(
-                    mContext, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
-            if (TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_BOOKMARKS.getValue()) {
-                actions.add(TabSelectionEditorBookmarkAction.createAction(mActivity,
-                        ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
-            }
-            if (TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_SHARE.getValue()) {
-                actions.add(TabSelectionEditorShareAction.createAction(mContext, ShowMode.MENU_ONLY,
-                        ButtonType.ICON_AND_TEXT, IconPosition.START));
-            }
-            mTabSelectionEditorControllerSupplier.get().configureToolbarWithMenuItems(
-                    actions, null);
-            return;
-        }
-
-        TabSelectionEditorActionProvider actionProvider =
-                new TabSelectionEditorActionProvider(mTabSelectionEditorControllerSupplier.get(),
-                        TabSelectionEditorActionProvider.TabSelectionEditorAction.UNGROUP);
-
-        String actionButtonText =
-                mContext.getString(R.string.tab_grid_dialog_selection_mode_remove);
-        mTabSelectionEditorControllerSupplier.get().configureToolbar(actionButtonText,
-                R.plurals.accessibility_tab_selection_dialog_remove_button, actionProvider, 1,
-                null);
+        List<TabSelectionEditorAction> actions = new ArrayList<>();
+        actions.add(TabSelectionEditorSelectionAction.createAction(
+                mContext, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.END));
+        actions.add(TabSelectionEditorCloseAction.createAction(
+                mContext, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
+        actions.add(TabSelectionEditorUngroupAction.createAction(
+                mContext, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
+        actions.add(TabSelectionEditorBookmarkAction.createAction(
+                mActivity, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
+        actions.add(TabSelectionEditorShareAction.createAction(
+                mContext, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
+        mTabSelectionEditorControllerSupplier.get().configureToolbarWithMenuItems(actions, null);
     }
 
     private void setupToolbarEditText() {
@@ -701,20 +677,19 @@ public class TabGridDialogMediator
     // OnLongPressTabItemEventListener implementation
     @Override
     public void onLongPressEvent(int tabId) {
-        if (setupAndShowTabSelectionEditorV2(tabId)) {
+        if (setupAndShowTabSelectionEditor(tabId)) {
             RecordUserAction.record("TabMultiSelectV2.OpenLongPressInDialog");
         }
     }
 
-    private boolean setupAndShowTabSelectionEditorV2(int currentTabId) {
+    private boolean setupAndShowTabSelectionEditor(int currentTabId) {
         if (mTabSelectionEditorControllerSupplier == null) return false;
 
         List<Tab> tabs = getRelatedTabs(currentTabId);
         // Setup dialog selection editor.
         setupDialogSelectionEditor();
-        boolean v2Enabled = TabUiFeatureUtilities.isTabSelectionEditorV2Enabled(mContext);
         mTabSelectionEditorControllerSupplier.get().show(tabs,
-                /*preSelectedTabCount=*/0, v2Enabled ? mRecyclerViewPositionSupplier.get() : null);
+                /*preSelectedTabCount=*/0, mRecyclerViewPositionSupplier.get());
         return true;
     }
 
@@ -733,21 +708,6 @@ public class TabGridDialogMediator
             mCurrentTabId = tabId;
             updateDialog();
         }
-    }
-
-    private String getTabGroupStringForSharing() {
-        StringBuilder sb = new StringBuilder();
-        List<Tab> tabgroup = getRelatedTabs(mCurrentTabId);
-        assert tabgroup.size() > 0;
-        for (int i = 0; i < tabgroup.size(); i++) {
-            sb.append(i + 1).append(". ").append(tabgroup.get(i).getUrl().getSpec()).append("\n");
-        }
-        return sb.toString();
-    }
-
-    @VisibleForTesting
-    String getTabGroupStringForSharingForTesting() {
-        return getTabGroupStringForSharing();
     }
 
     @VisibleForTesting

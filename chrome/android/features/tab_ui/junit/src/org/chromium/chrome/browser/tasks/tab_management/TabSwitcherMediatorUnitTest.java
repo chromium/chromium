@@ -241,7 +241,8 @@ public class TabSwitcherMediatorUnitTest {
                 TabListCoordinator.TabListMode.GRID, mIncognitoReauthControllerSupplier, null,
                 mTabGridDialogControllerSupplier);
 
-        mMediator.initWithNative(mEditorController, null);
+        mMediator.initWithNative(null);
+        mMediator.setTabSelectionEditorController(mEditorController);
         mMediator.addTabSwitcherViewObserver(mTabSwitcherViewObserver);
         mMediator.setOnTabSelectingListener(mLayout::onTabSelecting);
         verify(mIncognitoReauthController, times(1))
@@ -358,7 +359,8 @@ public class TabSwitcherMediatorUnitTest {
                 mPriceWelcomeMessageController, mMultiWindowModeStateDispatcher,
                 TabListCoordinator.TabListMode.GRID, mIncognitoReauthControllerSupplier, null,
                 null);
-        mMediator.initWithNative(mEditorController, null);
+        mMediator.initWithNative(null);
+        mMediator.setTabSelectionEditorController(mEditorController);
         mMediator.addTabSwitcherViewObserver(mTabSwitcherViewObserver);
         mMediator.setOnTabSelectingListener(mLayout::onTabSelecting);
 
@@ -433,7 +435,8 @@ public class TabSwitcherMediatorUnitTest {
                 mPriceWelcomeMessageController, mMultiWindowModeStateDispatcher,
                 TabListCoordinator.TabListMode.GRID, mIncognitoReauthControllerSupplier, null,
                 null);
-        mMediator.initWithNative(mEditorController, null);
+        mMediator.initWithNative(null);
+        mMediator.setTabSelectionEditorController(mEditorController);
         mMediator.addTabSwitcherViewObserver(mTabSwitcherViewObserver);
         mMediator.setOnTabSelectingListener(mLayout::onTabSelecting);
 

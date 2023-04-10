@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -21,9 +22,9 @@ import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabContext;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestion;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionFeedback;
 import org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSuggestionsObserver;
-import org.chromium.chrome.tab_ui.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,8 +33,6 @@ import java.util.Set;
  * One of the concrete {@link MessageService} that only serve {@link MessageType#TAB_SUGGESTION}.
  */
 public class TabSuggestionMessageService extends MessageService implements TabSuggestionsObserver {
-    static final int CLOSE_SUGGESTION_ACTION_ENABLING_THRESHOLD = 1;
-    static final int GROUP_SUGGESTION_ACTION_ENABLING_THRESHOLD = 2;
     private static boolean sSuggestionAvailableForTesting;
 
     /**
@@ -93,96 +92,67 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
 
     private final Context mContext;
     private final TabModelSelector mTabModelSelector;
-    private TabSelectionEditorCoordinator
-            .TabSelectionEditorController mTabSelectionEditorController;
+    private final Supplier<TabSelectionEditorCoordinator.TabSelectionEditorController>
+            mTabSelectionEditorControllerSupplier;
 
     public TabSuggestionMessageService(Context context, TabModelSelector tabModelSelector,
-            TabSelectionEditorCoordinator
-                    .TabSelectionEditorController tabSelectionEditorController) {
+            Supplier<TabSelectionEditorCoordinator.TabSelectionEditorController>
+                    tabSelectionEditorControllerSupplier) {
         super(MessageType.TAB_SUGGESTION);
         mContext = context;
         mTabModelSelector = tabModelSelector;
-        mTabSelectionEditorController = tabSelectionEditorController;
+        mTabSelectionEditorControllerSupplier = tabSelectionEditorControllerSupplier;
     }
 
     @VisibleForTesting
     void review(@NonNull TabSuggestion tabSuggestion,
             @NonNull Callback<TabSuggestionFeedback> feedbackCallback) {
-        mTabSelectionEditorController.configureToolbar(getActionString(tabSuggestion),
-                getActionButtonContentDescriptionTemplate(tabSuggestion),
-                getActionProvider(tabSuggestion, feedbackCallback),
-                getEnablingThreshold(tabSuggestion),
+        TabSelectionEditorCoordinator.TabSelectionEditorController tabSelectionEditorController =
+                mTabSelectionEditorControllerSupplier.get();
+        assert tabSelectionEditorController != null;
+
+        tabSelectionEditorController.configureToolbarWithMenuItems(
+                Collections.singletonList(getAction(tabSuggestion, feedbackCallback)),
                 getNavigationProvider(tabSuggestion, feedbackCallback));
 
-        mTabSelectionEditorController.show(getTabListFromSuggestion(tabSuggestion),
+        tabSelectionEditorController.show(getTabListFromSuggestion(tabSuggestion),
                 tabSuggestion.getTabsInfo().size(), /*recyclerViewPosition=*/null);
     }
 
-    private String getActionString(TabSuggestion tabSuggestion) {
-        switch (tabSuggestion.getAction()) {
-            case TabSuggestion.TabSuggestionAction.CLOSE:
-                return mContext.getString(R.string.tab_suggestion_close_tab_action_button);
-            case TabSuggestion.TabSuggestionAction.GROUP:
-                return mContext.getString(R.string.tab_selection_editor_group);
-            default:
-                assert false;
-        }
-        return null;
-    }
-
-    private int getActionButtonContentDescriptionTemplate(TabSuggestion tabSuggestion) {
-        switch (tabSuggestion.getAction()) {
-            case TabSuggestion.TabSuggestionAction.CLOSE:
-                return R.plurals.accessibility_tab_suggestion_close_tab_action_button;
-            case TabSuggestion.TabSuggestionAction.GROUP:
-                return R.plurals.accessibility_tab_selection_editor_group_button;
-            default:
-                assert false;
-        }
-        return 0;
-    }
-
-    private int getEnablingThreshold(TabSuggestion tabSuggestion) {
-        switch (tabSuggestion.getAction()) {
-            case TabSuggestion.TabSuggestionAction.CLOSE:
-                return CLOSE_SUGGESTION_ACTION_ENABLING_THRESHOLD;
-            case TabSuggestion.TabSuggestionAction.GROUP:
-                return GROUP_SUGGESTION_ACTION_ENABLING_THRESHOLD;
-            default:
-                assert false;
-        }
-        return -1;
-    }
-
     @VisibleForTesting
-    TabSelectionEditorActionProvider getActionProvider(
+    TabSelectionEditorAction getAction(
             TabSuggestion tabSuggestion, Callback<TabSuggestionFeedback> feedbackCallback) {
-        int action;
+        TabSelectionEditorAction action;
         switch (tabSuggestion.getAction()) {
             case TabSuggestion.TabSuggestionAction.CLOSE:
-                action = TabSelectionEditorActionProvider.TabSelectionEditorAction.CLOSE;
+                action = TabSelectionEditorCloseAction.createAction(mContext,
+                        TabSelectionEditorAction.ShowMode.IF_ROOM,
+                        TabSelectionEditorAction.ButtonType.TEXT,
+                        TabSelectionEditorAction.IconPosition.END);
                 break;
             case TabSuggestion.TabSuggestionAction.GROUP:
-                action = TabSelectionEditorActionProvider.TabSelectionEditorAction.GROUP;
+                action = TabSelectionEditorGroupAction.createAction(mContext,
+                        TabSelectionEditorAction.ShowMode.IF_ROOM,
+                        TabSelectionEditorAction.ButtonType.TEXT,
+                        TabSelectionEditorAction.IconPosition.END);
                 break;
             default:
                 assert false;
                 return null;
         }
 
-        return new TabSelectionEditorActionProvider(mTabSelectionEditorController, action) {
+        action.addActionObserver(new TabSelectionEditorAction.ActionObserver() {
             @Override
-            void processSelectedTabs(List<Tab> selectedTabs, TabModelSelector tabModelSelector) {
-                int totalTabCountBeforeProcess = tabModelSelector.getCurrentModel().getCount();
+            public void preProcessSelectedTabs(List<Tab> selectedTabs) {
+                int totalTabCountBeforeProcess = mTabModelSelector.getCurrentModel().getCount();
                 List<Integer> selectedTabIds = new ArrayList<>();
                 for (int i = 0; i < selectedTabs.size(); i++) {
                     selectedTabIds.add(selectedTabs.get(i).getId());
                 }
                 accept(selectedTabIds, totalTabCountBeforeProcess, tabSuggestion, feedbackCallback);
-
-                super.processSelectedTabs(selectedTabs, tabModelSelector);
             }
-        };
+        });
+        return action;
     }
 
     @VisibleForTesting
@@ -190,7 +160,7 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
             TabSuggestion tabSuggestion,
             @NonNull Callback<TabSuggestionFeedback> feedbackCallback) {
         return new TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider(
-                mContext, mTabSelectionEditorController) {
+                mContext, mTabSelectionEditorControllerSupplier.get()) {
             @Override
             public void goBack() {
                 super.goBack();

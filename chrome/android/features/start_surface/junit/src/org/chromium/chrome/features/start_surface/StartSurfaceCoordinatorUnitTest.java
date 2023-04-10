@@ -52,8 +52,7 @@ import org.chromium.url.GURL;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Features.EnableFeatures(ChromeFeatureList.START_SURFACE_ANDROID)
-@Features.DisableFeatures({ChromeFeatureList.WEB_FEED, ChromeFeatureList.SHOPPING_LIST,
-        ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+@Features.DisableFeatures({ChromeFeatureList.WEB_FEED, ChromeFeatureList.SHOPPING_LIST})
 public class StartSurfaceCoordinatorUnitTest {
     private static final long MILLISECONDS_PER_MINUTE = TimeUtils.SECONDS_PER_MINUTE * 1000;
     private static final String START_SURFACE_TIME_SPENT = "StartSurface.TimeSpent";
