@@ -669,6 +669,13 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
 
   RecordCookieSameSiteAttributeValueHistogram(samesite_string);
 
+  // These metrics capture whether or not a cookie has a Non-ASCII character in
+  // it.
+  UMA_HISTOGRAM_BOOLEAN("Cookie.HasNonASCII.Name",
+                        !base::IsStringASCII(cc->Name()));
+  UMA_HISTOGRAM_BOOLEAN("Cookie.HasNonASCII.Value",
+                        !base::IsStringASCII(cc->Value()));
+
   // Check for "__" prefixed names, excluding the cookie prefixes.
   bool name_prefixed_with_underscores =
       (prefix_case_insensitive == CanonicalCookie::COOKIE_PREFIX_NONE) &&

@@ -555,6 +555,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.HasNonASCII.{CookieField}" enum="Boolean"
+    expires_after="2023-10-01">
+  <owner>bingler@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    If a cookie's {CookieField} field contains a non-ASCII character.
+    Informally, this indicates if the field contains a (non-ASCII) Unicode
+    character. Logged whenever a cookie is created via
+    CanonicalCookie::Create().
+  </summary>
+  <token key="CookieField">
+    <variant name="Name"/>
+    <variant name="Value"/>
+  </token>
+</histogram>
+
 <histogram name="Cookie.IncludedRequestEffectiveSameSite"
     enum="CookieEffectiveSameSite" expires_after="2023-09-03">
   <owner>bingler@chromium.org</owner>
