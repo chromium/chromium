@@ -4,6 +4,7 @@
     <title>
       Test AudioContext.close()
     </title>
+    <script src="../../resources/gc.js"></script>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
     <script src="../resources/audit-util.js"></script>
@@ -197,7 +198,11 @@
                       context.sampleRate, 'After close, context1.baseLatency')
                       .beGreaterThan('0');
                 })
-                .then(task.done.bind(task));
+                .then(async () => {
+                  context = null;
+                  await asyncGC();
+                  task.done();
+                });
           });
 
       // Task: test offline context (1).

@@ -5579,11 +5579,11 @@ crbug.com/1298633 http/tests/inspector-protocol/network/cross-origin-isolation/c
 crbug.com/1307741 [ Mac ] external/wpt/webaudio/the-audio-api/the-mediastreamaudiosourcenode-interface/mediastreamaudiosourcenode-routing.html [ Timeout ]
 crbug.com/1307741 webaudio/AudioParam/audioparam-k-rate.html [ Timeout ]
 
-# WebAudio internals flaky GC (crbug.com/1312164)
-crbug.com/1312164 webaudio/internals/mediaelementaudiosourcenode-wrapper.html [ Crash Failure Pass Timeout ]
-crbug.com/1312164 webaudio/internals/scriptprocessornode-premature-death.html [ Crash Failure Pass Timeout ]
-crbug.com/1312164 webaudio/internals/mediaelementaudiosourcenode-gc.html [ Crash Failure Pass Timeout ]
-crbug.com/1312164 webaudio/internals/audiocontext-gc.html [ Crash Failure Pass Timeout ]
+# WebAudio internals flaky GC (crbug.com/1312164): See the bug before removing the "Skip" label.
+crbug.com/1312164 webaudio/internals/mediaelementaudiosourcenode-wrapper.html [ Skip Failure ]
+crbug.com/1312164 webaudio/internals/scriptprocessornode-premature-death.html [ Skip Failure ]
+crbug.com/1312164 webaudio/internals/mediaelementaudiosourcenode-gc.html [ Skip Failure ]
+crbug.com/1312164 webaudio/internals/audiocontext-gc.html [ Skip Failure ]
 
 # Sheriff 2022-03-21: More flaky tests.
 crbug.com/1272376 [ Mac ] plugins/plugin-document-back-forward.html [ Failure Pass ]
