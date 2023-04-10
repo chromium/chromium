@@ -5,7 +5,7 @@
 import("//build/config/features.gni")
 
 if (use_udev) {
-  source_set("udev_linux") {
+  component("udev_linux") {
     sources = [
       "scoped_udev.h",
       "udev.cc",
@@ -19,6 +19,8 @@ if (use_udev) {
       "udev_watcher.cc",
       "udev_watcher.h",
     ]
+
+    defines = [ "IS_DEVICE_UDEV_LINUX_IMPL" ]
 
     deps = [
       "//base",

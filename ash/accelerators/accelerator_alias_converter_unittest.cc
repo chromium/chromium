@@ -355,8 +355,7 @@ INSTANTIATE_TEST_SUITE_P(
                           ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
     }));
 
-// TODO(crbug.com/1430899): Re-enable this test.
-TEST_P(TopRowAliasTest, DISABLED_CheckTopRowAlias) {
+TEST_P(TopRowAliasTest, CheckTopRowAlias) {
   // Add fake keyboards based on layout type.
   fake_keyboard_manager_->RemoveAllDevices();
   for (int i = 0; const std::string& layout : keyboard_layout_types_) {

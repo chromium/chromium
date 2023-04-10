@@ -9,6 +9,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include "base/component_export.h"
+
 #if !defined(USE_UDEV)
 #error "USE_UDEV not defined"
 #endif
@@ -27,7 +29,7 @@ namespace device {
 //
 // All the methods have the same signatures as libudev's functions. e.g.
 // udev_monitor_get_fd(mon) simply becomes device::udev_monitor_get_fd(mon).
-class UdevLoader {
+class COMPONENT_EXPORT(DEVICE_UDEV_LINUX) UdevLoader {
  public:
   static UdevLoader* Get();
 
