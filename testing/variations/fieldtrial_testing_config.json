@@ -4072,26 +4072,6 @@
             ]
         }
     ],
-    "DesktopPartialTranslateGWSVisible": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20221129",
-                    "params": {
-                        "DesktopPartialTranslateTextSelectionMaxCharacters": "500"
-                    },
-                    "enable_features": [
-                        "DesktopPartialTranslate"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopReadingListAddFromDialog": [
         {
             "platforms": [
