@@ -78,15 +78,6 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
       PowerBookmarkServiceFactory::GetForBrowserState(chrome_state));
 }
 
-web::BrowserState* ShoppingServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* state) const {
-  return GetBrowserStateRedirectedInIncognito(state);
-}
-
-bool ShoppingServiceFactory::ServiceIsCreatedWithBrowserState() const {
-  return true;
-}
-
 bool ShoppingServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
