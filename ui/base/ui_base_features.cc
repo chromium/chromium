@@ -479,7 +479,7 @@ BASE_FEATURE(kWebUiSystemFont,
              "WebUiSystemFont",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 // Font Smoothing was enabled by default prior to introducing this feature.
 // We want to experiment with disabling it to align with CR2023 designs,
 // and we also want to disable it *by default* so that any abnormalities or

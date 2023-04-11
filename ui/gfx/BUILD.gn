@@ -407,6 +407,7 @@ component("gfx") {
 
   if (is_apple) {
     frameworks = [ "IOSurface.framework" ]
+    deps += [ "//ui/base:features" ]
   }
   if (is_mac) {
     frameworks += [
@@ -415,8 +416,6 @@ component("gfx") {
       "CoreGraphics.framework",
       "CoreText.framework",
     ]
-
-    deps += [ "//ui/base:features" ]
   }
 
   if ((!use_aura && !toolkit_views) || is_ios) {
