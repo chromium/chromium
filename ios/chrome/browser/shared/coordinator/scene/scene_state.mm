@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 
 #import "base/ios/crb_protocol_observers.h"
 #import "base/ios/ios_util.h"
@@ -13,7 +13,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/browser/sessions/scene_util.h"
-#import "ios/chrome/browser/ui/main/scene_controller.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -195,8 +195,9 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
 - (void)setIncognitoContentVisible:(BOOL)incognitoContentVisible {
   const ContentVisibility contentVisibility =
       ContentVisibilityForIncognito(incognitoContentVisible);
-  if (contentVisibility == _contentVisibility)
+  if (contentVisibility == _contentVisibility) {
     return;
+  }
 
   _contentVisibility = contentVisibility;
 

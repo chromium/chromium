@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 
-#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 

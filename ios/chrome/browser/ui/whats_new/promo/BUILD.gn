@@ -41,8 +41,9 @@ source_set("unit_tests") {
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/promos_manager:test_support",
-    "//ios/chrome/browser/ui/main:scene",
-    "//ios/chrome/browser/ui/main/test",
+    "//ios/chrome/browser/shared/coordinator/scene",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
+    "//ios/chrome/browser/shared/coordinator/scene/test",
     "//ios/chrome/browser/ui/whats_new:util",
     "//third_party/ocmock",
   ]

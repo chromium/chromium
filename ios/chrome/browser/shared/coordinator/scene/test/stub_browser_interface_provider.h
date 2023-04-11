@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_MAIN_TEST_STUB_BROWSER_INTERFACE_PROVIDER_H_
-#define IOS_CHROME_BROWSER_UI_MAIN_TEST_STUB_BROWSER_INTERFACE_PROVIDER_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_TEST_STUB_BROWSER_INTERFACE_PROVIDER_H_
+#define IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_TEST_STUB_BROWSER_INTERFACE_PROVIDER_H_
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_interface.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
-#import "ios/chrome/browser/ui/main/test/stub_browser_interface.h"
 
 // Test double for BrowserInterfaceProvider implementors. All properties are
 // writeable. It behaves as follows:
@@ -28,4 +28,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_MAIN_TEST_STUB_BROWSER_INTERFACE_PROVIDER_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_TEST_STUB_BROWSER_INTERFACE_PROVIDER_H_

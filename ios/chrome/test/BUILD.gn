@@ -255,6 +255,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/send_tab_to_self:unit_tests",
     "//ios/chrome/browser/sessions:unit_tests",
     "//ios/chrome/browser/shared/coordinator/alert:unit_tests",
+    "//ios/chrome/browser/shared/coordinator/scene:unit_tests",
     "//ios/chrome/browser/shared/public/commands:unit_tests",
     "//ios/chrome/browser/shared/ui/elements:unit_tests",
     "//ios/chrome/browser/shared/ui/list_model:unit_tests",

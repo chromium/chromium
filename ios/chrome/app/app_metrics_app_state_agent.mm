@@ -11,8 +11,8 @@
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/browser/metrics/ios_profile_session_durations_service.h"
 #import "ios/chrome/browser/metrics/ios_profile_session_durations_service_factory.h"
-#import "ios/chrome/browser/ui/main/scene_controller.h"
-#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/public/provider/chrome/browser/primes/primes_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

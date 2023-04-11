@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/main/scene_controller.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
@@ -72,6 +72,7 @@
 #import "ios/chrome/browser/screenshot/screenshot_delegate.h"
 #import "ios/chrome/browser/sessions/session_saving_scene_agent.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
@@ -117,7 +118,6 @@
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/incognito_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/main/layout_guide_scene_agent.h"
-#import "ios/chrome/browser/ui/main/scene_ui_provider.h"
 #import "ios/chrome/browser/ui/main/ui_blocker_scene_agent.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/policy/signin_policy_scene_agent.h"
@@ -196,8 +196,9 @@ bool IsSigninForcedByPolicy() {
 
 void InjectNTP(Browser* browser) {
   // Don't inject an NTP for an empty web state list.
-  if (!browser->GetWebStateList()->count())
+  if (!browser->GetWebStateList()->count()) {
     return;
+  }
 
   // Don't inject an NTP on an NTP.
   web::WebState* webState = browser->GetWebStateList()->GetActiveWebState();
@@ -209,8 +210,9 @@ void InjectNTP(Browser* browser) {
   StartSurfaceRecentTabBrowserAgent* browser_agent =
       StartSurfaceRecentTabBrowserAgent::FromBrowser(browser);
   // This may be nil for an incognito browser.
-  if (browser_agent)
+  if (browser_agent) {
     browser_agent->SaveMostRecentTab();
+  }
 
   // Inject a live NTP.
   web::WebState::CreateParams create_params(browser->GetBrowserState());
@@ -542,18 +544,21 @@ void InjectNTP(Browser* browser) {
 
 - (void)recordWindowCreationForSceneState:(SceneState*)sceneState {
   // Don't record window creation for single-window environments
-  if (!base::ios::IsMultipleScenesSupported())
+  if (!base::ios::IsMultipleScenesSupported()) {
     return;
+  }
 
   // Don't record restored window creation.
-  if (sceneState.currentOrigin == WindowActivityRestoredOrigin)
+  if (sceneState.currentOrigin == WindowActivityRestoredOrigin) {
     return;
+  }
 
   // If there's only one connected scene, and it isn't being restored, this
   // must be the initial app launch with scenes, so don't record the window
   // creation.
-  if (sceneState.appState.connectedScenes.count <= 1)
+  if (sceneState.appState.connectedScenes.count <= 1) {
     return;
+  }
 
   base::UmaHistogramEnumeration(kMultiWindowOpenInNewWindowHistogram,
                                 sceneState.currentOrigin);
@@ -900,14 +905,14 @@ void InjectNTP(Browser* browser) {
   // events.
   [GeolocationLogger sharedInstance];
 
-    [self.sceneState
-        addAgent:[[PromosManagerSceneAgent alloc]
-                     initWithCommandDispatcher:mainCommandDispatcher]];
+  [self.sceneState
+      addAgent:[[PromosManagerSceneAgent alloc]
+                   initWithCommandDispatcher:mainCommandDispatcher]];
 
-    if (IsAppStoreRatingEnabled()) {
+  if (IsAppStoreRatingEnabled()) {
     [self.sceneState addAgent:[[AppStoreRatingSceneAgent alloc]
                                   initWithPromosManager:promosManager]];
-    }
+  }
 
   if (IsWhatsNewEnabled()) {
     [self.sceneState addAgent:[[WhatsNewSceneAgent alloc]
@@ -1194,8 +1199,9 @@ void InjectNTP(Browser* browser) {
   DCHECK(self.currentInterface.browser);
   web::WebState* webState =
       self.currentInterface.browser->GetWebStateList()->GetActiveWebState();
-  if (!webState)
+  if (!webState) {
     return nil;
+  }
 
   // At this point there is at least one tab.
   int numberOfTabs = self.currentInterface.browser->GetWebStateList()->count();
@@ -1293,23 +1299,29 @@ void InjectNTP(Browser* browser) {
     return NO;
   }
   // Don't show the promo if there is a blocking task in process.
-  if (self.sceneState.appState.currentUIBlocker)
+  if (self.sceneState.appState.currentUIBlocker) {
     return NO;
+  }
   // Don't show the promo in Incognito mode.
-  if (self.currentInterface == self.incognitoInterface)
+  if (self.currentInterface == self.incognitoInterface) {
     return NO;
+  }
   // Don't show promos if the app was launched from a URL.
-  if (self.startupParameters)
+  if (self.startupParameters) {
     return NO;
+  }
   // Don't show the promo if the window is not active.
-  if (self.sceneState.activationLevel < SceneActivationLevelForegroundActive)
+  if (self.sceneState.activationLevel < SceneActivationLevelForegroundActive) {
     return NO;
+  }
   // Don't show the promo if the tab grid is active.
-  if (self.mainCoordinator.isTabGridActive)
+  if (self.mainCoordinator.isTabGridActive) {
     return NO;
+  }
   // Don't show the promo if already presented.
-  if (self.sceneState.appState.signinUpgradePromoPresentedOnce)
+  if (self.sceneState.appState.signinUpgradePromoPresentedOnce) {
     return NO;
+  }
   return YES;
 }
 
@@ -1459,8 +1471,9 @@ void InjectNTP(Browser* browser) {
   DCHECK(!self.signinCoordinator)
       << "self.signinCoordinator: "
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
-  if (self.settingsNavigationController)
+  if (self.settingsNavigationController) {
     return;
+  }
 
   Browser* browser = self.mainInterface.browser;
   self.settingsNavigationController =
@@ -1502,8 +1515,9 @@ void InjectNTP(Browser* browser) {
   DCHECK(!self.signinCoordinator)
       << "self.signinCoordinator: "
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
-  if (self.settingsNavigationController)
+  if (self.settingsNavigationController) {
     return;
+  }
 
   UserFeedbackData* data =
       [self createUserFeedbackDataForSender:sender
@@ -1561,8 +1575,9 @@ void InjectNTP(Browser* browser) {
     std::string username =
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
             .email;
-    if (!username.empty())
+    if (!username.empty()) {
       data.currentPageSyncedUserName = base::SysUTF8ToNSString(username);
+    }
   }
 
   data.productSpecificData = specificProductData;
@@ -1671,7 +1686,7 @@ void InjectNTP(Browser* browser) {
   [self
       showTrustedVaultDialogFromViewController:viewController
                                         intent:
-                            SigninTrustedVaultDialogIntentDegradedRecoverability
+                                            SigninTrustedVaultDialogIntentDegradedRecoverability
                                        trigger:trigger];
 }
 
@@ -1679,8 +1694,9 @@ void InjectNTP(Browser* browser) {
             (UIViewController*)baseViewController
                                          URL:(const GURL&)url {
   // Do not display the web sign-in promo if there is any UI on the screen.
-  if (self.signinCoordinator || self.settingsNavigationController)
+  if (self.signinCoordinator || self.settingsNavigationController) {
     return;
+  }
   if (self.sceneState.appState.initStage == InitStageFirstRun) {
     // This case is possible when using force FRE flag and opening chrome
     // with accounts.google.com in the background.
@@ -1694,8 +1710,9 @@ void InjectNTP(Browser* browser) {
                                                   accessPoint:
                                                       signin_metrics::AccessPoint::
                                                           ACCESS_POINT_WEB_SIGNIN];
-  if (!self.signinCoordinator)
+  if (!self.signinCoordinator) {
     return;
+  }
   __weak SceneController* weakSelf = self;
 
   // Copy the URL so it can be safely captured in the block.
@@ -1749,8 +1766,9 @@ void InjectNTP(Browser* browser) {
   DCHECK(!self.signinCoordinator)
       << "self.signinCoordinator: "
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
-  if (self.settingsNavigationController)
+  if (self.settingsNavigationController) {
     return;
+  }
   [[DeferredInitializationRunner sharedInstance]
       runBlockIfNecessary:kPrefObserverInit];
 
@@ -1765,8 +1783,9 @@ void InjectNTP(Browser* browser) {
 }
 
 - (void)openNewWindowWithActivity:(NSUserActivity*)userActivity {
-  if (!base::ios::IsMultipleScenesSupported())
+  if (!base::ios::IsMultipleScenesSupported()) {
     return;  // silent no-op.
+  }
 
   UISceneActivationRequestOptions* options =
       [[UISceneActivationRequestOptions alloc] init];
@@ -2429,8 +2448,9 @@ void InjectNTP(Browser* browser) {
     // - the tab switcher controller is not directly or indirectly presenting
     // another view controller.
     if (!(mainBrowser->GetWebStateList()->empty()) ||
-        !(otrBrowser->GetWebStateList()->empty()))
+        !(otrBrowser->GetWebStateList()->empty())) {
       return NO;
+    }
 
     // If the tabSwitcher is contained, check if the parent container is
     // presenting another view controller.
@@ -2464,8 +2484,9 @@ void InjectNTP(Browser* browser) {
   id<BrowserInterface> newInterface =
       incognitio ? self.interfaceProvider.incognitoInterface
                  : self.interfaceProvider.mainInterface;
-  if (currentInterface && currentInterface == newInterface)
+  if (currentInterface && currentInterface == newInterface) {
     return;
+  }
 
   // Update the snapshot before switching another application mode.  This
   // ensures that the snapshot is correct when links are opened in a different
@@ -2474,8 +2495,9 @@ void InjectNTP(Browser* browser) {
 
   self.interfaceProvider.currentInterface = newInterface;
 
-  if (!self.activatingBrowser)
+  if (!self.activatingBrowser) {
     [self displayCurrentBVCAndFocusOmnibox:NO dismissTabSwitcher:YES];
+  }
 
   // Tell the BVC that was made current that it can use the web.
   [self activateBVCAndMakeCurrentBVCPrimary];
@@ -2677,9 +2699,10 @@ void InjectNTP(Browser* browser) {
       [self addANewTabAndPresentBrowser:targetInterface.browser
                       withURLLoadParams:urlLoadParams];
       // In this particular usage, there should be no postOpeningAction,
-      // as triggering voice search while there are multiple windows opened is probably
-      // a bad idea both technically and as a user experience.
-      // It should be the caller duty to not set a completion if they don't need it.
+      // as triggering voice search while there are multiple windows opened is
+      // probably a bad idea both technically and as a user experience. It
+      // should be the caller duty to not set a completion if they don't need
+      // it.
       if (completion) {
         completion();
       }
@@ -2721,8 +2744,9 @@ void InjectNTP(Browser* browser) {
 - (void)updateActiveWebStateSnapshot {
   // Durinhg startup, there may be no current interface. Do nothing in that
   // case.
-  if (!self.currentInterface)
+  if (!self.currentInterface) {
     return;
+  }
 
   WebStateList* webStateList = self.currentInterface.browser->GetWebStateList();
   web::WebState* webState = webStateList->GetActiveWebState();
@@ -2961,8 +2985,9 @@ void InjectNTP(Browser* browser) {
   __weak SceneController* weakSelf = self;
   self.signinCoordinator.signinCompletion =
       ^(SigninCoordinatorResult result, SigninCompletionInfo* info) {
-        if (!weakSelf)
+        if (!weakSelf) {
           return;
+        }
         __typeof(self) strongSelf = weakSelf;
         [strongSelf.signinCoordinator stop];
         strongSelf.signinCoordinator = nil;
@@ -2999,7 +3024,6 @@ void InjectNTP(Browser* browser) {
           // is enabled.
           [strongSelf handleExternalIntents];
         }
-
       };
 
   [self.signinCoordinator start];
@@ -3013,8 +3037,9 @@ void InjectNTP(Browser* browser) {
     didDetachWebState:(web::WebState*)webState
               atIndex:(int)atIndex {
   // Do nothing on initialization.
-  if (!self.currentInterface.browser)
+  if (!self.currentInterface.browser) {
     return;
+  }
 
   if (notifiedWebStateList->empty()) {
     if (webState->GetBrowserState()->IsOffTheRecord()) {
@@ -3110,8 +3135,9 @@ void InjectNTP(Browser* browser) {
   BrowsingDataRemover* browsingDataRemover =
       BrowsingDataRemoverFactory::GetForBrowserStateIfExists(
           self.currentInterface.browserState);
-  if (browsingDataRemover && browsingDataRemover->IsRemoving())
+  if (browsingDataRemover && browsingDataRemover->IsRemoving()) {
     return;
+  }
 
   self.interfaceProvider.mainInterface.userInteractionEnabled = YES;
   self.interfaceProvider.incognitoInterface.userInteractionEnabled = YES;
@@ -3191,8 +3217,9 @@ void InjectNTP(Browser* browser) {
 
 // Returns the page that should be active in the TabGrid.
 - (TabGridPage)activePage {
-  if (self.currentInterface.browser == self.incognitoInterface.browser)
+  if (self.currentInterface.browser == self.incognitoInterface.browser) {
     return TabGridPageIncognitoTabs;
+  }
   return TabGridPageRegularTabs;
 }
 
@@ -3216,8 +3243,9 @@ void InjectNTP(Browser* browser) {
 - (BOOL)shouldDestroyAndRebuildIncognitoBrowserState {
   ChromeBrowserState* mainBrowserState =
       self.sceneState.appState.mainBrowserState;
-  if (!mainBrowserState->HasOffTheRecordChromeBrowserState())
+  if (!mainBrowserState->HasOffTheRecordChromeBrowserState()) {
     return NO;
+  }
 
   ChromeBrowserState* otrBrowserState =
       mainBrowserState->GetOffTheRecordChromeBrowserState();
@@ -3227,8 +3255,9 @@ void InjectNTP(Browser* browser) {
       BrowserListFactory::GetForBrowserState(otrBrowserState);
   for (Browser* browser : browserList->AllIncognitoBrowsers()) {
     WebStateList* webStateList = browser->GetWebStateList();
-    if (!webStateList->empty())
+    if (!webStateList->empty()) {
       return NO;
+    }
   }
 
   return YES;

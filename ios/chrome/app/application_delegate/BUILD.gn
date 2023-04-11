@@ -63,12 +63,12 @@ source_set("unit_tests") {
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/metrics",
+    "//ios/chrome/browser/shared/coordinator/scene",
+    "//ios/chrome/browser/shared/coordinator/scene/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/main",
-    "//ios/chrome/browser/ui/main:scene",
-    "//ios/chrome/browser/ui/main/test",
     "//ios/chrome/browser/ui/safe_mode",
     "//ios/chrome/browser/ui/settings",
     "//ios/chrome/browser/ui/settings:settings_root",
@@ -150,7 +150,7 @@ source_set("app_state_header") {
     "startup_information.h",
   ]
   public_deps = [
-    "//ios/chrome/browser/ui/main:scene_state_observer",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
     "//ios/chrome/browser/ui/scoped_ui_blocker",
   ]
 }
@@ -169,8 +169,7 @@ source_set("observing_app_state_agent") {
 
   public_deps = [
     ":app_state_header",
-    "//ios/chrome/browser/ui/main:scene_state_header",
-    "//ios/chrome/browser/ui/main:scene_state_observer",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
   ]
 }
 
@@ -224,6 +223,7 @@ source_set("application_delegate_internal") {
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/search_engines",
+    "//ios/chrome/browser/shared/coordinator/scene",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin",
@@ -232,7 +232,6 @@ source_set("application_delegate_internal") {
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/browser/ui/main",
-    "//ios/chrome/browser/ui/main:scene",
     "//ios/chrome/browser/url",
     "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/url_loading",
@@ -263,7 +262,7 @@ source_set("application_delegate_internal") {
   ]
   allow_circular_includes_from = [
     "//ios/chrome/browser/url_loading",
-    "//ios/chrome/browser/ui/main:scene",
+    "//ios/chrome/browser/shared/coordinator/scene",
   ]
 }
 

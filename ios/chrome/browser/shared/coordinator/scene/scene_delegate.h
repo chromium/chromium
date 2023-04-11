@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_MAIN_SCENE_DELEGATE_H_
-#define IOS_CHROME_BROWSER_UI_MAIN_SCENE_DELEGATE_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_SCENE_DELEGATE_H_
+#define IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_SCENE_DELEGATE_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/main/scene_controller.h"
-#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 
 // An object acting as a scene delegate for UIKit. Updates the scene state.
 @interface SceneDelegate : NSObject <UIWindowSceneDelegate>
@@ -23,4 +23,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_MAIN_SCENE_DELEGATE_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_SCENE_DELEGATE_H_

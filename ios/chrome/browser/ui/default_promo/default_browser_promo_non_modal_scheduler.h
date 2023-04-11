@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/main/scene_state_observer.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 
 class Browser;
 @class CommandDispatcher;

@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_START_SURFACE_START_SURFACE_UTIL_H_
 #define IOS_CHROME_BROWSER_UI_START_SURFACE_START_SURFACE_UTIL_H_
 
-#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 
 // Returns the time since the most recent tab was opened.
 NSTimeInterval GetTimeSinceMostRecentTabWasOpenForSceneState(
