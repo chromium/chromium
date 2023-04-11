@@ -83,6 +83,12 @@ BASE_FEATURE(kRetireStaticDenyList,
              "RetireStaticDenyList",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the new local extension approvals experience, which requests approval
+// through a platform-specific Parent Access Widget.
+BASE_FEATURE(kLocalExtensionApprovalsV2,
+             "LocalExtensionApprovalsV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsWebFilterInterstitialRefreshEnabled() {
   DCHECK(base::FeatureList::IsEnabled(kWebFilterInterstitialRefresh) ||
          !base::FeatureList::IsEnabled(kLocalWebApprovals));
@@ -151,5 +157,9 @@ BASE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
 
 bool IsSynchronousSignInCheckingEnabled() {
   return base::FeatureList::IsEnabled(kSynchronousSignInChecking);
+}
+
+bool IsLocalExtensionApprovalsV2Enabled() {
+  return base::FeatureList::IsEnabled(kLocalExtensionApprovalsV2);
 }
 }  // namespace supervised_user

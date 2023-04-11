@@ -10,6 +10,10 @@
 #include "base/memory/raw_ptr.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/supervised_user/chromeos/parent_access_extension_approvals_manager.h"
+#endif
+
 namespace content {
 class BrowserContext;
 class WebContents;
@@ -27,23 +31,22 @@ class ExtensionIconLoader;
 enum class ExtensionInstalledBlockedByParentDialogAction;
 
 class SupervisedUserExtensionsDelegateImpl
-    : public extensions::SupervisedUserExtensionsDelegate {
+    : public SupervisedUserExtensionsDelegate {
  public:
   explicit SupervisedUserExtensionsDelegateImpl(
       content::BrowserContext* browser_context);
   ~SupervisedUserExtensionsDelegateImpl() override;
 
-  // extensions::SupervisedUserExtensionsDelegate overrides
+  // SupervisedUserExtensionsDelegate overrides
   bool IsChild() const override;
-  bool IsExtensionAllowedByParent(
-      const extensions::Extension& extension) const override;
+  bool IsExtensionAllowedByParent(const Extension& extension) const override;
   void RequestToAddExtensionOrShowError(
-      const extensions::Extension& extension,
+      const Extension& extension,
       content::WebContents* web_contents,
       const gfx::ImageSkia& icon,
       ExtensionApprovalDoneCallback extension_approval_callback) override;
   void RequestToEnableExtensionOrShowError(
-      const extensions::Extension& extension,
+      const Extension& extension,
       content::WebContents* web_contents,
       ExtensionApprovalDoneCallback extension_approval_callback) override;
 
@@ -54,21 +57,24 @@ class SupervisedUserExtensionsDelegateImpl
 
   // Shows a parent permission dialog for |extension| and call |done_callback|
   // when it completes.
-  void ShowParentPermissionDialogForExtension(
-      const extensions::Extension& extension,
-      content::WebContents* contents,
-      const gfx::ImageSkia& icon);
+  void ShowParentPermissionDialogForExtension(const Extension& extension,
+                                              content::WebContents* contents,
+                                              const gfx::ImageSkia& icon);
+
   // Shows a dialog indicating that |extension| has been blocked and call
   // |done_callback| when it completes. Depending on the blocked_action type,
   // the UI of the dialog may differ.
   void ShowInstallBlockedByParentDialogForExtension(
-      const extensions::Extension& extension,
+      const Extension& extension,
       content::WebContents* contents,
       ExtensionInstalledBlockedByParentDialogAction blocked_action);
 
-  void OnExtensionDataLoaded(const extensions::Extension& extension,
-                             content::WebContents* contents,
-                             const gfx::ImageSkia& icon);
+  // Shows the ParentAccessDialog if V2 flag is enabled. If V2 is not enabled,
+  // the ParentPermissionDialog is shown if extension installation is not
+  // blocked. If permission is blocked, the block dialog is shown.
+  void RequestExtensionApproval(const Extension& extension,
+                                content::WebContents* contents,
+                                const gfx::ImageSkia& icon);
 
   // The dialog pointer is only destroyed when a new dialog is created or the
   // SupervisedUserExtensionsDelegate is destroyed. Therefore there can only be
@@ -76,11 +82,18 @@ class SupervisedUserExtensionsDelegateImpl
   // long lifetime.
   std::unique_ptr<ParentPermissionDialog> parent_permission_dialog_;
 
-  extensions::SupervisedUserExtensionsDelegate::ExtensionApprovalDoneCallback
+  SupervisedUserExtensionsDelegate::ExtensionApprovalDoneCallback
       done_callback_;
 
   std::unique_ptr<ExtensionIconLoader> icon_loader_;
   const raw_ptr<content::BrowserContext> context_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // The extension approvals manage is destroyed when a new ParentAccessDialog
+  // is created or this delegate is destroyed.
+  std::unique_ptr<ParentAccessExtensionApprovalsManager>
+      extension_approvals_manager_;
+#endif
 };
 
 }  // namespace extensions
