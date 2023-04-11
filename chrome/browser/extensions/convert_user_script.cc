@@ -136,12 +136,12 @@ scoped_refptr<Extension> ConvertUserScriptToExtension(
   content_script.js->push_back("script.js");
 
   if (script.run_location() == mojom::RunLocation::kDocumentStart) {
-    content_script.run_at = api::content_scripts::RUN_AT_DOCUMENT_START;
+    content_script.run_at = api::content_scripts::RunAt::kDocumentStart;
   } else if (script.run_location() == mojom::RunLocation::kDocumentEnd) {
-    content_script.run_at = api::content_scripts::RUN_AT_DOCUMENT_END;
+    content_script.run_at = api::content_scripts::RunAt::kDocumentEnd;
   } else if (script.run_location() == mojom::RunLocation::kDocumentIdle) {
     // This is the default, but store it just in case we change that.
-    content_script.run_at = api::content_scripts::RUN_AT_DOCUMENT_IDLE;
+    content_script.run_at = api::content_scripts::RunAt::kDocumentIdle;
   }
 
   base::Value::List content_scripts;

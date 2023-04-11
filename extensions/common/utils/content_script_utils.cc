@@ -123,13 +123,13 @@ CreateScopedMaxScriptsLengthPerExtensionForTesting(size_t max) {
 mojom::RunLocation ConvertManifestRunLocation(
     api::content_scripts::RunAt run_at) {
   switch (run_at) {
-    case api::content_scripts::RUN_AT_DOCUMENT_END:
+    case api::content_scripts::RunAt::kDocumentEnd:
       return mojom::RunLocation::kDocumentEnd;
-    case api::content_scripts::RUN_AT_DOCUMENT_IDLE:
+    case api::content_scripts::RunAt::kDocumentIdle:
       return mojom::RunLocation::kDocumentIdle;
-    case api::content_scripts::RUN_AT_DOCUMENT_START:
+    case api::content_scripts::RunAt::kDocumentStart:
       return mojom::RunLocation::kDocumentStart;
-    case api::content_scripts::RUN_AT_NONE:
+    case api::content_scripts::RunAt::kNone:
       NOTREACHED();
       return mojom::RunLocation::kDocumentIdle;
   }
@@ -141,11 +141,11 @@ api::content_scripts::RunAt ConvertRunLocationToManifestType(
   // or kBrowserDriven. We don't expect to encounter them here.
   switch (run_at) {
     case mojom::RunLocation::kDocumentEnd:
-      return api::content_scripts::RUN_AT_DOCUMENT_END;
+      return api::content_scripts::RunAt::kDocumentEnd;
     case mojom::RunLocation::kDocumentStart:
-      return api::content_scripts::RUN_AT_DOCUMENT_START;
+      return api::content_scripts::RunAt::kDocumentStart;
     case mojom::RunLocation::kDocumentIdle:
-      return api::content_scripts::RUN_AT_DOCUMENT_IDLE;
+      return api::content_scripts::RunAt::kDocumentIdle;
     case mojom::RunLocation::kUndefined:
     case mojom::RunLocation::kRunDeferred:
     case mojom::RunLocation::kBrowserDriven:
@@ -153,7 +153,7 @@ api::content_scripts::RunAt ConvertRunLocationToManifestType(
   }
 
   NOTREACHED();
-  return api::content_scripts::RUN_AT_DOCUMENT_IDLE;
+  return api::content_scripts::RunAt::kDocumentIdle;
 }
 
 bool ParseMatchPatterns(const std::vector<std::string>& matches,

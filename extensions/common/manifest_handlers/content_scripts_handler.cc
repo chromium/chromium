@@ -71,7 +71,7 @@ std::unique_ptr<UserScript> CreateUserScript(
   auto result = std::make_unique<UserScript>();
 
   // run_at
-  if (content_script.run_at != content_scripts_api::RUN_AT_NONE) {
+  if (content_script.run_at != content_scripts_api::RunAt::kNone) {
     result->set_run_location(
         script_parsing::ConvertManifestRunLocation(content_script.run_at));
   }
