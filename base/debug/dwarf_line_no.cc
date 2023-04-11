@@ -1267,7 +1267,7 @@ void PopulateCompileUnitOffsets(int fd,
 }  // namespace
 
 bool GetDwarfSourceLineNumber(void* pc,
-                              uint64_t cu_offset,
+                              uintptr_t cu_offset,
                               char* out,
                               size_t out_size) {
   uint64_t pc0 = reinterpret_cast<uint64_t>(pc);
@@ -1320,13 +1320,6 @@ void GetDwarfCompileUnitOffsets(void* const* trace,
             frame_info[cur_frame].pc, object_start_address, object_base_address,
             nullptr, 0)));
 
-    // Some stack frames may not have a corresponding object file, e.g. a call
-    // frame inside the Linux kernel's vdso. Just skip over these stack frames,
-    // as this is done on a best-effort basis.
-    if (object_fd.get() < 0) {
-      continue;
-    }
-
     // TODO(https://crbug.com/1335630): Consider exposing the end address so a
     // range of frames can be bulk-populated. This was originally implemented,
     // but line number symbolization is currently broken by default (and also
@@ -1350,7 +1343,7 @@ namespace base {
 namespace debug {
 
 bool GetDwarfSourceLineNumber(void* pc,
-                              uint64_t cu_offset,
+                              uintptr_t cu_offset,
                               char* out,
                               size_t out_size) {
   return false;

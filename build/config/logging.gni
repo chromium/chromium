@@ -4,15 +4,13 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 
 declare_args() {
   # Use LogErrorNotReached() for NOTREACHED().
   enable_log_error_not_reached =
       is_chromeos_ash && !(is_debug || dcheck_always_on)
-
-  enable_stack_trace_line_numbers = symbol_level > 0
+  enable_stack_trace_line_numbers = false
 
   # Use runtime vlog everywhere except for ash-chrome.
   # When `use_runtime_vlog` is true,
