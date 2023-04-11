@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "ui/base/interaction/element_identifier.h"
 
 namespace ash {
 
@@ -37,6 +38,9 @@ class ASH_EXPORT WelcomeTourController : public TutorialController,
   // Adds/removes the specified `observer` from being notified of events.
   void AddObserver(WelcomeTourControllerObserver* observer);
   void RemoveObserver(WelcomeTourControllerObserver* observer);
+
+  // Returns the initial element context to be used to start the Welcome Tour.
+  ui::ElementContext GetInitialElementContext() const;
 
  private:
   // TutorialController:

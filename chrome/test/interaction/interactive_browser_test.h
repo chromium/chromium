@@ -301,6 +301,12 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
 // If you don't need to derive from some existing test class, prefer to use
 // InteractiveBrowserTest.
 //
+// Note that this test fixture attempts to set the context widget from the
+// created `browser()` during `SetUpOnMainThread()`. If your derived test
+// fixture does not create a browser during set up, you will need to manually
+// `SetContextWidget()` before calling `RunTestSequence()`, or use
+// `RunTestTestSequenceInContext()` instead.
+//
 // See README.md for usage.
 template <typename T,
           typename =
@@ -317,8 +323,10 @@ class InteractiveBrowserTestT : public T, public InteractiveBrowserTestApi {
   void SetUpOnMainThread() override {
     T::SetUpOnMainThread();
     private_test_impl().DoTestSetUp();
-    SetContextWidget(
-        BrowserView::GetBrowserViewForBrowser(T::browser())->GetWidget());
+    if (Browser* browser = T::browser()) {
+      SetContextWidget(
+          BrowserView::GetBrowserViewForBrowser(browser)->GetWidget());
+    }
   }
 
   void TearDownOnMainThread() override {
@@ -329,6 +337,12 @@ class InteractiveBrowserTestT : public T, public InteractiveBrowserTestApi {
 
 // Convenience test fixture for interactive browser tests. This is the preferred
 // base class for Kombucha tests unless you specifically need something else.
+//
+// Note that this test fixture attempts to set the context widget from the
+// created `browser()` during `SetUpOnMainThread()`. If your derived test
+// fixture does not create a browser during set up, you will need to manually
+// `SetContextWidget()` before calling `RunTestSequence()`, or use
+// `RunTestTestSequenceInContext()` instead.
 //
 // See README.md for usage.
 using InteractiveBrowserTest = InteractiveBrowserTestT<InProcessBrowserTest>;

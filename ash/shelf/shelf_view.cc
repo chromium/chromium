@@ -42,6 +42,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/rounded_label.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/user_education/user_education_constants.h"
 #include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -95,6 +96,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/focus/focus_search.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_model.h"
 #include "ui/views/view_model_utils.h"
 #include "ui/views/widget/widget.h"
@@ -366,6 +368,10 @@ ShelfView::ShelfView(ShelfModel* model,
       ShelfConfig::Get()->shelf_animation_duration());
   set_context_menu_controller(this);
   set_allow_deactivate_on_esc(true);
+
+  if (features::IsUserEducationEnabled()) {
+    SetProperty(views::kElementIdentifierKey, kShelfViewElementId);
+  }
 
   announcement_view_ = new views::View();
   AddChildView(announcement_view_);

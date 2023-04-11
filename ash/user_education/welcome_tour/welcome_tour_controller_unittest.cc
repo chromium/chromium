@@ -127,6 +127,10 @@ TEST_F(WelcomeTourControllerTest, StartsTutorialAndPropagatesEvents) {
   AccountId primary_account_id = AccountId::FromUserEmail("primary@test");
   AccountId secondary_account_id = AccountId::FromUserEmail("secondary@test");
 
+  // Ensure controller exists.
+  auto* welcome_tour_controller = WelcomeTourController::Get();
+  ASSERT_TRUE(welcome_tour_controller);
+
   // Ensure delegate exists and disallow any unexpected tutorial starts.
   auto* user_education_delegate = this->user_education_delegate();
   ASSERT_TRUE(user_education_delegate);
@@ -136,7 +140,7 @@ TEST_F(WelcomeTourControllerTest, StartsTutorialAndPropagatesEvents) {
   StrictMock<MockWelcomeTourControllerObserver> observer;
   base::ScopedObservation<WelcomeTourController, WelcomeTourControllerObserver>
       observation{&observer};
-  observation.Observe(WelcomeTourController::Get());
+  observation.Observe(welcome_tour_controller);
 
   // Add a primary and secondary user session. This should *not* trigger the
   // Welcome Tour tutorial to start.
@@ -149,11 +153,13 @@ TEST_F(WelcomeTourControllerTest, StartsTutorialAndPropagatesEvents) {
   // tutorial to start as well as notify observers. Note that completed/aborted
   // callbacks are cached for later verification.
   base::OnceClosure ended_callbacks[2u];
-  EXPECT_CALL(*user_education_delegate,
-              StartTutorial(Eq(primary_account_id),
-                            Eq(TutorialId::kWelcomeTourPrototype1),
-                            Eq(ui::ElementContext()), /*completed_callback=*/_,
-                            /*aborted_callback=*/_))
+  EXPECT_CALL(
+      *user_education_delegate,
+      StartTutorial(Eq(primary_account_id),
+                    Eq(TutorialId::kWelcomeTourPrototype1),
+                    Eq(welcome_tour_controller->GetInitialElementContext()),
+                    /*completed_callback=*/_,
+                    /*aborted_callback=*/_))
       .WillOnce(MoveArgs<3, 4>(&ended_callbacks[0u], &ended_callbacks[1u]));
   EXPECT_CALL(observer, OnWelcomeTourStarted);
   session_controller_client->SetSessionState(SessionState::ACTIVE);
