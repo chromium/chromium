@@ -321,10 +321,9 @@ interface Crosapi {
   [MinVersion=72] BindExtensionInfoPrivate@75(
       pending_receiver<ExtensionInfoPrivate> receiver);
 
-  // FirewallHoleService is a service that allows users to open ports in the
-  // ChromeOS system firewall from Lacros. Implemented in Ash.
-  [MinVersion=101] BindFirewallHoleService@105(
-      pending_receiver<FirewallHoleService> receiver);
+  // Deprecated in M114; use chromeos::FirewallHole directly.
+  [MinVersion=101] REMOVED_105@105(
+      pending_receiver<FirewallHoleServiceDeprecated> receiver);
 
   // NetworkingPrivate is a service that allows users to modify
   // network settings in Lacros. Implemented in Ash.

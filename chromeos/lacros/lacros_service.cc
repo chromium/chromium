@@ -345,10 +345,6 @@ LacrosService::LacrosService()
       &crosapi::mojom::Crosapi::BindFieldTrialService,
       Crosapi::MethodMinVersions::kBindFieldTrialServiceMinVersion>();
   ConstructRemote<
-      crosapi::mojom::FirewallHoleService,
-      &crosapi::mojom::Crosapi::BindFirewallHoleService,
-      Crosapi::MethodMinVersions::kBindFirewallHoleServiceMinVersion>();
-  ConstructRemote<
       crosapi::mojom::ForceInstalledTracker,
       &crosapi::mojom::Crosapi::BindForceInstalledTracker,
       Crosapi::MethodMinVersions::kBindForceInstalledTrackerMinVersion>();

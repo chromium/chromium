@@ -53,7 +53,6 @@
 #include "chrome/browser/ash/crosapi/field_trial_service_ash.h"
 #include "chrome/browser/ash/crosapi/file_manager_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
-#include "chrome/browser/ash/crosapi/firewall_hole_ash.h"
 #include "chrome/browser/ash/crosapi/force_installed_tracker_ash.h"
 #include "chrome/browser/ash/crosapi/fullscreen_controller_ash.h"
 #include "chrome/browser/ash/crosapi/geolocation_service_ash.h"
@@ -215,7 +214,6 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       file_manager_ash_(std::make_unique<FileManagerAsh>()),
       file_system_provider_service_ash_(
           std::make_unique<FileSystemProviderServiceAsh>()),
-      firewall_hole_service_ash_(std::make_unique<FirewallHoleServiceAsh>()),
       force_installed_tracker_ash_(
           std::make_unique<ForceInstalledTrackerAsh>()),
       fullscreen_controller_ash_(std::make_unique<FullscreenControllerAsh>()),
@@ -510,11 +508,6 @@ void CrosapiAsh::BindFileManager(
 void CrosapiAsh::BindFileSystemProviderService(
     mojo::PendingReceiver<crosapi::mojom::FileSystemProviderService> receiver) {
   file_system_provider_service_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindFirewallHoleService(
-    mojo::PendingReceiver<crosapi::mojom::FirewallHoleService> receiver) {
-  firewall_hole_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindForceInstalledTracker(
@@ -891,6 +884,12 @@ void CrosapiAsh::OnBrowserStartup(mojom::BrowserInfoPtr browser_info) {
 
 void CrosapiAsh::REMOVED_29(
     mojo::PendingReceiver<mojom::SystemDisplayDeprecated> receiver) {
+  NOTIMPLEMENTED();
+}
+
+void CrosapiAsh::REMOVED_105(
+    mojo::PendingReceiver<crosapi::mojom::FirewallHoleServiceDeprecated>
+        receiver) {
   NOTIMPLEMENTED();
 }
 

@@ -310,7 +310,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::FieldTrialService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::FileManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::FileSystemProviderService>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::FirewallHoleService>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::FirewallHoleServiceDeprecated>(),
     MakeInterfaceVersionEntry<crosapi::mojom::ForceInstalledTracker>(),
     MakeInterfaceVersionEntry<crosapi::mojom::FullscreenController>(),
     MakeInterfaceVersionEntry<crosapi::mojom::GeolocationService>(),
