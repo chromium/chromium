@@ -274,7 +274,7 @@ TEST_F(SuspiciousSiteTriggerTest, SuspiciousHitAfterLoad) {
   ExpectNoReportRejection();
 }
 
-TEST_F(SuspiciousSiteTriggerTest, DISABLED_ReportRejectedByTriggerManager) {
+TEST_F(SuspiciousSiteTriggerTest, ReportRejectedByTriggerManager) {
   // If the trigger manager rejects the report then no report is sent.
   CreateTrigger(/*monitor_mode=*/false);
 
@@ -344,8 +344,7 @@ TEST_F(SuspiciousSiteTriggerTest, NewNavigationMidLoad_NotSuspicious) {
   ExpectNoReportRejection();
 }
 
-// Flaky. http://crbug.com/1010686
-TEST_F(SuspiciousSiteTriggerTest, DISABLED_NewNavigationMidLoad_Suspicious) {
+TEST_F(SuspiciousSiteTriggerTest, NewNavigationMidLoad_Suspicious) {
   // Exercise what happens when a new navigation begins in the middle of a page
   // load when a suspicious site was detected. The report of the first site
   // must be cancelled because we were waiting for the first load to finish
