@@ -958,6 +958,20 @@ TEST_F(MetricsReporterTest, SurfaceOpened) {
                                 FeedUserActionType::kOpenedFeedSurface, 1);
 }
 
+TEST_F(MetricsReporterTest, SurfaceOpenedSingleWebFeedEntryPoint) {
+  reporter_->SurfaceOpened(StreamType(StreamKind::kSingleWebFeed), kSurfaceId,
+                           SingleWebFeedEntryPoint::kMenu);
+
+  std::map<FeedEngagementType, int> want_empty;
+  EXPECT_EQ(want_empty,
+            ReportedEngagementType(StreamType(StreamKind::kSingleWebFeed)));
+  EXPECT_EQ(want_empty, ReportedEngagementType(kCombinedStreams));
+  histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserActions",
+                                FeedUserActionType::kOpenedFeedSurface, 1);
+  histogram_.ExpectUniqueSample("ContentSuggestions.SingleWebFeed.EntryPoint",
+                                SingleWebFeedEntryPoint::kMenu, 1);
+}
+
 TEST_F(MetricsReporterTest, OpenFeedSuccessDuration) {
   reporter_->SurfaceOpened(StreamType(StreamKind::kForYou), kSurfaceId);
   task_environment_.FastForwardBy(base::Seconds(9));
