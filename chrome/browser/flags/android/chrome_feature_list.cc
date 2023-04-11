@@ -263,7 +263,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kOpaqueOriginForIncomingIntents,
     &kOptimizeGeolocationHeaderGeneration,
     &kPartnerHomepageInitialLoadImprovement,
-    &kPostTaskFocusTab,
     &kProbabilisticCryptidRenderer,
     &kQuickDeleteForAndroid,
     &kReachedCodeProfiler,
@@ -850,10 +849,6 @@ BASE_FEATURE(kOptimizeGeolocationHeaderGeneration,
 
 BASE_FEATURE(kPartnerHomepageInitialLoadImprovement,
              "PartnerHomepageInitialLoadImprovement",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPostTaskFocusTab,
-             "PostTaskFocusTab",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kProbabilisticCryptidRenderer,

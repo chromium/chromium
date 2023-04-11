@@ -124,7 +124,6 @@ BASE_DECLARE_FEATURE(kBookmarksImprovedSaveFlow);
 BASE_DECLARE_FEATURE(kBookmarksRefresh);
 BASE_DECLARE_FEATURE(kOpaqueOriginForIncomingIntents);
 BASE_DECLARE_FEATURE(kPartnerHomepageInitialLoadImprovement);
-BASE_DECLARE_FEATURE(kPostTaskFocusTab);
 BASE_DECLARE_FEATURE(kProbabilisticCryptidRenderer);
 BASE_DECLARE_FEATURE(kQuickDeleteForAndroid);
 BASE_DECLARE_FEATURE(kReachedCodeProfiler);
