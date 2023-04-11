@@ -14,8 +14,9 @@
 
 - (instancetype)initWithIdentifier:(NSString*)identifier {
   DCHECK(identifier);
-  if ((self = [super init])) {
-    _identifier = identifier;
+  self = [super init];
+  if (self) {
+    _identifier = [identifier copy];
   }
   return self;
 }
