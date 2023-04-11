@@ -79,7 +79,7 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   auto line_spacing_button = std::make_unique<ReadAnythingMenuButton>(
       base::BindRepeating(&ReadAnythingToolbarView::ChangeLineSpacingCallback,
                           weak_pointer_factory_.GetWeakPtr()),
-      kLineSpacingIcon,
+      kReadAnythingLineSpacingIcon,
       l10n_util::GetStringUTF16(IDS_READING_MODE_LINE_SPACING_COMBOBOX_LABEL),
       delegate_->GetLineSpacingModel());
 
@@ -87,7 +87,7 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   auto letter_spacing_button = std::make_unique<ReadAnythingMenuButton>(
       base::BindRepeating(&ReadAnythingToolbarView::ChangeLetterSpacingCallback,
                           weak_pointer_factory_.GetWeakPtr()),
-      kLetterSpacingIcon,
+      kReadAnythingLetterSpacingIcon,
       l10n_util::GetStringUTF16(IDS_READING_MODE_LETTER_SPACING_COMBOBOX_LABEL),
       delegate_->GetLetterSpacingModel());
 
@@ -195,9 +195,9 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
 
   colors_button_->SetIcon(kPaletteIcon, kIconSize, foreground_color_id);
 
-  line_spacing_button_->SetIcon(kLineSpacingIcon, kIconSize,
+  line_spacing_button_->SetIcon(kReadAnythingLineSpacingIcon, kIconSize,
                                 foreground_color_id);
-  letter_spacing_button_->SetIcon(kLetterSpacingIcon, kIconSize,
+  letter_spacing_button_->SetIcon(kReadAnythingLetterSpacingIcon, kIconSize,
                                   foreground_color_id);
 
   // Update the background colors for the dropdowns.
