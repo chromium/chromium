@@ -95,7 +95,7 @@ def DownloadUrl(url, output_file):
 
   while True:
     try:
-      sys.stdout.write('Downloading %s ' % url)
+      sys.stdout.write(f'Downloading {url} ')
       sys.stdout.flush()
       request = urllib.request.Request(url)
       request.add_header('Accept-Encoding', 'gzip')
@@ -127,8 +127,8 @@ def DownloadUrl(url, output_file):
           sys.stdout.flush()
           dots_printed = num_dots
       if total_size is not None and bytes_done != total_size:
-        raise urllib.error.URLError("only got %d of %d bytes" %
-                                    (bytes_done, total_size))
+        raise urllib.error.URLError(
+            f'only got {bytes_done} of {total_size} bytes')
       if is_gzipped:
         output_file.write(gzip_decode.flush())
       print(' Done.')
@@ -142,7 +142,7 @@ def DownloadUrl(url, output_file):
       num_retries -= 1
       output_file.seek(0)
       output_file.truncate()
-      print('Retrying in %d s ...' % retry_wait_s)
+      print(f'Retrying in {retry_wait_s} s ...')
       sys.stdout.flush()
       time.sleep(retry_wait_s)
       retry_wait_s *= 2

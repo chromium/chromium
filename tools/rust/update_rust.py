@@ -16,7 +16,7 @@ import os
 import re
 import shutil
 import sys
-import tempfile
+import time
 import urllib
 
 from pathlib import Path
@@ -82,20 +82,20 @@ VERSION_STAMP_PATH = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'VERSION')
 # Package version built in build_rust.py, which is always built against the
 # current Clang. Typically Clang and Rust revisions are both updated together
 # and this picks the Clang that has just been built.
-def GetPackageVersionForBuild():
+def GetLatestRevision():
     from update import (CLANG_REVISION, CLANG_SUB_REVISION)
     return (f'{RUST_REVISION}-{RUST_SUB_REVISION}'
             f'-{CLANG_REVISION}-{CLANG_SUB_REVISION}')
 
 
 # Package version for download. Ideally this is the latest Clang+Rust roll,
-# which was built successfully and is returned from GetPackageVersionForBuild().
+# which was built successfully and is returned from GetLatestRevision().
 # However at this time Clang rolls even if Rust fails to build, so we have Rust
 # pinned to the last known successful build with FALLBACK_REVISION. This should
 # go away once we block Clang rolls on Rust also being built.
 def GetDownloadPackageVersion():
     return FALLBACK_REVISION \
-        if FALLBACK_REVISION else GetPackageVersionForBuild()
+        if FALLBACK_REVISION else GetLatestRevision()
 
 
 # Get the version of the toolchain package we already have.
@@ -110,6 +110,28 @@ def GetStampVersion():
         return match.group(1)
 
     return None
+
+
+def CheckUrl(url) -> bool:
+    """Check if a url exists."""
+    num_retries = 3
+    retry_wait_s = 5  # Doubled at each retry.
+
+    while True:
+        try:
+            urllib.request.urlopen(urllib.request.Request(url))
+            return True
+        except urllib.error.URLError as e:
+            if e.code != 404:
+                print(e)
+            if num_retries == 0 or isinstance(
+                    e, urllib.error.HTTPError) and e.code == 404:
+                return False
+            num_retries -= 1
+            print(f'Retrying in {retry_wait_s} s ...')
+            sys.stdout.flush()
+            time.sleep(retry_wait_s)
+            retry_wait_s *= 2
 
 
 def main():
@@ -130,11 +152,32 @@ def main():
         return 0
 
     if args.print_package_version:
-        print(GetDownloadPackageVersion())
+        stamp_version = GetStampVersion()
+        if (stamp_version != GetLatestRevision()
+                and stamp_version != FALLBACK_REVISION):
+            print(
+                f'The expected Rust version is {GetLatestRevision()} '
+                f'(or fallback {FALLBACK_REVISION} but the actual version is '
+                f'{stamp_version}')
+            print('Did you run "gclient sync"?')
+            return 1
+        print(stamp_version)
         return 0
 
     from update import (DownloadAndUnpack, GetDefaultHostOs,
                         GetPlatformUrlPrefix)
+
+    platform_prefix = GetPlatformUrlPrefix(GetDefaultHostOs())
+
+    version = GetLatestRevision()
+    url = f'{platform_prefix}rust-toolchain-{version}.tgz'
+    if not CheckUrl(url):
+        print("Latest Rust toolchain not found. Using fallback revision.")
+        version = FALLBACK_REVISION
+        url = f'{platform_prefix}rust-toolchain-{version}.tgz'
+        if not CheckUrl(url):
+            print('error: Could not find Rust toolchain package')
+            return 1
 
     # Exit early if the existing package is up-to-date. Note that we cannot
     # simply call DownloadAndUnpack() every time: aside from unnecessarily
@@ -142,7 +185,7 @@ def main():
     # versions of the same rustlibs. build/rust/std/find_std_rlibs.py chokes in
     # this case.
     if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
-        if GetDownloadPackageVersion() == GetStampVersion():
+        if version == GetStampVersion():
             return 0
 
     if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
@@ -150,19 +193,13 @@ def main():
 
     try:
         platform_prefix = GetPlatformUrlPrefix(GetDefaultHostOs())
-        version = GetDownloadPackageVersion()
-        url = f'{platform_prefix}rust-toolchain-{version}.tgz'
         DownloadAndUnpack(url, THIRD_PARTY_DIR)
     except urllib.error.HTTPError as e:
-        # Fail softly for now. This can happen if a Rust package was not
-        # produced, e.g. if the Rust build failed upon a Clang update, or if a
-        # Rust roll and a Clang roll raced against each other.
-        #
-        # TODO(https://crbug.com/1245714): Reconsider how to handle this.
-        print(f'warning: could not download Rust package')
+        print(f'error: Failed to download Rust package')
+        return 1
 
     # Ensure the newly extracted package has the correct version.
-    assert GetDownloadPackageVersion() == GetStampVersion()
+    assert version == GetStampVersion()
 
 
 if __name__ == '__main__':
