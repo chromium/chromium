@@ -6857,3 +6857,6 @@ crbug.com/1432100 [ Linux ] inspector-protocol/memory/sampling-native-snapshot.j
 crbug.com/1432100 [ Linux ] inspector-protocol/memory/sampling-native-profile.js [ Failure Pass ]
 crbug.com/1432100 [ Linux ] inspector-protocol/memory/sampling-native-profile-partition-alloc.js [ Failure Pass ]
 crbug.com/1432100 [ Linux ] inspector-protocol/memory/sampling-native-profile-blink-gc.js [ Failure Pass ]
+
+# Fails on newer Ubuntu versions.
+crbug.com/1432272 [ Linux ] virtual/unsafe_webgpu/regress/regress-1104580.html [ Crash Pass ]
