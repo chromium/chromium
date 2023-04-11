@@ -1,0 +1,219 @@
+#!/usr/bin/env vpython3
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+"""Tests for query_optimal_shard_counts.py."""
+
+import datetime
+import sys
+import os
+import json
+import mock
+import platform
+import subprocess
+import tempfile
+import unittest
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                '..'))
+
+import query_optimal_shard_counts
+
+DEFAULT_DICT = {
+    'shard_count': 10,
+    'optimal_shard_count': 20,
+    'simulated_max_shard_duration': 11,
+    'avg_num_builds_per_peak_hour': 80,
+    'p50_pending_time_sec': 1,
+    'p90_pending_time_sec': 231,
+    'avg_pending_time_sec': 65,
+    'avg_task_setup_overhead_sec': 27,
+    'estimated_bot_hour_cost': 1.27,
+    'percentile_duration_minutes': 20,
+    'sample_size': 9508,
+}
+
+
+def query_response_test_suite_dict(
+    waterfall_builder_group,
+    waterfall_builder_name,
+    try_builder,
+    test_suite,
+    **kwargs,
+):
+  return_dict = DEFAULT_DICT.copy()
+  return_dict.update({
+      'test_suite': test_suite,
+      'try_builder': try_builder,
+      'waterfall_builder_group': waterfall_builder_group,
+      'waterfall_builder_name': waterfall_builder_name,
+      **kwargs,
+  })
+  return return_dict
+
+
+def get_written_output(mock_open):
+  write_mock = mock_open.return_value.__enter__.return_value.write
+  mock_call_args, _ = write_mock.call_args
+  written_data = mock_call_args[0]
+  return json.loads(written_data)
+
+
+@unittest.skipIf(platform.system() == 'Windows',
+                 'These tests are currently not supported on Windows.')
+class FormatQueryResults(unittest.TestCase):
+  def setUp(self):
+    self._mock_check_call_patcher = mock.patch(
+        'query_optimal_shard_counts.subprocess.check_call')
+    self._mock_check_call = self._mock_check_call_patcher.start()
+    self._mock_check_output_patcher = mock.patch(
+        'query_optimal_shard_counts.subprocess.check_output')
+    self._mock_check_output = self._mock_check_output_patcher.start()
+    self.output_file_handle, self.output_file = tempfile.mkstemp()
+
+  def tearDown(self):
+    os.remove(self.output_file)
+    os.close(self.output_file_handle)
+    self._mock_check_call_patcher.stop()
+    self._mock_check_output_patcher.stop()
+
+  def _testBQNotInstalled(self):
+    self._mock_check_call.side_effect = (subprocess.CalledProcessError(
+        returncode=1, cmd="['which', 'bq']"))
+    with self.assertRaises(RuntimeError) as context:
+      query_optimal_shard_counts.main([])
+    self.assertTrue(query_optimal_shard_counts._BQ_SETUP_INSTRUCTION in str(
+        context.exception))
+
+  def testBasic(self):
+    expected_optimal_shard_count = 15
+    self._mock_check_output.return_value = json.dumps([
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+            optimal_shard_count=expected_optimal_shard_count,
+        ),
+    ])
+    query_optimal_shard_counts.main(['--output-file', self.output_file])
+    with open(self.output_file, 'r') as f:
+      script_result = json.loads(f.read())
+    self.assertEqual(
+        script_result['chromium.linux']['Linux Tests'],
+        {'browser_tests': {
+            'shards': expected_optimal_shard_count
+        }})
+
+  def testMultipleBuildersInGroup(self):
+    expected_optimal_shard_count_1 = 15
+    expected_optimal_shard_count_2 = 20
+    self._mock_check_output.return_value = json.dumps([
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+            optimal_shard_count=expected_optimal_shard_count_1,
+        ),
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux GPU Tests',
+            try_builder='linux-rel',
+            test_suite='gpu_tests',
+            optimal_shard_count=expected_optimal_shard_count_2,
+        ),
+    ])
+    query_optimal_shard_counts.main(['--output-file', self.output_file])
+    with open(self.output_file, 'r') as f:
+      script_result = json.loads(f.read())
+    self.assertEqual(
+        len(script_result['chromium.linux']),
+        2,
+    )
+    self.assertEqual(
+        script_result['chromium.linux']['Linux Tests'],
+        {'browser_tests': {
+            'shards': expected_optimal_shard_count_1
+        }})
+    self.assertEqual(script_result['chromium.linux']['Linux GPU Tests'],
+                     {'gpu_tests': {
+                         'shards': expected_optimal_shard_count_2
+                     }})
+
+  def testVerbose(self):
+    self._mock_check_output.return_value = json.dumps([
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+        ),
+    ])
+    query_optimal_shard_counts.main(
+        ['--output-file', self.output_file, '--verbose'])
+    with open(self.output_file, 'r') as f:
+      script_result = json.loads(f.read())
+    expected_dict = {
+        'shards':
+        DEFAULT_DICT['optimal_shard_count'],
+        'current_shard_count':
+        DEFAULT_DICT['shard_count'],
+        'simulated_max_shard_duration':
+        DEFAULT_DICT['simulated_max_shard_duration'],
+        'current_percentile_duration_minutes':
+        DEFAULT_DICT['percentile_duration_minutes'],
+    }
+    dict_result = script_result['chromium.linux']['Linux Tests'][
+        'browser_tests']
+    self.assertTrue(
+        all(dict_result[key] == val for key, val in expected_dict.items()))
+
+  def testNoQueryResults(self):
+    self._mock_check_output.return_value = json.dumps([])
+    query_optimal_shard_counts.main(['--output-file', self.output_file])
+    with open(self.output_file, 'r') as f:
+      script_result = json.loads(f.read())
+    self.assertEqual({}, script_result)
+
+  def testLookbackDates(self):
+    self._mock_check_output.return_value = json.dumps([
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+        ),
+    ])
+    query_optimal_shard_counts.main([
+        '--lookback-start-date', '2023-01-01', '--lookback-end-date',
+        '2023-02-01', '--output-file', self.output_file
+    ])
+    mock_call_args, _ = self._mock_check_output.call_args
+    big_query_arg_list = mock_call_args[0]
+    self.assertTrue(any('2023-01-01' in arg for arg in big_query_arg_list))
+    self.assertTrue(any('2023-02-01' in arg for arg in big_query_arg_list))
+
+  def testLookbackDays(self):
+    self._mock_check_output.return_value = json.dumps([
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+        ),
+    ])
+    fake_now = datetime.datetime(2023, 1, 1)
+    with mock.patch(
+        'query_optimal_shard_counts.datetime.datetime') as mock_datetime:
+      mock_datetime.now.return_value = fake_now
+      query_optimal_shard_counts.main(
+          ['--lookback-days', '3', '--output-file', self.output_file])
+    mock_call_args, _ = self._mock_check_output.call_args
+    big_query_arg_list = mock_call_args[0]
+    self.assertTrue(any('2023-01-01' in arg for arg in big_query_arg_list))
+    self.assertTrue(any('2022-12-29' in arg for arg in big_query_arg_list))
+
+
+if __name__ == '__main__':
+  unittest.main(verbosity=2)
