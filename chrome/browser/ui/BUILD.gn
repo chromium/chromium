@@ -5723,8 +5723,6 @@ static_library("ui") {
       "webui/lens/lens_untrusted_ui_config.cc",
       "webui/lens/lens_untrusted_ui_config.h",
     ]
-
-    deps += [ "//chrome/browser/ui/media_router/internal/vector_icons" ]
   }
 
   if (use_aura) {
