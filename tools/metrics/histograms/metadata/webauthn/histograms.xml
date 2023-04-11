@@ -42,7 +42,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.AOADiscoveryEvent"
-    enum="WebAuthenticationAOADiscoveryEvent" expires_after="2023-08-08">
+    enum="WebAuthenticationAOADiscoveryEvent" expires_after="2023-10-08">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -51,7 +51,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.DiscoveryEvent"
-    enum="WebAuthenticationCableV2DiscoveryEvent" expires_after="2023-08-08">
+    enum="WebAuthenticationCableV2DiscoveryEvent" expires_after="2023-10-08">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -81,14 +81,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.MobileResult"
-    enum="WebAuthenticationCableV2MobileResult" expires_after="2023-08-08">
+    enum="WebAuthenticationCableV2MobileResult" expires_after="2023-10-08">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>Records the outcome of caBLEv2 transactions.</summary>
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.RendezvousTime" units="ms"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -108,7 +108,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.CableV2.TunnelServerError"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-08-08">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-10-08">
   <owner>agl@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>
@@ -119,7 +119,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="WebAuthentication.ChromeOS.GetAssertionStatus"
     enum="WebAuthenticationChromeOSGetAssertionResult"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>martinkr@google.com</owner>
   <owner>hcyang@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -136,7 +136,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.ChromeOS.StartupRecordCount" units="records"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>martinkr@google.com</owner>
   <owner>chrome-webauthn@google.com</owner>
   <summary>
@@ -211,7 +211,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.IsUVPlatformAuthenticatorAvailable2"
-    enum="Boolean" expires_after="2023-08-08">
+    enum="Boolean" expires_after="2023-10-08">
   <owner>kenrb@chromium.org</owner>
   <owner>martinkr@google.com</owner>
   <summary>

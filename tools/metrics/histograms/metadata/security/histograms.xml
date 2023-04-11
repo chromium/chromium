@@ -381,7 +381,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SafetyTips.GetReputationStatusWithEngagedSitesTime"
-    units="ms" expires_after="2023-08-08">
+    units="ms" expires_after="2023-10-08">
   <owner>jdeblasio@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <owner>blundell@chromium.org</owner>
@@ -448,7 +448,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptIn.ReportCompletionStatus"
-    enum="SCTAuditingReportCompletionStatus" expires_after="2023-08-08">
+    enum="SCTAuditingReportCompletionStatus" expires_after="2023-10-08">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -841,7 +841,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.ORB.CorbVsOrb.OrbBlockedAndCorbDidnt.Reason"
-    enum="OrbBlockingDecisionReason" expires_after="2023-08-08">
+    enum="OrbBlockingDecisionReason" expires_after="2023-10-08">
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <owner>vogelheim@chromium.org</owner>
