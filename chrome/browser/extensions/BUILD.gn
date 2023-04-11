@@ -554,6 +554,8 @@ static_library("extensions") {
     "extension_migrator.h",
     "extension_service.cc",
     "extension_service.h",
+    "extension_side_panel_view_host.cc",
+    "extension_side_panel_view_host.h",
     "extension_special_storage_policy.cc",
     "extension_special_storage_policy.h",
     "extension_sync_data.cc",

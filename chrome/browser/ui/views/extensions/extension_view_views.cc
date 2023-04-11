@@ -23,7 +23,8 @@
 #include "ui/views/widget/widget.h"
 
 ExtensionViewViews::ExtensionViewViews(extensions::ExtensionViewHost* host)
-    : views::WebView(host->browser() ? host->browser()->profile() : nullptr),
+    : views::WebView(host->GetBrowser() ? host->GetBrowser()->profile()
+                                        : nullptr),
       host_(host) {
   host_->set_view(this);
   SetWebContents(host_->web_contents());

@@ -11,6 +11,10 @@ class Browser;
 class GURL;
 class Profile;
 
+namespace content {
+class WebContents;
+}
+
 namespace extensions {
 
 class ExtensionViewHost;
@@ -38,7 +42,8 @@ class ExtensionViewHostFactory {
   // profile.
   static std::unique_ptr<ExtensionViewHost> CreateSidePanelHost(
       const GURL& url,
-      Browser* browser);
+      Browser* browser,
+      content::WebContents* web_contents);
 };
 
 }  // namespace extensions

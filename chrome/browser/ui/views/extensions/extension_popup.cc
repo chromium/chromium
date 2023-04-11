@@ -73,7 +73,7 @@ class ExtensionPopup::ScopedBrowserActivationObservation
   explicit ScopedBrowserActivationObservation(ExtensionPopup* owner)
       : owner_(owner) {
     BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(owner->host()->browser());
+        BrowserView::GetBrowserViewForBrowser(owner->host()->GetBrowser());
     observation_.Observe(browser_view->GetWidget());
   }
   ~ScopedBrowserActivationObservation() override = default;
@@ -172,7 +172,7 @@ void ExtensionPopup::OnWidgetActivationChanged(views::Widget* widget,
     // widget that never gets activated, therefore we observe the activation of
     // the browser window.
     BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(host_->browser());
+        BrowserView::GetBrowserViewForBrowser(host_->GetBrowser());
     if (browser_view->IsImmersiveModeEnabled() && browser_view->IsActive()) {
       CloseUnlessUnderInspection();
     }
@@ -315,7 +315,7 @@ ExtensionPopup::ExtensionPopup(
 
   scoped_devtools_observation_ =
       std::make_unique<ScopedDevToolsAgentHostObservation>(this);
-  host_->browser()->tab_strip_model()->AddObserver(this);
+  host_->GetBrowser()->tab_strip_model()->AddObserver(this);
 
 #if BUILDFLAG(IS_MAC)
   scoped_browser_activation_obvervation_ =
