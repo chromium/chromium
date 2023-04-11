@@ -126,7 +126,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
 
   void ShowAutofillSettings(PopupType popup_type) override;
   void ShowCardUnmaskOtpInputDialog(
-      const size_t& otp_length,
+      const CardUnmaskChallengeOption& challenge_option,
       base::WeakPtr<OtpUnmaskDelegate> delegate) override;
   void OnUnmaskOtpVerificationResult(OtpUnmaskResult unmask_result) override;
   void ShowUnmaskPrompt(

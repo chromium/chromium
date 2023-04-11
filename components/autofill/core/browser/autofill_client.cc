@@ -135,7 +135,7 @@ AutofillClient::CreateCreditCardInternalAuthenticator(AutofillDriver* driver) {
 #endif
 
 void AutofillClient::ShowCardUnmaskOtpInputDialog(
-    const size_t& otp_length,
+    const CardUnmaskChallengeOption& challenge_option,
     base::WeakPtr<OtpUnmaskDelegate> delegate) {
   // This is overridden by platform subclasses. Currently only
   // ChromeAutofillClient (Chrome Desktop and Clank) implements this.

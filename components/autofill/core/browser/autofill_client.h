@@ -453,7 +453,7 @@ class AutofillClient : public RiskDataLoader {
 
   // Show the OTP unmask dialog to accept user-input OTP value.
   virtual void ShowCardUnmaskOtpInputDialog(
-      const size_t& otp_length,
+      const CardUnmaskChallengeOption& challenge_option,
       base::WeakPtr<OtpUnmaskDelegate> delegate);
 
   // Invoked when we receive the server response of the OTP unmask request.

@@ -421,13 +421,13 @@ void ChromeAutofillClient::ShowAutofillSettings(PopupType popup_type) {
 }
 
 void ChromeAutofillClient::ShowCardUnmaskOtpInputDialog(
-    const size_t& otp_length,
+    const CardUnmaskChallengeOption& challenge_option,
     base::WeakPtr<OtpUnmaskDelegate> delegate) {
   CardUnmaskOtpInputDialogControllerImpl::CreateForWebContents(web_contents());
   CardUnmaskOtpInputDialogControllerImpl* controller =
       CardUnmaskOtpInputDialogControllerImpl::FromWebContents(web_contents());
   DCHECK(controller);
-  controller->ShowDialog(otp_length, delegate);
+  controller->ShowDialog(challenge_option, delegate);
 }
 
 void ChromeAutofillClient::OnUnmaskOtpVerificationResult(

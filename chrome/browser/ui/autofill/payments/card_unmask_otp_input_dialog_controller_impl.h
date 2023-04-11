@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/card_unmask_otp_input_dialog_view.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/otp_unmask_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -31,7 +32,8 @@ class CardUnmaskOtpInputDialogControllerImpl
   ~CardUnmaskOtpInputDialogControllerImpl() override;
 
   // Show the dialog for users to type in OTPs.
-  void ShowDialog(size_t otp_length, base::WeakPtr<OtpUnmaskDelegate> delegate);
+  void ShowDialog(const CardUnmaskChallengeOption& challenge_option,
+                  base::WeakPtr<OtpUnmaskDelegate> delegate);
 
   // Invoked when the OTP verification is completed.
   void OnOtpVerificationResult(OtpUnmaskResult result);
@@ -64,6 +66,9 @@ class CardUnmaskOtpInputDialogControllerImpl
       content::WebContents* web_contents);
 
   raw_ptr<CardUnmaskOtpInputDialogView> dialog_view_ = nullptr;
+
+  // The challenge type of the OTP input dialog.
+  CardUnmaskChallengeOptionType challenge_type_;
 
  private:
   friend class content::WebContentsUserData<

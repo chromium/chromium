@@ -97,6 +97,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="Autofill.OtpAuth.Type">
+  <variant name="EmailOtp" summary="The OTP authentication with an email."/>
   <variant name="SmsOtp" summary="The OTP authentication with a SMS OTP."/>
 </variants>
 
