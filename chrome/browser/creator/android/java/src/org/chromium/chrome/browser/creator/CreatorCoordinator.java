@@ -308,6 +308,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
             view.setId(R.id.creator_feed_stream_recycler_view);
             view.setClipToPadding(false);
             view.setBackgroundColor(SemanticColorUtils.getDefaultBgColor(mActivity));
+            view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         } else {
             view = null;
         }
