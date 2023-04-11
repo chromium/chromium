@@ -948,7 +948,7 @@ static bool MergeRedirectUrlOfResponsesHelper(
       redirected = true;
     } else {
       ignored_actions->emplace_back(delta.extension_id,
-                                    web_request::IGNORED_ACTION_TYPE_REDIRECT);
+                                    web_request::IgnoredActionType::kRedirect);
     }
   }
   return redirected;
@@ -1268,7 +1268,7 @@ void MergeOnBeforeSendHeadersResponses(
       *request_headers_modified = true;
     } else {
       ignored_actions->emplace_back(
-          delta.extension_id, web_request::IGNORED_ACTION_TYPE_REQUEST_HEADERS);
+          delta.extension_id, web_request::IgnoredActionType::kRequestHeaders);
     }
   }
 
@@ -1636,8 +1636,7 @@ void MergeOnHeadersReceivedResponses(
       *response_headers_modified = true;
     } else {
       ignored_actions->emplace_back(
-          delta.extension_id,
-          web_request::IGNORED_ACTION_TYPE_RESPONSE_HEADERS);
+          delta.extension_id, web_request::IgnoredActionType::kResponseHeaders);
     }
   }
 
@@ -1723,8 +1722,7 @@ bool MergeOnAuthRequiredResponses(const EventResponseDeltas& deltas,
         auth_credentials->password() != delta.auth_credentials->password();
     if (credentials_set && different) {
       ignored_actions->emplace_back(
-          delta.extension_id,
-          web_request::IGNORED_ACTION_TYPE_AUTH_CREDENTIALS);
+          delta.extension_id, web_request::IgnoredActionType::kAuthCredentials);
     } else {
       *auth_credentials = *delta.auth_credentials;
       credentials_set = true;

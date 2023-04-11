@@ -624,7 +624,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses) {
   EXPECT_EQ(new_url_1, effective_new_url);
   EXPECT_EQ(1u, ignored_actions.size());
   EXPECT_TRUE(HasIgnoredAction(ignored_actions, "extid2",
-                               web_request::IGNORED_ACTION_TYPE_REDIRECT));
+                               web_request::IgnoredActionType::kRedirect));
 
   // Overriding redirect.
   GURL new_url_3("http://baz.com");
@@ -640,9 +640,9 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses) {
   EXPECT_EQ(new_url_3, effective_new_url);
   EXPECT_EQ(2u, ignored_actions.size());
   EXPECT_TRUE(HasIgnoredAction(ignored_actions, "extid1",
-                               web_request::IGNORED_ACTION_TYPE_REDIRECT));
+                               web_request::IgnoredActionType::kRedirect));
   EXPECT_TRUE(HasIgnoredAction(ignored_actions, "extid2",
-                               web_request::IGNORED_ACTION_TYPE_REDIRECT));
+                               web_request::IgnoredActionType::kRedirect));
 
   // Check that identical redirects don't cause a conflict.
   {
@@ -657,9 +657,9 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses) {
   EXPECT_EQ(new_url_3, effective_new_url);
   EXPECT_EQ(2u, ignored_actions.size());
   EXPECT_TRUE(HasIgnoredAction(ignored_actions, "extid1",
-                               web_request::IGNORED_ACTION_TYPE_REDIRECT));
+                               web_request::IgnoredActionType::kRedirect));
   EXPECT_TRUE(HasIgnoredAction(ignored_actions, "extid2",
-                               web_request::IGNORED_ACTION_TYPE_REDIRECT));
+                               web_request::IgnoredActionType::kRedirect));
 }
 
 // This tests that we can redirect to data:// urls, which is considered
@@ -726,7 +726,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeRequestResponses2) {
   EXPECT_EQ(new_url_1, effective_new_url);
   EXPECT_EQ(1u, ignored_actions.size());
   EXPECT_TRUE(HasIgnoredAction(ignored_actions, "extid3",
-                               web_request::IGNORED_ACTION_TYPE_REDIRECT));
+                               web_request::IgnoredActionType::kRedirect));
 }
 
 // This tests that we can redirect to about:blank, which is considered
@@ -867,7 +867,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeSendHeadersResponses) {
   EXPECT_EQ(1u, ignored_actions.size());
   EXPECT_TRUE(
       HasIgnoredAction(ignored_actions, "extid2",
-                       web_request::IGNORED_ACTION_TYPE_REQUEST_HEADERS));
+                       web_request::IgnoredActionType::kRequestHeaders));
   EXPECT_TRUE(request_headers_modified2);
 
   // Check that identical modifications don't conflict and operations
@@ -899,7 +899,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeSendHeadersResponses) {
   EXPECT_EQ(1u, ignored_actions.size());
   EXPECT_TRUE(
       HasIgnoredAction(ignored_actions, "extid2",
-                       web_request::IGNORED_ACTION_TYPE_REQUEST_HEADERS));
+                       web_request::IgnoredActionType::kRequestHeaders));
   EXPECT_TRUE(request_headers_modified3);
 
   // Check that headers removed by Declarative Net Request API can't be modified
@@ -934,10 +934,10 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeSendHeadersResponses) {
   EXPECT_EQ(2u, ignored_actions.size());
   EXPECT_TRUE(
       HasIgnoredAction(ignored_actions, "extid2",
-                       web_request::IGNORED_ACTION_TYPE_REQUEST_HEADERS));
+                       web_request::IgnoredActionType::kRequestHeaders));
   EXPECT_TRUE(
       HasIgnoredAction(ignored_actions, "extid3",
-                       web_request::IGNORED_ACTION_TYPE_REQUEST_HEADERS));
+                       web_request::IgnoredActionType::kRequestHeaders));
   EXPECT_TRUE(request_headers_modified4);
 
   // Check that headers set by Declarative Net Request API can't be further
@@ -997,13 +997,13 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeSendHeadersResponses) {
   EXPECT_EQ(3u, ignored_actions.size());
   EXPECT_TRUE(
       HasIgnoredAction(ignored_actions, "extid2",
-                       web_request::IGNORED_ACTION_TYPE_REQUEST_HEADERS));
+                       web_request::IgnoredActionType::kRequestHeaders));
   EXPECT_TRUE(
       HasIgnoredAction(ignored_actions, "extid3",
-                       web_request::IGNORED_ACTION_TYPE_REQUEST_HEADERS));
+                       web_request::IgnoredActionType::kRequestHeaders));
   EXPECT_TRUE(
       HasIgnoredAction(ignored_actions, "extid4",
-                       web_request::IGNORED_ACTION_TYPE_REQUEST_HEADERS));
+                       web_request::IgnoredActionType::kRequestHeaders));
   EXPECT_TRUE(request_headers_modified4);
 }
 
@@ -1678,7 +1678,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnHeadersReceivedResponses) {
   EXPECT_EQ(1u, ignored_actions.size());
   EXPECT_TRUE(
       HasIgnoredAction(ignored_actions, "extid2",
-                       web_request::IGNORED_ACTION_TYPE_RESPONSE_HEADERS));
+                       web_request::IgnoredActionType::kResponseHeaders));
   EXPECT_TRUE(response_headers_modified2);
 
   // Ensure headers removed by Declarative Net Request API can't be added by web
@@ -1718,7 +1718,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnHeadersReceivedResponses) {
   // |modify_headers_action| for the key3 header.
   EXPECT_TRUE(
       HasIgnoredAction(ignored_actions, "extid1",
-                       web_request::IGNORED_ACTION_TYPE_RESPONSE_HEADERS));
+                       web_request::IgnoredActionType::kResponseHeaders));
   EXPECT_TRUE(response_headers_modified3);
 
   // Ensure headers appended by Declarative Net Request API can't be removed by
@@ -1775,12 +1775,12 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnHeadersReceivedResponses) {
   // extid1.
   EXPECT_TRUE(
       HasIgnoredAction(ignored_actions, "extid2",
-                       web_request::IGNORED_ACTION_TYPE_RESPONSE_HEADERS));
+                       web_request::IgnoredActionType::kResponseHeaders));
   // The action specified by extid3 is ignored since it tries to remove Key4,
   // which was appended by the Declarative Net Request API.
   EXPECT_TRUE(
       HasIgnoredAction(ignored_actions, "extid3",
-                       web_request::IGNORED_ACTION_TYPE_RESPONSE_HEADERS));
+                       web_request::IgnoredActionType::kResponseHeaders));
   EXPECT_TRUE(response_headers_modified4);
 }
 
@@ -2193,7 +2193,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnAuthRequiredResponses) {
   EXPECT_EQ(1u, ignored_actions.size());
   EXPECT_TRUE(
       HasIgnoredAction(ignored_actions, "extid2",
-                       web_request::IGNORED_ACTION_TYPE_AUTH_CREDENTIALS));
+                       web_request::IgnoredActionType::kAuthCredentials));
 
   // Check that we can set identical AuthCredentials twice without causing
   // a conflict.
@@ -2214,7 +2214,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnAuthRequiredResponses) {
   EXPECT_EQ(1u, ignored_actions.size());
   EXPECT_TRUE(
       HasIgnoredAction(ignored_actions, "extid2",
-                       web_request::IGNORED_ACTION_TYPE_AUTH_CREDENTIALS));
+                       web_request::IgnoredActionType::kAuthCredentials));
 }
 
 }  // namespace extensions

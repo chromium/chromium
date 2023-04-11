@@ -358,9 +358,9 @@ void NotifyIgnoredActionsOnUI(
   EventRouter* event_router = EventRouter::Get(browser_context);
   web_request::OnActionIgnored::Details details;
   details.request_id = base::NumberToString(request_id);
-  details.action = web_request::IGNORED_ACTION_TYPE_NONE;
+  details.action = web_request::IgnoredActionType::kNone;
   for (const auto& ignored_action : ignored_actions) {
-    DCHECK_NE(web_request::IGNORED_ACTION_TYPE_NONE,
+    DCHECK_NE(web_request::IgnoredActionType::kNone,
               ignored_action.action_type);
 
     details.action = ignored_action.action_type;
