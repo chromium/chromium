@@ -19,7 +19,9 @@ namespace captions {
 
 CaptionBubbleModel::CaptionBubbleModel(CaptionBubbleContext* context,
                                        OnCaptionBubbleClosedCallback callback)
-    : caption_bubble_closed_callback_(callback), context_(context) {
+    : unique_id_(GetNextId()),
+      caption_bubble_closed_callback_(callback),
+      context_(context) {
   DCHECK(context_);
 }
 
@@ -108,6 +110,12 @@ void CaptionBubbleModel::CommitPartialText() {
     final_text_.erase(0, truncate_index);
     OnTextChanged();
   }
+}
+
+// static
+CaptionBubbleModel::Id CaptionBubbleModel::GetNextId() {
+  static Id::Generator generator;
+  return generator.GenerateNextId();
 }
 
 }  // namespace captions

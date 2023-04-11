@@ -90,7 +90,8 @@ void CaptionBubbleControllerViews::OnAudioStreamEnd(
 
   CaptionBubbleModel* caption_bubble_model =
       caption_bubble_models_[caption_bubble_context].get();
-  if (active_model_ == caption_bubble_model) {
+  if (active_model_ != nullptr &&
+      active_model_->unique_id() == caption_bubble_model->unique_id()) {
     active_model_ = nullptr;
     caption_bubble_->SetModel(nullptr);
   }
@@ -138,7 +139,8 @@ void CaptionBubbleControllerViews::SetActiveModel(
 
   CaptionBubbleModel* caption_bubble_model =
       caption_bubble_models_[caption_bubble_context].get();
-  if (active_model_ != caption_bubble_model) {
+  if (active_model_ == nullptr ||
+      active_model_->unique_id() != caption_bubble_model->unique_id()) {
     active_model_ = caption_bubble_model;
     caption_bubble_->SetModel(active_model_);
   }
