@@ -17,6 +17,7 @@ export interface AmbientState {
   temperatureUnit: TemperatureUnit|null;
   topicSource: TopicSource|null;
   ambientUiVisibility: AmbientUiVisibility|null;
+  shouldShowTimeOfDayBanner: boolean;
 }
 
 export function emptyState(): AmbientState {
@@ -28,5 +29,6 @@ export function emptyState(): AmbientState {
     temperatureUnit: null,
     topicSource: null,
     ambientUiVisibility: null,
+    shouldShowTimeOfDayBanner: false,
   };
 }

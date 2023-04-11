@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
@@ -47,6 +48,13 @@ std::u16string GetGooglePhotosURL() {
 bool IsAmbientModeAllowed() {
   return ash::AmbientClient::Get() &&
          ash::AmbientClient::Get()->IsAmbientModeAllowed();
+}
+
+AmbientBackendController* GetAmbientBackendController() {
+  AmbientBackendController* ambient_backend_controller =
+      AmbientBackendController::Get();
+  DCHECK(ambient_backend_controller);
+  return ambient_backend_controller;
 }
 
 void AddResources(content::WebUIDataSource* source) {
@@ -302,11 +310,18 @@ void AddStrings(content::WebUIDataSource* source) {
       {"timeOfDayWallpaperDialogBackButton",
        IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_BACK_BUTTON},
       {"timeOfDayWallpaperDialogConfirmButton",
-       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_CONFIRM_BUTTON}};
+       IDS_PERSONALIZATION_APP_TIME_OF_DAY_WALLPAPER_DIALOG_CONFIRM_BUTTON},
+      {"timeOfDayBannerTitle",
+       IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_TITLE},
+      {"timeOfDayBannerDescription",
+       IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_DESCRIPTION}};
 
   source->AddLocalizedStrings(kLocalizedStrings);
 
   source->AddString("googlePhotosURL", GetGooglePhotosURL());
+
+  source->AddString("timeOfDayBannerImageUrl",
+                    GetAmbientBackendController()->GetPromoBannerUrl());
 
   source->AddString(
       "ambientModeAlbumsSubpageGooglePhotosTitle",

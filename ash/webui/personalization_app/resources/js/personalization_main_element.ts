@@ -43,7 +43,18 @@ export class PersonalizationMain extends WithPersonalizationStore {
           return isRgbKeyboardSupported();
         },
       },
+      shouldShowTimeOfDayBanner_: Boolean,
     };
+  }
+
+  private shouldShowTimeOfDayBanner_: boolean;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.watch<PersonalizationMain['shouldShowTimeOfDayBanner_']>(
+        'shouldShowTimeOfDayBanner_',
+        state => state.ambient.shouldShowTimeOfDayBanner);
+    this.updateFromStore();
   }
 }
 

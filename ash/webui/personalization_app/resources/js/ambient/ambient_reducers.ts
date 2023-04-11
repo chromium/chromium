@@ -94,6 +94,16 @@ export function ambientUiVisibilityReducer(
   }
 }
 
+export function shouldShowTimeOfDayBannerReducer(
+    state: boolean, action: Actions, _: PersonalizationState): boolean {
+  switch (action.name) {
+    case AmbientActionName.SET_SHOULD_SHOW_TIME_OF_DAY_BANNER:
+      return action.shouldShowTimeOfDayBanner;
+    default:
+      return state;
+  }
+}
+
 export const ambientReducers:
     {[K in keyof AmbientState]: ReducerFunction<AmbientState[K]>} = {
       albums: albumsReducer,
@@ -103,4 +113,5 @@ export const ambientReducers:
       temperatureUnit: temperatureUnitReducer,
       topicSource: topicSourceReducer,
       ambientUiVisibility: ambientUiVisibilityReducer,
+      shouldShowTimeOfDayBanner: shouldShowTimeOfDayBannerReducer,
     };

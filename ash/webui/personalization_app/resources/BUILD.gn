@@ -61,6 +61,7 @@ build_webui("build") {
     "js/personalization_router_element.ts",
     "js/personalization_toast_element.ts",
     "js/personalization_breadcrumb_element.ts",
+    "js/time_of_day_banner_element.ts",
     "js/theme/personalization_theme_element.ts",
     "js/theme/color_scheme_icon_svg_element.ts",
     "js/theme/dynamic_color_element.ts",

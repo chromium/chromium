@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {AmbientModeAlbum, AmbientProviderInterface, AnimationTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
-import {setAlbumSelectedAction, setAmbientModeEnabledAction, setAnimationThemeAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
+import {setAlbumSelectedAction, setAmbientModeEnabledAction, setAnimationThemeAction, setShouldShowTimeOfDayBannerAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
 import {isValidTopicSourceAndTheme} from './utils.js';
 
 /**
@@ -74,4 +74,13 @@ export function setAlbumSelected(
 export function startScreenSaverPreview(provider: AmbientProviderInterface):
     void {
   provider.startScreenSaverPreview();
+}
+
+// Sets shouldShowTimeOfDayBanner to false.
+export function dismissTimeOfDayBanner(store: PersonalizationStore): void {
+  if (!store.data.ambient.shouldShowTimeOfDayBanner) {
+    // Do nothing if the banner is already dismissed;
+    return;
+  }
+  store.dispatch(setShouldShowTimeOfDayBannerAction(false));
 }
