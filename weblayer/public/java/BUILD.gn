@@ -138,6 +138,9 @@ android_library("java") {
     "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java",
     "//weblayer/browser/java:base_module_interfaces_java",
     "//weblayer/browser/java:interfaces_java",
+
+    # TODO(rayankans): Figure out why this isn't being inherited from //weblayer/browser/java.
+    "$google_play_services_package:google_play_services_basement_java",
   ]
 
   proguard_configs = [ "proguard.flags" ]
