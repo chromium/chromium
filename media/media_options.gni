@@ -121,13 +121,12 @@ declare_args() {
   enable_av1_decoder = enable_dav1d_decoder
 
   # Enable HEVC/H265 demuxing. Actual decoding must be provided by the
-  # platform.
-  # TODO(b/194429120): Enable this for Lacros builds.
+  # platform. Always enable this for Lacros, it determines support at runtime.
   # TODO(crbug.com/1336055): Revisit the default value for this setting as it
   # applies to video-capable devices.
   enable_platform_hevc =
-      proprietary_codecs &&
-      (enable_hevc_parser_and_hw_decoder || is_cast_media_device)
+      proprietary_codecs && (enable_hevc_parser_and_hw_decoder ||
+                             is_cast_media_device || is_chromeos_lacros)
 
   enable_mse_mpeg2ts_stream_parser =
       proprietary_codecs &&
