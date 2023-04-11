@@ -45,7 +45,7 @@ class CONTENT_EXPORT SmartCardService
       const blink::mojom::SmartCardReaderInfo& reader_info) override;
   void OnReaderChanged(
       const blink::mojom::SmartCardReaderInfo& reader_info) override;
-  void OnError(blink::mojom::SmartCardResponseCode response_code) override;
+  void OnError(device::mojom::SmartCardError error) override;
 
  private:
   const raw_ref<SmartCardDelegate> delegate_;

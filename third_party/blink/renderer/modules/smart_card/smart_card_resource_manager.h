@@ -32,7 +32,6 @@ class MODULES_EXPORT SmartCardResourceManager final
 
  public:
   using SmartCardReaderInfoPtr = mojom::blink::SmartCardReaderInfoPtr;
-  using SmartCardResponseCode = mojom::blink::SmartCardResponseCode;
 
   static const char kSupplementName[];
 
@@ -57,7 +56,7 @@ class MODULES_EXPORT SmartCardResourceManager final
   void ReaderAdded(SmartCardReaderInfoPtr reader_info) override;
   void ReaderRemoved(SmartCardReaderInfoPtr reader_info) override;
   void ReaderChanged(SmartCardReaderInfoPtr reader_info) override;
-  void Error(SmartCardResponseCode response_code) override;
+  void Error(device::mojom::blink::SmartCardError error) override;
 
  private:
   SmartCardReader* GetOrCreateReader(SmartCardReaderInfoPtr info);

@@ -15,7 +15,6 @@ using base::test::TestFuture;
 using blink::mojom::SmartCardReaderInfo;
 using blink::mojom::SmartCardReaderInfoPtr;
 using blink::mojom::SmartCardReaderState;
-using blink::mojom::SmartCardResponseCode;
 using device::mojom::SmartCardContext;
 using device::mojom::SmartCardError;
 using device::mojom::SmartCardReaderStateFlags;
@@ -88,7 +87,7 @@ class MockTrackerObserver : public SmartCardReaderTracker::Observer {
               (const SmartCardReaderInfo& reader_info),
               (override));
 
-  MOCK_METHOD(void, OnError, (SmartCardResponseCode response_code), (override));
+  MOCK_METHOD(void, OnError, (SmartCardError error), (override));
 };
 
 TEST_F(SmartCardReaderTrackerImplTest, ReaderChanged) {
@@ -332,7 +331,7 @@ TEST_F(SmartCardReaderTrackerImplTest, ReaderChanged) {
                               "Reader B", SmartCardReaderState::kEmpty,
                               std::vector<uint8_t>({}))));
 
-    EXPECT_CALL(observer, OnError(SmartCardResponseCode::kNoService));
+    EXPECT_CALL(observer, OnError(SmartCardError::kNoService));
   }
 
   TestFuture<blink::mojom::SmartCardGetReadersResultPtr> start_future;

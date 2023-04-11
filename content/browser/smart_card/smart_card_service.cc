@@ -138,10 +138,9 @@ void SmartCardService::OnReaderChanged(
   }
 }
 
-void SmartCardService::OnError(
-    blink::mojom::SmartCardResponseCode response_code) {
+void SmartCardService::OnError(device::mojom::SmartCardError error) {
   for (auto& client : clients_) {
-    client->Error(response_code);
+    client->Error(error);
   }
 }
 

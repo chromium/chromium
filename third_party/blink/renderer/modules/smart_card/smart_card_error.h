@@ -22,10 +22,9 @@ class MODULES_EXPORT SmartCardError : public DOMException {
   // Constructor exposed to script. Called by the V8 bindings.
   static SmartCardError* Create(String message, const SmartCardErrorOptions*);
 
-  // Depending on the particular mojo response code, creates either a
+  // Depending on the particular mojo error, creates either a
   // SmartCardError or a plain DOMException.
-  static DOMException* Create(
-      mojom::blink::SmartCardResponseCode mojom_response_code);
+  static DOMException* Create(device::mojom::blink::SmartCardError mojom_error);
 
   SmartCardError(String message, V8SmartCardResponseCode::Enum);
   SmartCardError(String message, V8SmartCardResponseCode);
