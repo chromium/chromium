@@ -316,8 +316,6 @@ class CONTENT_EXPORT VideoCaptureManager
 
   void EmitLogMessage(const std::string& message, int verbose_log_level);
 
-  void RecordDeviceSessionLockDuration();
-
   // Only accessed on Browser::IO thread.
   base::ObserverList<MediaStreamProviderListener>::Unchecked listeners_;
 
