@@ -375,6 +375,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ],
  ['MultidevicePage', 'multidevice_page_tests.js'],
  [
+   'MultidevicePageMultideviceWifiSyncItem',
+   'multidevice_page/multidevice_wifi_sync_item_tests.js'
+ ],
+ [
    'MultidevicePermissionsSetupDialog',
    'multidevice_permissions_setup_dialog_tests.js',
  ],
@@ -392,7 +396,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'MultideviceWifiSyncDisabledLink',
    'multidevice_wifi_sync_disabled_link_tests.js',
  ],
- ['MultideviceWifiSyncItem', 'multidevice_wifi_sync_item_tests.js'],
  [
    'NearbySharePageNearbyShareConfirmPage',
    'nearby_share_page/nearby_share_confirm_page_test.js'

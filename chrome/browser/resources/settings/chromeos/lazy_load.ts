@@ -126,7 +126,7 @@ export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './os_p
 export {SettingsUsersAddUserDialogElement} from './os_people_page/add_user_dialog.js';
 export {FingerprintBrowserProxyImpl, FingerprintResultType} from './os_people_page/fingerprint_browser_proxy.js';
 export {SettingsLockScreenElement} from './os_people_page/lock_screen_subpage.js';
-export {OsSyncBrowserProxyImpl} from './os_people_page/os_sync_browser_proxy.js';
+export {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from './os_people_page/os_sync_browser_proxy.js';
 export {FingerprintSetupStep} from './os_people_page/setup_fingerprint_dialog.js';
 export {PrinterType} from './os_printing_page/cups_printer_types.js';
 export {CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, PrinterSetupResult, PrintServerResult} from './os_printing_page/cups_printers_browser_proxy.js';
