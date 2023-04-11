@@ -6,6 +6,7 @@
 #define COMPONENTS_PAYMENTS_CONTENT_UTILITY_FINGERPRINT_PARSER_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <string>
 #include <vector>

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_CONTENTS_KEY_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_CONTENTS_KEY_H_
 
+#include <cstdint>
+
 #include "base/types/strong_alias.h"
 
 namespace content {

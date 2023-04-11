@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_EVENT_STORAGE_VALIDATOR_H_
 #define COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_EVENT_STORAGE_VALIDATOR_H_
 
+#include <stdint.h>
+
 #include <string>
 
 namespace feature_engagement {

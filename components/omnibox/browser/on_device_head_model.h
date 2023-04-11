@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_ON_DEVICE_HEAD_MODEL_H_
 #define COMPONENTS_OMNIBOX_BROWSER_ON_DEVICE_HEAD_MODEL_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <utility>
 #include <vector>
