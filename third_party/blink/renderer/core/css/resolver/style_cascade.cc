@@ -1130,8 +1130,7 @@ scoped_refptr<CSSVariableData> StyleCascade::ResolveVariableData(
   return sequence.BuildVariableData();
 }
 
-template <class ParserTokenStream>
-bool StyleCascade::ResolveTokensInto(ParserTokenStream& stream,
+bool StyleCascade::ResolveTokensInto(CSSParserTokenStream& stream,
                                      CascadeResolver& resolver,
                                      CSSTokenizer* parent_tokenizer,
                                      TokenSequence& out) {
@@ -1142,10 +1141,10 @@ bool StyleCascade::ResolveTokensInto(ParserTokenStream& stream,
     if (token.IsEOF()) {
       break;
     } else if (token.FunctionId() == CSSValueID::kVar) {
-      typename ParserTokenStream::BlockGuard guard(stream);
+      CSSParserTokenStream::BlockGuard guard(stream);
       success &= ResolveVarInto(stream, resolver, parent_tokenizer, out);
     } else if (token.FunctionId() == CSSValueID::kEnv) {
-      typename ParserTokenStream::BlockGuard guard(stream);
+      CSSParserTokenStream::BlockGuard guard(stream);
       success &= ResolveEnvInto(stream, resolver, parent_tokenizer, out);
     } else {
       if (token.GetBlockType() == CSSParserToken::kBlockStart) {

@@ -348,9 +348,7 @@ class CORE_EXPORT StyleCascade {
   // The CSSTokenizer* argument, if not nullptr, will be used to persist
   // the given tokens' string values (see CSSTokenizer::PersistStrings).
 
-  template <class ParserTokenStream>  // CSSParserTokenStream with or without
-                                      // comments.
-  bool ResolveTokensInto(ParserTokenStream&,
+  bool ResolveTokensInto(CSSParserTokenStream&,
                          CascadeResolver&,
                          CSSTokenizer*,
                          TokenSequence&);
