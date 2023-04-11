@@ -9,7 +9,13 @@
 namespace remoting {
 
 RateCounter::RateCounter(base::TimeDelta time_window)
-    : time_window_(time_window), sum_(0) {
+    : time_window_(time_window) {
+  DCHECK_GT(time_window, base::TimeDelta());
+}
+
+RateCounter::RateCounter(base::TimeDelta time_window,
+                         const base::TickClock* tick_clock)
+    : time_window_(time_window), tick_clock_(tick_clock) {
   DCHECK_GT(time_window, base::TimeDelta());
 }
 
