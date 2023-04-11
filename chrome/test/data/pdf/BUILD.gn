@@ -12,6 +12,7 @@ assert(enable_pdf, "enable_pdf check failed")
 ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "../../../../tools/typescript/tsconfig_base_polymer.json"
   path_mappings = [
     "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/*|" +
         rebase_path("$root_gen_dir/chrome/browser/resources/pdf/tsc/*",

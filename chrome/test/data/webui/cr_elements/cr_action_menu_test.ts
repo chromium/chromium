@@ -11,7 +11,7 @@ import {isMac, isWindows} from 'chrome://resources/js/platform.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -473,11 +473,13 @@ suite('CrActionMenu', function() {
     const containerTop = 10000;
     const containerWidth = 500;
 
-    suiteSetup(function() {
-      Polymer({
-        is: 'test-element',
+    class TestElement extends PolymerElement {
+      static get is() {
+        return 'test-element';
+      }
 
-        _template: html`
+      static get template() {
+        return html`
           <style>
             #container {
               overflow: auto;
@@ -505,9 +507,11 @@ suite('CrActionMenu', function() {
               </cr-action-menu>
             </div>
           </div>
-        `,
-      });
-    });
+        `;
+      }
+    }
+
+    customElements.define(TestElement.is, TestElement);
 
     setup(function() {
       document.body.scrollTop = 0;
