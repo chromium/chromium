@@ -1999,7 +1999,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/eche_app/app',
-        'version': 'ZwywifbvYt1337HGe0M8wkopVNNF-F8iB56x76CHhPUC',
+        'version': 'EQH5Q3OjFZCU_BYX0fSS630OUQogvUqS0bPgnEdm_rYC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
