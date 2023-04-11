@@ -274,14 +274,14 @@ ExtensionFunction::ResponseAction SocketsTcpConnectFunction::Work() {
 
   net::DnsQueryType dns_query_type;
   switch (params_->dns_query_type) {
-    case extensions::api::sockets_tcp::DNS_QUERY_TYPE_NONE:
-    case extensions::api::sockets_tcp::DNS_QUERY_TYPE_ANY:
+    case extensions::api::sockets_tcp::DnsQueryType::kNone:
+    case extensions::api::sockets_tcp::DnsQueryType::kAny:
       dns_query_type = net::DnsQueryType::UNSPECIFIED;
       break;
-    case extensions::api::sockets_tcp::DNS_QUERY_TYPE_IPV4:
+    case extensions::api::sockets_tcp::DnsQueryType::kIpv4:
       dns_query_type = net::DnsQueryType::A;
       break;
-    case extensions::api::sockets_tcp::DNS_QUERY_TYPE_IPV6:
+    case extensions::api::sockets_tcp::DnsQueryType::kIpv6:
       dns_query_type = net::DnsQueryType::AAAA;
       break;
   }

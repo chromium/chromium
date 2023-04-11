@@ -5,6 +5,7 @@
 // Use the <code>chrome.sockets.tcp</code> API to send and receive data over the
 // network using TCP connections. This API supersedes the TCP functionality
 // previously found in the <code>chrome.socket</code> API.
+[modernised_enums]
 namespace sockets.tcp {
   // The socket properties specified in the <code>create</code> or
   // <code>update</code> function. Each property is optional. If a property
