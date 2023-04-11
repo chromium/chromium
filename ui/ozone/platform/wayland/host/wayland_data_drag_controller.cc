@@ -20,6 +20,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/events/platform/scoped_event_dispatcher.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
@@ -81,13 +82,14 @@ uint32_t DragOperationsToDndActions(int operations) {
   return dnd_actions;
 }
 
-const SkBitmap* GetDragImage(const gfx::ImageSkia& image) {
-  const SkBitmap* icon_bitmap = image.bitmap();
+const SkBitmap* GetDragImage(const gfx::ImageSkia& image, float scale = 1.0) {
+  const SkBitmap* const icon_bitmap =
+      &image.GetRepresentation(scale).GetBitmap();
   return icon_bitmap && !icon_bitmap->empty() ? icon_bitmap : nullptr;
 }
 
-const SkBitmap* GetDragImage(const OSExchangeData& data) {
-  return GetDragImage(data.provider().GetDragImage());
+const SkBitmap* GetDragImage(const OSExchangeData& data, float scale = 1.0) {
+  return GetDragImage(data.provider().GetDragImage(), scale);
 }
 
 }  // namespace
@@ -144,14 +146,15 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
   data_source_->SetDndActions(DragOperationsToDndActions(operations));
 
   // Create drag icon surface (if any) and store the data to be exchanged.
-  icon_bitmap_ = GetDragImage(data);
+  icon_bitmap_ =
+      GetDragImage(data, origin_window->applied_state().window_scale);
   if (icon_bitmap_) {
     icon_surface_ = std::make_unique<WaylandSurface>(connection_, nullptr);
     if (icon_surface_->Initialize()) {
       // Corresponds to actual scale factor of the origin surface. Use the
       // latched state as that is what is currently displayed to the user and
       // used as buffers in these surfaces.
-      icon_surface_buffer_scale_ = origin_window->latched_state().window_scale;
+      icon_surface_buffer_scale_ = origin_window->applied_state().window_scale;
       icon_surface_->set_surface_buffer_scale(icon_surface_buffer_scale_);
       // Icon surface do not need input.
       const gfx::Rect empty_region_px;
@@ -159,9 +162,8 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
       icon_surface_->ApplyPendingState();
 
       auto icon_offset = -data.provider().GetDragImageOffset();
-      icon_offset_ =
-          gfx::ScaleToRoundedPoint({icon_offset.x(), icon_offset.y()},
-                                   1.0f / icon_surface_buffer_scale_);
+      pending_icon_offset_ = {icon_offset.x(), icon_offset.y()};
+      current_icon_offset_ = {0, 0};
     } else {
       LOG(ERROR) << "Failed to create drag icon surface.";
       icon_surface_.reset();
@@ -189,18 +191,15 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
 
 void WaylandDataDragController::UpdateDragImage(const gfx::ImageSkia& image,
                                                 const gfx::Vector2d& offset) {
-  icon_bitmap_ = GetDragImage(image);
+  icon_bitmap_ = GetDragImage(image, window_->applied_state().window_scale);
 
   if (icon_surface_ && window_) {
     icon_surface_buffer_scale_ = window_->applied_state().window_scale;
     icon_surface_->set_surface_buffer_scale(icon_surface_buffer_scale_);
     icon_surface_->ApplyPendingState();
-
-    icon_offset_ = gfx::ScaleToRoundedPoint(
-        {offset.x(), offset.y()}, 1.0f / window_->applied_state().window_scale);
-  } else {
-    icon_offset_ = {offset.x(), offset.y()};
   }
+
+  pending_icon_offset_ = {-offset.x(), -offset.y()};
 
   DrawIconInternal();
 }
@@ -284,14 +283,19 @@ void WaylandDataDragController::DrawIconInternal() {
   wl::DrawBitmap(*icon_bitmap_, icon_buffer_.get());
   auto* const surface = icon_surface_->surface();
   if (wl::get_version_of_object(surface) < WL_SURFACE_OFFSET_SINCE_VERSION) {
-    wl_surface_attach(surface, icon_buffer_->get(), icon_offset_.x(),
-                      icon_offset_.y());
+    wl_surface_attach(surface, icon_buffer_->get(),
+                      pending_icon_offset_.x() - current_icon_offset_.x(),
+                      pending_icon_offset_.y() - current_icon_offset_.y());
   } else {
     wl_surface_attach(surface, icon_buffer_->get(), 0, 0);
-    wl_surface_offset(surface, icon_offset_.x(), icon_offset_.y());
+    wl_surface_offset(surface,
+                      pending_icon_offset_.x() - current_icon_offset_.x(),
+                      pending_icon_offset_.y() - current_icon_offset_.y());
   }
   wl_surface_damage(surface, 0, 0, size_px.width(), size_px.height());
   wl_surface_commit(surface);
+
+  current_icon_offset_ = pending_icon_offset_;
 }
 
 void WaylandDataDragController::OnDragOffer(

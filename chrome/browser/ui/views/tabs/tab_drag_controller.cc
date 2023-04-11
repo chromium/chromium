@@ -194,7 +194,7 @@ void UpdateSystemDnDDragImage(TabDragContext* attached_context,
       attached_context->GetWidget()->GetNativeWindow()->GetRootWindow();
   if (aura::client::GetDragDropClient(root_window)) {
     aura::client::GetDragDropClient(root_window)
-        ->UpdateDragImage(image, {-image.height() / 2, -image.width() / 2});
+        ->UpdateDragImage(image, {image.height() / 2, image.width() / 2});
   }
 #endif  // BUILDFLAG(IS_LINUX)
 }
@@ -1011,12 +1011,8 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
 
 gfx::ImageSkia TabDragController::GetDragImageForSystemDnD() {
   // The width has the same value, as the logo image is square-shaped.
-  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
-      GetAttachedBrowserWidget()->GetNativeWindow());
-  int unscaled_drag_image_height = 50;
-  auto drag_image_height = static_cast<int>(unscaled_drag_image_height *
-                                            display.device_scale_factor());
-  gfx::Size drag_image_size(drag_image_height, drag_image_height);
+  const int drag_image_height = 50;
+  const gfx::Size drag_image_size(drag_image_height, drag_image_height);
   gfx::ImageSkia drag_image =
       *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
           IDR_PRODUCT_LOGO_256);
@@ -1051,7 +1047,7 @@ TabDragController::StartSystemDragAndDropSessionIfNecessary(
   gfx::ImageSkia drag_image = GetDragImageForSystemDnD();
   data_provider->SetDragImage(
       drag_image,
-      gfx::Vector2d(-drag_image.height() / 2, -drag_image.width() / 2));
+      gfx::Vector2d(drag_image.height() / 2, drag_image.width() / 2));
 
   base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
   GetAttachedBrowserWidget()->RunShellDrag(
