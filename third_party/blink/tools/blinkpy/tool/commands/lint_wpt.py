@@ -91,6 +91,47 @@ class MetadataSectionTooDeep(MetadataRule):
     """
 
 
+class MetadataUnknownKey(MetadataRule):
+    name = 'META-UNKNOWN-KEY'
+    description = '%(section_type)s section%(heading)s should not have key %(key)r'
+    to_fix = """
+    Check that all keys are spelled and indented correctly.
+    """
+    valid_keys = {
+        SectionType.DIRECTORY:
+        frozenset({
+            'disabled',
+            'restart-after',
+            'fuzzy',
+            'implementation-status',
+            'tags',
+        }),
+        SectionType.ROOT:
+        frozenset({
+            'disabled',
+            'restart-after',
+            'fuzzy',
+            'implementation-status',
+            'tags',
+        }),
+        SectionType.TEST:
+        frozenset({
+            'expected',
+            'disabled',
+            'restart-after',
+            'fuzzy',
+            'implementation-status',
+            'tags',
+            'bug',
+        }),
+        SectionType.SUBTEST:
+        frozenset({
+            'expected',
+            'disabled',
+        }),
+    }
+
+
 LintError = Tuple[str, str, str, Optional[int]]
 
 
@@ -234,6 +275,16 @@ class MetadataLinter(wptnode.NodeVisitor):
             with self.using_context(next_type=next_type):
                 for child in node.children:
                     self.visit(child)
+
+    def visit_KeyValueNode(self, node: wptnode.KeyValueNode):
+        assert node.data
+        section_type = self.context['section_type']
+        valid_keys = MetadataUnknownKey.valid_keys[section_type]
+        if self.test_type != 'reftest':
+            valid_keys -= {'fuzzy'}
+        with self.using_context(key=node.data):
+            if node.data not in valid_keys:
+                self._error(MetadataUnknownKey)
 
     def _error(self, rule: Type[MetadataRule], **extra):
         context = {**self.context, **extra}

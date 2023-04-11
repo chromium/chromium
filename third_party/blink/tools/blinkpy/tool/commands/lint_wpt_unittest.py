@@ -246,3 +246,30 @@ class LintWPTTest(LoggingTestCase):
         self.assertEqual(path, 'dir/__dir__.ini')
         self.assertEqual(description,
                          "Directory section should not contain subheadings")
+
+    def test_metadata_unknown_keys(self):
+        root_error, subtest_error, test_error = self._check_metadata(
+            """\
+            expected: OK
+            [variant.html?foo=baz]
+              fuzzy: 0-1;0-300
+              [subtest]
+                disabld: won't work, key is misspelled
+            """, 'variant.html.ini')
+        name, description, path, _ = root_error
+        self.assertEqual(name, 'META-UNKNOWN-KEY')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(description,
+                         "Root section should not have key 'expected'")
+        name, description, path, _ = test_error
+        self.assertEqual(name, 'META-UNKNOWN-KEY')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description, "Test section '[variant.html?foo=baz]' "
+            "should not have key 'fuzzy'")
+        name, description, path, _ = subtest_error
+        self.assertEqual(name, 'META-UNKNOWN-KEY')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description,
+            "Subtest section '[subtest]' should not have key 'disabld'")
