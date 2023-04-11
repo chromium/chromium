@@ -70,6 +70,7 @@ class TestPaths(TypedDict):
     url_base: Optional[str]
 
 
+BUG_PATTERN = re.compile(r'(crbug(\.com)?/)?(?P<bug>\d+)')
 ManifestMap = Mapping[wptmanifest.Manifest, TestPaths]
 
 
@@ -925,7 +926,7 @@ def _parse_build_specifiers(option: optparse.Option, _opt_str: str, value: str,
 
 def _coerce_bug_number(option: optparse.Option, _opt_str: str, value: str,
                        parser: optparse.OptionParser):
-    bug_match = re.fullmatch(r'(crbug(\.com)?/)?(?P<bug>\d+)', value)
+    bug_match = BUG_PATTERN.fullmatch(value)
     if not bug_match:
         raise optparse.OptionValueError('invalid bug number or URL %r' % value)
     setattr(parser.values, option.dest, int(bug_match['bug']))

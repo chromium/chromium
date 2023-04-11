@@ -11,17 +11,19 @@ import logging
 import optparse
 import pathlib
 import urllib.parse
-from typing import List, Optional, Tuple, Type
+from typing import List, Optional, Set, Tuple, Type
 
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
 from blinkpy.tool.commands.command import Command
 from blinkpy.w3c.wpt_manifest import WPTManifest
+from blinkpy.tool.commands.update_metadata import BUG_PATTERN
 
 path_finder.bootstrap_wpt_imports()
 from tools.lint import lint as wptlint
 from tools.lint import rules
 from wptrunner import wptmanifest
+from wptrunner.manifestexpected import fuzzy_prop
 from wptrunner.wptmanifest import node as wptnode
 
 _log = logging.getLogger(__name__)
@@ -130,6 +132,31 @@ class MetadataUnknownKey(MetadataRule):
             'disabled',
         }),
     }
+
+
+class MetadataBadValue(MetadataRule):
+    name = 'META-BAD-VALUE'
+    description = '%(section_type)s key %(key)r has invalid value %(value)r'
+    to_fix = """
+    Check that the value satisfies any required formats:
+    https://web-platform-tests.org/tools/wptrunner/docs/expectation.html#web-platform-tests-metadata
+    """
+    subtest_statuses = {
+        'PASS',
+        'FAIL',
+        'PRECONDITION_FAILED',
+        'TIMEOUT',
+        'NOTRUN',
+    }
+    common_test_statuses = {
+        'PRECONDITION_FAILED',
+        'TIMEOUT',
+        'CRASH',
+    }
+    harness_statuses = common_test_statuses | {'OK', 'ERROR'}
+    # Statuses for tests without subtests.
+    test_statuses = common_test_statuses | {'PASS', 'FAIL'}
+    implementation_statuses = {'implementing', 'not-implementing', 'default'}
 
 
 LintError = Tuple[str, str, str, Optional[int]]
@@ -285,6 +312,40 @@ class MetadataLinter(wptnode.NodeVisitor):
         with self.using_context(key=node.data):
             if node.data not in valid_keys:
                 self._error(MetadataUnknownKey)
+            else:
+                for child in node.children:
+                    self.visit(child)
+
+    def visit_ListNode(self, node: wptnode.ListNode):
+        key = self.context['key']
+        # TODO(crbug.com/1406669): Recommend unwrapping one-entry lists for
+        # `fuzzy`, `expected`, and `bug`.
+        if key == 'implementation-status':
+            self._error(MetadataBadValue, value=_format_node(node))
+        else:
+            for child in node.children:
+                self.visit(child)
+
+    def visit_ValueNode(self, node: wptnode.ValueNode):
+        assert node.data is not None
+        key = self.context['key']
+        if (key == 'implementation-status'
+                and node.data not in MetadataBadValue.implementation_statuses):
+            self._error(MetadataBadValue, value=node.data)
+        if key == 'expected' and node.data not in self.allowed_statuses:
+            self._error(MetadataBadValue, value=node.data)
+        if key == 'fuzzy':
+            try:
+                fuzzy_prop({'fuzzy': node.data})
+            except ValueError:
+                self._error(MetadataBadValue, value=node.data)
+        if key == 'bug' and not BUG_PATTERN.fullmatch(node.data):
+            self._error(MetadataBadValue, value=node.data)
+
+    def visit_AtomNode(self, node: wptnode.AtomNode):
+        key = self.context['key']
+        if key in {'fuzzy', 'expected', 'implementation-status', 'bug'}:
+            self._error(MetadataBadValue, value=_format_node(node))
 
     def _error(self, rule: Type[MetadataRule], **extra):
         context = {**self.context, **extra}
@@ -309,6 +370,16 @@ class MetadataLinter(wptnode.NodeVisitor):
                             successor=_format_node(child))
                 # Only report one error per block to avoid spam.
                 break
+
+    @property
+    def allowed_statuses(self) -> Set[str]:
+        section_type = self.context['section_type']
+        if section_type is SectionType.SUBTEST:
+            return MetadataBadValue.subtest_statuses
+        assert section_type is SectionType.TEST
+        if self.test_type == 'testharness':
+            return MetadataBadValue.harness_statuses
+        return MetadataBadValue.test_statuses
 
 
 def _format_node(node: wptnode.Node) -> str:

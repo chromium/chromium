@@ -100,7 +100,8 @@ class LintWPTTest(LoggingTestCase):
         errors = self._check_metadata(
             """\
             [variant.html?foo=bar/abc]
-              expected: FAIL
+              bug: crbug.com/12
+              expected: ERROR
             [variant.html?foo=baz]
               disabled: never completes
               expected: TIMEOUT
@@ -273,3 +274,62 @@ class LintWPTTest(LoggingTestCase):
         self.assertEqual(
             description,
             "Subtest section '[subtest]' should not have key 'disabld'")
+
+    def test_reftest_metadata_bad_values(self):
+        errors = self._check_metadata("""\
+            [reftest.html]
+              expected: ERROR
+              fuzzy: [0-1:0-2, reftest-ref.html:20;200-300, @False]
+              implementation-status: [implementing]
+            """)
+        exp_error, fuzzy_error1, fuzzy_error2, impl_error = errors
+        name, description, path, _ = exp_error
+        self.assertEqual(name, 'META-BAD-VALUE')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(description,
+                         "Test key 'expected' has invalid value 'ERROR'")
+        name, description, path, _ = fuzzy_error1
+        self.assertEqual(name, 'META-BAD-VALUE')
+        self.assertEqual(path, 'reftest.html.ini')
+        # Note that the colon is a typo of what should be a semicolon.
+        self.assertEqual(description,
+                         "Test key 'fuzzy' has invalid value '0-1:0-2'")
+        name, description, path, _ = fuzzy_error2
+        self.assertEqual(name, 'META-BAD-VALUE')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(description,
+                         "Test key 'fuzzy' has invalid value '@False'")
+        name, description, path, _ = impl_error
+        self.assertEqual(name, 'META-BAD-VALUE')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(
+            description, "Test key 'implementation-status' "
+            "has invalid value '[implementing]'")
+
+    def test_testharness_metadata_bad_values(self):
+        subtest_error, bug_error, test_error = self._check_metadata(
+            """\
+            [variant.html?foo=baz]
+              bug: crbug.com/nan
+              expected:
+                if os == "mac": [FAIL, CRASH]
+                FAIL
+              [subtest]
+                expected:
+                  if os == "mac": CRASH
+            """, 'variant.html.ini')
+        name, description, path, _ = bug_error
+        self.assertEqual(name, 'META-BAD-VALUE')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(description,
+                         "Test key 'bug' has invalid value 'crbug.com/nan'")
+        name, description, path, _ = test_error
+        self.assertEqual(name, 'META-BAD-VALUE')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(description,
+                         "Test key 'expected' has invalid value 'FAIL'")
+        name, description, path, _ = subtest_error
+        self.assertEqual(name, 'META-BAD-VALUE')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(description,
+                         "Subtest key 'expected' has invalid value 'CRASH'")
