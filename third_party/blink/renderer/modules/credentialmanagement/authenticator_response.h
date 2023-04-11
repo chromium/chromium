@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGEMENT_AUTHENTICATOR_RESPONSE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGEMENT_AUTHENTICATOR_RESPONSE_H_
 
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -12,6 +13,9 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
+
+class AuthenticatorAssertionResponseJSON;
+class AuthenticatorAttestationResponseJSON;
 
 class MODULES_EXPORT AuthenticatorResponse : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -23,6 +27,10 @@ class MODULES_EXPORT AuthenticatorResponse : public ScriptWrappable {
   DOMArrayBuffer* clientDataJSON() const { return client_data_json_.Get(); }
 
   void Trace(Visitor*) const override;
+
+  virtual absl::variant<AuthenticatorAssertionResponseJSON*,
+                        AuthenticatorAttestationResponseJSON*>
+  toJSON() const;
 
  private:
   const Member<DOMArrayBuffer> client_data_json_;

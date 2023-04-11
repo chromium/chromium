@@ -178,6 +178,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/credentialmanagement/password_credential_data.idl",
           "//third_party/blink/renderer/modules/credentialmanagement/payment_credential_instrument.idl",
           "//third_party/blink/renderer/modules/credentialmanagement/public_key_credential.idl",
+          "//third_party/blink/renderer/modules/credentialmanagement/public_key_credential_json.idl",
           "//third_party/blink/renderer/modules/credentialmanagement/registration_response_json.idl",
           "//third_party/blink/renderer/modules/credentialmanagement/authentication_response_json.idl",
           "//third_party/blink/renderer/modules/credentialmanagement/authenticator_assertion_response_json.idl",
