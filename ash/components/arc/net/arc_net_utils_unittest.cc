@@ -397,5 +397,31 @@ TEST_F(ArcNetUtilsTest, TranslateNetworkStates) {
   EXPECT_EQ(kNameServerIpv6, res[0]->dns_proxy_addresses.value()[1]);
 }
 
+TEST_F(ArcNetUtilsTest, TranslateSubjectNameMatchListToValue) {
+  std::vector<std::string> subjectMatch = {
+      "DNS:example1.com", "DNS:example2.com", "EMAIL:example@domain.com"};
+  base::Value::List result =
+      net_utils::TranslateSubjectNameMatchListToValue(subjectMatch);
+
+  EXPECT_EQ(*result[0].GetDict().FindString(
+                ::onc::eap_subject_alternative_name_match::kType),
+            "DNS");
+  EXPECT_EQ(*result[0].GetDict().FindString(
+                ::onc::eap_subject_alternative_name_match::kValue),
+            "example1.com");
+  EXPECT_EQ(*result[1].GetDict().FindString(
+                ::onc::eap_subject_alternative_name_match::kType),
+            "DNS");
+  EXPECT_EQ(*result[1].GetDict().FindString(
+                ::onc::eap_subject_alternative_name_match::kValue),
+            "example2.com");
+  EXPECT_EQ(*result[2].GetDict().FindString(
+                ::onc::eap_subject_alternative_name_match::kType),
+            "EMAIL");
+  EXPECT_EQ(*result[2].GetDict().FindString(
+                ::onc::eap_subject_alternative_name_match::kValue),
+            "example@domain.com");
+}
+
 }  // namespace
 }  // namespace arc

@@ -66,6 +66,11 @@ std::vector<arc::mojom::NetworkConfigurationPtr> TranslateNetworkStates(
     const std::map<std::string, base::Value::Dict>& shill_network_properties,
     const std::vector<patchpanel::NetworkDevice>& devices);
 
+// Convert a vector of subject name match list that containing ":" separated
+// string in "Type:Value" format (like DNS:example.com, EMAIL:test@domain.com)
+// to a base::Value::List format that is accepted by ONC.
+base::Value::List TranslateSubjectNameMatchListToValue(
+    const std::vector<std::string>& string_list);
 }  // namespace arc::net_utils
 
 #endif  // ASH_COMPONENTS_ARC_NET_ARC_NET_UTILS_H_

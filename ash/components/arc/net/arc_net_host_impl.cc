@@ -734,7 +734,6 @@ base::Value::List ArcNetHostImpl::TranslateStringListToValue(
   base::Value::List result;
   for (const auto& item : string_list)
     result.Append(item);
-
   return result;
 }
 
@@ -924,7 +923,7 @@ void ArcNetHostImpl::TranslateEapCredentialsToOncDictWithCertID(
   }
   if (eap->subject_alternative_name_match_list.has_value()) {
     eap_dict.Set(onc::eap::kSubjectAlternativeNameMatch,
-                 TranslateStringListToValue(
+                 net_utils::TranslateSubjectNameMatchListToValue(
                      eap->subject_alternative_name_match_list.value()));
   }
   if (eap->ca_certificate_pem.has_value()) {
