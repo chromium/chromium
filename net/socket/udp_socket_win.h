@@ -334,10 +334,14 @@ class NET_EXPORT UDPSocketWin : public base::win::ObjectWatcher::Delegate {
   int SetMulticastLoopbackMode(bool loopback);
 
   // Sets the differentiated services flags on outgoing packets. May not do
-  // anything on some platforms.  A return value of ERR_INVALID_HANDLE indicates
+  // anything on some platforms. A return value of ERR_INVALID_HANDLE indicates
   // the value was not set but could succeed on a future call, because
   // initialization is in progress.
   int SetDiffServCodePoint(DiffServCodePoint dscp);
+
+  // Sets IPV6_V6ONLY on the socket. If this flag is true, the socket will be
+  // restricted to only IPv6; false allows both IPv4 and IPv6 traffic.
+  int SetIPv6Only(bool ipv6_only);
 
   // Resets the thread to be used for thread-safety checks.
   void DetachFromThread();

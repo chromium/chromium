@@ -1185,6 +1185,14 @@ int UDPSocketWin::SetDiffServCodePoint(DiffServCodePoint dscp) {
   return OK;
 }
 
+int UDPSocketWin::SetIPv6Only(bool ipv6_only) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (is_connected()) {
+    return ERR_SOCKET_IS_CONNECTED;
+  }
+  return net::SetIPv6Only(socket_, ipv6_only);
+}
+
 void UDPSocketWin::DetachFromThread() {
   DETACH_FROM_THREAD(thread_checker_);
 }

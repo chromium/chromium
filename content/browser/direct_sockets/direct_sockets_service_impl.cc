@@ -349,6 +349,7 @@ void DirectSocketsServiceImpl::OpenBoundUDPSocket(
   auto socket_options = network::mojom::UDPSocketOptions::New();
   socket_options->send_buffer_size = options->send_buffer_size;
   socket_options->receive_buffer_size = options->receive_buffer_size;
+  socket_options->ipv6_only = options->ipv6_only;
 
   auto params = network::mojom::RestrictedUDPSocketParams::New();
   params->socket_options = std::move(socket_options);
