@@ -4,6 +4,7 @@
 #ifndef CHROME_BROWSER_CART_CART_SERVICE_H_
 #define CHROME_BROWSER_CART_CART_SERVICE_H_
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -255,8 +256,7 @@ class CartService : public history::HistoryServiceObserver,
       base::OnceCallback<void(bool)> callback,
       bool success,
       std::vector<CartDB::KeyAndValue> proto_pairs);
-  void CheckCartExistenceAfterDeletion(GURL url);
-  void MaybeDeleteCoupons(GURL url, bool has_cart);
+  void MaybeCommitDeletion(GURL url);
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<CartDB> cart_db_;
@@ -274,6 +274,8 @@ class CartService : public history::HistoryServiceObserver,
   raw_ptr<CouponService> coupon_service_;
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<commerce::ShoppingService, DanglingUntriaged> shopping_service_;
+  base::flat_map<std::string, cart_db::ChromeCartContentProto>
+      pending_deletion_map_;
   base::WeakPtrFactory<CartService> weak_ptr_factory_{this};
 };
 

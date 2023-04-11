@@ -374,6 +374,11 @@ class CartServiceTest : public testing::Test {
     service_->CleanUpDiscounts(proto);
   }
 
+  base::flat_map<std::string, cart_db::ChromeCartContentProto>
+  GetPendingDeletionMap() {
+    return service_->pending_deletion_map_;
+  }
+
   void TearDown() override {
     // Clean up the used discounts dictionary prefs.
     profile_->GetPrefs()->ClearPref(prefs::kCartUsedDiscounts);
@@ -731,6 +736,162 @@ TEST_F(CartServiceTest, TestDeleteCart) {
       base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
                      run_loop[3].QuitClosure(), kEmptyExpected));
   run_loop[3].Run();
+}
+
+TEST_F(CartServiceTest, TestDeleteCart_NoPendingWhenRemoval) {
+  CartDB* cart_db_ = service_->GetDB();
+  base::RunLoop run_loop[2];
+  cart_db::ChromeCartContentProto merchant_proto =
+      BuildProto(kMockMerchantA, kMockMerchantURLA);
+  merchant_proto.set_is_removed(true);
+  cart_db_->AddCart(
+      kMockMerchantA, merchant_proto,
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  // The cart deletion will not be tracked as pending when ignoring removal
+  // status.
+  service_->DeleteCart(GURL(kMockMerchantURLA), true);
+  task_environment_.RunUntilIdle();
+
+  cart_db_->LoadAllCarts(
+      base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
+                     run_loop[1].QuitClosure(), kEmptyExpected));
+  run_loop[1].Run();
+  EXPECT_FALSE(GetPendingDeletionMap().contains(kMockMerchantA));
+}
+
+TEST_F(CartServiceTest, TestDeleteCart_PendingDeletion) {
+  CartDB* cart_db_ = service_->GetDB();
+  base::RunLoop run_loop[3];
+  const std::string discount_text = "15% off";
+  // Build two protos who have the same products but the only difference is
+  // discount info.
+  cart_db::ChromeCartContentProto proto_with_discount =
+      BuildProtoWithProducts(kMockMerchantA, kMockMerchantURLA, {kProductURL});
+  proto_with_discount.mutable_discount_info()->set_discount_text(discount_text);
+  cart_db::ChromeCartContentProto proto_without_discount =
+      BuildProtoWithProducts(kMockMerchantA, kMockMerchantURLA, {kProductURL});
+
+  cart_db_->AddCart(
+      kMockMerchantA, proto_with_discount,
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  service_->DeleteCart(GURL(kMockMerchantURLA), false);
+  task_environment_.RunUntilIdle();
+
+  // The cart is deleted right away, but the deletion is cached in the pending
+  // deletion map until the deletion is committed.
+  cart_db_->LoadAllCarts(
+      base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
+                     run_loop[1].QuitClosure(), kEmptyExpected));
+  run_loop[1].Run();
+  task_environment_.FastForwardBy(
+      commerce::kCodeBasedRuleDiscountCouponDeletionTime.Get() -
+      base::Seconds(2));
+  EXPECT_TRUE(GetPendingDeletionMap().contains(kMockMerchantA));
+
+  // When deletion is pending, try to reuse the deleted cart proto.
+  service_->AddCart(mock_merchant_url_A_, absl::nullopt,
+                    proto_without_discount);
+  task_environment_.RunUntilIdle();
+  const ShoppingCarts expected = {{kMockMerchantA, proto_with_discount}};
+  cart_db_->LoadAllCarts(base::BindOnce(&CartServiceTest::GetEvaluationURL,
+                                        base::Unretained(this),
+                                        run_loop[2].QuitClosure(), expected));
+  run_loop[2].Run();
+  EXPECT_FALSE(GetPendingDeletionMap().contains(kMockMerchantA));
+}
+
+TEST_F(CartServiceTest, TestDeleteCart_CommitPendingDeletion) {
+  CartDB* cart_db_ = service_->GetDB();
+  base::RunLoop run_loop[3];
+  const std::string discount_text = "15% off";
+  // Build two protos who have the same products but the only difference is
+  // discount info.
+  cart_db::ChromeCartContentProto proto_with_discount =
+      BuildProtoWithProducts(kMockMerchantA, kMockMerchantURLA, {kProductURL});
+  proto_with_discount.mutable_discount_info()->set_discount_text(discount_text);
+  cart_db::ChromeCartContentProto proto_without_discount =
+      BuildProtoWithProducts(kMockMerchantA, kMockMerchantURLA, {kProductURL});
+
+  cart_db_->AddCart(
+      kMockMerchantA, proto_with_discount,
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  service_->DeleteCart(GURL(kMockMerchantURLA), false);
+  task_environment_.RunUntilIdle();
+
+  // The cart is deleted right away, and the deletion is committed after
+  // predefined period of time.
+  cart_db_->LoadAllCarts(
+      base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
+                     run_loop[1].QuitClosure(), kEmptyExpected));
+  run_loop[1].Run();
+  task_environment_.FastForwardBy(
+      commerce::kCodeBasedRuleDiscountCouponDeletionTime.Get());
+  EXPECT_FALSE(GetPendingDeletionMap().contains(kMockMerchantA));
+
+  // Deleted cart proto cannot be reused after deletion is committed.
+  service_->AddCart(mock_merchant_url_A_, absl::nullopt,
+                    proto_without_discount);
+  task_environment_.RunUntilIdle();
+  const ShoppingCarts expected = {{kMockMerchantA, proto_without_discount}};
+  cart_db_->LoadAllCarts(base::BindOnce(&CartServiceTest::GetEvaluationURL,
+                                        base::Unretained(this),
+                                        run_loop[2].QuitClosure(), expected));
+  run_loop[2].Run();
+  EXPECT_FALSE(GetPendingDeletionMap().contains(kMockMerchantA));
+}
+
+TEST_F(CartServiceTest,
+       TestDeleteCart_NotReusePendingDeletionForDifferentCart) {
+  CartDB* cart_db_ = service_->GetDB();
+  base::RunLoop run_loop[3];
+  const std::string discount_text = "15% off";
+  // Build two protos who have different products.
+  cart_db::ChromeCartContentProto proto_with_productA = BuildProtoWithProducts(
+      kMockMerchantA, kMockMerchantURLA, {"https://productA.com"});
+  cart_db::ChromeCartContentProto proto_with_productB = BuildProtoWithProducts(
+      kMockMerchantA, kMockMerchantURLA, {"https://productB.com"});
+
+  cart_db_->AddCart(
+      kMockMerchantA, proto_with_productA,
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  service_->DeleteCart(GURL(kMockMerchantURLA), false);
+  task_environment_.RunUntilIdle();
+
+  cart_db_->LoadAllCarts(
+      base::BindOnce(&CartServiceTest::GetEvaluationURL, base::Unretained(this),
+                     run_loop[1].QuitClosure(), kEmptyExpected));
+  run_loop[1].Run();
+  task_environment_.FastForwardBy(
+      commerce::kCodeBasedRuleDiscountCouponDeletionTime.Get() -
+      base::Seconds(2));
+  EXPECT_TRUE(GetPendingDeletionMap().contains(kMockMerchantA));
+
+  // Deleted cart proto cannot be reused if the new proto is different from the
+  // deleted proto.
+  service_->AddCart(mock_merchant_url_A_, absl::nullopt, proto_with_productB);
+  task_environment_.RunUntilIdle();
+  const ShoppingCarts expected = {{kMockMerchantA, proto_with_productB}};
+  cart_db_->LoadAllCarts(base::BindOnce(&CartServiceTest::GetEvaluationURL,
+                                        base::Unretained(this),
+                                        run_loop[2].QuitClosure(), expected));
+  run_loop[2].Run();
+  EXPECT_TRUE(GetPendingDeletionMap().contains(kMockMerchantA));
+
+  // Deletion is committed after delay.
+  task_environment_.FastForwardBy(base::Seconds(2));
+  EXPECT_FALSE(GetPendingDeletionMap().contains(kMockMerchantA));
 }
 
 // Tests loading one cart from the service.
@@ -2396,12 +2557,24 @@ class CartServiceCouponTest : public CartServiceTest {
   MockCouponService coupon_service_;
 };
 
+TEST_F(CartServiceCouponTest, TestDeleteCartWithCoupon_DeleteImmediately) {
+  const GURL& url = GURL(kMockMerchantURLA);
+  EXPECT_CALL(coupon_service_, DeleteFreeListingCouponsForUrl(url)).Times(1);
+  // Coupons are deleted immediately when the cart is deleted in a way that
+  // ignores removal status. In this case, the cart is also deleted immediately
+  // and doesn't go through deletion pending.
+  service_->DeleteCart(url, true);
+}
+
 TEST_F(CartServiceCouponTest,
        TestDeleteCartWithCoupon_NotDeleteCouponImmediately) {
+  service_->AddCart(mock_merchant_url_A_, absl::nullopt, kMockProtoA);
+  task_environment_.RunUntilIdle();
+
   const GURL& url = GURL(kMockMerchantURLA);
   EXPECT_CALL(coupon_service_, DeleteFreeListingCouponsForUrl(url)).Times(0);
   // Coupons are not deleted until deletion time is reached.
-  service_->DeleteCart(url, true);
+  service_->DeleteCart(url, false);
   task_environment_.FastForwardBy(
       commerce::kCodeBasedRuleDiscountCouponDeletionTime.Get() -
       base::Seconds(2));
@@ -2410,10 +2583,13 @@ TEST_F(CartServiceCouponTest,
 
 TEST_F(CartServiceCouponTest,
        TestDeleteCartWithCoupon_DeleteCouponForActualDeletion) {
+  service_->AddCart(mock_merchant_url_A_, absl::nullopt, kMockProtoA);
+  task_environment_.RunUntilIdle();
+
   const GURL& url = GURL(kMockMerchantURLA);
   EXPECT_CALL(coupon_service_, DeleteFreeListingCouponsForUrl(url)).Times(1);
   // Coupons are deleted when the cart is actually deleted.
-  service_->DeleteCart(url, true);
+  service_->DeleteCart(url, false);
   task_environment_.FastForwardBy(
       commerce::kCodeBasedRuleDiscountCouponDeletionTime.Get());
   task_environment_.RunUntilIdle();
@@ -2421,10 +2597,13 @@ TEST_F(CartServiceCouponTest,
 
 TEST_F(CartServiceCouponTest,
        TestDeleteCartWithCoupon_NotDeleteCouponForCanceledDeletion) {
+  service_->AddCart(mock_merchant_url_A_, absl::nullopt, kMockProtoA);
+  task_environment_.RunUntilIdle();
+
   const GURL& url = GURL(kMockMerchantURLA);
   EXPECT_CALL(coupon_service_, DeleteFreeListingCouponsForUrl(url)).Times(0);
   // Coupons are never deleted when the cart is not actually deleted.
-  service_->DeleteCart(url, true);
+  service_->DeleteCart(url, false);
   service_->AddCart(url, absl::nullopt, kMockProtoA);
   task_environment_.FastForwardBy(
       commerce::kCodeBasedRuleDiscountCouponDeletionTime.Get());
