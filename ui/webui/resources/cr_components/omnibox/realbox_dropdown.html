@@ -8,6 +8,7 @@
     border-radius: calc(0.25 * var(--cr-realbox-height));
     box-shadow: var(--cr-realbox-shadow);
     display: flex;
+    gap: 10px;
     margin-bottom: 8px;
     overflow: hidden;
     padding-bottom: 8px;
@@ -23,6 +24,10 @@
     #content {
       border: 1px solid ActiveBorder;
     }
+  }
+
+  .matches {
+    display: contents;
   }
 
   cr-realbox-match {
@@ -71,14 +76,32 @@
     }
   }
 
-  .primary-side {
-    flex: 2 1 var(--cr-realbox-min-width);
-    min-width: var(--cr-realbox-min-width);  /* needed for ellipsis. */
+  .primary-side,
+  .secondary-side {
+    flex: 1;
+    min-width: 0;
   }
 
   .secondary-side {
     display: var(--cr-realbox-secondary-side-display, none);
-    flex: 1 0 calc(var(--cr-realbox-width) - var(--cr-realbox-min-width));
+    padding-inline-end: 16px;
+  }
+
+  .secondary-side .header {
+    box-sizing: border-box;
+    height: 44px; /* To mirror match row height on primary side. */
+    margin: 0;
+    padding-inline-end: 6px;
+    padding-inline-start: 6px;
+  }
+
+  .secondary-side .header .text {
+    padding: 0;
+  }
+
+  .secondary-side .matches {
+    display: flex;
+    gap: 2px;
   }
 </style>
 <div id="content">
@@ -101,14 +124,16 @@
             </cr-icon-button>
           </div>
         </template>
-        <template is="dom-repeat"
-            items="[[matchesForGroup_(groupId, result.matches.*, hiddenGroupIds_.*)]]"
-            as="match" on-dom-change="onResultRepaint_">
-          <cr-realbox-match tabindex="0" role="option" match="[[match]]"
-              match-index="[[matchIndex_(match)]]" side-type="[[side]]"
-              selected$="[[isSelected_(match, selectedMatchIndex)]]">
-          </cr-realbox-match>
-        </template>
+        <div class="matches">
+          <template is="dom-repeat"
+              items="[[matchesForGroup_(groupId, result.matches.*, hiddenGroupIds_.*)]]"
+              as="match" on-dom-change="onResultRepaint_">
+            <cr-realbox-match tabindex="0" role="option" match="[[match]]"
+                match-index="[[matchIndex_(match)]]" side-type="[[side]]"
+                selected$="[[isSelected_(match, selectedMatchIndex)]]">
+            </cr-realbox-match>
+          </template>
+        </div>
       </template>
     </div>
   </template>

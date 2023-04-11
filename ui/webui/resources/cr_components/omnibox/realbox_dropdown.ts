@@ -16,7 +16,7 @@ import {AutocompleteMatch, AutocompleteResult, PageHandlerInterface, SideType} f
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import {getTemplate} from './realbox_dropdown.html.js';
 import {RealboxMatchElement} from './realbox_match.js';
-import {decodeString16} from './utils.js';
+import {decodeString16, sideTypeToClass} from './utils.js';
 
 // The '%' operator in JS returns negative numbers. This workaround avoids that.
 const remainder = (lhs: number, rhs: number) => ((lhs % rhs) + rhs) % rhs;
@@ -239,8 +239,7 @@ export class RealboxDropdownElement extends PolymerElement {
   //============================================================================
 
   private classForSide_(side: SideType): string {
-    return side === SideType.kDefaultPrimary ? 'primary-side' :
-                                               'secondary-side';
+    return sideTypeToClass(side);
   }
 
   private computeHasSecondarySide_(): boolean {
