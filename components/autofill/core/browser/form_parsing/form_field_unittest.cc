@@ -23,20 +23,11 @@ namespace autofill {
 
 class FormFieldTest
     : public FormFieldTestBase,
-      public ::testing::TestWithParam<std::tuple<
-          PatternProviderFeatureState,
-          /* features::kAutofillMin3FieldTypesForLocalHeuristics */ bool>> {
+      public ::testing::TestWithParam<PatternProviderFeatureState> {
  public:
-  FormFieldTest();
+  FormFieldTest() : FormFieldTestBase(GetParam()) {}
   FormFieldTest(const FormFieldTest&) = delete;
   FormFieldTest& operator=(const FormFieldTest&) = delete;
-
-  const PatternProviderFeatureState& pattern_provider_feature_state() const {
-    return std::get<0>(GetParam());
-  }
-  bool require_min_3_field_types_for_local_heuristics() const {
-    return std::get<1>(GetParam());
-  }
 
  protected:
   // Parses all added fields using `ParseFormFields`.
@@ -68,22 +59,10 @@ class FormFieldTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-FormFieldTest::FormFieldTest()
-    : FormFieldTestBase(pattern_provider_feature_state()) {
-  if (require_min_3_field_types_for_local_heuristics()) {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillMin3FieldTypesForLocalHeuristics);
-  } else {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kAutofillMin3FieldTypesForLocalHeuristics);
-  }
-}
-
 INSTANTIATE_TEST_SUITE_P(
     FormFieldTest,
     FormFieldTest,
-    ::testing::Combine(::testing::ValuesIn(PatternProviderFeatureState::All()),
-                       ::testing::Values(true, false)));
+    ::testing::ValuesIn(PatternProviderFeatureState::All()));
 
 struct MatchTestCase {
   std::u16string label;
@@ -335,15 +314,9 @@ TEST_P(FormFieldTest, ParseFormRequires3DistinctFieldTypes) {
   AddTextFormFieldData("name_via", "Via...", NAME_FULL);
   AddTextFormFieldData("name_notVia", "Not via...", NAME_FULL);
 
-  // Ensure that the parser does not return anything if
-  // features::kAutofillMin3FieldTypesForLocalHeuristics is enabled because it
-  // found only 1 field type.
-  if (require_min_3_field_types_for_local_heuristics()) {
-    EXPECT_EQ(0, ParseFormFields());
-  } else {
-    EXPECT_EQ(4, ParseFormFields());
-    TestClassificationExpectations();
-  }
+  // Ensure that the parser does not return anything because it found only 1
+  // field type.
+  EXPECT_EQ(0, ParseFormFields());
 
   // Add two more fields and ensure that the parser now returns all fields even
   // in the presence of features::kAutofillMin3FieldTypesForLocalHeuristics.

@@ -238,10 +238,9 @@ may sacrifice a little bit of correctness in favor of simplicity.
   * `FormField::ParseFormFields` is the global entry point for parsing fields
     with heuristics.
   * Local heuristics are only applied if a form has at least 3 fields and at
-    least 3 fields are classified (after launching
-    AutofillMin3FieldTypesForLocalHeuristics, we require 3 different field
-    types). There are exceptions for a few field types (email addresses,
-    promo codes, IBANs, CVV fields).
+    least 3 fields are classified with distinct field types. There are
+    exceptions for a few field types (email addresses, promo codes, IBANs, CVV
+    fields).
   * We perform local heuristics even for smaller forms but only for promo codes
     and IBANs (see `ParseSingleFieldForms`).
   * Regular expressions for parsing are provided via
