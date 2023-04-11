@@ -565,7 +565,7 @@ BASE_FEATURE(kOpenscreenCastStreamingSession,
 // information on the quality of the session using RTCP logs.
 BASE_FEATURE(kEnableRtcpReporting,
              "EnableRtcpReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Approach original pre-REC MSE object URL autorevoking behavior, though await
 // actual attempt to use the object URL for attachment to perform revocation.

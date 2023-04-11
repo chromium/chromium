@@ -4,6 +4,8 @@
 
 #include "chrome/browser/media/router/mojo/media_router_debugger_impl.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,6 +45,17 @@ TEST_F(MediaRouterDebuggerImplTest, ShouldFetchMirroringStats) {
       base::BindOnce([](bool enabled) { EXPECT_FALSE(enabled); }));
 
   debugger_->EnableRtcpReports();
+  debugger_->ShouldFetchMirroringStats(
+      base::BindOnce([](bool enabled) { EXPECT_TRUE(enabled); }));
+}
+
+TEST_F(MediaRouterDebuggerImplTest, ShouldFetchMirroringStatsFeatureEnabled) {
+  // By default reports should be disabled.
+  debugger_->ShouldFetchMirroringStats(
+      base::BindOnce([](bool enabled) { EXPECT_FALSE(enabled); }));
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({media::kEnableRtcpReporting}, {});
   debugger_->ShouldFetchMirroringStats(
       base::BindOnce([](bool enabled) { EXPECT_TRUE(enabled); }));
 }
