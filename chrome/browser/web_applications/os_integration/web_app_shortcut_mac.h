@@ -140,8 +140,10 @@ void LaunchShimForTesting(const base::FilePath& shim_path,
 // Waits for the shim with the given `app_id` and `shim_path` to terminate. If
 // there is no running application matching `app_id` and `shim_path` returns
 // immediately.
+// If `terminate_shim` is true, causes the shim to terminate before waiting.
 void WaitForShimToQuitForTesting(const base::FilePath& shim_path,
-                                 const std::string& app_id);
+                                 const std::string& app_id,
+                                 bool terminate_shim = false);
 
 // Disable app shims in tests if the shortcut folder is not set.
 // Because shims created in ~/Applications will not be cleaned up.

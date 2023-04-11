@@ -464,6 +464,15 @@ AppShimHost* AppShimManager::GetHostForRemoteCocoaBrowser(Browser* browser) {
   return profile_state->GetHost();
 }
 
+bool AppShimManager::BrowserUsesRemoteCocoa(Browser* browser) {
+  const std::string app_id =
+      web_app::GetAppIdFromApplicationName(browser->app_name());
+  if (web_app::AppShimCreationAndLaunchDisabledForTest()) {
+    return false;
+  }
+  return delegate_->AppUsesRemoteCocoa(browser->profile(), app_id);
+}
+
 void AppShimManager::OnShimLaunchRequested(
     AppShimHost* host,
     bool recreate_shims,

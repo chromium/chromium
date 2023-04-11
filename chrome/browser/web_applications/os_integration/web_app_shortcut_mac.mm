@@ -1695,7 +1695,8 @@ void LaunchShimForTesting(const base::FilePath& shim_path,  // IN-TEST
 }
 
 void WaitForShimToQuitForTesting(const base::FilePath& shim_path,  // IN-TEST
-                                 const std::string& app_id) {
+                                 const std::string& app_id,
+                                 bool terminate_shim) {
   std::string bundle_id = GetBundleIdentifier(app_id);
   NSArray<NSRunningApplication*>* apps = [NSRunningApplication
       runningApplicationsWithBundleIdentifier:base::SysUTF8ToNSString(
@@ -1707,8 +1708,13 @@ void WaitForShimToQuitForTesting(const base::FilePath& shim_path,  // IN-TEST
       break;
     }
   }
-  if (!matching_app)
+  if (!matching_app) {
     return;
+  }
+
+  if (terminate_shim) {
+    [matching_app terminate];
+  }
 
   base::RunLoop loop;
   [[TerminationObserver alloc] initWithRunningApplication:matching_app

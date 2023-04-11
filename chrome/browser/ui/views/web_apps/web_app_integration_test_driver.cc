@@ -2327,6 +2327,24 @@ void WebAppIntegrationTestDriver::CorruptAppShim(Site site) {
   EXPECT_TRUE(base::DeleteFile(bin_path));
   AfterStateChangeAction();
 }
+
+void WebAppIntegrationTestDriver::QuitAppShim(Site site) {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  AppId app_id = GetAppIdBySiteMode(site);
+  std::string app_name = GetSiteConfiguration(site).app_name;
+  base::FilePath app_path = GetShortcutPath(
+      override_registration_->test_override->chrome_apps_folder(), app_name,
+      app_id);
+
+  if (AppBrowserController::IsForWebApp(app_browser_, app_id)) {
+    app_browser_ = nullptr;
+  }
+
+  WaitForShimToQuitForTesting(app_path, app_id, /*terminate=*/true);
+  AfterStateChangeAction();
+}
 #endif
 
 void WebAppIntegrationTestDriver::CheckAppListEmpty() {

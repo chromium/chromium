@@ -44,10 +44,15 @@
 namespace {
 
 AppShimHost* GetHostForBrowser(Browser* browser) {
-  auto* shim_manager = apps::AppShimManager::Get();
+  auto* const shim_manager = apps::AppShimManager::Get();
   if (!shim_manager)
     return nullptr;
   return shim_manager->GetHostForRemoteCocoaBrowser(browser);
+}
+
+bool UsesRemoteCocoaApplicationHost(Browser* browser) {
+  auto* const shim_manager = apps::AppShimManager::Get();
+  return shim_manager && shim_manager->BrowserUsesRemoteCocoa(browser);
 }
 
 bool ShouldHandleKeyboardEvent(const content::NativeWebKeyboardEvent& event) {
@@ -119,7 +124,7 @@ BrowserFrameMac::BrowserFrameMac(BrowserFrame* browser_frame,
 }
 
 BrowserFrameMac::~BrowserFrameMac() {
-  if (GetRemoteCocoaApplicationHost()) {
+  if (UsesRemoteCocoaApplicationHost(browser_view_->browser())) {
     chrome::RemoveCommandObserver(browser_view_->browser(), IDC_BACK, this);
     chrome::RemoveCommandObserver(browser_view_->browser(), IDC_FORWARD, this);
   }

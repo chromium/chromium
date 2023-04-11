@@ -145,6 +145,11 @@ class AppShimManager : public AppShimHostBootstrap::Client,
   // finishes launching.
   AppShimHost* GetHostForRemoteCocoaBrowser(Browser* browser);
 
+  // Returns true if the specified `browser` should be using RemoteCocoa. This
+  // is equivalent to `GetHostForRemoteCocoaBrowser` return a non-null value,
+  // except that this method does not cause an AppShimHost to be created.
+  bool BrowserUsesRemoteCocoa(Browser* browser);
+
   // Return true if any non-bookmark app windows open.
   bool HasNonBookmarkAppWindowsOpen();
 
