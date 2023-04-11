@@ -117,7 +117,9 @@ try_.orchestrator_builder(
         "chromium_rts.inverted_rts": 100,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
+    # TODO(crbug/1432240): IAD bots not available. Turn back on once bots are back
+    # online.
+    # tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,

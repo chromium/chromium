@@ -25,8 +25,6 @@ These builders must pass before a CL may land that affects files outside of
 ### chromium
 * [android-12-x64-rel](https://ci.chromium.org/p/chromium/builders/try/android-12-x64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-12-x64-rel""))
 
-* [android-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/android-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-arm64-rel""))
-
 * [android-binary-size](https://ci.chromium.org/p/chromium/builders/try/android-binary-size) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-binary-size""))
 
 * [android-nougat-x86-rel](https://ci.chromium.org/p/chromium/builders/try/android-nougat-x86-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-nougat-x86-rel""))
