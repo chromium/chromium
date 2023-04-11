@@ -5,8 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_FOCUSGROUP_FLAGS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_FOCUSGROUP_FLAGS_H_
 
-#include <type_traits>
-
+#include "base/types/cxx23_to_underlying.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -37,16 +36,14 @@ enum FocusgroupFlags : uint16_t {
 
 inline constexpr FocusgroupFlags operator&(FocusgroupFlags a,
                                            FocusgroupFlags b) {
-  return static_cast<FocusgroupFlags>(
-      static_cast<std::underlying_type_t<FocusgroupFlags>>(a) &
-      static_cast<std::underlying_type_t<FocusgroupFlags>>(b));
+  return static_cast<FocusgroupFlags>(base::to_underlying(a) &
+                                      base::to_underlying(b));
 }
 
 inline constexpr FocusgroupFlags operator|(FocusgroupFlags a,
                                            FocusgroupFlags b) {
-  return static_cast<FocusgroupFlags>(
-      static_cast<std::underlying_type_t<FocusgroupFlags>>(a) |
-      static_cast<std::underlying_type_t<FocusgroupFlags>>(b));
+  return static_cast<FocusgroupFlags>(base::to_underlying(a) |
+                                      base::to_underlying(b));
 }
 
 inline FocusgroupFlags& operator|=(FocusgroupFlags& a, FocusgroupFlags b) {
@@ -58,8 +55,7 @@ inline FocusgroupFlags& operator&=(FocusgroupFlags& a, FocusgroupFlags b) {
 }
 
 inline constexpr FocusgroupFlags operator~(FocusgroupFlags flags) {
-  return static_cast<FocusgroupFlags>(
-      ~static_cast<std::underlying_type_t<FocusgroupFlags>>(flags));
+  return static_cast<FocusgroupFlags>(~base::to_underlying(flags));
 }
 
 FocusgroupFlags FindNearestFocusgroupAncestorFlags(const Element* element);
