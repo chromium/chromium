@@ -3279,9 +3279,6 @@ crbug.com/367760 external/wpt/svg/pservers/reftests/meshgradient-basic-001.svg [
 
 crbug.com/1131471 external/wpt/web-locks/clientids.tentative.https.html [ Failure ]
 
-# Temporarily disabled to land DevTools cleanup CL
-crbug.com/1420377 http/tests/devtools/quick-open/command-menu.js [ Failure Pass ]
-
 # See also crbug.com/920100 (sheriff 2019-01-09).
 crbug.com/626703 external/wpt/referrer-policy/css-integration/svg/external-stylesheet.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/referrer-policy/css-integration/svg/inline-style.html [ Failure Timeout ]
