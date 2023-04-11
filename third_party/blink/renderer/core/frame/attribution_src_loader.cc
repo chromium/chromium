@@ -36,14 +36,17 @@
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
+#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-blink.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
@@ -277,61 +280,70 @@ void AttributionSrcLoader::Trace(Visitor* visitor) const {
 }
 
 void AttributionSrcLoader::Register(const KURL& src_url, HTMLElement* element) {
-  CreateAndSendRequest(src_url, element, RegistrationType::kSourceOrTrigger,
+  CreateAndSendRequest(src_url, element,
                        /*attribution_src_token=*/absl::nullopt);
 }
 
 absl::optional<Impression> AttributionSrcLoader::RegisterNavigation(
-    const KURL& src_url,
-    mojom::blink::AttributionNavigationType nav_type,
-    HTMLElement* element) {
+    const KURL& navigation_url,
+    const String& attribution_src,
+    HTMLAnchorElement* element) {
+  DCHECK(!attribution_src.IsNull());
+
   // TODO(apaseltiner): Add tests to ensure that this method can't be used to
   // register triggers.
 
-  const AttributionSrcToken attribution_src_token;
-  ResourceClient* client = CreateAndSendRequest(
-      src_url, element, RegistrationType::kSource, attribution_src_token);
-  if (!client)
-    return absl::nullopt;
+  const Impression impression{
+      .nav_type = element
+                      ? mojom::blink::AttributionNavigationType::kAnchor
+                      : mojom::blink::AttributionNavigationType::kWindowOpen};
 
-  return blink::Impression{.attribution_src_token = attribution_src_token,
-                           .nav_type = nav_type};
+  if (!attribution_src.empty()) {
+    KURL background_url =
+        local_frame_->GetDocument()->CompleteURL(attribution_src);
+    if (CreateAndSendRequest(background_url, element,
+                             impression.attribution_src_token)) {
+      return impression;
+    }
+  }
+
+  if (CanRegister(navigation_url, element, /*request_id=*/absl::nullopt)) {
+    return impression;
+  }
+
+  return absl::nullopt;
 }
 
-AttributionSrcLoader::ResourceClient*
-AttributionSrcLoader::CreateAndSendRequest(
+bool AttributionSrcLoader::CreateAndSendRequest(
     const KURL& src_url,
     HTMLElement* element,
-    RegistrationType src_type,
     absl::optional<AttributionSrcToken> attribution_src_token) {
   // Detached frames cannot/should not register new attributionsrcs.
   if (!local_frame_->IsAttached())
-    return nullptr;
+    return false;
 
   LocalDOMWindow* window = local_frame_->DomWindow();
 
   if (!CanRegister(src_url, element, /*request_id=*/absl::nullopt))
-    return nullptr;
+    return false;
 
   Document* document = window->document();
 
   if (document->IsPrerendering()) {
-    document->AddPostPrerenderingActivationStep(
-        WTF::BindOnce(base::IgnoreResult(&AttributionSrcLoader::DoRegistration),
-                      WrapPersistentIfNeeded(this), src_url, src_type,
-                      attribution_src_token));
-    return nullptr;
+    document->AddPostPrerenderingActivationStep(WTF::BindOnce(
+        base::IgnoreResult(&AttributionSrcLoader::DoRegistration),
+        WrapPersistentIfNeeded(this), src_url, attribution_src_token));
+    return false;
   }
 
-  return DoRegistration(src_url, src_type, attribution_src_token);
+  return DoRegistration(src_url, attribution_src_token);
 }
 
-AttributionSrcLoader::ResourceClient* AttributionSrcLoader::DoRegistration(
+bool AttributionSrcLoader::DoRegistration(
     const KURL& src_url,
-    const RegistrationType src_type,
     const absl::optional<AttributionSrcToken> attribution_src_token) {
   if (!local_frame_->IsAttached())
-    return nullptr;
+    return false;
 
   // TODO(apaseltiner): Respect the referrerpolicy attribute of the
   // originating <a> or <img> tag, if present.
@@ -341,22 +353,14 @@ AttributionSrcLoader::ResourceClient* AttributionSrcLoader::DoRegistration(
   request.SetKeepalive(true);
   request.SetRequestContext(mojom::blink::RequestContextType::ATTRIBUTION_SRC);
 
-  const char* eligible = [&]() -> const char* {
-    switch (src_type) {
-      case RegistrationType::kSource:
-        return attribution_src_token.has_value() ? "navigation-source"
-                                                 : "event-source";
-      case RegistrationType::kTrigger:
-        NOTREACHED();
-        return nullptr;
-      case RegistrationType::kSourceOrTrigger:
-        DCHECK(!attribution_src_token.has_value());
-        return kAttributionEligibleEventSourceAndTrigger;
-    }
-  }();
+  const auto src_type = attribution_src_token.has_value()
+                            ? RegistrationType::kSource
+                            : RegistrationType::kSourceOrTrigger;
 
   request.SetHttpHeaderField(http_names::kAttributionReportingEligible,
-                             eligible);
+                             attribution_src_token.has_value()
+                                 ? "navigation-source"
+                                 : kAttributionEligibleEventSourceAndTrigger);
 
   FetchParameters params(
       std::move(request),
@@ -376,7 +380,7 @@ AttributionSrcLoader::ResourceClient* AttributionSrcLoader::DoRegistration(
 
   RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus::kRequested);
 
-  return client;
+  return true;
 }
 
 absl::optional<attribution_reporting::SuitableOrigin>

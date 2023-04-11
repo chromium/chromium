@@ -31,9 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WINDOW_FEATURES_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WINDOW_FEATURES_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-#include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/platform/web_string.h"
 
 namespace blink {
 
@@ -65,9 +63,11 @@ struct WebWindowFeatures {
   bool background = false;
   bool persistent = false;
 
-  // Represents the attribution source declared by Attribution Reporting related
-  // window features, if any.
-  absl::optional<Impression> impression;
+  // If `WebString::IsNull()`, no impression should be set on the navigation.
+  // If `WebString::empty()`, an impression should be set but no background
+  // request should be made. Otherwise, an impression should be set and a
+  // background request should be made to the contained relative URL.
+  WebString attribution_src;
 };
 
 }  // namespace blink

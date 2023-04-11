@@ -507,32 +507,35 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     AttributionSrcBrowserTest,
-    AttributionSrcWindowOpenNoUserGesture_SourceNotRegistered) {
+    AttributionSrcWindowOpenNoUserGesture_NoBackgroundRequestNoImpression) {
+  // Create a separate server as we cannot register a `ControllableHttpResponse`
+  // after the server starts.
+  auto https_server = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_server->ServeFilesFromSourceDirectory(
+      "content/test/data/attribution_reporting");
+
+  auto register_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          https_server.get(), "/source");
+  ASSERT_TRUE(https_server->Start());
+
   SourceObserver source_observer(web_contents());
   GURL page_url =
-      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
-  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
+      https_server->GetURL("b.test", "/page_with_impression_creator.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  std::unique_ptr<MockDataHost> data_host;
-  blink::AttributionSrcToken expected_token;
-  EXPECT_CALL(mock_attribution_host(), RegisterNavigationDataHost)
-      .WillOnce(
-          [&](mojo::PendingReceiver<blink::mojom::AttributionDataHost> host,
-              const blink::AttributionSrcToken& attribution_src_token) {
-            data_host = GetRegisteredDataHost(std::move(host));
-            expected_token = attribution_src_token;
-          });
+  EXPECT_CALL(mock_attribution_host(), RegisterNavigationDataHost).Times(0);
 
-  GURL register_url =
-      https_server()->GetURL("c.test", "/register_source_headers.html");
-  EXPECT_TRUE(ExecJs(web_contents(),
-                     JsReplace(R"(
-  window.open("page_with_conversion_redirect.html", "_top",
-  "attributionsrc="+$1);)",
-                               register_url),
+  ASSERT_TRUE(ExecJs(web_contents(), R"(
+    window.open("page_with_conversion_redirect.html", "_top",
+      "attributionsrc=/source");
+  )",
                      EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   EXPECT_TRUE(source_observer.WaitForNavigationWithNoImpression());
+  EXPECT_FALSE(register_response->has_received_request());
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,

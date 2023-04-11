@@ -32,15 +32,14 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/public/web/web_window_features.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/ad_tracker.h"
-#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -57,6 +56,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/number_parsing_options.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -68,8 +68,7 @@ static bool IsWindowFeaturesSeparator(UChar c) {
 }
 
 WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
-                                              LocalDOMWindow* dom_window,
-                                              const KURL& url) {
+                                              LocalDOMWindow* dom_window) {
   WebWindowFeatures window_features;
 
   bool attribution_reporting_enabled =
@@ -90,7 +89,6 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
   PopupState popup_state = PopupState::kUnknown;
   unsigned key_begin, key_end;
   unsigned value_begin, value_end;
-  String attributionsrc;
 
   const String buffer = feature_string.LowerASCII();
   const unsigned length = buffer.length();
@@ -228,30 +226,8 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
 
       // attributionsrc values are encoded in order to support embedded special
       // characters, such as '='.
-      attributionsrc = DecodeURLEscapeSequences(
+      window_features.attribution_src = DecodeURLEscapeSequences(
           original_case_value_string.ToString(), DecodeURLMode::kUTF8);
-    }
-  }
-
-  if (!attributionsrc.IsNull()) {
-    DCHECK(attribution_reporting_enabled);
-
-    if (!attributionsrc.empty()) {
-      window_features.impression =
-          dom_window->GetFrame()->GetAttributionSrcLoader()->RegisterNavigation(
-              dom_window->CompleteURL(attributionsrc),
-              mojom::blink::AttributionNavigationType::kWindowOpen);
-    }
-
-    // If the impression could not be set, or if the value was empty, mark
-    // attribution eligibility by adding an impression.
-    if (!window_features.impression &&
-        dom_window->GetFrame()->GetAttributionSrcLoader()->CanRegister(
-            url,
-            /*element=*/nullptr,
-            /*request_id=*/absl::nullopt)) {
-      window_features.impression = blink::Impression{
-          .nav_type = mojom::blink::AttributionNavigationType::kWindowOpen};
     }
   }
 

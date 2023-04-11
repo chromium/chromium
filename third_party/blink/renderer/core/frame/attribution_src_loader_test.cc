@@ -496,8 +496,8 @@ TEST_F(AttributionSrcLoaderTest, EligibleHeader_RegisterNavigation) {
   KURL url = ToKURL("https://example1.com/foo.html");
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->RegisterNavigation(
-      url, mojom::blink::AttributionNavigationType::kAnchor,
+  std::ignore = attribution_src_loader_->RegisterNavigation(
+      /*navigation_url=*/KURL(), /*attribution_src=*/url,
       /*element=*/nullptr);
 
   url_test_helpers::ServeAsynchronousRequests();
@@ -584,8 +584,8 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
   KURL url = ToKURL("https://example1.com/foo.html");
   RegisterMockedURLLoad(url, test::CoreTestDataPath("foo.html"));
 
-  attribution_src_loader_->RegisterNavigation(
-      url, mojom::blink::AttributionNavigationType::kAnchor,
+  std::ignore = attribution_src_loader_->RegisterNavigation(
+      /*navigation_url=*/KURL(), /*attribution_src=*/url,
       /*element=*/nullptr);
 
   url_test_helpers::ServeAsynchronousRequests();

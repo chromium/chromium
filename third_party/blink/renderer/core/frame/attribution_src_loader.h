@@ -10,7 +10,6 @@
 #include "components/attribution_reporting/registration_type.mojom-blink-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/conversions/attribution_reporting.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -27,6 +26,7 @@ class SuitableOrigin;
 
 namespace blink {
 
+class HTMLAnchorElement;
 class HTMLElement;
 class KURL;
 class LocalFrame;
@@ -59,14 +59,16 @@ class CORE_EXPORT AttributionSrcLoader
                                        const ResourceResponse& response,
                                        const Resource* resource);
 
-  // Registers an attributionsrc which is associated with a top-level
-  // navigation, for example a click on an anchor tag. Returns an Impression
-  // which identifies the attributionsrc request and notifies the browser to
-  // begin tracking it.
-  absl::optional<Impression> RegisterNavigation(
-      const KURL& attribution_src,
-      mojom::blink::AttributionNavigationType nav_type,
-      HTMLElement* element = nullptr);
+  // 1. If `attribution_src` is not empty, completes it as a URL against the
+  //    frame's document, initiates a fetch for it, and notifies the browser to
+  //    begin tracking it.
+  // 2. Validates that *either* `attribution_src` or `navigation_url` is
+  //    eligible for Attribution Reporting. If so, returns a non-`absl::nullopt`
+  //    `Impression` to live alongside the navigation.
+  [[nodiscard]] absl::optional<Impression> RegisterNavigation(
+      const KURL& navigation_url,
+      const String& attribution_src,
+      HTMLAnchorElement* element);
 
   // Returns true if `url` can be used as an attributionsrc: its scheme is HTTP
   // or HTTPS, its origin is potentially trustworthy, the document's permission
@@ -90,10 +92,7 @@ class CORE_EXPORT AttributionSrcLoader
  private:
   class ResourceClient;
 
-  ResourceClient* DoRegistration(
-      const KURL& src_url,
-      attribution_reporting::mojom::blink::RegistrationType,
-      absl::optional<AttributionSrcToken>);
+  bool DoRegistration(const KURL& src_url, absl::optional<AttributionSrcToken>);
 
   // Returns the reporting origin corresponding to `url` if its protocol is in
   // the HTTP family, its origin is potentially trustworthy, and attribution is
@@ -105,11 +104,9 @@ class CORE_EXPORT AttributionSrcLoader
                                absl::optional<uint64_t> request_id,
                                bool log_issues = true);
 
-  ResourceClient* CreateAndSendRequest(
-      const KURL& src_url,
-      HTMLElement* element,
-      attribution_reporting::mojom::blink::RegistrationType,
-      absl::optional<AttributionSrcToken>);
+  bool CreateAndSendRequest(const KURL& src_url,
+                            HTMLElement* element,
+                            absl::optional<AttributionSrcToken>);
 
   // Returns whether OS-level attribution is supported.
   bool HasOsSupport() const;
