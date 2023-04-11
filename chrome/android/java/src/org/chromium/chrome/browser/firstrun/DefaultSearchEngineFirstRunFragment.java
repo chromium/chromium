@@ -68,21 +68,14 @@ public class DefaultSearchEngineFirstRunFragment extends Fragment implements Fir
     }
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
+    public void onResume() {
+        super.onResume();
 
-        if (isVisibleToUser) {
-            if (mSearchEnginePromoDialogType == SearchEnginePromoType.DONT_SHOW) {
-                PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
-                    @Override
-                    public void run() {
-                        getPageDelegate().advanceToNextPage();
-                    }
-                });
-            }
-
-            recordShown();
+        if (mSearchEnginePromoDialogType == SearchEnginePromoType.DONT_SHOW) {
+            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> getPageDelegate().advanceToNextPage());
         }
+
+        recordShown();
     }
 
     private void recordShown() {
