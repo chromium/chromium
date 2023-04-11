@@ -44,15 +44,16 @@ WebContentsCaptureClient::CaptureResult WebContentsCaptureClient::CaptureAsync(
 
   // The default format and quality setting used when encoding jpegs.
   const api::extension_types::ImageFormat kDefaultFormat =
-      api::extension_types::IMAGE_FORMAT_JPEG;
+      api::extension_types::ImageFormat::kJpeg;
   const int kDefaultQuality = 90;
 
   image_format_ = kDefaultFormat;
   image_quality_ = kDefaultQuality;
 
   if (image_details) {
-    if (image_details->format != api::extension_types::IMAGE_FORMAT_NONE)
+    if (image_details->format != api::extension_types::ImageFormat::kNone) {
       image_format_ = image_details->format;
+    }
     if (image_details->quality)
       image_quality_ = *image_details->quality;
   }
@@ -85,11 +86,11 @@ bool WebContentsCaptureClient::EncodeBitmap(const SkBitmap& bitmap,
   bool encoded = false;
   std::string mime_type;
   switch (image_format_) {
-    case api::extension_types::IMAGE_FORMAT_JPEG:
+    case api::extension_types::ImageFormat::kJpeg:
       encoded = gfx::JPEGCodec::Encode(bitmap, image_quality_, &data);
       mime_type = kMimeTypeJpeg;
       break;
-    case api::extension_types::IMAGE_FORMAT_PNG:
+    case api::extension_types::ImageFormat::kPng:
       encoded = gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, should_discard_alpha,
                                                   &data);
       mime_type = kMimeTypePng;

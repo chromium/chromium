@@ -179,18 +179,18 @@ std::unique_ptr<extensions::UserScript> ParseContentScript(
     }
   }
   // run_at:
-  if (script_value.run_at) {
+  if (script_value.run_at != extensions::api::extension_types::RunAt::kNone) {
     extensions::mojom::RunLocation run_at =
         extensions::mojom::RunLocation::kUndefined;
     switch (script_value.run_at) {
-      case extensions::api::extension_types::RUN_AT_NONE:
-      case extensions::api::extension_types::RUN_AT_DOCUMENT_IDLE:
+      case extensions::api::extension_types::RunAt::kNone:
+      case extensions::api::extension_types::RunAt::kDocumentIdle:
         run_at = extensions::mojom::RunLocation::kDocumentIdle;
         break;
-      case extensions::api::extension_types::RUN_AT_DOCUMENT_START:
+      case extensions::api::extension_types::RunAt::kDocumentStart:
         run_at = extensions::mojom::RunLocation::kDocumentStart;
         break;
-      case extensions::api::extension_types::RUN_AT_DOCUMENT_END:
+      case extensions::api::extension_types::RunAt::kDocumentEnd:
         run_at = extensions::mojom::RunLocation::kDocumentEnd;
         break;
     }

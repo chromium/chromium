@@ -40,9 +40,8 @@ ExtensionApiFrameIdMap::FrameData::FrameData()
       parent_frame_id(kInvalidFrameId),
       tab_id(extension_misc::kUnknownTabId),
       window_id(extension_misc::kUnknownWindowId),
-      frame_type(api::extension_types::FrameType::FRAME_TYPE_OUTERMOST_FRAME),
-      document_lifecycle(
-          api::extension_types::DocumentLifecycle::DOCUMENT_LIFECYCLE_ACTIVE) {}
+      frame_type(api::extension_types::FrameType::kOutermostFrame),
+      document_lifecycle(api::extension_types::DocumentLifecycle::kActive) {}
 
 ExtensionApiFrameIdMap::FrameData::FrameData(
     int frame_id,
@@ -245,24 +244,24 @@ api::extension_types::FrameType ExtensionApiFrameIdMap::GetFrameType(
     content::RenderFrameHost* rfh) {
   DCHECK(rfh);
   if (!rfh->GetParentOrOuterDocument()) {
-    return api::extension_types::FRAME_TYPE_OUTERMOST_FRAME;
+    return api::extension_types::FrameType::kOutermostFrame;
   }
   if (rfh->IsFencedFrameRoot()) {
-    return api::extension_types::FRAME_TYPE_FENCED_FRAME;
+    return api::extension_types::FrameType::kFencedFrame;
   }
-  return api::extension_types::FRAME_TYPE_SUB_FRAME;
+  return api::extension_types::FrameType::kSubFrame;
 }
 
 api::extension_types::FrameType ExtensionApiFrameIdMap::GetFrameType(
     content::NavigationHandle* navigation_handle) {
   switch (navigation_handle->GetNavigatingFrameType()) {
     case content::FrameType::kSubframe:
-      return api::extension_types::FRAME_TYPE_SUB_FRAME;
+      return api::extension_types::FrameType::kSubFrame;
     case content::FrameType::kFencedFrameRoot:
-      return api::extension_types::FRAME_TYPE_FENCED_FRAME;
+      return api::extension_types::FrameType::kFencedFrame;
     case content::FrameType::kPrimaryMainFrame:
     case content::FrameType::kPrerenderMainFrame:
-      return api::extension_types::FRAME_TYPE_OUTERMOST_FRAME;
+      return api::extension_types::FrameType::kOutermostFrame;
   }
 }
 
@@ -273,21 +272,21 @@ ExtensionApiFrameIdMap::GetDocumentLifecycle(content::RenderFrameHost* rfh) {
   // because we cannot call GetLifecycleState for speculative frames.
   if (rfh->IsInLifecycleState(
           content::RenderFrameHost::LifecycleState::kActive)) {
-    return api::extension_types::DOCUMENT_LIFECYCLE_ACTIVE;
+    return api::extension_types::DocumentLifecycle::kActive;
   }
   if (rfh->IsInLifecycleState(
           content::RenderFrameHost::LifecycleState::kInBackForwardCache)) {
-    return api::extension_types::DOCUMENT_LIFECYCLE_CACHED;
+    return api::extension_types::DocumentLifecycle::kCached;
   }
   if (rfh->IsInLifecycleState(
           content::RenderFrameHost::LifecycleState::kPrerendering)) {
-    return api::extension_types::DOCUMENT_LIFECYCLE_PRERENDER;
+    return api::extension_types::DocumentLifecycle::kPrerender;
   }
   if (rfh->IsInLifecycleState(
           content::RenderFrameHost::LifecycleState::kPendingDeletion)) {
-    return api::extension_types::DOCUMENT_LIFECYCLE_PENDING_DELETION;
+    return api::extension_types::DocumentLifecycle::kPendingDeletion;
   }
-  return api::extension_types::DOCUMENT_LIFECYCLE_NONE;
+  return api::extension_types::DocumentLifecycle::kNone;
 }
 
 api::extension_types::DocumentLifecycle
@@ -298,11 +297,11 @@ ExtensionApiFrameIdMap::GetDocumentLifecycle(
     return GetDocumentLifecycle(parent_or_outer_document);
   }
   if (navigation_handle->IsInPrerenderedMainFrame()) {
-    return api::extension_types::DOCUMENT_LIFECYCLE_PRERENDER;
+    return api::extension_types::DocumentLifecycle::kPrerender;
   } else if (navigation_handle->IsInPrimaryMainFrame()) {
-    return api::extension_types::DOCUMENT_LIFECYCLE_ACTIVE;
+    return api::extension_types::DocumentLifecycle::kActive;
   }
-  return api::extension_types::DOCUMENT_LIFECYCLE_NONE;
+  return api::extension_types::DocumentLifecycle::kNone;
 }
 
 void ExtensionApiFrameIdMap::OnRenderFrameDeleted(
