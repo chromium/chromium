@@ -287,7 +287,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SafeBrowsing.BrowserThrottle.IsCheckCompletedOnProcessResponse"
-    enum="BooleanCompleted" expires_after="2023-08-06">
+    enum="BooleanCompleted" expires_after="2023-10-08">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -572,7 +572,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.EsbDisabled.LastEnabledInterval" units="days"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1755,7 +1755,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.IsLookupServiceAvailable"
-    enum="BooleanAvailable" expires_after="2023-08-06">
+    enum="BooleanAvailable" expires_after="2023-10-08">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1767,7 +1767,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.IsLookupSuccessful" enum="BooleanSuccess"
-    expires_after="2023-08-06">
+    expires_after="2023-10-08">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1928,7 +1928,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Response.VerdictType"
-    enum="SafeBrowsingRTLookupResponseVerdictType" expires_after="2023-08-08">
+    enum="SafeBrowsingRTLookupResponseVerdictType" expires_after="2023-10-08">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

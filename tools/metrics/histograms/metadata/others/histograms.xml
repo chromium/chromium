@@ -4504,7 +4504,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DefaultBrowser.InfoBar.UserInteraction"
-    enum="DefaultBrowserInfoBarUserInteraction" expires_after="2023-08-08">
+    enum="DefaultBrowserInfoBarUserInteraction" expires_after="2023-10-08">
   <owner>pmonette@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
   <summary>
@@ -8397,7 +8397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MPArch.ChildProcessLaunchFirst" units="ms"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>pasko@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -10952,7 +10952,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RenderViewContextMenu.Shown" enum="RenderViewContextMenuItem"
-    expires_after="2023-08-06">
+    expires_after="2023-10-08">
   <owner>avi@chromium.org</owner>
   <owner>edwardjung@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
@@ -11370,7 +11370,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SB2.RemoteCall.CanCheckUrl" enum="BooleanCanCheckUrl"
-    expires_after="2023-08-06">
+    expires_after="2023-10-08">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -14742,7 +14742,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebFont.DownloadTime.LoadError" units="ms"
-    expires_after="2023-08-06">
+    expires_after="2023-10-08">
   <owner>kenjibaheux@chromium.org</owner>
   <owner>ksakamoto@chromium.org</owner>
   <summary>

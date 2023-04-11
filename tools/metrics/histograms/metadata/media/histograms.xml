@@ -311,7 +311,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.InputStreamDuration" units="ms"
-    expires_after="2023-08-06">
+    expires_after="2023-10-08">
   <owner>olka@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -2362,7 +2362,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.EME.MediaFoundationCdm.LoadTime" units="ms"
-    expires_after="2023-08-08">
+    expires_after="2023-10-08">
   <owner>sangbaekpark@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>The time spent to load a library MediaFoundation CDM.</summary>

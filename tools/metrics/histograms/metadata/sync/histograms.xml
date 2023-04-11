@@ -1087,7 +1087,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.PasswordNotesStateInUpdate"
-    enum="SyncPasswordNotesStateInUpdate" expires_after="2023-08-06">
+    enum="SyncPasswordNotesStateInUpdate" expires_after="2023-10-08">
   <owner>mamir@chromium.org</owner>
   <owner>mastiz@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -1143,7 +1143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.PostedDataTypeCommitRequest" enum="SyncModelTypes"
-    expires_after="2023-08-06">
+    expires_after="2023-10-08">
   <owner>mastiz@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <component>Services&gt;Sync</component>
@@ -1157,7 +1157,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.PostedDataTypeGetUpdatesRequest" enum="SyncModelTypes"
-    expires_after="2023-08-06">
+    expires_after="2023-10-08">
   <owner>mastiz@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <component>Services&gt;Sync</component>
