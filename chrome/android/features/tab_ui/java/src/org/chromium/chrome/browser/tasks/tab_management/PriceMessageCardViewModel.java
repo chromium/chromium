@@ -97,7 +97,7 @@ public class PriceMessageCardViewModel {
             if ((PriceDropNotificationManagerFactory.create()).areAppNotificationsEnabled()) {
                 return context.getString(R.string.price_drop_alerts_card_get_notified);
             } else {
-                return context.getString(R.string.price_drop_alerts_card_go_to_settings);
+                return context.getString(R.string.go_to_os_settings);
             }
         }
         return null;

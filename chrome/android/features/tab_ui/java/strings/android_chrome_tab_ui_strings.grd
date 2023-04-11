@@ -443,9 +443,6 @@
       <message name="IDS_PRICE_DROP_ALERTS_CARD_GO_TO_SETTINGS_CONTENT" desc="This text shows below 'Get alerts for price drops?'. It asks users to turn on notifications in Android settings to get the price drop notifications.">
         To get an alert when there's a lower price in an open tab, turn on notifications in Settings.
       </message>
-      <message name="IDS_PRICE_DROP_ALERTS_CARD_GO_TO_SETTINGS" desc="This text button shows below 'Get alerts for price drops?'. When user clicks on the text button, we send them to the Android notification settings.">
-        Go to Settings
-      </message>
 
       <!-- Price Tracking Settings Dialog strings -->
       <message name="IDS_TRACK_PRICES_ON_TABS" desc="This text shows in the price tracking settings dialog. It tells users the switch on the side can be used to turn on/off the 'Track prices on tabs' feature.">
