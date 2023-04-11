@@ -250,6 +250,7 @@
 #include "chrome/browser/video_tutorials/prefs.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/1125897
 #include "components/content_creation/notes/core/note_prefs.h"
+#include "components/ntp_snippets/register_prefs.h"
 #include "components/ntp_tiles/popular_sites_impl.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/query_tiles/tile_service_prefs.h"
@@ -1156,6 +1157,11 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterDictionaryPref(kTypeSubscribedForInvalidations);
   registry->RegisterStringPref(kActiveRegistrationToken, std::string());
   registry->RegisterStringPref(kFCMInvalidationClientIDCache, std::string());
+
+  // Deprecated 04/2023.
+#if BUILDFLAG(IS_ANDROID)
+  ntp_snippets::prefs::RegisterProfilePrefsForMigrationApril2023(registry);
+#endif
 }
 
 }  // namespace
@@ -2219,6 +2225,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kTypeSubscribedForInvalidations);
   profile_prefs->ClearPref(kActiveRegistrationToken);
   profile_prefs->ClearPref(kFCMInvalidationClientIDCache);
+
+  // Added 04/2023.
+#if BUILDFLAG(IS_ANDROID)
+  ntp_snippets::prefs::MigrateObsoleteProfilePrefsApril2023(profile_prefs);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

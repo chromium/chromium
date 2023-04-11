@@ -1559,12 +1559,8 @@
         'chrome/android/junit/src/org/chromium/chrome/browser/ntp/|'\
         'chrome/android/java/src/org/chromium/chrome/browser/suggestions/|'\
         'chrome/android/javatests/src/org/chromium/chrome/browser/suggestions/|'\
-        'chrome/browser/android/ntp/ntp_snippets|'\
-        'chrome/browser/ntp_snippets/|'\
-        'components/ntp_snippets/|'\
         'chrome/android/java/res/layout/new_tab_page|'\
-        'chrome/android/java/res/layout/most_visited|'\
-        'ios/chrome/browser/ntp_snippets'
+        'chrome/android/java/res/layout/most_visited'
     },
     'ntp_tiles': {
       'filepath': 'chrome/browser/android/ntp/|'\

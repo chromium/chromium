@@ -505,7 +505,6 @@ after discussions on the right group.
       <annotation id="signed_in_profile_avatar"/>
     </sender>
     <sender name="Favicon">
-      <annotation id="content_suggestion_get_favicon"/>
       <annotation id="icon_catcher_get_large_icon"/>
       <annotation id="favicon_fetcher_get_favicon"/>
     </sender>
@@ -521,11 +520,9 @@ after discussions on the right group.
       <annotation id="backdrop_collection_names_download"/>
       <annotation id="backdrop_next_image_download"/>
       <annotation id="drive_service"/>
-      <annotation id="ntp_snippets_fetch"/>
       <annotation id="nux_ntp_background_preview"/>
       <annotation id="photos_service"/>
       <annotation id="popular_sites_fetch"/>
-      <annotation id="remote_suggestions_provider"/>
       <annotation id="promo_service"/>
       <annotation id="recipes_service"/>
       <annotation id="chrome_cart_discounts_lookup"/>

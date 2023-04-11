@@ -308,7 +308,6 @@
       <part file="management_strings.grdp" />
       <part file="media_message_center_strings.grdp" />
       <part file="new_or_sad_tab_strings.grdp" />
-      <part file="ntp_snippets_strings.grdp" />
       <part file="omnibox_strings.grdp" />
       <part file="page_info_strings.grdp" />
       <part file="paint_preview_strings.grdp" />
