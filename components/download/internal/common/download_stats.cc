@@ -670,24 +670,8 @@ void RecordInProgressDBCount(InProgressDBCountTypes type) {
   UMA_HISTOGRAM_ENUMERATION("Download.InProgressDB.Counts", type);
 }
 
-void RecordDuplicateInProgressDownloadIdCount(int count) {
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Download.DuplicateInProgressDownloadIdCount",
-                              count, 1, 10, 11);
-}
-
 void RecordResumptionRestartReason(DownloadInterruptReason reason) {
   base::UmaHistogramSparse("Download.ResumptionRestart.Reason", reason);
-}
-
-void RecordDownloadManagerCreationTimeSinceStartup(
-    base::TimeDelta elapsed_time) {
-  base::UmaHistogramLongTimes("Download.DownloadManager.CreationDelay",
-                              elapsed_time);
-}
-
-void RecordDownloadManagerMemoryUsage(size_t bytes_used) {
-  base::UmaHistogramMemoryKB("Download.DownloadManager.MemoryUsage",
-                             bytes_used / 1000);
 }
 
 void RecordDownloadLaterEvent(DownloadLaterEvent event) {

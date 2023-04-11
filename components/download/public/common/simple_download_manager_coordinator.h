@@ -49,9 +49,9 @@ class COMPONENTS_DOWNLOAD_EXPORT SimpleDownloadManagerCoordinator
 
   using DownloadWhenFullManagerStartsCallBack =
       base::RepeatingCallback<void(std::unique_ptr<DownloadUrlParameters>)>;
-  SimpleDownloadManagerCoordinator(const DownloadWhenFullManagerStartsCallBack&
-                                       download_when_full_manager_starts_cb,
-                                   bool record_full_download_manager_delay);
+  explicit SimpleDownloadManagerCoordinator(
+      const DownloadWhenFullManagerStartsCallBack&
+          download_when_full_manager_starts_cb);
 
   SimpleDownloadManagerCoordinator(const SimpleDownloadManagerCoordinator&) =
       delete;
@@ -117,9 +117,6 @@ class COMPONENTS_DOWNLOAD_EXPORT SimpleDownloadManagerCoordinator
 
   // Observers that want to be notified of changes to the set of downloads.
   base::ObserverList<Observer> observers_;
-
-  // Time when this object was created.
-  base::TimeTicks creation_time_ticks_;
 
   base::WeakPtrFactory<SimpleDownloadManagerCoordinator> weak_factory_{this};
 };

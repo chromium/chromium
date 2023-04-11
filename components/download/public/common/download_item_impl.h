@@ -406,9 +406,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
 
   void SetAutoResumeCountForTesting(int32_t auto_resume_count);
 
-  // Gets the approximate memory usage of this item.
-  size_t GetApproximateMemoryUsage() const;
-
   std::pair<int64_t, int64_t> GetRangeRequestOffset() const;
 
  private:

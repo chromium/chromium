@@ -366,26 +366,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.DownloadManager.CreationDelay" units="ms"
-    expires_after="2020-11-01">
-  <owner>qinmin@chromium.org</owner>
-  <owner>dtrainor@chromium.org</owner>
-  <summary>
-    Records the delay of creating non-incognito download manager after the
-    download system is initialized.
-  </summary>
-</histogram>
-
-<histogram name="Download.DownloadManager.MemoryUsage" units="KB"
-    expires_after="2020-11-01">
-  <owner>qinmin@chromium.org</owner>
-  <owner>dtrainor@chromium.org</owner>
-  <summary>
-    Records the approximate memory usage from non-incognito download manager,
-    after all downloads are loaded.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Download.DownloadSize" units="KB"
     expires_after="never">
 <!-- expires-never: Used for long term download system health monitoring. -->
@@ -426,16 +406,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Download"/>
     <variant name="OfflinePage"/>
   </token>
-</histogram>
-
-<histogram name="Download.DuplicateInProgressDownloadIdCount"
-    units="duplicates" expires_after="2019-07-30">
-  <owner>qinmin@chromium.org</owner>
-  <owner>dtrainor@chromium.org</owner>
-  <summary>
-    The total number of download IDs that are duplicate in the in-progress
-    downloads DB, capped at 10.
-  </summary>
 </histogram>
 
 <histogram name="Download.HttpResponseCode" enum="HttpResponseCode"

@@ -365,9 +365,6 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadHttpResponseCode(
 COMPONENTS_DOWNLOAD_EXPORT void RecordInProgressDBCount(
     InProgressDBCountTypes type);
 
-COMPONENTS_DOWNLOAD_EXPORT void RecordDuplicateInProgressDownloadIdCount(
-    int count);
-
 // Records the interrupt reason that causes download to restart.
 COMPONENTS_DOWNLOAD_EXPORT void RecordResumptionRestartReason(
     DownloadInterruptReason reason);
@@ -375,12 +372,6 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordResumptionRestartReason(
 // Records the interrupt reason that causes download to restart.
 COMPONENTS_DOWNLOAD_EXPORT void RecordResumptionStrongValidators(
     DownloadInterruptReason reason);
-
-COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadManagerCreationTimeSinceStartup(
-    base::TimeDelta elapsed_time);
-
-COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadManagerMemoryUsage(
-    size_t bytes_used);
 
 COMPONENTS_DOWNLOAD_EXPORT void RecordParallelRequestCreationFailure(
     DownloadInterruptReason reason);

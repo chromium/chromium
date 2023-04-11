@@ -1190,11 +1190,6 @@ void DownloadManagerImpl::OnDownloadManagerInitialized() {
   in_progress_manager_->OnAllInprogressDownloadsLoaded();
   for (auto& observer : observers_)
     observer.OnManagerInitialized();
-  size_t size = 0;
-  for (const auto& it : downloads_by_guid_)
-    size += it.second->GetApproximateMemoryUsage();
-  if (!IsOffTheRecord() && size > 0)
-    download::RecordDownloadManagerMemoryUsage(size);
 }
 
 bool DownloadManagerImpl::IsManagerInitialized() {

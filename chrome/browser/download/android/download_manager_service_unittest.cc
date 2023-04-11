@@ -31,7 +31,7 @@ class DownloadManagerServiceTest : public testing::Test {
  public:
   DownloadManagerServiceTest()
       : service_(new DownloadManagerService()),
-        coordinator_(base::NullCallback(), false),
+        coordinator_(base::NullCallback()),
         success_(false) {
     ON_CALL(manager_, GetDownloadByGuid(_))
         .WillByDefault(::testing::Invoke(

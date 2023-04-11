@@ -2766,31 +2766,6 @@ const char* DownloadItemImpl::DebugResumeModeString(ResumeMode mode) {
   return "unknown";
 }
 
-size_t DownloadItemImpl::GetApproximateMemoryUsage() const {
-  static size_t class_size = sizeof(DownloadItemImpl);
-  size_t size = class_size;
-
-  for (const GURL& url : GetUrlChain())
-    size += url.EstimateMemoryUsage();
-  size += GetReferrerUrl().EstimateMemoryUsage();
-  size += base::trace_event::EstimateMemoryUsage(
-      GetSerializedEmbedderDownloadData());
-  size += GetTabUrl().EstimateMemoryUsage();
-  size += GetTabReferrerUrl().EstimateMemoryUsage();
-  size += base::trace_event::EstimateMemoryUsage(GetSuggestedFilename());
-  size += base::trace_event::EstimateMemoryUsage(GetForcedFilePath().value());
-  size += base::trace_event::EstimateMemoryUsage(GetRemoteAddress());
-  size += base::trace_event::EstimateMemoryUsage(GetTargetFilePath().value());
-  size += base::trace_event::EstimateMemoryUsage(GetFullPath().value());
-  size += base::trace_event::EstimateMemoryUsage(GetHash());
-  size += base::trace_event::EstimateMemoryUsage(GetMimeType());
-  size += base::trace_event::EstimateMemoryUsage(GetOriginalMimeType());
-  size += base::trace_event::EstimateMemoryUsage(GetLastModifiedTime());
-  size += base::trace_event::EstimateMemoryUsage(GetETag());
-  size += base::trace_event::EstimateMemoryUsage(GetGuid());
-  return size;
-}
-
 std::pair<int64_t, int64_t> DownloadItemImpl::GetRangeRequestOffset() const {
   return std::make_pair(request_info_.range_request_from,
                         request_info_.range_request_to);
