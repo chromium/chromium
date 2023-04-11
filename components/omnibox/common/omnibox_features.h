@@ -24,7 +24,6 @@ BASE_DECLARE_FEATURE(kOmniboxRemoveSuggestionsFromClipboard);
 BASE_DECLARE_FEATURE(kGroupingFrameworkForZPS);
 BASE_DECLARE_FEATURE(kGroupingFrameworkForNonZPS);
 BASE_DECLARE_FEATURE(kOmniboxDemoteByType);
-BASE_DECLARE_FEATURE(kOmniboxRemoveExcessiveRecycledViewClearCalls);
 BASE_DECLARE_FEATURE(kPreferNonShortcutMatchesWhenDeduping);
 BASE_DECLARE_FEATURE(kPreferTailOverHistoryClusterSuggestions);
 BASE_DECLARE_FEATURE(kPreserveDefault);

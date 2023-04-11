@@ -1268,9 +1268,6 @@ extern const char kOmniboxOnDeviceTailSuggestionsDescription[];
 extern const char kOmniboxRedoCurrentMatchName[];
 extern const char kOmniboxRedoCurrentMatchDescription[];
 
-extern const char kOmniboxRemoveExcessiveRecycledViewClearCallsName[];
-extern const char kOmniboxRemoveExcessiveRecycledViewClearCallsDescription[];
-
 extern const char kOmniboxRevertModelBeforeClosingPopupName[];
 extern const char kOmniboxRevertModelBeforeClosingPopupDescription[];
 

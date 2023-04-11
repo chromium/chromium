@@ -14,7 +14,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.os.Handler;
@@ -141,8 +140,6 @@ public class AutocompleteMediatorUnitTest {
                 mMockProcessor);
         mMediator.getDropdownItemViewInfoListBuilderForTest().setHeaderProcessorForTest(
                 mMockHeaderProcessor);
-        mMediator.setSuggestionVisibilityState(
-                AutocompleteMediator.SuggestionVisibilityState.ALLOWED);
 
         doReturn(SUGGESTION_MIN_HEIGHT).when(mMockProcessor).getMinimumViewHeight();
         doReturn(true).when(mMockProcessor).doesProcessSuggestion(any(), anyInt());
@@ -506,14 +503,16 @@ public class AutocompleteMediatorUnitTest {
     @SmallTest
     public void onSuggestionsReceived_sendsOnSuggestionsChanged() {
         mMediator.onNativeInitialized();
+        mMediator.onUrlFocusChange(true);
         mMediator.onSuggestionsReceived(
                 AutocompleteResult.fromCache(mSuggestionsList, null), "inline_autocomplete", true);
         verify(mAutocompleteDelegate).onSuggestionsChanged("inline_autocomplete", true);
 
-        // Ensure duplicate requests are suppressed.
+        // Ensure duplicate requests are not suppressed, to preserve the
+        // relationship between Native and Java AutocompleteResult objects.
         mMediator.onSuggestionsReceived(
                 AutocompleteResult.fromCache(mSuggestionsList, null), "inline_autocomplete2", true);
-        verifyNoMoreInteractions(mAutocompleteDelegate);
+        verify(mAutocompleteDelegate).onSuggestionsChanged("inline_autocomplete", true);
     }
 
     @Test

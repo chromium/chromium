@@ -102,7 +102,6 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.sOmniboxMatchToolbarAndStatusBarColor,
                 ChromeFeatureList.sOmniboxModernizeVisualUpdate,
                 ChromeFeatureList.sOmniboxMostVisitedTilesAddRecycledViewPool,
-                ChromeFeatureList.sOmniboxRemoveExcessiveRecycledViewClearCalls,
                 ChromeFeatureList.sOptimizationGuidePushNotifications,
                 ChromeFeatureList.sPaintPreviewDemo,
                 ChromeFeatureList.sQueryTiles,

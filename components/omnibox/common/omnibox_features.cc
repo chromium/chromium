@@ -82,13 +82,6 @@ BASE_FEATURE(kOmniboxDemoteByType,
              "OmniboxDemoteByType",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Remove Excessive Clear Calls on RecycledViewPool in Omnibox.
-// The feature improves efficiency of the RecycledViewPool by removing excessive
-// calls to RecycledViewPool#clear().
-BASE_FEATURE(kOmniboxRemoveExcessiveRecycledViewClearCalls,
-             "OmniboxRemoveExcessiveRecycledViewClearCalls",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, deduping prefers non-shortcut provider matches, while still
 // treating fuzzy provider matches as the least preferred.
 BASE_FEATURE(kPreferNonShortcutMatchesWhenDeduping,

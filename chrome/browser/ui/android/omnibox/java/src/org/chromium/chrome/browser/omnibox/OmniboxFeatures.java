@@ -102,12 +102,6 @@ public class OmniboxFeatures {
     }
 
     /**
-     * Returns whether excessive calls to RecycledViewPool#clear should be removed.
-     */
-    public static boolean shouldRemoveExcessiveRecycledViewClearCalls() {
-        return ChromeFeatureList.sOmniboxRemoveExcessiveRecycledViewClearCalls.isEnabled();
-    }
-    /**
      * Returns whether the toolbar and status bar color should be matched.
      */
     public static boolean shouldMatchToolbarAndStatusBarColor() {

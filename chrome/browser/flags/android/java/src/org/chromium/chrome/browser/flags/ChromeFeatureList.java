@@ -388,8 +388,6 @@ public abstract class ChromeFeatureList {
     public static final String OMNIBOX_MODERNIZE_VISUAL_UPDATE = "OmniboxModernizeVisualUpdate";
     public static final String OMNIBOX_MOST_VISITED_TILES_ADD_RECYCLED_VIEW_POOL =
             "OmniboxMostVisitedTilesAddRecycledViewPool";
-    public static final String OMNIBOX_REMOVE_EXCESSIVE_RECYCLED_VIEW_CLEAR_CALLS =
-            "OmniboxRemoveExcessiveRecycledViewClearCalls";
     public static final String OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS =
             "OmniboxUpdatedConnectionSecurityIndicators";
     public static final String OPAQUE_ORIGIN_FOR_INCOMING_INTENTS =
@@ -622,8 +620,6 @@ public abstract class ChromeFeatureList {
             new CachedFlag(OMNIBOX_MODERNIZE_VISUAL_UPDATE, false);
     public static final CachedFlag sOmniboxMostVisitedTilesAddRecycledViewPool =
             new CachedFlag(OMNIBOX_MOST_VISITED_TILES_ADD_RECYCLED_VIEW_POOL, false);
-    public static final CachedFlag sOmniboxRemoveExcessiveRecycledViewClearCalls =
-            new CachedFlag(OMNIBOX_REMOVE_EXCESSIVE_RECYCLED_VIEW_CLEAR_CALLS, false);
     public static final CachedFlag sOptimizationGuidePushNotifications =
             new CachedFlag(OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, false);
     public static final CachedFlag sPaintPreviewDemo = new CachedFlag(PAINT_PREVIEW_DEMO, false);

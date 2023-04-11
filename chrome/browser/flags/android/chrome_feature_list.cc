@@ -357,7 +357,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &offline_pages::kOfflinePagesLivePageSharingFeature,
     &omnibox::kOmniboxAssistantVoiceSearch,
     &omnibox::kOmniboxMatchToolbarAndStatusBarColor,
-    &omnibox::kOmniboxRemoveExcessiveRecycledViewClearCalls,
     &omnibox::kOmniboxMostVisitedTilesAddRecycledViewPool,
     &omnibox::kOmniboxOnClobberFocusTypeOnContent,
     &omnibox::kSuggestionAnswersColorReverse,

@@ -129,7 +129,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
     @After
     public void tearDown() {
-        mListener.resetKeyboardShowState();
+        mListener.resetKeyboardShownState();
     }
 
     @Test
@@ -263,7 +263,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
         verifyNoMoreInteractions(mDropdownScrollListener);
 
         // Simulate lists being shown again.
-        mListener.resetKeyboardShowState();
+        mListener.resetKeyboardShownState();
 
         // Scroll attempt should suppress the scroll and emit keyboard dismiss.
         // Condition: the list is long enough that the scroll distance equals to delta.

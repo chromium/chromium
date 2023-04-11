@@ -5464,14 +5464,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxMostVisitedTilesAddRecycledViewPoolDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxMostVisitedTilesAddRecycledViewPool)},
-
-    {"omnibox-remove-excessive-recycled-view-clear-calls",
-     flag_descriptions::kOmniboxRemoveExcessiveRecycledViewClearCallsName,
-     flag_descriptions::
-         kOmniboxRemoveExcessiveRecycledViewClearCallsDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         omnibox::kOmniboxRemoveExcessiveRecycledViewClearCalls)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"omnibox-local-history-zero-suggest-beyond-ntp",

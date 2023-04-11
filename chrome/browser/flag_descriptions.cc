@@ -2211,11 +2211,6 @@ const char kOmniboxRedoCurrentMatchDescription[] =
     "Use an alternative implementation of calculating the cached omnibox "
     "current match that is valid more often.";
 
-const char kOmniboxRemoveExcessiveRecycledViewClearCallsName[] =
-    "Omnibox Remove Excessive Recycled View Clear Calls";
-const char kOmniboxRemoveExcessiveRecycledViewClearCallsDescription[] =
-    "Remove excessive clear calls on RecycledViewPool in omnibox.";
-
 const char kOmniboxReportAssistedQueryStatsName[] =
     "Omnibox Assisted Query Stats param";
 const char kOmniboxReportAssistedQueryStatsDescription[] =
