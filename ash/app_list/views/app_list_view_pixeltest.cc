@@ -12,6 +12,7 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/assistant/test/assistant_ash_test_base.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
+#include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
@@ -425,7 +426,7 @@ TEST_P(AppListViewAssistantZeroStateTest, Basic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "app_list_view_assistant_zero_state", /*revision_number=*/0,
-      page_view()));
+      page_view()->GetViewByID(AssistantViewID::kZeroStateView)));
 }
 
 }  // namespace ash
