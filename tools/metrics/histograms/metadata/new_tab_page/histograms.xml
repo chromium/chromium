@@ -357,17 +357,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.ContentSuggestions.CategoryDismissed"
-    enum="ContentSuggestionsCategory" expires_after="M90">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: A category of content suggestions that was dismissed (by swiping
-    away its empty state card).
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.ContentSuggestions.CountOnNtpOpenedIfVisible"
     units="units" expires_after="2021-06-20">
   <owner>carlosk@chromium.org</owner>
@@ -395,36 +384,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.ContentSuggestions.DismissedUnvisited"
-    units="index" expires_after="2021-11-21">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The position of a suggestion card on the NTP that is dismissed,
-    typically by swiping it away. The suggestion had a URL that was NOT visited
-    before. We track the position the card had in the list when it was first
-    seen by the user. This tracked position can be different from the position
-    observed by the user, e.g. when the user dismissed some suggestions from the
-    list or requested more that got inserted in the middle of the feed.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.DismissedVisited" units="index"
-    expires_after="2021-07-18">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The position of a suggestion card on the NTP that is dismissed,
-    typically by swiping it away. The suggestion had a URL that was visited
-    before. We track the position the card had in the list when it was first
-    seen by the user. This tracked position can be different from the position
-    observed by the user, e.g. when the user dismissed some suggestions from the
-    list or requested more that got inserted in the middle of the feed.
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.ContentSuggestions.MenuOpened" units="index"
     expires_after="2022-01-16">
   <owner>freedjm@chromium.org</owner>
@@ -432,61 +391,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Android: The position of a suggestion card whose long-press menu was opened,
     analogous to NewTabPage.ContentSuggestions.Opened.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.MenuOpenedAge" units="ms"
-    expires_after="M90">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The age of a suggestion card on the NTP whose long-press menu was
-    opened, analogous to NewTabPage.ContentSuggestions.OpenedAge.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.MenuOpenedScoreNormalized"
-    enum="NormalizedScore" expires_after="M85">
-  <owner>tschumann@chromium.org</owner>
-  <summary>
-    Android: The relevance score of a suggestion card on the NTP whose
-    long-press menu was opened, analogous to
-    NewTabPage.ContentSuggestions.OpenedScoreNormalized. Scores (which are
-    typically floats within (0,1]) get reported as discrete integers within
-    [1,10]. For instance, the discrete value 1 represents score values from
-    (0.0, 0.1]. The discrete value 11 is the overflow bucket for unexpectedly
-    high scores.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.MoreButtonClicked" units="index"
-    expires_after="2021-11-07">
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The position of a &quot;More&quot; suggestion card that was clicked
-    on the NTP. A card is considered shown when at least 2/3 of its height is
-    visible on the screen. We track the position the card had in the list when
-    it was first seen by the user. This tracked position can be different from
-    the position observed by the user, e.g. when the user dismissed some
-    suggestions from the list or requested more that got inserted in the middle
-    of the feed.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.MoreButtonShown" units="index"
-    expires_after="2021-07-01">
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The position of a &quot;More&quot; suggestion card that was shown
-    on the NTP. A card is considered shown when at least 2/3 of its height is
-    visible on the screen. For each card, at most one impression is recorded per
-    NTP instance. We track the position the card had in the list when it was
-    first seen by the user. This tracked position can be different from the
-    position observed by the user, e.g. when the user dismissed some suggestions
-    from the list or requested more that got inserted in the middle of the feed.
   </summary>
 </histogram>
 
@@ -533,17 +437,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.ContentSuggestions.OpenDisposition"
-    enum="WindowOpenDisposition" expires_after="M90">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: How an article linked from a suggestion card on the NTP was opened
-    (e.g. plain click, open in new tab, open in incognito).
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.ContentSuggestions.Opened" units="index"
     expires_after="never">
 <!-- expires-never: key feature metric.  We will need the Opened
@@ -579,44 +472,6 @@ chromium-metrics-reviews@google.com.
     This tracked position can be different from the position observed by the
     user, e.g. when the user dismissed some suggestions from the list or
     requested more that got inserted in the middle of the feed.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.OpenedAge" units="ms"
-    expires_after="2021-12-26">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The age of a suggestion card on the NTP that is clicked through to
-    the host website of the content. The age is measured from the moment the
-    content has been published.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.OpenedCategoryIndex"
-    units="index" expires_after="M77">
-  <owner>vitaliii@chromium.org</owner>
-  <summary>
-    Android: The index of a category on the NTP, whose suggestion card is
-    clicked through to the host website of the content. This tracked index can
-    be different from the position observed by the user, e.g. for the user a
-    category may be at the top of the NTP, but with index 1, because they
-    dismissed the one that was previously at the top.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.OpenedScoreNormalized"
-    enum="NormalizedScore" expires_after="M85">
-  <owner>tschumann@chromium.org</owner>
-  <summary>
-    Android: The score of a suggestion card on the NTP that is clicked through
-    to the host website of the content. The recorded score is from the moment
-    the suggestion was fetched, it could have changed since. Scores (which are
-    typically floats within (0,1]) get reported as discrete integers within
-    [1,10]. For instance, the discrete value 1 represents score values from
-    (0.0, 0.1]. The discrete value 11 is the overflow bucket for unexpectedly
-    high scores.
   </summary>
 </histogram>
 
@@ -660,26 +515,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="NewTabPage.ContentSuggestions.Shown.Articles.Prefetched.Offline2"
-    units="index" expires_after="M90">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The position of a prefetched suggestion card that was shown on the
-    NTP when offline. Analogous to NewTabPage.ContentSuggestions.Shown. That is
-    a card is considered shown when at least 2/3 of its height is visible on the
-    screen. For each card, at most one impression is recorded per NTP instance.
-    We track the position the card had in the list when it was first seen by the
-    user. This tracked position can be different from the position observed by
-    the user, e.g. when the user dismissed some suggestions from the list or
-    requested more that got inserted in the middle of the feed. This metric is
-    reported not immediately after the impression, but once the request to
-    Offline Page model to check the URL finishes.
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.ContentSuggestions.ShownAge" units="ms"
     expires_after="2022-01-09">
   <owner>freedjm@chromium.org</owner>
@@ -702,18 +537,6 @@ chromium-metrics-reviews@google.com.
     within [1,10]. For instance, the discrete value 1 represents score values
     from (0.0, 0.1]. The discrete value 11 is the overflow bucket for
     unexpectedly high scores.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.TimeSinceSuggestionFetched"
-    units="ms" expires_after="2021-10-25">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The time since the displayed content suggestions was fetched.
-    Recorded when the user looks at content suggestions on the NTP. The metric
-    is only recorded for suggestions of the Articles for you section.
   </summary>
 </histogram>
 
@@ -784,29 +607,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Android: The time since the last fetch, recorded upon a startup fetch. This
     is used to understand what are the real soft fetching intervals in the wild.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.UsageTimeLocal" units="units"
-    expires_after="2021-12-26">
-  <owner>carlosk@chromium.org</owner>
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The time of day (in the local timezone) when the user used content
-    suggestions. Recorded for example when the user scrolls to the articles
-    suggestions or opens an article suggestions.
-  </summary>
-</histogram>
-
-<histogram name="NewTabPage.ContentSuggestions.VisitDuration" units="ms"
-    expires_after="2021-07-01">
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: Time spent reading the page linked by an opened suggestion card.
-    Exit conditions include the tab not being in the foreground or starting a
-    new navigation.
   </summary>
 </histogram>
 

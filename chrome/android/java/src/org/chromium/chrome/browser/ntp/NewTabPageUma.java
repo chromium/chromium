@@ -274,16 +274,6 @@ public class NewTabPageUma {
     }
 
     /**
-     * Records position of a prefetched article suggestion, which was seen by the user on the
-     * suggestions surface when there was no network connection.
-     */
-    public void recordPrefetchedArticleSuggestionImpressionPosition(int positionInSection) {
-        RecordHistogram.recordEnumeratedHistogram("NewTabPage.ContentSuggestions.Shown.Articles."
-                        + "Prefetched.Offline2",
-                positionInSection, MAX_SUGGESTIONS_PER_SECTION);
-    }
-
-    /**
      * Records Content Suggestions Display Status when NTPs opened.
      */
     public void recordContentSuggestionsDisplayStatus(Profile profile) {
