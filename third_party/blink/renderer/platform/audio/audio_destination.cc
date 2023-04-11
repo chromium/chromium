@@ -100,6 +100,7 @@ AudioDestination::AudioDestination(AudioIOCallback& callback,
           AudioBus::Create(number_of_output_channels, render_quantum_frames)),
       callback_(callback),
       frames_elapsed_(0),
+      state_change_lock_("AudioDestination"),
       device_state_(DeviceState::kStopped) {
   SendLogMessage(String::Format("%s({output_channels=%u})", __func__,
                                 number_of_output_channels));
