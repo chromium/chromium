@@ -10,13 +10,13 @@ import './password_list_item.js';
 import './dialogs/add_password_dialog.js';
 import './dialogs/auth_timed_out_dialog.js';
 import './user_utils_mixin.js';
-import './prefs/pref_mixin.js';
 // <if expr="_google_chrome">
 import './promo_cards/promo_card.js';
 import './promo_cards/promo_cards_browser_proxy.js';
 
 // </if>
 
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -28,7 +28,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_section.html.js';
-import {PrefMixin} from './prefs/pref_mixin.js';
 // <if expr="_google_chrome">
 import {PromoCard, PromoCardsProxyImpl} from './promo_cards/promo_cards_browser_proxy.js';
 // </if>
@@ -45,7 +44,7 @@ export interface PasswordsSectionElement {
 }
 
 const PasswordsSectionElementBase =
-    PrefMixin(UserUtilMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
+    PrefsMixin(UserUtilMixin(RouteObserverMixin(I18nMixin(PolymerElement))));
 
 export class PasswordsSectionElement extends PasswordsSectionElementBase {
   static get is() {
@@ -103,7 +102,9 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
       passwordManagerDisabled_: {
         type: Boolean,
-        computed: 'computePasswordManagerDisabled_(pref)',
+        computed: 'computePasswordManagerDisabled_(' +
+            'prefs.credentials_enable_service.enforcement, ' +
+            'prefs.credentials_enable_service.value)',
       },
     };
   }
@@ -122,12 +123,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private setSavedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
   private authTimedOutListener_: (() => void)|null;
-
-  constructor() {
-    super();
-
-    this.prefKey = 'credentials_enable_service';
-  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -274,12 +269,9 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   // </if>
 
   private computePasswordManagerDisabled_(): boolean {
-    if (!this.pref) {
-      return true;
-    }
-    return this.pref!.enforcement ===
-        chrome.settingsPrivate.Enforcement.ENFORCED &&
-        !this.pref!.value;
+    const pref = this.getPref('credentials_enable_service');
+    return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED &&
+        !pref.value;
   }
 }
 

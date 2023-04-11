@@ -43,12 +43,12 @@
 <div class="card">
   <pref-toggle-button id="passwordToggle"
       label="$i18n{savePasswordsLabel}"
-      pref-key="credentials_enable_service">
+      pref="{{prefs.credentials_enable_service}}">
   </pref-toggle-button>
   <pref-toggle-button id="autosigninToggle" class="hr"
       label="$i18n{autosigninLabel}"
       sub-label="$i18n{autosigninDescription}"
-      pref-key="credentials_enable_autosignin">
+      pref="{{prefs.credentials_enable_autosignin}}">
   </pref-toggle-button>
   <if expr="is_win or is_macosx">
     <template is="dom-if"
@@ -56,7 +56,7 @@
       <pref-toggle-button id="biometricAuthenticationToggle" class="hr"
           label="$i18n{biometricAuthenticaionForFillingLabel}"
           sub-label="$i18n{biometricAuthenticaionForFillingSublabel}"
-          pref-key="password_manager.biometric_authentication_filling"
+          pref="{{prefs.password_manager.biometric_authentication_filling}}"
           change-requires-validation
           on-validate-and-change-pref="switchBiometricAuthBeforeFillingState_">
       </pref-toggle-button>

@@ -65,8 +65,6 @@ build_webui("build") {
     "password_manager.ts",
     "password_manager_proxy.ts",
     "prefs/extension_control_browser_proxy.ts",
-    "prefs/pref_mixin.ts",
-    "prefs/prefs_browser_proxy.ts",
     "router.ts",
     "searchable_label.ts",
     "show_password_mixin.ts",
@@ -97,6 +95,7 @@ build_webui("build") {
 
   ts_deps = [
     "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/settings_prefs:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]

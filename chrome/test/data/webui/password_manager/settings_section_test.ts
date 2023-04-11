@@ -4,7 +4,7 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {OpenWindowProxyImpl, PasswordManagerImpl, PrefsBrowserProxyImpl, PrefToggleButtonElement, SyncBrowserProxyImpl, TrustedVaultBannerState} from 'chrome://password-manager/password_manager.js';
+import {OpenWindowProxyImpl, PasswordManagerImpl, PrefToggleButtonElement, SyncBrowserProxyImpl, TrustedVaultBannerState} from 'chrome://password-manager/password_manager.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -14,7 +14,6 @@ import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
-import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 import {createBlockedSiteEntry, createPasswordEntry, makePasswordManagerPrefs} from './test_util.js';
 
@@ -36,16 +35,12 @@ function assertBlockedSiteList(
 }
 
 suite('SettingsSectionTest', function() {
-  let prefsProxy: TestPrefsBrowserProxy;
   let passwordManager: TestPasswordManagerProxy;
   let openWindowProxy: TestOpenWindowProxy;
   let syncProxy: TestSyncBrowserProxy;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    prefsProxy = new TestPrefsBrowserProxy();
-    PrefsBrowserProxyImpl.setInstance(prefsProxy);
-    prefsProxy.prefs = makePasswordManagerPrefs();
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
     openWindowProxy = new TestOpenWindowProxy();
@@ -55,56 +50,52 @@ suite('SettingsSectionTest', function() {
   });
 
   test('pref value displayed in the UI', async function() {
-    await prefsProxy.setPref('credentials_enable_service', false);
-
     const settings = document.createElement('settings-section');
+    settings.prefs = makePasswordManagerPrefs();
+    settings.prefs.credentials_enable_service.value = false;
     document.body.appendChild(settings);
-    await prefsProxy.whenCalled('getPref');
+    await flushTasks();
 
     assertFalse(settings.$.passwordToggle.checked);
     assertTrue(settings.$.autosigninToggle.checked);
   });
 
-  test('clicking the toggle updates corresponding', async function() {
+  test('clicking the toggle updates corresponding pref', async function() {
     const settings = document.createElement('settings-section');
+    settings.prefs = makePasswordManagerPrefs();
     document.body.appendChild(settings);
-    await prefsProxy.whenCalled('getPref');
+    await flushTasks();
 
+    assertTrue(settings.getPref('credentials_enable_service').value);
     assertTrue(settings.$.passwordToggle.checked);
-    settings.$.passwordToggle.click();
-    assertFalse(settings.$.passwordToggle.checked);
 
-    const {key, value} = await prefsProxy.whenCalled('setPref');
-    assertEquals('credentials_enable_service', key);
-    assertFalse(value);
+    settings.$.passwordToggle.click();
+    assertFalse(settings.getPref('credentials_enable_service').value);
+    assertFalse(settings.$.passwordToggle.checked);
   });
 
   test('enforcement disables toggle', async function() {
-    const enableServicePref =
-        await prefsProxy.getPref('credentials_enable_service');
-    enableServicePref.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
-
     const settings = document.createElement('settings-section');
+    settings.prefs = makePasswordManagerPrefs();
+    settings.prefs.credentials_enable_service.enforcement =
+        chrome.settingsPrivate.Enforcement.ENFORCED;
     document.body.appendChild(settings);
-    await prefsProxy.whenCalled('getPref');
+    await flushTasks();
 
+    assertTrue(settings.getPref('credentials_enable_service').value);
     assertTrue(settings.$.passwordToggle.checked);
     settings.$.passwordToggle.click();
-    assertTrue(settings.$.passwordToggle.checked);
-
-    const postPref = await prefsProxy.getPref('credentials_enable_service');
-    assertTrue(postPref.value);
+    assertTrue(settings.getPref('credentials_enable_service').value);
   });
 
   test('extension control includes icon', async function() {
-    const enableServicePref =
-        await prefsProxy.getPref('credentials_enable_service');
-    enableServicePref.extensionId = 'test';
-    enableServicePref.controlledByName = 'test extension';
-
     const settings = document.createElement('settings-section');
+    settings.prefs = makePasswordManagerPrefs();
+    settings.prefs.credentials_enable_service.extensionId = 'test';
+    settings.prefs.credentials_enable_service.controlledByName =
+        'test extension';
     document.body.appendChild(settings);
-    await prefsProxy.whenCalled('getPref');
+    await flushTasks();
 
     assertTrue(settings.$.passwordToggle.checked);
     assertTrue(!!settings.$.passwordToggle.shadowRoot!.querySelector(
@@ -113,8 +104,9 @@ suite('SettingsSectionTest', function() {
 
   test('no extension control icon by default', async function() {
     const settings = document.createElement('settings-section');
+    settings.prefs = makePasswordManagerPrefs();
     document.body.appendChild(settings);
-    await prefsProxy.whenCalled('getPref');
+    await flushTasks();
 
     assertTrue(settings.$.passwordToggle.checked);
     settings.$.passwordToggle.click();
@@ -124,12 +116,12 @@ suite('SettingsSectionTest', function() {
 
   test('pref updated externally', async function() {
     const settings = document.createElement('settings-section');
+    settings.prefs = makePasswordManagerPrefs();
     document.body.appendChild(settings);
-    await prefsProxy.whenCalled('getPref');
+    await flushTasks();
 
     assertTrue(settings.$.autosigninToggle.checked);
-    prefsProxy.prefs = makePasswordManagerPrefs();
-    await prefsProxy.setPref('credentials_enable_autosignin', false);
+    settings.set('prefs.credentials_enable_autosignin.value', false);
 
     assertFalse(settings.$.autosigninToggle.checked);
   });
@@ -138,14 +130,14 @@ suite('SettingsSectionTest', function() {
   // Tests that biometric auth pref is visible, and clicking on it triggers
   // biometric auth validation instead of directly updating the pref value.
   test('biometric auth prefs when feature is available', async function() {
-    await prefsProxy.setPref(
-        'password_manager.biometric_authentication_filling', false);
     loadTimeData.overrideValues(
         {biometricAuthenticationForFillingToggleVisible: true});
 
     const settings = document.createElement('settings-section');
+    settings.prefs = makePasswordManagerPrefs();
+    settings.prefs.password_manager.biometric_authentication_filling.value =
+        false;
     document.body.appendChild(settings);
-    await prefsProxy.whenCalled('getPref');
     await flushTasks();
 
     const biometricAuthenticationToggle =
@@ -153,17 +145,18 @@ suite('SettingsSectionTest', function() {
             '#biometricAuthenticationToggle') as PrefToggleButtonElement;
     assertTrue(!!biometricAuthenticationToggle);
     assertFalse(biometricAuthenticationToggle.checked);
+    assertFalse(
+        settings.getPref('password_manager.biometric_authentication_filling')
+            .value);
+
     biometricAuthenticationToggle.click();
 
     // Pref settings should not change until authentication succeeds.
     await passwordManager.whenCalled('switchBiometricAuthBeforeFillingState');
     assertFalse(biometricAuthenticationToggle.checked);
-
-    // Imitate prefs changing after successful identification.
-    prefsProxy.prefs = makePasswordManagerPrefs();
-    await prefsProxy.setPref(
-        'password_manager.biometric_authentication_filling', true);
-    assertTrue(biometricAuthenticationToggle.checked);
+    assertFalse(
+        settings.getPref('password_manager.biometric_authentication_filling')
+            .value);
   });
 
   // Tests that biometric auth pref is not shown, if biometric auth is
@@ -172,8 +165,8 @@ suite('SettingsSectionTest', function() {
     loadTimeData.overrideValues(
         {biometricAuthenticationForFillingToggleVisible: false});
     const settings = document.createElement('settings-section');
+    settings.prefs = makePasswordManagerPrefs();
     document.body.appendChild(settings);
-    await prefsProxy.whenCalled('getPref');
     await flushTasks();
     assertFalse(!!settings.shadowRoot!.querySelector<PrefToggleButtonElement>(
         '#biometricAuthenticationToggle'));

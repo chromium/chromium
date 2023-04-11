@@ -10,17 +10,13 @@ import '//resources/cr_elements/cr_actionable_row_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
-import './pref_mixin.js';
 import './extension_controlled_icon.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefMixin} from './pref_mixin.js';
 import {getTemplate} from './pref_toggle_button.html.js';
 
-const PrefToggleButtonElementBase = PrefMixin(PolymerElement);
-
-export class PrefToggleButtonElement extends PrefToggleButtonElementBase {
+export class PrefToggleButtonElement extends PolymerElement {
   static get is() {
     return 'pref-toggle-button';
   }
@@ -69,6 +65,8 @@ export class PrefToggleButtonElement extends PrefToggleButtonElementBase {
         type: Boolean,
         value: false,
       },
+
+      pref: Object,
     };
   }
 
@@ -84,6 +82,7 @@ export class PrefToggleButtonElement extends PrefToggleButtonElementBase {
   checked: boolean;
   disabled: boolean;
   changeRequiresValidation: boolean;
+  pref: chrome.settingsPrivate.PrefObject;
 
   override ready() {
     super.ready();
@@ -136,7 +135,7 @@ export class PrefToggleButtonElement extends PrefToggleButtonElementBase {
 
   /** Update the pref to the current |checked| value. */
   private updatePrefValue_() {
-    this.setPrefValue(this.checked);
+    this.set('pref.value', this.checked);
   }
 
   private getAriaLabel_(): string {

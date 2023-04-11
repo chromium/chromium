@@ -4,6 +4,8 @@
 
 import './password_manager_app.js';
 
+export {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
+export {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
 export {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 export {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
@@ -22,7 +24,6 @@ export {PasswordsSectionElement} from './passwords_section.js';
 export {ExtensionControlBrowserProxy, ExtensionControlBrowserProxyImpl} from './prefs/extension_control_browser_proxy.js';
 export {ExtensionControlledIconElement} from './prefs/extension_controlled_icon.js';
 export {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
-export {PrefsBrowserProxy, PrefsBrowserProxyImpl, PrefsChangedListener} from './prefs/prefs_browser_proxy.js';
 export {PromoCard, PromoCardsProxy, PromoCardsProxyImpl} from './promo_cards/promo_cards_browser_proxy.js';
 export {CheckupSubpage, Page, Route, RouteObserverMixin, RouteObserverMixinInterface, Router, UrlParam} from './router.js';
 export {SettingsSectionElement} from './settings_section.js';

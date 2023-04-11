@@ -1,13 +1,13 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './shared_style.css.js';
 import './prefs/pref_toggle_button.js';
 import './user_utils_mixin.js';
 
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -33,7 +33,7 @@ export interface SettingsSectionElement {
 }
 
 const SettingsSectionElementBase =
-    UserUtilMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
+    PrefsMixin(UserUtilMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
 export class SettingsSectionElement extends SettingsSectionElementBase {
   static get is() {
