@@ -204,85 +204,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(
       const LayoutObject* parent) const override;
 
-  // Accessors for logical width/height and margins in the containing block's
-  // block-flow direction.
-  LayoutUnit LogicalWidthForChild(const LayoutBox& child) const {
-    NOT_DESTROYED();
-    return LogicalWidthForChildSize(child.Size());
-  }
-  LayoutUnit LogicalWidthForChildSize(LayoutSize child_size) const {
-    NOT_DESTROYED();
-    return IsHorizontalWritingMode() ? child_size.Width() : child_size.Height();
-  }
-  LayoutUnit LogicalHeightForChild(const LayoutBox& child) const {
-    NOT_DESTROYED();
-    return IsHorizontalWritingMode() ? child.Size().Height()
-                                     : child.Size().Width();
-  }
-  LayoutSize LogicalSizeForChild(const LayoutBox& child) const {
-    NOT_DESTROYED();
-    return IsHorizontalWritingMode() ? child.Size()
-                                     : child.Size().TransposedSize();
-  }
-  LayoutUnit LogicalTopForChild(const LayoutBox& child) const {
-    NOT_DESTROYED();
-    return IsHorizontalWritingMode() ? child.Location().Y()
-                                     : child.Location().X();
-  }
-  DISABLE_CFI_PERF LayoutUnit
-  MarginBeforeForChild(const LayoutBoxModelObject& child) const {
-    NOT_DESTROYED();
-    return child.MarginBefore(Style());
-  }
-  DISABLE_CFI_PERF LayoutUnit
-  MarginAfterForChild(const LayoutBoxModelObject& child) const {
-    NOT_DESTROYED();
-    return child.MarginAfter(Style());
-  }
-  DISABLE_CFI_PERF LayoutUnit
-  MarginStartForChild(const LayoutBoxModelObject& child) const {
-    NOT_DESTROYED();
-    return child.MarginStart(Style());
-  }
-  LayoutUnit MarginEndForChild(const LayoutBoxModelObject& child) const {
-    NOT_DESTROYED();
-    return child.MarginEnd(Style());
-  }
-  void SetMarginBeforeForChild(LayoutBox& child, LayoutUnit value) const {
-    NOT_DESTROYED();
-    child.SetMarginBefore(value, Style());
-  }
-  void SetMarginAfterForChild(LayoutBox& child, LayoutUnit value) const {
-    NOT_DESTROYED();
-    child.SetMarginAfter(value, Style());
-  }
-
-  LayoutUnit AvailableLogicalWidthForContent() const {
-    NOT_DESTROYED();
-    return (LogicalRightOffsetForContent() - LogicalLeftOffsetForContent())
-        .ClampNegativeToZero();
-  }
-  DISABLE_CFI_PERF LayoutUnit LogicalLeftOffsetForContent() const {
-    NOT_DESTROYED();
-    return IsHorizontalWritingMode() ? ContentLeft() : ContentTop();
-  }
-  LayoutUnit LogicalRightOffsetForContent() const {
-    NOT_DESTROYED();
-    return LogicalLeftOffsetForContent() + AvailableLogicalWidth();
-  }
-  LayoutUnit StartOffsetForContent() const {
-    NOT_DESTROYED();
-    return StyleRef().IsLeftToRightDirection()
-               ? LogicalLeftOffsetForContent()
-               : LogicalWidth() - LogicalRightOffsetForContent();
-  }
-  LayoutUnit EndOffsetForContent() const {
-    NOT_DESTROYED();
-    return !StyleRef().IsLeftToRightDirection()
-               ? LogicalLeftOffsetForContent()
-               : LogicalWidth() - LogicalRightOffsetForContent();
-  }
-
 #if DCHECK_IS_ON()
   void CheckPositionedObjectsNeedLayout();
 #endif
@@ -332,9 +253,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void WillBeDestroyed() override;
 
   void UpdateLayout() override;
-
- protected:
-  LayoutUnit MarginIntrinsicLogicalWidthForChild(const LayoutBox& child) const;
 
  public:
   void Paint(const PaintInfo&) const override;

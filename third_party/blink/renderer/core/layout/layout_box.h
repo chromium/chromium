@@ -394,13 +394,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     frame_size_ = size;
     SizeChanged();
   }
-  void Move(LayoutUnit dx, LayoutUnit dy) {
-    NOT_DESTROYED();
-    if (!dx && !dy)
-      return;
-    frame_location_.Move(dx, dy);
-    LocationChanged();
-  }
 
   // See frame_location_ and frame_size_.
   LayoutRect FrameRect() const {

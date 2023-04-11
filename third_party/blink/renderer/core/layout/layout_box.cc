@@ -4470,17 +4470,18 @@ void LayoutBox::ComputeAndSetBlockDirectionMargins(
   LayoutUnit margin_before;
   LayoutUnit margin_after;
   DCHECK(containing_block);
+  const auto& containing_block_style = containing_block->StyleRef();
   ComputeMarginsForDirection(
       kBlockDirection, containing_block,
       ContainingBlockLogicalWidthForContent(), LogicalHeight(), margin_before,
-      margin_after, StyleRef().MarginBeforeUsing(containing_block->StyleRef()),
-      StyleRef().MarginAfterUsing(containing_block->StyleRef()));
+      margin_after, StyleRef().MarginBeforeUsing(containing_block_style),
+      StyleRef().MarginAfterUsing(containing_block_style));
   // Note that in this 'positioning phase' of the layout we are using the
   // containing block's writing mode rather than our own when calculating
   // margins.
   // http://www.w3.org/TR/2014/CR-css-writing-modes-3-20140320/#orthogonal-flows
-  containing_block->SetMarginBeforeForChild(*this, margin_before);
-  containing_block->SetMarginAfterForChild(*this, margin_after);
+  SetMarginBefore(margin_before, &containing_block_style);
+  SetMarginAfter(margin_after, &containing_block_style);
 }
 
 LayoutUnit LayoutBox::ContainingBlockLogicalWidthForPositioned(

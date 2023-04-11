@@ -513,22 +513,6 @@ void LayoutBlock::AddLayoutOverflowFromPositionedObjects() {
   }
 }
 
-LayoutUnit LayoutBlock::MarginIntrinsicLogicalWidthForChild(
-    const LayoutBox& child) const {
-  NOT_DESTROYED();
-  // A margin has three types: fixed, percentage, and auto (variable).
-  // Auto and percentage margins become 0 when computing min/max width.
-  // Fixed margins can be added in as is.
-  const Length& margin_left = child.StyleRef().MarginStartUsing(StyleRef());
-  const Length& margin_right = child.StyleRef().MarginEndUsing(StyleRef());
-  LayoutUnit margin;
-  if (margin_left.IsFixed())
-    margin += margin_left.Value();
-  if (margin_right.IsFixed())
-    margin += margin_right.Value();
-  return margin;
-}
-
 void LayoutBlock::Paint(const PaintInfo& paint_info) const {
   NOT_DESTROYED();
   NOTREACHED_NORETURN();
