@@ -29,8 +29,6 @@ BASE_DECLARE_FEATURE(kRetireStaticDenyList);
 
 BASE_DECLARE_FEATURE(kEnableProtoApiForClassifyUrl);
 
-BASE_DECLARE_FEATURE(kLocalExtensionApprovalsV2);
-
 // Returns whether refreshed version of the website filter interstitial is
 // enabled.
 bool IsWebFilterInterstitialRefreshEnabled();
