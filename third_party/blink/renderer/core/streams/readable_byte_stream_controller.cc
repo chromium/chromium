@@ -78,11 +78,20 @@ ReadableByteStreamController::ReadableByteStreamController()
 
 ReadableStreamBYOBRequest* ReadableByteStreamController::byobRequest() {
   // https://streams.spec.whatwg.org/#rbs-controller-byob-request
-  // 1. If this.[[byobRequest]] is null and this.[[pendingPullIntos]] is not
-  // empty,
-  if (!byob_request_ && !pending_pull_intos_.empty()) {
-    //   a. Let firstDescriptor be this.[[pendingPullIntos]][0].
-    const PullIntoDescriptor* first_descriptor = pending_pull_intos_[0];
+  // 1. Return ReadableByteStreamControllerGetBYOBRequest(this).
+  return GetBYOBRequest(this);
+}
+
+ReadableStreamBYOBRequest* ReadableByteStreamController::GetBYOBRequest(
+    ReadableByteStreamController* controller) {
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontrollergetbyobrequest
+  // 1. If controller.[[byobRequest]] is null and
+  // controller.[[pendingPullIntos]] is not empty,
+  if (!controller->byob_request_ && !controller->pending_pull_intos_.empty()) {
+    //   a. Let firstDescriptor be controller.[[pendingPullIntos]][0].
+    const PullIntoDescriptor* first_descriptor =
+        controller->pending_pull_intos_[0];
+
     //   b. Let view be ! Construct(%Uint8Array%, « firstDescriptor’s buffer,
     //   firstDescriptor’s byte offset + firstDescriptor’s bytes filled,
     //   firstDescriptor’s byte length − firstDescriptor’s bytes filled »).
@@ -90,15 +99,17 @@ ReadableStreamBYOBRequest* ReadableByteStreamController::byobRequest() {
         first_descriptor->buffer,
         first_descriptor->byte_offset + first_descriptor->bytes_filled,
         first_descriptor->byte_length - first_descriptor->bytes_filled);
+
     //   c. Let byobRequest be a new ReadableStreamBYOBRequest.
-    //   d. Set byobRequest.[[controller]] to this.
+    //   d. Set byobRequest.[[controller]] to controller.
     //   e. Set byobRequest.[[view]] to view.
-    //   f. Set this.[[byobRequest]] to byobRequest.
-    byob_request_ = MakeGarbageCollected<ReadableStreamBYOBRequest>(
-        this, NotShared<DOMUint8Array>(view));
+    //   f. Set controller.[[byobRequest]] to byobRequest.
+    controller->byob_request_ = MakeGarbageCollected<ReadableStreamBYOBRequest>(
+        controller, NotShared<DOMUint8Array>(view));
   }
-  // 2. Return this.[[byobRequest]].
-  return byob_request_;
+
+  // 2. Return controller.[[byobRequest]].
+  return controller->byob_request_;
 }
 
 absl::optional<double> ReadableByteStreamController::desiredSize() {

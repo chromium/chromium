@@ -114,6 +114,13 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
                                 StrategySizeAlgorithm* size_algorithm,
                                 ExceptionState&);
 
+  // https://streams.spec.whatwg.org/#abstract-opdef-createreadablebytestream
+  static ReadableStream* CreateByteStream(ScriptState*,
+                                          StreamStartAlgorithm* start_algorithm,
+                                          StreamAlgorithm* pull_algorithm,
+                                          StreamAlgorithm* cancel_algorithm,
+                                          ExceptionState&);
+
   // Entry point to create a ReadableByteStream from other C++ APIs.
   // CreateReadableByteStream():
   // https://streams.spec.whatwg.org/#abstract-opdef-createreadablebytestream
@@ -198,6 +205,11 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
            ReadableStream** branch1,
            ReadableStream** branch2,
            ExceptionState&);
+
+  void ByteStreamTee(ScriptState*,
+                     ReadableStream** branch1,
+                     ReadableStream** branch2,
+                     ExceptionState&);
 
   bool IsLocked() const { return IsLocked(this); }
 
@@ -300,6 +312,7 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   class PipeToEngine;
   class ReadHandleImpl;
   class TeeEngine;
+  class ByteStreamTeeEngine;
 
   // https://streams.spec.whatwg.org/#rs-constructor
   void InitInternal(ScriptState*,
