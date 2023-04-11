@@ -178,6 +178,9 @@ class VIEWS_EXPORT InkDropHost {
   // Size used by default for the SquareInkDropRipple.
   static constexpr gfx::Size kDefaultSquareInkDropSize = gfx::Size(24, 24);
 
+  // Returns a large scaled size used by SquareInkDropRipple and Highlight.
+  static gfx::Size GetLargeSize(gfx::Size small_size);
+
   // Creates a SquareInkDropRipple centered on |center_point|.
   std::unique_ptr<InkDropRipple> CreateSquareRipple(
       const gfx::Point& center_point,
