@@ -121,6 +121,10 @@
 
       #checkmark {
         display: block;
+        /* Automatically adjust color of the checkmark SVG in forced colors mode.
+         * Otherwise, this property defaults to preserve-parent-color.
+         * https://www.w3.org/TR/css-color-adjust-1/#forced-color-adjust-prop */
+        forced-color-adjust: auto;
         position: relative;
         transform: scale(0);
         z-index: 1;
