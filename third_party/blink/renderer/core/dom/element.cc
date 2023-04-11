@@ -3975,6 +3975,8 @@ StyleRecalcChange Element::RecalcStyle(
   StyleRecalcChange child_change = change.ForChildren(*this);
   if (change.ShouldRecalcStyleFor(*this)) {
     child_change = RecalcOwnStyle(change, style_recalc_context);
+    recordreplay::Assert("[RUN-1219-1706] Element::RecalcStyle %d AfterRecalcOwnStyle",
+                         RecordReplayId());
     if (GetStyleChangeType() == kSubtreeStyleChange) {
       child_change =
           child_change.EnsureAtLeast(StyleRecalcChange::kRecalcDescendants);
@@ -4065,6 +4067,8 @@ StyleRecalcChange Element::RecalcStyle(
   }
 
   if (child_change.TraversePseudoElements(*this)) {
+    recordreplay::Assert("[RUN-1219-1706] Element::RecalcStyle %d UpdatePseudoElement#1",
+      RecordReplayId());
     UpdatePseudoElement(kPseudoIdBackdrop, child_change, child_recalc_context);
     UpdatePseudoElement(kPseudoIdMarker, child_change, child_recalc_context);
     UpdatePseudoElement(kPseudoIdBefore, child_change, child_recalc_context);
@@ -4087,6 +4091,8 @@ StyleRecalcChange Element::RecalcStyle(
   recordreplay::Assert("[RUN-1436-1437] Element::RecalcStyle E");
 
   if (child_change.TraversePseudoElements(*this)) {
+    recordreplay::Assert("[RUN-1219-1706] Element::RecalcStyle %d UpdatePseudoElement#2",
+      RecordReplayId());
     UpdatePseudoElement(kPseudoIdAfter, child_change, child_recalc_context);
 
     // If we are re-attaching us or any of our descendants, we need to attach
