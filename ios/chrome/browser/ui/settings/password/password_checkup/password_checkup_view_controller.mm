@@ -4,9 +4,13 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_view_controller.h"
 
+#import "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/string_number_conversions.h"
+#import "components/google/core/common/google_util.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
@@ -47,6 +51,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Section: SectionIdentifierLastPasswordCheckup
   ItemTypePasswordCheckupTimestamp,
   ItemTypeCheckPasswordsButton,
+  ItemTypePasswordCheckupDescriptionFooter,
 };
 
 // Helper method to get the right header image depending on the
@@ -147,6 +152,9 @@ void SetUpTrailingIconAndAccessoryType(
 
   // The button to start password check.
   TableViewTextItem* _checkPasswordsButtonItem;
+
+  // The footer item briefly explaining the purpose of Password Checkup.
+  TableViewLinkHeaderFooterItem* _passwordCheckupDescriptionFooterItem;
 
   // Whether Settings have been dismissed.
   BOOL _settingsAreDismissed;
@@ -261,6 +269,13 @@ void SetUpTrailingIconAndAccessoryType(
   [model addItem:_checkPasswordsButtonItem
       toSectionWithIdentifier:SectionIdentifierLastPasswordCheckup];
 
+  if (!_passwordCheckupDescriptionFooterItem) {
+    _passwordCheckupDescriptionFooterItem =
+        [self passwordCheckupDescriptionFooterItem];
+  }
+  [model setFooter:_passwordCheckupDescriptionFooterItem
+      forSectionWithIdentifier:SectionIdentifierLastPasswordCheckup];
+
   if (_consumerHasBeenUpdated) {
     [self updateItemsDependingOnPasswordCheckupState];
   }
@@ -313,6 +328,22 @@ void SetUpTrailingIconAndAccessoryType(
   checkPasswordsButtonItem.textColor = [UIColor colorNamed:kBlueColor];
   checkPasswordsButtonItem.accessibilityTraits = UIAccessibilityTraitButton;
   return checkPasswordsButtonItem;
+}
+
+- (TableViewLinkHeaderFooterItem*)passwordCheckupDescriptionFooterItem {
+  TableViewLinkHeaderFooterItem* footerItem =
+      [[TableViewLinkHeaderFooterItem alloc]
+          initWithType:ItemTypePasswordCheckupDescriptionFooter];
+  footerItem.text =
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_FOOTER);
+  CrURL* footerURL = [[CrURL alloc]
+      initWithGURL:
+          google_util::AppendGoogleLocaleParam(
+              GURL(password_manager::
+                       kPasswordManagerHelpCenterChangeUnsafePasswordsURL),
+              GetApplicationContext()->GetApplicationLocale())];
+  footerItem.urls = @[ footerURL ];
+  return footerItem;
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -412,6 +443,7 @@ void SetUpTrailingIconAndAccessoryType(
           showPasswordIssuesWithWarningType:WarningType::kWeakPasswordsWarning];
       break;
     case ItemTypePasswordCheckupTimestamp:
+    case ItemTypePasswordCheckupDescriptionFooter:
       break;
     case ItemTypeCheckPasswordsButton:
       if (_checkPasswordsButtonItem.isEnabled) {
@@ -441,6 +473,28 @@ void SetUpTrailingIconAndAccessoryType(
       return _checkPasswordsButtonItem.isEnabled;
   }
   return YES;
+}
+
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  UIView* view = [super tableView:tableView viewForFooterInSection:section];
+  NSInteger sectionIdentifier =
+      [self.tableViewModel sectionIdentifierForSectionIndex:section];
+  if (sectionIdentifier == SectionIdentifierLastPasswordCheckup &&
+      [self.tableViewModel footerForSectionIndex:section]) {
+    // Attach self as delegate to handle clicks in page footer.
+    TableViewLinkHeaderFooterView* footerView =
+        base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
+    footerView.delegate = self;
+  }
+
+  return view;
+}
+
+#pragma mark - TableViewLinkHeaderFooterItemDelegate
+
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
+  [self.handler dismissAndOpenURL:URL];
 }
 
 #pragma mark - Private
