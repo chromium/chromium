@@ -376,6 +376,9 @@ RestrictedCookieManager::RestrictedCookieManager(
   DCHECK(cookie_store);
   DCHECK(!cookie_setting_overrides_.Has(
       net::CookieSettingOverride::kStorageAccessGrantEligible));
+  if (role == mojom::RestrictedCookieManagerRole::SCRIPT) {
+      CHECK(origin_.IsSameOriginWith(isolation_info_.frame_origin().value()));
+  }
 }
 
 RestrictedCookieManager::~RestrictedCookieManager() {
