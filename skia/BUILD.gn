@@ -355,6 +355,8 @@ component("skia") {
       "//third_party/skia/src/ports/SkImageGenerator_skia.cpp",
     ]
     deps += [ "//third_party/wuffs" ]
+  } else {
+      sources += skia_no_encode_jpeg_srcs
   }
 
   # Remove unused util sources.
