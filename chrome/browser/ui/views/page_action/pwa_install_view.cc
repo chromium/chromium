@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/user_education/common/feature_promo_controller.h"
@@ -31,7 +32,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -179,7 +179,7 @@ views::BubbleDialogDelegate* PwaInstallView::GetBubble() const {
 }
 
 const gfx::VectorIcon& PwaInstallView::GetVectorIcon() const {
-  return features::IsChromeRefresh2023()
+  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
              ? omnibox::kInstallDesktopChromeRefreshIcon
              : omnibox::kInstallDesktopIcon;
 }

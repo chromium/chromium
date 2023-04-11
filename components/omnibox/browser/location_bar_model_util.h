@@ -21,6 +21,14 @@ const gfx::VectorIcon& GetSecurityVectorIcon(
     security_state::SecurityLevel security_level,
     bool use_updated_connection_security_indicators);
 
+// Helper function to enable the omnibox chrome refresh icons based on the
+// feature flags turned on. This is a duplicate of
+// `omnibox_field_trial::IsChromeRefreshIconsEnabled` and is present to avoid a
+// cyclic interdependency on the build targets or to restructure them just for
+// experimentation.
+// TODO(shibalik): Replace this with global chrome refresh flag after flag is
+// expired.
+bool IsChromeRefreshIconsEnabled();
 }  // namespace location_bar_model
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_LOCATION_BAR_MODEL_UTIL_H_

@@ -23,12 +23,12 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -165,8 +165,9 @@ void HighEfficiencyChipView::OnExecuting(
 }
 
 const gfx::VectorIcon& HighEfficiencyChipView::GetVectorIcon() const {
-  return features::IsChromeRefresh2023() ? kHighEfficiencyChromeRefreshIcon
-                                         : kHighEfficiencyIcon;
+  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+             ? kHighEfficiencyChromeRefreshIcon
+             : kHighEfficiencyIcon;
 }
 
 views::BubbleDialogDelegate* HighEfficiencyChipView::GetBubble() const {
