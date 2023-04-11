@@ -45,6 +45,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -86,18 +87,24 @@ gfx::ImageSkia GetFaviconForWebContents(content::WebContents* web_contents) {
   const auto& color_provider = web_contents->GetColorProvider();
   const gfx::Image url_favicon =
       favicon::TabFaviconFromWebContents(web_contents);
-  const gfx::ImageSkia favicon =
+  gfx::ImageSkia favicon =
       url_favicon.IsEmpty()
           ? favicon::GetDefaultFaviconModel(ui::kColorBubbleBackground)
                 .Rasterize(&color_provider)
           : url_favicon.AsImageSkia();
   const bool is_dark =
       color_utils::IsDark(color_provider.GetColor(ui::kColorBubbleBackground));
+  const SkColor background_color = is_dark ? SK_ColorBLACK : SK_ColorWHITE;
+  const bool themify_favicon =
+      web_contents->GetURL().SchemeIs(content::kChromeUIScheme);
+  if (themify_favicon) {
+    favicon = favicon::ThemeFavicon(favicon, SK_ColorWHITE, background_color,
+                                    background_color);
+  }
   constexpr int kMainImageDimension = 112;
   gfx::ImageSkia centered_favicon =
       gfx::ImageSkiaOperations::CreateImageWithRoundRectBackground(
-          kMainImageDimension, 0, is_dark ? SK_ColorBLACK : SK_ColorWHITE,
-          favicon);
+          kMainImageDimension, 0, background_color, favicon);
   return centered_favicon;
 }
 }  // namespace
