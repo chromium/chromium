@@ -1712,11 +1712,11 @@ template <>
 inline CSSIdentifierValue::CSSIdentifierValue(TimelineScroller scroller)
     : CSSValue(kIdentifierClass) {
   switch (scroller) {
-    case TimelineScroller::kNearest:
-      value_id_ = CSSValueID::kNearest;
-      break;
     case TimelineScroller::kRoot:
       value_id_ = CSSValueID::kRoot;
+      break;
+    case TimelineScroller::kNearest:
+      value_id_ = CSSValueID::kNearest;
       break;
     case TimelineScroller::kSelf:
       value_id_ = CSSValueID::kSelf;
@@ -1727,10 +1727,10 @@ inline CSSIdentifierValue::CSSIdentifierValue(TimelineScroller scroller)
 template <>
 inline TimelineScroller CSSIdentifierValue::ConvertTo() const {
   switch (GetValueID()) {
-    case CSSValueID::kNearest:
-      return TimelineScroller::kNearest;
     case CSSValueID::kRoot:
       return TimelineScroller::kRoot;
+    case CSSValueID::kNearest:
+      return TimelineScroller::kNearest;
     case CSSValueID::kSelf:
       return TimelineScroller::kSelf;
     default:

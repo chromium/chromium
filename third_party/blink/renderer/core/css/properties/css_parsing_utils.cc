@@ -4180,25 +4180,42 @@ CSSValue* ConsumeScrollFunction(CSSParserTokenRange& range,
     return nullptr;
   }
   CSSParserTokenRange block = range.ConsumeBlock();
-  CSSIdentifierValue* axis =
-      ConsumeIdent<CSSValueID::kBlock, CSSValueID::kInline,
-                   CSSValueID::kVertical, CSSValueID::kHorizontal>(block);
-  CSSValue* scroller =
-      ConsumeIdent<CSSValueID::kNearest, CSSValueID::kRoot, CSSValueID::kSelf>(
-          block);
+
+  CSSValue* scroller = nullptr;
+  CSSIdentifierValue* axis = nullptr;
+
+  while (!scroller || !axis) {
+    if (block.AtEnd()) {
+      break;
+    }
+    if (!scroller) {
+      if ((scroller = ConsumeIdent<CSSValueID::kRoot, CSSValueID::kNearest,
+                                   CSSValueID::kSelf>(block))) {
+        continue;
+      }
+    }
+    if (!axis) {
+      if ((axis = ConsumeIdent<CSSValueID::kBlock, CSSValueID::kInline,
+                               CSSValueID::kVertical, CSSValueID::kHorizontal>(
+               block))) {
+        continue;
+      }
+    }
+    return nullptr;
+  }
   if (!block.AtEnd()) {
     return nullptr;
   }
   // Nullify default values.
-  // https://drafts.csswg.org/scroll-animations-1/#valdef-scroll-block
-  if (axis && IsIdent(*axis, CSSValueID::kBlock)) {
-    axis = nullptr;
-  }
   // https://drafts.csswg.org/scroll-animations-1/#valdef-scroll-nearest
   if (scroller && IsIdent(*scroller, CSSValueID::kNearest)) {
     scroller = nullptr;
   }
-  return MakeGarbageCollected<cssvalue::CSSScrollValue>(axis, scroller);
+  // https://drafts.csswg.org/scroll-animations-1/#valdef-scroll-block
+  if (axis && IsIdent(*axis, CSSValueID::kBlock)) {
+    axis = nullptr;
+  }
+  return MakeGarbageCollected<cssvalue::CSSScrollValue>(scroller, axis);
 }
 
 CSSValue* ConsumeViewFunction(CSSParserTokenRange& range,

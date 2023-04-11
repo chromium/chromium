@@ -2434,15 +2434,15 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimeline(
   }
   DCHECK(timeline.IsScroll());
   const StyleTimeline::ScrollData& scroll_data = timeline.GetScroll();
-  CSSValue* axis = scroll_data.HasDefaultAxis()
-                       ? nullptr
-                       : CSSIdentifierValue::Create(scroll_data.GetAxis());
   CSSValue* scroller =
       scroll_data.HasDefaultScroller()
           ? nullptr
           : CSSIdentifierValue::Create(scroll_data.GetScroller());
+  CSSValue* axis = scroll_data.HasDefaultAxis()
+                       ? nullptr
+                       : CSSIdentifierValue::Create(scroll_data.GetAxis());
 
-  return MakeGarbageCollected<cssvalue::CSSScrollValue>(axis, scroller);
+  return MakeGarbageCollected<cssvalue::CSSScrollValue>(scroller, axis);
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationTimelineList(

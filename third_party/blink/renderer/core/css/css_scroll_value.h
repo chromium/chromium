@@ -15,18 +15,18 @@ namespace cssvalue {
 // https://drafts.csswg.org/scroll-animations-1/#scroll-notation
 class CORE_EXPORT CSSScrollValue : public CSSValue {
  public:
-  CSSScrollValue(const CSSValue* axis, const CSSValue* scroller);
+  CSSScrollValue(const CSSValue* scroller, const CSSValue* axis);
 
-  const CSSValue* Axis() const { return axis_; }
   const CSSValue* Scroller() const { return scroller_; }
+  const CSSValue* Axis() const { return axis_; }
 
   String CustomCSSText() const;
   bool Equals(const CSSScrollValue&) const;
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
-  Member<const CSSValue> axis_;
   Member<const CSSValue> scroller_;
+  Member<const CSSValue> axis_;
 };
 
 }  // namespace cssvalue
