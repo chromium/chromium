@@ -341,6 +341,7 @@ source_set("headers") {
     "//third_party/blink/public/mojom:mojom_modules_headers",
     "//third_party/blink/public/mojom:mojom_platform_shared",
     "//third_party/blink/public/mojom:web_bluetooth_mojo_bindings_headers",
+    "//third_party/liburlpattern",
     "//ui/display/mojom",
     "//ui/events:event_constants",
     "//ui/events/types:headers",

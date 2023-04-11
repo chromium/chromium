@@ -1667,6 +1667,11 @@ _CONFIG = [
             'net::IsValidTopLevelMimeType',
             'net::ParseMimeTypeWithoutParameter',
             'net::registry_controlled_domains::.+',
+
+            # Needed to use the liburlpattern API.
+            "absl::StatusOr",
+            "absl::string_view",
+            'liburlpattern::.+',
         ],
     },
     {
