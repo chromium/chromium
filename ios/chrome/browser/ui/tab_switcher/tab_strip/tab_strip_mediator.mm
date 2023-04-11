@@ -7,8 +7,8 @@
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_consumer.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
+#import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url/url_util.h"
 #import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
@@ -27,13 +27,14 @@
 namespace {
 
 // Constructs an array of TabSwitcherItems from a `web_state_list`.
-NSArray* CreateItems(WebStateList* web_state_list) {
-  NSMutableArray* items = [[NSMutableArray alloc] init];
+NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
+  NSMutableArray<TabSwitcherItem*>* items = [[NSMutableArray alloc] init];
   for (int i = 0; i < web_state_list->count(); i++) {
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    [items addObject:GetTabSwitcherItem(web_state)];
+    [items
+        addObject:[[WebStateTabSwitcherItem alloc] initWithWebState:web_state]];
   }
-  return [items copy];
+  return items;
 }
 
 // Returns the ID of the active tab in `web_state_list`.
@@ -263,8 +264,9 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
 #pragma mark - CRWWebStateObserver
 
 - (void)webStateDidChangeTitle:(web::WebState*)webState {
-  [self.consumer replaceItemID:webState->GetStableIdentifier()
-                      withItem:GetTabSwitcherItem(webState)];
+  TabSwitcherItem* item =
+      [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
+  [self.consumer replaceItemID:webState->GetStableIdentifier() withItem:item];
 }
 
 @end

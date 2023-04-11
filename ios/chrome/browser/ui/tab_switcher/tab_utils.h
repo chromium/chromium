@@ -51,9 +51,6 @@ NSString* GetActiveWebStateIdentifier(WebStateList* web_state_list,
 web::WebState* GetWebState(WebStateList* web_state_list,
                            WebStateSearchCriteria criteria);
 
-// Returns the TabSwitcherItem object representing the `web_state`.
-TabSwitcherItem* GetTabSwitcherItem(web::WebState* web_state);
-
 // Returns the TabItem object representing the tab with `the given `criteria`.
 // Returns `nil` if the tab is not found.
 TabItem* GetTabItem(WebStateList* web_state_list,

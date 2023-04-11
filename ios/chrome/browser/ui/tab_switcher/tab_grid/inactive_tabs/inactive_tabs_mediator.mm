@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_info_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
+#import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/chrome/browser/url/url_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -54,7 +55,8 @@ NSArray* CreateItemsOrderedByRecency(WebStateList* web_state_list) {
             });
 
   for (web::WebState* web_state : web_states) {
-    [items addObject:GetTabSwitcherItem(web_state)];
+    [items
+        addObject:[[WebStateTabSwitcherItem alloc] initWithWebState:web_state]];
   }
   return items;
 }
@@ -221,8 +223,9 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 }
 
 - (void)updateConsumerItemForWebState:(web::WebState*)webState {
-  [_consumer replaceItemID:webState->GetStableIdentifier()
-                  withItem:GetTabSwitcherItem(webState)];
+  TabSwitcherItem* item =
+      [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
+  [_consumer replaceItemID:webState->GetStableIdentifier() withItem:item];
 }
 
 #pragma mark - GridImageDataSource
@@ -321,7 +324,9 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
     // It is possible to observe an updated snapshot for a WebState before
     // observing that the WebState has been added to the WebStateList. It is the
     // consumer's responsibility to ignore any updates before inserts.
-    [_consumer replaceItemID:identifier withItem:GetTabSwitcherItem(webState)];
+    TabSwitcherItem* item =
+        [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
+    [_consumer replaceItemID:identifier withItem:item];
   }
 }
 
@@ -341,9 +346,9 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
     return;
   }
 
-  [_consumer insertItem:GetTabSwitcherItem(webState)
-                atIndex:index
-         selectedItemID:nil];
+  TabSwitcherItem* item =
+      [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
+  [_consumer insertItem:item atIndex:index selectedItemID:nil];
 
   _scopedWebStateObservation->AddObservation(webState);
 }

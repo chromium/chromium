@@ -43,7 +43,6 @@
 #import "ios/chrome/browser/snapshots/snapshot_cache_observer.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/features.h"
-#import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/tabs_search/tabs_search_service.h"
 #import "ios/chrome/browser/tabs_search/tabs_search_service_factory.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
@@ -52,8 +51,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
+#import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url/url_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -76,15 +75,16 @@ namespace {
 
 // Constructs an array of TabSwitcherItems from a `web_state_list` sorted by
 // last active time.
-NSArray* CreateItemsOrderedByLastActiveTime(WebStateList* web_state_list) {
+NSArray<TabSwitcherItem*>* CreateItemsOrderedByLastActiveTime(
+    WebStateList* web_state_list) {
   DCHECK(IsTabGridSortedByRecency());
-  NSMutableArray* items = [[NSMutableArray alloc] init];
+  NSMutableArray<TabSwitcherItem*>* items = [[NSMutableArray alloc] init];
   std::vector<web::WebState*> web_states;
 
-  int firstIndex = web_state_list->GetIndexOfFirstNonPinnedWebState();
-  DCHECK(firstIndex == 0 || IsPinnedTabsEnabled());
+  int first_index = web_state_list->GetIndexOfFirstNonPinnedWebState();
+  DCHECK(first_index == 0 || IsPinnedTabsEnabled());
 
-  for (int i = firstIndex; i < web_state_list->count(); i++) {
+  for (int i = first_index; i < web_state_list->count(); i++) {
     DCHECK(!web_state_list->IsWebStatePinnedAt(i));
     web_states.push_back(web_state_list->GetWebStateAt(i));
   }
@@ -94,30 +94,33 @@ NSArray* CreateItemsOrderedByLastActiveTime(WebStateList* web_state_list) {
             });
 
   for (web::WebState* web_state : web_states) {
-    [items addObject:GetTabSwitcherItem(web_state)];
+    [items
+        addObject:[[WebStateTabSwitcherItem alloc] initWithWebState:web_state]];
   }
-  return [items copy];
+  return items;
 }
 
 // Constructs an array of TabSwitcherItems from a `web_state_list` sorted by
 // index.
-NSArray* CreateItemsOrderedByIndex(WebStateList* web_state_list) {
+NSArray<TabSwitcherItem*>* CreateItemsOrderedByIndex(
+    WebStateList* web_state_list) {
   DCHECK(!IsTabGridSortedByRecency());
-  NSMutableArray* items = [[NSMutableArray alloc] init];
+  NSMutableArray<TabSwitcherItem*>* items = [[NSMutableArray alloc] init];
 
-  int firstIndex = web_state_list->GetIndexOfFirstNonPinnedWebState();
-  DCHECK(firstIndex == 0 || IsPinnedTabsEnabled());
+  int first_index = web_state_list->GetIndexOfFirstNonPinnedWebState();
+  DCHECK(first_index == 0 || IsPinnedTabsEnabled());
 
-  for (int i = firstIndex; i < web_state_list->count(); i++) {
+  for (int i = first_index; i < web_state_list->count(); i++) {
     DCHECK(!web_state_list->IsWebStatePinnedAt(i));
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    [items addObject:GetTabSwitcherItem(web_state)];
+    [items
+        addObject:[[WebStateTabSwitcherItem alloc] initWithWebState:web_state]];
   }
-  return [items copy];
+  return items;
 }
 
 // Constructs an array of TabSwitcherItems from a `web_state_list`.
-NSArray* CreateItems(WebStateList* web_state_list) {
+NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
   if (IsTabGridSortedByRecency()) {
     return CreateItemsOrderedByLastActiveTime(web_state_list);
   }
@@ -280,8 +283,10 @@ void RecordTabGridCloseTabsCount(int count) {
     return;
   }
 
+  TabSwitcherItem* item =
+      [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
   NSUInteger itemIndex = [self itemIndexFromWebStateListIndex:index];
-  [self.consumer insertItem:GetTabSwitcherItem(webState)
+  [self.consumer insertItem:item
                     atIndex:itemIndex
              selectedItemID:GetActiveWebStateIdentifier(
                                 webStateList,
@@ -323,8 +328,10 @@ void RecordTabGridCloseTabsCount(int count) {
     return;
   }
 
+  TabSwitcherItem* newItem =
+      [[WebStateTabSwitcherItem alloc] initWithWebState:newWebState];
   [self.consumer replaceItemID:oldWebState->GetStableIdentifier()
-                      withItem:GetTabSwitcherItem(newWebState)];
+                      withItem:newItem];
 
   _scopedWebStateObservation->RemoveObservation(oldWebState);
   _scopedWebStateObservation->AddObservation(newWebState);
@@ -398,8 +405,10 @@ void RecordTabGridCloseTabsCount(int count) {
 
     _scopedWebStateObservation->RemoveObservation(webState);
   } else {
+    TabSwitcherItem* item =
+        [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
     NSUInteger itemIndex = [self itemIndexFromWebStateListIndex:index];
-    [self.consumer insertItem:GetTabSwitcherItem(webState)
+    [self.consumer insertItem:item
                       atIndex:itemIndex
                selectedItemID:GetActiveWebStateIdentifier(
                                   webStateList,
@@ -438,8 +447,9 @@ void RecordTabGridCloseTabsCount(int count) {
 }
 
 - (void)updateConsumerItemForWebState:(web::WebState*)webState {
-  [self.consumer replaceItemID:webState->GetStableIdentifier()
-                      withItem:GetTabSwitcherItem(webState)];
+  TabSwitcherItem* item =
+      [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
+  [self.consumer replaceItemID:webState->GetStableIdentifier() withItem:item];
 }
 
 #pragma mark - SnapshotCacheObserver
@@ -456,8 +466,9 @@ void RecordTabGridCloseTabsCount(int count) {
     // It is possible to observe an updated snapshot for a WebState before
     // observing that the WebState has been added to the WebStateList. It is the
     // consumer's responsibility to ignore any updates before inserts.
-    [self.consumer replaceItemID:identifier
-                        withItem:GetTabSwitcherItem(webState)];
+    TabSwitcherItem* item =
+        [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
+    [self.consumer replaceItemID:identifier withItem:item];
   }
 }
 
@@ -799,7 +810,8 @@ void RecordTabGridCloseTabsCount(int count) {
         for (const TabsSearchService::TabsSearchBrowserResults& browserResults :
              results) {
           for (web::WebState* webState : browserResults.web_states) {
-            TabSwitcherItem* item = GetTabSwitcherItem(webState);
+            TabSwitcherItem* item =
+                [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
             if (browserResults.browser == self.browser) {
               [currentBrowserItems addObject:item];
             } else {
