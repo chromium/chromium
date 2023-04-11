@@ -143,6 +143,8 @@ class ReadingListSyncBridge : public syncer::ModelTypeSyncBridge {
   void ApplyStopSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                 delete_metadata_change_list) override;
 
+  bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
+
  private:
   void AddEntryToBatch(syncer::MutableDataBatch* batch,
                        const ReadingListEntry& entry);

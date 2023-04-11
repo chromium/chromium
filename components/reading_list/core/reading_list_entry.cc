@@ -221,6 +221,19 @@ bool ReadingListEntry::HasBeenSeen() const {
   return state_ != UNSEEN;
 }
 
+bool ReadingListEntry::IsSpecificsValid(
+    const sync_pb::ReadingListSpecifics& pb_entry) {
+  // TODO(crbug.com/1402196): Make sure that the entry_id field is valid too.
+  if (!pb_entry.has_url()) {
+    return false;
+  }
+  GURL url(pb_entry.url());
+  if (url.is_empty() || !url.is_valid()) {
+    return false;
+  }
+  return true;
+}
+
 void ReadingListEntry::SetEstimatedReadTime(
     base::TimeDelta estimated_read_time) {
   estimated_read_time_ = estimated_read_time;
@@ -411,16 +424,11 @@ scoped_refptr<ReadingListEntry> ReadingListEntry::FromReadingListLocal(
 }
 
 // static
-scoped_refptr<ReadingListEntry> ReadingListEntry::FromReadingListSpecifics(
+scoped_refptr<ReadingListEntry> ReadingListEntry::FromReadingListValidSpecifics(
     const sync_pb::ReadingListSpecifics& pb_entry,
     const base::Time& now) {
-  if (!pb_entry.has_url()) {
-    return nullptr;
-  }
-  GURL url(pb_entry.url());
-  if (url.is_empty() || !url.is_valid()) {
-    return nullptr;
-  }
+  CHECK(IsSpecificsValid(pb_entry));
+
   std::string title;
   if (pb_entry.has_title()) {
     title = pb_entry.title();
@@ -471,7 +479,7 @@ scoped_refptr<ReadingListEntry> ReadingListEntry::FromReadingListSpecifics(
   }
 
   return base::WrapRefCounted<ReadingListEntry>(new ReadingListEntry(
-      url, title, estimated_read_time, state, creation_time_us,
+      GURL(pb_entry.url()), title, estimated_read_time, state, creation_time_us,
       first_read_time_us, update_time_us, update_title_time_us, WAITING,
       base::FilePath(), GURL(), 0, 0, 0, nullptr));
 }

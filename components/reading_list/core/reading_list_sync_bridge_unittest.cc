@@ -64,14 +64,17 @@ MATCHER_P2(MatchesEntry, url_matcher, is_read_matcher, "") {
 void ExpectAB(const sync_pb::ReadingListSpecifics& entryA,
               const sync_pb::ReadingListSpecifics& entryB,
               bool possible) {
+  ASSERT_TRUE(ReadingListEntry::IsSpecificsValid(entryA));
+  ASSERT_TRUE(ReadingListEntry::IsSpecificsValid(entryB));
+
   EXPECT_EQ(ReadingListSyncBridge::CompareEntriesForSync(entryA, entryB),
             possible);
   scoped_refptr<ReadingListEntry> a =
-      ReadingListEntry::FromReadingListSpecifics(entryA,
-                                                 base::Time::FromTimeT(10));
+      ReadingListEntry::FromReadingListValidSpecifics(
+          entryA, base::Time::FromTimeT(10));
   scoped_refptr<ReadingListEntry> b =
-      ReadingListEntry::FromReadingListSpecifics(entryB,
-                                                 base::Time::FromTimeT(10));
+      ReadingListEntry::FromReadingListValidSpecifics(
+          entryB, base::Time::FromTimeT(10));
   a->MergeWithEntry(*b);
   std::unique_ptr<sync_pb::ReadingListSpecifics> mergedEntry =
       a->AsReadingListSpecifics();
@@ -516,4 +519,27 @@ TEST_F(ReadingListSyncBridgeTest, CompareEntriesForSync) {
       ExpectAB(entryB, entryA, false);
     }
   }
+}
+
+TEST_F(ReadingListSyncBridgeTest, EntityDataShouldBeValid) {
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://example.com/"), "example title", AdvanceAndGetTime(&clock_));
+  std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
+      entry->AsReadingListSpecifics();
+  syncer::EntityData data;
+  *data.specifics.mutable_reading_list() = *specifics;
+
+  EXPECT_TRUE(bridge()->IsEntityDataValid(data));
+}
+
+TEST_F(ReadingListSyncBridgeTest, EntityDataShouldBeNotValid) {
+  auto entry = base::MakeRefCounted<ReadingListEntry>(
+      GURL("http://example.com/"), "example title", AdvanceAndGetTime(&clock_));
+  std::unique_ptr<sync_pb::ReadingListSpecifics> specifics =
+      entry->AsReadingListSpecifics();
+  *specifics->mutable_url() = "";
+  syncer::EntityData data;
+  *data.specifics.mutable_reading_list() = *specifics;
+
+  EXPECT_FALSE(bridge()->IsEntityDataValid(data));
 }

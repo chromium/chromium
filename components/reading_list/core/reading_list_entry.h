@@ -109,6 +109,9 @@ class ReadingListEntry : public base::RefCounted<ReadingListEntry> {
   bool IsRead() const;
   // Returns if an entry has ever been seen.
   bool HasBeenSeen() const;
+  // Returns whether the passed ReadingListSpecifics can be used to construct an
+  // entry via FromReadingListValidSpecifics().
+  static bool IsSpecificsValid(const sync_pb::ReadingListSpecifics& pb_entry);
 
   // The last update time of the entry. This value may be used to sort the
   // entries. The value is in microseconds since Jan 1st 1970.
@@ -145,7 +148,8 @@ class ReadingListEntry : public base::RefCounted<ReadingListEntry> {
 
   // Created a ReadingListEntry from the protobuf format.
   // If creation time is not set, it will be set to |now|.
-  static scoped_refptr<ReadingListEntry> FromReadingListSpecifics(
+  // Please note that |pb_entry| must be valid, as per IsSpecificsValid().
+  static scoped_refptr<ReadingListEntry> FromReadingListValidSpecifics(
       const sync_pb::ReadingListSpecifics& pb_entry,
       const base::Time& now);
 
