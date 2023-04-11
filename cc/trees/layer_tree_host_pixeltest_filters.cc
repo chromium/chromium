@@ -36,8 +36,8 @@ class LayerTreeHostFiltersPixelTest
         return "skia_gl";
       case viz::RendererType::kSkiaVk:
         return "skia_vk";
-      case viz::RendererType::kSkiaDawn:
-        return "skia_dawn";
+      case viz::RendererType::kSkiaGraphite:
+        return "skia_graphite";
       case viz::RendererType::kSoftware:
         return "sw";
     }
@@ -181,10 +181,6 @@ TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_BackdropFilterBlurRadius) {
 #elif BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
   // Windows and ARM64 have 436 pixels off by 1 or 2: crbug.com/259915
   float percentage_pixels_error = 1.09f;  // 436px / (200*200)
-  // Windows using Dawn D3D12 has 4044 pixels off by max of 2.
-  if (use_d3d12()) {
-    percentage_pixels_error = 2.5275f;  // 4044px / (400*400)
-  }
   pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       FuzzyPixelComparator()
           .DiscardAlpha()
@@ -383,9 +379,6 @@ TEST_P(LayerTreeHostBlurFiltersPixelTestGPULayerList,
   // Windows has 116 pixels off by at most 2: crbug.com/225027
   float percentage_pixels_error = 0.3f;  // 116px / (200*200), rounded up
   int error_allowed = 2;
-  // Windows on SkiaRenderer Dawn has 447 pixels off by at most 2.
-  if (use_d3d12())
-    percentage_pixels_error = 1.12f;  // 447px / (200*200), rounded up
 #else
   float percentage_pixels_error = 0.25f;  // 96px / (200*200), rounded up
   int error_allowed = 1;
@@ -398,9 +391,10 @@ TEST_P(LayerTreeHostBlurFiltersPixelTestGPULayerList,
           .SetAvgAbsErrorLimit(average_error_allowed_in_bad_pixels)
           .SetAbsErrorLimit(error_allowed));
 #else
-  if (use_skia_vulkan() || renderer_type_ == viz::RendererType::kSkiaDawn)
+  if (use_skia_vulkan()) {
     pixel_comparator_ =
         std::make_unique<AlphaDiscardingFuzzyPixelOffByOneComparator>();
+  }
 #endif
 
   RunPixelTestWithLayerList(
@@ -607,11 +601,6 @@ TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_ImageFilterScaled) {
   // Windows has 153 pixels off by at most 2: crbug.com/225027
   float percentage_pixels_error = 0.3825f;  // 153px / (200*200)
   int error_allowed = 2;
-  // Windows using Dawn D3D12 has 166 pixels off by 1.
-  if (use_d3d12()) {
-    percentage_pixels_error = 0.415f;  // 166px / (200*200)
-    error_allowed = 1;
-  }
 #elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   // There's a 1 pixel error on MacOS and ChromeOS
   float percentage_pixels_error = 0.0025f;  // 1px / (200*200)
@@ -746,11 +735,6 @@ TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_ImageRenderSurfaceScaled) {
     percentage_pixels_error = 0.686f;
     average_error_allowed_in_bad_pixels = 16.f;
     error_allowed = 17;
-  } else if (use_d3d12()) {
-    // Windows using Dawn D3D12 has 25 pixels off by 1.
-    percentage_pixels_error = 0.028;
-    average_error_allowed_in_bad_pixels = 1.f;
-    error_allowed = 1;
   }
   pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       FuzzyPixelComparator()
@@ -915,9 +899,6 @@ TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_RotatedFilter) {
   float percentage_pixels_error = 0.00111112f;  // 1px / (300*300)
   float average_error_allowed_in_bad_pixels = 1.f;
   int error_allowed = 1;
-  // Windows using Dawn D3D12 has 104 pixels off by 1.
-  if (use_d3d12())
-    percentage_pixels_error = 0.115556f;  // 104px / (300*300)
 #else
   float percentage_pixels_error = 0.0f;  // 1px / (300*300)
   float average_error_allowed_in_bad_pixels = 0.0f;
@@ -982,9 +963,6 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedDropShadowFilter) {
   float percentage_pixels_error = 0.00333334f;  // 3px / (300*300)
   float average_error_allowed_in_bad_pixels = 1.f;
   int error_allowed = 1;
-  // Windows using Dawn D3D12 has 22 pixels off by 1.
-  if (use_d3d12())
-    percentage_pixels_error = 0.02445;  // 22px / (300*300)
 #endif
   pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       FuzzyPixelComparator()
@@ -1039,8 +1017,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, TranslatedFilter) {
   parent->AddChild(child);
   clip->AddChild(parent);
 
-  if (use_software_renderer() ||
-      renderer_type_ == viz::RendererType::kSkiaDawn) {
+  if (use_software_renderer()) {
     pixel_comparator_ =
         std::make_unique<AlphaDiscardingFuzzyPixelOffByOneComparator>();
   }
@@ -1278,13 +1255,6 @@ class BackdropFilterInvertTest : public LayerTreeHostFiltersPixelTest {
         base::NumberToString(device_scale_factor) + "x");
     if (use_software_renderer()) {
       expected_result = expected_result.InsertBeforeExtensionASCII("_sw");
-    } else if (use_d3d12()) {
-      // Windows using Dawn D3D12 has 16 pixels off by 1.
-      pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
-          FuzzyPixelComparator()
-              .DiscardAlpha()
-              .SetErrorPixelsPercentageLimit(0.04f)  // 16px / (200*200)
-              .SetAbsErrorLimit(1));
     }
     RunPixelTest(std::move(root), expected_result);
   }

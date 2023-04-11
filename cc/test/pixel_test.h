@@ -51,9 +51,8 @@ class PixelTest : public testing::Test {
     kDefault,
     // SkiaRenderer with the Vulkan backend will be used.
     kSkiaVulkan,
-    // SkiaRenderer with the Dawn backend will be used; on Linux this will
-    // initialize Vulkan, and on Windows this will initialize D3D12.
-    kSkiaDawn,
+    // SkiaRenderer with the Skia Graphite on Dawn will be used.
+    kSkiaGraphite,
   };
 
   explicit PixelTest(GraphicsBackend backend = kDefault);
