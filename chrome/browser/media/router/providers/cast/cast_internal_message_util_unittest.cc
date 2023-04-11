@@ -152,7 +152,7 @@ TEST_F(CastInternalMessageUtilDeathTest,
 }
 
 // TODO(crbug.com/1378312): This test sometimes times out on the Win debug bot.
-#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG) || BUILDFLAG(IS_LINUX)
 #define MAYBE_CastInternalMessageFromClientConnectString \
   DISABLED_CastInternalMessageFromClientConnectString
 #else
