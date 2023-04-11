@@ -11,7 +11,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_win.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/win/uninstallation_via_os_settings.h"
@@ -114,16 +113,17 @@ bool ShouldRegisterUninstallationViaOsSettingsWithOs() {
   return true;
 }
 
-bool RegisterUninstallationViaOsSettingsWithOs(const AppId& app_id,
-                                               const std::string& app_name,
-                                               Profile* profile) {
+bool RegisterUninstallationViaOsSettingsWithOs(
+    const AppId& app_id,
+    const std::string& app_name,
+    const base::FilePath& profile_path) {
   DCHECK(ShouldRegisterUninstallationViaOsSettingsWithOs());
 
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  UninstallationViaOsSettingsHelper uninstall_os_settings_helper(
-      profile->GetPath(), app_id);
-  std::wstring hash_key = GetUninstallStringKey(profile->GetPath(), app_id);
+  UninstallationViaOsSettingsHelper uninstall_os_settings_helper(profile_path,
+                                                                 app_id);
+  std::wstring hash_key = GetUninstallStringKey(profile_path, app_id);
 
   auto uninstall_commandline = uninstall_os_settings_helper.GetCommandLine();
   base::FilePath icon_path =
@@ -135,14 +135,15 @@ bool RegisterUninstallationViaOsSettingsWithOs(const AppId& app_id,
       icon_path);
 }
 
-bool UnregisterUninstallationViaOsSettingsWithOs(const AppId& app_id,
-                                                 Profile* profile) {
+bool UnregisterUninstallationViaOsSettingsWithOs(
+    const AppId& app_id,
+    const base::FilePath& profile_path) {
   DCHECK(ShouldRegisterUninstallationViaOsSettingsWithOs());
 
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   return ::UnregisterUninstallationViaOsSettings(
-      GetUninstallStringKey(profile->GetPath(), app_id));
+      GetUninstallStringKey(profile_path, app_id));
 }
 
 }  // namespace web_app

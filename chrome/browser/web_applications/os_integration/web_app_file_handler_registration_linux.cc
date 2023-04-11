@@ -20,7 +20,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
@@ -64,8 +63,6 @@ void OnMimeInfoDatabaseUpdated(bool install,
     LOG(ERROR) << (install ? "Registering MIME types failed."
                            : "Unregistering MIME types failed.");
   }
-  scoped_refptr<OsIntegrationTestOverride> test_override =
-      web_app::GetOsIntegrationTestOverride();
   std::move(result_callback)
       .Run(registration_succeeded ? Result::kOk : Result::kError);
 }
@@ -155,11 +152,11 @@ bool UpdateMimeInfoDatabase(bool install,
 }
 
 void UninstallMimeInfoOnLinux(const AppId& app_id,
-                              Profile* profile,
+                              const base::FilePath& profile_path,
                               ResultCallback on_done) {
   base::FilePath filename =
-      shell_integration_linux::GetMimeTypesRegistrationFilename(
-          profile->GetPath(), app_id);
+      shell_integration_linux::GetMimeTypesRegistrationFilename(profile_path,
+                                                                app_id);
 
   // Empty file contents because xdg-mime uninstall only cares about the file
   // name (it uninstalls whatever associations were previously installed via the
@@ -186,28 +183,29 @@ bool FileHandlingIconsSupportedByOs() {
 
 void RegisterFileHandlersWithOs(const AppId& app_id,
                                 const std::string& app_name,
-                                Profile* profile,
+                                const base::FilePath& profile_path,
                                 const apps::FileHandlers& file_handlers,
                                 ResultCallback callback) {
   DCHECK(!file_handlers.empty());
-  InstallMimeInfoOnLinux(app_id, profile, file_handlers, std::move(callback));
+  InstallMimeInfoOnLinux(app_id, profile_path, file_handlers,
+                         std::move(callback));
 }
 
 void UnregisterFileHandlersWithOs(const AppId& app_id,
-                                  Profile* profile,
+                                  const base::FilePath& profile_path,
                                   ResultCallback callback) {
-  UninstallMimeInfoOnLinux(app_id, profile, std::move(callback));
+  UninstallMimeInfoOnLinux(app_id, profile_path, std::move(callback));
 }
 
 void InstallMimeInfoOnLinux(const AppId& app_id,
-                            Profile* profile,
+                            const base::FilePath& profile_path,
                             const apps::FileHandlers& file_handlers,
                             ResultCallback done_callback) {
   DCHECK(!app_id.empty() && !file_handlers.empty());
 
   base::FilePath filename =
-      shell_integration_linux::GetMimeTypesRegistrationFilename(
-          profile->GetPath(), app_id);
+      shell_integration_linux::GetMimeTypesRegistrationFilename(profile_path,
+                                                                app_id);
   std::string file_contents =
       shell_integration_linux::GetMimeTypesRegistrationFileContents(
           file_handlers);

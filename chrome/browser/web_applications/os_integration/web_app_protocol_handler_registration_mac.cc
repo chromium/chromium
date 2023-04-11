@@ -4,8 +4,8 @@
 
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_registration.h"
 
+#include "base/files/file_path.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 
@@ -14,7 +14,7 @@ namespace web_app {
 void RegisterProtocolHandlersWithOs(
     const AppId& app_id,
     const std::string& app_name,
-    Profile* profile,
+    const base::FilePath profile_path,
     std::vector<apps::ProtocolHandlerInfo> protocol_handlers,
     ResultCallback callback) {
   // Protocol handlers are managed through app shims. However when creating
@@ -27,16 +27,16 @@ void RegisterProtocolHandlersWithOs(
       protocols.insert(handler.protocol);
   }
   AppShimRegistry::Get()->SaveProtocolHandlersForAppAndProfile(
-      app_id, profile->GetPath(), std::move(protocols));
+      app_id, profile_path, std::move(protocols));
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), Result::kOk));
 }
 
 void UnregisterProtocolHandlersWithOs(const AppId& app_id,
-                                      Profile* profile,
+                                      const base::FilePath profile_path,
                                       ResultCallback callback) {
   AppShimRegistry::Get()->SaveProtocolHandlersForAppAndProfile(
-      app_id, profile->GetPath(), {});
+      app_id, profile_path, {});
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), Result::kOk));
 }

@@ -14,8 +14,6 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 
-class Profile;
-
 namespace web_app {
 
 // True if file handlers are managed externally by the operating system, and
@@ -35,14 +33,14 @@ bool FileHandlingIconsSupportedByOs();
 // here.
 void RegisterFileHandlersWithOs(const AppId& app_id,
                                 const std::string& app_name,
-                                Profile* profile,
+                                const base::FilePath& profile_path,
                                 const apps::FileHandlers& file_handlers,
                                 ResultCallback callback);
 
 // Undo the file extensions registration for the PWA with specified |app_id|.
 // If a shim app was required, also removes the shim app.
 void UnregisterFileHandlersWithOs(const AppId& app_id,
-                                  Profile* profile,
+                                  const base::FilePath& profile_path,
                                   ResultCallback callback);
 
 #if BUILDFLAG(IS_LINUX)
@@ -57,7 +55,7 @@ void UnregisterFileHandlersWithOs(const AppId& app_id,
 // registered as file handlers, and the file is launched.
 // TODO(crbug.com/1431463): Implement stricter handling w.r.t file extensions.
 void InstallMimeInfoOnLinux(const AppId& app_id,
-                            Profile* profile,
+                            const base::FilePath& profile_path,
                             const apps::FileHandlers& file_handlers,
                             ResultCallback done_callback);
 

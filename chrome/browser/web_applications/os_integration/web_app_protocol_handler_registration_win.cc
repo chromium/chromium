@@ -20,7 +20,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/chrome_pwa_launcher/chrome_pwa_launcher_util.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_handler_registration_utils_win.h"
@@ -42,8 +41,7 @@ namespace {
 void RegisterProtocolHandlersWithOSInBackground(
     const web_app::AppId& app_id,
     const std::wstring& app_name,
-    Profile* profile,
-    const base::FilePath& profile_path,
+    const base::FilePath profile_path,
     std::vector<apps::ProtocolHandlerInfo> protocol_handlers,
     const std::wstring& app_name_extension) {
   base::AssertLongCPUWorkAllowed();
@@ -135,7 +133,7 @@ namespace web_app {
 void RegisterProtocolHandlersWithOs(
     const AppId& app_id,
     const std::string& app_name,
-    Profile* profile,
+    const base::FilePath profile_path,
     std::vector<apps::ProtocolHandlerInfo> protocol_handlers,
     ResultCallback callback) {
   if (protocol_handlers.empty()) {
@@ -148,28 +146,28 @@ void RegisterProtocolHandlersWithOs(
   }
 
   std::wstring app_name_extension =
-      GetAppNameExtensionForNextInstall(app_id, profile->GetPath());
+      GetAppNameExtensionForNextInstall(app_id, profile_path);
 
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&RegisterProtocolHandlersWithOSInBackground, app_id,
-                     base::UTF8ToWide(app_name), profile, profile->GetPath(),
+                     base::UTF8ToWide(app_name), profile_path,
                      std::move(protocol_handlers), app_name_extension),
-      base::BindOnce(&CheckAndUpdateExternalInstallations, profile->GetPath(),
-                     app_id, std::move(callback)));
+      base::BindOnce(&CheckAndUpdateExternalInstallations, profile_path, app_id,
+                     std::move(callback)));
 }
 
 void UnregisterProtocolHandlersWithOs(const AppId& app_id,
-                                      Profile* profile,
+                                      const base::FilePath profile_path,
                                       ResultCallback callback) {
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&UnregisterProtocolHandlersWithOsInBackground, app_id,
-                     profile->GetPath()),
-      base::BindOnce(&CheckAndUpdateExternalInstallations, profile->GetPath(),
-                     app_id, std::move(callback)));
+                     profile_path),
+      base::BindOnce(&CheckAndUpdateExternalInstallations, profile_path, app_id,
+                     std::move(callback)));
 }
 
 }  // namespace web_app

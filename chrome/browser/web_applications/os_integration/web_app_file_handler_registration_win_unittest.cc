@@ -127,7 +127,8 @@ class WebAppFileHandlerRegistrationWinTest : public testing::Test {
         GetProgIdForAppFileHandler(profile->GetPath(), app_id(), {".doc"});
 
     base::RunLoop run_loop;
-    RegisterFileHandlersWithOs(app_id(), app_name, profile, file_handlers,
+    RegisterFileHandlersWithOs(app_id(), app_name, profile->GetPath(),
+                               file_handlers,
                                base::BindLambdaForTesting([&](Result result) {
                                  EXPECT_EQ(result, Result::kOk);
                                  run_loop.Quit();
@@ -260,7 +261,7 @@ TEST_F(WebAppFileHandlerRegistrationWinTest,
       GetProgIdForAppFileHandler(profile2->GetPath(), app_id(), {".doc"});
 
   base::RunLoop run_loop;
-  UnregisterFileHandlersWithOs(app_id(), profile(),
+  UnregisterFileHandlersWithOs(app_id(), profile()->GetPath(),
                                base::BindLambdaForTesting([&](Result result) {
                                  EXPECT_EQ(result, Result::kOk);
                                  run_loop.Quit();
@@ -309,7 +310,7 @@ TEST_F(WebAppFileHandlerRegistrationWinTest,
   AddAndVerifyFileAssociations(profile3, kAppName, " (Profile 3)");
 
   base::RunLoop run_loop;
-  UnregisterFileHandlersWithOs(app_id(), profile(),
+  UnregisterFileHandlersWithOs(app_id(), profile()->GetPath(),
                                base::BindLambdaForTesting([&](Result result) {
                                  EXPECT_EQ(result, Result::kOk);
                                  run_loop.Quit();
@@ -342,7 +343,7 @@ TEST_F(WebAppFileHandlerRegistrationWinTest, UnregisterFileHandlersForWebApp) {
       ShellUtil::GetApplicationPathForProgId(file_handler1_prog_id());
 
   base::RunLoop run_loop;
-  UnregisterFileHandlersWithOs(app_id(), profile(),
+  UnregisterFileHandlersWithOs(app_id(), profile()->GetPath(),
                                base::BindLambdaForTesting([&](Result result) {
                                  EXPECT_EQ(result, Result::kOk);
                                  run_loop.Quit();

@@ -23,7 +23,6 @@
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -81,7 +80,8 @@ void WebAppFileHandlerManager::EnableAndRegisterOsFileHandlers(
   const apps::FileHandlers* file_handlers = GetEnabledFileHandlers(app_id);
   if (file_handlers) {
     RegisterFileHandlersWithOs(app_id, GetRegistrar()->GetAppShortName(app_id),
-                               profile_, *file_handlers, std::move(callback));
+                               profile_->GetPath(), *file_handlers,
+                               std::move(callback));
   } else {
     // No file handlers registered.
     std::move(callback).Run(Result::kOk);
@@ -113,7 +113,8 @@ void WebAppFileHandlerManager::DisableAndUnregisterOsFileHandlers(
     return;
   }
 
-  UnregisterFileHandlersWithOs(app_id, profile_, std::move(callback));
+  UnregisterFileHandlersWithOs(app_id, profile_->GetPath(),
+                               std::move(callback));
 }
 
 const apps::FileHandlers* WebAppFileHandlerManager::GetEnabledFileHandlers(

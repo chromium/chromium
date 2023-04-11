@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -29,7 +30,7 @@ bool FileHandlingIconsSupportedByOs() {
 
 void RegisterFileHandlersWithOs(const AppId& app_id,
                                 const std::string& app_name,
-                                Profile* profile,
+                                const base::FilePath& profile_path,
                                 const apps::FileHandlers& file_handlers,
                                 ResultCallback callback) {
   NOTIMPLEMENTED();
@@ -37,7 +38,7 @@ void RegisterFileHandlersWithOs(const AppId& app_id,
 }
 
 void UnregisterFileHandlersWithOs(const AppId& app_id,
-                                  Profile* profile,
+                                  const base::FilePath& profile_path,
                                   ResultCallback callback) {
   NOTIMPLEMENTED();
   std::move(callback).Run(Result::kError);

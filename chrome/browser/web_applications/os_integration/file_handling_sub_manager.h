@@ -5,14 +5,13 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_FILE_HANDLING_SUB_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_FILE_HANDLING_SUB_MANAGER_H_
 
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-
-class Profile;
 
 namespace web_app {
 
@@ -28,7 +27,7 @@ std::set<std::string> GetMimeTypesFromFileHandlingProto(
 // Used to track updates to the file handlers for a web app.
 class FileHandlingSubManager : public OsIntegrationSubManager {
  public:
-  FileHandlingSubManager(Profile& profile,
+  FileHandlingSubManager(const base::FilePath& profile_path,
                          WebAppRegistrar& registrar,
                          WebAppSyncBridge& sync_bridge);
   ~FileHandlingSubManager() override;
@@ -52,8 +51,7 @@ class FileHandlingSubManager : public OsIntegrationSubManager {
                 const proto::WebAppOsIntegrationState& desired_state,
                 base::OnceClosure callback);
 
-  const raw_ref<Profile> profile_;
-
+  const base::FilePath profile_path_;
   const raw_ref<WebAppRegistrar> registrar_;
   const raw_ref<WebAppSyncBridge> sync_bridge_;
 

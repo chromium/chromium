@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_uninstallation_via_os_settings_registration.h"
 
 #include "base/check.h"
+#include "base/files/file_path.h"
 #include "build/build_config.h"
 
 namespace web_app {
@@ -17,15 +18,17 @@ bool ShouldRegisterUninstallationViaOsSettingsWithOs() {
   return false;
 }
 
-bool RegisterUninstallationViaOsSettingsWithOs(const AppId& app_id,
-                                               const std::string& app_name,
-                                               Profile* profile) {
+bool RegisterUninstallationViaOsSettingsWithOs(
+    const AppId& app_id,
+    const std::string& app_name,
+    const base::FilePath& profile_path) {
   NOTREACHED();
   return true;
 }
 
-bool UnregisterUninstallationViaOsSettingsWithOs(const AppId& app_id,
-                                                 Profile* profile) {
+bool UnregisterUninstallationViaOsSettingsWithOs(
+    const AppId& app_id,
+    const base::FilePath& profile_path) {
   NOTREACHED();
   return true;
 }

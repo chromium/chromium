@@ -6,11 +6,11 @@
 
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -83,10 +83,13 @@ std::set<std::string> GetMimeTypesFromFileHandlingProto(
   return mime_types;
 }
 
-FileHandlingSubManager::FileHandlingSubManager(Profile& profile,
-                                               WebAppRegistrar& registrar,
-                                               WebAppSyncBridge& sync_bridge)
-    : profile_(profile), registrar_(registrar), sync_bridge_(sync_bridge) {}
+FileHandlingSubManager::FileHandlingSubManager(
+    const base::FilePath& profile_path,
+    WebAppRegistrar& registrar,
+    WebAppSyncBridge& sync_bridge)
+    : profile_path_(profile_path),
+      registrar_(registrar),
+      sync_bridge_(sync_bridge) {}
 
 FileHandlingSubManager::~FileHandlingSubManager() = default;
 
@@ -131,7 +134,7 @@ void FileHandlingSubManager::Configure(
     // Save file handlers data on `AppShimRegistry` to be used during
     // `ShortcutSubManager::Execute`.
     AppShimRegistry::Get()->SaveFileHandlersForAppAndProfile(
-        app_id, profile_->GetPath(),
+        app_id, profile_path_,
         GetFileExtensionsFromFileHandlingProto(desired_state.file_handling()),
         GetMimeTypesFromFileHandlingProto(desired_state.file_handling()));
   }
@@ -190,7 +193,7 @@ void FileHandlingSubManager::Unregister(
         OsIntegrationState::kDisabled);
   }
 
-  UnregisterFileHandlersWithOs(app_id, &profile_.get(),
+  UnregisterFileHandlersWithOs(app_id, profile_path_,
                                std::move(metrics_callback));
 }
 
@@ -218,7 +221,7 @@ void FileHandlingSubManager::Register(
   }
 
   RegisterFileHandlersWithOs(
-      app_id, registrar_->GetAppShortName(app_id), &profile_.get(),
+      app_id, registrar_->GetAppShortName(app_id), profile_path_,
       ConvertFileHandlingProtoToFileHandlers(desired_state.file_handling()),
       std::move(metrics_callback));
 }

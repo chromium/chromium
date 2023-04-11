@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/web_applications/os_integration/web_app_uninstallation_via_os_settings_registration.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
@@ -35,9 +36,9 @@ bool ShouldRegisterOsUninstall(
 }  // namespace
 
 UninstallationViaOsSettingsSubManager::UninstallationViaOsSettingsSubManager(
-    Profile& profile,
+    const base::FilePath& profile_path,
     WebAppRegistrar& registrar)
-    : profile_(profile), registrar_(registrar) {}
+    : profile_path_(profile_path), registrar_(registrar) {}
 
 UninstallationViaOsSettingsSubManager::
     ~UninstallationViaOsSettingsSubManager() = default;
@@ -85,7 +86,7 @@ void UninstallationViaOsSettingsSubManager::Execute(
 
   if (ShouldRegisterOsUninstall(current_state)) {
     bool result =
-        UnregisterUninstallationViaOsSettingsWithOs(app_id, &profile_.get());
+        UnregisterUninstallationViaOsSettingsWithOs(app_id, profile_path_);
     base::UmaHistogramBoolean("WebApp.OsSettingsUninstallUnregistration.Result",
                               result);
   }
@@ -93,7 +94,7 @@ void UninstallationViaOsSettingsSubManager::Execute(
   if (ShouldRegisterOsUninstall(desired_state)) {
     bool result = RegisterUninstallationViaOsSettingsWithOs(
         app_id, desired_state.uninstall_registration().display_name(),
-        &profile_.get());
+        profile_path_);
     base::UmaHistogramBoolean("WebApp.OsSettingsUninstallRegistration.Result",
                               result);
   }
