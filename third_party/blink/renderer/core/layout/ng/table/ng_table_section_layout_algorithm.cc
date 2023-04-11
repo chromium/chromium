@@ -121,7 +121,8 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
     offset.block_offset += fragment.BlockSize();
     is_first_non_collapsed_row &= is_row_collapsed;
 
-    if (table_data.has_collapsed_borders) {
+    if (table_data.has_collapsed_borders &&
+        (!row_break_token || !row_break_token->IsAtBlockEnd())) {
       // Determine the start row-index for this section.
       if (row_offsets.size() == 1u)
         actual_start_row_index = row_index;

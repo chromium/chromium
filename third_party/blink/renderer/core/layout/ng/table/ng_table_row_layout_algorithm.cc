@@ -125,6 +125,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
   EBreakBetween row_break_after;
   NGRowBaselineTabulator row_baseline_tabulator;
   HeapVector<ResultWithOffset> results;
+  bool has_inflow_break_inside = false;
   auto PlaceCells =
       [&](LayoutUnit row_block_size,
           absl::optional<LayoutUnit> row_baseline) -> NGLayoutResult::EStatus {
@@ -134,6 +135,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
     row_break_after = EBreakBetween::kAuto;
     row_baseline_tabulator = NGRowBaselineTabulator();
     results.clear();
+    has_inflow_break_inside = false;
 
     NGBlockChildIterator child_iterator(Node().FirstChild(), BreakToken(),
                                         /* calculate_child_idx */ true);
@@ -187,9 +189,10 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
       }
 
       bool has_rowspan = cell_data.rowspan_block_size != kIndefiniteSize;
-      const NGBoxFragment fragment(
-          table_data.table_writing_direction,
-          To<NGPhysicalBoxFragment>(cell_result->PhysicalFragment()));
+      const auto& physical_fragment =
+          To<NGPhysicalBoxFragment>(cell_result->PhysicalFragment());
+      const NGBoxFragment fragment(table_data.table_writing_direction,
+                                   physical_fragment);
       row_baseline_tabulator.ProcessCell(
           fragment,
           NGTableAlgorithmUtils::IsBaseline(cell_style.VerticalAlign()),
@@ -198,6 +201,11 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
       if (min_block_size_should_encompass_intrinsic_size) {
         max_cell_block_size =
             std::max(max_cell_block_size, fragment.BlockSize());
+      }
+
+      if (const auto* outgoing_break_token = physical_fragment.BreakToken();
+          outgoing_break_token && !has_inflow_break_inside && !has_rowspan) {
+        has_inflow_break_inside = !outgoing_break_token->IsAtBlockEnd();
       }
     }
 
@@ -260,6 +268,7 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
   // separately), we have seen all children by now.
   container_builder_.SetHasSeenAllChildren();
 
+  container_builder_.SetIsKnownToFitInFragmentainer(!has_inflow_break_inside);
   container_builder_.SetIntrinsicBlockSize(max_cell_block_size);
   container_builder_.SetFragmentsTotalBlockSize(row_block_size);
   if (row.is_collapsed)
