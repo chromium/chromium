@@ -6294,17 +6294,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDownloadRangeDescription, kOsAll,
      FEATURE_VALUE_TYPE(download::features::kDownloadRange)},
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {"chrome-tips-in-main-menu", flag_descriptions::kChromeTipsInMainMenuName,
-     flag_descriptions::kChromeTipsInMainMenuDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kChromeTipsInMainMenu)},
-
-    {"chrome-tips-in-main-menu-new-badge",
-     flag_descriptions::kChromeTipsInMainMenuNewBadgeName,
-     flag_descriptions::kChromeTipsInMainMenuNewBadgeDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kChromeTipsInMainMenuNewBadge)},
-#endif
-
     {"tab-hover-card-images", flag_descriptions::kTabHoverCardImagesName,
      flag_descriptions::kTabHoverCardImagesDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabHoverCardImages,

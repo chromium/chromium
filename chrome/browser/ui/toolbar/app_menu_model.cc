@@ -208,11 +208,6 @@ class HelpMenuModel : public ui::SimpleMenuModel {
 #endif
     AddItem(IDC_ABOUT, l10n_util::GetStringUTF16(IDS_ABOUT));
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    if (base::FeatureList::IsEnabled(features::kChromeTipsInMainMenu)) {
-      AddItem(IDC_CHROME_TIPS, l10n_util::GetStringUTF16(IDS_CHROME_TIPS));
-      if (base::FeatureList::IsEnabled(features::kChromeTipsInMainMenuNewBadge))
-        SetIsNewFeatureAt(GetIndexOfCommandId(IDC_CHROME_TIPS).value(), true);
-    }
     if (base::FeatureList::IsEnabled(features::kChromeWhatsNewUI)) {
       AddItem(IDC_CHROME_WHATS_NEW,
               l10n_util::GetStringUTF16(IDS_CHROME_WHATS_NEW));

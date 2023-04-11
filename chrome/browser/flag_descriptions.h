@@ -415,14 +415,6 @@ extern const char kClearCrossSiteCrossBrowsingContextGroupWindowNameName[];
 extern const char
     kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription[];
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-extern const char kChromeTipsInMainMenuName[];
-extern const char kChromeTipsInMainMenuDescription[];
-
-extern const char kChromeTipsInMainMenuNewBadgeName[];
-extern const char kChromeTipsInMainMenuNewBadgeDescription[];
-#endif
-
 extern const char kChromeWhatsNewUIName[];
 extern const char kChromeWhatsNewUIDescription[];
 

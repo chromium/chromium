@@ -31,12 +31,6 @@ BASE_DECLARE_FEATURE(kDesktopPWAsAppHomePage);
 
 BASE_DECLARE_FEATURE(kChromeLabs);
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-BASE_DECLARE_FEATURE(kChromeTipsInMainMenu);
-
-BASE_DECLARE_FEATURE(kChromeTipsInMainMenuNewBadge);
-#endif
-
 BASE_DECLARE_FEATURE(kChromeWhatsNewUI);
 
 BASE_DECLARE_FEATURE(kExtensionsMenuInAppMenu);

@@ -753,21 +753,6 @@ const char kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription[] =
     "Clear the preserved window.name property when it's a top-level cross-site "
     "navigation that swaps BrowsingContextGroup.";
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-const char kChromeTipsInMainMenuName[] =
-    "Show 'Tips for Chrome' in Help portion of main menu.";
-const char kChromeTipsInMainMenuDescription[] =
-    "Enables 'Tips for Chrome' in main menu; the menu item will take users to "
-    "an official Google site with information about the latest and most "
-    "popular Chrome features.";
-
-const char kChromeTipsInMainMenuNewBadgeName[] =
-    "Show 'New' promo badge on 'Tips for Chrome' in Help portion of main menu.";
-const char kChromeTipsInMainMenuNewBadgeDescription[] =
-    "Enables 'New' promo badge on 'Tips for Chrome' in main menu; experiment to"
-    " test the value of this user education feature.";
-#endif
-
 const char kChromeWhatsNewUIName[] =
     "Show Chrome What's New page at chrome://whats-new";
 const char kChromeWhatsNewUIDescription[] =

@@ -25,18 +25,6 @@ BASE_FEATURE(kDesktopPWAsAppHomePage,
 // Enables Chrome Labs menu in the toolbar. See https://crbug.com/1145666
 BASE_FEATURE(kChromeLabs, "ChromeLabs", base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Enables "Tips for Chrome" in Main Chrome Menu | Help.
-BASE_FEATURE(kChromeTipsInMainMenu,
-             "ChromeTipsInMainMenu",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables "Tips for Chrome" in Main Chrome Menu | Help.
-BASE_FEATURE(kChromeTipsInMainMenuNewBadge,
-             "ChromeTipsInMainMenuNewBadge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // Enables "Chrome What's New" UI.
 BASE_FEATURE(kChromeWhatsNewUI,
              "ChromeWhatsNewUI",

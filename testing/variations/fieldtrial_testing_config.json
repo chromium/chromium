@@ -2821,27 +2821,6 @@
             ]
         }
     ],
-    "ChromeTipsInMainMenu": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithNewBadgePromo",
-                    "enable_features": [
-                        "ChromeTipsInMainMenu",
-                        "ChromeTipsInMainMenuNewBadge"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeWideEchoCancellation": [
         {
             "platforms": [
