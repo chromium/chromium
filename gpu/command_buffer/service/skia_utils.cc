@@ -76,7 +76,7 @@ void DeleteSkObject(SharedContextState* context_state, sk_sp<T> sk_object) {
 
 }  // namespace
 
-GrContextOptions GetDefaultGrContextOptions(GrContextType type) {
+GrContextOptions GetDefaultGrContextOptions() {
   // If you make any changes to the GrContext::Options here that could affect
   // text rendering, make sure to match the capabilities initialized in
   // GetCapabilities and ensuring these are also used by the
@@ -104,6 +104,18 @@ GrContextOptions GetDefaultGrContextOptions(GrContextType type) {
 
   return options;
 }
+
+#if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
+skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions() {
+  skgpu::graphite::ContextOptions options;
+  size_t max_resource_cache_bytes;
+  size_t glyph_cache_max_texture_bytes;
+  DetermineGrCacheLimitsFromAvailableMemory(&max_resource_cache_bytes,
+                                            &glyph_cache_max_texture_bytes);
+  options.fGlyphCacheTextureMaximumBytes = glyph_cache_max_texture_bytes;
+  return options;
+}
+#endif
 
 GLuint GetGrGLBackendTextureFormat(
     const gles2::FeatureInfo* feature_info,

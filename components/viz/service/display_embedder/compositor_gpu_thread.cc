@@ -200,15 +200,15 @@ CompositorGpuThread::GetSharedContextState() {
   // Initialize GL.
   if (!shared_context_state->InitializeGL(gpu_preferences,
                                           std::move(gles2_feature_info))) {
-    LOG(ERROR) << "Failed to initialize GL for SharedContextState";
+    LOG(ERROR) << "Failed to initialize GL for DrDC SharedContextState";
     return nullptr;
   }
 
-  // Initialize GrContext.
-  if (!shared_context_state->InitializeGrContext(
+  // Initialize Skia.
+  if (!shared_context_state->InitializeSkia(
           gpu_preferences, workarounds, gpu_channel_manager_->gr_shader_cache(),
           /*activity_flags=*/nullptr, /*progress_reporter=*/nullptr)) {
-    LOG(ERROR) << "Failed to Initialize GrContext for SharedContextState";
+    LOG(ERROR) << "Failed to Initialize Skia for DrDC SharedContextState";
   }
   shared_context_state_ = std::move(shared_context_state);
   return shared_context_state_;

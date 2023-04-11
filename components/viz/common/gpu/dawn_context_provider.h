@@ -9,8 +9,12 @@
 
 #include "components/viz/common/viz_dawn_context_provider_export.h"
 #include "third_party/dawn/include/dawn/native/DawnNative.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/dawn/GrDawnTypes.h"
+#include "third_party/skia/include/gpu/graphite/ContextOptions.h"
+#include "third_party/skia/include/gpu/graphite/dawn/DawnTypes.h"
+
+namespace skgpu::graphite {
+class Context;
+}  // namespace skgpu::graphite
 
 namespace viz {
 
@@ -23,10 +27,15 @@ class VIZ_DAWN_CONTEXT_PROVIDER_EXPORT DawnContextProvider {
 
   ~DawnContextProvider();
 
-  wgpu::Device GetDevice() { return device_; }
-  wgpu::Instance GetInstance() { return instance_.Get(); }
-  GrDirectContext* GetGrContext() { return gr_context_.get(); }
-  bool IsValid() { return !!gr_context_; }
+  wgpu::Device GetDevice() const { return device_; }
+  wgpu::Instance GetInstance() const { return instance_.Get(); }
+
+  bool InitializeGraphiteContext(
+      const skgpu::graphite::ContextOptions& options);
+
+  skgpu::graphite::Context* GetGraphiteContext() const {
+    return graphite_context_.get();
+  }
 
  private:
   DawnContextProvider();
@@ -35,7 +44,7 @@ class VIZ_DAWN_CONTEXT_PROVIDER_EXPORT DawnContextProvider {
 
   dawn::native::Instance instance_;
   wgpu::Device device_;
-  sk_sp<GrDirectContext> gr_context_;
+  std::unique_ptr<skgpu::graphite::Context> graphite_context_;
 };
 
 }  // namespace viz

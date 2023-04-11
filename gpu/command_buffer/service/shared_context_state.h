@@ -47,6 +47,10 @@ class MetalContextProvider;
 class VulkanContextProvider;
 }  // namespace viz
 
+namespace skgpu::graphite {
+class Context;
+}  // namespace skgpu::graphite
+
 namespace gpu {
 class ExternalSemaphorePool;
 class GpuDriverBugWorkarounds;
@@ -89,11 +93,11 @@ class GPU_GLES2_EXPORT SharedContextState
   SharedContextState(const SharedContextState&) = delete;
   SharedContextState& operator=(const SharedContextState&) = delete;
 
-  bool InitializeGrContext(const GpuPreferences& gpu_preferences,
-                           const GpuDriverBugWorkarounds& workarounds,
-                           gpu::raster::GrShaderCache* cache,
-                           GpuProcessActivityFlags* activity_flags = nullptr,
-                           gl::ProgressReporter* progress_reporter = nullptr);
+  bool InitializeSkia(const GpuPreferences& gpu_preferences,
+                      const GpuDriverBugWorkarounds& workarounds,
+                      gpu::raster::GrShaderCache* cache = nullptr,
+                      GpuProcessActivityFlags* activity_flags = nullptr,
+                      gl::ProgressReporter* progress_reporter = nullptr);
   bool GrContextIsGL() const {
     return gr_context_type_ == GrContextType::kGL;
   }
@@ -136,6 +140,9 @@ class GPU_GLES2_EXPORT SharedContextState
   }
   gl::ProgressReporter* progress_reporter() const { return progress_reporter_; }
   GrDirectContext* gr_context() { return gr_context_; }
+  skgpu::graphite::Context* graphite_context() const {
+    return graphite_context_;
+  }
   GrContextType gr_context_type() const { return gr_context_type_; }
   // Handles Skia-reported shader compilation errors.
   void compileError(const char* shader, const char* errors) override;
@@ -280,6 +287,14 @@ class GPU_GLES2_EXPORT SharedContextState
 
   ~SharedContextState() override;
 
+  bool InitializeGanesh(const GpuPreferences& gpu_preferences,
+                        const GpuDriverBugWorkarounds& workarounds,
+                        gpu::raster::GrShaderCache* cache,
+                        GpuProcessActivityFlags* activity_flags = nullptr,
+                        gl::ProgressReporter* progress_reporter = nullptr);
+
+  bool InitializeGraphite(const GpuPreferences& gpu_preferences);
+
   absl::optional<error::ContextLostReason> GetResetStatus(bool needs_gl);
 
   // gpu::GLContextVirtualDelegate implementation.
@@ -306,15 +321,16 @@ class GPU_GLES2_EXPORT SharedContextState
   bool support_vulkan_external_object_ = false;
   bool support_gl_external_object_flags_ = false;
   ContextLostCallback context_lost_callback_;
-  GrContextType gr_context_type_ = GrContextType::kGL;
+  const GrContextType gr_context_type_;
   MemoryTrackerObserver memory_tracker_observer_;
   MemoryTracker memory_tracker_;
   gpu::MemoryTypeTracker memory_type_tracker_;
-  const raw_ptr<viz::VulkanContextProvider> vk_context_provider_;
-  const raw_ptr<viz::MetalContextProvider> metal_context_provider_;
-  const raw_ptr<viz::DawnContextProvider> dawn_context_provider_;
+  const raw_ptr<viz::VulkanContextProvider> vk_context_provider_ = nullptr;
+  const raw_ptr<viz::MetalContextProvider> metal_context_provider_ = nullptr;
+  const raw_ptr<viz::DawnContextProvider> dawn_context_provider_ = nullptr;
   bool created_on_compositor_gpu_thread_ = false;
   raw_ptr<GrDirectContext> gr_context_ = nullptr;
+  raw_ptr<skgpu::graphite::Context> graphite_context_ = nullptr;
 
   scoped_refptr<gl::GLShareGroup> share_group_;
   scoped_refptr<gl::GLContext> context_;

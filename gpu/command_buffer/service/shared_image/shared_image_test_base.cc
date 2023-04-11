@@ -129,9 +129,9 @@ void SharedImageTestBase::InitializeContext(GrContextType context_type) {
                             gpu_workarounds_, GpuFeatureInfo()));
   ASSERT_TRUE(initialize_gl);
 
-  bool initialize_gr = context_state_->InitializeGrContext(
-      gpu_preferences_, gpu_workarounds_, nullptr);
-  ASSERT_TRUE(initialize_gr);
+  bool initialize_skia =
+      context_state_->InitializeSkia(gpu_preferences_, gpu_workarounds_);
+  ASSERT_TRUE(initialize_skia);
 }
 
 void SharedImageTestBase::VerifyPixelsWithReadback(

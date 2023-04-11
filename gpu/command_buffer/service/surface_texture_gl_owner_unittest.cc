@@ -59,7 +59,7 @@ class SurfaceTextureGLOwnerTest : public testing::Test {
     auto context_state = base::MakeRefCounted<SharedContextState>(
         share_group_, surface_, context_,
         false /* use_virtualized_gl_contexts */, base::DoNothing());
-    context_state->InitializeGrContext(GpuPreferences(), workarounds, nullptr);
+    context_state->InitializeSkia(GpuPreferences(), workarounds);
     auto feature_info =
         base::MakeRefCounted<gles2::FeatureInfo>(workarounds, GpuFeatureInfo());
     context_state->InitializeGL(GpuPreferences(), std::move(feature_info));

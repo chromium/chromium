@@ -2662,11 +2662,11 @@ bool GLES2DecoderPassthroughImpl::LazySharedContextState::Initialize() {
                        "for SharedContextState");
     return false;
   }
-  if (!shared_context_state_->InitializeGrContext(gpu_preferences, workarounds,
-                                                  /*cache=*/nullptr)) {
+  if (!shared_context_state_->InitializeSkia(gpu_preferences, workarounds,
+                                             /*cache=*/nullptr)) {
     impl_->InsertError(GL_INVALID_OPERATION,
                        "ContextResult::kFatalFailure: Failed to Initialize "
-                       "GrContext for SharedContextState");
+                       "Skia for SharedContextState");
     return false;
   }
   return true;
