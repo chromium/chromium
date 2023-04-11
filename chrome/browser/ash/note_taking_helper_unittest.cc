@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <sstream>
+#include <string>
 #include <utility>
 
 #include "ash/components/arc/arc_prefs.h"
@@ -19,6 +20,7 @@
 #include "ash/components/arc/test/fake_file_system_instance.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/note_taking_client.h"
+#include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -78,6 +80,7 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkTypes.h"
+#include "ui/display/test/display_manager_test_api.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -776,7 +779,7 @@ TEST_F(NoteTakingHelperTest, NoteTakingWebAppsListed) {
 // TODO(crbug.com/1332379): Move this to a lock screen apps unittest file.
 TEST_F(NoteTakingHelperTest, LockScreenWebAppsListed) {
   Init(ENABLE_PALETTE);
-  DCHECK(!base::FeatureList::IsEnabled(features::kWebLockScreenApi));
+  DCHECK(!base::FeatureList::IsEnabled(::features::kWebLockScreenApi));
 
   std::string app1_id;
   {
@@ -812,7 +815,7 @@ TEST_F(NoteTakingHelperTest, LockScreenWebAppsListed) {
 
 class NoteTakingHelperTest_WebLockScreenApiEnabled
     : public NoteTakingHelperTest {
-  base::test::ScopedFeatureList features_{features::kWebLockScreenApi};
+  base::test::ScopedFeatureList features_{::features::kWebLockScreenApi};
 };
 
 // Web apps with a lock_screen_start_url should show as supported on the lock
@@ -820,7 +823,7 @@ class NoteTakingHelperTest_WebLockScreenApiEnabled
 // TODO(crbug.com/1332379): Move this to a lock screen apps unittest file.
 TEST_F(NoteTakingHelperTest_WebLockScreenApiEnabled, LockScreenWebAppsListed) {
   Init(ENABLE_PALETTE);
-  DCHECK(base::FeatureList::IsEnabled(features::kWebLockScreenApi));
+  DCHECK(base::FeatureList::IsEnabled(::features::kWebLockScreenApi));
 
   std::string app1_id;
   {
@@ -1136,7 +1139,39 @@ TEST_F(NoteTakingHelperTest, ListAndroidApps) {
   EXPECT_TRUE(helper()->GetAvailableApps(profile()).empty());
 }
 
+TEST_F(NoteTakingHelperTest, LaunchAndroidAppNoDisplay) {
+  // Opening Android apps via OpenUrlsWithPermissionAndWindowInfo requires a
+  // valid internal display, not being able to find one will halt launch.
+  const std::string kPackage1 = "org.chromium.package1";
+  std::vector<IntentHandlerInfoPtr> handlers;
+  handlers.emplace_back(CreateIntentHandlerInfo("App 1", kPackage1));
+  intent_helper_.SetIntentHandlers(NoteTakingHelper::kIntentAction,
+                                   std::move(handlers));
+
+  Init(ENABLE_PALETTE | ENABLE_PLAY_STORE);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(helper()->IsAppAvailable(profile()));
+
+  // The installed app fails to launch, registering on histogram.
+  std::unique_ptr<HistogramTester> histogram_tester(new HistogramTester());
+  helper()->LaunchAppForNewNote(profile());
+  ASSERT_EQ(0u, file_system_->handledUrlRequests().size());
+
+  histogram_tester->ExpectUniqueSample(
+      NoteTakingHelper::kPreferredLaunchResultHistogramName,
+      static_cast<int>(LaunchResult::NO_APP_SPECIFIED), 1);
+  histogram_tester->ExpectUniqueSample(
+      NoteTakingHelper::kDefaultLaunchResultHistogramName,
+      static_cast<int>(LaunchResult::NO_INTERNAL_DISPLAY_FOUND), 1);
+}
+
 TEST_F(NoteTakingHelperTest, LaunchAndroidApp) {
+  // Since now launching Android apps require window info, this step is needed
+  // to make display info available.
+  ASSERT_TRUE(Shell::Get());
+  display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+
   const std::string kPackage1 = "org.chromium.package1";
   std::vector<IntentHandlerInfoPtr> handlers;
   handlers.emplace_back(CreateIntentHandlerInfo("App 1", kPackage1));

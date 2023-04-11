@@ -74025,6 +74025,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="No apps available"/>
   <int value="8" label="Web app launched successfully"/>
   <int value="9" label="Web app missing"/>
+  <int value="10" label="Unable to find an internal display"/>
 </enum>
 
 <enum name="NoteTemplate">

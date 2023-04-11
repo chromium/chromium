@@ -38,6 +38,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
@@ -64,6 +65,8 @@
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_handlers/action_handlers_handler.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "ui/display/display.h"
+#include "ui/display/util/display_util.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
 
@@ -387,10 +390,11 @@ void NoteTakingHelper::LaunchAppForNewNote(Profile* profile) {
   // they've chosen, just launch the first one we see.
   result = LaunchResult::NO_APPS_AVAILABLE;
   std::vector<NoteTakingAppInfo> infos = GetAvailableApps(profile);
-  if (infos.empty())
+  if (infos.empty()) {
     LOG(WARNING) << "Unable to launch note-taking app; none available";
-  else
+  } else {
     result = LaunchAppInternal(profile, infos[0].app_id);
+  }
   UMA_HISTOGRAM_ENUMERATION(kDefaultLaunchResultHistogramName,
                             static_cast<int>(result),
                             static_cast<int>(LaunchResult::MAX));
@@ -632,11 +636,19 @@ NoteTakingHelper::LaunchResult NoteTakingHelper::LaunchAppInternal(
     arc::mojom::FileSystemInstance* arc_file_system =
         ARC_GET_INSTANCE_FOR_METHOD(
             arc::ArcServiceManager::Get()->arc_bridge_service()->file_system(),
-            DEPRECATED_OpenUrlsWithPermission);
+            OpenUrlsWithPermissionAndWindowInfo);
     if (!arc_file_system)
       return LaunchResult::ANDROID_NOT_RUNNING;
-    arc_file_system->DEPRECATED_OpenUrlsWithPermission(std::move(request),
-                                                       base::DoNothing());
+
+    if (!display::HasInternalDisplay()) {
+      LOG(WARNING) << "Cannot find an internal display!";
+      return LaunchResult::NO_INTERNAL_DISPLAY_FOUND;
+    }
+    apps::WindowInfoPtr window_info = std::make_unique<apps::WindowInfo>(
+        display::Display::InternalDisplayId());
+    arc_file_system->OpenUrlsWithPermissionAndWindowInfo(
+        std::move(request), apps::MakeArcWindowInfo(std::move(window_info)),
+        base::DoNothing());
 
     arc::ArcMetricsService::RecordArcUserInteraction(
         profile, arc::UserInteractionType::APP_STARTED_FROM_STYLUS_TOOLS);
