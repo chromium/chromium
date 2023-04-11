@@ -11,6 +11,7 @@
 
 #import "base/ios/ios_util.h"
 #import "base/json/json_reader.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -39,8 +40,8 @@
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/password_manager/ios/test_helpers.h"
 #import "components/prefs/pref_registry_simple.h"
-#import "components/prefs/testing_pref_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/autofill/form_suggestion_controller.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
@@ -115,14 +116,9 @@ class FakeNetworkContext : public network::TestNetworkContext {
 class MockPasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
  public:
-  explicit MockPasswordManagerClient(
-      password_manager::PasswordStoreInterface* store)
-      : store_(store) {
-    prefs_ = std::make_unique<TestingPrefServiceSimple>();
-    prefs_->registry()->RegisterBooleanPref(kPasswordLeakDetectionEnabled,
-                                            true);
-    safe_browsing::RegisterProfilePrefs(prefs_->registry());
-  }
+  MockPasswordManagerClient(PrefService* prefs,
+                            password_manager::PasswordStoreInterface* store)
+      : prefs_(prefs), store_(store) {}
 
   ~MockPasswordManagerClient() override = default;
 
@@ -131,7 +127,7 @@ class MockPasswordManagerClient
                void(PasswordFormManagerForUI*));
   MOCK_CONST_METHOD1(IsSavingAndFillingEnabled, bool(const GURL&));
 
-  PrefService* GetPrefs() const override { return prefs_.get(); }
+  PrefService* GetPrefs() const override { return prefs_; }
 
   password_manager::PasswordStoreInterface* GetProfilePasswordStore()
       const override {
@@ -152,7 +148,7 @@ class MockPasswordManagerClient
 
  private:
   mutable FakeNetworkContext network_context_;
-  std::unique_ptr<TestingPrefServiceSimple> prefs_;
+  raw_ptr<PrefService> const prefs_;
   password_manager::PasswordStoreInterface* const store_;
 };
 
@@ -160,15 +156,17 @@ ACTION_P(SaveToScopedPtr, scoped) {
   scoped->reset(arg0);
 }
 
-// Creates PasswordController with the given `web_state` and a mock client
-// using the given `store`. If not null, `weak_client` is filled with a
-// non-owning pointer to the created client. The created controller is
+// Creates PasswordController with the given `pref_service`, `web_state` and a
+// mock client using the given `store`. If not null, `weak_client` is filled
+// with a non-owning pointer to the created client. The created controller is
 // returned.
 PasswordController* CreatePasswordController(
+    PrefService* pref_service,
     web::WebState* web_state,
     password_manager::PasswordStoreInterface* store,
     MockPasswordManagerClient** weak_client) {
-  auto client = std::make_unique<NiceMock<MockPasswordManagerClient>>(store);
+  auto client = std::make_unique<NiceMock<MockPasswordManagerClient>>(
+      pref_service, store);
   if (weak_client)
     *weak_client = client.get();
   return [[PasswordController alloc] initWithWebState:web_state
@@ -261,8 +259,8 @@ class PasswordControllerTest : public PlatformTest {
 
     UniqueIDDataTabHelper::CreateForWebState(web_state());
 
-    passwordController_ =
-        CreatePasswordController(web_state(), store_.get(), &weak_client_);
+    passwordController_ = CreatePasswordController(
+        browser_state_->GetPrefs(), web_state(), store_.get(), &weak_client_);
     passwordController_.passwordManager->set_leak_factory(
         std::make_unique<
             NiceMock<password_manager::MockLeakDetectionCheckFactory>>());
@@ -1227,14 +1225,19 @@ class PasswordControllerTestSimple : public PlatformTest {
   ~PasswordControllerTestSimple() override { store_->ShutdownOnUIThread(); }
 
   void SetUp() override {
+    // Tests depend on some of these prefs being registered.
+    password_manager::PasswordManager::RegisterProfilePrefs(
+        pref_service_.registry());
+    safe_browsing::RegisterProfilePrefs(pref_service_.registry());
+
     store_ =
         new testing::NiceMock<password_manager::MockPasswordStoreInterface>();
     ON_CALL(*store_, IsAbleToSavePasswords).WillByDefault(Return(true));
 
     UniqueIDDataTabHelper::CreateForWebState(&web_state_);
 
-    passwordController_ =
-        CreatePasswordController(&web_state_, store_.get(), &weak_client_);
+    passwordController_ = CreatePasswordController(&pref_service_, &web_state_,
+                                                   store_.get(), &weak_client_);
     passwordController_.passwordManager->set_leak_factory(
         std::make_unique<
             NiceMock<password_manager::MockLeakDetectionCheckFactory>>());
@@ -1252,6 +1255,7 @@ class PasswordControllerTestSimple : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_;
 
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
   PasswordController* passwordController_;
   scoped_refptr<password_manager::MockPasswordStoreInterface> store_;
   MockPasswordManagerClient* weak_client_;
