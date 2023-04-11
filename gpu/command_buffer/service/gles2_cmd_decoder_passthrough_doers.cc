@@ -2567,13 +2567,13 @@ error::Error GLES2DecoderPassthroughImpl::DoReadbackARGBImagePixelsINTERNAL(
   viz::SharedImageFormat source_format = source_shared_image->format();
 
   // If present, the color space is serialized into shared memory after the
-  // mailbox and before the pixel data.
-  if (mailbox_offset > pixels_offset) {
+  // Result and before the mailbox.
+  if (color_space_offset > mailbox_offset) {
     InsertError(GL_INVALID_VALUE,
-                "|pixels_offset| must be >= |mailbox_offset|");
+                "|mailbox_offset| must be >= |color_space_offset|");
     return error::kOutOfBounds;
   }
-  unsigned int color_space_size = pixels_offset - mailbox_offset;
+  unsigned int color_space_size = mailbox_offset - color_space_offset;
 
   sk_sp<SkColorSpace> dst_color_space;
   if (color_space_size) {
