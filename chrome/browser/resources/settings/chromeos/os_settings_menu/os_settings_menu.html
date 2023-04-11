@@ -152,7 +152,9 @@
     selectable="a.item"
     attr-for-selected="href"
     role="navigation"
-    on-iron-activate="onSelectorActivate_"
+    on-iron-activate="onItemActivated_"
+    on-iron-select="onItemSelected_"
+    on-iron-deselect="onItemDeselected_"
     on-click="onLinkClick_"
     selected="[[selectedUrl_]]">
   <template is="dom-repeat" items="[[basicMenuItems_]]" id="topMenuRepeat">
