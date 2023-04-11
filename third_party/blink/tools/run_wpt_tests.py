@@ -939,6 +939,15 @@ class ChromeiOS(Product):
     def test_env(self):
         with super().test_env():
             self.update_options()
+            # Set up xcode log output dir.
+            output_dir = self._host.filesystem.join(
+                self._host.filesystem.dirname(
+                    self._options.log_chromium[0].name), "xcode-output")
+            self._options.webdriver_args.extend([
+                '--out-dir=' + output_dir,
+            ])
+
+            # Install xcode.
             if self._options.xcode_build_version:
                 try:
                     runtime_cache_folder = xcode.construct_runtime_cache_folder(
