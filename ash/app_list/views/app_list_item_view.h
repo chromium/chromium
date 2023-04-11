@@ -304,6 +304,8 @@ class ASH_EXPORT AppListItemView : public views::Button,
     UI_STATE_NORMAL,              // Normal UI (icon + label)
     UI_STATE_DRAGGING,            // Dragging UI (scaled icon only)
     UI_STATE_DROPPING_IN_FOLDER,  // Folder dropping preview UI
+    UI_STATE_TOUCH_DRAGGING,      // Dragging UI for touch drag (non-scaled icon
+                                  // only)
   };
 
   // Callback used when a menu is closed.
@@ -405,7 +407,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
   ui::Layer* GetIconBackgroundLayer();
 
   // Initialize the item drag operation if it is available at `location`.
-  bool MaybeStartDrag(const gfx::Point& location);
+  bool MaybeStartTouchDrag(const gfx::Point& location);
 
   // The app list config used to layout this view. The initial values is set
   // during view construction, but can be changed by calling
