@@ -966,22 +966,6 @@ void PaintLayer::ConvertToLayerCoords(const PaintLayer* ancestor_layer,
         AccumulateOffsetTowardsAncestor(curr_layer, ancestor_layer, location);
 }
 
-void PaintLayer::ConvertToLayerCoords(const PaintLayer* ancestor_layer,
-                                      PhysicalRect& rect) const {
-  PhysicalOffset delta;
-  ConvertToLayerCoords(ancestor_layer, delta);
-  rect.Move(delta);
-}
-
-PhysicalOffset PaintLayer::VisualOffsetFromAncestor(
-    const PaintLayer* ancestor_layer,
-    PhysicalOffset offset) const {
-  if (ancestor_layer == this)
-    return offset;
-  ConvertToLayerCoords(ancestor_layer, offset);
-  return offset;
-}
-
 void PaintLayer::DidUpdateScrollsOverflow() {
   UpdateSelfPaintingLayer();
 }
@@ -2030,10 +2014,10 @@ bool PaintLayer::HitTestClippedOutByClipPath(
   DCHECK(GetLayoutObject().HasClipPath());
   DCHECK(IsSelfPaintingLayer());
 
-  PhysicalRect origin;
+  PhysicalOffset origin;
   ConvertToLayerCoords(&root_layer, origin);
 
-  gfx::PointF point(hit_test_location.Point() - origin.offset);
+  gfx::PointF point(hit_test_location.Point() - origin);
   gfx::RectF reference_box =
       ClipPathClipper::LocalReferenceBox(GetLayoutObject());
 
@@ -2074,20 +2058,6 @@ PhysicalRect PaintLayer::LocalBoundingBox() const {
         PhysicalRect(rect.offset, GetLayoutObject().View()->ViewRect().size));
   }
   return rect;
-}
-
-PhysicalRect PaintLayer::PhysicalBoundingBox(
-    const PaintLayer* ancestor_layer) const {
-  PhysicalOffset offset_from_root;
-  ConvertToLayerCoords(ancestor_layer, offset_from_root);
-  return PhysicalBoundingBox(offset_from_root);
-}
-
-PhysicalRect PaintLayer::PhysicalBoundingBox(
-    const PhysicalOffset& offset_from_root) const {
-  PhysicalRect result = LocalBoundingBox();
-  result.Move(offset_from_root);
-  return result;
 }
 
 void PaintLayer::ExpandRectForSelfPaintingDescendants(

@@ -288,19 +288,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   void ConvertToLayerCoords(const PaintLayer* ancestor_layer,
                             PhysicalOffset&) const;
-  void ConvertToLayerCoords(const PaintLayer* ancestor_layer,
-                            PhysicalRect&) const;
-
-  // Does the same as convertToLayerCoords() when not in multicol. For multicol,
-  // however, convertToLayerCoords() calculates the offset in flow-thread
-  // coordinates (what the layout engine uses internally), while this method
-  // calculates the visual coordinates; i.e. it figures out which column the
-  // layer starts in and adds in the offset. See
-  // http://www.chromium.org/developers/design-documents/multi-column-layout for
-  // more info.
-  PhysicalOffset VisualOffsetFromAncestor(
-      const PaintLayer* ancestor_layer,
-      PhysicalOffset offset = PhysicalOffset()) const;
 
   // The hitTest() method looks for mouse events by walking layers that
   // intersect the point from front to back.
@@ -309,11 +296,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   bool HitTest(const HitTestLocation& location,
                HitTestResult&,
                const PhysicalRect& hit_test_area);
-
-  // Bounding box relative to some ancestor layer. Pass offsetFromRoot if known.
-  PhysicalRect PhysicalBoundingBox(
-      const PhysicalOffset& offset_from_root) const;
-  PhysicalRect PhysicalBoundingBox(const PaintLayer* ancestor_layer) const;
 
   // Static position is set in parent's coordinate space.
   LayoutUnit StaticInlinePosition() const { return static_inline_position_; }
