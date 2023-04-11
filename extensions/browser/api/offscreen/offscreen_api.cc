@@ -92,7 +92,7 @@ ExtensionFunction::ResponseAction OffscreenCreateDocumentFunction::Run() {
     return RespondNow(Error("Only a single `reason` is currently supported."));
   }
 
-  if (base::Contains(deduped_reasons, api::offscreen::REASON_TESTING) &&
+  if (base::Contains(deduped_reasons, api::offscreen::Reason::kTesting) &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kOffscreenDocumentTesting)) {
     return RespondNow(Error(base::StringPrintf(

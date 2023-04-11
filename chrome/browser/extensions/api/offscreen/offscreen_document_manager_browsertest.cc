@@ -91,7 +91,7 @@ class OffscreenDocumentManagerBrowserTest : public ExtensionApiTest {
     host_waiter.RestrictToType(mojom::ViewType::kOffscreenDocument);
     OffscreenDocumentHost* offscreen_document =
         OffscreenDocumentManager::Get(&profile)->CreateOffscreenDocument(
-            extension, url, api::offscreen::REASON_TESTING);
+            extension, url, api::offscreen::Reason::kTesting);
     host_waiter.WaitForHostCompletedFirstLoad();
 
     return offscreen_document;
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
     host_waiter.RestrictToType(mojom::ViewType::kOffscreenDocument);
     offscreen_document = offscreen_document_manager()->CreateOffscreenDocument(
         *extension, extension->GetResourceURL("offscreen.html"),
-        api::offscreen::REASON_TESTING);
+        api::offscreen::Reason::kTesting);
     ASSERT_TRUE(offscreen_document);
     host_waiter.WaitForHostCompletedFirstLoad();
   }
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
   TestLifetimeEnforcer* lifetime_enforcer = nullptr;
   LifetimeEnforcerFactories::TestingOverride factory_override;
   factory_override.map().emplace(
-      api::offscreen::REASON_TESTING,
+      api::offscreen::Reason::kTesting,
       base::BindRepeating(&CreateTestLifetimeEnforcer, &lifetime_enforcer));
 
   // Load an extension and create an offscreen document.
@@ -416,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
   TestLifetimeEnforcer* lifetime_enforcer = nullptr;
   LifetimeEnforcerFactories::TestingOverride factory_override;
   factory_override.map().emplace(
-      api::offscreen::REASON_TESTING,
+      api::offscreen::Reason::kTesting,
       base::BindRepeating(&CreateTestLifetimeEnforcer, &lifetime_enforcer));
 
   // Load an extension an create an offscreen document.

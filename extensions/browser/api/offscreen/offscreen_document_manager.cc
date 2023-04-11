@@ -113,7 +113,7 @@ OffscreenDocumentHost* OffscreenDocumentManager::CreateOffscreenDocument(
   // Currently only a single offscreen document is supported per extension.
   DCHECK_EQ(nullptr, GetOffscreenDocumentForExtension(extension));
   DCHECK(!base::Contains(offscreen_documents_, extension.id()));
-  DCHECK_NE(api::offscreen::REASON_NONE, reason);
+  DCHECK_NE(api::offscreen::Reason::kNone, reason);
 #if DCHECK_IS_ON()
   // This should only be for an off-the-record context if the extension is both
   // enabled in incognito *and* runs in split mode. For spanning mode

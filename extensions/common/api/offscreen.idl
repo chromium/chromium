@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // Use the <code>offscreen</code> API to create and manage offscreen documents.
+[modernised_enums]
 namespace offscreen {
   enum Reason {
     // A reason used for testing purposes only.
