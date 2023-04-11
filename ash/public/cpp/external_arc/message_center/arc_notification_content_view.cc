@@ -16,6 +16,7 @@
 #include "ash/system/message_center/message_center_constants.h"
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/scoped_observation.h"
 #include "components/exo/notification_surface.h"
 #include "components/exo/surface.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -79,6 +80,10 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
   EventForwarder& operator=(const EventForwarder&) = delete;
 
   ~EventForwarder() override = default;
+
+  // Insert itself to pre-target handler lists of |window|
+  void Observe(aura::Window* window) { observation_.Observe(window); }
+  void Reset() { observation_.Reset(); }
 
  private:
   // ui::EventHandler
@@ -213,6 +218,8 @@ class ArcNotificationContentView::EventForwarder : public ui::EventHandler {
 
   ArcNotificationContentView* const owner_;
   bool is_current_slide_handled_by_android_ = false;
+
+  base::ScopedObservation<ui::EventTarget, ui::EventHandler> observation_{this};
 };
 
 class ArcNotificationContentView::SlideHelper {
@@ -264,8 +271,8 @@ ArcNotificationContentView::ArcNotificationContentView(
     message_center::MessageView* message_view)
     : item_(item),
       notification_key_(item->GetNotificationKey()),
-      event_forwarder_(new EventForwarder(this)),
-      mouse_enter_exit_handler_(new MouseEnterExitHandler(this)),
+      event_forwarder_(std::make_unique<EventForwarder>(this)),
+      mouse_enter_exit_handler_(std::make_unique<MouseEnterExitHandler>(this)),
       message_view_(message_view),
       control_buttons_view_(message_view),
       notification_width_(GetNotificationContentViewWidth()) {
@@ -451,7 +458,7 @@ void ArcNotificationContentView::SetSurface(ArcNotificationSurface* surface) {
     DCHECK(surface_->GetWindow());
     DCHECK(surface_->GetContentWindow());
     surface_->GetContentWindow()->RemoveObserver(this);
-    surface_->GetWindow()->RemovePreTargetHandler(event_forwarder_.get());
+    event_forwarder_->Reset();
 
     if (surface_->GetAttachedHost() == this) {
       DCHECK_EQ(this, surface_->GetAttachedHost());
@@ -465,7 +472,7 @@ void ArcNotificationContentView::SetSurface(ArcNotificationSurface* surface) {
     DCHECK(surface_->GetWindow());
     DCHECK(surface_->GetContentWindow());
     surface_->GetContentWindow()->AddObserver(this);
-    surface_->GetWindow()->AddPreTargetHandler(event_forwarder_.get());
+    event_forwarder_->Observe(surface_->GetWindow());
 
     if (GetWidget()) {
       // Force to detach the surface.
