@@ -31105,6 +31105,7 @@
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "test_level_retries": 2,
         "timeout_sec": 10800,
         "variant_id": "OCTOPUS_PUBLIC_LKGM"
       },
@@ -31122,6 +31123,7 @@
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "test_level_retries": 2,
         "timeout_sec": 10800,
         "variant_id": "EVE_PUBLIC_LKGM"
       }
@@ -31146,6 +31148,7 @@
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "test_level_retries": 2,
         "timeout_sec": 10800,
         "variant_id": "JACUZZI_PUBLIC_LKGM"
       },
@@ -31163,6 +31166,7 @@
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "test_level_retries": 2,
         "timeout_sec": 10800,
         "variant_id": "KEVIN64_PUBLIC_LKGM"
       }
@@ -31187,6 +31191,7 @@
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "test_level_retries": 2,
         "timeout_sec": 10800,
         "variant_id": "JACUZZI_PUBLIC_LKGM"
       },
@@ -31206,6 +31211,7 @@
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "test_level_retries": 2,
         "timeout_sec": 10800,
         "variant_id": "JACUZZI_CQ_PUBLIC_LKGM"
       },
@@ -31223,6 +31229,7 @@
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "test_level_retries": 2,
         "timeout_sec": 10800,
         "variant_id": "KEVIN64_PUBLIC_LKGM"
       }
