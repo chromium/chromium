@@ -7,6 +7,7 @@ source_set("eg2_tests") {
   sources = [
     "pinned_tabs_context_egtest.mm",
     "pinned_tabs_drag_drop_egtest.mm",
+    "pinned_tabs_generic_egtest.mm",
     "pinned_tabs_overflow_egtest.mm",
   ]
 
@@ -15,6 +16,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/tabs:features",
     "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs:constants",
     "//ios/chrome/common/ui/table_view:cells_constants",
