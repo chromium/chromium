@@ -584,6 +584,7 @@ std::unique_ptr<RTCVideoDecoderAdapter> RTCVideoDecoderAdapter::Create(
       media::kNoTransformation, kDefaultSize, gfx::Rect(kDefaultSize),
       kDefaultSize, media::EmptyExtraData(),
       media::EncryptionScheme::kUnencrypted);
+  config.set_is_rtc(true);
 
   std::unique_ptr<RTCVideoDecoderAdapter> rtc_video_decoder_adapter;
   if (gpu_factories->IsDecoderConfigSupported(config) !=
