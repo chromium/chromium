@@ -83,12 +83,10 @@ bool IOSIntermediateDumpWriter::Close() {
   if (fd_ < 0) {
     return true;
   }
-  if (!FlushWriteBuffer()) {
-    return false;
-  }
-  int fd = fd_;
+  const bool flushed = FlushWriteBuffer();
+  const bool closed = RawLoggingCloseFile(fd_);
   fd_ = -1;
-  return RawLoggingCloseFile(fd);
+  return flushed && closed;
 }
 
 bool IOSIntermediateDumpWriter::AddPropertyCString(IntermediateDumpKey key,
