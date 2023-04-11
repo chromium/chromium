@@ -20,7 +20,7 @@ class PrefService;
 // Designated initializer. All the parameters should not be null.
 // `localPrefService`: preference service from the application context.
 // `consumer`: consumer that will be notified when the data change.
-// `browser`: regular browser.
+// `browser`: the current browser.
 - (instancetype)initWithUserLocalPrefService:(PrefService*)localPrefService
                                      browser:(Browser*)browser
                                     consumer:(id<InactiveTabsSettingsConsumer>)

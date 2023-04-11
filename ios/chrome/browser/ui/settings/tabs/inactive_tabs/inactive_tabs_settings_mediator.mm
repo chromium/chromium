@@ -23,32 +23,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-// Find the associated inactive browser to the current regular browser.
-Browser* FindInactiveBrowserWithRegularBrowser(Browser* regular_browser) {
-  ChromeBrowserState* browserState = regular_browser->GetBrowserState();
-  SceneState* current_scene_state =
-      SceneStateBrowserAgent::FromBrowser(regular_browser)->GetSceneState();
-  std::set<Browser*> regular_browsers =
-      BrowserListFactory::GetForBrowserState(browserState)
-          ->AllRegularBrowsers();
-
-  std::set<Browser*>::iterator inactive_browser_iterator =
-      base::ranges::find_if(regular_browsers, [current_scene_state](
-                                                  Browser* browser) {
-        return browser->IsInactive() &&
-               SceneStateBrowserAgent::FromBrowser(browser)->GetSceneState() ==
-                   current_scene_state;
-      });
-
-  DCHECK(inactive_browser_iterator != regular_browsers.end());
-
-  return *inactive_browser_iterator;
-}
-
-}  // namespace
-
 @interface InactiveTabsSettingsMediator () <PrefObserverDelegate>
 @end
 
@@ -61,7 +35,7 @@ Browser* FindInactiveBrowserWithRegularBrowser(Browser* regular_browser) {
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
-  // Regular browser.
+  // The current browser.
   Browser* _browser;
 }
 
@@ -114,15 +88,18 @@ Browser* FindInactiveBrowserWithRegularBrowser(Browser* regular_browser) {
   }
   _prefs->SetInteger(prefs::kInactiveTabsTimeThreshold, threshold);
 
-  Browser* inactiveBrowser = FindInactiveBrowserWithRegularBrowser(_browser);
+  Browser* active_browser = _browser->GetActiveBrowser();
+  Browser* inactive_browser = _browser->GetInactiveBrowser();
+  CHECK(active_browser);
+  CHECK(inactive_browser);
 
   if (threshold == kInactiveTabsDisabledByUser) {
-    RestoreAllInactiveTabs(inactiveBrowser, _browser);
+    RestoreAllInactiveTabs(inactive_browser, active_browser);
   } else if (previousThreshold == kInactiveTabsDisabledByUser ||
              previousThreshold > threshold) {
-    MoveTabsFromActiveToInactive(_browser, inactiveBrowser);
+    MoveTabsFromActiveToInactive(active_browser, inactive_browser);
   } else {
-    MoveTabsFromInactiveToActive(inactiveBrowser, _browser);
+    MoveTabsFromInactiveToActive(inactive_browser, active_browser);
   }
 }
 
