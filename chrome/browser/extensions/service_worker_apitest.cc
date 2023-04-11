@@ -693,7 +693,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerOnStartupEventTest, PRE_Event) {
       << message_;
 }
 
-// Flaky (crbug.com/1243815).
 IN_PROC_BROWSER_TEST_F(ServiceWorkerOnStartupEventTest, Event) {
   EXPECT_TRUE(WaitForMessage());
 }
