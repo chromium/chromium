@@ -25,12 +25,14 @@ namespace {
 
 using base::SequencedTaskRunner;
 using base::TimeDelta;
-using drivefs::mojom::QueryItem;
-using drivefs::mojom::QueryItemPtr;
 using mojom::FileMetadata;
 using mojom::FileMetadataPtr;
+using mojom::QueryItem;
+using mojom::QueryItemPtr;
+using mojom::ShortcutDetails;
 using std::ostream;
 using Path = PinManager::Path;
+using LookupStatus = ShortcutDetails::LookupStatus;
 
 bool InProgress(const Stage stage) {
   switch (stage) {
@@ -180,9 +182,7 @@ ostream& operator<<(ostream& out, Quoter<mojom::FileChange::Type> q) {
              << static_cast<std::underlying_type_t<Type>>(q.value) << ")";
 }
 
-ostream& operator<<(ostream& out,
-                    Quoter<mojom::ShortcutDetails::LookupStatus> q) {
-  using LookupStatus = mojom::ShortcutDetails::LookupStatus;
+ostream& operator<<(ostream& out, Quoter<LookupStatus> q) {
   switch (q.value) {
 #define PRINT(s)           \
   case LookupStatus::k##s: \
@@ -194,12 +194,12 @@ ostream& operator<<(ostream& out,
 #undef PRINT
   }
 
-  return out << "ShortcutDetails::LookupStatus("
+  return out << "LookupStatus("
              << static_cast<std::underlying_type_t<LookupStatus>>(q.value)
              << ")";
 }
 
-ostream& operator<<(ostream& out, Quoter<mojom::ShortcutDetails> q) {
+ostream& operator<<(ostream& out, Quoter<ShortcutDetails> q) {
   return out << "{id: " << PinManager::Id(q.value.target_stable_id)
              << ", status: " << Quote(q.value.target_lookup_status) << "}";
 }
@@ -405,13 +405,6 @@ bool PinManager::CanPin(const FileMetadata& md, const Path& path) {
     return false;
   }
 
-  // TODO(b/266037569): Setting root in the query made to DriveFS is currently
-  // unsupported.
-  if (!Path("/root").IsParent(path)) {
-    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Not in my drive";
-    return false;
-  }
-
   return true;
 }
 
@@ -614,7 +607,7 @@ void PinManager::Start() {
 
   VLOG(1) << "Starting";
   progress_ = {};
-  visited_dirs_.clear();
+  listed_items_.clear();
   files_to_pin_.clear();
   files_to_track_.clear();
   DCHECK_EQ(progress_.syncing_files, 0);
@@ -811,7 +804,7 @@ void PinManager::OnSearchResult(const Id dir_id,
             << progress_.listed_files << " files, " << progress_.listed_docs
             << " docs, " << progress_.listed_shortcuts << " shortcuts";
     VLOG(1) << NiceNum << "Tracking " << files_to_track_.size() << " files";
-    visited_dirs_.clear();
+    listed_items_.clear();
     return StartPinning();
   }
 
@@ -833,26 +826,50 @@ void PinManager::OnSearchResult(const Id dir_id,
 
 void PinManager::HandleQueryItem(Id dir_id,
                                  const Path& dir_path,
-                                 const drivefs::mojom::QueryItem& item) {
+                                 const QueryItem& item) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(item.metadata);
-  const FileMetadata& md = *item.metadata;
-  const Id id = Id(md.stable_id);
+  FileMetadata& md = *item.metadata;
+  Id id = Id(md.stable_id);
   const Path& path = item.path;
 
   if (!dir_path.IsParent(path)) {
-    progress_.skipped_items++;
-    LOG(ERROR) << "Unexpected path " << id << " " << Quote(path) << " for "
-               << Quote(md) << " when listing items in " << dir_id << " "
-               << Quote(dir_path);
-    return;
+    VLOG(1) << "Disconnected path for " << Quote(md.type) << " " << id << " "
+            << Quote(path) << " when listing items in Directory " << dir_id
+            << " " << Quote(dir_path);
   }
 
+  // Is this item a shortcut?
   if (md.shortcut_details) {
-    progress_.skipped_items++;
     progress_.listed_shortcuts++;
-    VLOG(2) << "Skipped " << id << " " << Quote(path) << ": Shortcut to "
-            << md.type << " " << Id(md.shortcut_details->target_stable_id);
+
+    // Is the shortcut's target accessible?
+    if (md.shortcut_details->target_lookup_status != LookupStatus::kOk) {
+      // The shortcut target is not accessible.
+      progress_.skipped_items++;
+      VLOG(1) << "Broken shortcut " << id << " " << Quote(path) << ": "
+              << Quote(md);
+      return;
+    }
+
+    // The shortcut target is accessible.
+    VLOG(1) << "Following shortcut " << id << " " << Quote(path) << " to "
+            << Quote(md.type) << " "
+            << Id(md.shortcut_details->target_stable_id);
+
+    // Follow the shortcut.
+    md.stable_id = md.shortcut_details->target_stable_id;
+    id = Id(md.stable_id);
+    md.shortcut_details.reset();
+  }
+
+  // Deduplicate items.
+  if (const auto [it, ok] = listed_items_.try_emplace(id, dir_id); !ok) {
+    DCHECK_EQ(it->first, id);
+    progress_.skipped_items++;
+    VLOG(1) << "Skipped " << Quote(md.type) << " " << id << " " << Quote(path)
+            << " seen in Directory " << dir_id << " " << Quote(dir_path)
+            << ": Previously seen in Directory " << it->second;
     return;
   }
 
@@ -870,16 +887,6 @@ void PinManager::HandleQueryItem(Id dir_id,
 
     case Type::kDirectory:
       progress_.listed_dirs++;
-
-      if (const auto [it, ok] = visited_dirs_.try_emplace(id, dir_path); !ok) {
-        DCHECK_EQ(it->first, id);
-        progress_.skipped_items++;
-        VLOG(1) << "Dir " << id << " " << Quote(path) << " seen when listing "
-                << dir_id << " " << Quote(dir_path)
-                << " was previously seen when listing " << Quote(it->second);
-        return;
-      }
-
       ListItems(id, path);
       return;
   }
@@ -912,7 +919,7 @@ void PinManager::Complete(const Stage stage) {
   }
 
   weak_ptr_factory_.InvalidateWeakPtrs();
-  visited_dirs_.clear();
+  listed_items_.clear();
   files_to_pin_.clear();
   files_to_track_.clear();
   progress_.syncing_files = 0;
@@ -1168,6 +1175,11 @@ void PinManager::OnFileCreated(const mojom::FileChange& event) {
   if (id == Id::kNone) {
     // Ignore spurious event (b/268419828).
     VLOG(2) << "Ignored " << Quote(event) << ": Spurious event";
+    return;
+  }
+
+  if (!Path("/root").IsParent(path)) {
+    VLOG(2) << "Ignored " << Quote(event) << ": Not in 'My Drive'";
     return;
   }
 

@@ -318,9 +318,9 @@ TEST_F(DriveFsPinManagerTest, CanPin) {
   md.shortcut_details.reset();
   EXPECT_TRUE(PinManager::CanPin(md, path));
 
-  // File that is not under /root/... cannot be pinned.
+  // File that is not under /root/... can be pinned.
   path = Path("/shared/poi");
-  EXPECT_FALSE(PinManager::CanPin(md, path));
+  EXPECT_TRUE(PinManager::CanPin(md, path));
 }
 
 // Tests PinManager::Add().
@@ -2025,11 +2025,15 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   EXPECT_EQ(manager.progress_.skipped_items, 0);
   manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
   EXPECT_EQ(manager.progress_.skipped_items, 1);
+  EXPECT_THAT(manager.listed_items_, SizeIs(1));
 
-  // Shortcut
+  // Broken shortcuts.
+  using LookupStatus = mojom::ShortcutDetails::LookupStatus;
   md.shortcut_details = mojom::ShortcutDetails::New();
-  md.shortcut_details->target_stable_id = 201;
   md.type = FileMetadata::Type::kDirectory;
+  md.shortcut_details->target_stable_id = 201;
+  md.shortcut_details->target_lookup_status = LookupStatus::kUnknown;
+  md.stable_id++;
 
   EXPECT_EQ(manager.progress_.listed_shortcuts, 0);
   EXPECT_EQ(manager.progress_.listed_dirs, 0);
@@ -2042,48 +2046,57 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   EXPECT_EQ(manager.progress_.listed_dirs, 0);
   EXPECT_EQ(manager.progress_.listed_files, 0);
   EXPECT_EQ(manager.progress_.listed_docs, 0);
+  EXPECT_THAT(manager.listed_items_, SizeIs(1));
 
-  md.type = FileMetadata::Type::kFile;
+  md.shortcut_details->target_lookup_status = LookupStatus::kPermissionDenied;
+  md.stable_id++;
   manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
   EXPECT_EQ(manager.progress_.skipped_items, 3);
   EXPECT_EQ(manager.progress_.listed_shortcuts, 2);
   EXPECT_EQ(manager.progress_.listed_dirs, 0);
   EXPECT_EQ(manager.progress_.listed_files, 0);
   EXPECT_EQ(manager.progress_.listed_docs, 0);
+  EXPECT_THAT(manager.listed_items_, SizeIs(1));
 
-  md.type = FileMetadata::Type::kHosted;
+  md.shortcut_details->target_lookup_status = LookupStatus::kNotFound;
+  md.stable_id++;
   manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
   EXPECT_EQ(manager.progress_.skipped_items, 4);
   EXPECT_EQ(manager.progress_.listed_shortcuts, 3);
   EXPECT_EQ(manager.progress_.listed_dirs, 0);
   EXPECT_EQ(manager.progress_.listed_files, 0);
   EXPECT_EQ(manager.progress_.listed_docs, 0);
+  EXPECT_THAT(manager.listed_items_, SizeIs(1));
 
   // Unexpected path
   md.shortcut_details.reset();
   md.type = FileMetadata::Type::kFile;
+  md.stable_id++;
   item.path = Path("/root/Unexpected");
 
+  EXPECT_EQ(manager.progress_.files_to_pin, 0);
   manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
-  EXPECT_EQ(manager.progress_.skipped_items, 5);
+  EXPECT_EQ(manager.progress_.skipped_items, 4);
   EXPECT_EQ(manager.progress_.listed_shortcuts, 3);
   EXPECT_EQ(manager.progress_.listed_dirs, 0);
-  EXPECT_EQ(manager.progress_.listed_files, 0);
+  EXPECT_EQ(manager.progress_.listed_files, 1);
   EXPECT_EQ(manager.progress_.listed_docs, 0);
+  EXPECT_EQ(manager.progress_.files_to_pin, 1);
+  EXPECT_THAT(manager.listed_items_, SizeIs(2));
 
   // File
   md.stable_id++;
   md.type = FileMetadata::Type::kFile;
   item.path = Path("/root/Folder/File");
 
-  EXPECT_EQ(manager.progress_.files_to_pin, 0);
   manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
-  EXPECT_EQ(manager.progress_.skipped_items, 5);
+  EXPECT_EQ(manager.progress_.skipped_items, 4);
   EXPECT_EQ(manager.progress_.listed_shortcuts, 3);
   EXPECT_EQ(manager.progress_.listed_dirs, 0);
-  EXPECT_EQ(manager.progress_.listed_files, 1);
+  EXPECT_EQ(manager.progress_.listed_files, 2);
   EXPECT_EQ(manager.progress_.listed_docs, 0);
-  EXPECT_EQ(manager.progress_.files_to_pin, 1);
+  EXPECT_EQ(manager.progress_.files_to_pin, 2);
+  EXPECT_THAT(manager.listed_items_, SizeIs(3));
 
   // Hosted doc
   md.stable_id++;
@@ -2091,44 +2104,44 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   item.path = Path("/root/Folder/Doc");
 
   manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
-  EXPECT_EQ(manager.progress_.skipped_items, 5);
+  EXPECT_EQ(manager.progress_.skipped_items, 4);
   EXPECT_EQ(manager.progress_.listed_shortcuts, 3);
   EXPECT_EQ(manager.progress_.listed_dirs, 0);
-  EXPECT_EQ(manager.progress_.listed_files, 1);
+  EXPECT_EQ(manager.progress_.listed_files, 2);
   EXPECT_EQ(manager.progress_.listed_docs, 1);
-  EXPECT_EQ(manager.progress_.files_to_pin, 2);
+  EXPECT_EQ(manager.progress_.files_to_pin, 3);
+  EXPECT_THAT(manager.listed_items_, SizeIs(4));
 
   // Directory
   md.stable_id++;
   md.type = FileMetadata::Type::kDirectory;
   item.path = Path("/root/Folder/Dir");
 
-  EXPECT_THAT(manager.visited_dirs_, IsEmpty());
   EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(1);
+  manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
+  EXPECT_EQ(manager.progress_.skipped_items, 4);
+  EXPECT_EQ(manager.progress_.listed_shortcuts, 3);
+  EXPECT_EQ(manager.progress_.listed_dirs, 1);
+  EXPECT_EQ(manager.progress_.listed_files, 2);
+  EXPECT_EQ(manager.progress_.listed_docs, 1);
+  EXPECT_EQ(manager.progress_.files_to_pin, 3);
+  EXPECT_EQ(manager.progress_.max_active_queries, 3);
+  EXPECT_EQ(manager.progress_.active_queries, 3);
+  EXPECT_EQ(manager.progress_.total_queries, 3);
+  EXPECT_THAT(manager.listed_items_, SizeIs(5));
+
+  // Already visited directory
   manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
   EXPECT_EQ(manager.progress_.skipped_items, 5);
   EXPECT_EQ(manager.progress_.listed_shortcuts, 3);
   EXPECT_EQ(manager.progress_.listed_dirs, 1);
-  EXPECT_EQ(manager.progress_.listed_files, 1);
+  EXPECT_EQ(manager.progress_.listed_files, 2);
   EXPECT_EQ(manager.progress_.listed_docs, 1);
-  EXPECT_EQ(manager.progress_.files_to_pin, 2);
+  EXPECT_EQ(manager.progress_.files_to_pin, 3);
   EXPECT_EQ(manager.progress_.max_active_queries, 3);
   EXPECT_EQ(manager.progress_.active_queries, 3);
   EXPECT_EQ(manager.progress_.total_queries, 3);
-  EXPECT_THAT(manager.visited_dirs_, SizeIs(1));
-
-  // Already visited directory
-  manager.HandleQueryItem(dir_id, dir_path, std::as_const(item));
-  EXPECT_EQ(manager.progress_.skipped_items, 6);
-  EXPECT_EQ(manager.progress_.listed_shortcuts, 3);
-  EXPECT_EQ(manager.progress_.listed_dirs, 2);
-  EXPECT_EQ(manager.progress_.listed_files, 1);
-  EXPECT_EQ(manager.progress_.listed_docs, 1);
-  EXPECT_EQ(manager.progress_.files_to_pin, 2);
-  EXPECT_EQ(manager.progress_.max_active_queries, 3);
-  EXPECT_EQ(manager.progress_.active_queries, 3);
-  EXPECT_EQ(manager.progress_.total_queries, 3);
-  EXPECT_THAT(manager.visited_dirs_, SizeIs(1));
+  EXPECT_THAT(manager.listed_items_, SizeIs(5));
 
   manager.Stop();
 }

@@ -426,10 +426,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   base::ElapsedTimer timer_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::ElapsedTimer progress_timer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // Stable IDs of directories that got their items listed. The mapped Path is
-  // the path of the parent directory when the given directory designated by Id
+  // Stable IDs of items that got listed during the kListingFiles stage. The
+  // mapped ID is the stable ID of the parent directory in which the given item
   // was first encountered.
-  std::unordered_map<Id, Path> visited_dirs_
+  std::unordered_map<Id, Id> listed_items_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Stable IDs of the files to pin, and which are not already marked as pinned.
