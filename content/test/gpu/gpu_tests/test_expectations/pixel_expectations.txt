@@ -390,7 +390,6 @@ crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasAcceler
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ Failure ]
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_WebGLDisplayP3 [ Failure ]
 crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasAccelerated2D [ RetryOnFailure ]
-crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] Pixel_OffscreenCanvasWebGLDefaultWorker [ RetryOnFailure ]
 
 
 
