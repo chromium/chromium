@@ -2947,7 +2947,7 @@ crbug.com/626703 [ Mac10.14 ] external/wpt/css/compositing/mix-blend-mode/mix-bl
 crbug.com/626703 [ Mac10.14 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/html/cross-origin-opener-policy/resource-popup.https.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/html/semantics/embedded-content/media-elements/preserves-pitch.html [ Crash Timeout ]
-crbug.com/626703 [ Mac10.14 ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Crash ]
+crbug.com/1232504 [ Mac10.14 ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Crash Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-sorted-before-dispatch.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-fromelement/capture.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-image/MediaStreamTrack-getConstraints.https.html [ Crash ]
