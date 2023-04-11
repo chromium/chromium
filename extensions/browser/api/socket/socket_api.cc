@@ -132,8 +132,8 @@ void SocketApiFunction::OpenFirewallHole(const std::string& address,
         AppFirewallHoleManager::Get(browser_context());
     std::unique_ptr<AppFirewallHole> hole =
         manager->Open(socket->GetSocketType() == Socket::TYPE_TCP
-                          ? AppFirewallHole::PortType::kTcp
-                          : AppFirewallHole::PortType::kUdp,
+                          ? chromeos::FirewallHole::PortType::kTcp
+                          : chromeos::FirewallHole::PortType::kUdp,
                       local_address.port(), GetOriginId());
     if (!hole) {
       Respond(ErrorWithCode(-1, kFirewallFailure));

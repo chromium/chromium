@@ -41,7 +41,7 @@
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "content/public/browser/firewall_hole_proxy.h"
+#include "chromeos/components/firewall_hole/firewall_hole.h"
 #include "services/network/public/mojom/socket_connection_tracker.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -167,8 +167,9 @@ class DirectSocketsServiceImpl::FirewallHoleDelegate
     }
     auto [callback_a, callback_b] =
         base::SplitOnceCallback(std::move(callback));
-    content::OpenTCPFirewallHole(
-        "" /*all interfaces*/, local_addr->port(),
+    chromeos::FirewallHole::Open(
+        chromeos::FirewallHole::PortType::kTcp, local_addr->port(),
+        "" /*all interfaces*/,
         base::BindOnce(
             &FirewallHoleDelegate::OnFirewallHoleOpened, GetWeakPtr(),
             std::move(connection_tracker),
@@ -195,8 +196,9 @@ class DirectSocketsServiceImpl::FirewallHoleDelegate
     }
     auto [callback_a, callback_b] =
         base::SplitOnceCallback(std::move(callback));
-    content::OpenUDPFirewallHole(
-        "" /*all interfaces*/, local_addr->port(),
+    chromeos::FirewallHole::Open(
+        chromeos::FirewallHole::PortType::kUdp, local_addr->port(),
+        "" /*all interfaces*/,
         base::BindOnce(
             &FirewallHoleDelegate::OnFirewallHoleOpened, GetWeakPtr(),
             std::move(connection_tracker),
@@ -217,18 +219,18 @@ class DirectSocketsServiceImpl::FirewallHoleDelegate
           connection_tracker,
       base::OnceClosure on_success,
       base::OnceClosure on_failure,
-      std::unique_ptr<content::FirewallHoleProxy> firewall_hole_proxy) {
-    if (!firewall_hole_proxy) {
+      std::unique_ptr<chromeos::FirewallHole> firewall_hole) {
+    if (!firewall_hole) {
       std::move(on_failure).Run();
       return;
     }
     receivers_.Add(this, std::move(connection_tracker),
-                   std::move(firewall_hole_proxy));
+                   std::move(firewall_hole));
     std::move(on_success).Run();
   }
 
   mojo::ReceiverSet<network::mojom::SocketConnectionTracker,
-                    std::unique_ptr<content::FirewallHoleProxy>>
+                    std::unique_ptr<chromeos::FirewallHole>>
       receivers_;
   base::WeakPtrFactory<FirewallHoleDelegate> weak_factory_{this};
 };

@@ -16,26 +16,28 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 
-namespace ash {
+namespace chromeos {
 class FirewallHole;
-}  // namespace ash
+}  // namespace chromeos
 
 namespace crosapi {
 
-// FirewallHoleAsh wraps the ash::FirewallHole object and resets it upon
+// FirewallHoleAsh wraps the chromeos::FirewallHole object and resets it upon
 // destruction.
 class FirewallHoleAsh : public crosapi::mojom::FirewallHole {
  public:
-  explicit FirewallHoleAsh(std::unique_ptr<ash::FirewallHole> firewall_hole);
+  explicit FirewallHoleAsh(
+      std::unique_ptr<chromeos::FirewallHole> firewall_hole);
   ~FirewallHoleAsh() override;
 
  private:
-  std::unique_ptr<ash::FirewallHole> firewall_hole_;
+  std::unique_ptr<chromeos::FirewallHole> firewall_hole_;
 
   mojo::Receiver<crosapi::mojom::FirewallHole> receiver_{this};
 };
 
 // Ash implementation of crosapi::mojom::FirewallHoleService.
+// TODO(https://crbug.com/1429625): Remove this after crrev.com/c/4386417.
 class FirewallHoleServiceAsh : public crosapi::mojom::FirewallHoleService {
  public:
   FirewallHoleServiceAsh();
@@ -56,7 +58,7 @@ class FirewallHoleServiceAsh : public crosapi::mojom::FirewallHoleService {
   void OnFirewallHoleOpened(
       base::OnceCallback<
           void(mojo::PendingRemote<crosapi::mojom::FirewallHole>)> callback,
-      std::unique_ptr<ash::FirewallHole> firewall_hole);
+      std::unique_ptr<chromeos::FirewallHole> firewall_hole);
 
   // Supports any number of receivers.
   mojo::ReceiverSet<crosapi::mojom::FirewallHoleService> receivers_;

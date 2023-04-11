@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/network/firewall_hole.h"
+#include "chromeos/components/firewall_hole/firewall_hole.h"
 
 #include <utility>
 
@@ -11,13 +11,10 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
+namespace chromeos {
 namespace {
-
-using ::chromeos::FakePermissionBrokerClient;
 
 void CopyFirewallHole(base::RunLoop* run_loop,
                       std::unique_ptr<FirewallHole>* out_hole,
@@ -44,7 +41,7 @@ class FirewallHoleTest : public testing::Test {
 TEST_F(FirewallHoleTest, GrantTcpPortAccess) {
   base::RunLoop run_loop;
   std::unique_ptr<FirewallHole> hole;
-  FirewallHole::Open(FirewallHole::PortType::TCP, 1234, "foo0",
+  FirewallHole::Open(FirewallHole::PortType::kTcp, 1234, "foo0",
                      base::BindOnce(&CopyFirewallHole, &run_loop, &hole));
   run_loop.Run();
   EXPECT_TRUE(hole.get());
@@ -58,7 +55,7 @@ TEST_F(FirewallHoleTest, DenyTcpPortAccess) {
 
   base::RunLoop run_loop;
   std::unique_ptr<FirewallHole> hole;
-  FirewallHole::Open(FirewallHole::PortType::TCP, 1234, "foo0",
+  FirewallHole::Open(FirewallHole::PortType::kTcp, 1234, "foo0",
                      base::BindOnce(&CopyFirewallHole, &run_loop, &hole));
   run_loop.Run();
   EXPECT_FALSE(hole.get());
@@ -67,7 +64,7 @@ TEST_F(FirewallHoleTest, DenyTcpPortAccess) {
 TEST_F(FirewallHoleTest, GrantUdpPortAccess) {
   base::RunLoop run_loop;
   std::unique_ptr<FirewallHole> hole;
-  FirewallHole::Open(FirewallHole::PortType::UDP, 1234, "foo0",
+  FirewallHole::Open(FirewallHole::PortType::kUdp, 1234, "foo0",
                      base::BindOnce(&CopyFirewallHole, &run_loop, &hole));
   run_loop.Run();
   EXPECT_TRUE(hole.get());
@@ -81,11 +78,11 @@ TEST_F(FirewallHoleTest, DenyUdpPortAccess) {
 
   base::RunLoop run_loop;
   std::unique_ptr<FirewallHole> hole;
-  FirewallHole::Open(FirewallHole::PortType::UDP, 1234, "foo0",
+  FirewallHole::Open(FirewallHole::PortType::kUdp, 1234, "foo0",
                      base::BindOnce(&CopyFirewallHole, &run_loop, &hole));
   run_loop.Run();
   EXPECT_FALSE(hole.get());
 }
 
 }  // namespace
-}  // namespace ash
+}  // namespace chromeos

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_FIREWALL_HOLE_H_
-#define CHROMEOS_ASH_COMPONENTS_NETWORK_FIREWALL_HOLE_H_
+#ifndef CHROMEOS_COMPONENTS_FIREWALL_HOLE_FIREWALL_HOLE_H_
+#define CHROMEOS_COMPONENTS_FIREWALL_HOLE_FIREWALL_HOLE_H_
 
 #include <stdint.h>
 
@@ -14,15 +14,15 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/callback_forward.h"
 
-namespace ash {
+namespace chromeos {
 
 // This class works with the Chrome OS permission broker to open a port in the
 // system firewall. It is closed on destruction.
-class COMPONENT_EXPORT(CHROMEOS_NETWORK) FirewallHole {
+class COMPONENT_EXPORT(CHROMEOS_FIREWALL_HOLE) FirewallHole {
  public:
   enum class PortType {
-    UDP,
-    TCP,
+    kUdp,
+    kTcp,
   };
 
   using OpenCallback = base::OnceCallback<void(std::unique_ptr<FirewallHole>)>;
@@ -58,6 +58,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FirewallHole {
   base::ScopedFD lifeline_fd_;
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_FIREWALL_HOLE_H_
+#endif  // CHROMEOS_COMPONENTS_FIREWALL_HOLE_FIREWALL_HOLE_H_

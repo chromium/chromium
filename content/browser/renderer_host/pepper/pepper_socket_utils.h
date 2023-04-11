@@ -12,7 +12,7 @@
 #include "ppapi/c/pp_stdint.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "content/public/browser/firewall_hole_proxy.h"
+#include "chromeos/components/firewall_hole/firewall_hole.h"
 #include "net/base/ip_endpoint.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -36,10 +36,10 @@ bool CanUseSocketAPIs(bool external_plugin,
 #if BUILDFLAG(IS_CHROMEOS)
 
 void OpenTCPFirewallHole(const net::IPEndPoint& address,
-                         FirewallHoleProxy::OpenCallback callback);
+                         chromeos::FirewallHole::OpenCallback callback);
 
 void OpenUDPFirewallHole(const net::IPEndPoint& address,
-                         FirewallHoleProxy::OpenCallback callback);
+                         chromeos::FirewallHole::OpenCallback callback);
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/network/firewall_hole.h"
+#include "chromeos/components/firewall_hole/firewall_hole.h"
 
 #include <fcntl.h>
 #include <stdint.h>
@@ -17,15 +17,15 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/dbus/permission_broker/permission_broker_client.h"
 
-namespace ash {
+namespace chromeos {
 
 namespace {
 
 const char* PortTypeToString(FirewallHole::PortType type) {
   switch (type) {
-    case FirewallHole::PortType::TCP:
+    case FirewallHole::PortType::kTcp:
       return "TCP";
-    case FirewallHole::PortType::UDP:
+    case FirewallHole::PortType::kUdp:
       return "UDP";
   }
   NOTREACHED();
@@ -70,11 +70,11 @@ void FirewallHole::Open(PortType type,
   DCHECK(client) << "Could not get permission broker client.";
 
   switch (type) {
-    case PortType::TCP:
+    case PortType::kTcp:
       client->RequestTcpPortAccess(port, interface, lifeline_remote.get(),
                                    std::move(access_granted_closure));
       return;
-    case PortType::UDP:
+    case PortType::kUdp:
       client->RequestUdpPortAccess(port, interface, lifeline_remote.get(),
                                    std::move(access_granted_closure));
       return;
@@ -95,11 +95,11 @@ FirewallHole::~FirewallHole() {
   }
 
   switch (type_) {
-    case PortType::TCP:
+    case PortType::kTcp:
       client->ReleaseTcpPort(port_, interface_,
                              std::move(port_released_closure));
       return;
-    case PortType::UDP:
+    case PortType::kUdp:
       client->ReleaseUdpPort(port_, interface_,
                              std::move(port_released_closure));
       return;
@@ -129,4 +129,4 @@ FirewallHole::FirewallHole(PortType type,
       interface_(interface),
       lifeline_fd_(std::move(lifeline_fd)) {}
 
-}  // namespace ash
+}  // namespace chromeos

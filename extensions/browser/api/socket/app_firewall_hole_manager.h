@@ -11,11 +11,11 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chromeos/components/firewall_hole/firewall_hole.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 
 namespace content {
 class BrowserContext;
-class FirewallHoleProxy;
 }  // namespace content
 
 namespace extensions {
@@ -27,8 +27,6 @@ class AppFirewallHoleManager;
 // closed on destruction.
 class AppFirewallHole {
  public:
-  enum class PortType { kTcp, kUdp };
-
   ~AppFirewallHole();
 
   const std::string& extension_id() const { return extension_id_; }
@@ -37,23 +35,23 @@ class AppFirewallHole {
   friend class AppFirewallHoleManager;
 
   AppFirewallHole(const base::WeakPtr<AppFirewallHoleManager>& manager,
-                  PortType type,
+                  chromeos::FirewallHole::PortType type,
                   uint16_t port,
                   const std::string& extension_id);
 
   void SetVisible(bool app_visible);
   void OnFirewallHoleOpened(
-      std::unique_ptr<content::FirewallHoleProxy> firewall_hole);
+      std::unique_ptr<chromeos::FirewallHole> firewall_hole);
 
-  PortType type_;
+  chromeos::FirewallHole::PortType type_;
   uint16_t port_;
   std::string extension_id_;
   bool app_visible_ = false;
 
   base::WeakPtr<AppFirewallHoleManager> manager_;
 
-  // This will hold the FirewallHoleProxy object if one is opened.
-  std::unique_ptr<content::FirewallHoleProxy> firewall_hole_;
+  // This will hold the FirewallHole object if one is opened.
+  std::unique_ptr<chromeos::FirewallHole> firewall_hole_;
 
   base::WeakPtrFactory<AppFirewallHole> weak_factory_{this};
 };
@@ -72,7 +70,7 @@ class AppFirewallHoleManager : public KeyedService,
 
   // Opens a port on the system firewall if the associated application is
   // currently visible.
-  std::unique_ptr<AppFirewallHole> Open(AppFirewallHole::PortType type,
+  std::unique_ptr<AppFirewallHole> Open(chromeos::FirewallHole::PortType type,
                                         uint16_t port,
                                         const std::string& extension_id);
 

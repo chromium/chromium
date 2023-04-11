@@ -89,22 +89,24 @@ bool IsLoopbackAddress(const net::IPAddress& address) {
 }  // namespace
 
 void OpenTCPFirewallHole(const net::IPEndPoint& address,
-                         FirewallHoleProxy::OpenCallback callback) {
+                         chromeos::FirewallHole::OpenCallback callback) {
   if (IsLoopbackAddress(address.address())) {
     std::move(callback).Run(nullptr);
     return;
   }
-  content::OpenTCPFirewallHole("" /* all interfaces */, address.port(),
+  chromeos::FirewallHole::Open(chromeos::FirewallHole::PortType::kTcp,
+                               address.port(), "" /*all interfaces*/,
                                std::move(callback));
 }
 
 void OpenUDPFirewallHole(const net::IPEndPoint& address,
-                         FirewallHoleProxy::OpenCallback callback) {
+                         chromeos::FirewallHole::OpenCallback callback) {
   if (IsLoopbackAddress(address.address())) {
     std::move(callback).Run(nullptr);
     return;
   }
-  content::OpenUDPFirewallHole("" /* all interfaces */, address.port(),
+  chromeos::FirewallHole::Open(chromeos::FirewallHole::PortType::kUdp,
+                               address.port(), "" /*all interfaces*/,
                                std::move(callback));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

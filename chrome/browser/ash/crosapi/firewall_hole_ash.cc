@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/crosapi/firewall_hole_ash.h"
 
-#include "chromeos/ash/components/network/firewall_hole.h"
+#include "chromeos/components/firewall_hole/firewall_hole.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace crosapi {
 
 FirewallHoleAsh::FirewallHoleAsh(
-    std::unique_ptr<ash::FirewallHole> firewall_hole)
+    std::unique_ptr<chromeos::FirewallHole> firewall_hole)
     : firewall_hole_(std::move(firewall_hole)) {}
 
 FirewallHoleAsh::~FirewallHoleAsh() = default;
@@ -28,8 +28,8 @@ void FirewallHoleServiceAsh::OpenTCPFirewallHole(
     const std::string& interface_name,
     uint16_t port,
     OpenTCPFirewallHoleCallback callback) {
-  ash::FirewallHole::Open(
-      ash::FirewallHole::PortType::TCP, port, interface_name,
+  chromeos::FirewallHole::Open(
+      chromeos::FirewallHole::PortType::kTcp, port, interface_name,
       base::BindOnce(&FirewallHoleServiceAsh::OnFirewallHoleOpened,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -38,8 +38,8 @@ void FirewallHoleServiceAsh::OpenUDPFirewallHole(
     const std::string& interface_name,
     uint16_t port,
     OpenUDPFirewallHoleCallback callback) {
-  ash::FirewallHole::Open(
-      ash::FirewallHole::PortType::UDP, port, interface_name,
+  chromeos::FirewallHole::Open(
+      chromeos::FirewallHole::PortType::kUdp, port, interface_name,
       base::BindOnce(&FirewallHoleServiceAsh::OnFirewallHoleOpened,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -50,7 +50,7 @@ void FirewallHoleServiceAsh::OpenUDPFirewallHole(
 void FirewallHoleServiceAsh::OnFirewallHoleOpened(
     base::OnceCallback<void(mojo::PendingRemote<crosapi::mojom::FirewallHole>)>
         callback,
-    std::unique_ptr<ash::FirewallHole> firewall_hole) {
+    std::unique_ptr<chromeos::FirewallHole> firewall_hole) {
   if (!firewall_hole) {
     std::move(callback).Run(mojo::NullRemote());
     return;

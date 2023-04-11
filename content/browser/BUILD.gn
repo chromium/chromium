@@ -2393,7 +2393,6 @@ source_set("browser") {
       "lock_screen/lock_screen_storage_impl.h",
       "ml/ml_service_impl_cros.cc",
       "ml/ml_service_impl_cros.h",
-      "renderer_host/pepper/firewall_hole_proxy.cc",
       "smart_card/smart_card_reader_tracker.cc",
       "smart_card/smart_card_reader_tracker.h",
       "smart_card/smart_card_reader_tracker_impl.cc",
@@ -2402,6 +2401,7 @@ source_set("browser") {
       "smart_card/smart_card_service.h",
     ]
     deps += [
+      "//chromeos/components/firewall_hole",
       "//chromeos/crosapi/mojom",
       "//chromeos/services/machine_learning/public/cpp",
       "//chromeos/services/machine_learning/public/mojom",
