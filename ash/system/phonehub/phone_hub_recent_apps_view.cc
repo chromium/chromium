@@ -77,9 +77,9 @@ constexpr int kRecentAppsHeaderSpacing = 220;
 // to make the appearance of a ripple.
 constexpr int kAnimationLoadingIconStaggerDelayInMs = 100;
 
-// When the recent apps view is swapped in for the loading view, the opacities
-// of the two views are animated to give the appearance of a fade-in.
-constexpr int kLoadingViewFadeOutDurationInMs = 200;
+// When the recent apps view is swapped in for the loading view or vice versa,
+// the opacities of the two are animated to give the appearance of a fade-in.
+constexpr int kRecentAppsTransitionDurationMs = 200;
 
 void LayoutAppButtonsView(views::View* buttons_view) {
   const gfx::Rect child_area = buttons_view->GetContentsBounds();
@@ -294,6 +294,11 @@ void PhoneHubRecentAppsView::RecentAppButtonsView::Reset() {
   RemoveAllChildViews();
 }
 
+base::WeakPtr<PhoneHubRecentAppsView::RecentAppButtonsView>
+PhoneHubRecentAppsView::RecentAppButtonsView::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 PhoneHubRecentAppsView::LoadingView::LoadingView() {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
@@ -373,6 +378,7 @@ void PhoneHubRecentAppsView::Update() {
       break;
     case RecentAppsUiState::LOADING:
       if (features::IsEcheNetworkConnectionStateEnabled()) {
+        FadeOutRecentAppsButtonView();
         placeholder_view_->SetVisible(false);
         loading_view_->SetVisible(true);
         header_view_->SetErrorButtonVisible(false);
@@ -383,6 +389,7 @@ void PhoneHubRecentAppsView::Update() {
       [[fallthrough]];
     case RecentAppsUiState::CONNECTION_FAILED:
       if (features::IsEcheNetworkConnectionStateEnabled()) {
+        FadeOutRecentAppsButtonView();
         placeholder_view_->SetVisible(false);
         loading_view_->SetVisible(true);
         header_view_->SetErrorButtonVisible(true);
@@ -465,14 +472,36 @@ void PhoneHubRecentAppsView::FadeOutLoadingView() {
 
     views::AnimationBuilder()
         .OnEnded(base::BindOnce(&LoadingView::SetVisible,
-                                loading_view_->GetWeakPtr(), false))
+                                loading_view_->GetWeakPtr(),
+                                /*visible=*/false))
         .Once()
-        .SetOpacity(loading_view_, 1.0f)
-        .SetOpacity(recent_app_buttons_view_, 0.0f)
+        .SetOpacity(loading_view_, /*opacity=*/1.0f)
+        .SetOpacity(recent_app_buttons_view_, /*opacity=*/0.0f)
         .Then()
-        .SetDuration(base::Milliseconds(kLoadingViewFadeOutDurationInMs))
-        .SetOpacity(loading_view_, 0.0f, gfx::Tween::LINEAR)
-        .SetOpacity(recent_app_buttons_view_, 1.0f, gfx::Tween::LINEAR);
+        .SetDuration(base::Milliseconds(kRecentAppsTransitionDurationMs))
+        .SetOpacity(loading_view_, /*opacity=*/0.0f, gfx::Tween::LINEAR)
+        .SetOpacity(recent_app_buttons_view_, /*opacity=*/1.0f,
+                    gfx::Tween::LINEAR);
+  }
+}
+
+void PhoneHubRecentAppsView::FadeOutRecentAppsButtonView() {
+  if (features::IsEcheNetworkConnectionStateEnabled() &&
+      recent_app_buttons_view_->GetVisible()) {
+    loading_view_->StartLoadingAnimation();
+
+    views::AnimationBuilder()
+        .OnEnded(base::BindOnce(&RecentAppButtonsView::SetVisible,
+                                recent_app_buttons_view_->GetWeakPtr(),
+                                /*visible=*/false))
+        .Once()
+        .SetOpacity(recent_app_buttons_view_, /*opacity=*/1.0f)
+        .SetOpacity(loading_view_, /*opacity=*/0.0f)
+        .Then()
+        .SetDuration(base::Milliseconds(kRecentAppsTransitionDurationMs))
+        .SetOpacity(recent_app_buttons_view_, /*opacity=*/0.0f,
+                    gfx::Tween::LINEAR)
+        .SetOpacity(loading_view_, /*opacity=*/1.0f, gfx::Tween::LINEAR);
   }
 }
 
