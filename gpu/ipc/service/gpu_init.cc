@@ -400,12 +400,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ui::OzonePlatform::InitializeForGPU(params);
-  // We need to get supported formats before sandboxing to avoid an known
-  // issue which breaks the camera preview. (b/166850715)
-  std::vector<gfx::BufferFormat> supported_buffer_formats_for_texturing =
-      ui::OzonePlatform::GetInstance()
-          ->GetSurfaceFactoryOzone()
-          ->GetSupportedFormatsForTexturing();
 #endif  // BUILDFLAG(IS_OZONE)
 
   gl::GLDisplay* gl_display = nullptr;
@@ -662,6 +656,15 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       return false;
     }
   }
+
+#if BUILDFLAG(IS_OZONE)
+  // We need to get supported formats before sandboxing to avoid an known
+  // issue which breaks the camera preview. (b/166850715)
+  std::vector<gfx::BufferFormat> supported_buffer_formats_for_texturing =
+      ui::OzonePlatform::GetInstance()
+          ->GetSurfaceFactoryOzone()
+          ->GetSupportedFormatsForTexturing();
+#endif  // BUILDFLAG(IS_OZONE)
 
   InitializePlatformOverlaySettings(&gpu_info_, gpu_feature_info_);
 
