@@ -51,7 +51,6 @@ include_rules = [
   "+content/public/browser",
   "+device/base/synchronization",
   "+device/bluetooth",
-  "+device/fido/hid",
   "+device/gamepad", # For gamepad API
   "+device/nfc",
   "+device/vr/public", # For WebXR API
@@ -140,6 +139,7 @@ specific_include_rules = {
   "browser_main_loop\.cc": [
     # TODO(crbug.com/1049894): Remove.
     "+services/network/transitional_url_loader_factory_owner.h",
+    "+device/fido/hid/fido_hid_discovery.h",
   ],
   "browser_main_loop\.h": [
     "+ui/ozone/buildflags.h",

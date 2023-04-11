@@ -1,3 +1,9 @@
 include_rules = [
   "+dbus",
 ]
+
+specific_include_rules = {
+  "chrome_webauthn_credentials_delegate(_unittest|)\.cc": [
+    "+device/fido",
+  ],
+}
