@@ -58,6 +58,10 @@ bool SystemTextfieldController::HandleKeyEvent(views::Textfield* sender,
     // textfield.
     if (active) {
       textfield_->RestoreText();
+      // `RestoreText()`, uses `SetText()`, which does not invoke
+      // `ContentsChanged()`. Call `ContentsChanged()` directly, so the text
+      // change gets handled by controller overrides.
+      ContentsChanged(textfield_, textfield_->GetText());
       textfield_->SetActive(false);
       return true;
     }

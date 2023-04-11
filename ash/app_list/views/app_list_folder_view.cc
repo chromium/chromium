@@ -137,10 +137,16 @@ class BackgroundAnimation : public AppListFolderView::Animation,
                               : folder_view_->folder_item_icon_bounds();
     to_rect -= animating_view_->bounds().OffsetFromOrigin();
     const views::Widget* app_list_widget = folder_view_->GetWidget();
+    const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
     const SkColor background_color =
-        app_list_widget->GetColorProvider()->GetColor(kColorAshShieldAndBase80);
+        app_list_widget->GetColorProvider()->GetColor(
+            is_jelly_enabled ? static_cast<ui::ColorId>(
+                                   cros_tokens::kCrosSysSystemBaseElevated)
+                             : kColorAshShieldAndBase80);
     const SkColor bubble_color = app_list_widget->GetColorProvider()->GetColor(
-        kColorAshControlBackgroundColorInactive);
+        is_jelly_enabled
+            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemOnBase)
+            : kColorAshControlBackgroundColorInactive);
     const SkColor from_color = show_ ? bubble_color : background_color;
     const SkColor to_color = show_ ? background_color : bubble_color;
 
@@ -636,8 +642,10 @@ AppListFolderView::AppListFolderView(AppListFolderController* folder_controller,
       is_jelly_enabled ? views::HighlightBorder::Type::kHighlightBorderOnShadow
                        : views::HighlightBorder::Type::kHighlightBorder1,
       /*use_light_colors=*/false));
-  background_view_->SetBackground(
-      views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
+  background_view_->SetBackground(views::CreateThemedSolidBackground(
+      is_jelly_enabled
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
+          : kColorAshShieldAndBase80));
   background_view_->SetVisible(false);
 
   animating_background_ = AddChildView(std::make_unique<views::View>());
