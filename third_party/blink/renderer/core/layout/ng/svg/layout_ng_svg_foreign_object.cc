@@ -144,7 +144,7 @@ void LayoutNGSVGForeignObject::UpdateBlockLayout(bool relayout_children) {
   overridden_location_ = LayoutPoint(zoomed_location);
 
   UpdateNGBlockLayout();
-  DCHECK(!NeedsLayout());
+  DCHECK(!NeedsLayout() || ChildLayoutBlockedByDisplayLock());
   const bool bounds_changed = old_frame_rect != FrameRect();
 
   // Invalidate all resources of this client if our reference box changed.
