@@ -30,6 +30,7 @@ function fakeVolumeEntry(volumeType, displayRoot, additionalProperties) {
     displayRoot = createFakeDisplayRoot();
   }
   const fakeVolumeInfo = {
+    volumeId: `id:${volumeType}`,
     displayRoot: displayRoot,
     label: kLabel,
     volumeType: volumeType,
