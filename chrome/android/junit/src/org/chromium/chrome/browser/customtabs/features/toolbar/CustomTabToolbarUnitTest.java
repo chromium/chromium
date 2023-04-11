@@ -328,12 +328,19 @@ public class CustomTabToolbarUnitTest {
         result = mToolbar.isReadyForTextureCapture();
         assertTrue(result.isReady);
         assertEquals(result.snapshotDifference, ToolbarSnapshotDifference.SECURITY_ICON);
-        fakeTextureCapture();
 
+        fakeTextureCapture();
         when(mAnimationDelegate.isInAnimation()).thenReturn(true);
         result = mToolbar.isReadyForTextureCapture();
         assertTrue(result.isReady);
         assertEquals(result.snapshotDifference, ToolbarSnapshotDifference.CCT_ANIMATION);
+
+        when(mAnimationDelegate.isInAnimation()).thenReturn(false);
+        fakeTextureCapture();
+        mToolbar.layout(0, 0, 100, 100);
+        result = mToolbar.isReadyForTextureCapture();
+        assertTrue(result.isReady);
+        assertEquals(result.snapshotDifference, ToolbarSnapshotDifference.LOCATION_BAR_WIDTH);
     }
 
     @Test

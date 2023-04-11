@@ -23,8 +23,9 @@ class CustomTabCaptureStateToken {
     private final @ColorInt int mBackgroundColor;
     private final @DrawableRes int mSecurityIconRes;
     private @Nullable final Object mAnimationToken;
+    private final int mViewWidth;
     public CustomTabCaptureStateToken(String url, String title, @ColorInt int backgroundColor,
-            @DrawableRes int securityIconRes, boolean isInAnimation) {
+            @DrawableRes int securityIconRes, boolean isInAnimation, int viewWidth) {
         mUrl = url;
         mTitle = title;
         mBackgroundColor = backgroundColor;
@@ -33,6 +34,7 @@ class CustomTabCaptureStateToken {
         // reference equality, resulting in a difference unless both are null or the objects
         // are actually the same object.
         mAnimationToken = isInAnimation ? new Object() : null;
+        mViewWidth = viewWidth;
     }
 
     /**
@@ -52,6 +54,8 @@ class CustomTabCaptureStateToken {
             return ToolbarSnapshotDifference.SECURITY_ICON;
         } else if (!Objects.equals(mAnimationToken, that.mAnimationToken)) {
             return ToolbarSnapshotDifference.CCT_ANIMATION;
+        } else if (mViewWidth != that.mViewWidth) {
+            return ToolbarSnapshotDifference.LOCATION_BAR_WIDTH;
         } else {
             return ToolbarSnapshotDifference.NONE;
         }
