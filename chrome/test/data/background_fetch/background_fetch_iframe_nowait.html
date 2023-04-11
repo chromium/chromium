@@ -9,7 +9,7 @@
       navigator.serviceWorker.ready.then(swRegistration => {
         swRegistration.backgroundFetch.fetch(
             'iframe-fetch', '/background_fetch/types_of_cheese.txt');
-        sendResultToTest('ok');
+        window.parent.postMessage('ok', '*');
       });
     </script>
   </body>

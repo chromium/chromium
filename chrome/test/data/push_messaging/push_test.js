@@ -35,241 +35,245 @@ function swRegistrationReady(reg) {
 // Notification permission has been coalesced with Push permission. After
 // this is granted, Push API subscription can succeed.
 function requestNotificationPermission() {
-  Notification.requestPermission(function(permission) {
-    sendResultToTest('permission status - ' + permission);
-  });
+  return new Promise(resolve => {
+    Notification.requestPermission(resolve);
+  }).then((permission) => 'permission status - ' + permission);
 }
 
 function registerServiceWorker() {
   // The base dir used to resolve service_worker.js and the scope depends on
   // whether this script is included from an html file in ./, subscope1/, or
   // subscope2/.
-  navigator.serviceWorker.register('service_worker.js', {
+  return navigator.serviceWorker.register('service_worker.js', {
     scope: './'
   }).then(swRegistrationReady).then(() => {
-    sendResultToTest('ok - service worker registered');
-  }).catch(sendErrorToTest);
+    return 'ok - service worker registered';
+  }).catch(formatError);
 }
 
 function unregisterServiceWorker() {
-  navigator.serviceWorker.getRegistration().then(function(swRegistration) {
-    swRegistration.unregister().then(function(result) {
-      sendResultToTest('service worker unregistration status: ' + result);
+  return navigator.serviceWorker.getRegistration()
+    .then(function(swRegistration) {
+      return swRegistration.unregister();
+    }).then(function(result) {
+      return 'service worker unregistration status: ' + result;
     })
-  }).catch(sendErrorToTest);
+  .catch(formatError);
 }
 
 function replaceServiceWorker() {
-  navigator.serviceWorker.register('service_worker_with_skipWaiting_claim.js', {
+  return navigator.serviceWorker.register(
+    'service_worker_with_skipWaiting_claim.js', {
     scope: './'
   }).then(swRegistrationReady).then(() => {
-    sendResultToTest('ok - service worker replaced');
-  }).catch(sendErrorToTest);
+    return 'ok - service worker replaced';
+  }).catch(formatError);
 }
 
 function removeManifest() {
   var element = document.querySelector('link[rel="manifest"]');
   if (element)
     element.parentNode.removeChild(element);
-  sendResultToTest('manifest removed');
+  return 'manifest removed';
 }
 
 function swapManifestNoSenderId() {
   var element = document.querySelector('link[rel="manifest"]');
   if (element) {
     element.href = 'manifest_no_sender_id.json';
-    sendResultToTest('sender id removed from manifest');
+    return 'sender id removed from manifest';
   } else {
-    sendResultToTest('unable to find manifest element');
+    return 'unable to find manifest element';
   }
 }
 
 // This is the old style of push subscriptions which we are phasing away
 // from, where the subscription used a sender ID instead of public key.
 function documentSubscribePushWithoutKey() {
-  navigator.serviceWorker.ready.then(function(swRegistration) {
-    return swRegistration.pushManager.subscribe({userVisibleOnly: true})
-        .then(function(subscription) {
-          sendResultToTest(subscription.endpoint);
-        });
-  }).catch(sendErrorToTest);
+  return navigator.serviceWorker.ready.then(function(swRegistration) {
+    return swRegistration.pushManager.subscribe({userVisibleOnly: true});
+  }).then(function(subscription) {
+    return subscription.endpoint;
+  }).catch(formatError);
 }
 
 function documentSubscribePushWithEmptyOptions() {
-  navigator.serviceWorker.ready.then(function(swRegistration) {
-    return swRegistration.pushManager.subscribe()
-        .then(function(subscription) {
-          sendResultToTest(subscription.endpoint);
-        });
-  }).catch(sendErrorToTest);
+  return navigator.serviceWorker.ready.then(function(swRegistration) {
+    return swRegistration.pushManager.subscribe();
+  }).then(function(subscription) {
+    return subscription.endpoint;
+  }).catch(formatError);
 }
 
 function documentSubscribePush() {
-  navigator.serviceWorker.ready.then(function(swRegistration) {
+  return navigator.serviceWorker.ready.then(function(swRegistration) {
     return swRegistration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: kApplicationServerKey.buffer
-        })
-        .then(function(subscription) {
-          sendResultToTest(subscription.endpoint);
         });
-  }).catch(sendErrorToTest);
+  }).then(function(subscription) {
+    return subscription.endpoint;
+  }).catch(formatError);
 }
 
 function documentSubscribePushWithNumericKey() {
-  navigator.serviceWorker.ready.then(function(swRegistration) {
+  return navigator.serviceWorker.ready.then(function(swRegistration) {
     return swRegistration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: new TextEncoder().encode('1234567890')
-        })
-        .then(function(subscription) {
-          sendResultToTest(subscription.endpoint);
         });
-  }).catch(sendErrorToTest);
+  }).then(function(subscription) {
+    return subscription.endpoint;
+  }).catch(formatError);
 }
 
 function documentSubscribePushWithBase64URLEncodedString() {
-  navigator.serviceWorker.ready.then(function(swRegistration) {
+  return navigator.serviceWorker.ready.then(function(swRegistration) {
     return swRegistration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: kBase64URLEncodedKey
-        })
-        .then(function(subscription) {
-          sendResultToTest(subscription.endpoint);
         });
-  }).catch(sendErrorToTest);
+  }).then(function(subscription) {
+    return subscription.endpoint;
+  }).catch(formatError);
 }
 
 function documentSubscribePushGetExpirationTime() {
-  navigator.serviceWorker.ready.then(function(swRegistration) {
+  return navigator.serviceWorker.ready.then(function(swRegistration) {
     return swRegistration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: kApplicationServerKey.buffer
-        })
-        .then(function(subscription) {
-          sendResultToTest(subscription.expirationTime);
         });
-  }).catch(sendErrorToTest);
+  }).then(function(subscription) {
+    return String(subscription.expirationTime);
+  }).catch(formatError);
 }
 
 function workerSubscribePush() {
   // Send the message to the worker for it to subscribe
-  navigator.serviceWorker.controller.postMessage({command: 'workerSubscribe'});
+  return new Promise(resolve => {
+    navigator.serviceWorker.addEventListener('message', resolve, false);
+    navigator.serviceWorker.controller.postMessage(
+      {command: 'workerSubscribe'});
+  }).then((event) => JSON.parse(event.data).data);
 }
 
 function workerSubscribePushNoKey() {
   // The worker will try to subscribe without providing a key. This should
   // succeed if the worker was previously subscribed with a numeric key
   // and fail otherwise.
-  navigator.serviceWorker.controller.postMessage(
+  return new Promise(resolve => {
+    navigator.serviceWorker.addEventListener('message', resolve, false);
+    navigator.serviceWorker.controller.postMessage(
       {command: 'workerSubscribeNoKey'});
+  }).then((event) => JSON.parse(event.data).data);
 }
 
 function workerSubscribePushWithNumericKey(numericKey = '1234567890') {
   // Send the message to the worker for it to subscribe with the given numeric key
-  navigator.serviceWorker.controller.postMessage(
+  return new Promise(resolve => {
+    navigator.serviceWorker.addEventListener('message', resolve, false);
+    navigator.serviceWorker.controller.postMessage(
       {command: 'workerSubscribeWithNumericKey', key: numericKey});
+  }).then((event) => JSON.parse(event.data).data);
 }
 
 function workerSubscribePushWithBase64URLEncodedString() {
   // Send the message to the worker for it to subscribe with the given Base64URLEncoded key
-  navigator.serviceWorker.controller.postMessage(
-      {command: 'workerSubscribePushWithBase64URLEncodedString',
-        key: kBase64URLEncodedKey});
+  return new Promise(resolve => {
+    navigator.serviceWorker.addEventListener('message', resolve, false);
+    navigator.serviceWorker.controller.postMessage(
+        {command: 'workerSubscribePushWithBase64URLEncodedString',
+          key: kBase64URLEncodedKey});
+  }).then((event) => JSON.parse(event.data).data);
 }
 
 function GetP256dh() {
-  navigator.serviceWorker.ready.then(function(swRegistration) {
-    return swRegistration.pushManager.getSubscription()
-        .then(function(subscription) {
-          sendResultToTest(btoa(String.fromCharCode.apply(null,
-              new Uint8Array(subscription.getKey('p256dh')))));
-        });
-  }).catch(sendErrorToTest);
+  return navigator.serviceWorker.ready.then(function(swRegistration) {
+    return swRegistration.pushManager.getSubscription();
+  }).then(function(subscription) {
+    return btoa(String.fromCharCode.apply(null,
+        new Uint8Array(subscription.getKey('p256dh'))));
+  }).catch(formatError);
 }
 
 function GetSubscriptionExpirationTime() {
-  navigator.serviceWorker.ready.then(function(swRegistration) {
-    return swRegistration.pushManager.getSubscription()
-        .then(function(subscription) {
-          sendResultToTest(subscription.expirationTime);
-        });
-  }).catch(sendErrorToTest);
+  return navigator.serviceWorker.ready.then(function(swRegistration) {
+    return swRegistration.pushManager.getSubscription();
+  }).then(function(subscription) {
+    return String(subscription.expirationTime);
+  }).catch(formatError);
 }
 
 function pushManagerPermissionState() {
-  navigator.serviceWorker.ready.then(function(swRegistration) {
-    return swRegistration.pushManager.permissionState({userVisibleOnly: true})
-        .then(function(permission) {
-          sendResultToTest('permission status - ' + permission);
-        });
-  }).catch(sendErrorToTest);
+  return navigator.serviceWorker.ready.then(function(swRegistration) {
+    return swRegistration.pushManager.permissionState({userVisibleOnly: true});
+  }).then(function(permission) {
+    return 'permission status - ' + permission;
+  }).catch(formatError);
 }
 
 function notificationPermissionState() {
-  sendResultToTest('permission status - ' + Notification.permission);
+  return 'permission status - ' + Notification.permission;
 }
 
 function notificationPermissionAPIState() {
-  navigator.permissions.query({name: 'notifications'}).then(
+  return navigator.permissions.query({name: 'notifications'}).then(
       permission_status => {
-    sendResultToTest('permission status - ' + permission_status.state);
-  }).catch(sendErrorToTest);
+    return 'permission status - ' + permission_status.state;
+  }).catch(formatError);
 }
 
 function isControlled() {
   if (navigator.serviceWorker.controller) {
-    sendResultToTest('true - is controlled');
+    return 'true - is controlled';
   } else {
-    sendResultToTest('false - is not controlled');
+    return 'false - is not controlled';
   }
 }
 
-function unsubscribePush() {
-  navigator.serviceWorker.ready.then(function(swRegistration) {
-    if (!swRegistration) {
-      sendResultToTest('unsubscribe result: false');
-      return;
-    }
-    swRegistration.pushManager.getSubscription().then(function(pushSubscription)
-    {
-      if (!pushSubscription) {
-        sendResultToTest('unsubscribe result: false');
-        return;
-      }
-      pushSubscription.unsubscribe().then(function(result) {
-        sendResultToTest('unsubscribe result: ' + result);
-      }, function(error) {
-        sendResultToTest('unsubscribe error: ' + error.message);
-      });
-    })
-  });
+async function unsubscribePush() {
+  const swRegistration = await navigator.serviceWorker.ready;
+  if (!swRegistration) {
+    return 'unsubscribe result: false';
+  }
+  const pushSubscription = await swRegistration.pushManager.getSubscription();
+  if (!pushSubscription) {
+    return 'unsubscribe result: false';
+  }
+  try {
+    const result = await pushSubscription.unsubscribe();
+    return 'unsubscribe result: ' + result;
+  } catch(error) {
+    return 'unsubscribe error: ' + error.message;
+  }
 }
 
 function storePushSubscription() {
-  navigator.serviceWorker.ready.then(swRegistration => {
-    swRegistration.pushManager.getSubscription().then(pushSubscription => {
-      window.storedPushSubscription = pushSubscription;
-      sendResultToTest('ok - stored');
-    }, sendErrorToTest);
-  }, sendErrorToTest);
+  return navigator.serviceWorker.ready.then(swRegistration => {
+    return swRegistration.pushManager.getSubscription();
+  }).then(pushSubscription => {
+    window.storedPushSubscription = pushSubscription;
+    return 'ok - stored';
+  })
+  .catch(formatError);
 }
 
 function unsubscribeStoredPushSubscription() {
-  window.storedPushSubscription.unsubscribe().then(function(result) {
-    sendResultToTest('unsubscribe result: ' + result);
+  return window.storedPushSubscription.unsubscribe().then(function(result) {
+    return 'unsubscribe result: ' + result;
   }, function(error) {
-    sendResultToTest('unsubscribe error: ' + error.message);
+    return 'unsubscribe error: ' + error.message;
   });
 }
 
 function hasSubscription() {
-  navigator.serviceWorker.ready.then(function(swRegistration) {
+  return navigator.serviceWorker.ready.then(function(swRegistration) {
     return swRegistration.pushManager.getSubscription();
   }).then(function(subscription) {
-    sendResultToTest(subscription ? 'true - subscribed'
-                                  : 'false - not subscribed');
-  }).catch(sendErrorToTest);
+    return subscription ? 'true - subscribed'
+                        : 'false - not subscribed';
+  }).catch(formatError);
 }
 
 navigator.serviceWorker.addEventListener('message', function(event) {
@@ -279,7 +283,5 @@ navigator.serviceWorker.addEventListener('message', function(event) {
   } else if (message.type === 'pushsubscriptionchange') {
     resultQueue.push(message.data.oldEndpoint);
     resultQueue.push(message.data.newEndpoint);
-  } else {
-    sendResultToTest(message.data);
   }
 }, false);

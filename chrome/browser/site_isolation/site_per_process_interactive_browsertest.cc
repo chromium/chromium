@@ -212,17 +212,14 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   // "input-focus" will be sent once the input field's focus event fires.
   content::RenderFrameHost* child =
       ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
-  std::string result;
   std::string script =
       "function onInput(e) {"
-      "  domAutomationController.send(getInputFieldText());"
+      "  resultQueue.push(getInputFieldText());"
       "}"
       "inputField = document.getElementById('text-field');"
       "inputField.addEventListener('input', onInput, false);";
-  EXPECT_TRUE(ExecuteScript(child, script));
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      child, "window.focus(); focusInputField();", &result));
-  EXPECT_EQ("input-focus", result);
+  EXPECT_TRUE(ExecJs(child, script));
+  EXPECT_EQ("input-focus", EvalJs(child, "window.focus(); focusInputField();"));
 
   // The subframe should now be focused.
   EXPECT_EQ(child, web_contents->GetFocusedFrame());
@@ -230,22 +227,17 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   // Generate a few keyboard events and route them to currently focused frame.
   // We wait for replies to be sent back from the page, since keystrokes may
   // take time to propagate to the renderer's main thread.
-  content::DOMMessageQueue msg_queue(web_contents);
-  std::string reply;
   SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('F'),
                    ui::DomCode::US_F, ui::VKEY_F, false, false, false, false);
-  EXPECT_TRUE(msg_queue.WaitForMessage(&reply));
-  EXPECT_EQ("\"F\"", reply);
+  EXPECT_EQ("F", EvalJs(child, "waitForInput();"));
 
   SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('O'),
                    ui::DomCode::US_O, ui::VKEY_O, false, false, false, false);
-  EXPECT_TRUE(msg_queue.WaitForMessage(&reply));
-  EXPECT_EQ("\"FO\"", reply);
+  EXPECT_EQ("FO", EvalJs(child, "waitForInput();"));
 
   SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('O'),
                    ui::DomCode::US_O, ui::VKEY_O, false, false, false, false);
-  EXPECT_TRUE(msg_queue.WaitForMessage(&reply));
-  EXPECT_EQ("\"FOO\"", reply);
+  EXPECT_EQ("FOO", EvalJs(child, "waitForInput();"));
 }
 
 // Ensure that sequential focus navigation (advancing focused elements with
