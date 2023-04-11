@@ -155,6 +155,7 @@ void AboutThisSideSidePanelCoordinator::DidFinishNavigation(
       about_this_site_side_panel_view_ &&
       side_panel_coordinator->GetCurrentEntryId() ==
           SidePanelEntry::Id::kAboutThisSite) {
+    page_info::AboutThisSiteService::OnSameTabNavigation();
     RegisterEntryAndShow(page_info::AboutThisSiteService::CreateMoreAboutUrl(
         navigation_handle->GetURL()));
   }

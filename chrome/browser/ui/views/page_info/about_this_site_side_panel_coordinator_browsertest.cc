@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "content/public/test/browser_test.h"
@@ -177,6 +178,32 @@ IN_PROC_BROWSER_TEST_F(AboutThisSiteKeepSidePanelOpenBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl2)));
   EXPECT_FALSE(side_panel_coordinator()->IsSidePanelShowing());
   ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+}
+
+IN_PROC_BROWSER_TEST_F(AboutThisSiteKeepSidePanelOpenBrowserTest,
+                       HistogramEmissionOnSameTabNav) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  // Show side panel.
+  ShowAboutThisSiteSidePanel(web_contents(), CreateUrl(kAboutThisSiteUrl));
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kAboutThisSite);
+
+  base::HistogramTester t;
+
+  // Navigate on the same tab.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl2)));
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kAboutThisSite);
+
+  // Check that the histogram was emitted.
+  t.ExpectUniqueSample("Security.PageInfo.AboutThisSiteInteraction",
+                       page_info::AboutThisSiteService::
+                           AboutThisSiteInteraction::kSameTabNavigation,
+                       1);
 }
 
 // TODO(crbug.com/1318000): Cover additional AboutThisSite side panel behavior.
