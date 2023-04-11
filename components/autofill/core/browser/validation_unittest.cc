@@ -107,6 +107,17 @@ TEST(AutofillValidation, IsValidCreditCardNumber) {
   }
 }
 
+// Tests the validation of credit card numbers using the Luhn check.
+TEST(AutofillValidation, CreditCardNumberLuhnTest) {
+  const char16_t* valid_luhn_number = kValidNumbers[18];
+  SCOPED_TRACE(base::UTF16ToUTF8(valid_luhn_number));
+  EXPECT_TRUE(PassesLuhnCheck(valid_luhn_number));
+
+  const char16_t* invalid_luhn_number = kInvalidNumbers[2];
+  SCOPED_TRACE(base::UTF16ToUTF8(invalid_luhn_number));
+  EXPECT_FALSE(PassesLuhnCheck(invalid_luhn_number));
+}
+
 // Tests the plausibility of supplied credit card expiration years.
 TEST(AutofillValidation, IsPlausibleCreditCardExparationYear) {
   for (const char16_t* plausible_year : kPlausibleCreditCardExpirationYears) {

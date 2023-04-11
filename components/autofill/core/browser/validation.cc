@@ -97,7 +97,6 @@ bool HasCorrectLength(const std::u16string& number) {
   return true;
 }
 
-// TODO(crbug.com/927767): Add unit tests for this function.
 bool PassesLuhnCheck(const std::u16string& number) {
   // Use the Luhn formula [3] to validate the number.
   // [3] http://en.wikipedia.org/wiki/Luhn_algorithm
