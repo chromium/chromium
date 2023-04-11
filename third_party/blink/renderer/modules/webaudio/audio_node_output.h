@@ -151,7 +151,7 @@ class MODULES_EXPORT AudioNodeOutput final {
   // AudioNode::makeConnection when we add an AudioNodeInput to this, and must
   // call AudioNode::breakConnection() when we remove an AudioNodeInput from
   // this.
-  HashSet<AudioNodeInput*> inputs_;
+  HashSet<AudioNodeInput*, WTF::MemberHashRecordReplayRegisteredPointerId<AudioNodeInput>> inputs_;
   bool is_enabled_ = true;
 
   bool did_call_dispose_ = false;
