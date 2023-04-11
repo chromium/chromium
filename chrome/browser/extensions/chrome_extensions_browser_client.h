@@ -19,6 +19,7 @@
 #include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/kiosk/kiosk_delegate.h"
+#include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -200,6 +201,11 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::BrowserContext* context,
       const ExtensionId& extension_id,
       const std::string& code) const override;
+  void NotifyExtensionApiDeclarativeNetRequest(
+      content::BrowserContext* context,
+      const ExtensionId& extension_id,
+      const std::vector<api::declarative_net_request::Rule>& rules)
+      const override;
   void NotifyExtensionRemoteHostContacted(content::BrowserContext* context,
                                           const ExtensionId& extension_id,
                                           const GURL& url) const override;

@@ -147,6 +147,10 @@ BASE_FEATURE(kExtensionTelemetryCookiesGetSignal,
              "SafeBrowsingExtensionTelemetryCookiesGetSignal",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kExtensionTelemetryDeclarativeNetRequestSignal,
+             "SafeBrowsingExtensionTelemetryDeclarativeNetRequestSignal",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kFileTypePoliciesTag,
              "FileTypePoliciesTag",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -299,6 +303,7 @@ constexpr struct {
     {&kExtensionTelemetry, true},
     {&kExtensionTelemetryCookiesGetAllSignal, true},
     {&kExtensionTelemetryCookiesGetSignal, true},
+    {&kExtensionTelemetryDeclarativeNetRequestSignal, true},
     {&kExtensionTelemetryPersistence, true},
     {&kExtensionTelemetryPotentialPasswordTheft, true},
     {&kExtensionTelemetryReportContactedHosts, true},

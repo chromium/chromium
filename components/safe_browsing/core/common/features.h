@@ -145,6 +145,10 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryCookiesGetAllSignal);
 // cookies.get API call.
 BASE_DECLARE_FEATURE(kExtensionTelemetryCookiesGetSignal);
 
+// Enables collection of DeclarativeNetRequest rules when an extension invokes
+// the updateDynamicRules()/updateSessionRules() APIs.
+BASE_DECLARE_FEATURE(kExtensionTelemetryDeclarativeNetRequestSignal);
+
 // Determines the tag to pass to Omaha to get a file type policy.
 BASE_DECLARE_FEATURE(kFileTypePoliciesTag);
 
