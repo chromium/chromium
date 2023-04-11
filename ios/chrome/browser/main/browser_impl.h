@@ -24,7 +24,11 @@ class WebStateListDelegate;
 class BrowserImpl final : public Browser {
  public:
   // Constructs a BrowserImpl attached to `browser_state`.
-  BrowserImpl(ChromeBrowserState* browser_state, bool inactive);
+  // If `active_browser` is not null, the created browser is the inactive
+  // counterpart to that active browser. Otherwise, the created browser is
+  // considered active by default.
+  BrowserImpl(ChromeBrowserState* browser_state,
+              BrowserImpl* active_browser = nullptr);
 
   BrowserImpl(const BrowserImpl&) = delete;
   BrowserImpl& operator=(const BrowserImpl&) = delete;
@@ -39,14 +43,19 @@ class BrowserImpl final : public Browser {
   void RemoveObserver(BrowserObserver* observer) final;
   base::WeakPtr<Browser> AsWeakPtr() final;
   bool IsInactive() const final;
+  Browser* GetActiveBrowser() final;
+  Browser* GetInactiveBrowser() final;
+  Browser* CreateInactiveBrowser() final;
+  void DestroyInactiveBrowser() final;
 
  private:
-  ChromeBrowserState* browser_state_;
+  ChromeBrowserState* const browser_state_;
   std::unique_ptr<WebStateListDelegate> web_state_list_delegate_;
   std::unique_ptr<WebStateList> web_state_list_;
   __strong CommandDispatcher* command_dispatcher_;
   base::ObserverList<BrowserObserver, /* check_empty= */ true> observers_;
-  const bool is_inactive_;
+  Browser* const active_browser_;
+  std::unique_ptr<Browser> inactive_browser_;
 
   // Needs to be the last member field to ensure all weak pointers are
   // invalidated before the other internal objects are destroyed.

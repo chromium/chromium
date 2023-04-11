@@ -29,23 +29,51 @@ class BrowserImplTest : public PlatformTest {
 
 // Tests that the accessors return the expected values.
 TEST_F(BrowserImplTest, TestAccessors) {
-  BrowserImpl browser(chrome_browser_state_.get(), /*inactive=*/false);
+  BrowserImpl browser(chrome_browser_state_.get());
   EXPECT_EQ(chrome_browser_state_.get(), browser.GetBrowserState());
   EXPECT_TRUE(browser.GetWebStateList());
   EXPECT_TRUE(browser.GetCommandDispatcher());
   EXPECT_FALSE(browser.IsInactive());
+  EXPECT_EQ(browser.GetActiveBrowser(), &browser);
+  EXPECT_EQ(browser.GetInactiveBrowser(), nullptr);
 
-  BrowserImpl inactive_browser(chrome_browser_state_.get(), /*inactive=*/true);
-  EXPECT_TRUE(inactive_browser.IsInactive());
+  // Check that the inactive and the regular Browsers are correctly referencing
+  // each other after creating the inactive Browser.
+  Browser* inactive_browser = browser.CreateInactiveBrowser();
+  EXPECT_TRUE(inactive_browser->IsInactive());
+  EXPECT_EQ(inactive_browser->GetActiveBrowser(), &browser);
+  EXPECT_EQ(inactive_browser->GetInactiveBrowser(), inactive_browser);
+  EXPECT_FALSE(browser.IsInactive());
+  EXPECT_EQ(browser.GetActiveBrowser(), &browser);
+  EXPECT_EQ(browser.GetInactiveBrowser(), inactive_browser);
+
+  // Check that destroying the inactive browser resets the reference to the
+  // inactive Browser.
+  browser.DestroyInactiveBrowser();
+  EXPECT_FALSE(browser.IsInactive());
+  EXPECT_EQ(browser.GetActiveBrowser(), &browser);
+  EXPECT_EQ(browser.GetInactiveBrowser(), nullptr);
 }
 
 // Tests that the BrowserDestroyed() callback is sent when a browser is deleted.
 TEST_F(BrowserImplTest, BrowserDestroyed) {
   std::unique_ptr<FakeBrowserObserver> observer;
   {
-    BrowserImpl browser(chrome_browser_state_.get(), /*inactive=*/false);
+    BrowserImpl browser(chrome_browser_state_.get());
     observer = std::make_unique<FakeBrowserObserver>(&browser);
   }
+  ASSERT_TRUE(observer);
+  EXPECT_TRUE(observer->browser_destroyed());
+}
+
+// Tests that the BrowserDestroyed() callback is sent when destroying the
+// inactive Browser.
+TEST_F(BrowserImplTest, InactiveBrowserDestroyed) {
+  BrowserImpl browser(chrome_browser_state_.get());
+  Browser* inactive_browser = browser.CreateInactiveBrowser();
+  std::unique_ptr<FakeBrowserObserver> observer =
+      std::make_unique<FakeBrowserObserver>(inactive_browser);
+  browser.DestroyInactiveBrowser();
   ASSERT_TRUE(observer);
   EXPECT_TRUE(observer->browser_destroyed());
 }

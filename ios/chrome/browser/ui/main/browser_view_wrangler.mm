@@ -119,7 +119,6 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
   BOOL _isShutdown;
 
   std::unique_ptr<Browser> _mainBrowser;
-  std::unique_ptr<Browser> _inactiveBrowser;
   std::unique_ptr<Browser> _otrBrowser;
 }
 
@@ -133,17 +132,17 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
 @property(nonatomic, readonly) Browser* inactiveBrowser;
 @property(nonatomic, readonly) Browser* otrBrowser;
 
-// The main browser can't be set after creation, but they can be
-// cleared (setting them to nullptr).
+// The main browser can't be set after creation, but they can be cleared
+// (setting them to nullptr).
 - (void)clearMainBrowser;
+// The inactive browser can't be set after creation, but they can be cleared
+// (setting them to nullptr).
+- (void)clearInactiveBrowser;
 // The OTR browser can be reset after creation.
 - (void)setOtrBrowser:(std::unique_ptr<Browser>)browser;
 
-// Creates and sets up a new Browser for the given BrowserState and inactive
-// state.
-- (std::unique_ptr<Browser>)buildBrowserForBrowserState:
-                                (ChromeBrowserState*)browserState
-                                               inactive:(BOOL)inactive;
+// Sets up an existing browser.
+- (void)setupBrowser:(Browser*)browser;
 
 // Creates the correct BrowserCoordinator for the corresponding browser state
 // and Browser.
@@ -174,7 +173,9 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
 }
 
 - (Browser*)createMainBrowser {
-  _mainBrowser = [self buildBrowserForBrowserState:_browserState inactive:NO];
+  DCHECK(!_mainBrowser);
+  _mainBrowser = Browser::Create(_browserState);
+  [self setupBrowser:_mainBrowser.get()];
   return _mainBrowser.get();
 }
 
@@ -201,9 +202,10 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
       << "Main interface should be created before create inactive browser.";
 
   // Create and restore the inactive browser.
-  _inactiveBrowser = [self buildBrowserForBrowserState:_browserState
-                                              inactive:YES];
-  SessionRestorationBrowserAgent::FromBrowser(_inactiveBrowser.get())
+  Browser* inactiveBrowser = self.mainBrowser->CreateInactiveBrowser();
+  [self setupBrowser:inactiveBrowser];
+
+  SessionRestorationBrowserAgent::FromBrowser(inactiveBrowser)
       ->RestoreSession();
 
   if (IsInactiveTabsEnabled()) {
@@ -213,13 +215,13 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
     // tabs is fully launched. After fully launched the only place where tabs
     // can move from inactive to active is after a settings change, this line
     // will be called at this specific moment.
-    MoveTabsFromInactiveToActive(_inactiveBrowser.get(), _mainBrowser.get());
+    MoveTabsFromInactiveToActive(inactiveBrowser, _mainBrowser.get());
 
     // Moves all tabs that might have become inactive since the last launch.
-    MoveTabsFromActiveToInactive(_mainBrowser.get(), _inactiveBrowser.get());
-    _mainInterface.inactiveBrowser = _inactiveBrowser.get();
+    MoveTabsFromActiveToInactive(_mainBrowser.get(), inactiveBrowser);
+    _mainInterface.inactiveBrowser = inactiveBrowser;
   } else {
-    RestoreAllInactiveTabs(_inactiveBrowser.get(), _mainBrowser.get());
+    RestoreAllInactiveTabs(inactiveBrowser, _mainBrowser.get());
   }
 }
 
@@ -290,10 +292,11 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
 }
 
 - (Browser*)inactiveBrowser {
-  DCHECK(_inactiveBrowser.get())
+  Browser* inactiveBrowser = self.mainBrowser->GetInactiveBrowser();
+  CHECK(inactiveBrowser)
       << "-createInactiveBrowser must be called before -inactiveBrowser is "
-         "accessed and inactive tabs feature should be available.";
-  return _inactiveBrowser.get();
+         "accessed and Inactive Tabs feature should be available.";
+  return inactiveBrowser;
 }
 
 - (Browser*)otrBrowser {
@@ -302,8 +305,8 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
     DCHECK(_browserState);
     ChromeBrowserState* incognitoBrowserState =
         _browserState->GetOffTheRecordChromeBrowserState();
-    _otrBrowser = [self buildBrowserForBrowserState:incognitoBrowserState
-                                           inactive:NO];
+    _otrBrowser = Browser::Create(incognitoBrowserState);
+    [self setupBrowser:_otrBrowser.get()];
   }
   return _otrBrowser.get();
 }
@@ -327,8 +330,12 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
 }
 
 - (void)clearInactiveBrowser {
-  if (_inactiveBrowser.get()) {
-    WebStateList* webStateList = _inactiveBrowser->GetWebStateList();
+  // No-op if the main Browser or the inactive Browser have not been created
+  // yet.
+  Browser* inactiveBrowser =
+      _mainBrowser ? _mainBrowser->GetInactiveBrowser() : nullptr;
+  if (inactiveBrowser) {
+    WebStateList* webStateList = inactiveBrowser->GetWebStateList();
     crash_report_helper::StopMonitoringTabStateForWebStateList(webStateList);
     crash_report_helper::StopMonitoringURLsForWebStateList(webStateList);
     // Close all webstates in `webStateList`. Do this in an @autoreleasepool as
@@ -339,9 +346,9 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
     @autoreleasepool {
       webStateList->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
     }
-  }
 
-  _inactiveBrowser = nullptr;
+    _mainBrowser->DestroyInactiveBrowser();
+  }
 }
 
 - (void)setOtrBrowser:(std::unique_ptr<Browser>)otrBrowser {
@@ -411,8 +418,8 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
   ChromeBrowserState* incognitoBrowserState =
       _browserState->GetOffTheRecordChromeBrowserState();
 
-  [self setOtrBrowser:[self buildBrowserForBrowserState:incognitoBrowserState
-                                               inactive:NO]];
+  [self setOtrBrowser:Browser::Create(incognitoBrowserState)];
+  [self setupBrowser:self.otrBrowser];
   DCHECK(self.otrBrowser->GetWebStateList()->empty());
 
   // Recreate the off-the-record interface, but do not load the session as
@@ -451,6 +458,8 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
 
   // Handles removing observers, stopping crash key monitoring, and closing all
   // tabs.
+  // `clearInactiveBrowser` must be called before `clearMainBrowser`, as the
+  // inactive browser is owned by the main browser.
   [self clearInactiveBrowser];
   [self clearMainBrowser];
   // TODO(crbug.com/1416934): Create `clearOtrBrowser` or similar to follow the
@@ -493,33 +502,22 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
                            forProtocol:@protocol(BrowsingDataCommands)];
 }
 
-- (std::unique_ptr<Browser>)buildBrowserForBrowserState:
-                                (ChromeBrowserState*)browserState
-                                               inactive:(BOOL)inactive {
-  DCHECK(browserState);
-  std::unique_ptr<Browser> browser;
-  if (inactive) {
-    browser = Browser::CreateForInactiveTabs(browserState);
-  } else {
-    browser = Browser::Create(browserState);
-  }
-  DCHECK_EQ(browser->GetBrowserState(), browserState);
-  DCHECK_EQ(browser->IsInactive(), inactive);
-
+- (void)setupBrowser:(Browser*)browser {
+  ChromeBrowserState* browserState = browser->GetBrowserState();
   BrowserList* browserList =
       BrowserListFactory::GetForBrowserState(browserState);
   if (browserState->IsOffTheRecord()) {
-    browserList->AddIncognitoBrowser(browser.get());
+    browserList->AddIncognitoBrowser(browser);
   } else {
-    browserList->AddBrowser(browser.get());
+    browserList->AddBrowser(browser);
   }
 
-  // Associate the current SceneState with the new browser.
-  SceneStateBrowserAgent::CreateForBrowser(browser.get(), _sceneState);
+  // Associate the current SceneState with the new browser.
+  SceneStateBrowserAgent::CreateForBrowser(browser, _sceneState);
 
-  [self dispatchToEndpointsForBrowser:browser.get()];
+  [self dispatchToEndpointsForBrowser:browser];
 
-  [self setSessionIDForBrowser:browser.get()];
+  [self setSessionIDForBrowser:browser];
 
   crash_report_helper::MonitorTabStateForWebStateList(
       browser->GetWebStateList());
@@ -529,8 +527,6 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
   if (!browserState->IsOffTheRecord()) {
     crash_report_helper::MonitorURLsForWebStateList(browser->GetWebStateList());
   }
-
-  return browser;
 }
 
 // Returns the scene session ID with the inactive suffixes if needed.

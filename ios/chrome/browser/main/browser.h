@@ -25,12 +25,6 @@ class Browser : public base::SupportsUserData {
   // Creates a new Browser attached to `browser_state`.
   static std::unique_ptr<Browser> Create(ChromeBrowserState* browser_state);
 
-  // Creates a new Browser attached to `browser_state`. The created browser is
-  // created to contain inactive tabs only (tabs that are not opened for a
-  // certain amount of time).
-  static std::unique_ptr<Browser> CreateForInactiveTabs(
-      ChromeBrowserState* browser_state);
-
   Browser(const Browser&) = delete;
   Browser& operator=(const Browser&) = delete;
 
@@ -52,9 +46,21 @@ class Browser : public base::SupportsUserData {
   // Returns a weak pointer to the Browser.
   virtual base::WeakPtr<Browser> AsWeakPtr() = 0;
 
-  // Returns true if this browser is an inactive one. Which means this browser
+  // Returns true if this browser is the inactive one. This means this browser
   // contains only tabs that have not been opened for a defined amount of time.
   virtual bool IsInactive() const = 0;
+
+  // Get the associated browser, if any. Returns itself if the active state
+  // matches.
+  virtual Browser* GetActiveBrowser() = 0;
+  virtual Browser* GetInactiveBrowser() = 0;
+
+  // Creates the associated inactive browser. `IsInactive` must be false, and
+  // this function must be called at most once.
+  virtual Browser* CreateInactiveBrowser() = 0;
+
+  // Destroys the associated inactive browser. `IsInactive` must be false.
+  virtual void DestroyInactiveBrowser() = 0;
 
  protected:
   Browser() {}

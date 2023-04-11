@@ -65,3 +65,19 @@ base::WeakPtr<Browser> TestBrowser::AsWeakPtr() {
 bool TestBrowser::IsInactive() const {
   return false;
 }
+
+Browser* TestBrowser::GetActiveBrowser() {
+  return this;
+}
+
+Browser* TestBrowser::GetInactiveBrowser() {
+  return nullptr;
+}
+
+Browser* TestBrowser::CreateInactiveBrowser() {
+  NOTREACHED_NORETURN();
+}
+
+void TestBrowser::DestroyInactiveBrowser() {
+  NOTREACHED_NORETURN();
+}
