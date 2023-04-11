@@ -5598,10 +5598,12 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
 // response, the request is changed to a GET request. In this test case, the
 // reporting url is cross-origin.  There are preflight requests.
 // 1. A preflight request is sent to the reporting destination.
-// 2. A response with 302 redirect is sent back to the requester.
-// 3. A preflight request is sent to the redirected destination.
-// 4. A response with 200 OK is sent back to the requester.
-// 5. A GET request is sent to the redirected destination.
+// 2. A response with 200 OK is sent back to the requester.
+// 3. A POST request is sent to the reporting destination.
+// 4. A response with 302 redirect is sent back to the requester.
+// 5. A preflight request is sent to the redirected destination.
+// 6. A response with 200 OK is sent back to the requester.
+// 7. A GET request is sent to the redirected destination.
 IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        CrossOriginReportEventPost302RedirectGet) {
   net::test_server::ControllableHttpResponse preflight_response(https_server(),
