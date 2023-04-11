@@ -22,6 +22,11 @@ TouchSelectionMenuRunnerViews::TestApi::TestApi(
 
 TouchSelectionMenuRunnerViews::TestApi::~TestApi() = default;
 
+int TouchSelectionMenuRunnerViews::TestApi::GetMenuWidth() const {
+  TouchSelectionMenuViews* menu = menu_runner_->menu_;
+  return menu ? menu->width() : 0;
+}
+
 gfx::Rect TouchSelectionMenuRunnerViews::TestApi::GetAnchorRect() const {
   TouchSelectionMenuViews* menu = menu_runner_->menu_;
   return menu ? menu->GetAnchorRect() : gfx::Rect();
