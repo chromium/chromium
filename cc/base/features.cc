@@ -58,6 +58,10 @@ BASE_FEATURE(kMainRepaintScrollPrefersNewContent,
              "MainRepaintScrollPrefersNewContent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFlushGpuAtDraw,
+             "FlushGpuAtDraw",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSchedulerSmoothnessForAnimatedScrolls,
              "SmoothnessModeForAnimatedScrolls",
              base::FEATURE_DISABLED_BY_DEFAULT);
