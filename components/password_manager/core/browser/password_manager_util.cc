@@ -429,7 +429,6 @@ bool ShouldShowBiometricAuthenticationBeforeFillingPromo(
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 bool CanUseBiometricAuth(device_reauth::DeviceAuthenticator* authenticator,
-                         device_reauth::DeviceAuthRequester requester,
                          password_manager::PasswordManagerClient* client) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   if (!client || !client->GetLocalStatePrefs() || !client->GetPrefs() ||

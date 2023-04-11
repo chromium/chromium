@@ -906,16 +906,12 @@ TEST_F(PasswordManagerUtilTest, CanUseBiometricAuth) {
   EXPECT_CALL(*(mock_client_.GetPasswordFeatureManager()),
               IsBiometricAuthenticationBeforeFillingEnabled)
       .WillOnce(Return(false));
-  EXPECT_FALSE(CanUseBiometricAuth(
-      authenticator_.get(),
-      device_reauth::DeviceAuthRequester::kAutofillSuggestion, &mock_client_));
+  EXPECT_FALSE(CanUseBiometricAuth(authenticator_.get(), &mock_client_));
 
   EXPECT_CALL(*(mock_client_.GetPasswordFeatureManager()),
               IsBiometricAuthenticationBeforeFillingEnabled)
       .WillOnce(Return(true));
-  EXPECT_TRUE(CanUseBiometricAuth(
-      authenticator_.get(),
-      device_reauth::DeviceAuthRequester::kAutofillSuggestion, &mock_client_));
+  EXPECT_TRUE(CanUseBiometricAuth(authenticator_.get(), &mock_client_));
 }
 
 TEST_F(PasswordManagerUtilTest, BiometricsUnavailable) {
