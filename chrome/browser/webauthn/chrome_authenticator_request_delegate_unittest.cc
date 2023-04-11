@@ -581,11 +581,7 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
 }
 
 class DisableWebAuthnWithBrokenCertsTest
-    : public ChromeAuthenticatorRequestDelegateTest {
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      device::kDisableWebAuthnWithBrokenCerts};
-};
+    : public ChromeAuthenticatorRequestDelegateTest {};
 
 TEST_F(DisableWebAuthnWithBrokenCertsTest, SecurityLevelNotAcceptable) {
   GURL url("https://doofenshmirtz.evil");

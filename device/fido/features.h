@@ -36,10 +36,6 @@ BASE_DECLARE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege);
 // Enable some experimental UI changes
 COMPONENT_EXPORT(DEVICE_FIDO) BASE_DECLARE_FEATURE(kWebAuthPasskeysUI);
 
-// Allow WebAuthn for sites with TLS errors.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kDisableWebAuthnWithBrokenCerts);
-
 // Enable a special-case dialog for when there are no internal credentials.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnNoPasskeysError);
