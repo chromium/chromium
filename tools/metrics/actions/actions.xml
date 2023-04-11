@@ -37034,6 +37034,8 @@ should be able to be added at any place in this file.
   <suffix name="iOSPromoAppStore" label="For iOSPromoAppStore feature"/>
   <suffix name="iOSPromoCredentialProviderExtension"
       label="For iOSPromoCredentialProviderExtension feature"/>
+  <suffix name="iOSPromoDefaultBrowser"
+      label="For iOSPromoDefaultBrowser feature"/>
   <suffix name="iOSPromoPostRestore" label="For iOSPromoPostRestore feature"/>
   <suffix name="iOSPromoWhatsNew" label="For iOSPromoWhatsNew feature"/>
   <suffix name="KeyboardAccessoryAddressFilling"
