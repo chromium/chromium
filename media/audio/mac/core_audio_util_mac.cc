@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/mac/mac_logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -28,6 +29,11 @@ namespace {
 AudioObjectPropertyScope InputOutputScope(bool is_input) {
   return is_input ? kAudioObjectPropertyScopeInput
                   : kAudioObjectPropertyScopeOutput;
+}
+
+void RecordCompositionPropertyIsNull(bool is_null) {
+  base::UmaHistogramBoolean(
+      "Media.Audio.Mac.AggregateDeviceCompositionPropertyIsNull", is_null);
 }
 
 absl::optional<std::string> GetDeviceStringProperty(
@@ -299,7 +305,17 @@ bool IsPrivateAggregateDevice(AudioObjectID device_id) {
     return false;
   }
 
-  DCHECK_EQ(CFGetTypeID(dictionary), CFDictionaryGetTypeID());
+  // It is possible that though the result was successful, the dictionary
+  // might still be null.
+  if (!dictionary) {
+    RecordCompositionPropertyIsNull(/*is_null=*/true);
+    DLOG(WARNING) << "Property " << kAudioAggregateDevicePropertyComposition
+                  << " is null for device " << device_id;
+    return false;
+  }
+
+  CHECK_EQ(CFGetTypeID(dictionary), CFDictionaryGetTypeID());
+  RecordCompositionPropertyIsNull(/*is_null=*/false);
   bool is_private = false;
   CFTypeRef value = CFDictionaryGetValue(
       dictionary, CFSTR(kAudioAggregateDeviceIsPrivateKey));

@@ -616,6 +616,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Mac.AggregateDeviceCompositionPropertyIsNull"
+    enum="Boolean" expires_after="2024-03-31">
+  <owner>agpalak@chromium.org</owner>
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Reports the number of occurences of null output dictionary when
+    AudioObjectGetPropertyData for kAudioAggregateDevicePropertyComposition is
+    called. This is equivalent to the number of crashes that were reported in
+    crbug.com/1428619.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Output.Win.{AudioOutputMethod}Error"
     enum="Hresult" expires_after="M117">
   <owner>dalecurtis@chromium.org</owner>
