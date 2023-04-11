@@ -70,6 +70,7 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.sBackGestureActivityTabProvider,
                 ChromeFeatureList.sBackGestureRefactorAndroid,
                 ChromeFeatureList.sBaselineGm3SurfaceColors,
+                ChromeFeatureList.sBottomSheetGtsSupport,
                 ChromeFeatureList.sCctAutoTranslate,
                 ChromeFeatureList.sCctBottomBarSwipeUpGesture,
                 ChromeFeatureList.sCctBrandTransparency,

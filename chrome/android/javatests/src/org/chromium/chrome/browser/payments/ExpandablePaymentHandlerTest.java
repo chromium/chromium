@@ -432,7 +432,8 @@ public class ExpandablePaymentHandlerTest {
     public void testBottomSheetSuppressedFailsShow() {
         startDefaultServer();
         PaymentHandlerCoordinator paymentHandler = new PaymentHandlerCoordinator();
-        mBottomSheetTestSupport.suppressSheet(StateChangeReason.UNKNOWN);
+        mRule.runOnUiThread(
+                () -> { mBottomSheetTestSupport.suppressSheet(StateChangeReason.UNKNOWN); });
         mRule.runOnUiThread(() -> {
             Assert.assertNull(paymentHandler.show(mDefaultActivity.getCurrentWebContents(),
                     defaultPaymentAppUrl(), mDefaultIsIncognito, defaultUiObserver()));

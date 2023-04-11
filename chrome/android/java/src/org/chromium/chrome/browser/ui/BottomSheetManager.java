@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -139,7 +140,10 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         // TODO(https://crbug.com/1315679): Remove |mStartSurfaceSupplier|, |mStartSurfaceState| and
         // |mStartSurfaceStateObserver| after the refactor is enabled by default.
         mStartSurfaceSupplier = startSurfaceSupplier;
-        if (!mIsStartSurfaceRefactorEnabled) {
+
+        // With BottomSheetGtsSupport observing the StartSurface state is not necessary.
+        if (!ChromeFeatureList.sBottomSheetGtsSupport.isEnabled()
+                && !mIsStartSurfaceRefactorEnabled) {
             mStartSurfaceSupplier.onAvailable(
                     mCallbackController.makeCancelable(this::addStartSurfaceStateObserver));
         }
@@ -204,19 +208,21 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     }
 
     private void setActivityTab(Tab tab) {
-        // Temporarily suppress the sheet if entering a state where there is no activity
-        // tab and the Start surface homepage isn't showing.
-        updateSuppressionForTabSwitcher(tab,
-                mStartSurfaceSupplier.get() == null
-                        ? null
-                        : mStartSurfaceSupplier.get().getStartSurfaceState(),
-                mLayoutStateProviderSupplier.get() == null
-                        ? null
-                        : mLayoutStateProviderSupplier.get().getActiveLayoutType());
+        if (!ChromeFeatureList.sBottomSheetGtsSupport.isEnabled()) {
+            // Temporarily suppress the sheet if entering a state where there is no activity
+            // tab and the Start surface homepage isn't showing. Otherwise unsuppress the
+            // sheet.
+            updateSuppressionForTabSwitcher(tab,
+                    mStartSurfaceSupplier.get() == null
+                            ? null
+                            : mStartSurfaceSupplier.get().getStartSurfaceState(),
+                    mLayoutStateProviderSupplier.get() == null
+                            ? null
+                            : mLayoutStateProviderSupplier.get().getActiveLayoutType());
+        }
 
         if (tab == null) return;
 
-        // If refocusing the same tab, simply unsuppress the sheet.
         if (mLastActivityTab == tab) return;
 
         // Move the observer to the new activity tab and clear the sheet.
@@ -238,6 +244,8 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     private void updateSuppressionForTabSwitcher(@Nullable Tab tab,
             @Nullable @StartSurfaceState Integer startSurfaceState,
             @Nullable @LayoutType Integer layoutType) {
+        assert !ChromeFeatureList.sBottomSheetGtsSupport.isEnabled()
+            : "Bottom Sheet GTS support removes tab switcher suppression.";
         if (shouldSuppressForTabSwitcher(tab, startSurfaceState, layoutType)) {
             if (mTabSwitcherToken == 0) {
                 mTabSwitcherToken = mSheetController.suppressSheet(StateChangeReason.COMPOSITED_UI);
@@ -257,6 +265,8 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     private boolean shouldSuppressForTabSwitcher(Tab tab,
             @StartSurfaceState Integer startSurfaceState,
             @Nullable @LayoutType Integer layoutType) {
+        assert !ChromeFeatureList.sBottomSheetGtsSupport.isEnabled()
+            : "Bottom Sheet GTS support removes tab switcher suppression.";
         StartSurface startSurface = mStartSurfaceSupplier.get();
 
         if (mIsStartSurfaceRefactorEnabled) {
@@ -301,21 +311,39 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     }
 
     private void addLayoutStateObserver(LayoutStateProvider layoutStateProvider) {
-        if (!mIsStartSurfaceRefactorEnabled) return;
+        if (mIsStartSurfaceRefactorEnabled
+                && !ChromeFeatureList.sBottomSheetGtsSupport.isEnabled()) {
+            mLayoutStateObserver = new LayoutStateObserver() {
+                private @LayoutType int mLayoutType;
 
-        mLayoutStateObserver = new LayoutStateObserver() {
-            private @LayoutType int mLayoutType;
-            @Override
-            public void onFinishedShowing(int layoutType) {
-                if (mLayoutType == layoutType) return;
+                @Override
+                public void onFinishedShowing(int layoutType) {
+                    if (mLayoutType == layoutType) return;
 
-                mLayoutType = layoutType;
-                updateSuppressionForTabSwitcher(mTabProvider.get(), null, mLayoutType);
-                if (mLayoutType == LayoutType.START_SURFACE) {
-                    mSheetController.clearRequestsAndHide();
+                    mLayoutType = layoutType;
+                    updateSuppressionForTabSwitcher(mTabProvider.get(), null, mLayoutType);
+                    if (mLayoutType == LayoutType.START_SURFACE) {
+                        mSheetController.clearRequestsAndHide();
+                    }
                 }
-            }
-        };
+            };
+        } else if (ChromeFeatureList.sBottomSheetGtsSupport.isEnabled()) {
+            mLayoutStateObserver = new LayoutStateObserver() {
+                // On switching to a new layout act as though this is a tab switch by clearing all
+                // state. Use onStartedHiding to avoid the bottom sheet being visible during the
+                // transition if there is one.
+                @Override
+                public void onStartedHiding(
+                        int layoutType, boolean showToolbar, boolean delayAnimation) {
+                    if (layoutType != LayoutType.SIMPLE_ANIMATION) {
+                        mSheetController.clearRequestsAndHide();
+                    }
+                }
+            };
+        }
+
+        if (mLayoutStateObserver == null) return;
+
         layoutStateProvider.addObserver(mLayoutStateObserver);
         // It is possible that the observer missed the first layout change event due to the
         // layoutStateProvider being initialized too late during the startup. Call the observer's
