@@ -1597,6 +1597,8 @@ void Node::AttachLayoutTree(AttachContext& context) {
 }
 
 void Node::DetachLayoutTree(bool performing_reattach) {
+  recordreplay::Assert("[RUN-1219-1694] Node::DetachLayoutTree %d",
+    this->RecordReplayId());
   DCHECK(GetDocument().Lifecycle().StateAllowsDetach() ||
          GetDocument().GetStyleEngine().InContainerQueryStyleRecalc());
   DCHECK(!performing_reattach ||

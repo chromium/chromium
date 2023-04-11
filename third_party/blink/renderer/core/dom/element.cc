@@ -7090,6 +7090,7 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
     PseudoId pseudo_id,
     const StyleRecalcContext& style_recalc_context,
     const AtomicString& document_transition_tag) {
+  recordreplay::Assert("[RUN-1219-1694] Element::CreatePseudoElementIfNeeded");
   if (!CanGeneratePseudoElement(pseudo_id))
     return nullptr;
   if (pseudo_id == kPseudoIdFirstLetter) {
