@@ -2367,6 +2367,12 @@
         <message name="IDS_PERSONALIZATION_APP_THEME_LABEL" desc="Label for theme element in personalization hub">
           Theme
         </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_DYNAMIC_COLOR_LABEL" desc="Label for dynamic color theme element in personalization hub">
+          Accent colors
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_THEME_DYNAMIC_COLOR_DESCRIPTION" desc="Description for dynamic color theme element in personalization hub">
+          Use color sets that match your wallpaper
+        </message>
         <message name="IDS_PERSONALIZATION_APP_THEME_DARK_COLOR_MODE" desc="Label for dark color mode setting">
           Dark
         </message>

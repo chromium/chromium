@@ -90,10 +90,18 @@ suite('DynamicColorElementTest', function() {
   test('displays content', async () => {
     await initDynamicColorElement();
 
+    const title = dynamicColorElement!.shadowRoot!.getElementById('themeTitle');
+    assertTrue(!!title);
     assertEquals(
-        '[temp]Theme color[temp]Auto',
-        dynamicColorElement!.shadowRoot!.getElementById(
-                                            'themeHeader')!.textContent);
+        dynamicColorElement!.i18n('dynamicColorLabel'), title.textContent);
+
+    const description = dynamicColorElement!.shadowRoot!.getElementById(
+        'dynamicColorToggleDescription');
+    assertTrue(!!description);
+    assertEquals(
+        dynamicColorElement!.i18n('dynamicColorDescription'),
+        description.textContent);
+
     assertTrue(getToggleButton().checked, 'default toggle should be on');
     assertFalse(
         getColorSchemeSelector().hidden,

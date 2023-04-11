@@ -111,6 +111,9 @@ void AddStrings(content::WebUIDataSource* source) {
 
       // Theme related strings.
       {"themeLabel", IDS_PERSONALIZATION_APP_THEME_LABEL},
+      {"dynamicColorLabel", IDS_PERSONALIZATION_APP_THEME_DYNAMIC_COLOR_LABEL},
+      {"dynamicColorDescription",
+       IDS_PERSONALIZATION_APP_THEME_DYNAMIC_COLOR_DESCRIPTION},
       {"darkColorMode", IDS_PERSONALIZATION_APP_THEME_DARK_COLOR_MODE},
       {"lightColorMode", IDS_PERSONALIZATION_APP_THEME_LIGHT_COLOR_MODE},
       {"autoColorMode", IDS_PERSONALIZATION_APP_THEME_AUTO_COLOR_MODE},
