@@ -28,6 +28,7 @@ import {IEventManager} from '../events/EventManager';
 import {Network} from '../../../protocol/protocol';
 
 export class NetworkRequest {
+  static #unknown = 'UNKNOWN';
   requestId: string;
   #eventManager: IEventManager;
   #requestWillBeSentEvent: Protocol.Network.RequestWillBeSentEvent | undefined;
@@ -100,6 +101,26 @@ export class NetworkRequest {
     }
   }
 
+  onLoadingFailedEvent(
+    loadingFailedEvent: Protocol.Network.LoadingFailedEvent
+  ) {
+    this.#beforeRequestSentDeferred.resolve();
+    this.#responseReceivedDeferred.reject(loadingFailedEvent);
+
+    const params: Network.FetchErrorParams = {
+      ...this.#getBaseEventParams(),
+      errorText: loadingFailedEvent.errorText,
+    };
+
+    this.#eventManager.registerEvent(
+      {
+        method: Network.EventNames.FetchErrorEvent,
+        params,
+      },
+      this.#requestWillBeSentEvent?.frameId ?? null
+    );
+  }
+
   #sendBeforeRequestEvent() {
     if (!this.#isIgnoredEvent()) {
       this.#eventManager.registerPromiseEvent(
@@ -116,29 +137,8 @@ export class NetworkRequest {
     if (this.#requestWillBeSentEvent === undefined) {
       throw new Error('RequestWillBeSentEvent is not set');
     }
-    if (this.#requestWillBeSentExtraInfoEvent === undefined) {
-      throw new Error('RequestWillBeSentExtraInfoEvent is not set');
-    }
-
-    const requestWillBeSentEvent = this.#requestWillBeSentEvent;
-    const requestWillBeSentExtraInfoEvent =
-      this.#requestWillBeSentExtraInfoEvent;
-
-    const baseEventParams = {
-      context: requestWillBeSentEvent.frameId ?? null,
-      navigation: requestWillBeSentEvent.loaderId,
-      // TODO: implement.
-      redirectCount: 0,
-      request: this.#getRequestData(
-        requestWillBeSentEvent,
-        requestWillBeSentExtraInfoEvent
-      ),
-      // Timestamp should be in milliseconds, while CDP provides it in seconds.
-      timestamp: Math.round(requestWillBeSentEvent.wallTime * 1000),
-    };
-
     const params: Network.BeforeRequestSentParams = {
-      ...baseEventParams,
+      ...this.#getBaseEventParams(),
       initiator: {type: this.#getInitiatorType()},
     };
     return {
@@ -147,23 +147,40 @@ export class NetworkRequest {
     };
   }
 
-  #getRequestData(
-    requestWillBeSentEvent: Protocol.Network.RequestWillBeSentEvent,
-    requestWillBeSentExtraInfoEvent: Protocol.Network.RequestWillBeSentExtraInfoEvent
-  ) {
+  #getBaseEventParams(): Network.BaseEventParams {
     return {
-      request: requestWillBeSentEvent.requestId,
-      url: requestWillBeSentEvent.request.url,
-      method: requestWillBeSentEvent.request.method,
-      headers: Object.keys(requestWillBeSentEvent.request.headers).map(
-        (key) => ({
-          name: key,
-          value: requestWillBeSentEvent.request.headers[key],
-        })
+      context: this.#requestWillBeSentEvent?.frameId ?? null,
+      navigation: this.#requestWillBeSentEvent?.loaderId ?? null,
+      // TODO: implement.
+      redirectCount: 0,
+      request: this.#getRequestData(),
+      // Timestamp should be in milliseconds, while CDP provides it in seconds.
+      timestamp: Math.round(
+        (this.#requestWillBeSentEvent?.wallTime ?? 0) * 1000
       ),
-      cookies: NetworkRequest.#getCookies(
-        requestWillBeSentExtraInfoEvent.associatedCookies
-      ),
+    };
+  }
+
+  #getRequestData(): Network.RequestData {
+    const cookies =
+      this.#requestWillBeSentExtraInfoEvent === undefined
+        ? []
+        : NetworkRequest.#getCookies(
+            this.#requestWillBeSentExtraInfoEvent.associatedCookies
+          );
+    return {
+      request:
+        this.#requestWillBeSentEvent?.requestId ?? NetworkRequest.#unknown,
+      url: this.#requestWillBeSentEvent?.request.url ?? NetworkRequest.#unknown,
+      method:
+        this.#requestWillBeSentEvent?.request.method ?? NetworkRequest.#unknown,
+      headers: Object.keys(
+        this.#requestWillBeSentEvent?.request.headers ?? []
+      ).map((key) => ({
+        name: key,
+        value: this.#requestWillBeSentEvent?.request.headers[key],
+      })),
+      cookies,
       // TODO: implement.
       headersSize: -1,
       // TODO: implement.
@@ -262,59 +279,31 @@ export class NetworkRequest {
     if (this.#responseReceivedEvent === undefined) {
       throw new Error('ResponseReceivedEvent is not set');
     }
-    if (this.#responseReceivedExtraInfoEvent === undefined) {
-      throw new Error('ResponseReceivedExtraInfoEvent is not set');
-    }
     if (this.#requestWillBeSentEvent === undefined) {
       throw new Error('RequestWillBeSentEvent is not set');
     }
-    if (this.#requestWillBeSentExtraInfoEvent === undefined) {
-      throw new Error('RequestWillBeSentExtraInfoEvent is not set');
-    }
-
-    const requestWillBeSentEvent = this.#requestWillBeSentEvent;
-    const requestWillBeSentExtraInfoEvent =
-      this.#requestWillBeSentExtraInfoEvent;
-
-    const responseReceivedEvent = this.#responseReceivedEvent;
-    const responseReceivedExtraInfoEvent = this.#responseReceivedExtraInfoEvent;
-
-    const baseEventParams = {
-      context: responseReceivedEvent.frameId ?? null,
-      navigation: responseReceivedEvent.loaderId,
-      // TODO: implement.
-      redirectCount: 0,
-      request: this.#getRequestData(
-        requestWillBeSentEvent,
-        requestWillBeSentExtraInfoEvent
-      ),
-      // Timestamp normalized to wall time using `RequestWillBeSent` event as a
-      // baseline.
-      timestamp: Math.round(
-        requestWillBeSentEvent.wallTime * 1000 -
-          requestWillBeSentEvent.timestamp +
-          responseReceivedEvent.timestamp
-      ),
-    };
 
     return {
       method: Network.EventNames.ResponseCompletedEvent,
       params: {
-        ...baseEventParams,
+        ...this.#getBaseEventParams(),
         response: {
-          url: responseReceivedEvent.response.url,
-          protocol: responseReceivedEvent.response.protocol,
-          status: responseReceivedEvent.response.status,
-          statusText: responseReceivedEvent.response.statusText,
+          url: this.#responseReceivedEvent.response.url,
+          protocol: this.#responseReceivedEvent.response.protocol,
+          status: this.#responseReceivedEvent.response.status,
+          statusText: this.#responseReceivedEvent.response.statusText,
           // Check if this is correct.
           fromCache:
-            responseReceivedEvent.response.fromDiskCache ||
-            responseReceivedEvent.response.fromPrefetchCache,
+            this.#responseReceivedEvent.response.fromDiskCache ||
+            this.#responseReceivedEvent.response.fromPrefetchCache,
           // TODO: implement.
-          headers: this.#getHeaders(responseReceivedEvent.response.headers),
-          mimeType: responseReceivedEvent.response.mimeType,
-          bytesReceived: responseReceivedEvent.response.encodedDataLength,
-          headersSize: responseReceivedExtraInfoEvent.headersText?.length ?? -1,
+          headers: this.#getHeaders(
+            this.#responseReceivedEvent.response.headers
+          ),
+          mimeType: this.#responseReceivedEvent.response.mimeType,
+          bytesReceived: this.#responseReceivedEvent.response.encodedDataLength,
+          headersSize:
+            this.#responseReceivedExtraInfoEvent?.headersText?.length ?? -1,
           // TODO: consider removing from spec.
           bodySize: -1,
           content: {

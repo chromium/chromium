@@ -82,6 +82,15 @@ export class NetworkProcessor {
       }
     );
 
+    cdpClient.on(
+      'Network.loadingFailed',
+      (params: Protocol.Network.LoadingFailedEvent) => {
+        networkProcessor
+          .#getOrCreateNetworkRequest(params.requestId)
+          .onLoadingFailedEvent(params);
+      }
+    );
+
     await cdpClient.sendCommand('Network.enable');
 
     return networkProcessor;

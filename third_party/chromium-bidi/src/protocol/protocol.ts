@@ -983,7 +983,10 @@ export namespace Log {
 }
 
 export namespace Network {
-  export type Event = BeforeRequestSentEvent | ResponseCompletedEvent;
+  export type Event =
+    | BeforeRequestSentEvent
+    | ResponseCompletedEvent
+    | FetchErrorEvent;
 
   export type BeforeRequestSentEvent = EventResponse<
     EventNames.BeforeRequestSentEvent,
@@ -993,6 +996,11 @@ export namespace Network {
   export type ResponseCompletedEvent = EventResponse<
     EventNames.ResponseCompletedEvent,
     ResponseCompletedParams
+  >;
+
+  export type FetchErrorEvent = EventResponse<
+    EventNames.FetchErrorEvent,
+    FetchErrorParams
   >;
 
   type Header = {
@@ -1031,7 +1039,7 @@ export namespace Network {
     responseEnd: number;
   };
 
-  type RequestData = {
+  export type RequestData = {
     request: string;
     url: string;
     method: string;
@@ -1084,11 +1092,16 @@ export namespace Network {
     response: ResponseData;
   };
 
+  export type FetchErrorParams = BaseEventParams & {
+    errorText: string;
+  };
+
   export const AllEvents = 'network';
 
   export enum EventNames {
     BeforeRequestSentEvent = 'network.beforeRequestSent',
     ResponseCompletedEvent = 'network.responseCompleted',
+    FetchErrorEvent = 'network.fetchError',
   }
 }
 

@@ -241,3 +241,43 @@ async def test_network_network_response_completed_event_emitted(
             }
         }
     }
+
+
+# TODO(sadym): make offline.
+@pytest.mark.asyncio
+async def test_network_bad_ssl(websocket, context_id):
+    BAD_SSL_URL = "https://expired.badssl.com/"
+
+    await subscribe(websocket, "network.fetchError", context_id)
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": BAD_SSL_URL,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "method": "network.fetchError",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": {
+                "request": ANY_STR,
+                "url": BAD_SSL_URL,
+                "method": "GET",
+                "headers": ANY_LIST,
+                "cookies": [],
+                "headersSize": -1,
+                "bodySize": 0,
+                "timings": ANY_DICT
+            },
+            "timestamp": ANY_TIMESTAMP,
+            "errorText": "net::ERR_CERT_DATE_INVALID"
+        }
+    }
