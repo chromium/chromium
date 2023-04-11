@@ -118,6 +118,11 @@ extern const char kAutofillUpstreamAllowAllEmailDomainsDescription[];
 extern const char kAutofillUpstreamAuthenticatePreflightCallName[];
 extern const char kAutofillUpstreamAuthenticatePreflightCallDescription[];
 
+// Title and description for the flag to control whether a different data type
+// is used for passing the card number during credit card upload save.
+extern const char kAutofillUpstreamUseAlternateSecureDataTypeName[];
+extern const char kAutofillUpstreamUseAlternateSecureDataTypeDescription[];
+
 // Title and description for the flag that controls whether Autofill's
 // suggestions' labels are formatting with a mobile-friendly approach.
 extern const char kAutofillUseMobileLabelDisambiguationName[];

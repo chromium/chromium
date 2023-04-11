@@ -139,6 +139,12 @@ const char kAutofillUpstreamAuthenticatePreflightCallDescription[] =
     "Google Payments, in order to provide a better experience for users with "
     "server-side features disabled but not client-side features.";
 
+const char kAutofillUpstreamUseAlternateSecureDataTypeName[] =
+    "Use alternate secure data type for credit card upload save";
+const char kAutofillUpstreamUseAlternateSecureDataTypeDescription[] =
+    "When enabled, the secure data type for cards sent during credit card "
+    "upload save is updated to match newer server requirements.";
+
 const char kAutofillUseMobileLabelDisambiguationName[] =
     "Autofill Uses Mobile Label Disambiguation";
 const char kAutofillUseMobileLabelDisambiguationDescription[] =

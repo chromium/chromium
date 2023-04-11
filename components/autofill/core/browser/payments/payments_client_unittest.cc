@@ -1605,8 +1605,9 @@ TEST_F(PaymentsClientTest, UploadRequestIncludesEncryptedPan) {
   IssueOAuthToken();
 
   // Verify that the encrypted_pan and s7e_1_pan parameters were included
-  // in the request.
+  // in the request, and ephemeral_pan was not.
   EXPECT_TRUE(GetUploadData().find("encrypted_pan") != std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("ephemeral_pan") == std::string::npos);
   EXPECT_TRUE(GetUploadData().find("__param:s7e_1_pan") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("&s7e_1_pan=4111111111111111") !=
               std::string::npos);
@@ -1633,8 +1634,7 @@ TEST_F(PaymentsClientTest, UploadRequestIncludesClientBehaviorSignals) {
               HasSubstr("%22client_behavior_signals%22:%5B1%5D"));
 }
 
-TEST_F(PaymentsClientTest,
-       UploadRequestIncludesEncryptedPanUsingAlternateType) {
+TEST_F(PaymentsClientTest, UploadRequestIncludesEphemeralPan) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kAutofillUpstreamUseAlternateSecureDataType);
@@ -1642,9 +1642,10 @@ TEST_F(PaymentsClientTest,
   StartUploading(UploadCardOptions());
   IssueOAuthToken();
 
-  // Verify that the encrypted_pan and s7e_38_pan parameters were included
-  // in the request.
-  EXPECT_TRUE(GetUploadData().find("encrypted_pan") != std::string::npos);
+  // Verify that the ephemeral_pan and s7e_38_pan parameters were included
+  // in the request, and encrypted_pan was not.
+  EXPECT_TRUE(GetUploadData().find("encrypted_pan") == std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("ephemeral_pan") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("__param:s7e_38_pan") != std::string::npos);
   EXPECT_TRUE(GetUploadData().find("&s7e_38_pan=4111111111111111") !=
               std::string::npos);
