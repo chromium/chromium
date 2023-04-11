@@ -5,6 +5,7 @@
 // Use the <code>chrome.sockets.udp</code> API to send and receive data over the
 // network using UDP connections. This API supersedes the UDP functionality
 // previously found in the "socket" API.
+[modernised_enums]
 namespace sockets.udp {
   // The socket properties specified in the <code>create</code> or
   // <code>update</code> function. Each property is optional. If a property
