@@ -36,6 +36,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
+import org.robolectric.shadows.ShadowBuild;
 import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.FeatureList;
@@ -315,6 +316,7 @@ public class RequestDesktopUtilsUnitTest {
             mSharedPreferencesManager.removeKey(
                     ChromePreferenceKeys.DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_GLOBAL_SETTING_ENABLED);
         }
+        RequestDesktopUtils.sDefaultEnabledManufacturerAllowlist = null;
         TrackerFactory.setTrackerForTests(null);
     }
 
@@ -565,6 +567,47 @@ public class RequestDesktopUtilsUnitTest {
                                 ChromePreferenceKeys
                                         .DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT,
                                 false));
+    }
+
+    @Test
+    public void testShouldDefaultEnableGlobalSetting_withManufacturerInAllowList() {
+        Map<String, String> params = new HashMap<>();
+        params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_DEFAULT_ON_MANUFACTURER_LIST,
+                "google,samsung");
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
+        ShadowBuild.setManufacturer("google");
+        boolean shouldDefaultEnable = RequestDesktopUtils.shouldDefaultEnableGlobalSetting(
+                RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
+                mActivity);
+        Assert.assertTrue(
+                "Desktop site global setting should be default-enabled", shouldDefaultEnable);
+    }
+
+    @Test
+    public void testShouldDefaultEnableGlobalSetting_withManufacturerInAllowListWithSmallDisplay() {
+        Map<String, String> params = new HashMap<>();
+        params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_DEFAULT_ON_MANUFACTURER_LIST,
+                "google,samsung");
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
+        ShadowBuild.setManufacturer("google");
+        boolean shouldDefaultEnable =
+                RequestDesktopUtils.shouldDefaultEnableGlobalSetting(7, mActivity);
+        Assert.assertFalse(
+                "Desktop site global setting should not be default-enabled", shouldDefaultEnable);
+    }
+
+    @Test
+    public void testShouldDefaultEnableGlobalSetting_withManufacturerNotInAllowList() {
+        Map<String, String> params = new HashMap<>();
+        params.put(RequestDesktopUtils.PARAM_GLOBAL_SETTING_DEFAULT_ON_MANUFACTURER_LIST,
+                "google,samsung");
+        enableFeatureWithParams(ChromeFeatureList.REQUEST_DESKTOP_SITE_DEFAULTS, params, true);
+        ShadowBuild.setManufacturer("invalid");
+        boolean shouldDefaultEnable = RequestDesktopUtils.shouldDefaultEnableGlobalSetting(
+                RequestDesktopUtils.DEFAULT_GLOBAL_SETTING_DEFAULT_ON_DISPLAY_SIZE_THRESHOLD_INCHES,
+                mActivity);
+        Assert.assertFalse(
+                "Desktop site global setting should not be default-enabled", shouldDefaultEnable);
     }
 
     @Test
