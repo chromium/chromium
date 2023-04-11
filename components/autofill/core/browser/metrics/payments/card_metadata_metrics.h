@@ -23,6 +23,15 @@ constexpr char kProductNameShownOnlySuffix[] = "ProductDescriptionShown";
 constexpr char kArtImageShownOnlySuffix[] = "ArtImageShown";
 constexpr char kProductNameAndArtImageNotShownSuffix[] = "MetadataNotShown";
 
+// Enum for different types of form events. Used for metrics logging.
+enum class CardMetadataLoggingEvent {
+  // Suggestion was shown.
+  kShown = 0,
+  // Suggestion was selected.
+  kSelected = 1,
+  kMaxValue = kSelected,
+};
+
 // Struct that groups metadata-related information together for some set of
 // credit cards. Used for metrics logging.
 struct CardMetadataLoggingContext {
@@ -45,7 +54,9 @@ struct CardMetadataLoggingContext {
 CardMetadataLoggingContext GetMetadataLoggingContext(
     const std::vector<CreditCard>& cards);
 
-void LogCardWithMetadataShownMetric(const CardMetadataLoggingContext& context);
+void LogCardWithMetadataFormEventMetric(
+    CardMetadataLoggingEvent event,
+    const CardMetadataLoggingContext& context);
 
 // Log the latency between suggestions being shown and a suggestion was
 // selected, in milliseconds, and it is broken down by metadata availability
