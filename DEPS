@@ -313,7 +313,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': '9635da5827c080a69815b3d347a08817e669248c',
+  'v8_revision': 'afdf78758d5777f00f4610ca8ae38366347387c8',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
@@ -1667,7 +1667,7 @@ deps = {
     'packages': [
       {
         'package': 'infra/build/siso/${{platform}}',
-	'version': Var('siso_version'),
+ 'version': Var('siso_version'),
       }
     ],
     'dep_type': 'cipd',
