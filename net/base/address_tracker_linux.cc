@@ -241,7 +241,8 @@ void AddressTrackerLinux::Init() {
   bool address_changed;
   bool link_changed;
   bool tunnel_changed;
-  ReadMessages(&address_changed, &link_changed, &tunnel_changed);
+  ReadMessages(&address_changed, &link_changed, &tunnel_changed, nullptr,
+               nullptr);
 
   // Request dump of link state
   request.header.nlmsg_type = RTM_GETLINK;
@@ -256,7 +257,8 @@ void AddressTrackerLinux::Init() {
   }
 
   // Consume pending message to populate links_online_, but don't notify.
-  ReadMessages(&address_changed, &link_changed, &tunnel_changed);
+  ReadMessages(&address_changed, &link_changed, &tunnel_changed, nullptr,
+               nullptr);
   {
     AddressTrackerAutoLock lock(*this, connection_type_lock_);
     connection_type_initialized_ = true;
@@ -295,6 +297,25 @@ std::unordered_set<int> AddressTrackerLinux::GetOnlineLinks() const {
   return online_links_;
 }
 
+void AddressTrackerLinux::SetDiffCallback(DiffCallback diff_callback) {
+  diff_callback_ = std::move(diff_callback);
+
+  // Send the initial configuration to the diff callback.
+  AddressMap address_map = GetAddressMap();
+  AddressMapDiff address_map_diff;
+  for (const std::pair<const IPAddress, struct ifaddrmsg>& it : address_map) {
+    address_map_diff[it.first] = it.second;
+  }
+
+  std::unordered_set<int> online_links = GetOnlineLinks();
+  OnlineLinksDiff online_links_diff;
+  for (int online_link : online_links) {
+    online_links_diff[online_link] = true;
+  }
+
+  diff_callback_.Run(address_map_diff, online_links_diff);
+}
+
 bool AddressTrackerLinux::IsInterfaceIgnored(int interface_index) const {
   if (ignored_interfaces_.empty())
     return false;
@@ -320,7 +341,9 @@ AddressTrackerLinux::GetCurrentConnectionType() {
 
 void AddressTrackerLinux::ReadMessages(bool* address_changed,
                                        bool* link_changed,
-                                       bool* tunnel_changed) {
+                                       bool* tunnel_changed,
+                                       AddressMapDiff* address_map_diff,
+                                       OnlineLinksDiff* online_links_diff) {
   *address_changed = false;
   *link_changed = false;
   *tunnel_changed = false;
@@ -349,7 +372,8 @@ void AddressTrackerLinux::ReadMessages(bool* address_changed,
         PLOG(ERROR) << "Failed to recv from netlink socket";
         return;
       }
-      HandleMessage(buffer, rv, address_changed, link_changed, tunnel_changed);
+      HandleMessage(buffer, rv, address_changed, link_changed, tunnel_changed,
+                    address_map_diff, online_links_diff);
     }
   }
   if (*link_changed || *address_changed)
@@ -360,7 +384,9 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
                                         int length,
                                         bool* address_changed,
                                         bool* link_changed,
-                                        bool* tunnel_changed) {
+                                        bool* tunnel_changed,
+                                        AddressMapDiff* address_map_diff,
+                                        OnlineLinksDiff* online_links_diff) {
   DCHECK(buffer);
   // Note that NLMSG_NEXT decrements |length| to reflect the number of bytes
   // remaining in |buffer|.
@@ -411,6 +437,9 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
             it->second = msg_copy;
             *address_changed = true;
           }
+          if (*address_changed && address_map_diff) {
+            (*address_map_diff)[address] = msg_copy;
+          }
         }
       } break;
       case RTM_DELADDR: {
@@ -423,8 +452,12 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
           break;
         if (GetAddress(header, length, &address, nullptr)) {
           AddressTrackerAutoLock lock(*this, address_map_lock_);
-          if (address_map_.erase(address))
+          if (address_map_.erase(address)) {
             *address_changed = true;
+            if (address_map_diff) {
+              (*address_map_diff)[address] = absl::nullopt;
+            }
+          }
         }
       } break;
       case RTM_NEWLINK: {
@@ -443,6 +476,9 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
           AddressTrackerAutoLock lock(*this, online_links_lock_);
           if (online_links_.insert(msg->ifi_index).second) {
             *link_changed = true;
+            if (online_links_diff) {
+              (*online_links_diff)[msg->ifi_index] = true;
+            }
             if (IsTunnelInterface(msg->ifi_index))
               *tunnel_changed = true;
           }
@@ -450,6 +486,9 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
           AddressTrackerAutoLock lock(*this, online_links_lock_);
           if (online_links_.erase(msg->ifi_index)) {
             *link_changed = true;
+            if (online_links_diff) {
+              (*online_links_diff)[msg->ifi_index] = false;
+            }
             if (IsTunnelInterface(msg->ifi_index))
               *tunnel_changed = true;
           }
@@ -465,6 +504,9 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
         AddressTrackerAutoLock lock(*this, online_links_lock_);
         if (online_links_.erase(msg->ifi_index)) {
           *link_changed = true;
+          if (online_links_diff) {
+            (*online_links_diff)[msg->ifi_index] = false;
+          }
           if (IsTunnelInterface(msg->ifi_index))
             *tunnel_changed = true;
         }
@@ -479,7 +521,16 @@ void AddressTrackerLinux::OnFileCanReadWithoutBlocking() {
   bool address_changed;
   bool link_changed;
   bool tunnel_changed;
-  ReadMessages(&address_changed, &link_changed, &tunnel_changed);
+  if (diff_callback_) {
+    AddressMapDiff address_map_diff;
+    OnlineLinksDiff online_links_diff;
+    ReadMessages(&address_changed, &link_changed, &tunnel_changed,
+                 &address_map_diff, &online_links_diff);
+    diff_callback_.Run(address_map_diff, online_links_diff);
+  } else {
+    ReadMessages(&address_changed, &link_changed, &tunnel_changed, nullptr,
+                 nullptr);
+  }
   if (address_changed)
     address_callback_.Run();
   if (link_changed)

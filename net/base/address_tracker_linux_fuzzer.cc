@@ -18,7 +18,7 @@ class AddressTrackerLinuxTest {
                                 base::DoNothing(), ignored_interfaces);
     bool address_changed, link_changed, tunnel_changed;
     tracker.HandleMessage(buffer, length, &address_changed, &link_changed,
-                          &tunnel_changed);
+                          &tunnel_changed, nullptr, nullptr);
   }
 };
 
