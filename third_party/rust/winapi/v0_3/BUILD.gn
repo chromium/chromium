@@ -31,7 +31,6 @@ cargo_crate("lib") {
     "errhandlingapi",
     "fileapi",
     "handleapi",
-    "libloaderapi",
     "minwinbase",
     "minwindef",
     "processenv",
