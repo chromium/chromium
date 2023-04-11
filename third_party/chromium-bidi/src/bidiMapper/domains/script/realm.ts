@@ -120,8 +120,15 @@ export class Realm {
     webDriverValue: Protocol.Runtime.WebDriverValue
   ): CommonDataTypes.RemoteValue {
     // This relies on the CDP to implement proper BiDi serialization, except
-    // backendNodeId/sharedId.
+    // backendNodeId/sharedId and `platformobject`.
     const result = webDriverValue as any;
+
+    // Platform object is a special case. It should have only `{type: object}`
+    // without `value` field.
+    if (result.type === 'platformobject') {
+      return {type: 'object'} as CommonDataTypes.RemoteValue;
+    }
+
     const bidiValue = result.value;
     if (bidiValue === undefined) {
       return result;

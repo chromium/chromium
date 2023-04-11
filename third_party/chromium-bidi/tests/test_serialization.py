@@ -260,6 +260,10 @@ async def test_serialization_deserialization(websocket, context_id,
                           ("new Error('Woops!')", {
                               "type": "error",
                               "handle": ANY_STR
+                          }),
+                          ("new URL('https://example.com')", {
+                              "type": "object",
+                              "handle": ANY_STR
                           })])
 async def test_serialization_function(websocket, context_id, jsString,
                                       excepted_serialized):
