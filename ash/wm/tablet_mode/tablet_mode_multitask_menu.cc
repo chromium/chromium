@@ -331,7 +331,7 @@ void TabletModeMultitaskMenu::BeginDrag(float initial_y, bool down) {
 void TabletModeMultitaskMenu::UpdateDrag(float current_y, bool down) {
   const float translation_y = current_y - initial_y_;
   // Stop translating the menu if the drag moves out of bounds.
-  if (down && translation_y >= 0.f) {
+  if ((down && translation_y >= 0.f) || (!down && current_y <= 0.f)) {
     return;
   }
   menu_view_->layer()->SetTransform(
