@@ -15,6 +15,7 @@ export interface BookmarkNode {
   parentId?: string;
   url?: string;
   dateAdded?: number;
+  dateLastUsed?: number;
   dateGroupModified?: number;
   unmodifiable?: string;
   children?: string[];

@@ -67,6 +67,7 @@ export enum SearchAction {
 export interface SortOption {
   sortOrder: SortOrder;
   label: string;
+  lowerLabel: string;
 }
 
 export interface PowerBookmarksListElement {
@@ -125,18 +126,27 @@ export class PowerBookmarksListElement extends PolymerElement {
             [{
               sortOrder: SortOrder.kNewest,
               label: loadTimeData.getString('sortNewest'),
+              lowerLabel: loadTimeData.getString('sortNewestLower'),
             },
              {
                sortOrder: SortOrder.kOldest,
                label: loadTimeData.getString('sortOldest'),
+               lowerLabel: loadTimeData.getString('sortOldestLower'),
+             },
+             {
+               sortOrder: SortOrder.kLastOpened,
+               label: loadTimeData.getString('sortLastOpened'),
+               lowerLabel: loadTimeData.getString('sortLastOpenedLower'),
              },
              {
                sortOrder: SortOrder.kAlphabetical,
                label: loadTimeData.getString('sortAlphabetically'),
+               lowerLabel: loadTimeData.getString('sortAlphabetically'),
              },
              {
                sortOrder: SortOrder.kReverseAlphabetical,
                label: loadTimeData.getString('sortReverseAlphabetically'),
+               lowerLabel: loadTimeData.getString('sortReverseAlphabetically'),
              }],
       },
 
@@ -559,6 +569,10 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   private getSortMenuItemLabel_(sortType: SortOption): string {
     return loadTimeData.getStringF('sortByType', sortType.label);
+  }
+
+  private getSortMenuItemLowerLabel_(sortType: SortOption): string {
+    return loadTimeData.getStringF('sortByType', sortType.lowerLabel);
   }
 
   private sortMenuItemIsSelected_(sortType: SortOption): boolean {

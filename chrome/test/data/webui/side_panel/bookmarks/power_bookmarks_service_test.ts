@@ -46,6 +46,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
           title: 'First child bookmark',
           url: 'http://child/bookmark/1/',
           dateAdded: 1,
+          dateLastUsed: 4,
         },
         {
           id: '4',
@@ -53,12 +54,14 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
           title: 'Second child bookmark',
           url: 'http://child/bookmark/2/',
           dateAdded: 3,
+          dateLastUsed: 3,
         },
         {
           id: '5',
           parentId: '2',
           title: 'Child folder',
           dateAdded: 2,
+          dateGroupModified: 1,
           children: [
             {
               id: '6',
@@ -142,7 +145,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     assertEquals(sortedBookmarks[2]!.id, '4');
   });
 
-  test('SortsByAToZ', () => {
+  test('SortsByLastOpened', () => {
     const sortedBookmarks =
         service.filterBookmarks(undefined, 2, undefined, []);
     assertEquals(sortedBookmarks[0]!.id, '5');
@@ -150,9 +153,17 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     assertEquals(sortedBookmarks[2]!.id, '4');
   });
 
-  test('SortsByZToA', () => {
+  test('SortsByAToZ', () => {
     const sortedBookmarks =
         service.filterBookmarks(undefined, 3, undefined, []);
+    assertEquals(sortedBookmarks[0]!.id, '5');
+    assertEquals(sortedBookmarks[1]!.id, '3');
+    assertEquals(sortedBookmarks[2]!.id, '4');
+  });
+
+  test('SortsByZToA', () => {
+    const sortedBookmarks =
+        service.filterBookmarks(undefined, 4, undefined, []);
     assertEquals(sortedBookmarks[0]!.id, '5');
     assertEquals(sortedBookmarks[1]!.id, '4');
     assertEquals(sortedBookmarks[2]!.id, '3');

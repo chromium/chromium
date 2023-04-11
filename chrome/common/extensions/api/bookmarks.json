@@ -63,6 +63,11 @@
             "optional": true,
             "description": "When this node was created, in milliseconds since the epoch (<code>new Date(dateAdded)</code>)."
           },
+          "dateLastUsed": {
+            "type": "number",
+            "optional": true,
+            "description": "When this node was last opened, in milliseconds since the epoch. Not set for folders."
+          },
           "dateGroupModified": {
             "type": "number",
             "optional": true,

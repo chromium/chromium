@@ -7492,14 +7492,26 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_BOOKMARKS_SORT_NEWEST" desc="Label for the newest-first bookmarks sort type">
         Newest
       </message>
+      <message name="IDS_BOOKMARKS_SORT_NEWEST_LOWER" desc="Lowercase label for the newest-first bookmarks sort type">
+        newest
+      </message>
       <message name="IDS_BOOKMARKS_SORT_OLDEST" desc="Label for the oldest-first bookmarks sort type">
         Oldest
+      </message>
+      <message name="IDS_BOOKMARKS_SORT_OLDEST_LOWER" desc="Lowercase label for the oldest-first bookmarks sort type">
+        oldest
       </message>
       <message name="IDS_BOOKMARKS_SORT_ALPHABETICALLY" desc="Label for the alphabetical bookmarks sort type">
         A to Z
       </message>
       <message name="IDS_BOOKMARKS_SORT_REVERSE_ALPHABETICALLY" desc="Label for the reverse alphabetical bookmarks sort type">
         Z to A
+      </message>
+      <message name="IDS_BOOKMARKS_SORT_LAST_OPENED" desc="Label for the last opened bookmarks sort type">
+        Last opened
+      </message>
+      <message name="IDS_BOOKMARKS_SORT_LAST_OPENED_LOWER" desc="Lowercase label for the last opened bookmarks sort type">
+        last opened
       </message>
       <message name="IDS_BOOKMARKS_VISUAL_VIEW" desc="Label for the visual view bookmarks menu option">
         Visual view
