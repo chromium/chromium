@@ -424,7 +424,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _parentFolderItem.title =
       bookmark_utils_ios::TitleForBookmarkNode(_parentFolder);
   _parentFolderItem.shouldDisplayCloudSlashIcon =
-      bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
+      bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
+          _syncSetupService);
   [self.tableView reloadRowsAtIndexPaths:@[ folderSelectionIndexPath ]
                         withRowAnimation:UITableViewRowAnimationNone];
 
@@ -459,7 +460,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _parentFolderItem.title =
       bookmark_utils_ios::TitleForBookmarkNode(_parentFolder);
   _parentFolderItem.shouldDisplayCloudSlashIcon =
-      bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
+      bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
+          _syncSetupService);
   [self.tableViewModel addItem:_parentFolderItem
        toSectionWithIdentifier:SectionIdentifierInfo];
 }
@@ -492,7 +494,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)onSyncStateChanged {
   _parentFolderItem.shouldDisplayCloudSlashIcon =
-      bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
+      bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
+          _syncSetupService);
   NSIndexPath* indexPath =
       [self.tableViewModel indexPathForItemType:ItemTypeParentFolder
                               sectionIdentifier:SectionIdentifierInfo];

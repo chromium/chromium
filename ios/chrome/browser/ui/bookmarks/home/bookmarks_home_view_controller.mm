@@ -1198,7 +1198,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   SyncSetupService* syncSetupService =
       SyncSetupServiceFactory::GetForBrowserState(self.browserState);
   nodeItem.shouldDisplayCloudSlashIcon =
-      bookmark_utils_ios::ShouldDisplayCloudSlashIcon(syncSetupService);
+      bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
+          syncSetupService);
   [self.sharedState.tableViewModel
                       addItem:nodeItem
       toSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];

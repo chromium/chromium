@@ -187,7 +187,8 @@ const int kMaxBookmarksSearchResults = 50;
         initWithType:BookmarksHomeItemTypeBookmark
         bookmarkNode:child.get()];
     nodeItem.shouldDisplayCloudSlashIcon =
-        bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
+        bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
+            _syncSetupService);
     [self.sharedState.tableViewModel
                         addItem:nodeItem
         toSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];
@@ -219,7 +220,8 @@ const int kMaxBookmarksSearchResults = 50;
       [[BookmarksHomeNodeItem alloc] initWithType:BookmarksHomeItemTypeBookmark
                                      bookmarkNode:mobileNode];
   mobileItem.shouldDisplayCloudSlashIcon =
-      bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
+      bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
+          _syncSetupService);
   [self.sharedState.tableViewModel addItem:mobileItem
                    toSectionWithIdentifier:sectionIdentifier];
 
@@ -230,7 +232,8 @@ const int kMaxBookmarksSearchResults = 50;
         initWithType:BookmarksHomeItemTypeBookmark
         bookmarkNode:bookmarkBar];
     barItem.shouldDisplayCloudSlashIcon =
-        bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
+        bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
+            _syncSetupService);
     [self.sharedState.tableViewModel addItem:barItem
                      toSectionWithIdentifier:sectionIdentifier];
   }
@@ -241,7 +244,8 @@ const int kMaxBookmarksSearchResults = 50;
         initWithType:BookmarksHomeItemTypeBookmark
         bookmarkNode:otherBookmarks];
     otherItem.shouldDisplayCloudSlashIcon =
-        bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
+        bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
+            _syncSetupService);
     [self.sharedState.tableViewModel addItem:otherItem
                      toSectionWithIdentifier:sectionIdentifier];
   }
@@ -256,7 +260,8 @@ const int kMaxBookmarksSearchResults = 50;
         initWithType:BookmarksHomeItemTypeBookmark
         bookmarkNode:managedNode];
     managedItem.shouldDisplayCloudSlashIcon =
-        bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
+        bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
+            _syncSetupService);
     [self.sharedState.tableViewModel addItem:managedItem
                      toSectionWithIdentifier:sectionIdentifier];
   }
@@ -279,7 +284,8 @@ const int kMaxBookmarksSearchResults = 50;
         initWithType:BookmarksHomeItemTypeBookmark
         bookmarkNode:node];
     nodeItem.shouldDisplayCloudSlashIcon =
-        bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
+        bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
+            _syncSetupService);
     [self.sharedState.tableViewModel
                         addItem:nodeItem
         toSectionWithIdentifier:BookmarksHomeSectionIdentifierBookmarks];

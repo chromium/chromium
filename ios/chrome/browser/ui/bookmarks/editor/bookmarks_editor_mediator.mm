@@ -73,7 +73,8 @@
 #pragma mark - BookmarksEditorMutator
 
 - (BOOL)shouldDisplayCloudSlashSymbolForParentFolder {
-  return bookmark_utils_ios::ShouldDisplayCloudSlashIcon(_syncSetupService);
+  return bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
+      _syncSetupService);
 }
 
 - (void)changeFolder:(const bookmarks::BookmarkNode*)folder {

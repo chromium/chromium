@@ -128,9 +128,10 @@ BookmarkModelType GetBookmarkModelType(
   return BookmarkModelType::kAccount;
 }
 
-// TODO (crbug.com/1404250): Implements the distinction of profile/account
+// TODO (crbug.com/1430453): Implements the distinction of profile/account
 // models when both models are used.
-bool ShouldDisplayCloudSlashIcon(SyncSetupService* sync_setup_service) {
+bool ShouldDisplayCloudSlashIconForProfileModel(
+    SyncSetupService* sync_setup_service) {
   if (!base::FeatureList::IsEnabled(
           bookmarks::kEnableBookmarksAccountStorage)) {
     return false;
