@@ -1616,7 +1616,9 @@ void AshNotificationView::CreateOrUpdateSnoozeButton(
   auto snooze_button = std::make_unique<IconButton>(
       base::BindRepeating(&AshNotificationView::OnSnoozeButtonPressed,
                           base::Unretained(this)),
-      IconButton::Type::kMediumFloating, &kNotificationSnoozeButtonIcon,
+      chromeos::features::IsJellyEnabled() ? IconButton::Type::kXSmallFloating
+                                           : IconButton::Type::kMediumFloating,
+      &kNotificationSnoozeButtonIcon,
       IDS_MESSAGE_CENTER_NOTIFICATION_SNOOZE_BUTTON_TOOLTIP);
   snooze_button_ = action_buttons_row()->AddChildView(std::move(snooze_button));
 }
