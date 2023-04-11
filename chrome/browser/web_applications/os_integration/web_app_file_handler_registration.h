@@ -48,14 +48,21 @@ void UnregisterFileHandlersWithOs(const AppId& app_id,
 #if BUILDFLAG(IS_LINUX)
 // Exposed for testing purposes. Register the set of
 // MIME-type-to-file-extensions mappings corresponding to |file_handlers|. File
-// I/O and a a callout to the Linux shell are performed asynchronously.
+// I/O and callouts to the Linux shell are performed asynchronously.
+//
+// It is worth nothing that file handlers in the current implementation work
+// with respect to mime types, and will disregard file extensions on Linux.
+// Example: If the mime-type supported is text/plain and the file types
+// specified in the manifest are only .csv and .md, .txt files are also
+// registered as file handlers, and the file is launched.
+// TODO(crbug.com/1431463): Implement stricter handling w.r.t file extensions.
 void InstallMimeInfoOnLinux(const AppId& app_id,
                             Profile* profile,
                             const apps::FileHandlers& file_handlers,
-                            base::OnceClosure on_done);
+                            ResultCallback done_callback);
 
 using UpdateMimeInfoDatabaseOnLinuxCallback =
-    base::RepeatingCallback<bool(base::FilePath profile_path,
+    base::RepeatingCallback<bool(base::FilePath file_path,
                                  std::string xdg_command,
                                  std::string file_contents)>;
 

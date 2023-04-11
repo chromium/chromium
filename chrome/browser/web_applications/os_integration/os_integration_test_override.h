@@ -38,6 +38,7 @@ namespace web_app {
 
 #if BUILDFLAG(IS_LINUX)
 struct LinuxFileRegistration {
+  base::FilePath file_name;
   std::string xdg_command;
   std::string file_contents;
 };
@@ -205,6 +206,9 @@ class OsIntegrationTestOverride
   bool DeleteDesktopDirOnLinux();
   const base::FilePath& desktop() { return desktop_.GetPath(); }
   const base::FilePath& startup() { return startup_.GetPath(); }
+  const base::FilePath& applications_dir() {
+    return applications_dir_.GetPath();
+  }
   const std::vector<LinuxFileRegistration>& linux_file_registration() {
     return linux_file_registration_;
   }
@@ -253,6 +257,7 @@ class OsIntegrationTestOverride
 #elif BUILDFLAG(IS_LINUX)
   base::ScopedTempDir desktop_;
   base::ScopedTempDir startup_;
+  base::ScopedTempDir applications_dir_;
   std::vector<LinuxFileRegistration> linux_file_registration_;
 #endif
 

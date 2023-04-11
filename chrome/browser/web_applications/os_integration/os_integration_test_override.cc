@@ -130,7 +130,7 @@ std::vector<std::wstring> GetFileExtensionsForProgId(
   std::wstring handled_file_extensions;
   LONG result = file_extensions_key.ReadValue(L"FileExtensions",
                                               &handled_file_extensions);
-  DCHECK_EQ(result, ERROR_SUCCESS);
+  CHECK_EQ(result, ERROR_SUCCESS);
 
   return base::SplitString(handled_file_extensions, std::wstring(L";"),
                            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -152,7 +152,7 @@ SkColor IconManagerReadIconTopLeftColorForSize(WebAppIconManager& icon_manager,
       base::BindOnce(
           [](base::RunLoop* run_loop, SkColor* result, SquareSizePx size_px,
              std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
-            DCHECK(base::Contains(icon_bitmaps, size_px));
+            CHECK(base::Contains(icon_bitmaps, size_px));
             *result = icon_bitmaps.at(size_px).getColor(0, 0);
             run_loop->Quit();
           },
@@ -173,11 +173,11 @@ OsIntegrationTestOverride::BlockingRegistration::~BlockingRegistration() {
   {
     auto& global_state = GetMutableOsIntegrationTestOverrideStateForTesting();
     base::AutoLock state_lock(global_state.lock);
-    DCHECK_EQ(global_state.global_os_integration_test_override,
-              test_override.get());
+    CHECK_EQ(global_state.global_os_integration_test_override,
+             test_override.get());
 
     // Set the destruction closure for the scoped override object.
-    DCHECK(!test_override->on_destruction_)
+    CHECK(!test_override->on_destruction_)
         << "Cannot have multiple registrations at the same time.";
     test_override->on_destruction_.ReplaceClosure(
         wait_until_destruction_loop.QuitClosure());
@@ -198,7 +198,7 @@ std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
 OsIntegrationTestOverride::OverrideForTesting(const base::FilePath& base_path) {
   auto& state = GetMutableOsIntegrationTestOverrideStateForTesting();
   base::AutoLock state_lock(state.lock);
-  DCHECK(!state.global_os_integration_test_override)
+  CHECK(!state.global_os_integration_test_override)
       << "Cannot have multiple registrations at the same time.";
   auto test_override =
       base::WrapRefCounted(new OsIntegrationTestOverride(base_path));
@@ -255,7 +255,7 @@ bool OsIntegrationTestOverride::IsFileExtensionHandled(
                                    base::FilePath::kSeparators[0] +
                                    ShellUtil::kRegOpenWithProgids;
       LONG result = key.Open(HKEY_CURRENT_USER, reg_key.data(), KEY_READ);
-      DCHECK_EQ(ERROR_SUCCESS, result);
+      CHECK_EQ(ERROR_SUCCESS, result);
       return key.HasValue(file_handler_prog_id.data());
     }
   }
@@ -271,6 +271,9 @@ bool OsIntegrationTestOverride::IsFileExtensionHandled(
       shell_integration::CanApplicationHandleURL(app_path, test_file_url);
   base::DeleteFile(test_file_path);
 #elif BUILDFLAG(IS_LINUX)
+  base::FilePath user_applications_dir =
+      applications_dir().Append("applications");
+  bool database_update_called = false;
   for (const LinuxFileRegistration& command : linux_file_registration()) {
     if (base::Contains(command.xdg_command, app_id) &&
         base::Contains(command.xdg_command,
@@ -279,12 +282,20 @@ bool OsIntegrationTestOverride::IsFileExtensionHandled(
         is_file_handled = base::Contains(command.file_contents,
                                          "\"*" + file_extension + "\"");
       } else {
-        DCHECK(base::StartsWith(command.xdg_command, "xdg-mime uninstall"))
+        CHECK(base::StartsWith(command.xdg_command, "xdg-mime uninstall"))
             << command.xdg_command;
         is_file_handled = false;
       }
     }
+
+    // Verify if the mimeinfo.cache is also updated. See
+    // web_app_file_handler_registration_linux.cc for more information.
+    if (base::StartsWith(command.xdg_command, "update-desktop-database")) {
+      database_update_called =
+          base::Contains(command.xdg_command, user_applications_dir.value());
+    }
   }
+  is_file_handled = is_file_handled && database_update_called;
 #endif
   return is_file_handled;
 }
@@ -331,13 +342,13 @@ void OsIntegrationTestOverride::DeleteShortcutsMenuJumpListEntryForApp(
 
 int OsIntegrationTestOverride::GetCountOfShortcutIconsCreated(
     const std::wstring& app_user_model_id) {
-  DCHECK(IsShortcutsMenuRegisteredForApp(app_user_model_id));
+  CHECK(IsShortcutsMenuRegisteredForApp(app_user_model_id));
   return jump_list_entry_map_[app_user_model_id].size();
 }
 
 std::vector<SkColor> OsIntegrationTestOverride::GetIconColorsForShortcutsMenu(
     const std::wstring& app_user_model_id) {
-  DCHECK(IsShortcutsMenuRegisteredForApp(app_user_model_id));
+  CHECK(IsShortcutsMenuRegisteredForApp(app_user_model_id));
   std::vector<SkColor> icon_colors;
   for (auto& shell_link_item : jump_list_entry_map_[app_user_model_id]) {
     icon_colors.emplace_back(
@@ -533,22 +544,22 @@ bool OsIntegrationTestOverride::SimulateDeleteShortcutsByUser(
 #if BUILDFLAG(IS_WIN)
   base::FilePath desktop_shortcut_path =
       GetShortcutPath(profile, desktop(), app_id, app_name);
-  DCHECK(base::PathExists(desktop_shortcut_path));
+  CHECK(base::PathExists(desktop_shortcut_path));
   base::FilePath app_menu_shortcut_path =
       GetShortcutPath(profile, application_menu(), app_id, app_name);
-  DCHECK(base::PathExists(app_menu_shortcut_path));
+  CHECK(base::PathExists(app_menu_shortcut_path));
   return base::DeleteFile(desktop_shortcut_path) &&
          base::DeleteFile(app_menu_shortcut_path);
 #elif BUILDFLAG(IS_MAC)
   base::FilePath app_folder_shortcut_path =
       GetShortcutPath(profile, chrome_apps_folder(), app_id, app_name);
-  DCHECK(base::PathExists(app_folder_shortcut_path));
+  CHECK(base::PathExists(app_folder_shortcut_path));
   return base::DeletePathRecursively(app_folder_shortcut_path);
 #elif BUILDFLAG(IS_LINUX)
   base::FilePath desktop_shortcut_path =
       GetShortcutPath(profile, desktop(), app_id, app_name);
   LOG(INFO) << desktop_shortcut_path;
-  DCHECK(base::PathExists(desktop_shortcut_path));
+  CHECK(base::PathExists(desktop_shortcut_path));
   return base::DeleteFile(desktop_shortcut_path);
 #else
   NOTREACHED() << "Not implemented on ChromeOS/Fuchsia ";
@@ -619,60 +630,65 @@ void OsIntegrationTestOverride::RegisterProtocolSchemes(
 
 OsIntegrationTestOverride::OsIntegrationTestOverride(
     const base::FilePath& base_path) {
-  // Initialize all directories used. The success & the DCHECK are separated to
+  // Initialize all directories used. The success & the CHECK are separated to
   // ensure that these function calls occur on release builds.
   if (!base_path.empty()) {
 #if BUILDFLAG(IS_WIN)
     bool success = desktop_.CreateUniqueTempDirUnderPath(base_path);
-    DCHECK(success);
+    CHECK(success);
     success = application_menu_.CreateUniqueTempDirUnderPath(base_path);
-    DCHECK(success);
+    CHECK(success);
     success = quick_launch_.CreateUniqueTempDirUnderPath(base_path);
-    DCHECK(success);
+    CHECK(success);
     success = startup_.CreateUniqueTempDirUnderPath(base_path);
-    DCHECK(success);
+    CHECK(success);
 #elif BUILDFLAG(IS_MAC)
     bool success = chrome_apps_folder_.CreateUniqueTempDirUnderPath(base_path);
-    DCHECK(success);
+    CHECK(success);
 #elif BUILDFLAG(IS_LINUX)
     bool success = desktop_.CreateUniqueTempDirUnderPath(base_path);
-    DCHECK(success);
+    CHECK(success);
     success = startup_.CreateUniqueTempDirUnderPath(base_path);
-    DCHECK(success);
+    CHECK(success);
+    success = applications_dir_.CreateUniqueTempDirUnderPath(base_path);
+    CHECK(success);
 #endif
   } else {
 #if BUILDFLAG(IS_WIN)
     bool success = desktop_.CreateUniqueTempDir();
-    DCHECK(success);
+    CHECK(success);
     success = application_menu_.CreateUniqueTempDir();
-    DCHECK(success);
+    CHECK(success);
     success = quick_launch_.CreateUniqueTempDir();
-    DCHECK(success);
+    CHECK(success);
     success = startup_.CreateUniqueTempDir();
-    DCHECK(success);
+    CHECK(success);
 #elif BUILDFLAG(IS_MAC)
     bool success = chrome_apps_folder_.CreateUniqueTempDir();
-    DCHECK(success);
+    CHECK(success);
 #elif BUILDFLAG(IS_LINUX)
     bool success = desktop_.CreateUniqueTempDir();
-    DCHECK(success);
+    CHECK(success);
     success = startup_.CreateUniqueTempDir();
-    DCHECK(success);
+    CHECK(success);
+    success = applications_dir_.CreateUniqueTempDir();
+    CHECK(success);
 #endif
   }
 
 #if BUILDFLAG(IS_LINUX)
-  auto callback =
-      base::BindRepeating([](base::FilePath filename, std::string xdg_command,
-                             std::string file_contents) {
-        auto test_override = GetOsIntegrationTestOverride();
-        DCHECK(test_override);
-        LinuxFileRegistration file_registration = LinuxFileRegistration();
-        file_registration.xdg_command = xdg_command;
-        file_registration.file_contents = file_contents;
-        test_override->linux_file_registration_.push_back(file_registration);
-        return true;
-      });
+  auto callback = base::BindRepeating([](base::FilePath filename_in,
+                                         std::string xdg_command,
+                                         std::string file_contents) {
+    auto test_override = GetOsIntegrationTestOverride();
+    CHECK(test_override);
+    LinuxFileRegistration file_registration = LinuxFileRegistration();
+    file_registration.file_name = filename_in;
+    file_registration.xdg_command = xdg_command;
+    file_registration.file_contents = file_contents;
+    test_override->linux_file_registration_.push_back(file_registration);
+    return true;
+  });
   SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(std::move(callback));
 #endif
 }
@@ -699,13 +715,13 @@ OsIntegrationTestOverride::~OsIntegrationTestOverride() {
   // Reset the file handling callback.
   SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(
       UpdateMimeInfoDatabaseOnLinuxCallback());
-  directories = {&desktop_};
+  directories = {&desktop_, &applications_dir_};
 #endif
   for (base::ScopedTempDir* dir : directories) {
     if (!dir->IsValid()) {
       continue;
     }
-    DCHECK(base::IsDirectoryEmpty(dir->GetPath()))
+    CHECK(base::IsDirectoryEmpty(dir->GetPath()))
         << "Directory not empty: " << dir->GetPath().AsUTF8Unsafe()
         << ". Please uninstall all webapps that have been installed while "
            "shortcuts were overriden. Contents:\n"
@@ -716,7 +732,7 @@ OsIntegrationTestOverride::~OsIntegrationTestOverride() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 SkColor OsIntegrationTestOverride::GetIconTopLeftColorFromShortcutFile(
     const base::FilePath& shortcut_path) {
-  DCHECK(base::PathExists(shortcut_path));
+  CHECK(base::PathExists(shortcut_path));
 #if BUILDFLAG(IS_MAC)
   base::FilePath icon_path =
       shortcut_path.AppendASCII("Contents/Resources/app.icns");

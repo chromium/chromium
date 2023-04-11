@@ -682,7 +682,6 @@ source_set("web_applications_unit_tests") {
   if (is_linux) {
     # Desktop linux, doesn't count ChromeOS.
     sources += [
-      "os_integration/web_app_file_handler_registration_linux_unittest.cc",
       "os_integration/web_app_run_on_os_login_linux_unittest.cc",
       "os_integration/web_app_shortcut_linux_unittest.cc",
     ]

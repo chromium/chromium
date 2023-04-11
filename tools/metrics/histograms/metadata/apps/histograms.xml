@@ -2134,17 +2134,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Apps.FileHandler.Registration.Linux.RecreateShortcut.Result"
-    enum="FileHandlerRegistrationLinuxRecreateShortcutResult"
-    expires_after="M110">
-  <owner>estade@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
-  <summary>
-    Records the result of re-creating shortcut during file handler registration
-    process for PWA on Linux
-  </summary>
-</histogram>
-
 <histogram name="Apps.FileHandler.Registration.Linux.Result"
     enum="FileHandlerRegistrationLinuxResult" expires_after="M110">
   <owner>estade@chromium.org</owner>
