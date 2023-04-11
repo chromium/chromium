@@ -1,4 +1,8 @@
 <style include="network-shared">
+  div {
+    color: var(--cr-secondary-text-color);
+  }
+
   #apnDescription {
     align-items: flex-start;
     display: flex;
@@ -21,6 +25,20 @@
     min-height: var(--settings-row-min-height);
     padding: 0 20px 0 0;
   }
+
+  #zeroStateText {
+    border-top: var(--cr-separator-line);
+    display: flex;
+    margin-inline-end: 40px;
+    padding: 10px var(--cr-section-padding) 10px var(--cr-section-padding);
+  }
+
+  iron-icon[icon='cr:info-outline'] {
+    --iron-icon-width: 1rem;
+    --iron-icon-height: 1rem;
+    --iron-icon-fill-color: var(--cr-secondary-text-color);
+    margin-inline-end: 10px;
+  }
 </style>
 <div id="apnDescription" class="property-box">
   <template is="dom-if" if="[[!shouldOmitLinks]]" restamp>
@@ -35,6 +53,15 @@
     </div>
   </template>
 </div>
+
+<template is="dom-if"
+    if="[[shouldShowZeroStateText_(managedCellularProperties, errorState)]]"
+    restamp>
+  <div id="zeroStateText">
+    <span><iron-icon icon="cr:info-outline"></iron-icon></span>
+    <div>[[i18n('apnSettingsZeroStateDescription')]]</div>
+  </div>
+</template>
 
 <iron-list items="[[getApns_(managedCellularProperties)]]"
     on-show-apn-detail-dialog="onShowApnDetailDialog_">

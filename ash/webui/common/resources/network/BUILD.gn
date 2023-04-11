@@ -77,6 +77,7 @@ js_library("apn_list") {
     "//ash/webui/common/resources:load_time_data.m",
     "//ash/webui/common/resources/network:apn_list_item",
     "//chromeos/services/network_config/public/mojom:mojom_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = []

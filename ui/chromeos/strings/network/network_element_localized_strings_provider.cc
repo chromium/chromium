@@ -329,6 +329,8 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
       {"customApnLimitReached", IDS_SETTINGS_CUSTOM_APN_LIMIT_REACHED},
       {"apnSettingsDescriptionWithLink",
        IDS_SETTINGS_APN_DESCRIPTION_WITH_LEARN_MORE_LINK},
+      {"apnSettingsZeroStateDescription",
+       IDS_SETTINGS_APN_ZERO_STATE_DESCRIPTION},
       {"apnMenuDetails", IDS_SETTINGS_APN_MENU_DETAILS},
       {"apnMenuDisable", IDS_SETTINGS_APN_MENU_DISABLE},
       {"apnMenuEnable", IDS_SETTINGS_APN_MENU_ENABLE},

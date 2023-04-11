@@ -99,6 +99,10 @@ suite('ApnListTest', function() {
     id: '8',
   };
 
+  function getZeroStateText() {
+    return apnList.shadowRoot.querySelector('#zeroStateText');
+  }
+
   setup(async function() {
     apnList = document.createElement('apn-list');
     document.body.appendChild(apnList);
@@ -121,10 +125,33 @@ suite('ApnListTest', function() {
   });
 
   test('No managedCellularProperties', async function() {
+    // Temporarily set |managedCellularProperties| to trigger a UI refresh.
+    apnList.managedCellularProperties = {};
     apnList.managedCellularProperties = undefined;
     await flushTasks();
     assertEquals(
         apnList.shadowRoot.querySelectorAll('apn-list-item').length, 0);
+    assertTrue(!!getZeroStateText());
+  });
+
+  test('Error states', async function() {
+    apnList.managedCellularProperties = {};
+    await flushTasks();
+    assertTrue(!!getZeroStateText());
+    assertEquals(
+        apnList.i18n('apnSettingsZeroStateDescription'),
+        getZeroStateText().querySelector('div').innerText);
+
+    // Set as non-APN-related error.
+    apnList.errorState = 'connect-failed';
+    await flushTasks();
+    assertTrue(!!getZeroStateText());
+
+    // Set as APN-related error. TODO(b/162365553): Assert error UI when
+    // implemented.
+    apnList.errorState = 'invalid-apn';
+    await flushTasks();
+    assertFalse(!!getZeroStateText());
   });
 
   test('There is no Connected APN and no custom APNs', async function() {
@@ -132,6 +159,7 @@ suite('ApnListTest', function() {
     await flushTasks();
     const apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
     assertEquals(apns.length, 0);
+    assertTrue(!!getZeroStateText());
   });
 
   test(
@@ -145,6 +173,7 @@ suite('ApnListTest', function() {
         assertTrue(OncMojo.apnMatch(apns[0].apn, customApn1));
         assertTrue(OncMojo.apnMatch(apns[1].apn, customApn2));
         assertFalse(apns[0].isConnected);
+        assertFalse(!!getZeroStateText());
       });
 
   test(
@@ -161,6 +190,7 @@ suite('ApnListTest', function() {
         assertEquals(apns.length, 1);
         assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
         assertTrue(apns[0].isConnected);
+        assertFalse(!!getZeroStateText());
       });
 
   test(
@@ -180,6 +210,7 @@ suite('ApnListTest', function() {
         assertTrue(OncMojo.apnMatch(apns[1].apn, customApn1));
         assertTrue(OncMojo.apnMatch(apns[2].apn, customApn2));
         assertTrue(apns[0].isConnected);
+        assertFalse(!!getZeroStateText());
       });
 
   test('Connected APN is inside custom APN list.', async function() {
@@ -197,6 +228,7 @@ suite('ApnListTest', function() {
     assertTrue(OncMojo.apnMatch(apns[1].apn, customApn1));
     assertTrue(OncMojo.apnMatch(apns[2].apn, customApn2));
     assertTrue(apns[0].isConnected);
+    assertFalse(!!getZeroStateText());
   });
 
   test('Connected APN is the only apn in custom APN list.', async function() {
@@ -209,6 +241,7 @@ suite('ApnListTest', function() {
     assertEquals(apns.length, 1);
     assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
     assertTrue(apns[0].isConnected);
+    assertFalse(!!getZeroStateText());
 
     // Simulate the APN no longer being connected.
     apnList.managedCellularProperties = {
@@ -219,6 +252,7 @@ suite('ApnListTest', function() {
     assertEquals(apns.length, 1);
     assertTrue(OncMojo.apnMatch(apns[0].apn, connectedApn));
     assertFalse(apns[0].isConnected);
+    assertFalse(!!getZeroStateText());
   });
 
   test(
