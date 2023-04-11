@@ -9,6 +9,10 @@
 
 namespace chromecast {
 
+std::string GetDeviceUserAgentSuffix();
+std::string GetChromiumUserAgent();
+
+std::string GetChromeKeyString();
 std::string GetUserAgent();
 
 }  // namespace chromecast

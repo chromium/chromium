@@ -89,6 +89,12 @@ cast_source_set("common") {
     "user_agent.h",
   ]
 
+  if (is_android) {
+    sources += [ "user_agent_android.cc" ]
+  } else {
+    sources += [ "user_agent_default.cc" ]
+  }
+
   public_deps = [ "//base" ]
 
   deps = [
