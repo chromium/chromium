@@ -190,6 +190,30 @@ public class PartialCustomTabDisplayManagerTest {
     }
 
     @Test
+    public void transitionFromBottomSheetToSideSheetWhileSoftkeyboardIsOn() {
+        mPCCTTestRule.configPortraitMode();
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
+        verify(mPCCTTestRule.mOnActivityLayoutCallback)
+                .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
+                        eq(ACTIVITY_LAYOUT_STATE_BOTTOM_SHEET));
+        clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
+
+        assertEquals("Bottom-Sheet should be the active strategy",
+                PartialCustomTabType.BOTTOM_SHEET, displayManager.getActiveStrategyType());
+        displayManager.onShowSoftInput(() -> {});
+        PartialCustomTabTestRule.waitForAnimationToFinish();
+        assertTrue(displayManager.getSizeStrategyForTesting().isMaximized());
+
+        // Rotate while the soft keyboard is on.
+        mPCCTTestRule.configLandscapeMode();
+        displayManager.onConfigurationChanged(mPCCTTestRule.mConfiguration);
+        PartialCustomTabTestRule.waitForAnimationToFinish();
+
+        // The destroyed bottom sheet should have its height state back to 'initial'.
+        assertFalse(displayManager.getSizeStrategyForTesting().isMaximized());
+    }
+
+    @Test
     public void
     transitionFromBottomSheetTo900dpBottomSheetWhenOrientationChangedToLandscape_andHeightSetWidthNot() {
         mPCCTTestRule.configPortraitMode();

@@ -115,8 +115,8 @@ public class PartialCustomTabDisplayManager
         int type = calculatePartialCustomTabType();
         if (type != mCurrentPartialCustomTabType) {
             if (mStrategy != null) {
+                mStrategy.destroy(); // May update the internal states.
                 mLastMaximizeState.put(mStrategy.getStrategyType(), mStrategy.isMaximized());
-                mStrategy.destroy();
             }
             boolean startMaximized = mLastMaximizeState.get(type, false);
             mStrategy = mSizeStrategyCreator.createForType(

@@ -146,6 +146,7 @@ public abstract class PartialCustomTabBaseStrategy
     @Override
     public void destroy() {
         mFullscreenManager.removeObserver(this);
+        cleanupImeStateCallback();
     }
 
     @Override
