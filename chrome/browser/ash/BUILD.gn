@@ -5319,6 +5319,7 @@ source_set("unit_tests") {
     "login/ui/oobe_dialog_size_utils_unittest.cc",
     "login/user_online_signin_notifier_unittest.cc",
     "login/users/affiliation_unittest.cc",
+    "login/users/avatar/user_image_loader_unittest.cc",
     "login/users/default_user_image/default_user_images_unittest.cc",
     "login/users/multi_profile_user_controller_unittest.cc",
     "login/users/user_manager_unittest.cc",

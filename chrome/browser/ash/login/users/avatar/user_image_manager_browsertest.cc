@@ -155,9 +155,10 @@ class UserImageManagerTestBase : public LoginManagerTest,
     EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
     {
       base::ScopedAllowBlockingForTesting allow_io;
-      EXPECT_TRUE(ReadFileToString(
-          test_data_dir.Append("chromeos").Append("avatar1.jpg"),
-          &profile_image_data));
+      EXPECT_TRUE(ReadFileToString(test_data_dir.Append("chromeos")
+                                       .Append("avatars")
+                                       .Append("avatar1.jpg"),
+                                   &profile_image_data));
     }
     std::unique_ptr<net::test_server::BasicHttpResponse> response =
         std::make_unique<net::test_server::BasicHttpResponse>();
