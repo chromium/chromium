@@ -25,6 +25,8 @@
 @property(nonatomic, readonly) BOOL repostFormWarningRequested;
 // Whether `javaScriptDialogPresenterForWebState:` has been called or not.
 @property(nonatomic, readonly) BOOL javaScriptDialogPresenterRequested;
+// Whether `webState:handlePermissions:decisionHandler` has been called or not.
+@property(nonatomic, readonly) BOOL permissionsRequestHandled;
 // Whether `webState:didRequestHTTPAuthForProtectionSpace:...| has been called
 // or not.
 @property(nonatomic, readonly) BOOL authenticationRequested;
