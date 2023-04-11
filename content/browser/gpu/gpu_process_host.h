@@ -209,6 +209,7 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
 
   // Update GPU crash counters.  Disable GPU if crash limit is reached.
   void RecordProcessCrash();
+  int GetFallbackCrashLimit() const;
 
   void RunServiceImpl(mojo::GenericPendingReceiver receiver);
 
