@@ -19,6 +19,7 @@
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/crosapi/fake_migration_progress_tracker.h"
+#include "chrome/common/chrome_constants.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/storage_type.h"
 #include "components/sync/model/blocking_model_type_store_impl.h"
@@ -609,32 +610,33 @@ TEST(BrowserDataMigratorUtilTest, CopyDirectory) {
           .Append(data_file)));
 }
 
-TEST(BrowserDataMigratorUtilTest, HasEnoughDiskSpace) {
+TEST(BrowserDataMigratorUtilTest, EstimatedExtraBytesCreated) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  const int64_t free_disk_space =
-      base::SysInfo::AmountOfFreeDiskSpace(temp_dir.GetPath());
-  ASSERT_GE(free_disk_space, 0);
-  ASSERT_GE(static_cast<uint64_t>(free_disk_space), kBuffer);
+  // Set up the directory as below. 'Preferences' and 'Sync Data' are files that
+  // are split during the migration. 'shared_proto_db' is one of the
+  // need-to-copy items in `kNeedCopyForMoveDataPaths`.
+  // |- Preferences
+  // |- Sync Data/
+  //     |- data
+  // |- shared_proto_db
+  const std::string pref_text = "*";
+  const std::string sync_text(10, '*');
+  const std::string spdb_text(100, '*');
+  ASSERT_TRUE(CreateDirectory(temp_dir.GetPath().Append(kSyncDataFilePath)));
+  ASSERT_TRUE(base::WriteFile(temp_dir.GetPath()
+                                  .Append(kSyncDataFilePath)
+                                  .Append(FILE_PATH_LITERAL("data")),
+                              sync_text));
+  ASSERT_TRUE(base::WriteFile(temp_dir.GetPath().Append(kSharedProtoDBPath),
+                              spdb_text));
+  ASSERT_TRUE(base::WriteFile(
+      temp_dir.GetPath().Append(chrome::kPreferencesFilename), pref_text));
 
-  // If total copy size is the same as `free_disk_space` then the disk is
-  // exactly `kBuffer` bytes short of free space.
-  EXPECT_EQ(ExtraBytesRequiredToBeFreed(free_disk_space, temp_dir.GetPath()),
-            kBuffer);
-  EXPECT_FALSE(HasEnoughDiskSpace(free_disk_space, temp_dir.GetPath()));
-
-  // If total copy size is the same as `free_disk_space - kBuffer` then the disk
-  // has just enough space for the migration.
-  EXPECT_EQ(ExtraBytesRequiredToBeFreed(free_disk_space - kBuffer,
-                                        temp_dir.GetPath()),
-            0u);
-  EXPECT_TRUE(
-      HasEnoughDiskSpace(free_disk_space - kBuffer, temp_dir.GetPath()));
-
-  // If there is nothing to be copied then as long as `free_disk_space >=
-  // kBuffer`, there should be no extra space required to be freed.
-  EXPECT_EQ(ExtraBytesRequiredToBeFreed(0, temp_dir.GetPath()), 0u);
-  EXPECT_TRUE(HasEnoughDiskSpace(0, temp_dir.GetPath()));
+  // Expected size should be size(NeedToCopy) + size(Preferences) * 2 +
+  // size(Sync Data).
+  const int64_t expected_size = 1 * 2 + 10 + 100;
+  EXPECT_EQ(EstimatedExtraBytesCreated(temp_dir.GetPath()), expected_size);
 }
 
 TEST(BrowserDataMigratorUtilTest, IsAshOnlySyncDataType) {

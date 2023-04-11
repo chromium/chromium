@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
+#include "chrome/common/chrome_constants.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/storage_type.h"
 #include "components/sync/model/blocking_model_type_store_impl.h"
@@ -313,6 +314,38 @@ uint64_t ExtraBytesRequiredToBeFreed(
   return 0;
 }
 
+int64_t EstimatedExtraBytesCreated(const base::FilePath& original_profile_dir) {
+  const TargetItems need_to_copy_items =
+      GetTargetItems(original_profile_dir, ItemType::kNeedCopyForMove);
+
+  int64_t total_size = need_to_copy_items.total_size;
+
+  // Get file size of 'Preferences' and 'Sync Data'.
+  const base::FilePath preferences_path =
+      original_profile_dir.Append(chrome::kPreferencesFilename);
+  if (base::PathExists(preferences_path)) {
+    int64_t size;
+    if (base::GetFileSize(preferences_path, &size)) {
+      // For 'Preferences', add size * 2 because we create copies for Lacros and
+      // Ash of the same size.
+      total_size += size * 2;
+    } else {
+      PLOG(ERROR) << "Failed to get file size for " << preferences_path.value();
+    }
+  }
+
+  // For 'Sync Data', the "copies" we create for Ash and Lacros have no
+  // overlap thus the total size of the newly created copies is approximately
+  // equal to the size of the original database.
+  const base::FilePath sync_data_path =
+      original_profile_dir.Append(kSyncDataFilePath);
+  if (base::PathExists(sync_data_path)) {
+    total_size += base::ComputeDirectorySize(sync_data_path);
+  }
+
+  return total_size;
+}
+
 ScopedExtraBytesRequiredToBeFreedForTesting::
     ScopedExtraBytesRequiredToBeFreedForTesting(uint64_t required_size) {
   DCHECK(!g_extra_bytes_required_to_be_freed_for_testing.has_value());
@@ -552,27 +585,30 @@ void DryRunToCollectUMA(const base::FilePath& profile_data_dir) {
   RecordTargetItemSizes(lacros_items.items);
   RecordTargetItemSizes(need_copy_items.items);
 
+  // TODO(crbug.com/1416750): Retire copy migration related UMAs.
   base::UmaHistogramBoolean(
       kDryRunCopyMigrationHasEnoughDiskSpace,
       HasEnoughDiskSpace(lacros_items.total_size + need_copy_items.total_size,
                          profile_data_dir));
   base::UmaHistogramBoolean(
-      kDryRunMoveMigrationHasEnoughDiskSpace,
-      HasEnoughDiskSpace(need_copy_items.total_size, profile_data_dir));
-  base::UmaHistogramBoolean(
       kDryRunDeleteAndCopyMigrationHasEnoughDiskSpace,
       HasEnoughDiskSpace(lacros_items.total_size + need_copy_items.total_size -
                              deletable_items.total_size,
                          profile_data_dir));
+  const int64_t extra_bytes_created_by_move =
+      EstimatedExtraBytesCreated(profile_data_dir);
+  base::UmaHistogramBoolean(
+      kDryRunMoveMigrationHasEnoughDiskSpace,
+      HasEnoughDiskSpace(extra_bytes_created_by_move, profile_data_dir));
   base::UmaHistogramBoolean(kDryRunDeleteAndMoveMigrationHasEnoughDiskSpace,
-                            HasEnoughDiskSpace(need_copy_items.total_size -
+                            HasEnoughDiskSpace(extra_bytes_created_by_move -
                                                    deletable_items.total_size,
                                                profile_data_dir));
 
   const int64_t free_disk_space =
       base::SysInfo::AmountOfFreeDiskSpace(profile_data_dir);
   const int64_t extra_space_reserved_for_move_migration =
-      free_disk_space - need_copy_items.total_size +
+      free_disk_space - extra_bytes_created_by_move +
       deletable_items.total_size - kBuffer;
   if (extra_space_reserved_for_move_migration > 0) {
     base::UmaHistogramCustomCounts(

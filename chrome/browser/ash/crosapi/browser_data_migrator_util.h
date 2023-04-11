@@ -407,6 +407,11 @@ uint64_t ExtraBytesRequiredToBeFreed(
     int64_t total_copy_size,
     const base::FilePath& original_profile_dir);
 
+// Returns an estimate of the total of file sizes created during profile
+// migration in bytes. Note that this underestimates the total because some
+// smaller files that are being created during the migration.
+int64_t EstimatedExtraBytesCreated(const base::FilePath& original_profile_dir);
+
 // Injects the bytes to be returned by ExtraBytesRequiredToBeFreed above
 // in RAII manner.
 class ScopedExtraBytesRequiredToBeFreedForTesting {

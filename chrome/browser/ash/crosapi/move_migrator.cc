@@ -268,16 +268,14 @@ MoveMigrator::TaskResult MoveMigrator::PreMigrationCleanUp(
     }
   }
 
+  const int64_t extra_bytes_created =
+      browser_data_migrator_util::EstimatedExtraBytesCreated(
+          original_profile_dir);
   // Now check if there is enough disk space for the migration to be carried
   // out.
-  browser_data_migrator_util::TargetItems need_copy_items =
-      browser_data_migrator_util::GetTargetItems(
-          original_profile_dir,
-          browser_data_migrator_util::ItemType::kNeedCopyForMove);
-
   const int64_t extra_bytes_required_to_be_freed =
       browser_data_migrator_util::ExtraBytesRequiredToBeFreed(
-          need_copy_items.total_size, original_profile_dir);
+          extra_bytes_created, original_profile_dir);
 
   UMA_HISTOGRAM_MEDIUM_TIMES(kMoveMigratorPreMigrationCleanUpTimeUMA,
                              timer.Elapsed());
