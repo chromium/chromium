@@ -116,7 +116,7 @@ class PLATFORM_EXPORT EffectPaintPropertyNode
 
     // An identifier for a view transition element. `id.valid()` returns true if
     // this has been set, and false otherwise.
-    ViewTransitionElementId view_transition_element_id;
+    blink::ViewTransitionElementId view_transition_element_id;
 
     // An identifier to tag transition element resources generated and cached in
     // the Viz process. This generated resource can be used as content for other
