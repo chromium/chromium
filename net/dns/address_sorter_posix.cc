@@ -278,18 +278,6 @@ class AddressSorterPosix::SortContext {
       VLOG(1) << "Could not connect to " << dest.ToStringWithoutPort()
               << " reason " << rv;
       sort_list_[info_index].failed = true;
-      MaybeFinishSort();
-      return;
-    }
-    // Filter out unusable destinations.
-    IPEndPoint src;
-    rv = sort_list_[info_index].socket->GetLocalAddress(&src);
-    if (rv != OK) {
-      LOG(WARNING) << "Could not get local address for "
-                   << dest.ToStringWithoutPort() << " reason " << rv;
-      sort_list_[info_index].failed = true;
-      MaybeFinishSort();
-      return;
     }
 
     MaybeFinishSort();
@@ -303,10 +291,21 @@ class AddressSorterPosix::SortContext {
     if (num_completed_ != num_endpoints_) {
       return;
     }
-    base::EraseIf(sort_list_, [](auto& element) { return element.failed; });
     for (auto& info : sort_list_) {
+      if (info.failed) {
+        continue;
+      }
+
       IPEndPoint src;
-      info.socket->GetLocalAddress(&src);
+      // Filter out unusable destinations.
+      int rv = info.socket->GetLocalAddress(&src);
+      if (rv != OK) {
+        LOG(WARNING) << "Could not get local address for "
+                     << info.endpoint.ToStringWithoutPort() << " reason " << rv;
+        info.failed = true;
+        continue;
+      }
+
       auto iter = sorter_->source_map_.find(src.address());
       if (iter == sorter_->source_map_.end()) {
         //  |src.address| may not be in the map if |source_info_| has not been
@@ -327,6 +326,7 @@ class AddressSorterPosix::SortContext {
                      info.src.prefix_length);
       }
     }
+    base::EraseIf(sort_list_, [](auto& element) { return element.failed; });
     std::stable_sort(sort_list_.begin(), sort_list_.end(), CompareDestinations);
 
     std::vector<IPEndPoint> sorted_result;
