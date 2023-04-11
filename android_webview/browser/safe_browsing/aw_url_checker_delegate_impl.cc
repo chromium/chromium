@@ -17,6 +17,8 @@
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_allowlist_manager.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_ui_manager.h"
 #include "android_webview/browser_jni_headers/AwSafeBrowsingConfigHelper_jni.h"
+#include "android_webview/browser_jni_headers/AwSafeBrowsingSafeModeAction_jni.h"
+#include "android_webview/common/aw_features.h"
 #include "base/android/jni_android.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -114,6 +116,14 @@ bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
     int render_process_id,
     int render_frame_id,
     bool originated_from_service_worker) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  if (base::FeatureList::IsEnabled(
+          android_webview::features::kWebViewSafeBrowsingSafeMode)) {
+    if (Java_AwSafeBrowsingSafeModeAction_isSafeBrowsingDisabled(env)) {
+      return true;
+    }
+  }
+
   const content::GlobalRenderFrameHostId rfh_id(render_process_id,
                                                 render_frame_id);
 
@@ -146,7 +156,6 @@ bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
     return false;
 
   // For other requests, follow user consent.
-  JNIEnv* env = base::android::AttachCurrentThread();
   bool safe_browsing_user_consent =
       Java_AwSafeBrowsingConfigHelper_getSafeBrowsingUserOptIn(env);
   return !safe_browsing_user_consent;

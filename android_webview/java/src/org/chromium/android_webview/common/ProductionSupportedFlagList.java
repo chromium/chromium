@@ -404,6 +404,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(TracingServiceFeatures.ENABLE_PERFETTO_SYSTEM_TRACING,
                     "When enabled, WebView exports trace events to the Android Perfetto service."
                             + " This works only for Android Q+."),
+            Flag.baseFeature(AwFeatures.WEBVIEW_SAFE_BROWSING_SAFE_MODE,
+                    "Enable doing a JNI call to check safe browsing safe mode status "
+                            + "before doing a safe browsing check."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

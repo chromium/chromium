@@ -105,6 +105,12 @@ BASE_FEATURE(kWebViewRestrictSensitiveContent,
              "WebViewRestrictSensitiveContent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable doing a JNI call to check safe browsing safe mode status before doing
+// a safe browsing check.
+BASE_FEATURE(kWebViewSafeBrowsingSafeMode,
+             "WebViewSafeBrowsingSafeMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Disallows window.{alert, prompt, confirm} if triggered inside a subframe that
 // is not same origin with the main frame.
 BASE_FEATURE(kWebViewSuppressDifferentOriginSubframeJSDialogs,

@@ -11,6 +11,7 @@ import org.chromium.android_webview.common.Flag;
 import org.chromium.android_webview.common.FlagOverrideHelper;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.ProductionSupportedFlagList;
+import org.chromium.android_webview.safe_browsing.AwSafeBrowsingSafeModeAction;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -118,6 +119,11 @@ public class AwContentsStatics {
                 PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, callback.bind(b));
             }
         };
+
+        if (AwSafeBrowsingSafeModeAction.isSafeBrowsingDisabled()) {
+            wrapperCallback.onResult(PlatformServiceBridge.getInstance().canUseGms());
+            return;
+        }
 
         PlatformServiceBridge.getInstance().warmUpSafeBrowsing(
                 context.getApplicationContext(), wrapperCallback);
