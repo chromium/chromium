@@ -556,8 +556,16 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
   }
 
   const unsigned texture_target =
-      buffer_context_->gpu_factories()->ImageTextureTarget(
-          gpu_memory_buffer_->GetFormat());
+#if BUILDFLAG(IS_LINUX)
+      // Explicitly set GL_TEXTURE_EXTERNAL_OES as the
+      // `media::VideoFrame::RequiresExternalSampler()` requires it for NV12
+      // format, while the `ImageTextureTarget()` will return GL_TEXTURE_2D.
+      (frame_info_->pixel_format == media::PIXEL_FORMAT_NV12)
+          ? GL_TEXTURE_EXTERNAL_OES
+          :
+#endif
+          buffer_context_->gpu_factories()->ImageTextureTarget(
+              gpu_memory_buffer_->GetFormat());
 
   const gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 
