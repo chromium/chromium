@@ -398,7 +398,10 @@ void PillButton::UpdateIconColor() {
   if (!IsIconPillButton(type_))
     return;
 
-  DCHECK(icon_);
+  if (!icon_) {
+    return;
+  }
+
   SetImageModel(views::Button::STATE_DISABLED,
                 ui::ImageModel::FromVectorIcon(
                     *icon_, cros_tokens::kCrosSysDisabled, kIconSize));

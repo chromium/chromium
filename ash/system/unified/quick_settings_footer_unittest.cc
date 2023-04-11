@@ -8,6 +8,8 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
+#include "ash/shell.h"
+#include "ash/system/power/adaptive_charging_controller.h"
 #include "ash/system/unified/power_button.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -17,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -257,6 +260,24 @@ TEST_F(QuickSettingsFooterTest, DisableSettingsIconPolicy) {
 
   local_state()->SetBoolean(prefs::kOsSettingsEnabled, true);
   EXPECT_EQ(views::Button::STATE_NORMAL, GetSettingsButton()->GetState());
+}
+
+// Tests different battery states.
+TEST_F(QuickSettingsFooterTest, BatteryButtonState) {
+  CreateUserSessions(1);
+  SetUpView();
+
+  const bool use_smart_charging_ui =
+      ash::features::IsAdaptiveChargingEnabled() &&
+      Shell::Get()
+          ->adaptive_charging_controller()
+          ->is_adaptive_delaying_charge();
+
+  if (use_smart_charging_ui) {
+    EXPECT_TRUE(views::IsViewClass<QsBatteryIconView>(GetBatteryButton()));
+  } else {
+    EXPECT_TRUE(views::IsViewClass<QsBatteryLabelView>(GetBatteryButton()));
+  }
 }
 
 // The following tests will ensure that the entire Widget root view is properly
