@@ -57,11 +57,7 @@ void ClearPref(int index, const char* pref_name) {
 void ChangeListPref(int index,
                     const char* pref_name,
                     const base::Value::List& new_value) {
-  ScopedListPrefUpdate update(GetPrefs(index), pref_name);
-  base::Value::List& list = update.Get();
-  for (const base::Value& it : new_value) {
-    list.Append(it.Clone());
-  }
+  GetPrefs(index)->SetList(pref_name, new_value.Clone());
 }
 
 bool BooleanPrefMatches(const char* pref_name) {
