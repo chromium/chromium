@@ -540,6 +540,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   [self stopPasswordsCoordinator];
   [self stopSafetyCheckCoordinator];
   [self stopClearBrowsingDataCoordinator];
+  [self stopPrivacySafeBrowsingCoordinator];
 
   // Reset the delegate to prevent any queued transitions from attempting to
   // close the settings.
