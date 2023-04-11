@@ -64,7 +64,7 @@ bool ShellVirtualKeyboardDelegate::IsSettingsEnabled() {
 }
 
 bool ShellVirtualKeyboardDelegate::SetVirtualKeyboardMode(
-    int mode_enum,
+    api::virtual_keyboard_private::KeyboardMode mode,
     gfx::Rect target_bounds,
     OnSetModeCallback on_set_mode_callback) {
   return false;
@@ -75,7 +75,8 @@ bool ShellVirtualKeyboardDelegate::SetDraggableArea(
   return false;
 }
 
-bool ShellVirtualKeyboardDelegate::SetRequestedKeyboardState(int state_enum) {
+bool ShellVirtualKeyboardDelegate::SetRequestedKeyboardState(
+    api::virtual_keyboard_private::KeyboardState state) {
   return false;
 }
 

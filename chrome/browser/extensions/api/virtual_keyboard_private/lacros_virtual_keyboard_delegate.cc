@@ -111,7 +111,7 @@ bool LacrosVirtualKeyboardDelegate::IsSettingsEnabled() {
 }
 
 bool LacrosVirtualKeyboardDelegate::SetVirtualKeyboardMode(
-    int mode_enum,
+    api::virtual_keyboard_private::KeyboardMode mode,
     gfx::Rect target_bounds,
     OnSetModeCallback on_set_mode_callback) {
   NOTIMPLEMENTED_LOG_ONCE();
@@ -124,7 +124,8 @@ bool LacrosVirtualKeyboardDelegate::SetDraggableArea(
   return false;
 }
 
-bool LacrosVirtualKeyboardDelegate::SetRequestedKeyboardState(int state_enum) {
+bool LacrosVirtualKeyboardDelegate::SetRequestedKeyboardState(
+    api::virtual_keyboard_private::KeyboardState state) {
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }

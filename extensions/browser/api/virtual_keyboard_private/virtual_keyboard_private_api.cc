@@ -69,13 +69,13 @@ base::Value::Dict SerializeClipboardHistoryItem(
   switch (item.display_format()) {
     case ash::ClipboardHistoryItem::DisplayFormat::kText:
       clipboard_item.text_data = base::UTF16ToUTF8(item.display_text());
-      clipboard_item.display_format = DisplayFormat::DISPLAY_FORMAT_TEXT;
+      clipboard_item.display_format = DisplayFormat::kText;
       break;
     case ash::ClipboardHistoryItem::DisplayFormat::kPng:
-      clipboard_item.display_format = DisplayFormat::DISPLAY_FORMAT_PNG;
+      clipboard_item.display_format = DisplayFormat::kPng;
       break;
     case ash::ClipboardHistoryItem::DisplayFormat::kHtml:
-      clipboard_item.display_format = DisplayFormat::DISPLAY_FORMAT_HTML;
+      clipboard_item.display_format = DisplayFormat::kHtml;
       break;
     case ash::ClipboardHistoryItem::DisplayFormat::kFile:
       DCHECK(!clipboard_item.image_data.has_value());
@@ -86,7 +86,7 @@ base::Value::Dict SerializeClipboardHistoryItem(
       clipboard_item.image_data =
           webui::GetBitmapDataUrl(*icon->Rasterize(&color_provider).bitmap());
       clipboard_item.text_data = base::UTF16ToUTF8(item.display_text());
-      clipboard_item.display_format = DisplayFormat::DISPLAY_FORMAT_FILE;
+      clipboard_item.display_format = DisplayFormat::kFile;
       break;
   }
 

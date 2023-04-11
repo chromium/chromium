@@ -1755,7 +1755,7 @@ void AccessibilityManager::OnExtensionUnloaded(
             extensions::VirtualKeyboardAPI>::Get(browser_context);
     DCHECK(api);
     api->delegate()->SetRequestedKeyboardState(
-        extensions::api::virtual_keyboard_private::KEYBOARD_STATE_AUTO);
+        extensions::api::virtual_keyboard_private::KeyboardState::kAuto);
   }
 }
 

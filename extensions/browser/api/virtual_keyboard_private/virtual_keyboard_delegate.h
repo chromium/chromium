@@ -90,7 +90,7 @@ class VirtualKeyboardDelegate {
 
   // Sets virtual keyboard window mode.
   virtual bool SetVirtualKeyboardMode(
-      int mode_enum,
+      api::virtual_keyboard_private::KeyboardMode mode_enum,
       gfx::Rect target_bounds,
       OnSetModeCallback on_set_mode_callback) = 0;
 
@@ -100,7 +100,8 @@ class VirtualKeyboardDelegate {
       const api::virtual_keyboard_private::Bounds& bounds) = 0;
 
   // Sets requested virtual keyboard state.
-  virtual bool SetRequestedKeyboardState(int state_enum) = 0;
+  virtual bool SetRequestedKeyboardState(
+      api::virtual_keyboard_private::KeyboardState state) = 0;
 
   // Sets the area on the screen that is occluded by the keyboard.
   virtual bool SetOccludedBounds(const std::vector<gfx::Rect>& bounds) = 0;
