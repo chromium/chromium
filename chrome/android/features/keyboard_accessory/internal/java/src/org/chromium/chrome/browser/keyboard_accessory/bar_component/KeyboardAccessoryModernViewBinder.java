@@ -137,13 +137,21 @@ class KeyboardAccessoryModernViewBinder {
             Resources res = chipView.getContext().getResources();
             if (item.getSuggestion().getCustomIconUrl() != null
                     && item.getSuggestion().getCustomIconUrl().isValid()) {
-                customIconBitmap =
-                        PersonalDataManager.getInstance().getCustomImageForAutofillSuggestionIfAvailable(
-                                AutofillUiUtils.getCCIconURLWithParams(
-                                        item.getSuggestion().getCustomIconUrl(),
-                                        res.getDimensionPixelSize(
-                                                R.dimen.keyboard_accessory_bar_item_cc_icon_width),
-                                        res.getDimensionPixelSize(R.dimen.chip_icon_size)));
+                if (item.getSuggestion().getCustomIconUrl().getSpec().equals(
+                            "https://www.gstatic.com/autofill/virtualcard/icon/capitalone.png")
+                        && ChromeFeatureList.isEnabled(
+                                ChromeFeatureList
+                                        .AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+                    iconId = R.drawable.capitalone_metadata_card;
+                } else {
+                    customIconBitmap =
+                            PersonalDataManager.getInstance().getCustomImageForAutofillSuggestionIfAvailable(
+                                    AutofillUiUtils.getCCIconURLWithParams(
+                                            item.getSuggestion().getCustomIconUrl(),
+                                            res.getDimensionPixelSize(
+                                                    R.dimen.keyboard_accessory_bar_item_cc_icon_width),
+                                            res.getDimensionPixelSize(R.dimen.chip_icon_size)));
+                }
             }
             if (customIconBitmap != null) {
                 chipView.setIcon(new BitmapDrawable(res, customIconBitmap), false);
