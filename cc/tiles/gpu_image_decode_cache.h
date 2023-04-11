@@ -618,6 +618,7 @@ class CC_EXPORT GpuImageDecodeCache
   bool EnsureCapacity(size_t required_size);
   bool CanFitInWorkingSet(size_t size) const;
   bool ExceedsCacheLimits() const;
+  void ReduceCacheUsageLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   void InsertTransferCacheEntry(
       const ClientImageTransferCacheEntry& image_entry,

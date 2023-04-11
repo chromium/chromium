@@ -1375,10 +1375,14 @@ void GpuImageDecodeCache::DrawWithImageFinished(
   RunPendingContextThreadOperations();
 }
 
-void GpuImageDecodeCache::ReduceCacheUsage() NO_THREAD_SAFETY_ANALYSIS {
+void GpuImageDecodeCache::ReduceCacheUsage() {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::ReduceCacheUsage");
   base::AutoLock lock(lock_);
+  ReduceCacheUsageLocked();
+}
+
+void GpuImageDecodeCache::ReduceCacheUsageLocked() NO_THREAD_SAFETY_ANALYSIS {
   EnsureCapacity(0);
 
   // This is typically called when no tasks are running (between scheduling
@@ -3170,7 +3174,7 @@ void GpuImageDecodeCache::OnMemoryPressure(
 
   base::AutoLock lock(lock_);
   base::AutoReset<bool> reset(&aggressively_freeing_resources_, true);
-  EnsureCapacity(0);
+  ReduceCacheUsageLocked();
 }
 
 bool GpuImageDecodeCache::SupportsColorSpaceConversion() const {
