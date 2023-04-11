@@ -54,16 +54,12 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) Cursor {
 
   mojom::CursorType type() const { return type_; }
   scoped_refptr<PlatformCursor> platform() const { return platform_cursor_; }
-  float image_scale_factor() const { return image_scale_factor_; }
-  void set_image_scale_factor(float scale) { image_scale_factor_ = scale; }
 
-  const SkBitmap& custom_bitmap() const { return custom_bitmap_; }
-  void set_custom_bitmap(const SkBitmap& bitmap) { custom_bitmap_ = bitmap; }
-
-  const gfx::Point& custom_hotspot() const { return custom_hotspot_; }
-  void set_custom_hotspot(const gfx::Point& hotspot) {
-    custom_hotspot_ = hotspot;
-  }
+  // Methods to access custom cursor data. For any other cursor type, the
+  // program will abort.
+  const SkBitmap& custom_bitmap() const;
+  const gfx::Point& custom_hotspot() const;
+  float image_scale_factor() const;
 
   // Note: custom cursor comparison may perform expensive pixel equality checks!
   bool operator==(const Cursor& cursor) const;

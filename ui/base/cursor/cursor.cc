@@ -56,6 +56,21 @@ void Cursor::SetPlatformCursor(scoped_refptr<PlatformCursor> platform_cursor) {
   platform_cursor_ = platform_cursor;
 }
 
+const SkBitmap& Cursor::custom_bitmap() const {
+  CHECK_EQ(type_, CursorType::kCustom);
+  return custom_bitmap_;
+}
+
+const gfx::Point& Cursor::custom_hotspot() const {
+  CHECK_EQ(type_, CursorType::kCustom);
+  return custom_hotspot_;
+}
+
+float Cursor::image_scale_factor() const {
+  CHECK_EQ(type_, CursorType::kCustom);
+  return image_scale_factor_;
+}
+
 bool Cursor::operator==(const Cursor& cursor) const {
   return type_ == cursor.type_ && platform_cursor_ == cursor.platform_cursor_ &&
          (type_ != CursorType::kCustom ||
