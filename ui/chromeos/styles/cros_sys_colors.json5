@@ -181,6 +181,7 @@
       light: 'rgba($cros.ref.secondary90.rgb, 0.6)',
       dark:  'rgba($cros.ref.secondary30.rgb, 0.48)',
     },
+    'dialog-container': '$cros.sys.base-elevated',
     'inverse-surface': {
       light: '$cros.ref.neutral20',
       dark:  '$cros.ref.neutral90',
