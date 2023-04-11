@@ -8,9 +8,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/system/system_notification_controller.h"
 #include "ash/system/test_system_sounds_delegate.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/flat_map.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -56,6 +58,18 @@ class PowerSoundsControllerTest : public AshTestBase {
     return true;
   }
 
+  // Returns true if the lid is closed.
+  bool SetLidState(bool closed) {
+    chromeos::FakePowerManagerClient::Get()->SetLidState(
+        closed ? chromeos::PowerManagerClient::LidState::CLOSED
+               : chromeos::PowerManagerClient::LidState::OPEN,
+        base::TimeTicks::Now());
+    return Shell::Get()
+               ->system_notification_controller()
+               ->power_sounds_->lid_state_ ==
+           chromeos::PowerManagerClient::LidState::CLOSED;
+  }
+
   void SetPowerStatus(int battery_level, bool line_power_connected) {
     ASSERT_GE(battery_level, 0);
     ASSERT_LE(battery_level, 100);
@@ -90,6 +104,7 @@ class PowerSoundsControllerTest : public AshTestBase {
     // disconnected with a charger and 5% battery level.
     is_line_power_connected_ = true;
     SetPowerStatus(5, /*line_power_connected=*/false);
+    EXPECT_FALSE(SetLidState(/*closed=*/false));
   }
 
  protected:
@@ -199,6 +214,26 @@ TEST_F(PowerSoundsControllerTest,
         PowerSoundsController::kUnpluggedBatteryLevelHistogramName, i,
         unplugged_levels_samples_[i]);
   }
+}
+
+// Tests that the sounds can only be played if the lid is opened; otherwise, we
+// don't play any sounds.
+TEST_F(PowerSoundsControllerTest, PlaySoundsOnlyIfLidIsOpened) {
+  // When the lid is closed, plugging in a line power, the device don't play any
+  // sound.
+  EXPECT_TRUE(SetLidState(/*closed=*/true));
+  SetPowerStatus(5, /*line_power_connected=*/true);
+  EXPECT_TRUE(GetSystemSoundsDelegate()->empty());
+
+  // When we open the lid, it doesn't play the delayed sound.
+  EXPECT_FALSE(SetLidState(/*closed=*/false));
+  EXPECT_TRUE(GetSystemSoundsDelegate()->empty());
+
+  // Under the condition of the lid opening, the device will play a sound when
+  // charging it.
+  SetPowerStatus(10, /*line_power_connected=*/false);
+  SetPowerStatus(5, /*line_power_connected=*/true);
+  EXPECT_TRUE(VerifySounds({Sound::kChargeLowBattery}));
 }
 
 }  // namespace ash
