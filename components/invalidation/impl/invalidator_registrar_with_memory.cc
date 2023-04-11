@@ -98,8 +98,9 @@ InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(
   for (auto it : *pref_data) {
     const std::string& topic_name = it.first;
     if (it.second.is_dict()) {
-      const std::string* handler = it.second.FindStringKey(kHandler);
-      const absl::optional<bool> is_public = it.second.FindBoolKey(kIsPublic);
+      const base::Value::Dict& second_dict = it.second.GetDict();
+      const std::string* handler = second_dict.FindString(kHandler);
+      const absl::optional<bool> is_public = second_dict.FindBool(kIsPublic);
       if (!handler || !is_public) {
         continue;
       }
