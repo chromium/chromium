@@ -86,6 +86,10 @@ class IdpTestServer {
     std::string accounts_endpoint_url;
     std::string client_metadata_endpoint_url;
     std::string id_assertion_endpoint_url;
+    std::map<std::string,
+             base::RepeatingCallback<std::unique_ptr<HttpResponse>(
+                 const HttpRequest&)>>
+        servlets;
   };
 
   IdpTestServer() = default;
@@ -116,6 +120,10 @@ class IdpTestServer {
     if (IsGetRequestWithPath(request, kExpectedWellKnownPath)) {
       BuildWellKnownResponse(*response.get());
       return response;
+    }
+
+    if (config_details_.servlets[request.relative_url]) {
+      return config_details_.servlets[request.relative_url].Run(request);
     }
 
     return nullptr;
@@ -541,7 +549,41 @@ IN_PROC_BROWSER_TEST_F(WebIdMDocsBrowserTest, MDocs) {
 
 // Verify a standard login flow with IdP sign-in page.
 IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, PopUpWindowAuthzFlow) {
-  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+  IdpTestServer::ConfigDetails config_details = BuildValidConfigDetails();
+
+  // Points the id assertion endpoint to a servlet.
+  config_details.id_assertion_endpoint_url = "/authz/id_assertion_endpoint.php";
+
+  // Add a servlet to serve a response for the id assertoin endpoint.
+  config_details.servlets["/authz/id_assertion_endpoint.php"] =
+      base::BindRepeating(
+          [](const HttpRequest& request) -> std::unique_ptr<HttpResponse> {
+            EXPECT_EQ(request.method, HttpMethod::METHOD_POST);
+            EXPECT_EQ(request.has_content, true);
+
+            std::string content;
+            content += "client_id=client_id_1&";
+            content += "nonce=12345&";
+            content += "account_id=not_real_account&";
+            content += "disclosure_text_shown=false&";
+            // Asserts that the scope, response_type and params parameters
+            // were passed correctly to the id assertion endpoint.
+            content += "scope=name+email+photo+calendar.readonly&";
+            content += "response_type=id_token+code&";
+            content += "%3F+gets+://=%26+escaped+!&";
+            content += "foo=bar&";
+            content += "hello=world";
+
+            EXPECT_EQ(request.content, content);
+
+            auto response = std::make_unique<BasicHttpResponse>();
+            response->set_code(net::HTTP_OK);
+            response->set_content_type("text/json");
+            response->set_content(R"({"token": "[request lgtm!]"})");
+            return response;
+          });
+
+  idp_server()->SetConfigResponseDetails(config_details);
 
   std::string script = R"(
         (async () => {
@@ -552,10 +594,20 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, PopUpWindowAuthzFlow) {
                        BaseIdpUrl() + R"(',
                 clientId: 'client_id_1',
                 nonce: '12345',
-                scope: ['name', 'email', 'calendar.readonly'],
-                responseType: ['id_token', 'code'],
+                scope: [
+                  'name',
+                  'email',
+                  'photo',
+                  'calendar.readonly'
+                ],
+                responseType: [
+                  'id_token',
+                  'code'
+                ],
                 params: {
                   'foo': 'bar',
+                  'hello': 'world',
+                  '? gets ://': '& escaped !',
                 }
               }]
             }
@@ -564,7 +616,7 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, PopUpWindowAuthzFlow) {
         }) ()
     )";
 
-  EXPECT_EQ(std::string(kToken), EvalJs(shell(), script));
+  EXPECT_EQ(std::string("[request lgtm!]"), EvalJs(shell(), script));
 }
 
 }  // namespace content

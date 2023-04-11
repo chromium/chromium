@@ -59,10 +59,14 @@ namespace {
 static constexpr base::TimeDelta kDefaultTokenRequestDelay = base::Seconds(3);
 static constexpr base::TimeDelta kMaxRejectionTime = base::Seconds(60);
 
-std::string ComputeUrlEncodedTokenPostData(const std::string& client_id,
-                                           const std::string& nonce,
-                                           const std::string& account_id,
-                                           bool is_sign_in) {
+std::string ComputeUrlEncodedTokenPostData(
+    const std::string& client_id,
+    const std::string& nonce,
+    const std::string& account_id,
+    bool is_sign_in,
+    const std::vector<std::string>& scope,
+    const std::vector<std::string>& responseType,
+    const base::flat_map<std::string, std::string>& params) {
   std::string query;
   if (!client_id.empty())
     query +=
@@ -87,6 +91,32 @@ std::string ComputeUrlEncodedTokenPostData(const std::string& client_id,
   std::string disclosure_text_shown = is_sign_in ? "false" : "true";
   if (!query.empty())
     query += "&disclosure_text_shown=" + disclosure_text_shown;
+
+  if (IsFedCmAuthzEnabled()) {
+    // We keep the scope and response_type parameters consistenct with the OIDC
+    // spec [1] to the extent that we can:
+    //
+    // - They are an arrays of strings, separated by spaces
+    // - We use the singular (e.g. "scope") as opposed to the plural
+    //   (e.g. "scopes")
+    //
+    // We do, however, use a different escaping character for spaces: "+"
+    // rather than the "%20" to make it consitent with the other
+    // parameters in the FedCM spec.
+    //
+    // [1] https://openid.net/specs/openid-connect-core-1_0.html#ScopeClaims
+    query += "&scope=" + base::EscapeUrlEncodedData(
+                             base::JoinString(scope, " "), /*use_plus=*/true);
+    query += "&response_type=" +
+             base::EscapeUrlEncodedData(base::JoinString(responseType, " "),
+                                        /*use_plus=*/true);
+    for (const auto& pair : params) {
+      // TODO(crbug.com/1429083): Should we use a prefix with these custom
+      // parameters so that they don't collide with the standard ones?
+      query += "&" + base::EscapeUrlEncodedData(pair.first, /*use_plus=*/true) +
+               "=" + base::EscapeUrlEncodedData(pair.second, /*use_plus=*/true);
+    }
+  }
 
   return query;
 }
@@ -1290,9 +1320,10 @@ void FederatedAuthRequestImpl::OnAccountSelected(bool auto_reauthn,
 
   network_manager_->SendTokenRequest(
       idp_info.endpoints.token, account_id_,
-      ComputeUrlEncodedTokenPostData(idp_info.provider->client_id,
-                                     idp_info.provider->nonce, account_id,
-                                     is_sign_in),
+      ComputeUrlEncodedTokenPostData(
+          idp_info.provider->client_id, idp_info.provider->nonce, account_id,
+          is_sign_in, idp_info.provider->scope, idp_info.provider->responseType,
+          idp_info.provider->params),
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(),
                      idp_info.provider->Clone()));
