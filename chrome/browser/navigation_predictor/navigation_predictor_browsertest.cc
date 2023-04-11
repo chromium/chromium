@@ -308,8 +308,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest,
 }
 
 // Tests that anchors from iframes are reported.
-// TODO(crbug.com/1427913): Flaky on Windows ASAN.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/1427913): Flaky on Windows ASAN and ChromeOS dbg.
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG))
 #define MAYBE_PageWithIframe DISABLED_PageWithIframe
 #else
 #define MAYBE_PageWithIframe PageWithIframe
