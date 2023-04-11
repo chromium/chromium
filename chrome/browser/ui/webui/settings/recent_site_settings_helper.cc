@@ -56,8 +56,9 @@ std::map<GURL, std::vector<TimestampedSetting>> GetAllSettingsForProfile(
       HostContentSettingsMapFactory::GetForProfile(profile);
   std::map<GURL, std::vector<TimestampedSetting>> results;
   for (auto content_type : content_types) {
-    auto exceptions_for_type = site_settings::GetSiteExceptionsForContentType(
-        content_settings_map, content_type);
+    auto exceptions_for_type =
+        site_settings::GetSingleOriginExceptionsForContentType(
+            content_settings_map, content_type);
     for (const auto& e : exceptions_for_type) {
       auto last_modified = e.metadata.last_modified;
       if (last_modified.is_null()) {

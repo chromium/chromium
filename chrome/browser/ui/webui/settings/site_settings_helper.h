@@ -176,9 +176,9 @@ void GetPolicyAllowedUrls(
     bool incognito);
 
 // Returns all site permission exceptions for a given content type
-std::vector<ContentSettingPatternSource> GetSiteExceptionsForContentType(
-    HostContentSettingsMap* map,
-    ContentSettingsType content_type);
+std::vector<ContentSettingPatternSource>
+GetSingleOriginExceptionsForContentType(HostContentSettingsMap* map,
+                                        ContentSettingsType content_type);
 
 // This struct facilitates lookup of a chooser context factory function by name
 // for a given content settings type and is declared early so that it can used
