@@ -254,8 +254,34 @@ function messageCallback(message) {
 
 // Methods for interacting with the record/replay driver.
 
+// Track all current execution contexts so that any scripts that we
+// inject via evaluatePrivilegd can know what contexts are available.
+const gExecutionContexts = new Map();
+const gContextChangeCallbacks = new Set();
+
 initMessages();
 addEventListener("Runtime.consoleAPICalled", onConsoleAPICall);
+addEventListener("Runtime.executionContextCreated", ({ context }) => {
+  gExecutionContexts.set(context.id, context);
+  for (const callback of gContextChangeCallbacks) {
+    callback(context, "add");
+  }
+});
+addEventListener("Runtime.executionContextDestroyed", ({ executionContextId }) => {
+  const context = gExecutionContexts.get(executionContextId);
+  for (const callback of gContextChangeCallbacks) {
+    callback(context, "remove");
+  }
+  gExecutionContexts.delete(executionContextId);
+});
+addEventListener("Runtime.executionContextsCleared", () => {
+  for (const context of gExecutionContexts.values()) {
+    for (const callback of gContextChangeCallbacks) {
+      callback(context, "remove");
+    }
+  }
+  gExecutionContexts.clear();
+});
 sendMessage("Runtime.enable");
 
 const CommandCallbacks = {
