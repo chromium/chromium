@@ -90,6 +90,9 @@ component("message_center") {
     }
 
     if (toolkit_views) {
+      # TODO(b/257291597): Skip the sources that are unused on is_chromeos_ash
+      # (e.g. notification_view.cc). This will require refactoring to break
+      # dependencies (e.g. MessagePopupCollection must become an interface).
       sources += [
         "views/desktop_message_popup_collection.cc",
         "views/desktop_message_popup_collection.h",
@@ -223,9 +226,14 @@ if (enable_message_center) {
         "views/notification_control_buttons_unittest.cc",
         "views/notification_header_view_unittest.cc",
         "views/notification_view_base_unittest.cc",
-        "views/notification_view_unittest.cc",
         "views/relative_time_formatter_unittest.cc",
       ]
+
+      # ChromeOS/Ash uses AshNotificationView, not NotificationView.
+      if (!is_chromeos_ash) {
+        sources += [ "views/notification_view_unittest.cc" ]
+      }
+
       deps += [
         "//ui/color",
         "//ui/display",

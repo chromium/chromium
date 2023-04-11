@@ -347,7 +347,7 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   // Describes whether this view is for an ash/ChromeOS notification (ash
   // notification UI uses AshNotificationView, which has customized layout,
   // header view, etc.).
-  bool for_ash_notification_ = true;
+  const bool for_ash_notification_;
 
   // Describes whether the view can display inline settings or not.
   bool inline_settings_enabled_ = false;

@@ -36,10 +36,8 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget_utils.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "chromeos/constants/chromeos_features.h"
-#endif  // IS_CHROMEOS_ASH
+// ChromeOS/Ash uses `AshNotificationView` instead of `NotificationView`.
+static_assert(!BUILDFLAG(IS_CHROMEOS_ASH));
 
 namespace message_center {
 
@@ -120,18 +118,6 @@ class NotificationViewTest : public views::ViewObserver,
 
   // views::ViewsTestBase:
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Since ash will use ash::AshNotificationView instead of
-    // message_center::NotificationView when
-    // kNotificationsRefresh/kDarkLightMode is enabled, these unit tests are
-    // only applicable when the features are disabled.
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{ash::features::kNotificationsRefresh,
-                               chromeos::features::kDarkLightMode});
-#endif  // IS_CHROMEOS_ASH
-
     views::ViewsTestBase::SetUp();
     MessageCenter::Initialize();
     delegate_ = new NotificationTestDelegate();

@@ -138,7 +138,7 @@ class MessageCenterImpl : public MessageCenter,
   bool visible_ = false;
   bool has_message_center_view_ = true;
   bool spoken_feedback_enabled_ = false;
-  bool notifications_grouping_enabled_ = false;
+  const bool notifications_grouping_enabled_;
 
   std::u16string system_notification_app_name_;
 

@@ -6,6 +6,7 @@
 
 #include "ash/bubble/bubble_constants.h"
 #include "ash/constants/ash_features.h"
+#include "ash/system/message_center/ash_notification_view.h"
 #include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_model.h"
@@ -23,7 +24,6 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_list.h"
 #include "ui/message_center/views/message_view.h"
-#include "ui/message_center/views/notification_view.h"
 #include "ui/views/test/views_test_utils.h"
 
 using message_center::MessageCenter;
@@ -34,10 +34,11 @@ namespace ash {
 
 namespace {
 
-class TestNotificationView : public message_center::NotificationView {
+class TestNotificationView : public AshNotificationView {
  public:
-  TestNotificationView(const message_center::Notification& notification)
-      : NotificationView(notification) {
+  explicit TestNotificationView(
+      const message_center::Notification& notification)
+      : AshNotificationView(notification, /*shown_in_popup=*/false) {
     layer()->GetAnimator()->set_preemption_strategy(
         ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
   }
@@ -47,7 +48,7 @@ class TestNotificationView : public message_center::NotificationView {
 
   ~TestNotificationView() override = default;
 
-  // message_center::NotificationView:
+  // AshNotificationView:
   void UpdateCornerRadius(int top_radius, int bottom_radius) override {
     top_radius_ = top_radius;
     bottom_radius_ = bottom_radius;
@@ -433,6 +434,7 @@ TEST_P(ParameterizedNotificationListViewTest, RemovingNotificationAnimation) {
   int previous_height = message_list_view()->GetPreferredSize().height();
   gfx::Rect bounds0 = GetMessageViewBounds(0);
   gfx::Rect bounds1 = GetMessageViewBounds(1);
+  gfx::Rect bounds2 = GetMessageViewBounds(2);
 
   MessageCenter::Get()->RemoveNotification(id1, true /* by_user */);
   FinishSlideOutAnimation();
@@ -448,7 +450,10 @@ TEST_P(ParameterizedNotificationListViewTest, RemovingNotificationAnimation) {
   AnimateToEnd();
   EXPECT_GT(previous_height, message_list_view()->GetPreferredSize().height());
   previous_height = message_list_view()->GetPreferredSize().height();
-  EXPECT_EQ(bounds0, GetMessageViewBounds(0));
+  // The remaining notification keeps the smaller vertical size of the last
+  // notification in the original list, but shifts position.
+  EXPECT_EQ(bounds2.size(), GetMessageViewBounds(0).size());
+  EXPECT_EQ(bounds0.origin(), GetMessageViewBounds(0).origin());
 
   MessageCenter::Get()->RemoveNotification(id0, true /* by_user */);
   FinishSlideOutAnimation();
