@@ -49,7 +49,8 @@ chromium-metrics-reviews@google.com.
     Omnibox or voice search on Omnibox to navigate. This is consistent with
     MobileOmniboxUse. For single tab card: is recorded every time when user
     clicks on the single tab card. For tab switcher button: is recorded every
-    time when user clicks on the tab switcher button. The histogram is logged on
+    time when user clicks on the tab switcher button. For profile button: is
+    recorded when user clicks on the profile button. The histogram is logged on
     Start surface and is Android-only.
   </summary>
 </histogram>

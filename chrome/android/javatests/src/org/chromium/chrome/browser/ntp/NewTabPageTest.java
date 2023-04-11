@@ -905,6 +905,20 @@ public class NewTabPageTest {
                 singleTabCardView.getVisibility());
     }
 
+    /**
+     * Test whether the clicking action on the profile button in {@link NewTabPage} is been
+     * recorded in histogram correctly.
+     */
+    @Test
+    @SmallTest
+    public void testRecordHistogramProfileButtonClick_Ntp() {
+        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                HISTOGRAM_NTP_MODULE_CLICK, BrowserUiUtils.ModuleTypeOnStartAndNTP.PROFILE_BUTTON);
+        onView(withId(R.id.optional_toolbar_button)).perform(click());
+        histogramWatcher.assertExpected(HISTOGRAM_NTP_MODULE_CLICK
+                + " is not recorded correctly when click on the profile button.");
+    }
+
     private void captureThumbnail() {
         Canvas canvas = new Canvas();
         mNtp.captureThumbnail(canvas);
