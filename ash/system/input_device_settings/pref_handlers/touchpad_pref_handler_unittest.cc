@@ -4,6 +4,7 @@
 
 #include "ash/system/input_device_settings/pref_handlers/touchpad_pref_handler_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
@@ -11,8 +12,11 @@
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/user_manager/known_user.h"
 
 namespace ash {
 
@@ -22,6 +26,11 @@ const std::string kDictFakeValue = "fake_value";
 
 const std::string kTouchpadKey1 = "device_key1";
 const std::string kTouchpadKey2 = "device_key2";
+
+constexpr char kUserEmail[] = "example@email.com";
+constexpr char kUserEmail2[] = "example2@email.com";
+const AccountId account_id_1 = AccountId::FromUserEmail(kUserEmail);
+const AccountId account_id_2 = AccountId::FromUserEmail(kUserEmail2);
 
 const int kTestSensitivity = 2;
 const bool kTestReverseScrolling = false;
@@ -91,6 +100,8 @@ class TouchpadPrefHandlerTest : public AshTestBase {
 
   // testing::Test:
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kInputDeviceSettingsSplit);
     AshTestBase::SetUp();
     InitializePrefService();
     pref_handler_ = std::make_unique<TouchpadPrefHandlerImpl>();
@@ -102,6 +113,9 @@ class TouchpadPrefHandlerTest : public AshTestBase {
   }
 
   void InitializePrefService() {
+    local_state()->registry()->RegisterBooleanPref(
+        prefs::kOwnerTapToClickEnabled, /*default_value=*/false);
+    user_manager::KnownUser::RegisterPrefs(local_state()->registry());
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
 
     pref_service_->registry()->RegisterDictionaryPref(
@@ -238,6 +252,28 @@ class TouchpadPrefHandlerTest : public AshTestBase {
     }
   }
 
+  void CheckTouchpadSettingsAreSetToDefaultValues(
+      const mojom::TouchpadSettings& settings) {
+    EXPECT_EQ(kTouchpadSettingsDefault.sensitivity, settings.sensitivity);
+    EXPECT_EQ(kTouchpadSettingsDefault.reverse_scrolling,
+              settings.reverse_scrolling);
+    EXPECT_EQ(kTouchpadSettingsDefault.acceleration_enabled,
+              settings.acceleration_enabled);
+    EXPECT_EQ(kTouchpadSettingsDefault.tap_to_click_enabled,
+              settings.tap_to_click_enabled);
+    EXPECT_EQ(kTouchpadSettingsDefault.three_finger_click_enabled,
+              settings.three_finger_click_enabled);
+    EXPECT_EQ(kTouchpadSettingsDefault.tap_dragging_enabled,
+              settings.tap_dragging_enabled);
+    EXPECT_EQ(kTouchpadSettingsDefault.scroll_sensitivity,
+              settings.scroll_sensitivity);
+    EXPECT_EQ(kTouchpadSettingsDefault.scroll_acceleration,
+              settings.scroll_acceleration);
+    EXPECT_EQ(kTouchpadSettingsDefault.haptic_sensitivity,
+              settings.haptic_sensitivity);
+    EXPECT_EQ(kTouchpadSettingsDefault.haptic_enabled, settings.haptic_enabled);
+  }
+
   void CallUpdateTouchpadSettings(const std::string& device_key,
                                   const mojom::TouchpadSettings& settings) {
     mojom::TouchpadPtr touchpad = mojom::Touchpad::New();
@@ -245,6 +281,16 @@ class TouchpadPrefHandlerTest : public AshTestBase {
     touchpad->device_key = device_key;
 
     pref_handler_->UpdateTouchpadSettings(pref_service_.get(), *touchpad);
+  }
+
+  void CallUpdateLoginScreenTouchpadSettings(
+      const AccountId& account_id,
+      const std::string& device_key,
+      const mojom::TouchpadSettings& settings) {
+    mojom::TouchpadPtr touchpad = mojom::Touchpad::New();
+    touchpad->settings = settings.Clone();
+    pref_handler_->UpdateLoginScreenTouchpadSettings(local_state(), account_id,
+                                                     *touchpad);
   }
 
   mojom::TouchpadSettingsPtr CallInitializeTouchpadSettings(
@@ -257,6 +303,16 @@ class TouchpadPrefHandlerTest : public AshTestBase {
     return std::move(touchpad->settings);
   }
 
+  mojom::TouchpadSettingsPtr CallInitializeLoginScreenTouchpadSettings(
+      const AccountId& account_id,
+      const mojom::Touchpad& touchpad) {
+    const auto touchpad_ptr = touchpad.Clone();
+
+    pref_handler_->InitializeLoginScreenTouchpadSettings(
+        local_state(), account_id, touchpad_ptr.get());
+    return std::move(touchpad_ptr->settings);
+  }
+
   const base::Value::Dict* GetSettingsDict(const std::string& device_key) {
     const auto& devices_dict =
         pref_service_->GetDict(prefs::kTouchpadDeviceSettingsDictPref);
@@ -267,10 +323,78 @@ class TouchpadPrefHandlerTest : public AshTestBase {
     return settings_dict;
   }
 
+  user_manager::KnownUser known_user() {
+    return user_manager::KnownUser(local_state());
+  }
+
+  bool HasInternalLoginScreenSettingsDict(AccountId account_id) {
+    const auto* dict = known_user().FindPath(
+        account_id, prefs::kTouchpadLoginScreenInternalSettingsPref);
+    return dict && dict->is_dict();
+  }
+
+  bool HasExternalLoginScreenSettingsDict(AccountId account_id) {
+    const auto* dict = known_user().FindPath(
+        account_id, prefs::kTouchpadLoginScreenExternalSettingsPref);
+    return dict && dict->is_dict();
+  }
+
+  base::Value::Dict GetInternalLoginScreenSettingsDict(AccountId account_id) {
+    return known_user()
+        .FindPath(account_id, prefs::kTouchpadLoginScreenInternalSettingsPref)
+        ->GetDict()
+        .Clone();
+  }
+
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TouchpadPrefHandlerImpl> pref_handler_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
 };
+
+TEST_F(TouchpadPrefHandlerTest, InitializeLoginScreenTouchpadSettings) {
+  mojom::Touchpad touchpad;
+  touchpad.device_key = kTouchpadKey1;
+  touchpad.is_external = false;
+  mojom::TouchpadSettingsPtr settings =
+      CallInitializeLoginScreenTouchpadSettings(account_id_1, touchpad);
+
+  CheckTouchpadSettingsAreSetToDefaultValues(*settings);
+  EXPECT_FALSE(HasInternalLoginScreenSettingsDict(account_id_1));
+}
+
+TEST_F(TouchpadPrefHandlerTest, UpdateLoginScreenTouchpadSettings) {
+  mojom::Touchpad touchpad;
+  touchpad.device_key = kTouchpadKey1;
+  touchpad.is_external = false;
+  mojom::TouchpadSettingsPtr settings =
+      CallInitializeLoginScreenTouchpadSettings(account_id_1, touchpad);
+  mojom::TouchpadSettings updated_settings = *settings;
+  updated_settings.reverse_scrolling = !updated_settings.reverse_scrolling;
+  updated_settings.acceleration_enabled =
+      !updated_settings.acceleration_enabled;
+  CallUpdateLoginScreenTouchpadSettings(account_id_1, kTouchpadKey1,
+                                        updated_settings);
+  const auto& updated_settings_dict =
+      GetInternalLoginScreenSettingsDict(account_id_1);
+  CheckTouchpadSettingsAndDictAreEqual(updated_settings, updated_settings_dict);
+}
+
+TEST_F(TouchpadPrefHandlerTest,
+       LoginScreenPrefsNotPersistedWhenFlagIsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kInputDeviceSettingsSplit);
+  mojom::Touchpad touchpad1;
+  touchpad1.device_key = kTouchpadKey1;
+  touchpad1.is_external = false;
+  mojom::Touchpad touchpad2;
+  touchpad2.device_key = kTouchpadKey2;
+  touchpad2.is_external = true;
+  CallInitializeLoginScreenTouchpadSettings(account_id_1, touchpad1);
+  CallInitializeLoginScreenTouchpadSettings(account_id_1, touchpad2);
+  EXPECT_FALSE(HasInternalLoginScreenSettingsDict(account_id_1));
+  EXPECT_FALSE(HasExternalLoginScreenSettingsDict(account_id_1));
+}
 
 TEST_F(TouchpadPrefHandlerTest, MultipleDevices) {
   CallUpdateTouchpadSettings(kTouchpadKey1, kTouchpadSettings1);
@@ -366,7 +490,7 @@ TEST_F(TouchpadPrefHandlerTest, NewSettingAddedRoundTrip) {
   pref_service_->SetDict(prefs::kTouchpadDeviceSettingsDictPref,
                          std::move(devices_dict));
 
-  // Initialize keyboard settings for the device and check that
+  // Initialize touchpad settings for the device and check that
   // "new settings" match their default values.
   mojom::TouchpadSettingsPtr settings =
       CallInitializeTouchpadSettings(kTouchpadKey1);
@@ -408,6 +532,8 @@ TEST_F(TouchpadPrefHandlerTest, NewTouchpadDefaultSettings) {
 
 TEST_F(TouchpadPrefHandlerTest,
        TransitionPeriodSettingsPersistedWhenUserChosen) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kInputDeviceSettingsSplit);
   mojom::Touchpad touchpad;
   touchpad.device_key = kTouchpadKey1;
   Shell::Get()->input_device_tracker()->OnTouchpadConnected(touchpad);
@@ -455,6 +581,8 @@ TEST_F(TouchpadPrefHandlerTest,
 }
 
 TEST_F(TouchpadPrefHandlerTest, TouchpadObserveredInTransitionPeriod) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kInputDeviceSettingsSplit);
   mojom::Touchpad touchpad;
   touchpad.device_key = kTouchpadKey1;
   Shell::Get()->input_device_tracker()->OnTouchpadConnected(touchpad);
