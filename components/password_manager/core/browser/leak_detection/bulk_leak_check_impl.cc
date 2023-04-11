@@ -86,6 +86,7 @@ BulkLeakCheckImpl::BulkLeakCheckImpl(
 BulkLeakCheckImpl::~BulkLeakCheckImpl() = default;
 
 void BulkLeakCheckImpl::CheckCredentials(
+    LeakDetectionInitiator initiator,
     std::vector<LeakCheckCredential> credentials) {
   for (auto& c : credentials) {
     waiting_encryption_.push_back(
@@ -93,7 +94,7 @@ void BulkLeakCheckImpl::CheckCredentials(
     const LeakCheckCredential& credential =
         waiting_encryption_.back()->credential;
     PrepareSingleLeakRequestData(
-        task_tracker_, *payload_task_runner_, encryption_key_,
+        task_tracker_, *payload_task_runner_, initiator, encryption_key_,
         base::UTF16ToUTF8(credential.username()),
         base::UTF16ToUTF8(credential.password()),
         base::BindOnce(&BulkLeakCheckImpl::OnPayloadReady,

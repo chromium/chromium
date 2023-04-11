@@ -56,12 +56,15 @@ LookupSingleLeakPayload ProduceHashes(base::StringPiece username,
 
 // Despite the function is short, it executes long. That's why it should be done
 // asynchronously.
-LookupSingleLeakData PrepareLookupSingleLeakData(base::StringPiece username,
-                                                 base::StringPiece password) {
+LookupSingleLeakData PrepareLookupSingleLeakData(
+    LeakDetectionInitiator initiator,
+    base::StringPiece username,
+    base::StringPiece password) {
   LookupSingleLeakData data;
   data.payload = ProduceHashes(username, password);
   if (data.payload.encrypted_payload.empty())
     return LookupSingleLeakData();
+  data.payload.initiator = initiator;
   data.payload.encrypted_payload =
       CipherEncrypt(data.payload.encrypted_payload, &data.encryption_key)
           .value_or("");
@@ -72,6 +75,7 @@ LookupSingleLeakData PrepareLookupSingleLeakData(base::StringPiece username,
 // Despite the function is short, it executes long. That's why it should be done
 // asynchronously.
 LookupSingleLeakPayload PrepareLookupSingleLeakDataWithKey(
+    LeakDetectionInitiator initiator,
     const std::string& encryption_key,
     base::StringPiece username,
     base::StringPiece password) {
@@ -81,6 +85,7 @@ LookupSingleLeakPayload PrepareLookupSingleLeakDataWithKey(
   payload.encrypted_payload =
       CipherEncryptWithKey(payload.encrypted_payload, encryption_key)
           .value_or("");
+  payload.initiator = initiator;
   return payload.encrypted_payload.empty() ? LookupSingleLeakPayload()
                                            : std::move(payload);
 }
@@ -125,28 +130,31 @@ AnalyzeResponseResult CheckIfCredentialWasLeaked(
 
 }  // namespace
 
-void PrepareSingleLeakRequestData(const std::string& username,
+void PrepareSingleLeakRequestData(LeakDetectionInitiator initiator,
+                                  const std::string& username,
                                   const std::string& password,
                                   SingleLeakRequestDataCallback callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&PrepareLookupSingleLeakData, username, password),
+      base::BindOnce(&PrepareLookupSingleLeakData, initiator, username,
+                     password),
       std::move(callback));
 }
 
 void PrepareSingleLeakRequestData(
     base::CancelableTaskTracker& task_tracker,
     base::TaskRunner& task_runner,
+    LeakDetectionInitiator initiator,
     const std::string& encryption_key,
     const std::string& username,
     const std::string& password,
     base::OnceCallback<void(LookupSingleLeakPayload)> callback) {
   task_tracker.PostTaskAndReplyWithResult(
       &task_runner, FROM_HERE,
-      base::BindOnce(&PrepareLookupSingleLeakDataWithKey, encryption_key,
-                     username, password),
+      base::BindOnce(&PrepareLookupSingleLeakDataWithKey, initiator,
+                     encryption_key, username, password),
       std::move(callback));
 }
 

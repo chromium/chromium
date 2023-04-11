@@ -72,6 +72,7 @@ class BulkLeakCheckServiceInterface : public KeyedService {
 
   // Starts the checks or appends |credentials| to the existing queue.
   virtual void CheckUsernamePasswordPairs(
+      LeakDetectionInitiator initiator,
       std::vector<LeakCheckCredential> credentials) = 0;
 
   // Stops all the current checks immediately.

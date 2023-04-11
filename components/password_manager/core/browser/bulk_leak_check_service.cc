@@ -88,6 +88,7 @@ BulkLeakCheckService::BulkLeakCheckService(
 BulkLeakCheckService::~BulkLeakCheckService() = default;
 
 void BulkLeakCheckService::CheckUsernamePasswordPairs(
+    LeakDetectionInitiator initiator,
     std::vector<password_manager::LeakCheckCredential> credentials) {
   DVLOG(0) << "Bulk password check, start " << credentials.size();
   if (credentials.empty()) {
@@ -105,7 +106,7 @@ void BulkLeakCheckService::CheckUsernamePasswordPairs(
   if (bulk_leak_check_) {
     DCHECK_EQ(State::kRunning, state_);
     // The check is already running. Append the credentials to the list.
-    bulk_leak_check_->CheckCredentials(std::move(credentials));
+    bulk_leak_check_->CheckCredentials(initiator, std::move(credentials));
     // Notify the observers because the number of pending credentials changed.
     NotifyStateChanged();
     return;
@@ -121,7 +122,7 @@ void BulkLeakCheckService::CheckUsernamePasswordPairs(
   // The state is 'running now'. CheckCredentials() can trigger OnError() that
   // will change it to something else.
   state_ = State::kRunning;
-  bulk_leak_check_->CheckCredentials(std::move(credentials));
+  bulk_leak_check_->CheckCredentials(initiator, std::move(credentials));
   // Notify the observers after the call because the number of pending
   // credentials after CheckCredentials.
   NotifyStateChanged();

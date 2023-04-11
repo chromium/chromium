@@ -51,7 +51,8 @@ class BulkLeakCheckImpl : public BulkLeakCheck {
   ~BulkLeakCheckImpl() override;
 
   // BulkLeakCheck:
-  void CheckCredentials(std::vector<LeakCheckCredential> credentials) override;
+  void CheckCredentials(LeakDetectionInitiator initiator,
+                        std::vector<LeakCheckCredential> credentials) override;
   size_t GetPendingChecksCount() const override;
 
 #if defined(UNIT_TEST)
