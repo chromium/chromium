@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/desks_admin_template_zero_state_provider.h"
+#include "chrome/browser/ash/app_list/search/desks_admin_template_provider.h"
 
 #include <memory>
 
-#include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/templates/saved_desk_controller.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
@@ -24,7 +24,7 @@ constexpr char kAdminTemplateResultPrefix[] = "admin-template://";
 
 }  // namespace
 
-DesksAdminTemplateZeroStateResult::DesksAdminTemplateZeroStateResult(
+DesksAdminTemplateResult::DesksAdminTemplateResult(
     Profile* profile,
     const base ::GUID& template_uuid,
     const std::u16string& title,
@@ -35,59 +35,53 @@ DesksAdminTemplateZeroStateResult::DesksAdminTemplateZeroStateResult(
   SetCategory(Category::kUnknown);
   SetTitle(title);
   SetDetails(u"Managed by administrator");
-  SetResultType(ResultType::kZeroStateDesksAdminTemplate);
+  SetResultType(ResultType::kDesksAdminTemplate);
   SetDisplayType(DisplayType::kContinue);
-  SetMetricsType(ash::ZERO_STATE_DESKS_ADMIN_TEMPLATE);
+  SetMetricsType(ash::DESKS_ADMIN_TEMPLATE);
   SetChipIcon(icon);
 }
 
-DesksAdminTemplateZeroStateResult::~DesksAdminTemplateZeroStateResult() =
-    default;
+DesksAdminTemplateResult::~DesksAdminTemplateResult() = default;
 
-void DesksAdminTemplateZeroStateResult::Open(int event_flags) {
+void DesksAdminTemplateResult::Open(int event_flags) {
   ash::SavedDeskController::Get()->LaunchAdminTemplate(template_uuid_);
 }
 
-DesksAdminTemplateZeroStateProvider::DesksAdminTemplateZeroStateProvider(
-    Profile* profile)
+DesksAdminTemplateProvider::DesksAdminTemplateProvider(Profile* profile)
     : profile_(profile) {
   DCHECK(profile_);
 }
 
-DesksAdminTemplateZeroStateProvider::~DesksAdminTemplateZeroStateProvider() =
-    default;
+DesksAdminTemplateProvider::~DesksAdminTemplateProvider() = default;
 
-void DesksAdminTemplateZeroStateProvider::StartZeroState() {
+void DesksAdminTemplateProvider::StartZeroState() {
   SearchProvider::Results search_results;
 
   auto* controller = ash::SavedDeskController::Get();
 
+  // TODO(b/273799604): Change the `icon_color` after future discussion.
   auto* color_provider = ash::ColorProvider::Get();
   // NOTE: Color provider may not be set in unit tests.
   SkColor icon_color =
       color_provider
           ? color_provider->GetContentLayerColor(
-                ash::ColorProvider::ContentLayerType::kButtonIconColorPrimary)
+                ash::ColorProvider::ContentLayerType::kIconColorPrimary)
           : gfx::kGoogleGrey900;
-  // TODO(b/273799604): We will replace the default icon with our admin
-  // templates icon.
   gfx::ImageSkia icon = gfx::CreateVectorIcon(
-      ash::kReleaseNotesChipIcon, app_list::kSystemIconDimension, icon_color);
+      ash::kDesksTemplatesIcon, app_list::kSystemIconDimension, icon_color);
 
   for (const auto& metadata : controller->GetAdminTemplateMetadata()) {
     // With productivity launcher enabled, release notes are shown in continue
     // section.
-    search_results.emplace_back(
-        std::make_unique<DesksAdminTemplateZeroStateResult>(
-            profile_, metadata.uuid, metadata.name, icon));
+    search_results.emplace_back(std::make_unique<DesksAdminTemplateResult>(
+        profile_, metadata.uuid, metadata.name, icon));
   }
 
   SwapResults(&search_results);
 }
 
-ash::AppListSearchResultType DesksAdminTemplateZeroStateProvider::ResultType()
-    const {
-  return ash::AppListSearchResultType::kZeroStateDesksAdminTemplate;
+ash::AppListSearchResultType DesksAdminTemplateProvider::ResultType() const {
+  return ash::AppListSearchResultType::kDesksAdminTemplate;
 }
 
 }  // namespace app_list

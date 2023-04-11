@@ -183,7 +183,7 @@ enum SearchResultType {
   // A local image search result.
   IMAGE_SEARCH,
   // A zero-state result representing a admin template.
-  ZERO_STATE_DESKS_ADMIN_TEMPLATE,
+  DESKS_ADMIN_TEMPLATE,
   // Boundary is always last.
   SEARCH_RESULT_TYPE_BOUNDARY
 };

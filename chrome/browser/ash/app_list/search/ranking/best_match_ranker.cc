@@ -51,7 +51,7 @@ bool ShouldIgnoreProvider(ProviderType type) {
     case ProviderType::kOpenTab:
     case ProviderType::kOsSettings:
     case ProviderType::kSystemInfo:
-    case ProviderType::kZeroStateDesksAdminTemplate:
+    case ProviderType::kDesksAdminTemplate:
       return false;
   }
 }

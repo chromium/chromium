@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_list/search/desks_admin_template_zero_state_provider.h"
+#include "chrome/browser/ash/app_list/search/desks_admin_template_provider.h"
 #include <vector>
 
 #include "ash/wm/desks/templates/saved_desk_controller.h"
@@ -42,10 +42,10 @@ class MockSavedDeskController : public ash::SavedDeskController {
 
 }  // namespace
 
-class DesksAdminTemplateZeroStateProviderTest : public testing::Test {
+class DesksAdminTemplateProviderTest : public testing::Test {
  public:
-  DesksAdminTemplateZeroStateProviderTest() = default;
-  ~DesksAdminTemplateZeroStateProviderTest() override = default;
+  DesksAdminTemplateProviderTest() = default;
+  ~DesksAdminTemplateProviderTest() override = default;
 
   void SetUp() override {
     search_controller_ = std::make_unique<TestSearchController>();
@@ -54,8 +54,7 @@ class DesksAdminTemplateZeroStateProviderTest : public testing::Test {
     ASSERT_TRUE(profile_manager_->SetUp());
     profile_ = profile_manager_->CreateTestingProfile("name");
 
-    auto provider =
-        std::make_unique<DesksAdminTemplateZeroStateProvider>(profile_);
+    auto provider = std::make_unique<DesksAdminTemplateProvider>(profile_);
     provider_ = provider.get();
     search_controller_->AddProvider(std::move(provider));
 
@@ -85,11 +84,11 @@ class DesksAdminTemplateZeroStateProviderTest : public testing::Test {
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
   TestingProfile* profile_;
-  DesksAdminTemplateZeroStateProvider* provider_ = nullptr;
+  DesksAdminTemplateProvider* provider_ = nullptr;
 };
 
 // Tests that when there isn't a admin template, the results will be empty.
-TEST_F(DesksAdminTemplateZeroStateProviderTest, NoResultsWhenNoAdminTemplates) {
+TEST_F(DesksAdminTemplateProviderTest, NoResultsWhenNoAdminTemplates) {
   MockSavedDeskController mock;
   std::vector<ash::AdminTemplateMetadata> empty_result = {};
 
@@ -104,7 +103,7 @@ TEST_F(DesksAdminTemplateZeroStateProviderTest, NoResultsWhenNoAdminTemplates) {
 // Tests that when there is a admin template, it will showing up on the bubble
 // launcher in zero state. Also, when opening it, it will call the
 // `LaunchAdminTemplate` function.
-TEST_F(DesksAdminTemplateZeroStateProviderTest, Basic) {
+TEST_F(DesksAdminTemplateProviderTest, Basic) {
   MockSavedDeskController mock;
 
   std::vector<ash::AdminTemplateMetadata> results = {ash::AdminTemplateMetadata{

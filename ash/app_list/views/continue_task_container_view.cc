@@ -275,7 +275,7 @@ void ContinueTaskContainerView::Update() {
     }
 
     if (tasks[i]->result_type() ==
-        AppListSearchResultType::kZeroStateDesksAdminTemplate) {
+        AppListSearchResultType::kDesksAdminTemplate) {
       ++num_desks_admin_template_results_;
     }
   }
