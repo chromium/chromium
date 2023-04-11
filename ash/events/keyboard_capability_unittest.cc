@@ -699,4 +699,65 @@ TEST_F(KeyboardCapabilityTest, IdentifyKeyboardDrallionTopRowLayout) {
   EXPECT_EQ(0u, keyboard_capability_->GetTopRowScanCodes(input_device)->size());
 }
 
+TEST_F(KeyboardCapabilityTest, TopRowLayout1) {
+  ui::InputDevice input_device(kDeviceId1, ui::INPUT_DEVICE_INTERNAL,
+                               "Internal Keyboard");
+  fake_keyboard_manager_->AddFakeKeyboard(input_device, kKbdTopRowLayout1Tag,
+                                          /*has_custom_top_row=*/false);
+
+  for (ui::TopRowActionKey action_key = ui::TopRowActionKey::kMinValue;
+       action_key <= ui::TopRowActionKey::kMaxValue;
+       action_key =
+           static_cast<ui::TopRowActionKey>(static_cast<int>(action_key) + 1)) {
+    EXPECT_EQ(
+        ui::kLayout1TopRowActionKeys.contains(action_key),
+        keyboard_capability_->HasTopRowActionKey(input_device, action_key))
+        << "Action Key: " << static_cast<int>(action_key);
+  }
+}
+
+TEST_F(KeyboardCapabilityTest, TopRowLayout2) {
+  ui::InputDevice input_device(kDeviceId1, ui::INPUT_DEVICE_INTERNAL,
+                               "Internal Keyboard");
+  fake_keyboard_manager_->AddFakeKeyboard(input_device, kKbdTopRowLayout2Tag,
+                                          /*has_custom_top_row=*/false);
+
+  for (ui::TopRowActionKey action_key = ui::TopRowActionKey::kMinValue;
+       action_key <= ui::TopRowActionKey::kMaxValue;
+       action_key =
+           static_cast<ui::TopRowActionKey>(static_cast<int>(action_key) + 1)) {
+    EXPECT_EQ(
+        ui::kLayout2TopRowActionKeys.contains(action_key),
+        keyboard_capability_->HasTopRowActionKey(input_device, action_key))
+        << "Action Key: " << static_cast<int>(action_key);
+  }
+}
+
+TEST_F(KeyboardCapabilityTest, TopRowLayoutWilco) {
+  ui::InputDevice wilco_device(kDeviceId1, ui::INPUT_DEVICE_INTERNAL,
+                               "Internal Keyboard");
+  fake_keyboard_manager_->AddFakeKeyboard(wilco_device,
+                                          kKbdTopRowLayoutWilcoTag,
+                                          /*has_custom_top_row=*/false);
+  ui::InputDevice drallion_device(kDeviceId1, ui::INPUT_DEVICE_INTERNAL,
+                                  "Internal Keyboard");
+  fake_keyboard_manager_->AddFakeKeyboard(drallion_device,
+                                          kKbdTopRowLayoutDrallionTag,
+                                          /*has_custom_top_row=*/false);
+
+  for (ui::TopRowActionKey action_key = ui::TopRowActionKey::kMinValue;
+       action_key <= ui::TopRowActionKey::kMaxValue;
+       action_key =
+           static_cast<ui::TopRowActionKey>(static_cast<int>(action_key) + 1)) {
+    EXPECT_EQ(
+        ui::kLayoutWilcoDrallionTopRowActionKeys.contains(action_key),
+        keyboard_capability_->HasTopRowActionKey(wilco_device, action_key))
+        << "Action Key: " << static_cast<int>(action_key);
+    EXPECT_EQ(
+        ui::kLayoutWilcoDrallionTopRowActionKeys.contains(action_key),
+        keyboard_capability_->HasTopRowActionKey(drallion_device, action_key))
+        << "Action Key: " << static_cast<int>(action_key);
+  }
+}
+
 }  // namespace ash

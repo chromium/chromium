@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -19,6 +20,71 @@
 #include "ui/events/ozone/evdev/event_device_info.h"
 
 namespace ui {
+
+// TODO(dpad): Handle privacy screen toggle and display mirror top row keys.
+enum class TopRowActionKey {
+  kBack = 0,
+  kMinValue = kBack,
+  kForward,
+  kRefresh,
+  kFullscreen,
+  kOverview,
+  kScreenshot,
+  kScreenBrightnessDown,
+  kScreenBrightnessUp,
+  kMicrophoneMute,
+  kVolumeMute,
+  kVolumeDown,
+  kVolumeUp,
+  kKeyboardBacklightToggle,
+  kKeyboardBacklightDown,
+  kKeyboardBacklightUp,
+  kNextTrack,
+  kPreviousTrack,
+  kPlayPause,
+  kMaxValue = kPlayPause,
+};
+
+inline constexpr auto kLayout1TopRowActionKeys =
+    base::MakeFixedFlatSet<TopRowActionKey>({
+        TopRowActionKey::kBack,
+        TopRowActionKey::kForward,
+        TopRowActionKey::kRefresh,
+        TopRowActionKey::kFullscreen,
+        TopRowActionKey::kOverview,
+        TopRowActionKey::kScreenBrightnessDown,
+        TopRowActionKey::kScreenBrightnessUp,
+        TopRowActionKey::kVolumeMute,
+        TopRowActionKey::kVolumeDown,
+        TopRowActionKey::kVolumeUp,
+    });
+
+inline constexpr auto kLayout2TopRowActionKeys =
+    base::MakeFixedFlatSet<TopRowActionKey>({
+        TopRowActionKey::kBack,
+        TopRowActionKey::kRefresh,
+        TopRowActionKey::kFullscreen,
+        TopRowActionKey::kOverview,
+        TopRowActionKey::kScreenBrightnessDown,
+        TopRowActionKey::kScreenBrightnessUp,
+        TopRowActionKey::kPlayPause,
+        TopRowActionKey::kVolumeMute,
+        TopRowActionKey::kVolumeDown,
+        TopRowActionKey::kVolumeUp,
+    });
+
+inline constexpr auto kLayoutWilcoDrallionTopRowActionKeys =
+    base::MakeFixedFlatSet<TopRowActionKey>({
+        TopRowActionKey::kBack,
+        TopRowActionKey::kRefresh,
+        TopRowActionKey::kFullscreen,
+        TopRowActionKey::kOverview,
+        TopRowActionKey::kScreenBrightnessDown,
+        TopRowActionKey::kScreenBrightnessUp,
+        TopRowActionKey::kVolumeMute,
+        TopRowActionKey::kVolumeDown,
+        TopRowActionKey::kVolumeUp,
+    });
 
 // Keyboard layout1 map between top row keys to function keys.
 inline constexpr auto kLayout1TopRowKeyToFKeyMap =
@@ -157,6 +223,7 @@ class KeyboardCapability : public InputDeviceEventObserver {
     DeviceType device_type;
     KeyboardTopRowLayout top_row_layout;
     std::vector<uint32_t> top_row_scan_codes;
+    std::vector<TopRowActionKey> top_row_action_keys;
     std::unique_ptr<EventDeviceInfo> event_device_info;
   };
 
@@ -251,6 +318,11 @@ class KeyboardCapability : public InputDeviceEventObserver {
 
   // Check if any of the connected keyboards has a specific key event.
   bool HasKeyEventOnAnyKeyboard(const KeyboardCode& key_code) const;
+
+  // Check if a given `action_key` exists on the given keyboard.
+  bool HasTopRowActionKey(const InputDevice& keyboard,
+                          TopRowActionKey action_key) const;
+  bool HasTopRowActionKeyOnAnyKeyboard(TopRowActionKey action_key) const;
 
   const base::flat_map<int, KeyboardInfo>& keyboard_info_map() const {
     return keyboard_info_map_;

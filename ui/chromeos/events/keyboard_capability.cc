@@ -10,9 +10,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -290,6 +292,25 @@ IdentifyKeyboardInfo(const InputDevice& keyboard) {
   return {IdentifyKeyboardType(
               keyboard, !top_row_scan_codes.empty() || !layout_string.empty()),
           layout, std::move(top_row_scan_codes)};
+}
+
+std::vector<TopRowActionKey> IdentifyTopRowActionKeys(
+    DeviceType device_type,
+    KeyboardTopRowLayout layout,
+    const std::vector<uint32_t>& top_row_scan_codes) {
+  switch (layout) {
+    case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout1:
+      return {kLayout1TopRowActionKeys.begin(), kLayout1TopRowActionKeys.end()};
+    case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout2:
+      return {kLayout2TopRowActionKeys.begin(), kLayout2TopRowActionKeys.end()};
+    case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutWilco:
+    case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutDrallion:
+      return {kLayoutWilcoDrallionTopRowActionKeys.begin(),
+              kLayoutWilcoDrallionTopRowActionKeys.end()};
+    case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom:
+      // TODO(dpad): Implement custom top row action key mapping.
+      return {};
+  }
 }
 
 }  // namespace
@@ -590,7 +611,9 @@ const KeyboardCapability::KeyboardInfo* KeyboardCapability::GetKeyboardInfo(
   auto& keyboard_info = keyboard_info_map_[keyboard.id];
   std::tie(keyboard_info.device_type, keyboard_info.top_row_layout,
            keyboard_info.top_row_scan_codes) = IdentifyKeyboardInfo(keyboard);
-
+  keyboard_info.top_row_action_keys = IdentifyTopRowActionKeys(
+      keyboard_info.device_type, keyboard_info.top_row_layout,
+      keyboard_info.top_row_scan_codes);
   // Enable only when flag is enabled to avoid crashing while problem is
   // addressed. This issue exists the `EventDeviceInfo` objects are only allowed
   // to be created on a thread that allows blocking. See b/272960076
@@ -714,6 +737,27 @@ bool KeyboardCapability::HasKeyEventOnAnyKeyboard(
   for (const ui::InputDevice& keyboard :
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
     if (HasKeyEvent(key_code, keyboard)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool KeyboardCapability::HasTopRowActionKey(const InputDevice& keyboard,
+                                            TopRowActionKey action_key) const {
+  const auto* keyboard_info = GetKeyboardInfo(keyboard);
+  if (!keyboard_info) {
+    return kLayout1TopRowActionKeys.contains(action_key);
+  }
+
+  return base::Contains(keyboard_info->top_row_action_keys, action_key);
+}
+
+bool KeyboardCapability::HasTopRowActionKeyOnAnyKeyboard(
+    TopRowActionKey action_key) const {
+  for (const ui::InputDevice& keyboard :
+       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+    if (HasTopRowActionKey(keyboard, action_key)) {
       return true;
     }
   }
