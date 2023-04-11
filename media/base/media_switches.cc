@@ -756,6 +756,11 @@ BASE_FEATURE(kVaapiVP9Encoder,
              "VaapiVP9Encoder",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable VA-API hardware encode acceleration for AV1.
+BASE_FEATURE(kVaapiAV1Encoder,
+             "VaapiAV1Encoder",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enable global VA-API lock. Disable this to use lock-free VA-API function
 // calls for thread safe backends.
 BASE_FEATURE(kGlobalVaapiLock,

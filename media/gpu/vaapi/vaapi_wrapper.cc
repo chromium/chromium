@@ -648,6 +648,11 @@ bool IsBlockedDriver(VaapiWrapper::CodecMode mode,
     return true;
   }
 
+  if (va_profile == VAProfileAV1Profile0 &&
+      !base::FeatureList::IsEnabled(kVaapiAV1Encoder)) {
+    return true;
+  }
+
   if (mode == VaapiWrapper::CodecMode::kEncodeVariableBitrate) {
     // The rate controller on grunt is not good enough to support VBR encoding,
     // b/253988139.
