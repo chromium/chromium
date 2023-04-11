@@ -787,11 +787,11 @@ ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
     if (multiple_)
       picker_type = ui::SelectFileDialog::SELECT_OPEN_MULTI_FILE;
 
-    if (options.type == file_system::CHOOSE_ENTRY_TYPE_OPENWRITABLEFILE &&
+    if (options.type == file_system::ChooseEntryType::kOpenWritableFile &&
         !app_file_handler_util::HasFileSystemWritePermission(
             extension_.get())) {
       return RespondNow(Error(kRequiresFileSystemWriteError));
-    } else if (options.type == file_system::CHOOSE_ENTRY_TYPE_SAVEFILE) {
+    } else if (options.type == file_system::ChooseEntryType::kSaveFile) {
       if (!app_file_handler_util::HasFileSystemWritePermission(
               extension_.get())) {
         return RespondNow(Error(kRequiresFileSystemWriteError));
@@ -800,7 +800,7 @@ ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
         return RespondNow(Error(kMultipleUnsupportedError));
       }
       picker_type = ui::SelectFileDialog::SELECT_SAVEAS_FILE;
-    } else if (options.type == file_system::CHOOSE_ENTRY_TYPE_OPENDIRECTORY) {
+    } else if (options.type == file_system::ChooseEntryType::kOpenDirectory) {
       is_directory_ = true;
       if (!extension_->permissions_data()->HasAPIPermission(
               mojom::APIPermissionID::kFileSystemDirectory)) {
