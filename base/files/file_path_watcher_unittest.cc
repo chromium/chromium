@@ -44,7 +44,7 @@
 #include "base/files/file_descriptor_watcher_posix.h"
 #endif  // BUILDFLAG(IS_POSIX)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/files/file_path_watcher_inotify.h"
 #include "base/format_macros.h"
 #endif
@@ -162,7 +162,7 @@ class TestDelegate : public TestDelegateBase {
 class FilePathWatcherTest : public testing::Test {
  public:
   FilePathWatcherTest()
-#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX)
       : task_environment_(test::TaskEnvironment::MainThreadType::IO)
 #endif
   {
@@ -278,13 +278,7 @@ TEST_F(FilePathWatcherTest, ModifiedFile) {
 }
 
 // Verify that moving the file into place is caught.
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/851641): Re-enable for Fuchsia when inotify is fixed.
-#define MAYBE_MovedFile DISABLED_MovedFile
-#else
-#define MAYBE_MovedFile MovedFile
-#endif
-TEST_F(FilePathWatcherTest, MAYBE_MovedFile) {
+TEST_F(FilePathWatcherTest, MovedFile) {
   FilePath source_file(temp_dir_.GetPath().AppendASCII("source"));
   ASSERT_TRUE(WriteFile(source_file, "content"));
 
@@ -298,13 +292,7 @@ TEST_F(FilePathWatcherTest, MAYBE_MovedFile) {
   ASSERT_TRUE(WaitForEvent());
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/851641): Re-enable for Fuchsia when inotify is fixed.
-#define MAYBE_DeletedFile DISABLED_DeletedFile
-#else
-#define MAYBE_DeletedFile DeletedFile
-#endif
-TEST_F(FilePathWatcherTest, MAYBE_DeletedFile) {
+TEST_F(FilePathWatcherTest, DeletedFile) {
   ASSERT_TRUE(WriteFile(test_file(), "content"));
 
   FilePathWatcher watcher;
@@ -365,13 +353,7 @@ TEST_F(FilePathWatcherTest, DestroyWithPendingNotification) {
   ASSERT_TRUE(WriteFile(test_file(), "content"));
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/851641): Re-enable for Fuchsia when inotify is fixed.
-#define MAYBE_MultipleWatchersSingleFile DISABLED_MultipleWatchersSingleFile
-#else
-#define MAYBE_MultipleWatchersSingleFile MultipleWatchersSingleFile
-#endif
-TEST_F(FilePathWatcherTest, MAYBE_MultipleWatchersSingleFile) {
+TEST_F(FilePathWatcherTest, MultipleWatchersSingleFile) {
   FilePathWatcher watcher1, watcher2;
   std::unique_ptr<TestDelegate> delegate1(new TestDelegate(collector()));
   std::unique_ptr<TestDelegate> delegate2(new TestDelegate(collector()));
@@ -386,13 +368,7 @@ TEST_F(FilePathWatcherTest, MAYBE_MultipleWatchersSingleFile) {
 
 // Verify that watching a file whose parent directory doesn't exist yet works if
 // the directory and file are created eventually.
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/851641): Re-enable for Fuchsia when inotify is fixed.
-#define MAYBE_NonExistentDirectory DISABLED_NonExistentDirectory
-#else
-#define MAYBE_NonExistentDirectory NonExistentDirectory
-#endif
-TEST_F(FilePathWatcherTest, MAYBE_NonExistentDirectory) {
+TEST_F(FilePathWatcherTest, NonExistentDirectory) {
   FilePathWatcher watcher;
   FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
   FilePath file(dir.AppendASCII("file"));
@@ -418,13 +394,7 @@ TEST_F(FilePathWatcherTest, MAYBE_NonExistentDirectory) {
 
 // Exercises watch reconfiguration for the case that directories on the path
 // are rapidly created.
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/851641): Re-enable for Fuchsia when inotify is fixed.
-#define MAYBE_DirectoryChain DISABLED_DirectoryChain
-#else
-#define MAYBE_DirectoryChain DirectoryChain
-#endif
-TEST_F(FilePathWatcherTest, MAYBE_DirectoryChain) {
+TEST_F(FilePathWatcherTest, DirectoryChain) {
   FilePath path(temp_dir_.GetPath());
   std::vector<std::string> dir_names;
   for (int i = 0; i < 20; i++) {
@@ -455,13 +425,7 @@ TEST_F(FilePathWatcherTest, MAYBE_DirectoryChain) {
   ASSERT_TRUE(WaitForEvent());
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/851641): Re-enable for Fuchsia when inotify is fixed.
-#define MAYBE_DisappearingDirectory DISABLED_DisappearingDirectory
-#else
-#define MAYBE_DisappearingDirectory DisappearingDirectory
-#endif
-TEST_F(FilePathWatcherTest, MAYBE_DisappearingDirectory) {
+TEST_F(FilePathWatcherTest, DisappearingDirectory) {
   FilePathWatcher watcher;
   FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
   FilePath file(dir.AppendASCII("file"));
@@ -476,13 +440,7 @@ TEST_F(FilePathWatcherTest, MAYBE_DisappearingDirectory) {
 }
 
 // Tests that a file that is deleted and reappears is tracked correctly.
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/851641): Re-enable for Fuchsia when inotify is fixed.
-#define MAYBE_DeleteAndRecreate DISABLED_DeleteAndRecreate
-#else
-#define MAYBE_DeleteAndRecreate DeleteAndRecreate
-#endif
-TEST_F(FilePathWatcherTest, MAYBE_DeleteAndRecreate) {
+TEST_F(FilePathWatcherTest, DeleteAndRecreate) {
   ASSERT_TRUE(WriteFile(test_file(), "content"));
   FilePathWatcher watcher;
   std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
@@ -498,13 +456,7 @@ TEST_F(FilePathWatcherTest, MAYBE_DeleteAndRecreate) {
   ASSERT_TRUE(WaitForEvent());
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/851641): Re-enable for Fuchsia when inotify is fixed.
-#define MAYBE_WatchDirectory DISABLED_WatchDirectory
-#else
-#define MAYBE_WatchDirectory WatchDirectory
-#endif
-TEST_F(FilePathWatcherTest, MAYBE_WatchDirectory) {
+TEST_F(FilePathWatcherTest, WatchDirectory) {
   FilePathWatcher watcher;
   FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
   FilePath file1(dir.AppendASCII("file1"));
@@ -537,13 +489,7 @@ TEST_F(FilePathWatcherTest, MAYBE_WatchDirectory) {
   ASSERT_TRUE(WaitForEvent());
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/851641): Re-enable for Fuchsia when inotify is fixed.
-#define MAYBE_MoveParent DISABLED_MoveParent
-#else
-#define MAYBE_MoveParent MoveParent
-#endif
-TEST_F(FilePathWatcherTest, MAYBE_MoveParent) {
+TEST_F(FilePathWatcherTest, MoveParent) {
   FilePathWatcher file_watcher;
   FilePathWatcher subdir_watcher;
   FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
@@ -569,13 +515,7 @@ TEST_F(FilePathWatcherTest, MAYBE_MoveParent) {
   ASSERT_TRUE(WaitForEvent());
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/851641): Re-enable for Fuchsia when inotify is fixed.
-#define MAYBE_RecursiveWatch DISABLED_RecursiveWatch
-#else
-#define MAYBE_RecursiveWatch RecursiveWatch
-#endif
-TEST_F(FilePathWatcherTest, MAYBE_RecursiveWatch) {
+TEST_F(FilePathWatcherTest, RecursiveWatch) {
   FilePathWatcher watcher;
   FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
   std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));
@@ -708,13 +648,7 @@ TEST_F(FilePathWatcherTest, RecursiveWithSymLink) {
 }
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/851641): Re-enable for Fuchsia when inotify is fixed.
-#define MAYBE_MoveChild DISABLED_MoveChild
-#else
-#define MAYBE_MoveChild MoveChild
-#endif
-TEST_F(FilePathWatcherTest, MAYBE_MoveChild) {
+TEST_F(FilePathWatcherTest, MoveChild) {
   FilePathWatcher file_watcher;
   FilePathWatcher subdir_watcher;
   FilePath source_dir(temp_dir_.GetPath().AppendASCII("source"));
@@ -741,19 +675,15 @@ TEST_F(FilePathWatcherTest, MAYBE_MoveChild) {
 }
 
 // Verify that changing attributes on a file is caught
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/851641): Re-enable for Fuchsia when inotify is fixed.
-
+#if BUILDFLAG(IS_ANDROID)
 // Apps cannot change file attributes on Android in /sdcard as /sdcard uses the
 // "fuse" file system, while /data uses "ext4".  Running these tests in /data
 // would be preferable and allow testing file attributes and symlinks.
 // TODO(pauljensen): Re-enable when crbug.com/475568 is fixed and SetUp() places
 // the |temp_dir_| in /data.
-#define MAYBE_FileAttributesChanged DISABLED_FileAttributesChanged
-#else
-#define MAYBE_FileAttributesChanged FileAttributesChanged
+#define FileAttributesChanged DISABLED_FileAttributesChanged
 #endif  // BUILDFLAG(IS_ANDROID)
-TEST_F(FilePathWatcherTest, MAYBE_FileAttributesChanged) {
+TEST_F(FilePathWatcherTest, FileAttributesChanged) {
   ASSERT_TRUE(WriteFile(test_file(), "content"));
   FilePathWatcher watcher;
   std::unique_ptr<TestDelegate> delegate(new TestDelegate(collector()));

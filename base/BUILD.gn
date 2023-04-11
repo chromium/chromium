@@ -1011,7 +1011,7 @@ component("base") {
     ]
   }
 
-  if (is_linux || is_chromeos || is_android || is_fuchsia) {
+  if (is_linux || is_chromeos || is_android) {
     sources += [
       "files/file_path_watcher_inotify.cc",
       "files/file_path_watcher_inotify.h",
@@ -1401,6 +1401,7 @@ component("base") {
       "file_descriptor_posix.cc",
       "file_descriptor_posix.h",
       "files/dir_reader_posix.h",
+      "files/file_path_watcher_stub.cc",  # See crbug.com/851641.
       "files/file_posix.cc",
       "files/file_util_fuchsia.cc",
       "files/memory_mapped_file_posix.cc",
@@ -3894,6 +3895,11 @@ test("base_unittests") {
       "message_loop/fd_watch_controller_posix_unittest.cc",
       "posix/file_descriptor_shuffle_unittest.cc",
     ]
+
+    # FilePatchWatcherImpl is not implemented. See crbug.com/851641.
+    # TODO(crbug.com/1430566): Convert this subtraction to a condition where
+    # it is added.
+    sources -= [ "files/file_path_watcher_unittest.cc" ]
 
     deps += [
       ":test_interface_impl",
