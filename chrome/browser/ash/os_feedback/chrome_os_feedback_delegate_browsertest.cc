@@ -163,7 +163,7 @@ void FakeFeedbackPrivateDelegate::FetchExtraLogs(
 extensions::api::feedback_private::LandingPageType
 FakeFeedbackPrivateDelegate::GetLandingPageType(
     const feedback::FeedbackData& feedback_data) const {
-  return extensions::api::feedback_private::LANDING_PAGE_TYPE_NOLANDINGPAGE;
+  return extensions::api::feedback_private::LandingPageType::kNoLandingPage;
 }
 
 void FakeFeedbackPrivateDelegate::GetLacrosHistograms(

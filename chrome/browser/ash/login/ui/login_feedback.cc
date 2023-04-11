@@ -26,7 +26,7 @@ void LoginFeedback::Request(const std::string& description) {
 
   auto info = api->CreateFeedbackInfo(
       description_, std::string(), "Login", std::string(), GURL(),
-      extensions::api::feedback_private::FeedbackFlow::FEEDBACK_FLOW_LOGIN,
+      extensions::api::feedback_private::FeedbackFlow::kLogin,
       /*from_assistant=*/false,
       /*include_bluetooth_logs=*/false,
       /*show_questionnaire=*/false,

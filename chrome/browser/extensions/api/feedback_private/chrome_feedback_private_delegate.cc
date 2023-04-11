@@ -140,49 +140,49 @@ ChromeFeedbackPrivateDelegate::CreateSingleLogSource(
 
   switch (source_type) {
     // These map to SupportedLogFileSources.
-    case api::feedback_private::LOG_SOURCE_MESSAGES:
+    case api::feedback_private::LogSource::kMessages:
       return std::make_unique<system_logs::SingleLogFileLogSource>(
           SupportedLogFileSource::kMessages);
-    case api::feedback_private::LOG_SOURCE_UILATEST:
+    case api::feedback_private::LogSource::kUiLatest:
       return std::make_unique<system_logs::SingleLogFileLogSource>(
           SupportedLogFileSource::kUiLatest);
-    case api::feedback_private::LOG_SOURCE_ATRUSLOG:
+    case api::feedback_private::LogSource::kAtrusLog:
       return std::make_unique<system_logs::SingleLogFileLogSource>(
           SupportedLogFileSource::kAtrusLog);
-    case api::feedback_private::LOG_SOURCE_NETLOG:
+    case api::feedback_private::LogSource::kNetLog:
       return std::make_unique<system_logs::SingleLogFileLogSource>(
           SupportedLogFileSource::kNetLog);
-    case api::feedback_private::LOG_SOURCE_EVENTLOG:
+    case api::feedback_private::LogSource::kEventLog:
       return std::make_unique<system_logs::SingleLogFileLogSource>(
           SupportedLogFileSource::kEventLog);
-    case api::feedback_private::LOG_SOURCE_UPDATEENGINELOG:
+    case api::feedback_private::LogSource::kUpdateEngineLog:
       return std::make_unique<system_logs::SingleLogFileLogSource>(
           SupportedLogFileSource::kUpdateEngineLog);
-    case api::feedback_private::LOG_SOURCE_POWERDLATEST:
+    case api::feedback_private::LogSource::kPowerdLatest:
       return std::make_unique<system_logs::SingleLogFileLogSource>(
           SupportedLogFileSource::kPowerdLatest);
-    case api::feedback_private::LOG_SOURCE_POWERDPREVIOUS:
+    case api::feedback_private::LogSource::kPowerdPrevious:
       return std::make_unique<system_logs::SingleLogFileLogSource>(
           SupportedLogFileSource::kPowerdPrevious);
 
     // These map to SupportedDebugDaemonSources.
-    case api::feedback_private::LOG_SOURCE_DRMMODETEST:
+    case api::feedback_private::LogSource::kDrmModetest:
       return std::make_unique<system_logs::SingleDebugDaemonLogSource>(
           SupportedDebugDaemonSource::kModetest);
-    case api::feedback_private::LOG_SOURCE_LSUSB:
+    case api::feedback_private::LogSource::kLsusb:
       return std::make_unique<system_logs::SingleDebugDaemonLogSource>(
           SupportedDebugDaemonSource::kLsusb);
-    case api::feedback_private::LOG_SOURCE_LSPCI:
+    case api::feedback_private::LogSource::kLspci:
       return std::make_unique<system_logs::SingleDebugDaemonLogSource>(
           SupportedDebugDaemonSource::kLspci);
-    case api::feedback_private::LOG_SOURCE_IFCONFIG:
+    case api::feedback_private::LogSource::kIfconfig:
       return std::make_unique<system_logs::SingleDebugDaemonLogSource>(
           SupportedDebugDaemonSource::kIfconfig);
-    case api::feedback_private::LOG_SOURCE_UPTIME:
+    case api::feedback_private::LogSource::kUptime:
       return std::make_unique<system_logs::SingleDebugDaemonLogSource>(
           SupportedDebugDaemonSource::kUptime);
 
-    case api::feedback_private::LOG_SOURCE_NONE:
+    case api::feedback_private::LogSource::kNone:
     default:
       NOTREACHED() << "Unknown log source type.";
       return nullptr;
@@ -227,13 +227,13 @@ ChromeFeedbackPrivateDelegate::GetLandingPageType(
     const feedback::FeedbackData& feedback_data) const {
   // Googlers using eve get a custom landing page.
   if (!gaia::IsGoogleInternalAccountEmail(feedback_data.user_email()))
-    return api::feedback_private::LANDING_PAGE_TYPE_NORMAL;
+    return api::feedback_private::LandingPageType::kNormal;
 
   const std::vector<std::string> board =
       base::SplitString(base::SysInfo::GetLsbReleaseBoard(), "-",
                         base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  return board[0] == "eve" ? api::feedback_private::LANDING_PAGE_TYPE_TECHSTOP
-                           : api::feedback_private::LANDING_PAGE_TYPE_NORMAL;
+  return board[0] == "eve" ? api::feedback_private::LandingPageType::kTechstop
+                           : api::feedback_private::LandingPageType::kNormal;
 }
 
 void ChromeFeedbackPrivateDelegate::GetLacrosHistograms(
@@ -278,8 +278,7 @@ void ChromeFeedbackPrivateDelegate::OpenFeedback(
     api::feedback_private::FeedbackSource source) const {
   GURL url;
 
-  DCHECK(source ==
-         api::feedback_private::FeedbackSource::FEEDBACK_SOURCE_QUICKOFFICE);
+  DCHECK(source == api::feedback_private::FeedbackSource::kQuickoffice);
 
   Profile* profile = Profile::FromBrowserContext(context);
   chrome::ShowFeedbackPage(url, profile,

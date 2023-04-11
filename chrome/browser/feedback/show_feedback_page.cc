@@ -195,11 +195,11 @@ feedback_private::FeedbackFlow GetFeedbackFlowFromSource(
     FeedbackSource source) {
   switch (source) {
     case kFeedbackSourceSadTabPage:
-      return feedback_private::FeedbackFlow::FEEDBACK_FLOW_SADTABCRASH;
+      return feedback_private::FeedbackFlow::kSadTabCrash;
     case kFeedbackSourceAutofillContextMenu:
-      return feedback_private::FeedbackFlow::FEEDBACK_FLOW_GOOGLEINTERNAL;
+      return feedback_private::FeedbackFlow::kGoogleInternal;
     default:
-      return feedback_private::FeedbackFlow::FEEDBACK_FLOW_REGULAR;
+      return feedback_private::FeedbackFlow::kRegular;
   }
 }
 
@@ -217,7 +217,7 @@ void RequestFeedbackFlow(const GURL& page_url,
   bool show_questionnaire = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (IsGoogleInternalAccount(profile)) {
-    flow = feedback_private::FeedbackFlow::FEEDBACK_FLOW_GOOGLEINTERNAL;
+    flow = feedback_private::FeedbackFlow::kGoogleInternal;
     include_bluetooth_logs = IsFromUserInteraction(source);
     show_questionnaire = IsFromUserInteraction(source);
   }

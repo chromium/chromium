@@ -34,8 +34,7 @@ const int kDefaultHeight = 628;
 
 }  // namespace
 
-using extensions::api::feedback_private::FEEDBACK_FLOW_LOGIN;
-using extensions::api::feedback_private::FEEDBACK_FLOW_SADTABCRASH;
+using extensions::api::feedback_private::FeedbackFlow;
 using extensions::api::feedback_private::FeedbackInfo;
 
 // static
@@ -115,13 +114,13 @@ ui::ModalType FeedbackDialog::GetDialogModalType() const {
   // On the login screen, set to Modal mode. Otherwise, this is not visible.
   // For other cases, set to none Modal mode so the user can navigate to
   // other windows.
-  return (feedback_flow_ == FEEDBACK_FLOW_LOGIN) ? ui::MODAL_TYPE_SYSTEM
-                                                 : ui::MODAL_TYPE_NONE;
+  return (feedback_flow_ == FeedbackFlow::kLogin) ? ui::MODAL_TYPE_SYSTEM
+                                                  : ui::MODAL_TYPE_NONE;
 }
 
 std::u16string FeedbackDialog::GetDialogTitle() const {
   return l10n_util::GetStringUTF16(
-      (feedback_flow_ == FEEDBACK_FLOW_SADTABCRASH)
+      (feedback_flow_ == FeedbackFlow::kSadTabCrash)
           ? IDS_FEEDBACK_REPORT_PAGE_TITLE_SAD_TAB_FLOW
           : IDS_FEEDBACK_REPORT_PAGE_TITLE);
 }
