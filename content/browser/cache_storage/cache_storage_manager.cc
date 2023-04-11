@@ -1059,6 +1059,8 @@ base::FilePath CacheStorageManager::ConstructBucketPath(
   // Non-default bucket & first/third-party partition:
   // {{storage_partition_path}}/WebStorage/{{bucket_id}}/CacheStorage/... and
   // {{storage_partition_path}}/WebStorage/{{bucket_id}}/BackgroundFetch/...
+  // TODO(estade): this ought to use
+  // `quota_manager_proxy_->GetClientBucketPath()`
   switch (owner) {
     case storage::mojom::CacheStorageOwner::kCacheAPI:
       return storage::CreateClientBucketPath(
