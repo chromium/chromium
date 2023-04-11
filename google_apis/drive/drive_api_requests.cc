@@ -54,12 +54,6 @@ const char kHttpBr[] = "\r\n";
 // Mime type of multipart mixed.
 const char kMultipartMixedMimeTypePrefix[] = "multipart/mixed; boundary=";
 
-// UMA names.
-const char kUMADriveTotalFileCountInBatchUpload[] =
-    "Drive.TotalFileCountInBatchUpload";
-const char kUMADriveTotalFileSizeInBatchUpload[] =
-    "Drive.TotalFileSizeInBatchUpload";
-
 // Parses the JSON value to FileResource instance and runs |callback| on the
 // UI thread once parsing is done.
 // This is customized version of ParseJsonAndRun defined above to adapt the
@@ -1208,7 +1202,6 @@ void BatchUploadRequest::MayCompletePrepare() {
   }
 
   // Build multipart body here.
-  int64_t total_size = 0;
   std::vector<ContentTypeAndData> parts;
   for (const auto& child : child_requests_) {
     std::string type;
@@ -1226,14 +1219,9 @@ void BatchUploadRequest::MayCompletePrepare() {
 
     child->data_offset = header.size();
     child->data_size = data.size();
-    total_size += data.size();
 
     parts.push_back(ContentTypeAndData({kHttpContentType, header + data}));
   }
-
-  UMA_HISTOGRAM_COUNTS_100(kUMADriveTotalFileCountInBatchUpload, parts.size());
-  UMA_HISTOGRAM_MEMORY_KB(kUMADriveTotalFileSizeInBatchUpload,
-                          total_size / 1024);
 
   std::vector<uint64_t> part_data_offset;
   GenerateMultipartBody(MultipartType::kMixed, boundary_, parts,
