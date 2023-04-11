@@ -498,6 +498,7 @@ android_library("content_javatests") {
     ":content_java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:base_java_test_support_uncommon",
     "//base:process_launcher_java",
     "//cc/mojom:mojom_java",
     "//components/payments/mojom:mojom_java",

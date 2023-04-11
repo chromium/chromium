@@ -24,6 +24,7 @@ android_library("javatests") {
   deps = [
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:base_java_test_support_uncommon",
     "//chrome/android:chrome_java",
     "//chrome/browser/back_press/android:java",
     "//chrome/browser/flags:java",

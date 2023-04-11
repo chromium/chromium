@@ -4380,6 +4380,7 @@ if (is_android) {
     deps = [
       ":base_java",
       ":base_java_test_support",
+      ":base_java_test_support_uncommon",
       "//base:jni_java",
       "//base/test:test_support_java",
       "//build/android:build_java",
@@ -4479,20 +4480,15 @@ if (is_android) {
 
     sources = [
       "test/android/java/src/org/chromium/base/multidex/ChromiumMultiDexInstaller.java",
-      "test/android/javatests/src/org/chromium/base/FakeTimeTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/BaseActivityTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/BaseChromiumAndroidJUnitRunner.java",
       "test/android/javatests/src/org/chromium/base/test/BaseChromiumRunnerCommon.java",
       "test/android/javatests/src/org/chromium/base/test/BaseJUnit4ClassRunner.java",
       "test/android/javatests/src/org/chromium/base/test/BaseJUnit4TestRule.java",
-      "test/android/javatests/src/org/chromium/base/test/BundleTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/LoadNative.java",
       "test/android/javatests/src/org/chromium/base/test/MockitoErrorHandler.java",
-      "test/android/javatests/src/org/chromium/base/test/ReachedCodeProfiler.java",
       "test/android/javatests/src/org/chromium/base/test/ResetCachedFlagValuesTestHook.java",
       "test/android/javatests/src/org/chromium/base/test/ScreenshotOnFailureStatement.java",
-      "test/android/javatests/src/org/chromium/base/test/SetUpStatement.java",
-      "test/android/javatests/src/org/chromium/base/test/SetUpTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/TestListInstrumentationRunListener.java",
       "test/android/javatests/src/org/chromium/base/test/TestTraceEvent.java",
       "test/android/javatests/src/org/chromium/base/test/UiThreadStatement.java",
@@ -4513,8 +4509,6 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/params/ParameterizedRunnerDelegateCommon.java",
       "test/android/javatests/src/org/chromium/base/test/params/ParameterizedRunnerDelegateFactory.java",
       "test/android/javatests/src/org/chromium/base/test/params/SkipCommandLineParameterization.java",
-      "test/android/javatests/src/org/chromium/base/test/task/SchedulerTestHelpers.java",
-      "test/android/javatests/src/org/chromium/base/test/task/ThreadPoolTestHelpers.java",
       "test/android/javatests/src/org/chromium/base/test/util/AdvancedMockContext.java",
       "test/android/javatests/src/org/chromium/base/test/util/AndroidSdkLevelSkipCheck.java",
       "test/android/javatests/src/org/chromium/base/test/util/AnnotationProcessingUtils.java",
@@ -4523,7 +4517,6 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/ApplicationTestUtils.java",
       "test/android/javatests/src/org/chromium/base/test/util/Batch.java",
       "test/android/javatests/src/org/chromium/base/test/util/CallbackHelper.java",
-      "test/android/javatests/src/org/chromium/base/test/util/CloseableOnMainThread.java",
       "test/android/javatests/src/org/chromium/base/test/util/CommandLineFlags.java",
       "test/android/javatests/src/org/chromium/base/test/util/Criteria.java",
       "test/android/javatests/src/org/chromium/base/test/util/CriteriaHelper.java",
@@ -4540,12 +4533,10 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/HistogramWatcher.java",
       "test/android/javatests/src/org/chromium/base/test/util/InMemorySharedPreferences.java",
       "test/android/javatests/src/org/chromium/base/test/util/InMemorySharedPreferencesContext.java",
-      "test/android/javatests/src/org/chromium/base/test/util/InstrumentationUtils.java",
       "test/android/javatests/src/org/chromium/base/test/util/IntegrationTest.java",
       "test/android/javatests/src/org/chromium/base/test/util/JniMocker.java",
       "test/android/javatests/src/org/chromium/base/test/util/LooperUtils.java",
       "test/android/javatests/src/org/chromium/base/test/util/Manual.java",
-      "test/android/javatests/src/org/chromium/base/test/util/Matchers.java",
       "test/android/javatests/src/org/chromium/base/test/util/MaxAndroidSdkLevel.java",
       "test/android/javatests/src/org/chromium/base/test/util/MinAndroidSdkLevel.java",
       "test/android/javatests/src/org/chromium/base/test/util/PackageManagerWrapper.java",
@@ -4560,6 +4551,34 @@ if (is_android) {
       "test/android/javatests/src/org/chromium/base/test/util/TimeoutTimer.java",
       "test/android/javatests/src/org/chromium/base/test/util/UserActionTester.java",
     ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  }
+
+  android_library("base_java_test_support_uncommon") {
+    testonly = true
+
+    deps = [
+      "//base:base_java",
+      "//base:jni_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_test_monitor_java",
+      "//third_party/hamcrest:hamcrest_java",
+      "//third_party/junit:junit",
+    ]
+
+    sources = [
+      "test/android/javatests/src/org/chromium/base/FakeTimeTestRule.java",
+      "test/android/javatests/src/org/chromium/base/test/BundleTestRule.java",
+      "test/android/javatests/src/org/chromium/base/test/ReachedCodeProfiler.java",
+      "test/android/javatests/src/org/chromium/base/test/SetUpStatement.java",
+      "test/android/javatests/src/org/chromium/base/test/SetUpTestRule.java",
+      "test/android/javatests/src/org/chromium/base/test/task/SchedulerTestHelpers.java",
+      "test/android/javatests/src/org/chromium/base/test/task/ThreadPoolTestHelpers.java",
+      "test/android/javatests/src/org/chromium/base/test/util/CloseableOnMainThread.java",
+      "test/android/javatests/src/org/chromium/base/test/util/InstrumentationUtils.java",
+      "test/android/javatests/src/org/chromium/base/test/util/Matchers.java",
+    ]
+
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
@@ -4651,6 +4670,7 @@ if (is_android) {
       ":base_java",
       ":base_java_process_launcher_test_support",
       ":base_java_test_support",
+      ":base_java_test_support_uncommon",
       ":base_junit_test_support",
       "//base/test:test_support_java",
       "//third_party/androidx:androidx_annotation_annotation_java",

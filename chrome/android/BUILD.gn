@@ -817,6 +817,7 @@ if (current_toolchain == default_toolchain) {
       "$google_play_services_package:google_play_services_cast_java",
       "$google_play_services_package:google_play_services_gcm_java",
       "//base:base_java_test_support",
+      "//base:base_java_test_support_uncommon",
       "//base:base_junit_test_support",
       "//base/test:test_support_java",
       "//cc:cc_java",
@@ -1382,6 +1383,7 @@ if (current_toolchain == default_toolchain) {
       "$google_play_services_package:google_play_services_tasks_java",
       "//base:base_java",
       "//base:base_java_test_support",
+      "//base:base_java_test_support_uncommon",
       "//base:jni_java",
       "//base/test:test_support_java",
       "//build/android:build_java",
@@ -1858,6 +1860,7 @@ if (current_toolchain == default_toolchain) {
 
         deps = chrome_test_xr_java_deps + [
                  ":chrome_test_util_java",
+                 "//base:base_java_test_support_uncommon",
                  "//chrome/android:chrome_test_xr_java",
                  "//chrome/android/features/vr:java_resources",
                  "//chrome/browser/profiles/android:java",
