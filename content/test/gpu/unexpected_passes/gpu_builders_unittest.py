@@ -30,6 +30,20 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
     }
     self.assertTrue(self.instance._BuilderRunsTestOfInterest(test_map))
 
+  def testMatchSkylab(self) -> None:
+    """Tests that a match can be successfully found for Skylab builders."""
+    test_map = {
+        'skylab_tests': [
+            {
+                'args': [
+                    'webgl_conformance',
+                ],
+                'test': 'telemetry_gpu_integration_test',
+            },
+        ],
+    }
+    self.assertTrue(self.instance._BuilderRunsTestOfInterest(test_map))
+
   def testNoMatchIsolate(self) -> None:
     """Tests that a match is not found if the isolate name is not valid."""
     test_map = {
@@ -44,6 +58,20 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
     }
     self.assertFalse(self.instance._BuilderRunsTestOfInterest(test_map))
 
+  def testNoMatchSkylabTest(self) -> None:
+    """Tests that a match is not found for Skylab if test name is not valid."""
+    test_map = {
+        'skylab_tests': [
+            {
+                'args': [
+                    'webgl_conformance',
+                ],
+                'test': 'not_telemetry',
+            },
+        ],
+    }
+    self.assertFalse(self.instance._BuilderRunsTestOfInterest(test_map))
+
   def testNoMatchSuite(self) -> None:
     """Tests that a match is not found if the suite name is not valid."""
     test_map = {
@@ -53,6 +81,20 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
                     'not_a_suite',
                 ],
                 'isolate_name': 'telemetry_gpu_integration_test',
+            },
+        ],
+    }
+    self.assertFalse(self.instance._BuilderRunsTestOfInterest(test_map))
+
+  def testNoMatchSuiteSkylab(self) -> None:
+    """Tests that a match is not found if Skylab suite name is not valid."""
+    test_map = {
+        'skylab_tests': [
+            {
+                'args': [
+                    'not_a_suite',
+                ],
+                'test': 'telemetry_gpu_integration_test',
             },
         ],
     }

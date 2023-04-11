@@ -266,10 +266,15 @@ WITH
       exported.id,
       test_id,
       status,
-      (
-        SELECT value
-        FROM tr.tags
-        WHERE key = "step_name") as step_name,
+      IFNULL(
+        (
+          SELECT value
+          FROM tr.tags
+          WHERE key = "step_name"),
+        (
+          SELECT value
+          FROM tr.variant
+          WHERE key = "test_suite")) as step_name,
       ARRAY(
         SELECT value
         FROM tr.tags
@@ -320,10 +325,15 @@ WITH
       exported.id,
       test_id,
       status,
-      (
-        SELECT value
-        FROM tr.tags
-        WHERE key = "step_name") as step_name,
+      IFNULL(
+        (
+          SELECT value
+          FROM tr.tags
+          WHERE key = "step_name"),
+        (
+          SELECT value
+          FROM tr.variant
+          WHERE key = "test_suite")) as step_name,
       ARRAY(
         SELECT value
         FROM tr.tags
@@ -401,10 +411,15 @@ WITH
       exported.id,
       test_id,
       status,
-      (
-        SELECT value
-        FROM tr.tags
-        WHERE key = "step_name") as step_name,
+      IFNULL(
+        (
+          SELECT value
+          FROM tr.tags
+          WHERE key = "step_name"),
+        (
+          SELECT value
+          FROM tr.variant
+          WHERE key = "test_suite")) as step_name,
       ARRAY(
         SELECT value
         FROM tr.tags
@@ -482,10 +497,15 @@ WITH
       exported.id,
       test_id,
       status,
-      (
-        SELECT value
-        FROM tr.tags
-        WHERE key = "step_name") as step_name,
+      IFNULL(
+        (
+          SELECT value
+          FROM tr.tags
+          WHERE key = "step_name"),
+        (
+          SELECT value
+          FROM tr.variant
+          WHERE key = "test_suite")) as step_name,
       ARRAY(
         SELECT value
         FROM tr.tags

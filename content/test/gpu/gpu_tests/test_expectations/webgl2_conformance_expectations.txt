@@ -748,7 +748,6 @@ crbug.com/1424483 [ chromeos chromeos-board-amd64-generic ] conformance2/texture
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_03.html [ Failure ]
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_04.html [ Failure ]
 
-# finder:disable-unused crbug.com/1431985
 crbug.com/1211588 [ chromeos chromeos-board-kevin no-passthrough ] deqp/functional/gles3/transformfeedback/* [ Failure ]
 crbug.com/1213198 [ chromeos chromeos-board-kevin ] WebglExtension_EXT_texture_compression_bptc [ Failure ]
 crbug.com/1213198 [ chromeos chromeos-board-kevin ] WebglExtension_EXT_texture_compression_rgtc [ Failure ]
@@ -877,8 +876,6 @@ crbug.com/1337803 [ chromeos chromeos-board-kevin ] conformance2/misc/expando-lo
 crbug.com/1328444 [ chromeos chromeos-board-kevin ] conformance2/rendering/blitframebuffer-resolve-to-back-buffer.html [ Failure ]
 crbug.com/1328444 [ chromeos chromeos-board-kevin ] conformance2/textures/misc/tex-input-validation.html [ Failure ]
 crbug.com/1373277 [ chromeos chromeos-board-kevin ] conformance2/textures/video/tex-3d-srgb8-rgb-unsigned_byte.html [ Failure ]
-
-# finder:enable-unused
 
 crbug.com/1232106 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/1232118 [ angle-opengles chromeos chromeos-board-amd64-generic passthrough ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
