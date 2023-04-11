@@ -5,7 +5,11 @@ const {
   newTask,
 } = require("../utils");
 
-const revision = getLatestRevision();
+const revision = process.env.BUILD_TEST_REVISION || getLatestRevision();
+
+if (!revision || revision.length !== 12) {
+  throw new Error("Revision must be the first 12 characters of the SHA");
+}
 
 sendBuildTestRequest({
   name: `Chromium Release ${revision}`,

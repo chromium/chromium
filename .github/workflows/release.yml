@@ -1,6 +1,10 @@
 name: Release Latest Browsers
 on:
   workflow_dispatch:
+    inputs:
+      revision:
+        description: SHA (first 12 chars) to release
+        type: string
 
 jobs:
   release:
@@ -19,6 +23,7 @@ jobs:
           branch: ${{ github.head_ref || github.ref_name }}
       - uses: ./.github/actions/release
         env:
+          BUILD_TEST_REVISION: ${{ inputs.revision }}
           BUILD_TEST_AUTHORIZATION: ${{ secrets.BUILD_TEST_AUTHORIZATION }}
           BUILD_TEST_HOSTNAME: a49855c191a944333918aea7ad31bc76-6a8a830d89921d8a.elb.us-east-2.amazonaws.com
           BUILD_TEST_PORT: ${{ secrets.BUILD_TEST_PORT }}
