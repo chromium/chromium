@@ -3830,11 +3830,10 @@ TEST_P(RendererPixelTest, TileDrawQuadNearestNeighbor) {
   constexpr bool needs_blending = true;
   constexpr bool nearest_neighbor = true;
   constexpr bool force_anti_aliasing_off = false;
-  constexpr ResourceFormat resource_format = RGBA_8888;
+  constexpr SharedImageFormat format = SinglePlaneFormat::kRGBA_8888;
   gfx::Rect viewport(this->device_viewport_size_);
 
-  SkColorType ct = ResourceFormatToClosestSkColorType(!is_software_renderer(),
-                                                      resource_format);
+  SkColorType ct = ToClosestSkColorType(!is_software_renderer(), format);
   SkImageInfo info = SkImageInfo::Make(2, 2, ct, kPremul_SkAlphaType);
   SkBitmap bitmap;
   bitmap.allocPixels(info);
