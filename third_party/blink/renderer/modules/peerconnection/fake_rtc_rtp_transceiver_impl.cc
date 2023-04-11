@@ -237,6 +237,15 @@ FakeRTCRtpTransceiverImpl::FiredDirection() const {
   return absl::nullopt;
 }
 
+webrtc::RTCError FakeRTCRtpTransceiverImpl::Stop() {
+  return webrtc::RTCError::OK();
+}
+
+webrtc::RTCError FakeRTCRtpTransceiverImpl::SetCodecPreferences(
+    Vector<webrtc::RtpCodecCapability>) {
+  return webrtc::RTCError::OK();
+}
+
 webrtc::RTCError FakeRTCRtpTransceiverImpl::SetHeaderExtensionsToNegotiate(
     Vector<webrtc::RtpHeaderExtensionCapability> header_extensions) {
   return webrtc::RTCError(webrtc::RTCErrorType::UNSUPPORTED_OPERATION);

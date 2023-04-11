@@ -40,14 +40,9 @@ class PLATFORM_EXPORT RTCRtpTransceiverPlatform {
       const = 0;
   virtual absl::optional<webrtc::RtpTransceiverDirection> FiredDirection()
       const = 0;
-  virtual webrtc::RTCError Stop() {
-    NOTREACHED();
-    return webrtc::RTCError::OK();
-  }
+  virtual webrtc::RTCError Stop() = 0;
   virtual webrtc::RTCError SetCodecPreferences(
-      Vector<webrtc::RtpCodecCapability>) {
-    return {};
-  }
+      Vector<webrtc::RtpCodecCapability>) = 0;
   virtual webrtc::RTCError SetHeaderExtensionsToNegotiate(
       Vector<webrtc::RtpHeaderExtensionCapability> header_extensions) = 0;
   virtual Vector<webrtc::RtpHeaderExtensionCapability>
