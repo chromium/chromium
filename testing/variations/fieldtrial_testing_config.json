@@ -3643,7 +3643,7 @@
                     "name": "StatefulBounceTrigger",
                     "params": {
                         "persist_database": "true",
-                        "triggering_action": "storage"
+                        "triggering_action": "stateful_bounce"
                     },
                     "enable_features": [
                         "DIPS"
