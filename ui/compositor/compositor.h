@@ -305,6 +305,12 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   void AddVSyncParameterObserver(
       mojo::PendingRemote<viz::mojom::VSyncParameterObserver> observer);
 
+  // Sets and caches the maximum vsync interval, to be applied to the
+  // |display_private_| when possible, for use with variable refresh rates. An
+  // absent value indicates that VRR is not enabled.
+  void SetMaxVrrInterval(
+      const absl::optional<base::TimeDelta>& max_vrr_interval);
+
   // Sets the widget for the compositor to render into.
   void SetAcceleratedWidget(gfx::AcceleratedWidget widget);
   // Releases the widget previously set through SetAcceleratedWidget().
@@ -554,6 +560,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   base::TimeTicks vsync_timebase_;
   base::TimeDelta vsync_interval_ = viz::BeginFrameArgs::DefaultInterval();
   bool has_vsync_params_ = false;
+  absl::optional<base::TimeDelta> max_vrr_interval_ = absl::nullopt;
 
   const bool use_external_begin_frame_control_;
   const bool force_software_compositor_;

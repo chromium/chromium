@@ -343,6 +343,10 @@ ManagedDisplayInfo DisplayChangeObserver::CreateManagedDisplayInfo(
 
   new_info.SetDRMFormatsAndModifiers(snapshot->GetDRMFormatsAndModifiers());
 
+  new_info.set_variable_refresh_rate_state(
+      snapshot->variable_refresh_rate_state());
+  new_info.set_vsync_rate_min(snapshot->vsync_rate_min());
+
   return new_info;
 }
 

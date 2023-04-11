@@ -15,6 +15,7 @@
 #include "base/syslog_logging.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/display_features.h"
 #include "ui/display/display_switches.h"
@@ -602,7 +603,8 @@ DisplayConfigurator::DisplayConfigurator()
           layout_manager_.get(),
           base::BindRepeating(&DisplayConfigurator::configurator_disabled,
                               base::Unretained(this)))),
-      has_unassociated_display_(false) {
+      has_unassociated_display_(false),
+      pending_vrr_state_(::features::IsVariableRefreshRateEnabled()) {
   AddObserver(content_protection_manager_.get());
 }
 
@@ -1219,16 +1221,12 @@ bool DisplayConfigurator::GetRequestedVrrState() const {
 }
 
 bool DisplayConfigurator::ShouldConfigureVrr() const {
-  if (!pending_vrr_state_.has_value()) {
-    return false;
-  }
-
   for (const auto* display : cached_displays_) {
     if (!display->IsVrrCapable()) {
       continue;
     }
 
-    if (display->IsVrrEnabled() != pending_vrr_state_.value()) {
+    if (display->IsVrrEnabled() != GetRequestedVrrState()) {
       return true;
     }
   }

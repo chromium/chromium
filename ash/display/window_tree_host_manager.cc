@@ -100,6 +100,16 @@ void SetDisplayPropertiesOnHost(AshWindowTreeHost* ash_host,
   host->SetDisplayTransformHint(
       display::DisplayRotationToOverlayTransform(effective_rotation));
 
+  const display::ManagedDisplayInfo& display_info =
+      GetDisplayManager()->GetDisplayInfo(display.id());
+  absl::optional<base::TimeDelta> max_vrr_interval = absl::nullopt;
+  if (display_info.variable_refresh_rate_state() == display::kVrrEnabled &&
+      display_info.vsync_rate_min().has_value() &&
+      display_info.vsync_rate_min() > 0) {
+    max_vrr_interval = base::Hertz(display_info.vsync_rate_min().value());
+  }
+  host->compositor()->SetMaxVrrInterval(max_vrr_interval);
+
   // Just moving the display requires the full redraw.
   // chrome-os-partner:33558.
   host->compositor()->ScheduleFullRedraw();
@@ -683,7 +693,7 @@ void WindowTreeHostManager::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t metrics) {
   if (!(metrics & (DISPLAY_METRIC_BOUNDS | DISPLAY_METRIC_ROTATION |
-                   DISPLAY_METRIC_DEVICE_SCALE_FACTOR))) {
+                   DISPLAY_METRIC_DEVICE_SCALE_FACTOR | DISPLAY_METRIC_VRR))) {
     return;
   }
 

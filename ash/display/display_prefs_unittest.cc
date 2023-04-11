@@ -603,7 +603,8 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   // Set new display's selected resolution.
   display_manager()->RegisterDisplayProperty(
       display::GetNextSynthesizedDisplayId(id2), display::Display::ROTATE_0,
-      nullptr, gfx::Size(500, 400), 1.0f, 1.0f, 60.f, false);
+      nullptr, gfx::Size(500, 400), 1.0f, 1.0f, 60.f, false,
+      display::kVrrNotCapable, absl::nullopt);
 
   UpdateDisplay("300x200*2, 600x500#600x500|500x400");
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
@@ -632,7 +633,8 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   // Set yet another new display's selected resolution.
   display_manager()->RegisterDisplayProperty(
       display::GetNextSynthesizedDisplayId(id2), display::Display::ROTATE_0,
-      nullptr, gfx::Size(500, 400), 1.0f, 1.0f, 60.f, false);
+      nullptr, gfx::Size(500, 400), 1.0f, 1.0f, 60.f, false,
+      display::kVrrNotCapable, absl::nullopt);
   // Disconnect 2nd display first to generate new id for external display.
   UpdateDisplay("300x200*2");
   UpdateDisplay("300x200*2, 500x400#600x500|500x400%60.0f");

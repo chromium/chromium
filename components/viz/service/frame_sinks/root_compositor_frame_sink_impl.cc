@@ -664,4 +664,9 @@ BeginFrameSource* RootCompositorFrameSinkImpl::begin_frame_source() {
   return synthetic_begin_frame_source_.get();
 }
 
+void RootCompositorFrameSinkImpl::SetMaxVrrInterval(
+    absl::optional<base::TimeDelta> max_vrr_interval) {
+  // TODO(b/221220344): Use VRR parameters in frame scheduling logic.
+}
+
 }  // namespace viz

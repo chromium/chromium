@@ -69,6 +69,9 @@ constexpr char kDisplayPowerInternalOffExternalOn[] =
 constexpr char kDisplayPowerInternalOnExternalOff[] =
     "internal_on_external_off";
 
+constexpr char kVariableRefreshRateState[] = "vrr_state";
+constexpr char kVsyncRateMin[] = "vsync_rate_min";
+
 // This kind of boilerplates should be done by base::JSONValueConverter but it
 // doesn't support classes like gfx::Insets for now.
 // TODO(mukai): fix base::JSONValueConverter and use it here.
@@ -264,9 +267,20 @@ void LoadDisplayProperties(PrefService* local_state) {
 
     double display_zoom = dict_value->FindDouble(kDisplayZoom).value_or(1.0);
 
+    display::VariableRefreshRateState variable_refresh_rate_state =
+        display::kVrrNotCapable;
+    if (absl::optional<int> vrr_state_value =
+            dict_value->FindInt(kVariableRefreshRateState)) {
+      variable_refresh_rate_state =
+          static_cast<display::VariableRefreshRateState>(*vrr_state_value);
+    }
+    absl::optional<uint16_t> vsync_rate_min =
+        dict_value->FindInt(kVsyncRateMin);
+
     GetDisplayManager()->RegisterDisplayProperty(
         id, rotation, insets_to_set, resolution_in_pixels, device_scale_factor,
-        display_zoom, refresh_rate, is_interlaced);
+        display_zoom, refresh_rate, is_interlaced, variable_refresh_rate_state,
+        vsync_rate_min);
   }
 }
 
@@ -559,6 +573,13 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
     }
 
     property_value.Set(kDisplayZoom, info.zoom_factor());
+
+    property_value.Set(kVariableRefreshRateState,
+                       info.variable_refresh_rate_state());
+    if (const absl::optional<uint16_t>& vsync_rate_min =
+            info.vsync_rate_min()) {
+      property_value.Set(kVsyncRateMin, vsync_rate_min.value());
+    }
 
     pref_data.Set(base::NumberToString(id), std::move(property_value));
   }
