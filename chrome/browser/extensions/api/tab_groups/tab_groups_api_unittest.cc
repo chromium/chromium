@@ -193,12 +193,10 @@ TEST_F(TabGroupsApiUnitTest, TabStripModelWithNoTabGroupFails) {
   scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
 
   const char* kTitleQueryInfo = R"([{"title": "Sample title"}])";
-  auto function = base::MakeRefCounted<TabGroupsQueryFunction>();
-  function->set_extension(extension);
+  base::Value::List groups_list =
+      RunTabGroupsQueryFunction(browser(), extension.get(), kTitleQueryInfo);
 
-  std::string error = extension_function_test_utils::RunFunctionAndReturnError(
-      function.get(), kTitleQueryInfo, browser2.get());
-  EXPECT_EQ(tabs_constants::kTabStripDoesNotSupportTabGroupsError, error);
+  ASSERT_EQ(0u, groups_list.size());
 
   tab_strip_model2->CloseAllTabs();
 }
