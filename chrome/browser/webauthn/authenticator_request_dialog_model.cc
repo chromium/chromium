@@ -273,8 +273,7 @@ void AuthenticatorRequestDialogModel::
     SetCurrentStep(*pending_step_);
     pending_step_.reset();
   } else if (mechanisms_.empty()) {
-    if (base::FeatureList::IsEnabled(device::kWebAuthnNoPasskeysError) &&
-        transport_availability_.transport_list_did_include_internal) {
+    if (transport_availability_.transport_list_did_include_internal) {
       SetCurrentStep(Step::kErrorNoPasskeys);
     } else {
       SetCurrentStep(Step::kErrorNoAvailableTransports);
