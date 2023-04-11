@@ -501,6 +501,10 @@ void ExpectNoCrashes(UpdaterScope scope) {
   }
 
   base::FilePath dest_dir = GetLogDestinationDir();
+  if (dest_dir.empty()) {
+    VLOG(2) << "No log destination folder, skip copying possible crash dumps.";
+    return;
+  }
   dest_dir = dest_dir.AppendASCII(GetTestName());
   EXPECT_TRUE(base::CreateDirectory(dest_dir));
 
