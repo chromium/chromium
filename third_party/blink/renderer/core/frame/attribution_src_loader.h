@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_ATTRIBUTION_SRC_LOADER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_ATTRIBUTION_SRC_LOADER_H_
 
-#include <stddef.h>
 #include <stdint.h>
 
 #include "components/attribution_reporting/registration_type.mojom-blink-forward.h"
@@ -88,8 +87,6 @@ class CORE_EXPORT AttributionSrcLoader
   // returns "web".
   AtomicString GetSupportHeader() const;
 
-  static constexpr size_t kMaxConcurrentRequests = 30;
-
  private:
   class ResourceClient;
 
@@ -126,7 +123,6 @@ class CORE_EXPORT AttributionSrcLoader
       const absl::optional<network::TriggerAttestation>& trigger_attestation);
 
   const Member<LocalFrame> local_frame_;
-  size_t num_resource_clients_ = 0;
 };
 
 }  // namespace blink

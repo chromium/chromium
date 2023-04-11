@@ -50,7 +50,6 @@ enum class AttributionReportingIssueType {
   kInvalidRegisterSourceHeader,
   kInvalidRegisterTriggerHeader,
   kInvalidEligibleHeader,
-  kTooManyConcurrentRequests,
   kSourceAndTriggerHeaders,
   kSourceIgnored,
   kTriggerIgnored,

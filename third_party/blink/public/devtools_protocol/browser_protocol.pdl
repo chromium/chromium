@@ -708,6 +708,8 @@ experimental domain Audits
       InvalidHeader
       InvalidRegisterTriggerHeader
       InvalidEligibleHeader
+      # TODO(crbug.com/1431942): Remove this issue once DevTools stops
+      # referencing it
       TooManyConcurrentRequests
       SourceAndTriggerHeaders
       SourceIgnored

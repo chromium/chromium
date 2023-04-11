@@ -310,14 +310,6 @@ AttributionSrcLoader::CreateAndSendRequest(
 
   LocalDOMWindow* window = local_frame_->DomWindow();
 
-  if (num_resource_clients_ >= kMaxConcurrentRequests) {
-    LogAuditIssue(
-        window, AttributionReportingIssueType::kTooManyConcurrentRequests,
-        element, /*request_id=*/absl::nullopt,
-        /*invalid_parameter=*/AtomicString::Number(kMaxConcurrentRequests));
-    return nullptr;
-  }
-
   if (!CanRegister(src_url, element, /*request_id=*/absl::nullopt))
     return nullptr;
 
@@ -374,8 +366,6 @@ AttributionSrcLoader::ResourceClient* AttributionSrcLoader::DoRegistration(
 
   auto* client = MakeGarbageCollected<ResourceClient>(this, src_type,
                                                       attribution_src_token);
-  ++num_resource_clients_;
-
   // TODO(https://crbug.com/1374121): If this registration is
   // `associated_with_navigation`, there is a risk that the navigation will
   // complete before the resource fetch here is complete. In this case, the
@@ -581,9 +571,6 @@ bool AttributionSrcLoader::ResourceClient::RedirectReceived(
 
 void AttributionSrcLoader::ResourceClient::NotifyFinished(Resource* resource) {
   ClearResource();
-
-  DCHECK_GT(loader_->num_resource_clients_, 0u);
-  --loader_->num_resource_clients_;
 
   if (resource->ErrorOccurred()) {
     RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus::kFailed);
