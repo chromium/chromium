@@ -212,7 +212,7 @@
 <translation id="4970880042055371251">Версия Chrome OS</translation>
 <translation id="4970947549776831107">Chrome заблокировал файл с опасным расширением.</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
-<translation id="5098668839038261629">Также выполняется выход из Chrome</translation>
+<translation id="5098668839038261629">Также выходить из Chrome</translation>
 <translation id="5132929315877954718">Широкий выбор приложений, игр, расширений и тем для Google Chrome.</translation>
 <translation id="5139423532931106058">Настройте профиль Chrome</translation>
 <translation id="5163087008893166964">Добро пожаловать в Chrome! Открыто новое окно браузера.</translation>
@@ -345,7 +345,7 @@
 <translation id="7917876797003313048">В этом разделе можно управлять аккаунтами Google, в которые вы вошли. Они используются в Google Play, Gmail, браузере Chrome и других сервисах. Чтобы указать аккаунт участника семейной группы или кого-нибудь ещё, добавьте на устройство <ph name="DEVICE_TYPE" /> нового пользователя. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="7930071585467473040">Google Chrome пытается скопировать пароли</translation>
 <translation id="7951272445806340501">Чтобы установить обновление, перезапустите Chrome OS Flex.</translation>
-<translation id="7962368738413920945">Скорее всего, сайты продолжат работать привычным образом, но данные о ваших действиях будут удаляться после закрытия всех окон браузера Chrome</translation>
+<translation id="7962368738413920945">Скорее всего, сайты сайты будут работать так, как вы ожидаете, но после закрытия всех окон Chrome данные о ваших действиях будут удаляться</translation>
 <translation id="7962410387636238736">Google Chrome больше не будет обновляться на этом компьютере, так как поддержка Windows XP и Windows Vista прекращена.</translation>
 <translation id="8005666035647241369">В Google Менеджере паролей на этом устройстве</translation>
 <translation id="8008534537613507642">Переустановить Chrome</translation>

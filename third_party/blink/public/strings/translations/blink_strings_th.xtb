@@ -112,7 +112,7 @@
 <translation id="6310801910862476708">ออกจากการแสดงภาพซ้อนภาพ</translation>
 <translation id="6398862346408813489">แสดงแผงการเลือกเดือน</translation>
 <translation id="6404546809543547843">ตัวควบคุมเวลาของเสียง</translation>
-<translation id="6443871981718447451">แสดงเมนูคำอธิบายภาพ</translation>
+<translation id="6443871981718447451">แสดงเมนูคำบรรยายแทนเสียง</translation>
 <translation id="6550675742724504774">ตัวเลือก</translation>
 <translation id="6572309429103589720">ไวยากรณ์ไม่ถูกต้อง</translation>
 <translation id="658823671542763450">เข้าสู่โหมดเต็มหน้าจอ</translation>
@@ -152,7 +152,7 @@
 <translation id="8131955114056917397">0.25</translation>
 <translation id="8199524924445686405">ปปปป</translation>
 <translation id="8261464734335370856">มีการสะกดผิด</translation>
-<translation id="8284326494547611709">คำบรรยาย</translation>
+<translation id="8284326494547611709">คำบรรยายแทนเสียง</translation>
 <translation id="835897206747267392">ค่าไม่ถูกต้อง</translation>
 <translation id="839593075537728968">ค่าต้องอยู่ระหว่าง <ph name="MINIMUM_TIME" /> ถึง <ph name="MAXIMUM_TIME" /></translation>
 <translation id="8403857369060869934">เวลาที่ผ่านไป: <ph name="ELAPSED_TIME" /></translation>

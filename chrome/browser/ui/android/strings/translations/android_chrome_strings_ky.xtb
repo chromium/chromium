@@ -783,7 +783,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5246093389635966745">Куралдар тилкесинин ыкчам баскычын түзөтүү</translation>
 <translation id="5271967389191913893">Жүктөлүп алына турган мазмунду түзмөк ача албайт.</translation>
 <translation id="5274286919938458946"><ph name="CARD_DETAIL" /> менен байланышкан</translation>
-<translation id="5292796745632149097">Төмөнкүгө жөнөтүү</translation>
+<translation id="5292796745632149097">Кимге</translation>
 <translation id="5300426565656326054">Жарнамаларды серепчинин негизинде жекелештирүү</translation>
 <translation id="5304593522240415983">Бул талаа бош болбошу керек</translation>
 <translation id="5308380583665731573">Туташуу</translation>
@@ -1157,7 +1157,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7260367682327802201">Android түзмөгүңүздө ушуга окшош параметр болушу мүмкүн. Эгер Chrome'до жана Android түзмөгүндө Жарнамаларды талдоо күйгүзүлсө, компания вебсайттарда жана колдонмолордо көрсөтүлгөн жарнамалардын майнаптуулугун талдай алышы мүмкүн.</translation>
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" /> коду <ph name="ORIGIN" /> сайтына тапшырылсынбы?</translation>
 <translation id="7274013316676448362">Бөгөттөлгөн сайт</translation>
-<translation id="7286572596625053347"><ph name="LANGUAGE" /> тилине өзгөрсүнбү?</translation>
+<translation id="7286572596625053347"><ph name="LANGUAGE" /> тилин өзгөртөсүзбү?</translation>
 <translation id="7286703216224610554">Реакцияны гана бөлүшүү</translation>
 <translation id="7290209999329137901">Аталышын өзгөртүү мүмкүн эмес</translation>
 <translation id="7291910923717764901">Сүрөттүн бул баракка кошулган сүрөттөмөлөрү</translation>

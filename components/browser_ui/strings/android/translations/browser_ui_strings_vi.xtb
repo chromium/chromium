@@ -118,7 +118,7 @@
 <translation id="3115898365077584848">Hiển thị thông tin</translation>
 <translation id="3123473560110926937">Đã chặn trên một số trang web</translation>
 <translation id="3143754809889689516">Phát từ đầu</translation>
-<translation id="3162899666601560689">Các trang web có thể dùng cookie để cải thiện trải nghiệm duyệt web của bạn, chẳng hạn như để duy trì trạng thái đăng nhập hoặc ghi nhớ các mục có trong giỏ hàng</translation>
+<translation id="3162899666601560689">Các trang web có thể dùng cookie để cải thiện trải nghiệm duyệt web của bạn, chẳng hạn như để duy trì trạng thái đăng nhập hoặc ghi nhớ các mặt hàng có trong giỏ hàng</translation>
 <translation id="3165022941318558018">Cho phép một trang web dùng cookie của bên thứ ba</translation>
 <translation id="3198916472715691905">Dữ liệu đã lưu trữ: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3203366800380907218">Trên web</translation>
@@ -389,7 +389,7 @@
 <translation id="8197286292360124385">Đã cho phép <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Tiếp tục</translation>
 <translation id="8206354486702514201">Cài đặt này được quản trị viên của bạn thực thi.</translation>
-<translation id="8211406090763984747">Kết nối an toàn</translation>
+<translation id="8211406090763984747">Kết nối này an toàn</translation>
 <translation id="8249310407154411074">Chuyển lên trên cùng</translation>
 <translation id="8261506727792406068">Xoá</translation>
 <translation id="8284326494547611709">Phụ đề</translation>
