@@ -18,6 +18,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
 #include "ash/wm/splitview/split_view_utils.h"
+#include "ash/wm/tablet_mode/tablet_mode_window_state.h"
 #include "ash/wm/wm_metrics.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
@@ -346,8 +347,18 @@ void TabDragDropDelegate::UpdateSourceWindowBoundsIfNecessary(
 
 void TabDragDropDelegate::RestoreSourceWindowBounds() {
   if (SplitViewController::Get(source_window_)
-          ->IsWindowInSplitView(source_window_))
+          ->IsWindowInSplitView(source_window_)) {
     return;
+  }
+
+  auto* window_state = WindowState::Get(source_window_);
+  if (window_state->IsFloated()) {
+    // This will notify `FloatController` to find the ideal floated window
+    // bounds in tablet mode.
+    TabletModeWindowState::UpdateWindowPosition(
+        window_state, WindowState::BoundsChangeAnimationType::kNone);
+    return;
+  }
 
   const gfx::Rect area =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
