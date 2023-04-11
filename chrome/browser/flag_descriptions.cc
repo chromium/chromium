@@ -2177,12 +2177,6 @@ const char kOmniboxInspireMeDescription[] =
     "When enabled, appends additional suggestions based on local trends and/or "
     "related to the recently executed queries.";
 
-const char kOmniboxKeepSecondaryZeroSuggestName[] =
-    "Keeps all secondary zero-prefix suggestions.";
-const char kOmniboxKeepSecondaryZeroSuggestDescription[] =
-    "Keeps all zero-prefix suggestions in the second column and does not count "
-    "them toward the overall zero-suggest limit.";
-
 const char kOmniboxMatchToolbarAndStatusBarColorName[] =
     "Omnibox Omnibox Match Toolbar And Status Bar Color";
 const char kOmniboxMatchToolbarAndStatusBarColorDescription[] =
@@ -4598,6 +4592,12 @@ const char kPasswordsImportM2Name[] = "Passwords Import M2";
 const char kPasswordsImportM2Description[] =
     "Extends passwords import flow in password settings with conflict "
     "resolution functionality.";
+
+const char kRealboxSecondaryZeroSuggestName[] =
+    "Enables showing secondary zero-prefix suggestions in NTP realbox.";
+const char kRealboxSecondaryZeroSuggestDescription[] =
+    "When enabled, allows showing secondary zero-prefix suggestions in NTP "
+    "realbox.";
 
 const char kSCTAuditingName[] = "SCT auditing";
 const char kSCTAuditingDescription[] =

@@ -1229,9 +1229,6 @@ extern const char
 extern const char kOmniboxInspireMeName[];
 extern const char kOmniboxInspireMeDescription[];
 
-extern const char kOmniboxKeepSecondaryZeroSuggestName[];
-extern const char kOmniboxKeepSecondaryZeroSuggestDescription[];
-
 extern const char kOmniboxMlLogUrlScoringSignalsName[];
 extern const char kOmniboxMlLogUrlScoringSignalsDescription[];
 
@@ -2644,6 +2641,9 @@ extern const char kPasswordsGroupingDescription[];
 
 extern const char kPasswordManagerRedesignName[];
 extern const char kPasswordManagerRedesignDescription[];
+
+extern const char kRealboxSecondaryZeroSuggestName[];
+extern const char kRealboxSecondaryZeroSuggestDescription[];
 
 extern const char kSCTAuditingName[];
 extern const char kSCTAuditingDescription[];

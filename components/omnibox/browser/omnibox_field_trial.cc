@@ -1142,7 +1142,17 @@ bool IsUrlScoringModelEnabled() {
 
 // <- ML Relevance Scoring
 // ---------------------------------------------------------
+// Two-column realbox ->
+
+const base::FeatureParam<int> kRealboxMaxPreviousSearchRelatedSuggestions(
+    &omnibox::kRealboxSecondaryZeroSuggest,
+    "RealboxMaxPreviousSearchRelatedSuggestions",
+    3);
+
+// <- Two-column realbox
+// ---------------------------------------------------------
 // Inspire Me ->
+
 const base::FeatureParam<int> kInspireMeAdditionalRelatedQueries(
     &omnibox::kInspireMe,
     "AdditionalRelatedQueries",
@@ -1152,6 +1162,7 @@ const base::FeatureParam<int> kInspireMeAdditionalTrendingQueries(
     &omnibox::kInspireMe,
     "AdditionalTrendingQueries",
     0);
+
 // <- Inspire Me
 // ---------------------------------------------------------
 

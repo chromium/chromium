@@ -191,12 +191,6 @@ BASE_FEATURE(kFocusTriggersSRPZeroSuggest,
              "OmniboxFocusTriggersSRPZeroSuggest",
              enabled_by_default_android_only);
 
-// If enabled, keeps all zero-prefix suggestions in the second column and does
-// not count them toward the overall zero-suggest limit.
-BASE_FEATURE(kKeepSecondaryZeroSuggest,
-             "KeepSecondaryZeroSuggest",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables local history zero-prefix suggestions in every context in which the
 // remote zero-prefix suggestions are enabled.
 BASE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP,
@@ -221,6 +215,13 @@ BASE_FEATURE(kNormalizeSearchSuggestions,
 BASE_FEATURE(kOmniboxOnClobberFocusTypeOnContent,
              "OmniboxOnClobberFocusTypeOnContent",
              enabled_by_default_desktop_android);
+
+// If enabled, allows up to
+// `OmniboxFieldTrial::kRealboxMaxPreviousSearchRelatedSuggestions` zero-prefix
+// suggestions in the 2nd column of realbox.
+BASE_FEATURE(kRealboxSecondaryZeroSuggest,
+             "RealboxSecondaryZeroSuggest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, zero prefix suggestions will be stored using an in-memory caching
 // service, instead of using the existing prefs-based cache.

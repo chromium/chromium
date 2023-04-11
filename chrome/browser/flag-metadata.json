@@ -5489,11 +5489,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-keep-secondary-zero-suggest",
-    "owners": [ "ender@google.com", "mahmadi@google.com", "chrome-desktop-search@google.com" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "omnibox-keyboard-paste-button",
     "owners": ["christianxu", "stkhapugin", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 115
@@ -6360,6 +6355,11 @@
     // This flag is a utility for testing Reader Mode heuristics or force
     // enabling the feature on every page.
     "expiry_milestone": -1
+  },
+  {
+    "name": "realbox-secondary-zero-suggest",
+    "owners": [ "mahmadi@google.com", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 120
   },
   {
     "name": "record-permission-expiration-timestamps",

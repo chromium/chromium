@@ -1554,6 +1554,24 @@ const FeatureEntry::FeatureVariation kOmniboxMlRelevanceScoringVariations[] = {
      kOmniboxMlRelevanceScoringIncreaseNumCandidates,
      std::size(kOmniboxMlRelevanceScoringIncreaseNumCandidates), nullptr},
 };
+
+const FeatureEntry::FeatureParam kRealboxTwoPreviousSearchRelatedSuggestions[] =
+    {
+        {"RealboxMaxPreviousSearchRelatedSuggestions", "2"},
+};
+const FeatureEntry::FeatureParam
+    kRealboxThreePreviousSearchRelatedSuggestions[] = {
+        {"RealboxMaxPreviousSearchRelatedSuggestions", "3"},
+};
+
+const FeatureEntry::FeatureVariation
+    kRealboxMaxPreviousSearchRelatedSuggestionsVariations[] = {
+        {"2 secondary suggestions", kRealboxTwoPreviousSearchRelatedSuggestions,
+         std::size(kRealboxTwoPreviousSearchRelatedSuggestions), nullptr},
+        {"3 secondary suggestions",
+         kRealboxThreePreviousSearchRelatedSuggestions,
+         std::size(kRealboxThreePreviousSearchRelatedSuggestions), nullptr}};
+
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 
@@ -5615,8 +5633,17 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxMlUrlScoringModelName,
      flag_descriptions::kOmniboxMlUrlScoringModelDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kUrlScoringModel)},
+
+    {"realbox-secondary-zero-suggest",
+     flag_descriptions::kRealboxSecondaryZeroSuggestName,
+     flag_descriptions::kRealboxSecondaryZeroSuggestDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox::kRealboxSecondaryZeroSuggest,
+         kRealboxMaxPreviousSearchRelatedSuggestionsVariations,
+         "RealboxSecondaryZeroSuggest")},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+
 #if BUILDFLAG(IS_ANDROID)
     {"omnibox-inspire-me", flag_descriptions::kOmniboxInspireMeName,
      flag_descriptions::kOmniboxInspireMeDescription, kOsAndroid,
@@ -5722,11 +5749,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kDynamicMaxAutocomplete,
                                     kOmniboxDynamicMaxAutocompleteVariations,
                                     "OmniboxBundledExperimentV1")},
-
-    {"omnibox-keep-secondary-zero-suggest",
-     flag_descriptions::kOmniboxKeepSecondaryZeroSuggestName,
-     flag_descriptions::kOmniboxKeepSecondaryZeroSuggestDescription, kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kKeepSecondaryZeroSuggest)},
 
     {"omnibox-short-bookmark-suggestions",
      flag_descriptions::kOmniboxShortBookmarkSuggestionsName,

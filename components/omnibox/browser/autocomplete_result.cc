@@ -388,11 +388,17 @@ void AutocompleteResult::SortAndCull(
       if (omnibox::IsNTPPage(page_classification)) {
         sections.push_back(
             std::make_unique<DesktopNTPZpsSection>(suggestion_groups_map_));
-        if (page_classification == OmniboxEventProto::NTP_REALBOX &&
-            base::FeatureList::IsEnabled(omnibox::kKeepSecondaryZeroSuggest)) {
-          // Allow secondary zero-prefix suggestions in the NTP realbox, if any.
+        // Allow secondary zero-prefix suggestions in the NTP realbox or the
+        // WebUI omnibox, if any.
+        if ((page_classification == OmniboxEventProto::NTP_REALBOX ||
+             base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) &&
+            base::FeatureList::IsEnabled(
+                omnibox::kRealboxSecondaryZeroSuggest)) {
+          size_t max_previous_search_related =
+              OmniboxFieldTrial::kRealboxMaxPreviousSearchRelatedSuggestions
+                  .Get();
           sections.push_back(std::make_unique<DesktopSecondaryNTPZpsSection>(
-              /*max_previous_search_related=*/3U, suggestion_groups_map_));
+              max_previous_search_related, suggestion_groups_map_));
         }
       } else if (omnibox::IsSearchResultsPage(page_classification)) {
         sections.push_back(
@@ -474,25 +480,6 @@ void AutocompleteResult::SortAndCull(
                                       matches_.end());
       }
       GroupAndDemoteMatchesInGroups();
-
-    } else if (base::FeatureList::IsEnabled(
-                   omnibox::kKeepSecondaryZeroSuggest)) {
-      // Zero-prefix suggestions are grouped then trimmed.
-      GroupAndDemoteMatchesInGroups();
-      size_t num_primary_suggestions = 0;
-      base::EraseIf(matches_, [&](const auto& match) {
-        if (!match.suggestion_group_id.has_value() ||
-            GetSideTypeForSuggestionGroup(match.suggestion_group_id.value()) ==
-                omnibox::GroupConfig_SideType_DEFAULT_PRIMARY) {
-          // Trim the primary suggestions to the given limit.
-          return ++num_primary_suggestions > num_matches;
-        } else {
-          // Keep the secondary suggestions for the NTP realbox.
-          // TODO(ender): Add appropriate page classification for Android.
-          return page_classification != OmniboxEventProto::NTP_REALBOX;
-        }
-      });
-
     } else {
       // Zero-prefix suggestions are grouped then trimmed.
       GroupAndDemoteMatchesInGroups();

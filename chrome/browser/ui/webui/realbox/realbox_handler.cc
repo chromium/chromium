@@ -548,7 +548,7 @@ void RealboxHandler::SetupDropdownWebUIDataSource(
 
   source->AddBoolean(
       "showSecondarySide",
-      base::FeatureList::IsEnabled(omnibox::kKeepSecondaryZeroSuggest));
+      base::FeatureList::IsEnabled(omnibox::kRealboxSecondaryZeroSuggest));
 }
 
 // static

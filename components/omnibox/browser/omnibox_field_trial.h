@@ -708,12 +708,24 @@ bool IsUrlScoringModelEnabled();
 
 // <- ML Relevance Scoring
 // ---------------------------------------------------------
+// Two-column realbox ->
+
+// Specifies the number of zero-prefix suggestions in the 2nd column of realbox
+// when `omnibox::kRealboxSecondaryZeroSuggest` is enabled.
+extern const base::FeatureParam<int>
+    kRealboxMaxPreviousSearchRelatedSuggestions;
+
+// <- Two-column realbox
+// ---------------------------------------------------------
 // Inspire Me ->
+
 // Specify number of additional Related and Trending queries appended to the
 // suggestion list, when the Inspire Me feature is enabled.
 extern const base::FeatureParam<int> kInspireMeAdditionalRelatedQueries;
 extern const base::FeatureParam<int> kInspireMeAdditionalTrendingQueries;
+
 // <- Inspire Me
+// ---------------------------------------------------------
 
 // New params should be inserted above this comment. They should be ordered
 // consistently with `omnibox_features.h`. They should be formatted as:
