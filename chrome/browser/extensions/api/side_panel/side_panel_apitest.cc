@@ -51,6 +51,12 @@ IN_PROC_BROWSER_TEST_F(SidePanelApiTest, PanelBehavior) {
   ASSERT_TRUE(RunExtensionTest("side_panel/panel_behavior")) << message_;
 }
 
+// Verify normal chrome.sidePanel functionality.
+IN_PROC_BROWSER_TEST_F(SidePanelApiTest, ApiOnly) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest("side_panel/api_only")) << message_;
+}
+
 class SidePanelApiWithExtensionTest : public SidePanelApiTest {
  public:
   // Load and get extension.
