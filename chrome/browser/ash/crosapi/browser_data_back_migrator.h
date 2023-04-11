@@ -32,7 +32,8 @@ class ScopedBackMigratorRestartAttemptForTesting {
   ~ScopedBackMigratorRestartAttemptForTesting();
 };
 
-class BrowserDataBackMigrator {
+// The interface is exposed to be inherited by fakes in tests.
+class BrowserDataBackMigratorBase {
  public:
   // Represents a result status.
   enum class Result {
@@ -40,6 +41,21 @@ class BrowserDataBackMigrator {
     kFailed,
   };
 
+  using BackMigrationFinishedCallback = base::OnceCallback<void(Result)>;
+  using BackMigrationProgressCallback = base::RepeatingCallback<void(int)>;
+  using BackMigrationCanceledCallback = base::OnceClosure;
+
+  virtual ~BrowserDataBackMigratorBase() = default;
+
+  virtual void Migrate(BackMigrationProgressCallback progress_callback,
+                       BackMigrationFinishedCallback finished_callback) = 0;
+
+  virtual void CancelMigration(
+      BackMigrationCanceledCallback canceled_callback) = 0;
+};
+
+class BrowserDataBackMigrator : public BrowserDataBackMigratorBase {
+ public:
   // A list of all the possible results of migration, including success and all
   // failure types in each step of the migration.
   //
@@ -80,17 +96,12 @@ class BrowserDataBackMigrator {
     absl::optional<int> posix_errno;
   };
 
-  using BackMigrationFinishedCallback =
-      base::OnceCallback<void(BrowserDataBackMigrator::Result)>;
-  using BackMigrationProgressCallback = base::RepeatingCallback<void(int)>;
-  using BackMigrationCanceledCallback = base::OnceClosure;
-
   explicit BrowserDataBackMigrator(const base::FilePath& ash_profile_dir,
                                    const std::string& user_id_hash,
                                    PrefService* local_state);
   BrowserDataBackMigrator(const BrowserDataBackMigrator&) = delete;
   BrowserDataBackMigrator& operator=(const BrowserDataBackMigrator&) = delete;
-  ~BrowserDataBackMigrator();
+  ~BrowserDataBackMigrator() override;
 
   // Calls `chrome::AttemptRestart()` unless
   // `ScopedBackMigratorRestartAttemptForTesting` is in scope.
@@ -102,7 +113,7 @@ class BrowserDataBackMigrator {
   // an error.
   // Migrate can only be called once.
   void Migrate(BackMigrationProgressCallback progress_callback,
-               BackMigrationFinishedCallback finished_callback);
+               BackMigrationFinishedCallback finished_callback) override;
 
   // IsBackMigrationEnabled determines if the feature is enabled.
   // It checks the following in order:
@@ -126,7 +137,8 @@ class BrowserDataBackMigrator {
 
   // CancelMigration is called when the user chooses to cancel the migration
   // from OOBE and it cleans up the in-progress migration.
-  void CancelMigration(BackMigrationCanceledCallback canceled_callback);
+  void CancelMigration(
+      BackMigrationCanceledCallback canceled_callback) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorTest, PreMigrationCleanUp);
