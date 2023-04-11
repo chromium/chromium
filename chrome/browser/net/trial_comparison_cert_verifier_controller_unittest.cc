@@ -296,17 +296,6 @@ TEST_P(TrialComparisonCertVerifierControllerTest,
 
 TEST_P(TrialComparisonCertVerifierControllerTest,
        NotOfficialBuildTrialEnabled) {
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed)) {
-    // If ChromeRootStoreUsed feature is enabled by default,
-    // TrialComparisonCertVerifier will not be allowed. It is not safe to
-    // change the kChromeRootStoreUsed flag in unit_tests since multiple tests
-    // run in the same process, and GetChromeCertVerifierServiceParams will
-    // globally enforce a single configuration for the lifetime of the
-    // process. Therefore just skip this test if CRS is enabled.
-    GTEST_SKIP();
-  }
-#endif
   scoped_feature_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_->InitAndEnableFeature(
       net::features::kCertDualVerificationTrialFeature);
@@ -345,17 +334,6 @@ TEST_P(TrialComparisonCertVerifierControllerTest,
 }
 
 TEST_P(TrialComparisonCertVerifierControllerTest, OfficialBuildTrialEnabled) {
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed)) {
-    // If ChromeRootStoreUsed feature is enabled by default,
-    // TrialComparisonCertVerifier will not be allowed. It is not safe to
-    // change the kChromeRootStoreUsed flag in unit_tests since multiple tests
-    // run in the same process, and GetChromeCertVerifierServiceParams will
-    // globally enforce a single configuration for the lifetime of the
-    // process. Therefore just skip this test if CRS is enabled.
-    GTEST_SKIP();
-  }
-#endif
   TrialComparisonCertVerifierController::SetFakeOfficialBuildForTesting(true);
   scoped_feature_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_->InitAndEnableFeature(
@@ -438,17 +416,6 @@ TEST_P(TrialComparisonCertVerifierControllerTest, OfficialBuildTrialEnabled) {
 
 TEST_P(TrialComparisonCertVerifierControllerTest,
        OfficialBuildTrialEnabledTwoClients) {
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed)) {
-    // If ChromeRootStoreUsed feature is enabled by default,
-    // TrialComparisonCertVerifier will not be allowed. It is not safe to
-    // change the kChromeRootStoreUsed flag in unit_tests since multiple tests
-    // run in the same process, and GetChromeCertVerifierServiceParams will
-    // globally enforce a single configuration for the lifetime of the
-    // process. Therefore just skip this test if CRS is enabled.
-    GTEST_SKIP();
-  }
-#endif
   TrialComparisonCertVerifierController::SetFakeOfficialBuildForTesting(true);
   scoped_feature_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_->InitAndEnableFeature(
@@ -561,17 +528,6 @@ TEST_P(TrialComparisonCertVerifierControllerTest,
 
 TEST_P(TrialComparisonCertVerifierControllerTest,
        OfficialBuildTrialEnabledUmaOnly) {
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed)) {
-    // If ChromeRootStoreUsed feature is enabled by default,
-    // TrialComparisonCertVerifier will not be allowed. It is not safe to
-    // change the kChromeRootStoreUsed flag in unit_tests since multiple tests
-    // run in the same process, and GetChromeCertVerifierServiceParams will
-    // globally enforce a single configuration for the lifetime of the
-    // process. Therefore just skip this test if CRS is enabled.
-    GTEST_SKIP();
-  }
-#endif
   TrialComparisonCertVerifierController::SetFakeOfficialBuildForTesting(true);
   scoped_feature_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_->InitAndEnableFeatureWithParameters(
@@ -609,17 +565,6 @@ TEST_P(TrialComparisonCertVerifierControllerTest,
 
 TEST_P(TrialComparisonCertVerifierControllerTest,
        IncognitoOfficialBuildTrialEnabled) {
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  if (base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed)) {
-    // If ChromeRootStoreUsed feature is enabled by default,
-    // TrialComparisonCertVerifier will not be allowed. It is not safe to
-    // change the kChromeRootStoreUsed flag in unit_tests since multiple tests
-    // run in the same process, and GetChromeCertVerifierServiceParams will
-    // globally enforce a single configuration for the lifetime of the
-    // process. Therefore just skip this test if CRS is enabled.
-    GTEST_SKIP();
-  }
-#endif
   TrialComparisonCertVerifierController::SetFakeOfficialBuildForTesting(true);
   scoped_feature_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_->InitAndEnableFeature(

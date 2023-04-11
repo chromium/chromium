@@ -83,8 +83,7 @@ class SwapWithNewProcFactory : public CertVerifyProcFactory {
 
   scoped_refptr<net::CertVerifyProc> CreateCertVerifyProc(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
-      scoped_refptr<CRLSet> crl_set,
-      const ChromeRootStoreData* root_store_data) override {
+      const ImplParams& impl_params) override {
     return mock_verify_proc_;
   }
 
@@ -313,7 +312,7 @@ TEST_F(MultiThreadedCertVerifierTest, VerifyProcChangeChromeRootStore) {
   EXPECT_CALL(*mock_new_verify_proc_, VerifyInternal(_, _, _, _, _, _, _, _))
       .WillRepeatedly(
           DoAll(SetCertVerifyRevokedResult(), Return(ERR_CERT_REVOKED)));
-  verifier_->UpdateVerifyProcData(nullptr, nullptr, nullptr);
+  verifier_->UpdateVerifyProcData(nullptr, {});
 
   EXPECT_EQ(observer_counter.change_count(), 1u);
 
@@ -353,7 +352,7 @@ TEST_F(MultiThreadedCertVerifierTest, VerifyProcChangeRequest) {
       &verify_result, callback.callback(), &request, NetLogWithSource());
   ASSERT_THAT(error, IsError(ERR_IO_PENDING));
   EXPECT_TRUE(request);
-  verifier_->UpdateVerifyProcData(nullptr, nullptr, nullptr);
+  verifier_->UpdateVerifyProcData(nullptr, {});
   error = callback.WaitForResult();
   EXPECT_TRUE(IsCertificateError(error));
   EXPECT_THAT(error, IsError(ERR_CERT_COMMON_NAME_INVALID));

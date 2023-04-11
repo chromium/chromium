@@ -72,9 +72,10 @@ class NetworkContextWithRealCertVerifierTest : public testing::Test {
     if (!cert_verifier_service_factory_) {
       cert_verifier_service_factory_ =
           std::make_unique<CertVerifierServiceFactoryImpl>(
-              GetCertVerifierServiceParams(),
               cert_verifier_service_factory_remote_
                   .BindNewPipeAndPassReceiver());
+      InitializeCertVerifierServiceFactory(
+          cert_verifier_service_factory_.get());
     }
 
     // Create a cert verifier service.
@@ -83,9 +84,8 @@ class NetworkContextWithRealCertVerifierTest : public testing::Test {
         std::move(cert_verifier_creation_params));
   }
 
-  virtual mojom::CertVerifierServiceParamsPtr GetCertVerifierServiceParams() {
-    return nullptr;
-  }
+  virtual void InitializeCertVerifierServiceFactory(
+      mojom::CertVerifierServiceFactory* factory) {}
 
   network::mojom::NetworkService* network_service() const {
     return network_service_.get();
@@ -169,13 +169,12 @@ class NetworkContextChromeRootStoreFeatureFlagTest
         net::features::kChromeRootStoreUsed, feature_use_chrome_root_store());
   }
 
-  mojom::CertVerifierServiceParamsPtr GetCertVerifierServiceParams() override {
-    mojom::CertVerifierServiceParamsPtr params;
+  void InitializeCertVerifierServiceFactory(
+      mojom::CertVerifierServiceFactory* factory) override {
     if (param_use_chrome_root_store().has_value()) {
-      params = mojom::CertVerifierServiceParams::New();
-      params->use_chrome_root_store = *param_use_chrome_root_store();
+      factory->SetUseChromeRootStore(*param_use_chrome_root_store(),
+                                     base::DoNothing());
     }
-    return params;
   }
 
   bool feature_use_chrome_root_store() const { return std::get<0>(GetParam()); }

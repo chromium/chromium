@@ -10496,8 +10496,9 @@ class HTTPSCertNetFetchingTest : public HTTPSRequestTest {
   }
 
   void UpdateCertVerifier(scoped_refptr<CRLSet> crl_set) {
-    updatable_cert_verifier_->UpdateVerifyProcData(cert_net_fetcher_,
-                                                   std::move(crl_set), nullptr);
+    net::CertVerifyProcFactory::ImplParams params;
+    params.crl_set = std::move(crl_set);
+    updatable_cert_verifier_->UpdateVerifyProcData(cert_net_fetcher_, params);
   }
 
   scoped_refptr<CertNetFetcherURLRequest> cert_net_fetcher_;
@@ -11606,16 +11607,15 @@ TEST_F(HTTPSLocalCRLSetTest, KnownInterceptionBlocked) {
   // Configure a CRL that will mark |root_ca_cert| as a blocked interception
   // root.
   std::string crl_set_bytes;
-  scoped_refptr<CRLSet> crl_set;
+  net::CertVerifyProcFactory::ImplParams params;
   ASSERT_TRUE(
       base::ReadFileToString(GetTestCertsDirectory().AppendASCII(
                                  "crlset_blocked_interception_by_root.raw"),
                              &crl_set_bytes));
-  ASSERT_TRUE(CRLSet::Parse(crl_set_bytes, &crl_set));
+  ASSERT_TRUE(CRLSet::Parse(crl_set_bytes, &params.crl_set));
 
   updatable_cert_verifier_->UpdateVerifyProcData(
-      /*cert_net_fetcher=*/nullptr, crl_set,
-      /*root_store_data=*/nullptr);
+      /*cert_net_fetcher=*/nullptr, params);
 
   // Verify the connection fails as being a known interception root.
   {

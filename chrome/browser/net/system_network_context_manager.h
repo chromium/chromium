@@ -14,6 +14,7 @@
 #include "chrome/browser/net/proxy_config_monitor.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/ssl/ssl_config_service_manager.h"
+#include "chrome/common/buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -172,6 +173,10 @@ class SystemNetworkContextManager {
     stub_resolver_config_reader_for_testing_ = reader;
   }
 
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+  bool IsUsingChromeRootStore();
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+
  private:
   FRIEND_TEST_ALL_PREFIXES(
       SystemNetworkContextServiceCertVerifierBuiltinPermissionsPolicyTest,
@@ -192,6 +197,10 @@ class SystemNetworkContextManager {
   // Send the current value of the net.explicitly_allowed_network_ports pref to
   // the network process.
   void UpdateExplicitlyAllowedNetworkPorts();
+
+#if BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
+  void UpdateChromeRootStoreEnabled();
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_POLICY_SUPPORTED)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)

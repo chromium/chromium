@@ -236,11 +236,10 @@ int MultiThreadedCertVerifier::Verify(const RequestParams& params,
 
 void MultiThreadedCertVerifier::UpdateVerifyProcData(
     scoped_refptr<CertNetFetcher> cert_net_fetcher,
-    scoped_refptr<CRLSet> crl_set,
-    const ChromeRootStoreData* root_store_data) {
+    const net::CertVerifyProcFactory::ImplParams& impl_params) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   verify_proc_ = verify_proc_factory_->CreateCertVerifyProc(
-      std::move(cert_net_fetcher), std::move(crl_set), root_store_data);
+      std::move(cert_net_fetcher), impl_params);
   NotifyCertVerifierChanged();
 }
 

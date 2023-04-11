@@ -53,11 +53,6 @@ void TestCertVerifierServiceFactoryImpl::GetNewCertVerifier(
   captured_params_.push_front(std::move(params));
 }
 
-void TestCertVerifierServiceFactoryImpl::GetServiceParamsForTesting(
-    GetServiceParamsForTestingCallback callback) {
-  delegate_remote_->GetServiceParamsForTesting(std::move(callback));
-}
-
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 void TestCertVerifierServiceFactoryImpl::UpdateChromeRootStore(
     mojom::ChromeRootStorePtr new_root_store,
@@ -100,10 +95,7 @@ void TestCertVerifierServiceFactoryImpl::InitDelegate() {
       base::SequencedTaskRunner::GetCurrentDefault()
 #endif
   );
-  delegate_->Init(content::GetContentClientForTesting()
-                      ->browser()
-                      ->GetCertVerifierServiceParams(),
-                  delegate_remote_.BindNewPipeAndPassReceiver());
+  delegate_->Init(delegate_remote_.BindNewPipeAndPassReceiver());
 }
 
 TestCertVerifierServiceFactoryImpl::DelegateOwner::DelegateOwner(
@@ -113,17 +105,16 @@ TestCertVerifierServiceFactoryImpl::DelegateOwner::DelegateOwner(
 TestCertVerifierServiceFactoryImpl::DelegateOwner::~DelegateOwner() = default;
 
 void TestCertVerifierServiceFactoryImpl::DelegateOwner::Init(
-    mojom::CertVerifierServiceParamsPtr params,
     mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceFactory>
         receiver) {
   if (!owning_task_runner()->RunsTasksInCurrentSequence()) {
     owning_task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&DelegateOwner::Init, this, std::move(params),
-                                  std::move(receiver)));
+        FROM_HERE,
+        base::BindOnce(&DelegateOwner::Init, this, std::move(receiver)));
     return;
   }
-  delegate_ = std::make_unique<CertVerifierServiceFactoryImpl>(
-      std::move(params), std::move(receiver));
+  delegate_ =
+      std::make_unique<CertVerifierServiceFactoryImpl>(std::move(receiver));
 }
 
 }  // namespace cert_verifier

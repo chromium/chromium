@@ -468,21 +468,29 @@ void TrialComparisonCertVerifier::Job::Request::OnJobAborted() {
 }
 
 TrialComparisonCertVerifier::TrialComparisonCertVerifier(
-    scoped_refptr<CertVerifyProc> primary_verify_proc,
-    scoped_refptr<CertVerifyProcFactory> primary_verify_proc_factory,
-    scoped_refptr<CertVerifyProc> trial_verify_proc,
-    scoped_refptr<CertVerifyProcFactory> trial_verify_proc_factory,
+    scoped_refptr<CertVerifyProcFactory> verify_proc_factory,
+    scoped_refptr<CertNetFetcher> cert_net_fetcher,
+    const CertVerifyProcFactory::ImplParams& impl_params,
     ReportCallback report_callback)
-    : report_callback_(std::move(report_callback)),
-      primary_verifier_(std::make_unique<MultiThreadedCertVerifier>(
-          primary_verify_proc,
-          primary_verify_proc_factory)),
-      primary_reverifier_(std::make_unique<MultiThreadedCertVerifier>(
-          primary_verify_proc,
-          primary_verify_proc_factory)),
-      trial_verifier_(std::make_unique<MultiThreadedCertVerifier>(
-          trial_verify_proc,
-          trial_verify_proc_factory)) {
+    : report_callback_(std::move(report_callback)) {
+  auto [primary_impl_params, trial_impl_params] =
+      ProcessImplParams(impl_params);
+
+  primary_verifier_ = std::make_unique<MultiThreadedCertVerifier>(
+      verify_proc_factory->CreateCertVerifyProc(cert_net_fetcher,
+                                                primary_impl_params),
+      verify_proc_factory);
+
+  primary_reverifier_ = std::make_unique<MultiThreadedCertVerifier>(
+      verify_proc_factory->CreateCertVerifyProc(cert_net_fetcher,
+                                                primary_impl_params),
+      verify_proc_factory);
+
+  trial_verifier_ = std::make_unique<MultiThreadedCertVerifier>(
+      verify_proc_factory->CreateCertVerifyProc(cert_net_fetcher,
+                                                trial_impl_params),
+      verify_proc_factory);
+
   primary_verifier_->AddObserver(this);
   primary_reverifier_->AddObserver(this);
   trial_verifier_->AddObserver(this);
@@ -501,9 +509,18 @@ int TrialComparisonCertVerifier::Verify(const RequestParams& params,
                                         const NetLogWithSource& net_log) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!trial_allowed()) {
-    return primary_verifier_->Verify(params, verify_result, std::move(callback),
+  // Technically, the trial could still be active when
+  // actual_use_chrome_root_store_=true, just by reversing everything. (Doing
+  // the trial verifier first and returning that result, then doing the primary
+  // verifier and comparing.) Probably not worth the trouble though.
+  if (!trial_allowed() || actual_use_chrome_root_store_) {
+    if (actual_use_chrome_root_store_) {
+      return trial_verifier_->Verify(params, verify_result, std::move(callback),
                                      out_req, net_log);
+    } else {
+      return primary_verifier_->Verify(params, verify_result,
+                                       std::move(callback), out_req, net_log);
+    }
   }
 
   std::unique_ptr<Job> job =
@@ -527,32 +544,53 @@ void TrialComparisonCertVerifier::SetConfig(const Config& config) {
 
 void TrialComparisonCertVerifier::AddObserver(
     CertVerifier::Observer* observer) {
-  // Let primary_verifier_ handle the observer lists rather than creating
-  // another one in TrialComparisonCertVerifier. From the perspective of the
-  // caller, the primary_verifier is the only one that it would care about
-  // changes to.
+  // Delegate the notifications to the wrapped verifiers. We add the observer
+  // to both `primary_verifier_` and `trial_verifier_` since either one might
+  // be the one that matters depending on the configuration at the time. This
+  // does mean the caller will get double notified, but shouldn't really matter
+  // that much. It would be possible to avoid this by making a notification
+  // proxy that only forwards notifications from the verifier that is currently
+  // the "main" one, but it's probably not worth the trouble.
+  //
+  // Also this assumes that there is never a case where the
+  // TrialComparisonCertVerifier itself would change something without the
+  // wrapped verifiers also generating a notification.
   primary_verifier_->AddObserver(observer);
+  trial_verifier_->AddObserver(observer);
 }
 
 void TrialComparisonCertVerifier::RemoveObserver(
     CertVerifier::Observer* observer) {
+  trial_verifier_->RemoveObserver(observer);
   primary_verifier_->RemoveObserver(observer);
 }
 
 void TrialComparisonCertVerifier::UpdateVerifyProcData(
     scoped_refptr<CertNetFetcher> cert_net_fetcher,
-    scoped_refptr<CRLSet> crl_set,
-    const ChromeRootStoreData* root_store_data) {
-  primary_verifier_->UpdateVerifyProcData(cert_net_fetcher, crl_set,
-                                          root_store_data);
-  primary_reverifier_->UpdateVerifyProcData(cert_net_fetcher, crl_set,
-                                            root_store_data);
-  trial_verifier_->UpdateVerifyProcData(cert_net_fetcher, crl_set,
-                                        root_store_data);
+    const CertVerifyProcFactory::ImplParams& impl_params) {
+  bool previous_actual_use_chrome_root_store = actual_use_chrome_root_store_;
+  auto [primary_impl_params, trial_impl_params] =
+      ProcessImplParams(impl_params);
+
+  // If the only change in the params was to switch the
+  // `actual_use_chrome_root_store_` value, updating the underlying verifiers
+  // is unnecessary, but it's probably not worth the trouble to try to avoid
+  // it.
+  primary_verifier_->UpdateVerifyProcData(cert_net_fetcher,
+                                          primary_impl_params);
+  primary_reverifier_->UpdateVerifyProcData(cert_net_fetcher,
+                                            primary_impl_params);
+
+  trial_verifier_->UpdateVerifyProcData(cert_net_fetcher, trial_impl_params);
+
   // The TrialComparisonCertVerifier is registered as an observer of the
   // underlying verifiers, and so the OnCertVerifierChanged method should be
   // triggered to call NotifyJobsOfConfigChange, so it isn't explicitly called
-  // here.
+  // here for cases other than the `actual_use_chrome_root_store_` changing.
+
+  if (previous_actual_use_chrome_root_store != actual_use_chrome_root_store_) {
+    NotifyJobsOfConfigChange();
+  }
 }
 
 void TrialComparisonCertVerifier::RemoveJob(Job* job_ptr) {
@@ -561,6 +599,18 @@ void TrialComparisonCertVerifier::RemoveJob(Job* job_ptr) {
   auto it = jobs_.find(job_ptr);
   DCHECK(it != jobs_.end());
   jobs_.erase(it);
+}
+
+std::tuple<CertVerifyProcFactory::ImplParams, CertVerifyProcFactory::ImplParams>
+TrialComparisonCertVerifier::ProcessImplParams(
+    const CertVerifyProcFactory::ImplParams& impl_params) {
+  actual_use_chrome_root_store_ = impl_params.use_chrome_root_store;
+
+  CertVerifyProcFactory::ImplParams primary_impl_params(impl_params);
+  primary_impl_params.use_chrome_root_store = false;
+  CertVerifyProcFactory::ImplParams trial_impl_params(impl_params);
+  trial_impl_params.use_chrome_root_store = true;
+  return {std::move(primary_impl_params), std::move(trial_impl_params)};
 }
 
 void TrialComparisonCertVerifier::NotifyJobsOfConfigChange() {

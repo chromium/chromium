@@ -111,7 +111,6 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-#include "chrome/browser/net/cert_verifier_configuration.h"
 #include "chrome/browser/net/trial_comparison_cert_verifier_controller.h"
 #endif
 
@@ -907,27 +906,8 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   network_context_params->ct_policy = GetCTPolicy();
 
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-  // In order for the TrialComparisonCertVerifier to be useful, it needs to
-  // provide comparisons between two well-defined verifier configurations; this
-  // means the currently launched cert verifier (and root store) and the
-  // prospective cert verifier (and root store).
-  //
-  // It's possible that, due to user configuration, such as enterprise policies,
-  // the user may be requesting a non-standard configuration from the current
-  // default. In these cases, the trial verifier is also disabled,
-  // because all users in the trial should be running in the same configuration.
   DCHECK(cert_verifier_creation_params);
-  bool is_trial_comparison_supported = !in_memory;
-
-  cert_verifier::mojom::CertVerifierServiceParamsPtr
-      cert_verifier_configuration =
-          GetChromeCertVerifierServiceParams(/*local_state=*/nullptr);
-  DCHECK(cert_verifier_configuration);
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  is_trial_comparison_supported &=
-      !cert_verifier_configuration->use_chrome_root_store;
-#endif
-  if (is_trial_comparison_supported &&
+  if (!in_memory &&
       TrialComparisonCertVerifierController::MaybeAllowedForProfile(profile_)) {
     mojo::PendingRemote<
         cert_verifier::mojom::TrialComparisonCertVerifierConfigClient>
