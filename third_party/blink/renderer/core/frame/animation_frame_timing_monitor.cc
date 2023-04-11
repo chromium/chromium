@@ -579,8 +579,14 @@ void AnimationFrameTimingMonitor::Will(
 namespace {
 
 ScriptTimingInfo::ScriptSourceLocation CaptureScriptSourceLocation(
-    const v8::Local<v8::Value>& value) {
-  if (value.IsEmpty() || !value->IsFunction()) {
+    v8::MaybeLocal<v8::Value> maybe_value) {
+  v8::Local<v8::Value> value;
+
+  if (!maybe_value.ToLocal(&value)) {
+    return ScriptTimingInfo::ScriptSourceLocation();
+  }
+
+  if (!value->IsFunction()) {
     return ScriptTimingInfo::ScriptSourceLocation();
   }
 
@@ -617,8 +623,7 @@ void AnimationFrameTimingMonitor::Did(const probe::InvokeCallback& probe_data) {
   if (probe_data.callback) {
     info->SetSourceLocation(
         CaptureScriptSourceLocation(probe_data.callback->CallbackObject()));
-  } else if (!probe_data.function.IsEmpty() &&
-             probe_data.function->IsFunction()) {
+  } else {
     info->SetSourceLocation(CaptureScriptSourceLocation(probe_data.function));
   }
 }
