@@ -196,6 +196,8 @@ public abstract class ChromeFeatureList {
             "AutofillEnableManualFallbackForVirtualCards";
     public static final String AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES =
             "AutofillEnableNewCardArtAndNetworkImages";
+    public static final String AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH =
+            "AutofillEnablePaymentsMandatoryReauth";
     public static final String AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES =
             "AutofillEnableSupportForHonorificPrefixes";
     public static final String AUTOFILL_ENABLE_UPDATE_VIRTUAL_CARD_ENROLLMENT =

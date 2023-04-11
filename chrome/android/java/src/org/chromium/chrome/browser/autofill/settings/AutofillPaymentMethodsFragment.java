@@ -129,6 +129,21 @@ public class AutofillPaymentMethodsFragment
             getPreferenceScreen().addPreference(fidoAuthSwitch);
         }
 
+        // TODO(crbug.com/1427216): Confirm with Product on the order of the toggles.
+        // TODO(crbug.com/1427216): Check biometric eligibilty before showing this toggle.
+        // We don't show the Reauth toggle when Autofill credit card is disabled.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH)
+                && PersonalDataManager.isAutofillCreditCardEnabled()) {
+            ChromeSwitchPreference mandatoryReauthSwitch =
+                    new ChromeSwitchPreference(getStyledContext(), null);
+            mandatoryReauthSwitch.setTitle(
+                    R.string.autofill_settings_page_enable_payment_method_mandatory_reauth_label);
+            mandatoryReauthSwitch.setSummary(
+                    R.string.autofill_settings_page_enable_payment_method_mandatory_reauth_sublabel);
+            // TODO(crbug.com/1427216): Set the checked value and listener to bind to the new pref.
+            getPreferenceScreen().addPreference(mandatoryReauthSwitch);
+        }
+
         for (CreditCard card : PersonalDataManager.getInstance().getCreditCardsForSettings()) {
             // Add a preference for the credit card.
             Preference card_pref = new Preference(getStyledContext());
