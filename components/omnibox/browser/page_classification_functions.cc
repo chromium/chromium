@@ -12,7 +12,6 @@ bool IsNTPPage(
          (classification == OEP::INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS) ||
          (classification == OEP::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS) ||
          (classification == OEP::NTP_REALBOX) ||
-         (classification == OEP::ANDROID_SHORTCUTS_WIDGET) ||
          (classification == OEP::NTP_ZPS_PREFETCH);
 }
 
@@ -23,6 +22,7 @@ bool IsSearchResultsPage(
           OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT) ||
          (classification ==
           OEP::SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT) ||
+         (classification == OEP::ANDROID_SHORTCUTS_WIDGET) ||
          (classification == OEP::SRP_ZPS_PREFETCH);
 }
 
