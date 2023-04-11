@@ -144,20 +144,21 @@ bool IsCaseSensitive(const dnr_api::Rule& parsed_rule) {
 uint8_t GetOptionsMask(const dnr_api::Rule& parsed_rule) {
   uint8_t mask = flat_rule::OptionFlag_NONE;
 
-  if (parsed_rule.action.type == dnr_api::RULE_ACTION_TYPE_ALLOW)
+  if (parsed_rule.action.type == dnr_api::RuleActionType::kAllow) {
     mask |= flat_rule::OptionFlag_IS_ALLOWLIST;
+  }
 
   if (!IsCaseSensitive(parsed_rule))
     mask |= flat_rule::OptionFlag_IS_CASE_INSENSITIVE;
 
   switch (parsed_rule.condition.domain_type) {
-    case dnr_api::DOMAIN_TYPE_FIRSTPARTY:
+    case dnr_api::DomainType::kFirstParty:
       mask |= flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY;
       break;
-    case dnr_api::DOMAIN_TYPE_THIRDPARTY:
+    case dnr_api::DomainType::kThirdParty:
       mask |= flat_rule::OptionFlag_APPLIES_TO_THIRD_PARTY;
       break;
-    case dnr_api::DOMAIN_TYPE_NONE:
+    case dnr_api::DomainType::kNone:
       mask |= (flat_rule::OptionFlag_APPLIES_TO_FIRST_PARTY |
                flat_rule::OptionFlag_APPLIES_TO_THIRD_PARTY);
       break;
@@ -241,7 +242,7 @@ ParseResult ComputeElementTypes(const dnr_api::Rule& rule,
   if (include_element_type_mask & exclude_element_type_mask)
     return ParseResult::ERROR_RESOURCE_TYPE_DUPLICATED;
 
-  if (rule.action.type == dnr_api::RULE_ACTION_TYPE_ALLOWALLREQUESTS) {
+  if (rule.action.type == dnr_api::RuleActionType::kAllowAllRequests) {
     // For allowAllRequests rule, the resourceTypes key must always be specified
     // and may only include main_frame and sub_frame types.
     const uint16_t frame_element_type_mask =
@@ -392,19 +393,19 @@ ParseResult ParseRedirect(dnr_api::Redirect redirect,
 
 uint8_t GetActionTypePriority(dnr_api::RuleActionType action_type) {
   switch (action_type) {
-    case dnr_api::RULE_ACTION_TYPE_ALLOW:
+    case dnr_api::RuleActionType::kAllow:
       return 5;
-    case dnr_api::RULE_ACTION_TYPE_ALLOWALLREQUESTS:
+    case dnr_api::RuleActionType::kAllowAllRequests:
       return 4;
-    case dnr_api::RULE_ACTION_TYPE_BLOCK:
+    case dnr_api::RuleActionType::kBlock:
       return 3;
-    case dnr_api::RULE_ACTION_TYPE_UPGRADESCHEME:
+    case dnr_api::RuleActionType::kUpgradeScheme:
       return 2;
-    case dnr_api::RULE_ACTION_TYPE_REDIRECT:
+    case dnr_api::RuleActionType::kRedirect:
       return 1;
-    case dnr_api::RULE_ACTION_TYPE_MODIFYHEADERS:
+    case dnr_api::RuleActionType::kModifyHeaders:
       return 0;
-    case dnr_api::RULE_ACTION_TYPE_NONE:
+    case dnr_api::RuleActionType::kNone:
       break;
   }
   NOTREACHED();
@@ -428,7 +429,7 @@ ParseResult ValidateHeaders(
       return ParseResult::ERROR_INVALID_HEADER_NAME;
 
     if (are_request_headers &&
-        header_info.operation == dnr_api::HEADER_OPERATION_APPEND) {
+        header_info.operation == dnr_api::HeaderOperation::kAppend) {
       DCHECK(
           base::ranges::none_of(header_info.header, base::IsAsciiUpper<char>));
       if (!base::Contains(kDNRRequestHeaderAppendAllowList, header_info.header))
@@ -440,10 +441,11 @@ ParseResult ValidateHeaders(
         return ParseResult::ERROR_INVALID_HEADER_VALUE;
 
       // Check that a remove operation must not specify a value.
-      if (header_info.operation == dnr_api::HEADER_OPERATION_REMOVE)
+      if (header_info.operation == dnr_api::HeaderOperation::kRemove) {
         return ParseResult::ERROR_HEADER_VALUE_PRESENT;
-    } else if (header_info.operation == dnr_api::HEADER_OPERATION_APPEND ||
-               header_info.operation == dnr_api::HEADER_OPERATION_SET) {
+      }
+    } else if (header_info.operation == dnr_api::HeaderOperation::kAppend ||
+               header_info.operation == dnr_api::HeaderOperation::kSet) {
       // Check that an append or set operation must specify a value.
       return ParseResult::ERROR_HEADER_VALUE_NOT_SPECIFIED;
     }
@@ -484,7 +486,7 @@ ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
     return ParseResult::ERROR_INVALID_RULE_PRIORITY;
 
   const bool is_redirect_rule =
-      parsed_rule.action.type == dnr_api::RULE_ACTION_TYPE_REDIRECT;
+      parsed_rule.action.type == dnr_api::RuleActionType::kRedirect;
 
   if (is_redirect_rule) {
     if (!parsed_rule.action.redirect)
@@ -693,7 +695,7 @@ ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
   if (indexed_rule->options & flat_rule::OptionFlag_IS_CASE_INSENSITIVE)
     indexed_rule->url_pattern = base::ToLowerASCII(indexed_rule->url_pattern);
 
-  if (parsed_rule.action.type == dnr_api::RULE_ACTION_TYPE_MODIFYHEADERS) {
+  if (parsed_rule.action.type == dnr_api::RuleActionType::kModifyHeaders) {
     if (!parsed_rule.action.request_headers &&
         !parsed_rule.action.response_headers)
       return ParseResult::ERROR_NO_HEADERS_SPECIFIED;

@@ -644,8 +644,8 @@ DeclarativeNetRequestIsRegexSupportedFunction::Run() {
   } else {
     result.is_supported = false;
     result.reason = regex.error_code() == re2::RE2::ErrorPatternTooLarge
-                        ? dnr_api::UNSUPPORTED_REGEX_REASON_MEMORYLIMITEXCEEDED
-                        : dnr_api::UNSUPPORTED_REGEX_REASON_SYNTAXERROR;
+                        ? dnr_api::UnsupportedRegexReason::kMemoryLimitExceeded
+                        : dnr_api::UnsupportedRegexReason::kSyntaxError;
   }
 
   return RespondNow(
@@ -741,10 +741,9 @@ DeclarativeNetRequestTestMatchOutcomeFunction::Run() {
     return RespondNow(Error(declarative_net_request::kInvalidTestTabIdError));
   }
 
-  auto method =
-      params->request.method == dnr_api::RequestMethod::REQUEST_METHOD_NONE
-          ? dnr_api::RequestMethod::REQUEST_METHOD_GET
-          : params->request.method;
+  auto method = params->request.method == dnr_api::RequestMethod::kNone
+                    ? dnr_api::RequestMethod::kGet
+                    : params->request.method;
   declarative_net_request::RequestParams request_params(
       url, initiator, params->request.type, method, tab_id);
 

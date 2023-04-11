@@ -226,14 +226,14 @@ TEST_F(RulesetMatcherTest, ModifyHeaders) {
   RequestAction expected_rule_1_action = CreateRequestActionForTesting(
       RequestAction::Type::MODIFY_HEADERS, *rule_1.id, *rule_1.priority);
   expected_rule_1_action.request_headers_to_modify = {RequestAction::HeaderInfo(
-      "header1", dnr_api::HEADER_OPERATION_REMOVE, absl::nullopt)};
+      "header1", dnr_api::HeaderOperation::kRemove, absl::nullopt)};
 
   RequestAction expected_rule_2_action = CreateRequestActionForTesting(
       RequestAction::Type::MODIFY_HEADERS, *rule_2.id, *rule_2.priority);
   expected_rule_2_action.request_headers_to_modify = {
-      RequestAction::HeaderInfo("header1", dnr_api::HEADER_OPERATION_SET,
+      RequestAction::HeaderInfo("header1", dnr_api::HeaderOperation::kSet,
                                 "value1"),
-      RequestAction::HeaderInfo("header2", dnr_api::HEADER_OPERATION_REMOVE,
+      RequestAction::HeaderInfo("header2", dnr_api::HeaderOperation::kRemove,
                                 absl::nullopt)};
 
   EXPECT_THAT(modify_header_actions,
@@ -572,7 +572,7 @@ TEST_F(RulesetMatcherTest, RegexRules) {
     test_case.expected_modify_header_action = CreateRequestActionForTesting(
         RequestAction::Type::MODIFY_HEADERS, *modify_headers_rule.id);
     test_case.expected_modify_header_action->request_headers_to_modify = {
-        RequestAction::HeaderInfo("header1", dnr_api::HEADER_OPERATION_SET,
+        RequestAction::HeaderInfo("header1", dnr_api::HeaderOperation::kSet,
                                   "value1")};
     test_cases.push_back(std::move(test_case));
   }
@@ -947,9 +947,9 @@ TEST_F(RulesetMatcherTest, RegexAndFilterListRules_ModifyHeaders) {
   RequestAction action_1 = CreateRequestActionForTesting(
       RequestAction::Type::MODIFY_HEADERS, 1, *rule.priority);
   action_1.request_headers_to_modify = {
-      RequestAction::HeaderInfo("header1", dnr_api::HEADER_OPERATION_REMOVE,
+      RequestAction::HeaderInfo("header1", dnr_api::HeaderOperation::kRemove,
                                 absl::nullopt),
-      RequestAction::HeaderInfo("header2", dnr_api::HEADER_OPERATION_REMOVE,
+      RequestAction::HeaderInfo("header2", dnr_api::HeaderOperation::kRemove,
                                 absl::nullopt)};
 
   rule = CreateGenericRule();
@@ -966,9 +966,9 @@ TEST_F(RulesetMatcherTest, RegexAndFilterListRules_ModifyHeaders) {
   RequestAction action_2 = CreateRequestActionForTesting(
       RequestAction::Type::MODIFY_HEADERS, 2, *rule.priority);
   action_2.request_headers_to_modify = {
-      RequestAction::HeaderInfo("header1", dnr_api::HEADER_OPERATION_REMOVE,
+      RequestAction::HeaderInfo("header1", dnr_api::HeaderOperation::kRemove,
                                 absl::nullopt),
-      RequestAction::HeaderInfo("header3", dnr_api::HEADER_OPERATION_REMOVE,
+      RequestAction::HeaderInfo("header3", dnr_api::HeaderOperation::kRemove,
                                 absl::nullopt)};
 
   std::unique_ptr<RulesetMatcher> matcher;

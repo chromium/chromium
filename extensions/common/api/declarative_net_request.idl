@@ -6,7 +6,7 @@
 // network requests by specifying declarative rules. This lets extensions
 // modify network requests without intercepting them and viewing their content,
 // thus providing more privacy.
-[generate_error_messages]
+[generate_error_messages, modernised_enums]
 namespace declarativeNetRequest {
   // This describes the resource type of the network request.
   enum ResourceType {

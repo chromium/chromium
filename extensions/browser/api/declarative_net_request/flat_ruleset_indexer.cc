@@ -178,16 +178,16 @@ FlatVectorOffset<flat::ModifyHeaderInfo> BuildModifyHeaderInfoOffset(
     FlatStringOffset header_value;
 
     switch (header_info.operation) {
-      case dnr_api::HeaderOperation::HEADER_OPERATION_NONE:
-      case dnr_api::HEADER_OPERATION_APPEND:
+      case dnr_api::HeaderOperation::kNone:
+      case dnr_api::HeaderOperation::kAppend:
         operation = flat::HeaderOperation_append;
         header_value = builder->CreateSharedString(*header_info.value);
         break;
-      case dnr_api::HEADER_OPERATION_SET:
+      case dnr_api::HeaderOperation::kSet:
         operation = flat::HeaderOperation_set;
         header_value = builder->CreateSharedString(*header_info.value);
         break;
-      case dnr_api::HEADER_OPERATION_REMOVE:
+      case dnr_api::HeaderOperation::kRemove:
         operation = flat::HeaderOperation_remove;
         break;
     }
@@ -340,18 +340,18 @@ flatbuffers::DetachedBuffer FlatRulesetIndexer::FinishAndReleaseBuffer() {
 std::vector<FlatRulesetIndexer::UrlPatternIndexBuilder*>
 FlatRulesetIndexer::GetBuilders(const IndexedRule& indexed_rule) {
   switch (indexed_rule.action_type) {
-    case dnr_api::RULE_ACTION_TYPE_BLOCK:
-    case dnr_api::RULE_ACTION_TYPE_ALLOW:
-    case dnr_api::RULE_ACTION_TYPE_REDIRECT:
-    case dnr_api::RULE_ACTION_TYPE_UPGRADESCHEME:
+    case dnr_api::RuleActionType::kBlock:
+    case dnr_api::RuleActionType::kAllow:
+    case dnr_api::RuleActionType::kRedirect:
+    case dnr_api::RuleActionType::kUpgradeScheme:
       return {index_builders_
                   [flat::IndexType_before_request_except_allow_all_requests]
                       .get()};
-    case dnr_api::RULE_ACTION_TYPE_ALLOWALLREQUESTS:
+    case dnr_api::RuleActionType::kAllowAllRequests:
       return {index_builders_[flat::IndexType_allow_all_requests].get()};
-    case dnr_api::RULE_ACTION_TYPE_MODIFYHEADERS:
+    case dnr_api::RuleActionType::kModifyHeaders:
       return {index_builders_[flat::IndexType_modify_headers].get()};
-    case dnr_api::RULE_ACTION_TYPE_NONE:
+    case dnr_api::RuleActionType::kNone:
       break;
   }
   NOTREACHED();

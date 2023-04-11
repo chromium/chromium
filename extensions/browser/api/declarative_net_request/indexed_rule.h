@@ -41,7 +41,7 @@ struct IndexedRule {
       IndexedRule* indexed_rule);
 
   api::declarative_net_request::RuleActionType action_type =
-      api::declarative_net_request::RULE_ACTION_TYPE_NONE;
+      api::declarative_net_request::RuleActionType::kNone;
 
   // These fields correspond to the attributes of a flatbuffer UrlRule, as
   // specified by the url_pattern_index component.

@@ -510,18 +510,18 @@ TEST_P(RulesetManagerTest, ModifyHeaders) {
       RequestActionType::MODIFY_HEADERS, kMinValidID, kDefaultPriority,
       kMinValidStaticRulesetID, extension_2->id());
   expected_action_1.request_headers_to_modify = {RequestAction::HeaderInfo(
-      "header1", dnr_api::HEADER_OPERATION_REMOVE, absl::nullopt)};
+      "header1", dnr_api::HeaderOperation::kRemove, absl::nullopt)};
   expected_action_1.response_headers_to_modify = {RequestAction::HeaderInfo(
-      "header3", dnr_api::HEADER_OPERATION_APPEND, "value3")};
+      "header3", dnr_api::HeaderOperation::kAppend, "value3")};
 
   // Create the expected RequestAction for |extension_1|.
   RequestAction expected_action_2 = CreateRequestActionForTesting(
       RequestActionType::MODIFY_HEADERS, kMinValidID, kDefaultPriority,
       kMinValidStaticRulesetID, extension_1->id());
   expected_action_2.request_headers_to_modify = {
-      RequestAction::HeaderInfo("header1", dnr_api::HEADER_OPERATION_REMOVE,
+      RequestAction::HeaderInfo("header1", dnr_api::HeaderOperation::kRemove,
                                 absl::nullopt),
-      RequestAction::HeaderInfo("header2", dnr_api::HEADER_OPERATION_SET,
+      RequestAction::HeaderInfo("header2", dnr_api::HeaderOperation::kSet,
                                 "value2")};
 
   // Verify that the list of actions is sorted in descending order of extension
@@ -574,7 +574,7 @@ TEST_P(RulesetManagerTest, ModifyHeadersWithAllowRules) {
         RequestActionType::MODIFY_HEADERS, *rule1.id, *rule1.priority,
         kMinValidStaticRulesetID, extension->id());
     expected_action.request_headers_to_modify = {RequestAction::HeaderInfo(
-        "header", dnr_api::HEADER_OPERATION_SET, "value")};
+        "header", dnr_api::HeaderOperation::kSet, "value")};
     EXPECT_THAT(actions, ::testing::ElementsAre(
                              ::testing::Eq(::testing::ByRef(expected_action))));
   }
@@ -622,7 +622,7 @@ TEST_P(RulesetManagerTest, ModifyHeaders_HostPermissions) {
         RequestActionType::MODIFY_HEADERS, kMinValidID, kDefaultPriority,
         kMinValidStaticRulesetID, extension->id());
     expected_action.request_headers_to_modify = {RequestAction::HeaderInfo(
-        "header1", dnr_api::HEADER_OPERATION_REMOVE, absl::nullopt)};
+        "header1", dnr_api::HeaderOperation::kRemove, absl::nullopt)};
 
     EXPECT_THAT(actual_actions, ::testing::ElementsAre(::testing::Eq(
                                     ::testing::ByRef(expected_action))));

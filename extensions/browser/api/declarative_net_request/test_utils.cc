@@ -40,17 +40,17 @@ RequestAction CreateRequestActionForTesting(RequestAction::Type type,
     switch (type) {
       case RequestAction::Type::BLOCK:
       case RequestAction::Type::COLLAPSE:
-        return dnr_api::RULE_ACTION_TYPE_BLOCK;
+        return dnr_api::RuleActionType::kBlock;
       case RequestAction::Type::ALLOW:
-        return dnr_api::RULE_ACTION_TYPE_ALLOW;
+        return dnr_api::RuleActionType::kAllow;
       case RequestAction::Type::REDIRECT:
-        return dnr_api::RULE_ACTION_TYPE_REDIRECT;
+        return dnr_api::RuleActionType::kRedirect;
       case RequestAction::Type::UPGRADE:
-        return dnr_api::RULE_ACTION_TYPE_UPGRADESCHEME;
+        return dnr_api::RuleActionType::kUpgradeScheme;
       case RequestAction::Type::ALLOW_ALL_REQUESTS:
-        return dnr_api::RULE_ACTION_TYPE_ALLOWALLREQUESTS;
+        return dnr_api::RuleActionType::kAllowAllRequests;
       case RequestAction::Type::MODIFY_HEADERS:
-        return dnr_api::RULE_ACTION_TYPE_MODIFYHEADERS;
+        return dnr_api::RuleActionType::kModifyHeaders;
     }
   }();
   return RequestAction(type, rule_id,

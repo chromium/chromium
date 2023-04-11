@@ -178,20 +178,20 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions) {
       CreateRequestActionForTesting(RequestAction::Type::MODIFY_HEADERS,
                                     *rule_1.id, *rule_1.priority, kSource1ID);
   action_1.request_headers_to_modify = {
-      RequestAction::HeaderInfo("header1", dnr_api::HEADER_OPERATION_REMOVE,
+      RequestAction::HeaderInfo("header1", dnr_api::HeaderOperation::kRemove,
                                 absl::nullopt),
-      RequestAction::HeaderInfo("header2", dnr_api::HEADER_OPERATION_SET,
+      RequestAction::HeaderInfo("header2", dnr_api::HeaderOperation::kSet,
                                 "value2")};
 
   RequestAction action_2 =
       CreateRequestActionForTesting(RequestAction::Type::MODIFY_HEADERS,
                                     *rule_2.id, *rule_2.priority, kSource2ID);
   action_2.response_headers_to_modify = {
-      RequestAction::HeaderInfo("header1", dnr_api::HEADER_OPERATION_REMOVE,
+      RequestAction::HeaderInfo("header1", dnr_api::HeaderOperation::kRemove,
                                 absl::nullopt),
-      RequestAction::HeaderInfo("header2", dnr_api::HEADER_OPERATION_APPEND,
+      RequestAction::HeaderInfo("header2", dnr_api::HeaderOperation::kAppend,
                                 "VALUE2"),
-      RequestAction::HeaderInfo("header3", dnr_api::HEADER_OPERATION_SET,
+      RequestAction::HeaderInfo("header3", dnr_api::HeaderOperation::kSet,
                                 "VALUE3")};
 
   // |action_2| should be before |action_1| because |rule_2|
@@ -227,20 +227,20 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions) {
       CreateRequestActionForTesting(RequestAction::Type::MODIFY_HEADERS,
                                     *rule_1.id, *rule_1.priority, kSource1ID);
   action_1.request_headers_to_modify = {
-      RequestAction::HeaderInfo("header1", dnr_api::HEADER_OPERATION_REMOVE,
+      RequestAction::HeaderInfo("header1", dnr_api::HeaderOperation::kRemove,
                                 absl::nullopt),
-      RequestAction::HeaderInfo("header2", dnr_api::HEADER_OPERATION_SET,
+      RequestAction::HeaderInfo("header2", dnr_api::HeaderOperation::kSet,
                                 "value2")};
 
   action_2 =
       CreateRequestActionForTesting(RequestAction::Type::MODIFY_HEADERS,
                                     *rule_2.id, *rule_2.priority, kSource2ID);
   action_2.response_headers_to_modify = {
-      RequestAction::HeaderInfo("header1", dnr_api::HEADER_OPERATION_REMOVE,
+      RequestAction::HeaderInfo("header1", dnr_api::HeaderOperation::kRemove,
                                 absl::nullopt),
-      RequestAction::HeaderInfo("header2", dnr_api::HEADER_OPERATION_APPEND,
+      RequestAction::HeaderInfo("header2", dnr_api::HeaderOperation::kAppend,
                                 "VALUE2"),
-      RequestAction::HeaderInfo("header3", dnr_api::HEADER_OPERATION_SET,
+      RequestAction::HeaderInfo("header3", dnr_api::HeaderOperation::kSet,
                                 "VALUE3")};
 
   // |action_1| should now be before |action_2| after their
@@ -346,10 +346,12 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions_Priority) {
 
   RequestAction header_3_action = create_action_for_rule(
       url_rule_3, kSource1ID,
-      {HeaderInfo("header3", dnr_api::HEADER_OPERATION_REMOVE, absl::nullopt)});
+      {HeaderInfo("header3", dnr_api::HeaderOperation::kRemove,
+                  absl::nullopt)});
   RequestAction header_6_action = create_action_for_rule(
       regex_rule_3, kSource2ID,
-      {HeaderInfo("header6", dnr_api::HEADER_OPERATION_REMOVE, absl::nullopt)});
+      {HeaderInfo("header6", dnr_api::HeaderOperation::kRemove,
+                  absl::nullopt)});
 
   // For the request to "http://google.com/1", since |url_rule_3| and
   // |regex_rule_3| are the only rules with a greater priority than
@@ -371,16 +373,20 @@ TEST_F(CompositeMatcherTest, GetModifyHeadersActions_Priority) {
 
   RequestAction header_1_action = create_action_for_rule(
       url_rule_1, kSource1ID,
-      {HeaderInfo("header1", dnr_api::HEADER_OPERATION_REMOVE, absl::nullopt)});
+      {HeaderInfo("header1", dnr_api::HeaderOperation::kRemove,
+                  absl::nullopt)});
   RequestAction header_2_action = create_action_for_rule(
       url_rule_2, kSource1ID,
-      {HeaderInfo("header2", dnr_api::HEADER_OPERATION_REMOVE, absl::nullopt)});
+      {HeaderInfo("header2", dnr_api::HeaderOperation::kRemove,
+                  absl::nullopt)});
   RequestAction header_4_action = create_action_for_rule(
       regex_rule_1, kSource2ID,
-      {HeaderInfo("header4", dnr_api::HEADER_OPERATION_REMOVE, absl::nullopt)});
+      {HeaderInfo("header4", dnr_api::HeaderOperation::kRemove,
+                  absl::nullopt)});
   RequestAction header_5_action = create_action_for_rule(
       regex_rule_2, kSource2ID,
-      {HeaderInfo("header5", dnr_api::HEADER_OPERATION_REMOVE, absl::nullopt)});
+      {HeaderInfo("header5", dnr_api::HeaderOperation::kRemove,
+                  absl::nullopt)});
 
   // For the request to "http://google.com/2", "header1" to "header6" should be
   // removed since all modifyHeaders rules are matched and there is no matching

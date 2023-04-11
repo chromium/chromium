@@ -194,75 +194,75 @@ void LogReadDynamicRulesStatus(ReadJSONRulesResult::Status status) {
 dnr_api::ResourceType GetDNRResourceType(WebRequestResourceType resource_type) {
   switch (resource_type) {
     case WebRequestResourceType::OTHER:
-      return dnr_api::RESOURCE_TYPE_OTHER;
+      return dnr_api::ResourceType::kOther;
     case WebRequestResourceType::MAIN_FRAME:
-      return dnr_api::RESOURCE_TYPE_MAIN_FRAME;
+      return dnr_api::ResourceType::kMainFrame;
     case WebRequestResourceType::CSP_REPORT:
-      return dnr_api::RESOURCE_TYPE_CSP_REPORT;
+      return dnr_api::ResourceType::kCspReport;
     case WebRequestResourceType::SCRIPT:
-      return dnr_api::RESOURCE_TYPE_SCRIPT;
+      return dnr_api::ResourceType::kScript;
     case WebRequestResourceType::IMAGE:
-      return dnr_api::RESOURCE_TYPE_IMAGE;
+      return dnr_api::ResourceType::kImage;
     case WebRequestResourceType::STYLESHEET:
-      return dnr_api::RESOURCE_TYPE_STYLESHEET;
+      return dnr_api::ResourceType::kStylesheet;
     case WebRequestResourceType::OBJECT:
-      return dnr_api::RESOURCE_TYPE_OBJECT;
+      return dnr_api::ResourceType::kObject;
     case WebRequestResourceType::XHR:
-      return dnr_api::RESOURCE_TYPE_XMLHTTPREQUEST;
+      return dnr_api::ResourceType::kXmlhttprequest;
     case WebRequestResourceType::SUB_FRAME:
-      return dnr_api::RESOURCE_TYPE_SUB_FRAME;
+      return dnr_api::ResourceType::kSubFrame;
     case WebRequestResourceType::PING:
-      return dnr_api::RESOURCE_TYPE_PING;
+      return dnr_api::ResourceType::kPing;
     case WebRequestResourceType::MEDIA:
-      return dnr_api::RESOURCE_TYPE_MEDIA;
+      return dnr_api::ResourceType::kMedia;
     case WebRequestResourceType::FONT:
-      return dnr_api::RESOURCE_TYPE_FONT;
+      return dnr_api::ResourceType::kFont;
     case WebRequestResourceType::WEB_SOCKET:
-      return dnr_api::RESOURCE_TYPE_WEBSOCKET;
+      return dnr_api::ResourceType::kWebsocket;
     case WebRequestResourceType::WEB_TRANSPORT:
-      return dnr_api::RESOURCE_TYPE_WEBTRANSPORT;
+      return dnr_api::ResourceType::kWebtransport;
     case WebRequestResourceType::WEBBUNDLE:
-      return dnr_api::RESOURCE_TYPE_WEBBUNDLE;
+      return dnr_api::ResourceType::kWebbundle;
   }
   NOTREACHED();
-  return dnr_api::RESOURCE_TYPE_OTHER;
+  return dnr_api::ResourceType::kOther;
 }
 
 // Maps dnr_api::ResourceType to WebRequestResourceType.
 WebRequestResourceType GetWebRequestResourceType(
     dnr_api::ResourceType resource_type) {
   switch (resource_type) {
-    case dnr_api::RESOURCE_TYPE_OTHER:
+    case dnr_api::ResourceType::kOther:
       return WebRequestResourceType::OTHER;
-    case dnr_api::RESOURCE_TYPE_MAIN_FRAME:
+    case dnr_api::ResourceType::kMainFrame:
       return WebRequestResourceType::MAIN_FRAME;
-    case dnr_api::RESOURCE_TYPE_CSP_REPORT:
+    case dnr_api::ResourceType::kCspReport:
       return WebRequestResourceType::CSP_REPORT;
-    case dnr_api::RESOURCE_TYPE_SCRIPT:
+    case dnr_api::ResourceType::kScript:
       return WebRequestResourceType::SCRIPT;
-    case dnr_api::RESOURCE_TYPE_IMAGE:
+    case dnr_api::ResourceType::kImage:
       return WebRequestResourceType::IMAGE;
-    case dnr_api::RESOURCE_TYPE_STYLESHEET:
+    case dnr_api::ResourceType::kStylesheet:
       return WebRequestResourceType::STYLESHEET;
-    case dnr_api::RESOURCE_TYPE_OBJECT:
+    case dnr_api::ResourceType::kObject:
       return WebRequestResourceType::OBJECT;
-    case dnr_api::RESOURCE_TYPE_XMLHTTPREQUEST:
+    case dnr_api::ResourceType::kXmlhttprequest:
       return WebRequestResourceType::XHR;
-    case dnr_api::RESOURCE_TYPE_SUB_FRAME:
+    case dnr_api::ResourceType::kSubFrame:
       return WebRequestResourceType::SUB_FRAME;
-    case dnr_api::RESOURCE_TYPE_PING:
+    case dnr_api::ResourceType::kPing:
       return WebRequestResourceType::PING;
-    case dnr_api::RESOURCE_TYPE_MEDIA:
+    case dnr_api::ResourceType::kMedia:
       return WebRequestResourceType::MEDIA;
-    case dnr_api::RESOURCE_TYPE_FONT:
+    case dnr_api::ResourceType::kFont:
       return WebRequestResourceType::FONT;
-    case dnr_api::RESOURCE_TYPE_WEBSOCKET:
+    case dnr_api::ResourceType::kWebsocket:
       return WebRequestResourceType::WEB_SOCKET;
-    case dnr_api::RESOURCE_TYPE_WEBTRANSPORT:
+    case dnr_api::ResourceType::kWebtransport:
       return WebRequestResourceType::WEB_TRANSPORT;
-    case dnr_api::RESOURCE_TYPE_WEBBUNDLE:
+    case dnr_api::ResourceType::kWebbundle:
       return WebRequestResourceType::WEBBUNDLE;
-    case dnr_api::RESOURCE_TYPE_NONE:
+    case dnr_api::ResourceType::kNone:
       NOTREACHED();
       return WebRequestResourceType::OTHER;
   }
@@ -321,19 +321,19 @@ re2::RE2::Options CreateRE2Options(bool is_case_sensitive,
 
 flat::ActionType ConvertToFlatActionType(dnr_api::RuleActionType action_type) {
   switch (action_type) {
-    case dnr_api::RULE_ACTION_TYPE_BLOCK:
+    case dnr_api::RuleActionType::kBlock:
       return flat::ActionType_block;
-    case dnr_api::RULE_ACTION_TYPE_ALLOW:
+    case dnr_api::RuleActionType::kAllow:
       return flat::ActionType_allow;
-    case dnr_api::RULE_ACTION_TYPE_REDIRECT:
+    case dnr_api::RuleActionType::kRedirect:
       return flat::ActionType_redirect;
-    case dnr_api::RULE_ACTION_TYPE_MODIFYHEADERS:
+    case dnr_api::RuleActionType::kModifyHeaders:
       return flat::ActionType_modify_headers;
-    case dnr_api::RULE_ACTION_TYPE_UPGRADESCHEME:
+    case dnr_api::RuleActionType::kUpgradeScheme:
       return flat::ActionType_upgrade_scheme;
-    case dnr_api::RULE_ACTION_TYPE_ALLOWALLREQUESTS:
+    case dnr_api::RuleActionType::kAllowAllRequests:
       return flat::ActionType_allow_all_requests;
-    case dnr_api::RULE_ACTION_TYPE_NONE:
+    case dnr_api::RuleActionType::kNone:
       break;
   }
   NOTREACHED();
@@ -673,37 +673,37 @@ flat_rule::ElementType GetElementType(WebRequestResourceType web_request_type) {
 
 flat_rule::ElementType GetElementType(dnr_api::ResourceType resource_type) {
   switch (resource_type) {
-    case dnr_api::RESOURCE_TYPE_NONE:
+    case dnr_api::ResourceType::kNone:
       return flat_rule::ElementType_NONE;
-    case dnr_api::RESOURCE_TYPE_MAIN_FRAME:
+    case dnr_api::ResourceType::kMainFrame:
       return flat_rule::ElementType_MAIN_FRAME;
-    case dnr_api::RESOURCE_TYPE_SUB_FRAME:
+    case dnr_api::ResourceType::kSubFrame:
       return flat_rule::ElementType_SUBDOCUMENT;
-    case dnr_api::RESOURCE_TYPE_STYLESHEET:
+    case dnr_api::ResourceType::kStylesheet:
       return flat_rule::ElementType_STYLESHEET;
-    case dnr_api::RESOURCE_TYPE_SCRIPT:
+    case dnr_api::ResourceType::kScript:
       return flat_rule::ElementType_SCRIPT;
-    case dnr_api::RESOURCE_TYPE_IMAGE:
+    case dnr_api::ResourceType::kImage:
       return flat_rule::ElementType_IMAGE;
-    case dnr_api::RESOURCE_TYPE_FONT:
+    case dnr_api::ResourceType::kFont:
       return flat_rule::ElementType_FONT;
-    case dnr_api::RESOURCE_TYPE_OBJECT:
+    case dnr_api::ResourceType::kObject:
       return flat_rule::ElementType_OBJECT;
-    case dnr_api::RESOURCE_TYPE_XMLHTTPREQUEST:
+    case dnr_api::ResourceType::kXmlhttprequest:
       return flat_rule::ElementType_XMLHTTPREQUEST;
-    case dnr_api::RESOURCE_TYPE_PING:
+    case dnr_api::ResourceType::kPing:
       return flat_rule::ElementType_PING;
-    case dnr_api::RESOURCE_TYPE_CSP_REPORT:
+    case dnr_api::ResourceType::kCspReport:
       return flat_rule::ElementType_CSP_REPORT;
-    case dnr_api::RESOURCE_TYPE_MEDIA:
+    case dnr_api::ResourceType::kMedia:
       return flat_rule::ElementType_MEDIA;
-    case dnr_api::RESOURCE_TYPE_WEBSOCKET:
+    case dnr_api::ResourceType::kWebsocket:
       return flat_rule::ElementType_WEBSOCKET;
-    case dnr_api::RESOURCE_TYPE_WEBTRANSPORT:
+    case dnr_api::ResourceType::kWebtransport:
       return flat_rule::ElementType_WEBTRANSPORT;
-    case dnr_api::RESOURCE_TYPE_WEBBUNDLE:
+    case dnr_api::ResourceType::kWebbundle:
       return flat_rule::ElementType_WEBBUNDLE;
-    case dnr_api::RESOURCE_TYPE_OTHER:
+    case dnr_api::ResourceType::kOther:
       return flat_rule::ElementType_OTHER;
   }
   NOTREACHED();
@@ -749,26 +749,26 @@ flat_rule::RequestMethod GetRequestMethod(bool http_or_https,
 flat_rule::RequestMethod GetRequestMethod(
     dnr_api::RequestMethod request_method) {
   switch (request_method) {
-    case dnr_api::REQUEST_METHOD_NONE:
+    case dnr_api::RequestMethod::kNone:
       NOTREACHED();
       return flat_rule::RequestMethod_NONE;
-    case dnr_api::REQUEST_METHOD_CONNECT:
+    case dnr_api::RequestMethod::kConnect:
       return flat_rule::RequestMethod_CONNECT;
-    case dnr_api::REQUEST_METHOD_DELETE:
+    case dnr_api::RequestMethod::kDelete:
       return flat_rule::RequestMethod_DELETE;
-    case dnr_api::REQUEST_METHOD_GET:
+    case dnr_api::RequestMethod::kGet:
       return flat_rule::RequestMethod_GET;
-    case dnr_api::REQUEST_METHOD_HEAD:
+    case dnr_api::RequestMethod::kHead:
       return flat_rule::RequestMethod_HEAD;
-    case dnr_api::REQUEST_METHOD_OPTIONS:
+    case dnr_api::RequestMethod::kOptions:
       return flat_rule::RequestMethod_OPTIONS;
-    case dnr_api::REQUEST_METHOD_OTHER:
+    case dnr_api::RequestMethod::kOther:
       return flat_rule::RequestMethod_OTHER_HTTP;
-    case dnr_api::REQUEST_METHOD_PATCH:
+    case dnr_api::RequestMethod::kPatch:
       return flat_rule::RequestMethod_PATCH;
-    case dnr_api::REQUEST_METHOD_POST:
+    case dnr_api::RequestMethod::kPost:
       return flat_rule::RequestMethod_POST;
-    case dnr_api::REQUEST_METHOD_PUT:
+    case dnr_api::RequestMethod::kPut:
       return flat_rule::RequestMethod_PUT;
   }
   NOTREACHED();

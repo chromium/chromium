@@ -915,7 +915,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeSendHeadersResponses) {
       CreateRequestActionForTesting(DNRRequestAction::Type::MODIFY_HEADERS);
   modify_headers_action.request_headers_to_modify = {
       DNRRequestAction::HeaderInfo(
-          "key5", api::declarative_net_request::HEADER_OPERATION_REMOVE,
+          "key5", api::declarative_net_request::HeaderOperation::kRemove,
           absl::nullopt)};
   info.dnr_actions = std::vector<DNRRequestAction>();
   info.dnr_actions->push_back(std::move(modify_headers_action));
@@ -964,17 +964,17 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnBeforeSendHeadersResponses) {
   // key5, therefore |extid4| should be ignored.
   set_headers_action.request_headers_to_modify = {
       DNRRequestAction::HeaderInfo(
-          "key2", api::declarative_net_request::HEADER_OPERATION_SET,
+          "key2", api::declarative_net_request::HeaderOperation::kSet,
           "value 3"),
       DNRRequestAction::HeaderInfo(
-          "key5", api::declarative_net_request::HEADER_OPERATION_SET,
+          "key5", api::declarative_net_request::HeaderOperation::kSet,
           "dnr_value"),
       // Unlike for response headers, appends for request headers are treated
       // as set operations which set the header as
       // "<existing value><appended value>" and will conflict with WebRequest
       // modifications.
       DNRRequestAction::HeaderInfo(
-          "cookie", api::declarative_net_request::HEADER_OPERATION_APPEND,
+          "cookie", api::declarative_net_request::HeaderOperation::kAppend,
           "cookey=value")};
   info.dnr_actions = std::vector<DNRRequestAction>();
   info.dnr_actions->push_back(std::move(set_headers_action));
@@ -1063,23 +1063,23 @@ TEST(ExtensionWebRequestHelpersTest,
       CreateRequestActionForTesting(DNRRequestAction::Type::MODIFY_HEADERS);
   action_1.extension_id = ext_1;
   action_1.request_headers_to_modify = {
-      DNRRequestAction::HeaderInfo("accept", dnr_api::HEADER_OPERATION_APPEND,
+      DNRRequestAction::HeaderInfo("accept", dnr_api::HeaderOperation::kAppend,
                                    "dnr_action_1"),
       DNRRequestAction::HeaderInfo(
-          "connection", dnr_api::HEADER_OPERATION_APPEND, "dnr_action_1"),
+          "connection", dnr_api::HeaderOperation::kAppend, "dnr_action_1"),
       DNRRequestAction::HeaderInfo(
-          "forwarded", dnr_api::HEADER_OPERATION_APPEND, "dnr_action_1")};
+          "forwarded", dnr_api::HeaderOperation::kAppend, "dnr_action_1")};
 
   DNRRequestAction action_2 =
       CreateRequestActionForTesting(DNRRequestAction::Type::MODIFY_HEADERS);
   action_2.extension_id = ext_2;
   action_2.request_headers_to_modify = {
-      DNRRequestAction::HeaderInfo("accept", dnr_api::HEADER_OPERATION_APPEND,
+      DNRRequestAction::HeaderInfo("accept", dnr_api::HeaderOperation::kAppend,
                                    "dnr_action_2"),
-      DNRRequestAction::HeaderInfo("connection", dnr_api::HEADER_OPERATION_SET,
+      DNRRequestAction::HeaderInfo("connection", dnr_api::HeaderOperation::kSet,
                                    "dnr_action_2"),
       DNRRequestAction::HeaderInfo(
-          "forwarded", dnr_api::HEADER_OPERATION_REMOVE, absl::nullopt)};
+          "forwarded", dnr_api::HeaderOperation::kRemove, absl::nullopt)};
 
   WebRequestInfoInitParams info_params;
   WebRequestInfo info(std::move(info_params));
@@ -1127,30 +1127,30 @@ TEST(ExtensionWebRequestHelpersTest,
       CreateRequestActionForTesting(DNRRequestAction::Type::MODIFY_HEADERS);
   action_1.extension_id = ext_1;
   action_1.request_headers_to_modify = {
-      DNRRequestAction::HeaderInfo("range", dnr_api::HEADER_OPERATION_SET,
+      DNRRequestAction::HeaderInfo("range", dnr_api::HeaderOperation::kSet,
                                    "dnr_action_1"),
-      DNRRequestAction::HeaderInfo("key5", dnr_api::HEADER_OPERATION_SET,
+      DNRRequestAction::HeaderInfo("key5", dnr_api::HeaderOperation::kSet,
                                    "dnr_action_1"),
-      DNRRequestAction::HeaderInfo("key6", dnr_api::HEADER_OPERATION_SET,
+      DNRRequestAction::HeaderInfo("key6", dnr_api::HeaderOperation::kSet,
                                    "dnr_action_1"),
-      DNRRequestAction::HeaderInfo("cookie", dnr_api::HEADER_OPERATION_SET,
+      DNRRequestAction::HeaderInfo("cookie", dnr_api::HeaderOperation::kSet,
                                    "dnr_action_1")};
 
   DNRRequestAction action_2 =
       CreateRequestActionForTesting(DNRRequestAction::Type::MODIFY_HEADERS);
   action_2.extension_id = ext_1;
   action_2.request_headers_to_modify = {DNRRequestAction::HeaderInfo(
-      "cookie", dnr_api::HEADER_OPERATION_APPEND, "dnr_action_2")};
+      "cookie", dnr_api::HeaderOperation::kAppend, "dnr_action_2")};
 
   DNRRequestAction action_3 =
       CreateRequestActionForTesting(DNRRequestAction::Type::MODIFY_HEADERS);
   action_3.extension_id = ext_2;
   action_3.request_headers_to_modify = {
-      DNRRequestAction::HeaderInfo("range", dnr_api::HEADER_OPERATION_APPEND,
+      DNRRequestAction::HeaderInfo("range", dnr_api::HeaderOperation::kAppend,
                                    "dnr_action_3"),
-      DNRRequestAction::HeaderInfo("key5", dnr_api::HEADER_OPERATION_SET,
+      DNRRequestAction::HeaderInfo("key5", dnr_api::HeaderOperation::kSet,
                                    "dnr_action_3"),
-      DNRRequestAction::HeaderInfo("key6", dnr_api::HEADER_OPERATION_REMOVE,
+      DNRRequestAction::HeaderInfo("key6", dnr_api::HeaderOperation::kRemove,
                                    absl::nullopt)};
 
   WebRequestInfoInitParams info_params;
@@ -1204,10 +1204,10 @@ TEST(ExtensionWebRequestHelpersTest,
   action_1.extension_id = ext_1;
   action_1.request_headers_to_modify = {
       DNRRequestAction::HeaderInfo(
-          "upgrade", api::declarative_net_request::HEADER_OPERATION_REMOVE,
+          "upgrade", api::declarative_net_request::HeaderOperation::kRemove,
           absl::nullopt),
       DNRRequestAction::HeaderInfo(
-          "key8", api::declarative_net_request::HEADER_OPERATION_REMOVE,
+          "key8", api::declarative_net_request::HeaderOperation::kRemove,
           absl::nullopt)};
 
   DNRRequestAction action_2 =
@@ -1215,10 +1215,10 @@ TEST(ExtensionWebRequestHelpersTest,
   action_2.extension_id = ext_2;
   action_2.request_headers_to_modify = {
       DNRRequestAction::HeaderInfo(
-          "upgrade", api::declarative_net_request::HEADER_OPERATION_APPEND,
+          "upgrade", api::declarative_net_request::HeaderOperation::kAppend,
           "dnr_action_2"),
       DNRRequestAction::HeaderInfo(
-          "key8", api::declarative_net_request::HEADER_OPERATION_SET,
+          "key8", api::declarative_net_request::HeaderOperation::kSet,
           "dnr_action_2")};
 
   WebRequestInfoInitParams info_params;
@@ -1687,7 +1687,7 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnHeadersReceivedResponses) {
       CreateRequestActionForTesting(DNRRequestAction::Type::MODIFY_HEADERS);
   modify_headers_action.response_headers_to_modify = {
       DNRRequestAction::HeaderInfo(
-          "key3", api::declarative_net_request::HEADER_OPERATION_REMOVE,
+          "key3", api::declarative_net_request::HeaderOperation::kRemove,
           absl::nullopt)};
 
   info.dnr_actions = std::vector<DNRRequestAction>();
@@ -1735,10 +1735,10 @@ TEST(ExtensionWebRequestHelpersTest, TestMergeOnHeadersReceivedResponses) {
       CreateRequestActionForTesting(DNRRequestAction::Type::MODIFY_HEADERS);
   modify_headers_action.response_headers_to_modify = {
       DNRRequestAction::HeaderInfo(
-          "key3", api::declarative_net_request::HEADER_OPERATION_APPEND,
+          "key3", api::declarative_net_request::HeaderOperation::kAppend,
           "dnr_value_3"),
       DNRRequestAction::HeaderInfo(
-          "key4", api::declarative_net_request::HEADER_OPERATION_APPEND,
+          "key4", api::declarative_net_request::HeaderOperation::kAppend,
           "dnr_value_4")};
 
   info.dnr_actions = std::vector<DNRRequestAction>();
@@ -1914,57 +1914,57 @@ TEST(ExtensionWebRequestHelpersTest,
       CreateRequestActionForTesting(DNRRequestAction::Type::MODIFY_HEADERS);
   action_1.extension_id = ext_1;
   action_1.response_headers_to_modify = {
-      HeaderInfo("key1", api::declarative_net_request::HEADER_OPERATION_APPEND,
+      HeaderInfo("key1", api::declarative_net_request::HeaderOperation::kAppend,
                  "dnr_action_1"),
-      HeaderInfo("key2", api::declarative_net_request::HEADER_OPERATION_APPEND,
+      HeaderInfo("key2", api::declarative_net_request::HeaderOperation::kAppend,
                  "dnr_action_1"),
-      HeaderInfo("key3", api::declarative_net_request::HEADER_OPERATION_APPEND,
-                 "dnr_action_1"),
-
-      HeaderInfo("key4", api::declarative_net_request::HEADER_OPERATION_SET,
-                 "dnr_action_1"),
-      HeaderInfo("key5", api::declarative_net_request::HEADER_OPERATION_SET,
-                 "dnr_action_1"),
-      HeaderInfo("key6", api::declarative_net_request::HEADER_OPERATION_SET,
+      HeaderInfo("key3", api::declarative_net_request::HeaderOperation::kAppend,
                  "dnr_action_1"),
 
-      HeaderInfo("key7", api::declarative_net_request::HEADER_OPERATION_REMOVE,
+      HeaderInfo("key4", api::declarative_net_request::HeaderOperation::kSet,
+                 "dnr_action_1"),
+      HeaderInfo("key5", api::declarative_net_request::HeaderOperation::kSet,
+                 "dnr_action_1"),
+      HeaderInfo("key6", api::declarative_net_request::HeaderOperation::kSet,
+                 "dnr_action_1"),
+
+      HeaderInfo("key7", api::declarative_net_request::HeaderOperation::kRemove,
                  absl::nullopt),
-      HeaderInfo("key8", api::declarative_net_request::HEADER_OPERATION_REMOVE,
+      HeaderInfo("key8", api::declarative_net_request::HeaderOperation::kRemove,
                  absl::nullopt),
 
       HeaderInfo("same_ext_key",
-                 api::declarative_net_request::HEADER_OPERATION_SET,
+                 api::declarative_net_request::HeaderOperation::kSet,
                  "dnr_action_1")};
 
   DNRRequestAction action_2 =
       CreateRequestActionForTesting(DNRRequestAction::Type::MODIFY_HEADERS);
   action_2.extension_id = ext_1;
   action_2.response_headers_to_modify = {HeaderInfo(
-      "same_ext_key", api::declarative_net_request::HEADER_OPERATION_APPEND,
+      "same_ext_key", api::declarative_net_request::HeaderOperation::kAppend,
       "dnr_action_2")};
 
   DNRRequestAction action_3 =
       CreateRequestActionForTesting(DNRRequestAction::Type::MODIFY_HEADERS);
   action_3.extension_id = ext_2;
   action_3.response_headers_to_modify = {
-      HeaderInfo("key1", api::declarative_net_request::HEADER_OPERATION_APPEND,
+      HeaderInfo("key1", api::declarative_net_request::HeaderOperation::kAppend,
                  "dnr_action_3"),
-      HeaderInfo("key2", api::declarative_net_request::HEADER_OPERATION_SET,
+      HeaderInfo("key2", api::declarative_net_request::HeaderOperation::kSet,
                  "dnr_action_3"),
-      HeaderInfo("key3", api::declarative_net_request::HEADER_OPERATION_REMOVE,
+      HeaderInfo("key3", api::declarative_net_request::HeaderOperation::kRemove,
                  absl::nullopt),
 
-      HeaderInfo("key4", api::declarative_net_request::HEADER_OPERATION_APPEND,
+      HeaderInfo("key4", api::declarative_net_request::HeaderOperation::kAppend,
                  "dnr_action_3"),
-      HeaderInfo("key5", api::declarative_net_request::HEADER_OPERATION_SET,
+      HeaderInfo("key5", api::declarative_net_request::HeaderOperation::kSet,
                  "dnr_action_3"),
-      HeaderInfo("key6", api::declarative_net_request::HEADER_OPERATION_REMOVE,
+      HeaderInfo("key6", api::declarative_net_request::HeaderOperation::kRemove,
                  absl::nullopt),
 
-      HeaderInfo("key7", api::declarative_net_request::HEADER_OPERATION_APPEND,
+      HeaderInfo("key7", api::declarative_net_request::HeaderOperation::kAppend,
                  "dnr_action_3"),
-      HeaderInfo("key8", api::declarative_net_request::HEADER_OPERATION_SET,
+      HeaderInfo("key8", api::declarative_net_request::HeaderOperation::kSet,
                  "dnr_action_3")};
 
   WebRequestInfoInitParams info_params;
@@ -2053,16 +2053,16 @@ TEST(ExtensionWebRequestHelpersTest,
 
   action_1.response_headers_to_modify = {
       HeaderInfo("connection",
-                 api::declarative_net_request::HEADER_OPERATION_APPEND,
+                 api::declarative_net_request::HeaderOperation::kAppend,
                  "dnr_action_1"),
       HeaderInfo("same_ext_key",
-                 api::declarative_net_request::HEADER_OPERATION_SET,
+                 api::declarative_net_request::HeaderOperation::kSet,
                  "dnr_action_1"),
       HeaderInfo("set-cookie",
-                 api::declarative_net_request::HEADER_OPERATION_REMOVE,
+                 api::declarative_net_request::HeaderOperation::kRemove,
                  absl::nullopt),
       HeaderInfo("warning",
-                 api::declarative_net_request::HEADER_OPERATION_REMOVE,
+                 api::declarative_net_request::HeaderOperation::kRemove,
                  absl::nullopt)};
 
   DNRRequestAction action_2 =
@@ -2070,10 +2070,10 @@ TEST(ExtensionWebRequestHelpersTest,
   action_2.extension_id = ext_1;
   action_2.response_headers_to_modify = {
       HeaderInfo("connection",
-                 api::declarative_net_request::HEADER_OPERATION_APPEND,
+                 api::declarative_net_request::HeaderOperation::kAppend,
                  "dnr_action_2"),
       HeaderInfo("same_ext_key",
-                 api::declarative_net_request::HEADER_OPERATION_APPEND,
+                 api::declarative_net_request::HeaderOperation::kAppend,
                  "dnr_action_2")};
 
   WebRequestInfoInitParams info_params;
