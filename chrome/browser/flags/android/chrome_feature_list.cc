@@ -253,6 +253,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBookmarksImprovedSaveFlow,
     &kBookmarksRefresh,
     &kOmahaMinSdkVersionAndroid,
+    &kOmniboxAdaptiveSuggestionsVisibleGroupEligibilityUpdate,
     &kOmniboxAdaptNarrowTabletWindows,
     &kOmniboxCacheSuggestionResources,
     &kOmniboxConsumesImeInsets,
@@ -807,6 +808,12 @@ BASE_FEATURE(kBackGestureRefactorAndroid,
 
 BASE_FEATURE(kOmahaMinSdkVersionAndroid,
              "OmahaMinSdkVersionAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, considers suggestions exposed 50% or more as fully visible and
+// 49% or less as hidden for Adaptive Suggestions partial grouping.
+BASE_FEATURE(kOmniboxAdaptiveSuggestionsVisibleGroupEligibilityUpdate,
+             "AdaptiveSuggestionsVisibleGroupEligibilityUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOmniboxAdaptNarrowTabletWindows,

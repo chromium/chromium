@@ -41,6 +41,12 @@ public class OmniboxFeatures {
     private static final MutableFlagWithSafeDefault sCacheSuggestionResources =
             new MutableFlagWithSafeDefault(
                     ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES, false);
+    private static final MutableFlagWithSafeDefault
+            sOmniboxAdaptiveSuggestionsVisibleGroupEligibilityUpdate =
+                    new MutableFlagWithSafeDefault(
+                            ChromeFeatureList
+                                    .OMNIBOX_ADAPTIVE_SUGGESTIONS_VISIBLE_GROUP_ELIGIBILITY_UPDATE,
+                            false);
 
     /**
      * @param context The activity context.
@@ -126,5 +132,13 @@ public class OmniboxFeatures {
      */
     public static boolean shouldCacheSuggestionResources() {
         return sCacheSuggestionResources.isEnabled();
+    }
+
+    /**
+     * Returns whether a modified visible-group eligibility logic should be used when determining
+     * suggestion visibility.
+     */
+    public static boolean adaptiveSuggestionsVisibleGroupEligibilityUpdate() {
+        return sOmniboxAdaptiveSuggestionsVisibleGroupEligibilityUpdate.isEnabled();
     }
 }

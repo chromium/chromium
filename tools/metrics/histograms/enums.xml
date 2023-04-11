@@ -60165,6 +60165,8 @@ from previous Chrome versions.
   <int value="-989671895" label="OfflineIndicatorAlwaysHttpProbe:enabled"/>
   <int value="-989140298" label="UseSyncInvalidations:disabled"/>
   <int value="-989050085" label="AppStoreBillingDebug:enabled"/>
+  <int value="-988758700"
+      label="AdaptiveSuggestionsVisibleGroupEligibilityUpdate:enabled"/>
   <int value="-987470173" label="ClickToCallOpenDialerDirectly:disabled"/>
   <int value="-987191098" label="FontAccessPersistent:disabled"/>
   <int value="-987187004" label="SyncSettingsCategorization:disabled"/>
@@ -62548,6 +62550,8 @@ from previous Chrome versions.
   <int value="323605372" label="ui-disable-compositor-animation-timelines"/>
   <int value="324060906"
       label="enable-experimental-accessibility-language-detection"/>
+  <int value="324194873"
+      label="AdaptiveSuggestionsVisibleGroupEligibilityUpdate:disabled"/>
   <int value="324522065" label="app-menu-icon"/>
   <int value="324631366" label="enable-drive-search-in-app-launcher"/>
   <int value="325489620" label="WebAppEnableManifestId:disabled"/>
