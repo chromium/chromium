@@ -8,11 +8,15 @@
 #include <linux/input-event-codes.h>
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "device/udev_linux/scoped_udev.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
 #include "ui/chromeos/events/keyboard_layout_util.h"
@@ -20,15 +24,58 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/input_device_event_observer.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 
 namespace ui {
 
 namespace {
 
+using KeyboardTopRowLayout = KeyboardCapability::KeyboardTopRowLayout;
+using DeviceType = KeyboardCapability::DeviceType;
+
+// Hotrod controller vendor/product ids.
+const int kHotrodRemoteVendorId = 0x0471;
+const int kHotrodRemoteProductId = 0x21cc;
+
+constexpr char kLayoutProperty[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
+constexpr char kCustomTopRowLayoutAttribute[] = "function_row_physmap";
+constexpr char kCustomTopRowLayoutProperty[] = "FUNCTION_ROW_PHYSMAP";
+
+constexpr KeyboardCode kMaxCustomTopRowLayoutFKeyCode = VKEY_F15;
+constexpr size_t kNumCustomTopRowFKeys =
+    (kMaxCustomTopRowLayoutFKeyCode - VKEY_F1) + 1;
+
+class StubKeyboardCapabilityDelegate : public KeyboardCapability::Delegate {
+ public:
+  StubKeyboardCapabilityDelegate() = default;
+  StubKeyboardCapabilityDelegate(const StubKeyboardCapabilityDelegate&) =
+      delete;
+  StubKeyboardCapabilityDelegate& operator=(
+      const StubKeyboardCapabilityDelegate&) = delete;
+  ~StubKeyboardCapabilityDelegate() override = default;
+
+  void AddObserver(KeyboardCapability::Observer* observer) override {}
+  void RemoveObserver(KeyboardCapability::Observer* observer) override {}
+  bool TopRowKeysAreFKeys() const override { return false; }
+  void SetTopRowKeysAsFKeysEnabledForTesting(bool enabled) override {}
+};
+
+absl::optional<InputDevice> FindKeyboardWithId(int device_id) {
+  const auto& keyboards =
+      DeviceDataManager::GetInstance()->GetKeyboardDevices();
+  for (const auto& keyboard : keyboards) {
+    if (keyboard.id == device_id) {
+      return keyboard;
+    }
+  }
+
+  return absl::nullopt;
+}
+
 bool GetDeviceProperty(const base::FilePath& device_path,
                        const char* key,
-                       std::string* value) {
+                       std::string& value) {
   device::ScopedUdevPtr udev(device::udev_new());
   if (!udev.get()) {
     return false;
@@ -40,8 +87,209 @@ bool GetDeviceProperty(const base::FilePath& device_path,
     return false;
   }
 
-  *value = device::UdevDeviceGetPropertyValue(device.get(), key);
+  value = device::UdevDeviceGetPropertyValue(device.get(), key);
   return true;
+}
+
+// Parses the custom top row layout string. The string contains a space
+// separated list of scan codes in hex. eg "aa ab ac" for F1, F2, F3, etc.
+std::vector<uint32_t> ParseCustomTopRowLayoutScancodes(
+    const std::string& layout) {
+  std::vector<uint32_t> scancode_vector;
+
+  const std::vector<std::string> scan_code_strings = base::SplitString(
+      layout, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (scan_code_strings.size() == 0 ||
+      scan_code_strings.size() > kNumCustomTopRowFKeys) {
+    return {};
+  }
+
+  for (const auto& scan_code_string : scan_code_strings) {
+    uint32_t scan_code = 0;
+    if (!base::HexStringToUInt(scan_code_string, &scan_code)) {
+      return {};
+    }
+
+    scancode_vector.push_back(scan_code);
+  }
+
+  return scancode_vector;
+}
+
+// Returns true if |value| is replaced with the specific device attribute value
+// without getting an error. |device_path| should be obtained from the
+// |InputDevice.sys_path| field.
+bool GetDeviceAttributeRecursive(const base::FilePath& device_path,
+                                 const char* key,
+                                 std::string& value) {
+  device::ScopedUdevPtr udev(device::udev_new());
+  if (!udev.get()) {
+    return false;
+  }
+
+  device::ScopedUdevDevicePtr device(device::udev_device_new_from_syspath(
+      udev.get(), device_path.value().c_str()));
+  if (!device.get()) {
+    return false;
+  }
+
+  value = device::UdevDeviceRecursiveGetSysattrValue(device.get(), key);
+  return true;
+}
+
+bool GetCustomTopRowLayoutAttribute(const InputDevice& keyboard,
+                                    std::string& out_prop) {
+  bool result = GetDeviceAttributeRecursive(
+      keyboard.sys_path, kCustomTopRowLayoutAttribute, out_prop);
+
+  if (result && out_prop.size() > 0) {
+    VLOG(1) << "Identified custom top row keyboard layout: sys_path="
+            << keyboard.sys_path << " layout=" << out_prop;
+    return true;
+  }
+
+  return false;
+}
+
+bool GetCustomTopRowLayout(const InputDevice& keyboard, std::string& out_prop) {
+  if (GetCustomTopRowLayoutAttribute(keyboard, out_prop)) {
+    return true;
+  }
+  return GetDeviceProperty(keyboard.sys_path, kCustomTopRowLayoutProperty,
+                           out_prop);
+}
+
+std::vector<uint32_t> GetTopRowScanCodeVector(const InputDevice& keyboard) {
+  std::string layout;
+  if (!GetCustomTopRowLayout(keyboard, layout) || layout.empty()) {
+    return {};
+  }
+
+  return ParseCustomTopRowLayoutScancodes(layout);
+}
+
+bool GetTopRowLayoutProperty(const InputDevice& keyboard_device,
+                             std::string& out_prop) {
+  return GetDeviceProperty(keyboard_device.sys_path, kLayoutProperty, out_prop);
+}
+
+// Parses keyboard to row layout string. Returns true if data is valid.
+bool ParseKeyboardTopRowLayout(const std::string& layout_string,
+                               KeyboardTopRowLayout& out_layout) {
+  if (layout_string.empty()) {
+    out_layout = KeyboardTopRowLayout::kKbdTopRowLayoutDefault;
+    return true;
+  }
+
+  int layout_id;
+  if (!base::StringToInt(layout_string, &layout_id)) {
+    LOG(WARNING) << "Failed to parse layout " << kLayoutProperty << " value '"
+                 << layout_string << "'";
+    return false;
+  }
+
+  if (layout_id < static_cast<int>(KeyboardTopRowLayout::kKbdTopRowLayoutMin) ||
+      layout_id > static_cast<int>(KeyboardTopRowLayout::kKbdTopRowLayoutMax)) {
+    LOG(WARNING) << "Invalid " << kLayoutProperty << " '" << layout_string
+                 << "'";
+    return false;
+  }
+
+  out_layout = static_cast<KeyboardTopRowLayout>(layout_id);
+  return true;
+}
+
+// Determines the type of |keyboard_device| we are dealing with.
+// |has_chromeos_top_row| argument indicates that the keyboard's top
+// row has "action" keys (such as back, refresh, etc.) instead of the
+// standard F1-F12 keys.
+KeyboardCapability::DeviceType IdentifyKeyboardType(
+    const InputDevice& keyboard_device,
+    bool has_chromeos_top_row) {
+  if (keyboard_device.vendor_id == kHotrodRemoteVendorId &&
+      keyboard_device.product_id == kHotrodRemoteProductId) {
+    VLOG(1) << "Hotrod remote '" << keyboard_device.name
+            << "' connected: id=" << keyboard_device.id;
+    return KeyboardCapability::DeviceType::kDeviceHotrodRemote;
+  }
+
+  if (base::EqualsCaseInsensitiveASCII(keyboard_device.name,
+                                       "virtual core keyboard")) {
+    VLOG(1) << "Xorg virtual '" << keyboard_device.name
+            << "' connected: id=" << keyboard_device.id;
+    return KeyboardCapability::DeviceType::kDeviceVirtualCoreKeyboard;
+  }
+
+  if (keyboard_device.type == INPUT_DEVICE_INTERNAL) {
+    VLOG(1) << "Internal keyboard '" << keyboard_device.name
+            << "' connected: id=" << keyboard_device.id;
+    return KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
+  }
+
+  if (has_chromeos_top_row) {
+    // If the device was tagged as having Chrome OS top row layout it must be a
+    // Chrome OS keyboard.
+    VLOG(1) << "External Chrome OS keyboard '" << keyboard_device.name
+            << "' connected: id=" << keyboard_device.id;
+    return KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard;
+  }
+
+  const std::vector<std::string> tokens =
+      base::SplitString(keyboard_device.name, " .", base::KEEP_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
+
+  // Parse |device_name| to help classify it.
+  bool found_apple = false;
+  bool found_keyboard = false;
+  for (const auto& token : tokens) {
+    if (!found_apple && base::EqualsCaseInsensitiveASCII(token, "apple")) {
+      found_apple = true;
+    }
+    if (!found_keyboard &&
+        base::EqualsCaseInsensitiveASCII(token, "keyboard")) {
+      found_keyboard = true;
+    }
+  }
+  if (found_apple) {
+    // If the |device_name| contains the two words, "apple" and "keyboard",
+    // treat it as an Apple keyboard.
+    if (found_keyboard) {
+      VLOG(1) << "Apple keyboard '" << keyboard_device.name
+              << "' connected: id=" << keyboard_device.id;
+      return KeyboardCapability::DeviceType::kDeviceExternalAppleKeyboard;
+    } else {
+      VLOG(1) << "Apple device '" << keyboard_device.name
+              << "' connected: id=" << keyboard_device.id;
+      return KeyboardCapability::DeviceType::kDeviceExternalUnknown;
+    }
+  } else if (found_keyboard) {
+    VLOG(1) << "External keyboard '" << keyboard_device.name
+            << "' connected: id=" << keyboard_device.id;
+    return KeyboardCapability::DeviceType::kDeviceExternalGenericKeyboard;
+  } else {
+    VLOG(1) << "External device '" << keyboard_device.name
+            << "' connected: id=" << keyboard_device.id;
+    return KeyboardCapability::DeviceType::kDeviceExternalUnknown;
+  }
+}
+
+std::tuple<DeviceType, KeyboardTopRowLayout, std::vector<uint32_t>>
+IdentifyKeyboardInfo(const InputDevice& keyboard) {
+  std::string layout_string;
+  KeyboardTopRowLayout layout;
+  std::vector<uint32_t> top_row_scan_codes = GetTopRowScanCodeVector(keyboard);
+  if (!top_row_scan_codes.empty()) {
+    layout = KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
+  } else if (!GetTopRowLayoutProperty(keyboard, layout_string) ||
+             !ParseKeyboardTopRowLayout(layout_string, layout)) {
+    return {KeyboardCapability::DeviceType::kDeviceUnknown,
+            KeyboardTopRowLayout::kKbdTopRowLayoutDefault,
+            {}};
+  }
+
+  return {IdentifyKeyboardType(
+              keyboard, !top_row_scan_codes.empty() || !layout_string.empty()),
+          layout, std::move(top_row_scan_codes)};
 }
 
 }  // namespace
@@ -62,12 +310,19 @@ KeyboardCapability::KeyboardInfo& KeyboardCapability::KeyboardInfo::operator=(
 KeyboardCapability::KeyboardInfo::~KeyboardInfo() = default;
 
 // static
+std::unique_ptr<KeyboardCapability>
+KeyboardCapability::CreateStubKeyboardCapability() {
+  return std::make_unique<KeyboardCapability>(
+      std::make_unique<StubKeyboardCapabilityDelegate>());
+}
+
+// static
 std::unique_ptr<EventDeviceInfo>
 KeyboardCapability::CreateEventDeviceInfoFromInputDevice(
     const InputDevice& keyboard) {
   const char kDevNameProperty[] = "DEVNAME";
   std::string dev_name;
-  if (!GetDeviceProperty(keyboard.sys_path, kDevNameProperty, &dev_name) ||
+  if (!GetDeviceProperty(keyboard.sys_path, kDevNameProperty, dev_name) ||
       dev_name.empty()) {
     return nullptr;
   }
@@ -123,8 +378,7 @@ absl::optional<KeyboardCode> KeyboardCapability::GetMappedFKeyIfExists(
     const InputDevice& keyboard) const {
   // TODO(zhangwenyu): Cache the layout for currently connected keyboards and
   // observe the keyboard changes.
-  KeyboardTopRowLayout layout =
-      EventRewriterChromeOS::GetKeyboardTopRowLayout(keyboard);
+  KeyboardTopRowLayout layout = GetTopRowLayout(keyboard);
   switch (layout) {
     case KeyboardTopRowLayout::kKbdTopRowLayout1:
       if (kLayout1TopRowKeyToFKeyMap.contains(key_code)) {
@@ -158,12 +412,17 @@ bool KeyboardCapability::HasLauncherButton(
   // type.
   // TODO(zhangwenyu): Handle edge cases.
   if (!keyboard.has_value()) {
-    // DeviceUsesKeyboardLayout2() relies on DeviceDataManager.
-    DCHECK(DeviceDataManager::HasInstance());
-    return DeviceUsesKeyboardLayout2();
+    for (const InputDevice& keyboard_iter :
+         DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+      if (GetTopRowLayout(keyboard_iter) ==
+          KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout2) {
+        return true;
+      }
+    }
+    return false;
   }
 
-  return EventRewriterChromeOS::GetKeyboardTopRowLayout(keyboard.value()) ==
+  return GetTopRowLayout(keyboard.value()) ==
          KeyboardTopRowLayout::kKbdTopRowLayout2;
 }
 
@@ -247,7 +506,7 @@ bool KeyboardCapability::IsTopRowActionKey(ui::KeyboardCode code) {
 }
 
 std::vector<mojom::ModifierKey> KeyboardCapability::GetModifierKeys(
-    const InputDevice& keyboard) {
+    const InputDevice& keyboard) const {
   // This set of modifier keys is available on every keyboard.
   std::vector<mojom::ModifierKey> modifier_keys = {
       mojom::ModifierKey::kBackspace, mojom::ModifierKey::kControl,
@@ -269,7 +528,7 @@ std::vector<mojom::ModifierKey> KeyboardCapability::GetModifierKeys(
   }
 
   // Assistant key can be checked by querying evdev properties.
-  if (keyboard_info &&
+  if (keyboard_info && keyboard_info->event_device_info &&
       keyboard_info->event_device_info->HasKeyEvent(KEY_ASSISTANT)) {
     modifier_keys.push_back(mojom::ModifierKey::kAssistant);
   }
@@ -277,8 +536,8 @@ std::vector<mojom::ModifierKey> KeyboardCapability::GetModifierKeys(
   return modifier_keys;
 }
 
-KeyboardCapability::DeviceType KeyboardCapability::GetDeviceType(
-    const InputDevice& keyboard) {
+DeviceType KeyboardCapability::GetDeviceType(
+    const InputDevice& keyboard) const {
   const auto* keyboard_info = GetKeyboardInfo(keyboard);
   if (!keyboard_info) {
     return DeviceType::kDeviceUnknown;
@@ -287,13 +546,41 @@ KeyboardCapability::DeviceType KeyboardCapability::GetDeviceType(
   return keyboard_info->device_type;
 }
 
+DeviceType KeyboardCapability::GetDeviceType(int device_id) const {
+  auto keyboard = FindKeyboardWithId(device_id);
+  if (!keyboard) {
+    return DeviceType::kDeviceUnknown;
+  }
+
+  return GetDeviceType(*keyboard);
+}
+
+KeyboardTopRowLayout KeyboardCapability::GetTopRowLayout(
+    const InputDevice& keyboard) const {
+  const auto* keyboard_info = GetKeyboardInfo(keyboard);
+  if (!keyboard_info) {
+    return KeyboardTopRowLayout::kKbdTopRowLayoutDefault;
+  }
+
+  return keyboard_info->top_row_layout;
+}
+
+KeyboardTopRowLayout KeyboardCapability::GetTopRowLayout(int device_id) const {
+  auto keyboard = FindKeyboardWithId(device_id);
+  if (!keyboard) {
+    return KeyboardTopRowLayout::kKbdTopRowLayoutDefault;
+  }
+
+  return GetTopRowLayout(*keyboard);
+}
+
 void KeyboardCapability::SetKeyboardInfoForTesting(const InputDevice& keyboard,
                                                    KeyboardInfo keyboard_info) {
   keyboard_info_map_.insert_or_assign(keyboard.id, std::move(keyboard_info));
 }
 
 const KeyboardCapability::KeyboardInfo* KeyboardCapability::GetKeyboardInfo(
-    const InputDevice& keyboard) {
+    const InputDevice& keyboard) const {
   auto iter = keyboard_info_map_.find(keyboard.id);
   if (iter != keyboard_info_map_.end()) {
     return &iter->second;
@@ -301,15 +588,44 @@ const KeyboardCapability::KeyboardInfo* KeyboardCapability::GetKeyboardInfo(
 
   // Insert new keyboard info into the map.
   auto& keyboard_info = keyboard_info_map_[keyboard.id];
-  keyboard_info.device_type = EventRewriterChromeOS::GetDeviceType(keyboard);
-  keyboard_info.event_device_info =
-      CreateEventDeviceInfoFromInputDevice(keyboard);
-  if (!keyboard_info.event_device_info) {
+  std::tie(keyboard_info.device_type, keyboard_info.top_row_layout,
+           keyboard_info.top_row_scan_codes) = IdentifyKeyboardInfo(keyboard);
+
+  // Enable only when flag is enabled to avoid crashing while problem is
+  // addressed. This issue exists the `EventDeviceInfo` objects are only allowed
+  // to be created on a thread that allows blocking. See b/272960076
+  if (ash::features::IsInputDeviceSettingsSplitEnabled()) {
+    keyboard_info.event_device_info =
+        CreateEventDeviceInfoFromInputDevice(keyboard);
+  }
+
+  // If we are unable to identify the device, erase the entry from the map.
+  if (keyboard_info.device_type == DeviceType::kDeviceUnknown) {
     keyboard_info_map_.erase(keyboard.id);
     return nullptr;
   }
 
   return &keyboard_info;
+}
+
+const std::vector<uint32_t>* KeyboardCapability::GetTopRowScanCodes(
+    const InputDevice& keyboard) const {
+  const KeyboardInfo* keyboard_info = GetKeyboardInfo(keyboard);
+  if (!keyboard_info) {
+    return nullptr;
+  }
+
+  return &keyboard_info->top_row_scan_codes;
+}
+
+const std::vector<uint32_t>* KeyboardCapability::GetTopRowScanCodes(
+    int device_id) const {
+  auto keyboard = FindKeyboardWithId(device_id);
+  if (!keyboard.has_value()) {
+    return nullptr;
+  }
+
+  return GetTopRowScanCodes(*keyboard);
 }
 
 void KeyboardCapability::OnDeviceListsComplete() {
@@ -359,11 +675,10 @@ void KeyboardCapability::TrimKeyboardInfoMap() {
 }
 
 bool KeyboardCapability::HasKeyEvent(const KeyboardCode& key_code,
-                                     const InputDevice& keyboard) {
+                                     const InputDevice& keyboard) const {
   // Handle top row keys.
   if (IsTopRowKey(key_code)) {
-    KeyboardTopRowLayout layout =
-        EventRewriterChromeOS::GetKeyboardTopRowLayout(keyboard);
+    KeyboardTopRowLayout layout = GetTopRowLayout(keyboard);
     switch (layout) {
       case KeyboardTopRowLayout::kKbdTopRowLayout1:
         return kLayout1TopRowKeyToFKeyMap.contains(key_code);
@@ -395,7 +710,7 @@ bool KeyboardCapability::HasKeyEvent(const KeyboardCode& key_code,
 }
 
 bool KeyboardCapability::HasKeyEventOnAnyKeyboard(
-    const KeyboardCode& key_code) {
+    const KeyboardCode& key_code) const {
   for (const ui::InputDevice& keyboard :
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
     if (HasKeyEvent(key_code, keyboard)) {

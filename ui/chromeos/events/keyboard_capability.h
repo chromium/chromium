@@ -5,6 +5,9 @@
 #ifndef UI_CHROMEOS_EVENTS_KEYBOARD_CAPABILITY_H_
 #define UI_CHROMEOS_EVENTS_KEYBOARD_CAPABILITY_H_
 
+#include <memory>
+#include <vector>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -152,6 +155,8 @@ class KeyboardCapability : public InputDeviceEventObserver {
     ~KeyboardInfo();
 
     DeviceType device_type;
+    KeyboardTopRowLayout top_row_layout;
+    std::vector<uint32_t> top_row_scan_codes;
     std::unique_ptr<EventDeviceInfo> event_device_info;
   };
 
@@ -159,6 +164,8 @@ class KeyboardCapability : public InputDeviceEventObserver {
   KeyboardCapability(const KeyboardCapability&) = delete;
   KeyboardCapability& operator=(const KeyboardCapability&) = delete;
   ~KeyboardCapability() override;
+
+  static std::unique_ptr<KeyboardCapability> CreateStubKeyboardCapability();
 
   // Generates an `EventDeviceInfo` from a given input device.
   static std::unique_ptr<EventDeviceInfo> CreateEventDeviceInfoFromInputDevice(
@@ -213,10 +220,22 @@ class KeyboardCapability : public InputDeviceEventObserver {
   static bool IsTopRowActionKey(ui::KeyboardCode code);
 
   // Returns the set of modifier keys present on the given keyboard.
-  std::vector<mojom::ModifierKey> GetModifierKeys(const InputDevice& keyboard);
+  std::vector<mojom::ModifierKey> GetModifierKeys(
+      const InputDevice& keyboard) const;
 
   // Returns the device type of the given keyboard.
-  DeviceType GetDeviceType(const InputDevice& keyboard);
+  DeviceType GetDeviceType(const InputDevice& keyboard) const;
+  DeviceType GetDeviceType(int device_id) const;
+
+  // Returns the device's top row layout.
+  KeyboardTopRowLayout GetTopRowLayout(const InputDevice& keyboard) const;
+  KeyboardTopRowLayout GetTopRowLayout(int device_id) const;
+
+  // Returns the device's top row scan codes. If the device does not have a
+  // custom top row, the returned list will be null or empty.
+  const std::vector<uint32_t>* GetTopRowScanCodes(
+      const InputDevice& keyboard) const;
+  const std::vector<uint32_t>* GetTopRowScanCodes(int device_id) const;
 
   // Takes a `KeyboardInfo` to use for testing the passed in keyboard.
   void SetKeyboardInfoForTesting(const InputDevice& keyboard,
@@ -227,22 +246,24 @@ class KeyboardCapability : public InputDeviceEventObserver {
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;
 
   // Check if a specific key event exists on a given keyboard.
-  bool HasKeyEvent(const KeyboardCode& key_code, const InputDevice& keyboard);
+  bool HasKeyEvent(const KeyboardCode& key_code,
+                   const InputDevice& keyboard) const;
 
   // Check if any of the connected keyboards has a specific key event.
-  bool HasKeyEventOnAnyKeyboard(const KeyboardCode& key_code);
+  bool HasKeyEventOnAnyKeyboard(const KeyboardCode& key_code) const;
 
-  const base::flat_map<int, KeyboardInfo>& keyboard_info_map() {
+  const base::flat_map<int, KeyboardInfo>& keyboard_info_map() const {
     return keyboard_info_map_;
   }
 
  private:
-  const KeyboardInfo* GetKeyboardInfo(const InputDevice& keyboard);
+  const KeyboardInfo* GetKeyboardInfo(const InputDevice& keyboard) const;
   void TrimKeyboardInfoMap();
 
   // Stores event device info objects so they do not need to be constructed
-  // multiple times.
-  base::flat_map<int, KeyboardInfo> keyboard_info_map_;
+  // multiple times. This is mutable to allow caching results from the APIs
+  // which are effectively const.
+  mutable base::flat_map<int, KeyboardInfo> keyboard_info_map_;
   std::unique_ptr<Delegate> delegate_;
 };
 

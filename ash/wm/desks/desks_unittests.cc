@@ -4843,8 +4843,8 @@ class DesksAcceleratorsTest : public DesksTest,
 
     auto* event_rewriter_controller = EventRewriterController::Get();
     auto event_rewriter = std::make_unique<ui::EventRewriterChromeOS>(
-        this, Shell::Get()->sticky_keys_controller(), false,
-        &fake_ime_keyboard_);
+        this, Shell::Get()->keyboard_capability(),
+        Shell::Get()->sticky_keys_controller(), false, &fake_ime_keyboard_);
     event_rewriter_controller->AddEventRewriter(std::move(event_rewriter));
   }
 

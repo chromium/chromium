@@ -9,18 +9,6 @@
 
 namespace ui {
 
-bool DeviceUsesKeyboardLayout2() {
-  for (const InputDevice& keyboard :
-       DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
-    if (EventRewriterChromeOS::GetKeyboardTopRowLayout(keyboard) ==
-        KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayout2) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 bool DeviceKeyboardHasAssistantKey() {
   for (const InputDevice& keyboard :
        DeviceDataManager::GetInstance()->GetKeyboardDevices()) {

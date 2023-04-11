@@ -836,7 +836,7 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
           : IDS_SETTINGS_KEYBOARD_KEY_SEARCH);
   html_source->AddLocalizedString(
       "keyboardSendFunctionKeysDescription",
-      ui::DeviceUsesKeyboardLayout2()
+      Shell::Get()->keyboard_capability()->HasLauncherButton()
           ? IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS_LAYOUT2_DESCRIPTION
           : IDS_SETTINGS_KEYBOARD_SEND_FUNCTION_KEYS_DESCRIPTION);
 }

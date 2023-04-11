@@ -88,22 +88,9 @@ constexpr mojom::TopRowKey kClassicTopRowKeys[] = {
     mojom::TopRowKey::kVolumeDown,
     mojom::TopRowKey::kVolumeUp};
 
-const base::flat_map<uint32_t, ui::EventRewriterChromeOS::MutableKeyState>
-    kInternalJinlonScanCodeMap = {
-        {0xEA, {ui::EF_NONE, ui::DomCode::F1, ui::DomKey::F1, ui::VKEY_F1}},
-        {0xE7, {ui::EF_NONE, ui::DomCode::F2, ui::DomKey::F2, ui::VKEY_F2}},
-        {0x91, {ui::EF_NONE, ui::DomCode::F3, ui::DomKey::F3, ui::VKEY_F3}},
-        {0x92, {ui::EF_NONE, ui::DomCode::F4, ui::DomKey::F4, ui::VKEY_F4}},
-        {0x93, {ui::EF_NONE, ui::DomCode::F5, ui::DomKey::F5, ui::VKEY_F5}},
-        {0x94, {ui::EF_NONE, ui::DomCode::F6, ui::DomKey::F6, ui::VKEY_F6}},
-        {0x95, {ui::EF_NONE, ui::DomCode::F7, ui::DomKey::F7, ui::VKEY_F7}},
-        {0x96, {ui::EF_NONE, ui::DomCode::F8, ui::DomKey::F8, ui::VKEY_F8}},
-        {0x97, {ui::EF_NONE, ui::DomCode::F9, ui::DomKey::F9, ui::VKEY_F9}},
-        {0x98, {ui::EF_NONE, ui::DomCode::F10, ui::DomKey::F10, ui::VKEY_F10}},
-        {0xA0, {ui::EF_NONE, ui::DomCode::F11, ui::DomKey::F11, ui::VKEY_F11}},
-        {0xAE, {ui::EF_NONE, ui::DomCode::F12, ui::DomKey::F12, ui::VKEY_F12}},
-        {0xB0, {ui::EF_NONE, ui::DomCode::F13, ui::DomKey::F13, ui::VKEY_F13}},
-};
+const std::vector<uint32_t> kInternalJinlonScanCodes = {
+    0xEA, 0xE7, 0x91, 0x92, 0x93, 0x94, 0x95,
+    0x96, 0x97, 0x98, 0xA0, 0xAE, 0xB0};
 
 constexpr mojom::TopRowKey kInternalJinlonTopRowKeys[] = {
     mojom::TopRowKey::kBack,
@@ -492,7 +479,7 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
           ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
       info->keyboard_top_row_layout =
           ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
-      info->keyboard_scan_code_map = kInternalJinlonScanCodeMap;
+      info->keyboard_scan_codes = kInternalJinlonScanCodes;
       EXPECT_EQ(7, id);
     } else if (base_name == "event8") {
       device_caps = ui::kMicrosoftBluetoothNumberPad;
@@ -519,10 +506,9 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
           ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
       info->keyboard_top_row_layout =
           ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
-      info->keyboard_scan_code_map = kInternalJinlonScanCodeMap;
-      info->keyboard_scan_code_map.erase(0x96);
-      info->keyboard_scan_code_map[0xC4] = {ui::EF_NONE, ui::DomCode::F8,
-                                            ui::DomKey::F8, ui::VKEY_F8};
+      info->keyboard_scan_codes = kInternalJinlonScanCodes;
+      // Set 0xC4 to be F8.
+      info->keyboard_scan_codes[7] = 0xC4;
       EXPECT_EQ(11, id);
     } else if (base_name == "event12") {
       device_caps = ui::kMorphiusTabletModeSwitch;

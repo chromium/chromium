@@ -155,21 +155,20 @@ class EventRewriterChromeOS : public EventRewriter {
   // nullptr (for testing without ash), in which case sticky key operations
   // don't happen.
   EventRewriterChromeOS(Delegate* delegate,
+                        KeyboardCapability* keyboard_capability,
                         EventRewriter* sticky_keys_controller,
                         bool privacy_screen_supported);
 
   // Only explicitly use this constructor for tests. Does not take ownership of
   // |ime_keyboard|.
   EventRewriterChromeOS(Delegate* delegate,
+                        KeyboardCapability* keyboard_capability,
                         EventRewriter* sticky_keys_controller,
                         bool privacy_screen_supported,
                         ash::input_method::ImeKeyboard* ime_keyboard);
   EventRewriterChromeOS(const EventRewriterChromeOS&) = delete;
   EventRewriterChromeOS& operator=(const EventRewriterChromeOS&) = delete;
   ~EventRewriterChromeOS() override;
-
-  // Calls KeyboardDeviceAdded.
-  void KeyboardDeviceAddedForTesting(int device_id);
 
   // Reset the internal rewriter state so that next set of tests can be ran on
   // the same rewriter, if needed.
@@ -204,30 +203,6 @@ class EventRewriterChromeOS : public EventRewriter {
                                      const MutableKeyState& state,
                                      std::unique_ptr<Event>* rewritten_event);
 
-  // Given a keyboard device, returns its type.
-  static KeyboardCapability::DeviceType GetDeviceType(
-      const InputDevice& keyboard_device);
-
-  // Given a keyboard device, returns its top row layout. Will return default
-  // kKbdTopRowLayoutDefault if the device is not tagged with a specific
-  // layout, or when failing to retrieve device layout from udev.
-  static KeyboardCapability::KeyboardTopRowLayout GetKeyboardTopRowLayout(
-      const InputDevice& keyboard_device);
-
-  // Given a keyboard device, identify the type of keyboard, and the top row
-  // layout, if applicable. |out_type| and |out_layout| are always updated. If
-  // |out_scan_code_map| is non-null, and the top row layout is of type
-  // kKbdTopRowLayoutCustom, then the custom layout information will be parsed
-  // and written to the supplied map. Returns false on some errors of
-  // identifying the keyboard, however out_type and out_layout will always be
-  // updated.
-  static bool IdentifyKeyboard(
-      const InputDevice& keyboard_device,
-      KeyboardCapability::DeviceType* out_type,
-      KeyboardCapability::KeyboardTopRowLayout* out_layout,
-      base::flat_map<uint32_t, EventRewriterChromeOS::MutableKeyState>*
-          out_scan_code_map);
-
   // Given a keyboard device, returns true if we get back the Assistant key
   // property without getting an error. Property value is stored in
   // |has_assistant_key|.
@@ -243,22 +218,12 @@ class EventRewriterChromeOS : public EventRewriter {
   void RewriteFunctionKeys(const KeyEvent& event, MutableKeyState* state);
 
  private:
-  struct DeviceInfo {
-    KeyboardCapability::DeviceType type;
-    KeyboardCapability::KeyboardTopRowLayout top_row_layout;
-  };
-
   void DeviceKeyPressedOrReleased(int device_id);
 
   // By default the top row (F1-F12) keys are system keys for back, forward,
   // brightness, volume, etc. However, windows for v2 apps can optionally
   // request raw function keys for these keys.
   bool ForceTopRowAsFunctionKeys(int device_id) const;
-
-  // Adds a device to |device_id_to_info_| only if no failure occurs in
-  // identifying the keyboard, and returns the device type of this keyboard
-  // even if it wasn't stored in |device_id_to_info_|.
-  KeyboardCapability::DeviceType KeyboardDeviceAdded(int device_id);
 
   // Returns true if |last_keyboard_device_id_| is Hotrod remote.
   bool IsHotrodRemote() const;
@@ -312,14 +277,6 @@ class EventRewriterChromeOS : public EventRewriter {
   int RewriteLocatedEvent(const Event& event);
   int RewriteModifierClick(const MouseEvent& event, int* flags);
 
-  // For new CrOS keyboards that support supplying a custom layout via sysfs,
-  // takes a mapping read by IdentifyKeyboard, and stores it mapped to
-  // |keyboard_device| in |top_row_scan_code_map_|.
-  bool StoreCustomTopRowMapping(
-      const ui::InputDevice& keyboard_device,
-      base::flat_map<uint32_t, EventRewriterChromeOS::MutableKeyState>
-          top_row_map);
-
   // Handle Function <-> Action key remapping for new CrOS keyboards that
   // support supplying a custom layout via sysfs.
   bool RewriteTopRowKeysForCustomLayout(
@@ -365,14 +322,6 @@ class EventRewriterChromeOS : public EventRewriter {
   // event to a mouse left button event. This is why we only have
   // `pressed_as_right_button_device_ids_` here without a "left" counterpart.
   std::set<int> pressed_as_right_button_device_ids_;
-
-  std::map<int, DeviceInfo> device_id_to_info_;
-
-  // Maps a device ID to a mapping of scan_code to MutableKeyState on keyboards
-  // that supply it via a sysfs attribute.
-  // eg. map<device_id, Map<scan_code, MutableKeyState>>.
-  base::flat_map<int, base::flat_map<uint32_t, MutableKeyState>>
-      top_row_scan_code_map_;
 
   // The |source_device_id()| of the most recent keyboard event,
   // used to interpret modifiers on pointer events.
@@ -421,6 +370,7 @@ class EventRewriterChromeOS : public EventRewriter {
   // latches. See b/216049965 for more details.
   base::flat_map<DomCode, ui::EventFlags> previous_non_modifier_latches_;
 
+  KeyboardCapability* const keyboard_capability_;
   ash::input_method::ImeKeyboard* const ime_keyboard_;
 
   // True if alt + key and mouse event remapping is allowed. In some scenario,

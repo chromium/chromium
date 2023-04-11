@@ -55,9 +55,7 @@ class InputDataProviderKeyboard {
   void ProcessKeyboardTopRowLayout(
       const InputDeviceInformation* device_info,
       ui::KeyboardCapability::KeyboardTopRowLayout top_row_layout,
-      const base::flat_map<uint32_t,
-                           ui::EventRewriterChromeOS::MutableKeyState>&
-          scan_code_map,
+      const std::vector<uint32_t>& scan_code_map,
       std::vector<mojom::TopRowKey>* out_top_row_keys,
       AuxData* out_aux_data);
 };

@@ -19,6 +19,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
+#include "ui/chromeos/events/keyboard_capability.h"
 #include "ui/chromeos/events/mojom/modifier_key.mojom-shared.h"
 #include "ui/chromeos/events/pref_names.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
@@ -82,8 +83,10 @@ class ChromeVoxAccessibilityEventRewriterTest
       public ui::EventRewriterChromeOS::Delegate {
  public:
   ChromeVoxAccessibilityEventRewriterTest() {
+    keyboard_capability_ =
+        ui::KeyboardCapability::CreateStubKeyboardCapability();
     event_rewriter_chromeos_ = std::make_unique<ui::EventRewriterChromeOS>(
-        this, nullptr, false, &fake_ime_keyboard_);
+        this, keyboard_capability_.get(), nullptr, false, &fake_ime_keyboard_);
   }
   ChromeVoxAccessibilityEventRewriterTest(
       const ChromeVoxAccessibilityEventRewriterTest&) = delete;
@@ -170,6 +173,7 @@ class ChromeVoxAccessibilityEventRewriterTest
   std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_;
 
   input_method::FakeImeKeyboard fake_ime_keyboard_;
+  std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
   std::unique_ptr<ui::EventRewriterChromeOS> event_rewriter_chromeos_;
 
  private:
@@ -495,8 +499,10 @@ class SwitchAccessAccessibilityEventRewriterTest
       public ui::EventRewriterChromeOS::Delegate {
  public:
   SwitchAccessAccessibilityEventRewriterTest() {
+    keyboard_capability_ =
+        ui::KeyboardCapability::CreateStubKeyboardCapability();
     event_rewriter_chromeos_ = std::make_unique<ui::EventRewriterChromeOS>(
-        this, nullptr, false, &fake_ime_keyboard_);
+        this, keyboard_capability_.get(), nullptr, false, &fake_ime_keyboard_);
   }
   ~SwitchAccessAccessibilityEventRewriterTest() override = default;
 
@@ -613,6 +619,7 @@ class SwitchAccessAccessibilityEventRewriterTest
   std::unique_ptr<SwitchAccessTestDelegate> delegate_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_;
+  std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
   std::unique_ptr<ui::EventRewriterChromeOS> event_rewriter_chromeos_;
 };
 
@@ -887,8 +894,11 @@ class MagnifierTestDelegate : public AccessibilityEventRewriterDelegate {
 class MagnifierAccessibilityEventRewriterTest : public AshTestBase {
  public:
   MagnifierAccessibilityEventRewriterTest() {
+    keyboard_capability_ =
+        ui::KeyboardCapability::CreateStubKeyboardCapability();
     event_rewriter_chromeos_ = std::make_unique<ui::EventRewriterChromeOS>(
-        nullptr, nullptr, false, &fake_ime_keyboard_);
+        nullptr, keyboard_capability_.get(), nullptr, false,
+        &fake_ime_keyboard_);
   }
   ~MagnifierAccessibilityEventRewriterTest() override = default;
 
@@ -931,6 +941,7 @@ class MagnifierAccessibilityEventRewriterTest : public AshTestBase {
   std::unique_ptr<MagnifierTestDelegate> delegate_;
   input_method::FakeImeKeyboard fake_ime_keyboard_;
   std::unique_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_;
+  std::unique_ptr<ui::KeyboardCapability> keyboard_capability_;
   std::unique_ptr<ui::EventRewriterChromeOS> event_rewriter_chromeos_;
 };
 
