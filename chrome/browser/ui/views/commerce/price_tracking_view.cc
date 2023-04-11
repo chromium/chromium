@@ -101,6 +101,7 @@ PriceTrackingView::PriceTrackingView(Profile* profile,
       views::style::STYLE_SECONDARY));
   body_label_->SetProperty(views::kMarginsKey,
                            gfx::Insets::TLBR(label_spacing, 0, 0, 0));
+  body_label_->SetMultiLine(true);
   body_label_->SetAllowCharacterBreak(true);
   body_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   body_label_->SetFocusBehavior(View::FocusBehavior::ACCESSIBLE_ONLY);
@@ -115,23 +116,23 @@ PriceTrackingView::PriceTrackingView(Profile* profile,
   toggle_button_->SetProperty(views::kMarginsKey,
                               gfx::Insets::TLBR(0, kHorizontalSpacing, 0, 0));
 
+  const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
+  int label_width;
   if (power_bookmarks_side_panel_enabled) {
     toggle_button_->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                  views::MaximumFlexSizeRule::kUnbounded)
             .WithAlignment(views::LayoutAlignment::kEnd));
+
+    label_width = bubble_width - kHorizontalSpacing * 2 - kIconMargin * 2 -
+                  kIconSize - toggle_button_->GetPreferredSize().width();
   } else {
-    body_label_->SetMultiLine(true);
-    const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-        views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
-
-    const int label_width = bubble_width - kHorizontalSpacing * 4 -
-                            kProductImageSize -
-                            toggle_button_->GetPreferredSize().width();
-    body_label_->SizeToFit(label_width);
+    label_width = bubble_width - kHorizontalSpacing * 4 - kProductImageSize -
+                  toggle_button_->GetPreferredSize().width();
   }
-
+  body_label_->SizeToFit(label_width);
   base::RecordAction(base::UserMetricsAction(
       "Commerce.PriceTracking.BookmarkDialogPriceTrackViewShown"));
 }
