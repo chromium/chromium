@@ -5,6 +5,8 @@
 #ifndef NET_BASE_PARSE_NUMBER_H_
 #define NET_BASE_PARSE_NUMBER_H_
 
+#include <cstdint>
+
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 

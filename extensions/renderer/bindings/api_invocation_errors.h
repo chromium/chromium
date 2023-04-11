@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_RENDERER_BINDINGS_API_INVOCATION_ERRORS_H_
 #define EXTENSIONS_RENDERER_BINDINGS_API_INVOCATION_ERRORS_H_
 
+#include <cstdint>
 #include <set>
 #include <string>
 

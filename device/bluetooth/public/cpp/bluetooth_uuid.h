@@ -5,6 +5,7 @@
 #ifndef DEVICE_BLUETOOTH_PUBLIC_CPP_BLUETOOTH_UUID_H_
 #define DEVICE_BLUETOOTH_PUBLIC_CPP_BLUETOOTH_UUID_H_
 
+#include <cstdint>
 #include <ostream>
 #include <string>
 #include <vector>

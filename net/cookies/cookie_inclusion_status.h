@@ -6,6 +6,7 @@
 #define NET_COOKIES_COOKIE_INCLUSION_STATUS_H_
 
 #include <bitset>
+#include <cstdint>
 #include <ostream>
 #include <string>
 #include <vector>

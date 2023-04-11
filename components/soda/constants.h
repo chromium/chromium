@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SODA_CONSTANTS_H_
 #define COMPONENTS_SODA_CONSTANTS_H_
 
+#include <cstdint>
 #include <string>
 
 #include "base/files/file_path.h"
