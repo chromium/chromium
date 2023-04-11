@@ -19,7 +19,7 @@
 }
 
 .label {
-  line-height: 20px;
+  min-height: 20px;
 }
 
 .single-line-label {
