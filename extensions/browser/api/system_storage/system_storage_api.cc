@@ -67,19 +67,19 @@ void SystemStorageEjectDeviceFunction::OnStorageMonitorInit(
 void SystemStorageEjectDeviceFunction::HandleResponse(
     StorageMonitor::EjectStatus status) {
   api::system_storage::EjectDeviceResultCode result =
-      api::system_storage::EJECT_DEVICE_RESULT_CODE_FAILURE;
+      api::system_storage::EjectDeviceResultCode::kFailure;
   switch (status) {
     case StorageMonitor::EJECT_OK:
-      result = api::system_storage::EJECT_DEVICE_RESULT_CODE_SUCCESS;
+      result = api::system_storage::EjectDeviceResultCode::kSuccess;
       break;
     case StorageMonitor::EJECT_IN_USE:
-      result = api::system_storage::EJECT_DEVICE_RESULT_CODE_IN_USE;
+      result = api::system_storage::EjectDeviceResultCode::kInUse;
       break;
     case StorageMonitor::EJECT_NO_SUCH_DEVICE:
-      result = api::system_storage::EJECT_DEVICE_RESULT_CODE_NO_SUCH_DEVICE;
+      result = api::system_storage::EjectDeviceResultCode::kNoSuchDevice;
       break;
     case StorageMonitor::EJECT_FAILURE:
-      result = api::system_storage::EJECT_DEVICE_RESULT_CODE_FAILURE;
+      result = api::system_storage::EjectDeviceResultCode::kFailure;
   }
 
   Respond(WithArguments(api::system_storage::ToString(result)));
