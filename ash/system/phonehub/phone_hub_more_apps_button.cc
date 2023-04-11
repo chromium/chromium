@@ -62,6 +62,8 @@ PhoneHubMoreAppsButton::PhoneHubMoreAppsButton(
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_FULL_APPS_LIST_BUTTON_TITLE));
+  SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_FULL_APPS_LIST_BUTTON_TITLE));
   InitLayout();
   app_stream_launcher_data_model_->AddObserver(this);
 }
