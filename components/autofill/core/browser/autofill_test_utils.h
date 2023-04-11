@@ -259,8 +259,9 @@ void CreateTestCreditCardFormData(FormData* form,
 // Populates `form_data` with data corresponding to an IBAN form (a form with a
 // single IBAN field). Note that this actually appends fields to the form data,
 // which can be useful for building up more complex test forms.
-void CreateTestIbanFormData(FormData* form_data,
-                            const char* value = "IE64 IRCE 9205 0112 3456 78");
+void CreateTestIbanFormData(
+    FormData* form_data,
+    const char* value = "FR76 3000 6000 0112 3456 7890 189");
 
 // Strips those members from |form| and |field| that are not serialized via
 // mojo, i.e., resets them to `{}`.

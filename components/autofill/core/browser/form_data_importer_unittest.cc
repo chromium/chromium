@@ -116,9 +116,9 @@ constexpr char kDefaultCreditCardExpMonth[] = "01";
 constexpr char kDefaultCreditCardExpYear[] = "2999";
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// Define default value for Iban.
-constexpr char kIbanValue[] = "IE64 IRCE 9205 0112 3456 78";
-constexpr char kIbanValueWithoutWhitespaces[] = "IE64IRCE92050112345678";
+// Define a default value for Iban.
+constexpr char kIbanValue[] = "FR76 3000 6000 0112 3456 7890 189";
+constexpr char kIbanValueWithoutWhitespaces[] = "FR7630006000011234567890189";
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // For a given ServerFieldType |type| returns a pair of field name and label
