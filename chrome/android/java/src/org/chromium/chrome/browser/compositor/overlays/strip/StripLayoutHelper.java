@@ -154,6 +154,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     static final float BACKGROUND_TAB_BRIGHTNESS_DIMMED = 0.65f;
     static final float FADE_FULL_OPACITY_THRESHOLD_DP = 24.f;
     private static final float TAB_STRIP_TAB_WIDTH = 108.f;
+    private static final float NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING = 8.f;
 
     private static final int MESSAGE_RESIZE = 1;
     private static final int MESSAGE_UPDATE_SPINNER = 2;
@@ -224,6 +225,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
     // New tab button with tab strip end padding
     private float mNewTabButtonWithTabStripEndPadding;
+    // 3-dots menu button with tab strip end padding
+    private float mMenuButtonPadding;
 
     private final boolean mIncognito;
     private boolean mIsFirstLayoutPass;
@@ -269,8 +272,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mModelSelectorButton = modelSelectorButton;
 
         if (ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+            // Use toolbar menu button padding to align NTB with menu button.
+            mMenuButtonPadding = context.getResources().getDimension(R.dimen.button_end_padding)
+                    / context.getResources().getDisplayMetrics().density;
             mNewTabButtonWithTabStripEndPadding =
-                    (BUTTON_DESIRED_TOUCH_TARGET_SIZE - mNewTabButtonWidth) / 2;
+                    (BUTTON_DESIRED_TOUCH_TARGET_SIZE - mNewTabButtonWidth - mMenuButtonPadding) / 2
+                    + mMenuButtonPadding;
         } else {
             mNewTabButtonWithTabStripEndPadding = NEW_TAB_BUTTON_PADDING_DP;
         }
@@ -537,11 +544,17 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     /**
      * @param margin The distance between the last tab and the edge of the screen.
      */
-    public void setEndMargin(float margin) {
+    public void setEndMargin(float margin, boolean isMsbVisible) {
+        // When MSB is not visible we add strip end padding here. When MSB is visible strip end
+        // padding will be included in MSB margin, so just add padding between NTB and MSB here.
         if (LocalizationUtils.isLayoutRtl()) {
-            mLeftMargin = margin + mNewTabButtonWithTabStripEndPadding + mNewTabButtonWidth;
+            mLeftMargin = margin + mNewTabButtonWidth;
+            mLeftMargin += isMsbVisible ? NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING
+                                        : mNewTabButtonWithTabStripEndPadding;
         } else {
-            mRightMargin = margin + mNewTabButtonWithTabStripEndPadding + mNewTabButtonWidth;
+            mRightMargin = margin + mNewTabButtonWidth;
+            mRightMargin += isMsbVisible ? NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING
+                                         : mNewTabButtonWithTabStripEndPadding;
         }
 
         computeAndUpdateTabWidth(false, false);

@@ -163,11 +163,6 @@ void TabStripSceneLayer::UpdateNewTabButton(
 
   new_tab_button_->SetUIResourceId(button_resource->ui_resource()->id());
 
-  // The touch target for the new tab button is skewed towards the end of the
-  // strip. This ensures that the view itself is correctly aligned without
-  // adjusting the touch target.
-  float left_offset = touch_target_offset;
-
   new_tab_button_->SetBounds(button_resource->size());
   new_tab_button_->SetHideLayerAndSubtree(!visible);
   new_tab_button_->SetOpacity(button_alpha);
@@ -185,7 +180,7 @@ void TabStripSceneLayer::UpdateNewTabButton(
                                   2;
     new_tab_button_background_->SetUIResourceId(
         button_background_resource->ui_resource()->id());
-    new_tab_button_background_->SetPosition(gfx::PointF(x + left_offset, y));
+    new_tab_button_background_->SetPosition(gfx::PointF(x, y));
 
     new_tab_button_background_->SetBounds(button_background_resource->size());
     new_tab_button_background_->SetHideLayerAndSubtree(!visible);
@@ -194,6 +189,11 @@ void TabStripSceneLayer::UpdateNewTabButton(
         gfx::PointF(background_left_offset, background_top_offset));
     new_tab_button_background_->AddChild(new_tab_button_);
   } else {
+    // The touch target for the new tab button is skewed towards the end of the
+    // strip. This ensures that the view itself is correctly aligned without
+    // adjusting the touch target.
+    float left_offset = touch_target_offset;
+
     // Only show new tab button icon when TSR is disabled
     new_tab_button_->SetPosition(gfx::PointF(x + left_offset, y));
   }
@@ -263,6 +263,7 @@ void TabStripSceneLayer::UpdateModelSelectorButtonBackground(
   float background_top_offset = (button_background_resource->size().height() -
                                  button_resource->size().height()) /
                                 2;
+
   model_selector_button_background_->SetPosition(gfx::PointF(x, y));
 
   model_selector_button_background_->SetBounds(

@@ -61,4 +61,6 @@ found in the LICENSE file.
     <dimen name="navigation_popup_top_padding">8dp</dimen>
     <dimen name="navigation_popup_favicon_bg_size">36dp</dimen>
 
+    <!-- Padding between rightmost button and strip end -->
+    <dimen name="button_end_padding">8dp</dimen>
 </resources>
