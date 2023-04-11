@@ -280,11 +280,7 @@ ChromeBrowsingDataLifetimeManager::ChromeBrowsingDataLifetimeManager(
 
   // When the service is instantiated, wait a few minutes after Chrome startup
   // to start deleting data.
-  content::GetUIThreadTaskRunner(
-      {
-          base::TaskPriority::BEST_EFFORT,
-          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
-      })
+  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostDelayedTask(FROM_HERE,
                         base::BindOnce(&ChromeBrowsingDataLifetimeManager::
                                            UpdateScheduledRemovalSettings,
@@ -384,11 +380,7 @@ void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
                     remover, /*filterable_deletion=*/false, profile_));
     }
   }
-  content::GetUIThreadTaskRunner(
-      {
-          base::TaskPriority::BEST_EFFORT,
-          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
-      })
+  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostDelayedTask(FROM_HERE,
                         base::BindOnce(&ChromeBrowsingDataLifetimeManager::
                                            StartScheduledBrowsingDataRemoval,

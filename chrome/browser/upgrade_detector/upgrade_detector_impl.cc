@@ -487,8 +487,7 @@ void UpgradeDetectorImpl::Init() {
 #endif
 
   // Start checking for outdated builds sometime after startup completes.
-  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT,
-                                  base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})
+  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostTask(
           FROM_HERE,
           base::BindOnce(&UpgradeDetectorImpl::StartOutdatedBuildDetector,
