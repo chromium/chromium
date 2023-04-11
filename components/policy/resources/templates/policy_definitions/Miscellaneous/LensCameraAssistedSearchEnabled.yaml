@@ -19,6 +19,7 @@ items:
   value: false
 owners:
 - yusuyoutube@google.com
+- hujasonx@google.com
 - benwgold@google.com
 - wylieb@chromium.org
 - fgorski@chromium.org
@@ -27,5 +28,6 @@ schema:
   type: boolean
 supported_on:
 - android:91-
+- ios:113-
 tags: []
 type: main

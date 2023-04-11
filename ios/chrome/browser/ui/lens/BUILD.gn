@@ -14,9 +14,11 @@ source_set("coordinator") {
     ":lens_entrypoint",
     "//base",
     "//components/lens",
+    "//components/prefs",
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state:browser_state",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
@@ -27,6 +29,7 @@ source_set("coordinator") {
     "//ios/chrome/common/app_group",
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/web/public/navigation",
+    "//ui/base",
   ]
 }
 
@@ -39,6 +42,9 @@ source_set("lens_availability") {
   deps = [
     ":lens_entrypoint",
     "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features:features",
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ui/base",

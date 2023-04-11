@@ -16,7 +16,8 @@ enum class LensSupportStatus {
   DeviceFormFactorTablet = 2,
   DisabledByFlag = 3,
   ProviderUnsupported = 4,
-  kMaxValue = ProviderUnsupported,
+  DisabledByEnterprisePolicy = 5,
+  kMaxValue = DisabledByEnterprisePolicy,
 };
 
 // Histogram name for the support status of the context menu entrypoint.

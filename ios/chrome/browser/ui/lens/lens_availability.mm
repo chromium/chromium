@@ -6,6 +6,9 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
+#import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ui/base/device_form_factor.h"
@@ -64,6 +67,9 @@ bool CheckAndLogAvailabilityForLensEntryPoint(
     lens_support_status = LensSupportStatus::ProviderUnsupported;
   } else if (!flag_enabled) {
     lens_support_status = LensSupportStatus::DisabledByFlag;
+  } else if (!GetApplicationContext()->GetLocalState()->GetBoolean(
+                 prefs::kLensCameraAssistedSearchPolicyAllowed)) {
+    lens_support_status = LensSupportStatus::DisabledByEnterprisePolicy;
   } else if (!is_google_default_search_engine) {
     lens_support_status = LensSupportStatus::NonGoogleSearchEngine;
   } else if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
