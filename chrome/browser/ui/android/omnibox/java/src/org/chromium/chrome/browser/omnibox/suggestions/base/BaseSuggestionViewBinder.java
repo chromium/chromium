@@ -22,6 +22,8 @@ import android.widget.ImageView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
@@ -53,6 +55,16 @@ import java.util.List;
  */
 public final class BaseSuggestionViewBinder<T extends View>
         implements ViewBinder<PropertyModel, BaseSuggestionView<T>, PropertyKey> {
+    /**
+     * Holder of metadata about a view's current state w.r.t. a suggestion's visual properties.
+     * This allows us to avoid calling setters when the current state of the view is already
+     * correct.
+     */
+    private static class BaseSuggestionViewMetadata {
+        @Nullable
+        public Drawable.ConstantState backgroundConstantState;
+    }
+
     /** Drawable ConstantState used to expedite creation of Focus ripples. */
     private static Drawable.ConstantState sFocusableDrawableState;
     private static @BrandedColorScheme int sFocusableDrawableStateTheme;
@@ -207,6 +219,25 @@ public final class BaseSuggestionViewBinder<T extends View>
     }
 
     /**
+     * Access the BaseSuggestionViewMetadata for the given view, creating and attaching a new one
+     * if none is currently associated. Returns an unattached metadata if {@link
+     * OmniboxFeatures#shouldCacheSuggestionResources} returns false.
+     */
+    private static @NonNull BaseSuggestionViewMetadata ensureViewMetadata(View view) {
+        if (!OmniboxFeatures.shouldCacheSuggestionResources()) {
+            return new BaseSuggestionViewMetadata();
+        }
+
+        BaseSuggestionViewMetadata metadata =
+                (BaseSuggestionViewMetadata) view.getTag(R.id.base_suggestion_view_metadata_key);
+        if (metadata == null) {
+            metadata = new BaseSuggestionViewMetadata();
+            view.setTag(R.id.base_suggestion_view_metadata_key, metadata);
+        }
+        return metadata;
+    }
+
+    /**
      * Applies selectable drawable from cache (where possible) or resources (otherwise).
      *
      * The method internally stores the ConstantState for the drawable to be returned to
@@ -216,8 +247,14 @@ public final class BaseSuggestionViewBinder<T extends View>
      * @param view A view that receives background.
      */
     public static void applySelectableBackground(PropertyModel model, View view) {
+        // Use a throwaway metadata object if caching is off to simplify branching; the performance
+        // difference will still manifest because it's not persisted.
+        BaseSuggestionViewMetadata metadata = ensureViewMetadata(view);
+
         if (sFocusableDrawableState != null) {
+            if (sFocusableDrawableState == metadata.backgroundConstantState) return;
             view.setBackground(sFocusableDrawableState.newDrawable());
+            metadata.backgroundConstantState = sFocusableDrawableState;
             return;
         }
 
@@ -234,6 +271,7 @@ public final class BaseSuggestionViewBinder<T extends View>
         // Cache the drawable state for faster retrieval.
         // See go/omnibox:drawables for more details.
         sFocusableDrawableState = layer.getConstantState();
+        metadata.backgroundConstantState = sFocusableDrawableState;
         view.setBackground(layer);
     }
 
@@ -341,7 +379,7 @@ public final class BaseSuggestionViewBinder<T extends View>
         // TODO(crbug.com/1418077): This should be part of BaseSuggestionView.
         // Move this once we reconcile Pedals with Base.
         var outlineProvider = view.getOutlineProvider();
-        if (outlineProvider == null || !(outlineProvider instanceof RoundedCornerOutlineProvider)) {
+        if (!(outlineProvider instanceof RoundedCornerOutlineProvider)) {
             outlineProvider =
                     new RoundedCornerOutlineProvider(view.getResources().getDimensionPixelSize(
                             R.dimen.omnibox_suggestion_bg_round_corner_radius));
