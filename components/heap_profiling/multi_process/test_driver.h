@@ -128,7 +128,7 @@ class TestDriver {
   size_t total_variadic_allocations_ = 0;
 
   // Use to make PA allocations, which should also be shimmed.
-  partition_alloc::PartitionAllocatorForTesting partition_allocator_;
+  partition_alloc::PartitionAllocatorAllowLeaksForTesting partition_allocator_;
 
   // Contains nothing until |CollectResults| has been called.
   std::string serialized_trace_;
