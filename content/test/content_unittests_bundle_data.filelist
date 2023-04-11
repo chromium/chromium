@@ -1463,6 +1463,7 @@
 //content/test/data/service_worker/fetch_event.js.mock-http-headers
 //content/test/data/service_worker/fetch_event_blob.js
 //content/test/data/service_worker/fetch_event_blob.js.mock-http-headers
+//content/test/data/service_worker/fetch_event_object_removing_itself.js
 //content/test/data/service_worker/fetch_event_pass_through.js
 //content/test/data/service_worker/fetch_event_pass_through.js.mock-http-headers
 //content/test/data/service_worker/fetch_event_rejected.js
