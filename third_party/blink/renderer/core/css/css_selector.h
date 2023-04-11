@@ -51,14 +51,15 @@ class StyleRule;
 // representative list of selectors is in CSSSelectorTest; run it in a debug
 // build to see useful debugging output.
 //
-// ** TagHistory() and Relation():
+// ** NextSimpleSelector() and Relation():
 //
 // Selectors are represented as an array of simple selectors (defined more
 // or less according to
-// http://www.w3.org/TR/css3-selectors/#simple-selectors-dfn). The tagHistory()
-// method returns the next simple selector in the list. The relation() method
-// returns the relationship of the current simple selector to the one in
-// tagHistory(). For example, the CSS selector .a.b #c is represented as:
+// http://www.w3.org/TR/css3-selectors/#simple-selectors-dfn).
+// The NextInSimpleSelector() member function returns the next simple selector
+// in the list. The Relation() member function returns the relationship of the
+// current simple selector to the one in NextSimpleSelector(). For example, the
+// CSS selector .a.b #c is represented as:
 //
 // SelectorText(): .a.b #c
 // --> (relation == kDescendant)
@@ -66,11 +67,11 @@ class StyleRule;
 //   --> (relation == kSubSelector)
 //     SelectorText(): .b
 //
-// The order of tagHistory() varies depending on the situation.
+// The ordering of the simple selectors varies depending on the situation.
 // * Relations using combinators
 //   (http://www.w3.org/TR/css3-selectors/#combinators), such as descendant,
 //   sibling, etc., are parsed right-to-left (in the example above, this is why
-//   #c is earlier in the tagHistory() chain than .a.b).
+//   #c is earlier in the simple selector chain than .a.b).
 // * SubSelector relations are parsed left-to-right, such as the .a.b example
 //   above.
 // * ShadowPseudo relations are parsed right-to-left. Example:
@@ -198,7 +199,7 @@ class CORE_EXPORT CSSSelector {
     // any compound selector which contains either :scope or the parent
     // selector (&). When encountered during selector matching,
     // kScopeActivation will try the to match the rest of the selector (i.e. the
-    // TagHistory from that point) using activation roots as the :scope
+    // NextSimpleSelector from that point) using activation roots as the :scope
     // element, trying the nearest activation root first.
     //
     // See also StyleScopeActivation.
@@ -376,7 +377,7 @@ class CORE_EXPORT CSSSelector {
   // scope-containing during parsing.
   CSSNestingType GetNestingType() const;
   // Set this CSSSelector as a :true pseudo-class. This can be useful if you
-  // need to insert a special RelationType into a selector's TagHistory,
+  // need to insert a special RelationType into a selector's NextSimpleSelector,
   // but lack any existing/suitable CSSSelector to attach that RelationType to.
   //
   // Note that :true is always implicit (see IsImplicit).
@@ -395,11 +396,11 @@ class CORE_EXPORT CSSSelector {
 
   // Selectors are kept in an array by CSSSelectorList. The next component of
   // the selector is the next item in the array.
-  const CSSSelector* TagHistory() const {
-    return is_last_in_tag_history_ ? nullptr : this + 1;
+  const CSSSelector* NextSimpleSelector() const {
+    return is_last_in_complex_selector_ ? nullptr : this + 1;
   }
-  CSSSelector* TagHistory() {
-    return is_last_in_tag_history_ ? nullptr : this + 1;
+  CSSSelector* NextSimpleSelector() {
+    return is_last_in_complex_selector_ ? nullptr : this + 1;
   }
 
   static const AtomicString& UniversalSelectorAtom() { return g_null_atom; }
@@ -497,8 +498,10 @@ class CORE_EXPORT CSSSelector {
     is_last_in_selector_list_ = is_last;
   }
 
-  bool IsLastInTagHistory() const { return is_last_in_tag_history_; }
-  void SetLastInTagHistory(bool is_last) { is_last_in_tag_history_ = is_last; }
+  bool IsLastInComplexSelector() const { return is_last_in_complex_selector_; }
+  void SetLastInComplexSelector(bool is_last) {
+    is_last_in_complex_selector_ = is_last;
+  }
 
   // https://drafts.csswg.org/selectors/#compound
   bool IsCompound() const;
@@ -541,7 +544,7 @@ class CORE_EXPORT CSSSelector {
   unsigned match_ : 4;        // enum MatchType
   unsigned pseudo_type_ : 8;  // enum PseudoType
   unsigned is_last_in_selector_list_ : 1;
-  unsigned is_last_in_tag_history_ : 1;
+  unsigned is_last_in_complex_selector_ : 1;
   unsigned has_rare_data_ : 1;
   unsigned is_for_page_ : 1;
   unsigned is_implicitly_added_ : 1;
@@ -717,7 +720,7 @@ inline CSSSelector::CSSSelector()
       match_(kUnknown),
       pseudo_type_(kPseudoUnknown),
       is_last_in_selector_list_(false),
-      is_last_in_tag_history_(false),
+      is_last_in_complex_selector_(false),
       has_rare_data_(false),
       is_for_page_(false),
       is_implicitly_added_(false),
@@ -730,7 +733,7 @@ inline CSSSelector::CSSSelector(const QualifiedName& tag_q_name,
       match_(kTag),
       pseudo_type_(kPseudoUnknown),
       is_last_in_selector_list_(false),
-      is_last_in_tag_history_(false),
+      is_last_in_complex_selector_(false),
       has_rare_data_(false),
       is_for_page_(false),
       is_implicitly_added_(tag_is_implicit),
@@ -742,7 +745,7 @@ inline CSSSelector::CSSSelector(const StyleRule* parent_rule, bool is_implicit)
       match_(kPseudoClass),
       pseudo_type_(kPseudoParent),
       is_last_in_selector_list_(false),
-      is_last_in_tag_history_(false),
+      is_last_in_complex_selector_(false),
       has_rare_data_(false),
       is_for_page_(false),
       is_implicitly_added_(is_implicit),
@@ -757,7 +760,7 @@ inline CSSSelector::CSSSelector(const AtomicString& pseudo_name,
                                     /* has_arguments */ false,
                                     /* document */ nullptr)),
       is_last_in_selector_list_(false),
-      is_last_in_tag_history_(false),
+      is_last_in_complex_selector_(false),
       has_rare_data_(false),
       is_for_page_(false),
       is_implicitly_added_(is_implicit),
@@ -769,7 +772,7 @@ inline CSSSelector::CSSSelector(const CSSSelector& o)
       match_(o.match_),
       pseudo_type_(o.pseudo_type_),
       is_last_in_selector_list_(o.is_last_in_selector_list_),
-      is_last_in_tag_history_(o.is_last_in_tag_history_),
+      is_last_in_complex_selector_(o.is_last_in_complex_selector_),
       has_rare_data_(o.has_rare_data_),
       is_for_page_(o.is_for_page_),
       is_implicitly_added_(o.is_implicitly_added_),

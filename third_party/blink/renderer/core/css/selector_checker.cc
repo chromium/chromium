@@ -193,8 +193,8 @@ static bool ShouldMatchHoverOrActive(
   }
   const CSSSelector* selector = context.selector;
   while (selector->Relation() == CSSSelector::kSubSelector &&
-         selector->TagHistory()) {
-    selector = selector->TagHistory();
+         selector->NextSimpleSelector()) {
+    selector = selector->NextSimpleSelector();
     if (selector->Match() != CSSSelector::kPseudoClass) {
       return true;
     }
@@ -232,7 +232,7 @@ bool SelectorChecker::Match(const SelectorCheckingContext& context,
 
   if (UNLIKELY(context.vtt_originating_element)) {
     // A kUAShadow combinator is required for VTT matching.
-    if (context.selector->IsLastInTagHistory()) {
+    if (context.selector->IsLastInComplexSelector()) {
       return false;
     }
   }
@@ -272,7 +272,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
     result.custom_highlight_name = std::move(sub_result.custom_highlight_name);
   }
 
-  if (context.selector->IsLastInTagHistory()) {
+  if (context.selector->IsLastInComplexSelector()) {
     return kSelectorMatches;
   }
 
@@ -300,8 +300,8 @@ static inline SelectorChecker::SelectorCheckingContext
 PrepareNextContextForRelation(
     const SelectorChecker::SelectorCheckingContext& context) {
   SelectorChecker::SelectorCheckingContext next_context(context);
-  DCHECK(context.selector->TagHistory());
-  next_context.selector = context.selector->TagHistory();
+  DCHECK(context.selector->NextSimpleSelector());
+  next_context.selector = context.selector->NextSimpleSelector();
   return next_context;
 }
 
@@ -386,7 +386,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
       [[fallthrough]];
     case CSSSelector::kDescendant:
       if (next_context.selector->GetPseudoType() == CSSSelector::kPseudoScope) {
-        if (next_context.selector->IsLastInTagHistory()) {
+        if (next_context.selector->IsLastInComplexSelector()) {
           if (context.scope && context.scope->IsDocumentFragment()) {
             return kSelectorMatches;
           }

@@ -471,7 +471,7 @@ TEST_F(SelectorCheckerTest, PseudoTrue) {
 
   CSSSelector selector;
   selector.SetTrue();
-  selector.SetLastInTagHistory(true);
+  selector.SetLastInComplexSelector(true);
 
   Element* foo = GetDocument().getElementById("foo");
   ASSERT_TRUE(foo);

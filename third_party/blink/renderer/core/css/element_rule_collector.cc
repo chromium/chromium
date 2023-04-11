@@ -992,14 +992,14 @@ void ElementRuleCollector::DidMatchRule(
         // When there is no default @namespace, *::selection and *|*::selection
         // are stored without the star, so we are universal if there’s nothing
         // before (e.g. x::selection) and nothing after (e.g. y ::selection).
-        universal = selector.IsLastInTagHistory();
-      } else if (const CSSSelector* next = selector.TagHistory()) {
+        universal = selector.IsLastInComplexSelector();
+      } else if (const CSSSelector* next = selector.NextSimpleSelector()) {
         // When there is a default @namespace, ::selection and *::selection (not
         // universal) are stored as g_null_atom|*::selection, |*::selection (not
         // universal) is stored as g_empty_atom|*::selection, and *|*::selection
         // (the only universal form) is stored as g_star_atom|*::selection.
         universal =
-            next->IsLastInTagHistory() &&
+            next->IsLastInComplexSelector() &&
             CSSSelector::GetPseudoId(next->GetPseudoType()) == dynamic_pseudo &&
             selector.Match() == CSSSelector::kTag &&
             selector.TagQName().LocalName().IsNull() &&

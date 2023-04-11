@@ -99,7 +99,7 @@ static bool CheckPageSelectorComponents(const CSSSelector* selector,
                                         bool is_first_page,
                                         const AtomicString& page_name) {
   for (const CSSSelector* component = selector; component;
-       component = component->TagHistory()) {
+       component = component->NextSimpleSelector()) {
     if (component->Match() == CSSSelector::kTag) {
       const AtomicString& local_name = component->TagQName().LocalName();
       DCHECK_NE(local_name, CSSSelector::UniversalSelectorAtom());

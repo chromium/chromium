@@ -84,10 +84,10 @@ bool NeedsImplicitShadowCombinatorForMatching(const CSSSelector& selector) {
 void MarkAsEntireComplexSelector(base::span<CSSSelector> selectors) {
 #if DCHECK_IS_ON()
   for (CSSSelector& selector : selectors.first(selectors.size() - 1)) {
-    DCHECK(!selector.IsLastInTagHistory());
+    DCHECK(!selector.IsLastInComplexSelector());
   }
 #endif
-  selectors.back().SetLastInTagHistory(true);
+  selectors.back().SetLastInComplexSelector(true);
 }
 
 }  // namespace
@@ -489,7 +489,7 @@ void CSSSelectorParser::AddPlaceholderSelectorIfNeeded(
     placeholder_selector.SetMatch(CSSSelector::kPseudoClass);
     placeholder_selector.SetUnparsedPlaceholder(
         nesting_type, AtomicString(argument.Serialize()));
-    placeholder_selector.SetLastInTagHistory(true);
+    placeholder_selector.SetLastInComplexSelector(true);
     output_.push_back(placeholder_selector);
   }
 }
@@ -742,7 +742,7 @@ static CSSSelector CreateImplicitAnchor(
 
 // Within @scope, each compound that contains either :scope or '&' is prepended
 // with an implicit :true + relation=kScopeActivation. This makes it possible
-// for SelectorChecker to (re)try the selector's TagHistory with
+// for SelectorChecker to (re)try the selector's NextSimpleSelector with
 // different :scope nodes.
 static CSSSelector CreateImplicitScopeActivation() {
   CSSSelector selector;
@@ -1189,7 +1189,7 @@ static bool SelectorListRequiresScopeActivation(const CSSSelectorList& list) {
   for (const CSSSelector* selector = list.First(); selector;
        selector = CSSSelectorList::Next(*selector)) {
     for (const CSSSelector* simple = selector; simple;
-         simple = simple->TagHistory()) {
+         simple = simple->NextSimpleSelector()) {
       if (SimpleSelectorRequiresScopeActivation(*simple)) {
         return true;
       }
@@ -2121,13 +2121,12 @@ void CSSSelectorParser::PrependTypeSelectorIfNeeded(
 // require rearranging elements in memory (see the comment below).
 void CSSSelectorParser::SplitCompoundAtImplicitShadowCrossingCombinator(
     base::span<CSSSelector> selectors) {
-  // The tagHistory is a linked list that stores combinator separated compound
-  // selectors from right-to-left. Yet, within a single compound selector,
-  // stores the simple selectors from left-to-right.
+  // The simple selectors are stored in an array that stores
+  // combinator-separated compound selectors from right-to-left. Yet, within a
+  // single compound selector, stores the simple selectors from left-to-right.
   //
-  // ".a.b > div#id" is stored in a tagHistory as [div, #id, .a, .b], each
-  // element in the list stored with an associated relation (combinator or
-  // SubSelector).
+  // ".a.b > div#id" is stored as [div, #id, .a, .b], each element in the list
+  // stored with an associated relation (combinator or SubSelector).
   //
   // ::cue, ::shadow, and custom pseudo elements have an implicit ShadowPseudo
   // combinator to their left, which really makes for a new compound selector,
@@ -2380,7 +2379,7 @@ static void RecordUsageAndDeprecationsOneSelector(
   }
   if (selector->SelectorList()) {
     for (const CSSSelector* current = selector->SelectorList()->First();
-         current; current = current->TagHistory()) {
+         current; current = current->NextSimpleSelector()) {
       RecordUsageAndDeprecationsOneSelector(current, context);
     }
   }

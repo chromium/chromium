@@ -153,7 +153,7 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
   // Skip the rightmost compound. It is handled quickly by the rule hashes.
   bool skip_over_subselectors = true;
   for (const CSSSelector* current = selector; current;
-       current = current->TagHistory()) {
+       current = current->NextSimpleSelector()) {
     // Only collect identifiers that match ancestors.
     switch (relation) {
       case CSSSelector::kSubSelector:
@@ -262,7 +262,7 @@ void SelectorFilter::CollectIdentifierHashes(
   unsigned* end = identifier_hashes + maximum_identifier_count;
 
   CollectDescendantCompoundSelectorIdentifierHashes(
-      selector.TagHistory(), selector.Relation(), hash, end);
+      selector.NextSimpleSelector(), selector.Relation(), hash, end);
   if (hash != end) {
     *hash = 0;
   }

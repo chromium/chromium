@@ -429,7 +429,7 @@ CSSSelectorList* CSSParserImpl::ParsePageSelector(
       return nullptr;
     }
     if (selectors.size() != 0) {
-      selectors[0].SetLastInTagHistory(false);
+      selectors[0].SetLastInComplexSelector(false);
     }
     selectors.push_back(selector);
   }
@@ -437,7 +437,7 @@ CSSSelectorList* CSSParserImpl::ParsePageSelector(
     selectors.push_back(CSSSelector());
   }
   selectors[0].SetForPage();
-  selectors.back().SetLastInTagHistory(true);
+  selectors.back().SetLastInComplexSelector(true);
   return CSSSelectorList::AdoptSelectorVector(
       base::span<CSSSelector>(selectors));
 }
@@ -966,7 +966,7 @@ StyleRule* CSSParserImpl::CreateImplicitNestedRule(
   constexpr bool kNotExplicit =
       false;  // The rule is implicit, but the & is not.
   CSSSelector parent_selector(parent_rule_for_nesting, kNotExplicit);
-  parent_selector.SetLastInTagHistory(true);
+  parent_selector.SetLastInComplexSelector(true);
   parent_selector.SetLastInSelectorList(true);
   return StyleRule::Create(
       base::span<CSSSelector>{&parent_selector, 1u},

@@ -65,7 +65,7 @@ static inline ValidPropertyFilter DetermineValidPropertyFilter(
     const AddRuleFlags add_rule_flags,
     const CSSSelector& selector) {
   for (const CSSSelector* component = &selector; component;
-       component = component->TagHistory()) {
+       component = component->NextSimpleSelector()) {
     if (component->Match() == CSSSelector::kPseudoElement &&
         component->Value() == TextTrackCue::CueShadowPseudoId()) {
       return ValidPropertyFilter::kCue;
@@ -130,7 +130,7 @@ void RuleData::ComputeEntirelyCoveredByBucketing() {
   is_easy_ = EasySelectorChecker::IsEasy(&Selector());
   is_entirely_covered_by_bucketing_ = true;
   for (const CSSSelector* selector = &Selector(); selector;
-       selector = selector->TagHistory()) {
+       selector = selector->NextSimpleSelector()) {
     if (!selector->IsCoveredByBucketing()) {
       is_entirely_covered_by_bucketing_ = false;
       break;
@@ -140,7 +140,7 @@ void RuleData::ComputeEntirelyCoveredByBucketing() {
 
 void RuleData::ResetEntirelyCoveredByBucketing() {
   for (CSSSelector* selector = &MutableSelector(); selector;
-       selector = selector->TagHistory()) {
+       selector = selector->NextSimpleSelector()) {
     selector->SetCoveredByBucketing(false);
     if (selector->Relation() != CSSSelector::kSubSelector) {
       break;
@@ -285,7 +285,7 @@ static const CSSSelector* ExtractBestSelectorValues(
     CSSSelector::PseudoType& pseudo_type) {
   const CSSSelector* it = &component;
   for (; it && it->Relation() == CSSSelector::kSubSelector;
-       it = it->TagHistory()) {
+       it = it->NextSimpleSelector()) {
     ExtractSelectorValues(it, id, class_name, attr_name, attr_value,
                           is_exact_attr, custom_pseudo_element_name, tag_name,
                           part_name, pseudo_type);
@@ -318,7 +318,8 @@ static void MarkAsCoveredByBucketing(CSSSelector& selector,
     // We could also have taken universal selectors no matter what
     // should_mark_func() says, but again, we consider that not worth it.
 
-    if (s->IsLastInTagHistory() || s->Relation() != CSSSelector::kSubSelector) {
+    if (s->IsLastInComplexSelector() ||
+        s->Relation() != CSSSelector::kSubSelector) {
       break;
     }
   }
@@ -381,10 +382,10 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
   }
 
   if (!custom_pseudo_element_name.empty()) {
-    // Custom pseudos come before ids and classes in the order of tagHistory,
-    // and have a relation of ShadowPseudo between them. Therefore we should
-    // never be a situation where ExtractSelectorValues finds id and
-    // className in addition to custom pseudo.
+    // Custom pseudos come before ids and classes in the order of
+    // NextSimpleSelector(), and have a relation of ShadowPseudo between them.
+    // Therefore we should never be a situation where ExtractSelectorValues
+    // finds id and className in addition to custom pseudo.
     DCHECK(id.empty());
     DCHECK(class_name.empty());
     AddToRuleSet(custom_pseudo_element_name, ua_shadow_pseudo_element_rules_,
