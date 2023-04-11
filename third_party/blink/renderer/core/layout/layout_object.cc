@@ -374,6 +374,11 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
       return nullptr;
     case EDisplay::kInline:
       return MakeGarbageCollected<LayoutInline>(element);
+    case EDisplay::kInlineListItem:
+    case EDisplay::kFlowRootListItem:
+    case EDisplay::kInlineFlowRootListItem:
+      DCHECK(RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled());
+      [[fallthrough]];
     case EDisplay::kBlock:
     case EDisplay::kFlowRoot:
     case EDisplay::kInlineBlock:
