@@ -65,6 +65,12 @@ public class TabUiFeatureUtilities {
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
                     SHOW_OPEN_IN_TAB_GROUP_MENU_ITEM_FIRST_PARAM, true);
 
+    // Field trial parameter for disabling new tab button anchor for tab strip redesign.
+    private static final String TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR_PARAM = "disable_ntb_anchor";
+    public static final BooleanCachedFieldTrialParameter TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_STRIP_REDESIGN,
+                    TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR_PARAM, false);
+
     private static boolean sTabSelectionEditorLongPressEntryEnabled;
 
     /**
@@ -72,6 +78,13 @@ public class TabUiFeatureUtilities {
      */
     public static void setTabSelectionEditorLongPressEntryEnabledForTesting(boolean enabled) {
         sTabSelectionEditorLongPressEntryEnabled = enabled;
+    }
+
+    /**
+     * @return Whether New tab button anchor for tab strip redesign is disabled.
+     */
+    public static boolean isTabStripNtbAnchorDisabled() {
+        return TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR.getValue();
     }
 
     /**
