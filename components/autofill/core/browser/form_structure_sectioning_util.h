@@ -23,11 +23,12 @@ namespace autofill {
 //  2. All credit card fields are in one, distinct section, unless they have a
 //     valid autocomplete attribute section.
 //  3. All other fields that are focusable or <select> fields are partitioned
-//     into intervals, each of which is a section.
+//     into intervals, each of which is a section, and starts with a focusable
+//     field (i.e., it does not start with an unfocusable <select> field).
 //  4. All remaining fields are in one, distinct section.
 //
 // The basic idea of interval partitioning is to start a new section when the
-// same field type appears repeatedly. See `ShouldStartNewSection()` for the
+// same field type appears repeatedly. See `BelongsToCurrentSection()` for the
 // details.
 //
 // The motivation behind the special handling of credit card fields is that

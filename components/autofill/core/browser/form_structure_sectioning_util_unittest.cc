@@ -251,5 +251,60 @@ TEST_F(FormStructureSectioningTest, ExampleFormSectioningModeExpand) {
               BucketsAre(Bucket(1, 1), Bucket(3, 1), Bucket(5, 1)));
 }
 
+// Tests that an invisible <select> does not start a new section. Consider the
+// following form:
+//   <form>
+//     <div style="display: none">
+//       Name: <input>
+//       Country: <select>...</select>
+//       ...
+//     </div>
+//     <div style="display: block">
+//       Name: <input>
+//       Country: <select>...</select>
+//       ...
+//     </div>
+//   </form>
+// The fields from the first <div> must be in a different section than the
+// fields in the second <div>. In particular, the first <select> (even though it
+// *is* sectionable) must not start a section to which the name <input> is then
+// added.
+TEST_F(FormStructureSectioningTest,
+       SelectFieldOfHiddenSectionDoesNotLeakIntoFollowingForm) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillUseParameterizedSectioning);
+
+  auto fields =
+      CreateFields({{.field_type = NAME_FULL, .is_focusable = false},
+                    {.field_type = ADDRESS_HOME_LINE1, .is_focusable = false},
+                    {.field_type = ADDRESS_HOME_LINE2, .is_focusable = false},
+                    {.field_type = ADDRESS_HOME_COUNTRY,
+                     .form_control_type = "select-one",
+                     .is_focusable = false},
+                    {.field_type = NAME_FULL},
+                    {.field_type = ADDRESS_HOME_LINE1},
+                    {.field_type = ADDRESS_HOME_LINE2},
+                    {.field_type = ADDRESS_HOME_COUNTRY,
+                     .form_control_type = "select-one"}});
+
+  base::HistogramTester histogram_tester;
+  AssignSectionsAndLogMetrics(fields);
+
+  // The evaluation order of the `Section::FromFieldIdentifier()` expressions
+  // does not matter, as all `FormFieldData::host_frame` are identical.
+  base::flat_map<LocalFrameToken, size_t> frame_token_ids;
+  EXPECT_THAT(GetSections(fields),
+              testing::ElementsAre(
+                  Section(), Section(), Section(), Section(),
+                  Section::FromFieldIdentifier(*fields[4], frame_token_ids),
+                  Section::FromFieldIdentifier(*fields[4], frame_token_ids),
+                  Section::FromFieldIdentifier(*fields[4], frame_token_ids),
+                  Section::FromFieldIdentifier(*fields[4], frame_token_ids)));
+  EXPECT_EQ(ComputeSectioningSignature(fields), StrToHash32Bit("00001111"));
+  histogram_tester.ExpectUniqueSample(kNumberOfSectionsHistogram, 2, 1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kFieldsPerSectionHistogram),
+              BucketsAre(Bucket(4, 2)));
+}
+
 }  // namespace
 }  // namespace autofill
