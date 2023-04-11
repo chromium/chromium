@@ -486,8 +486,15 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
     }
   }
 
-  if ((source_ == ContextMenuSource::kToolbarAction) &&
-      can_show_icon_in_toolbar) {
+  // Extensions menu using kExtensionsMenuAccessControl doesn't have pin button
+  // in the menu items and thus context menu should display it (whereas
+  // extensions menu without the feature could have pin buttons).
+  bool show_toggle_visibility_button =
+      can_show_icon_in_toolbar &&
+      (base::FeatureList::IsEnabled(
+           extensions_features::kExtensionsMenuAccessControl) ||
+       source_ == ContextMenuSource::kToolbarAction);
+  if (show_toggle_visibility_button) {
     int visibility_string_id =
         GetVisibilityStringId(profile_, extension, button_visibility_);
     DCHECK_NE(-1, visibility_string_id);

@@ -266,9 +266,13 @@ void ExtensionsMenuMainPageView::Update(std::u16string current_site,
       GetSiteSettingToggleText(is_site_settings_toggle_on));
 }
 
-void ExtensionsMenuMainPageView::UpdatePinButtons() {
+void ExtensionsMenuMainPageView::UpdateContextMenuButtons(
+    const ToolbarActionsModel& toolbar_model) {
   for (views::View* view : menu_items_->children()) {
-    GetAsMenuItem(view)->UpdatePinButton();
+    ExtensionMenuItemView* menu_item = GetAsMenuItem(view);
+    bool is_action_pinned =
+        toolbar_model.IsActionPinned(menu_item->view_controller()->GetId());
+    menu_item->UpdateContextMenuButton(is_action_pinned);
   }
 }
 

@@ -61,8 +61,8 @@ class ExtensionsMenuMainPageView : public views::View {
               bool is_site_settings_toggle_visible,
               bool is_site_settings_toggle_on);
 
-  // Updates the pin button of each menu item.
-  void UpdatePinButtons();
+  // Updates the context menu button of each menu item.
+  void UpdateContextMenuButtons(const ToolbarActionsModel& toolbar_model);
 
   void OnToggleButtonPressed();
 

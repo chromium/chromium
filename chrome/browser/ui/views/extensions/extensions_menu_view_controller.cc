@@ -437,7 +437,7 @@ void ExtensionsMenuViewController::OnToolbarPinnedActionsChanged() {
 
   auto* main_page = GetMainPage(current_page_);
   DCHECK(main_page);
-  main_page->UpdatePinButtons();
+  main_page->UpdateContextMenuButtons(*toolbar_model_);
 }
 
 void ExtensionsMenuViewController::OnUserPermissionsSettingsChanged(

@@ -32,6 +32,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -218,13 +219,17 @@ void ExtensionMenuItemView::OnThemeChanged() {
 
   if (pin_button_) {
     views::InkDrop::Get(pin_button_)->SetBaseColor(icon_color);
+    UpdatePinButton();
   }
 
-  SetButtonIconWithColor(
-      context_menu_button_, kBrowserToolsIcon, icon_color,
-      color_provider->GetColor(kColorExtensionMenuIconDisabled));
-
-  UpdatePinButton();
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    UpdateContextMenuButton(IsPinned());
+  } else {
+    SetButtonIconWithColor(
+        context_menu_button_, kBrowserToolsIcon, icon_color,
+        color_provider->GetColor(kColorExtensionMenuIconDisabled));
+  }
 }
 
 void ExtensionMenuItemView::Update(
@@ -274,6 +279,33 @@ void ExtensionMenuItemView::UpdatePinButton() {
   SetButtonIconWithColor(pin_button_,
                          IsPinned() ? views::kUnpinIcon : views::kPinIcon,
                          icon_color, disabled_icon_color);
+}
+
+void ExtensionMenuItemView::UpdateContextMenuButton(bool is_action_pinned) {
+  CHECK(base::FeatureList::IsEnabled(
+      extensions_features::kExtensionsMenuAccessControl));
+
+  const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE);
+  const auto* const color_provider = GetColorProvider();
+  auto three_dot_icon = ui::ImageModel::FromVectorIcon(
+      kBrowserToolsIcon, color_provider->GetColor(kColorExtensionMenuIcon),
+      icon_size);
+
+  // Show a pin button for the context menu normal state icon when the action is
+  // pinned in the toolbar. All other states should look, and behave, the same.
+  context_menu_button_->SetImageModel(
+      views::Button::STATE_NORMAL,
+      is_action_pinned
+          ? ui::ImageModel::FromVectorIcon(
+                views::kPinIcon,
+                color_provider->GetColor(kColorExtensionMenuPinButtonIcon),
+                icon_size)
+          : three_dot_icon);
+  context_menu_button_->SetImageModel(views::Button::STATE_HOVERED,
+                                      three_dot_icon);
+  context_menu_button_->SetImageModel(views::Button::STATE_PRESSED,
+                                      three_dot_icon);
 }
 
 void ExtensionMenuItemView::SetupContextMenuButton() {
