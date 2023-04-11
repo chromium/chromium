@@ -164,14 +164,24 @@ generate_jni("jni_headers") {
   sources = [ "java/org/chromium/wolvic/Tab.java" ]
 }
 
-android_library("jni_java") {
-  sources = [ "java/org/chromium/wolvic/Tab.java" ]
+android_library("wolvic_java") {
+  sources = [
+    "java/org/chromium/wolvic/Tab.java",
+    "java/org/chromium/wolvic/TabCompositorView.java",
+  ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   deps = [
+    "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
+    "//components/embedder_support/android:content_view_java",
+    "//components/embedder_support/android:view_java",
     "//components/embedder_support/android:web_contents_delegate_java",
+    "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_full_java",
+    "//url:gurl_java",
   ]
 }
 
@@ -179,8 +189,8 @@ dist_aar("content_aar") {
   testonly = true
   deps = [
     ":content_manifest",
-    ":jni_java",
     ":libcontent_native",
+    ":wolvic_java",
     "//base",
     "//base:base_java",
     "//base:jni_java",
