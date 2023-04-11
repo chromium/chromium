@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_CHROMEOS_EVENTS_KEYBOARD_LAYOUT_UTIL_H_
-#define UI_CHROMEOS_EVENTS_KEYBOARD_LAYOUT_UTIL_H_
+#ifndef UI_EVENTS_ASH_KEYBOARD_LAYOUT_UTIL_H_
+#define UI_EVENTS_ASH_KEYBOARD_LAYOUT_UTIL_H_
 
 namespace ui {
 
@@ -14,4 +14,4 @@ bool DeviceKeyboardHasAssistantKey();
 
 }  // namespace ui
 
-#endif  // UI_CHROMEOS_EVENTS_KEYBOARD_LAYOUT_UTIL_H_
+#endif  // UI_EVENTS_ASH_KEYBOARD_LAYOUT_UTIL_H_

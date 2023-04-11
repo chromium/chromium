@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/chromeos/events/pref_names.h"
+#include "ui/events/ash/pref_names.h"
 
 namespace prefs {
 
@@ -11,7 +11,7 @@ namespace prefs {
 
 // Integer prefs which determine how we remap modifier keys (e.g. swap Alt and
 // Control.) Possible values for these prefs are 0-7. See ModifierKey enum in
-// src/ui/chromeos/events/mojom/modifier_key.mojom
+// src/ui/events/ash/mojom/modifier_key.mojom
 const char kLanguageRemapSearchKeyTo[] =
     // Note: we no longer use XKB for remapping these keys, but we can't change
     // the pref names since the names are already synced with the cloud.

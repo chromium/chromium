@@ -86,7 +86,7 @@
 #include "components/account_manager_core/pref_names.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "ui/chromeos/events/pref_names.h"
+#include "ui/events/ash/pref_names.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_ASH)

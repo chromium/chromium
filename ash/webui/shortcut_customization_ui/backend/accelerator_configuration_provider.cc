@@ -31,7 +31,7 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/chromeos/events/keyboard_capability.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event_constants.h"

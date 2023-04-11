@@ -15,8 +15,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "content/public/browser/web_ui.h"
-#include "ui/chromeos/events/keyboard_capability.h"
-#include "ui/chromeos/events/keyboard_layout_util.h"
+#include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/keyboard_layout_util.h"
 
 namespace {
 

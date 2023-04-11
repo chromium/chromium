@@ -24,7 +24,7 @@
 #include "chromeos/ash/components/proximity_auth/proximity_auth_pref_names.h"
 #include "chromeos/ash/components/tether/pref_names.h"
 #include "components/metrics/demographics/user_demographics.h"
-#include "ui/chromeos/events/pref_names.h"
+#include "ui/events/ash/pref_names.h"
 #endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/pref_names.h"

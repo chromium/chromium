@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
-#include "ui/chromeos/events/keyboard_capability.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 

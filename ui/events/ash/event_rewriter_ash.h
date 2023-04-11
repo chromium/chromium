@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_CHROMEOS_EVENTS_EVENT_REWRITER_CHROMEOS_H_
-#define UI_CHROMEOS_EVENTS_EVENT_REWRITER_CHROMEOS_H_
+#ifndef UI_EVENTS_ASH_EVENT_REWRITER_ASH_H_
+#define UI_EVENTS_ASH_EVENT_REWRITER_ASH_H_
 
 #include <list>
 #include <map>
@@ -13,8 +13,8 @@
 #include <utility>
 #include <vector>
 
-#include "ui/chromeos/events/keyboard_capability.h"
-#include "ui/chromeos/events/mojom/modifier_key.mojom-shared.h"
+#include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event.h"
 #include "ui/events/event_rewriter.h"
@@ -30,7 +30,7 @@ namespace ui {
 
 enum class DomCode;
 
-// EventRewriterChromeOS makes various changes to keyboard-related events,
+// EventRewriterAsh makes various changes to keyboard-related events,
 // including KeyEvents and some other events with keyboard modifier flags:
 // - maps certain non-character keys according to user preferences
 //   (Control, Alt, Search, Caps Lock, Escape, Backspace, Diamond);
@@ -40,7 +40,7 @@ enum class DomCode;
 // - handles various key combinations like Search+Backspace -> Delete
 //   and Search+number to Fnumber;
 // - handles key/pointer combinations like Alt+Button1 -> Button3.
-class EventRewriterChromeOS : public EventRewriter {
+class EventRewriterAsh : public EventRewriter {
  public:
   // Things that keyboard-related rewriter phases can change about an Event.
   struct MutableKeyState {
@@ -113,12 +113,12 @@ class EventRewriterChromeOS : public EventRewriter {
     virtual bool TopRowKeysAreFunctionKeys(int device_id) const = 0;
 
     // Returns true if the |key_code| and |flags| have been resgistered for
-    // extensions and EventRewriterChromeOS will not rewrite the event.
+    // extensions and EventRewriterAsh will not rewrite the event.
     virtual bool IsExtensionCommandRegistered(KeyboardCode key_code,
                                               int flags) const = 0;
 
     // Returns true if search key accelerator is reserved for current active
-    // window and EventRewriterChromeOS will not rewrite the event.
+    // window and EventRewriterAsh will not rewrite the event.
     virtual bool IsSearchKeyAcceleratorReserved() const = 0;
 
     // Used to send a notification about Alt-Click being deprecated.
@@ -154,21 +154,21 @@ class EventRewriterChromeOS : public EventRewriter {
   // Does not take ownership of the |sticky_keys_controller|, which may also be
   // nullptr (for testing without ash), in which case sticky key operations
   // don't happen.
-  EventRewriterChromeOS(Delegate* delegate,
-                        KeyboardCapability* keyboard_capability,
-                        EventRewriter* sticky_keys_controller,
-                        bool privacy_screen_supported);
+  EventRewriterAsh(Delegate* delegate,
+                   KeyboardCapability* keyboard_capability,
+                   EventRewriter* sticky_keys_controller,
+                   bool privacy_screen_supported);
 
   // Only explicitly use this constructor for tests. Does not take ownership of
   // |ime_keyboard|.
-  EventRewriterChromeOS(Delegate* delegate,
-                        KeyboardCapability* keyboard_capability,
-                        EventRewriter* sticky_keys_controller,
-                        bool privacy_screen_supported,
-                        ash::input_method::ImeKeyboard* ime_keyboard);
-  EventRewriterChromeOS(const EventRewriterChromeOS&) = delete;
-  EventRewriterChromeOS& operator=(const EventRewriterChromeOS&) = delete;
-  ~EventRewriterChromeOS() override;
+  EventRewriterAsh(Delegate* delegate,
+                   KeyboardCapability* keyboard_capability,
+                   EventRewriter* sticky_keys_controller,
+                   bool privacy_screen_supported,
+                   ash::input_method::ImeKeyboard* ime_keyboard);
+  EventRewriterAsh(const EventRewriterAsh&) = delete;
+  EventRewriterAsh& operator=(const EventRewriterAsh&) = delete;
+  ~EventRewriterAsh() override;
 
   // Reset the internal rewriter state so that next set of tests can be ran on
   // the same rewriter, if needed.
@@ -283,7 +283,7 @@ class EventRewriterChromeOS : public EventRewriter {
       int device_id,
       const ui::KeyEvent& key_event,
       bool search_is_pressed,
-      ui::EventRewriterChromeOS::MutableKeyState* state);
+      ui::EventRewriterAsh::MutableKeyState* state);
 
   // Handle Fn/Action key remapping for Wilco keyboard layout.
   bool RewriteTopRowKeysForLayoutWilco(
@@ -317,7 +317,7 @@ class EventRewriterChromeOS : public EventRewriter {
   // induced left to right button remapping.
   //
   // This variable works closely with
-  // EventRewriterChromeOS::ShouldRemapToRightClick(). As of this writing we
+  // EventRewriterAsh::ShouldRemapToRightClick(). As of this writing we
   // don't have a product feature that would rewrite a mouse non-left button
   // event to a mouse left button event. This is why we only have
   // `pressed_as_right_button_device_ids_` here without a "left" counterpart.
@@ -348,7 +348,7 @@ class EventRewriterChromeOS : public EventRewriter {
   // modifier to the next non-modifier keypress. Under Ozone the stateless
   // layout model requires this to be handled explicitly. See crbug.com/518237
   // Pragmatically this, like the Diamond key, is handled here in
-  // EventRewriterChromeOS, but modifier state management is scattered between
+  // EventRewriterAsh, but modifier state management is scattered between
   // here, sticky keys, and the system layer (Ozone), and could do with
   // refactoring.
   // - |pressed_modifier_latches_| records the latching keys currently pressed.
@@ -383,4 +383,4 @@ class EventRewriterChromeOS : public EventRewriter {
 
 }  // namespace ui
 
-#endif  // UI_CHROMEOS_EVENTS_EVENT_REWRITER_CHROMEOS_H_
+#endif  // UI_EVENTS_ASH_EVENT_REWRITER_ASH_H_

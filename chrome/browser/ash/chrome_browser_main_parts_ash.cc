@@ -275,7 +275,7 @@
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/pointer/pointer_device.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/chromeos/events/pref_names.h"
+#include "ui/events/ash/pref_names.h"
 #include "ui/events/event_utils.h"
 
 #if BUILDFLAG(PLATFORM_CFM)

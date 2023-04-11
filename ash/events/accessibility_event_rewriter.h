@@ -16,7 +16,7 @@
 #include "ui/events/event_rewriter.h"
 
 namespace ui {
-class EventRewriterChromeOS;
+class EventRewriterAsh;
 }
 
 namespace ash {
@@ -32,7 +32,7 @@ class ASH_EXPORT AccessibilityEventRewriter
     : public ui::EventRewriter,
       public input_method::InputMethodManager::Observer {
  public:
-  AccessibilityEventRewriter(ui::EventRewriterChromeOS* event_rewriter_chromeos,
+  AccessibilityEventRewriter(ui::EventRewriterAsh* event_rewriter_ash,
                              AccessibilityEventRewriterDelegate* delegate);
   AccessibilityEventRewriter(const AccessibilityEventRewriter&) = delete;
   AccessibilityEventRewriter& operator=(const AccessibilityEventRewriter&) =
@@ -118,7 +118,7 @@ class ASH_EXPORT AccessibilityEventRewriter
 
   // Used to rewrite events in special cases such as function keys for ChromeVox
   // taylored behavior.
-  ui::EventRewriterChromeOS* const event_rewriter_chromeos_;
+  ui::EventRewriterAsh* const event_rewriter_ash_;
 
   // Suspends key handling for Switch Access during key assignment in web ui.
   bool suspend_switch_access_key_handling_ = false;

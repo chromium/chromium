@@ -20,7 +20,7 @@
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "ui/chromeos/events/mojom/modifier_key.mojom.h"
+#include "ui/events/ash/mojom/modifier_key.mojom.h"
 
 namespace ash {
 namespace {

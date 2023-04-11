@@ -8,11 +8,11 @@ import("//build/config/ui.gni")
 
 assert(is_chromeos_ash)
 
-source_set("events") {
-  output_name = "ui_chromeos_events"
+source_set("ash") {
+  output_name = "ui_events_ash"
   sources = [
-    "event_rewriter_chromeos.cc",
-    "event_rewriter_chromeos.h",
+    "event_rewriter_ash.cc",
+    "event_rewriter_ash.h",
     "keyboard_capability.cc",
     "keyboard_capability.h",
     "keyboard_layout_util.cc",
@@ -27,9 +27,9 @@ source_set("events") {
     "//ui/base",
     "//ui/base:features",
     "//ui/base/ime/ash",
-    "//ui/chromeos/events/mojom",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
+    "//ui/events/ash/mojom",
     "//ui/events/devices",
     "//ui/events/ozone/evdev",
     "//ui/events/ozone/evdev:event_device_info",

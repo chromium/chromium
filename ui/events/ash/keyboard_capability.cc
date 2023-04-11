@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/chromeos/events/keyboard_capability.h"
+#include "ui/events/ash/keyboard_capability.h"
 
 #include <fcntl.h>
 #include <linux/input-event-codes.h>
@@ -20,9 +20,9 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "device/udev_linux/scoped_udev.h"
-#include "ui/chromeos/events/event_rewriter_chromeos.h"
-#include "ui/chromeos/events/keyboard_layout_util.h"
-#include "ui/chromeos/events/mojom/modifier_key.mojom-shared.h"
+#include "ui/events/ash/event_rewriter_ash.h"
+#include "ui/events/ash/keyboard_layout_util.h"
+#include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/input_device_event_observer.h"

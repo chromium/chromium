@@ -11,7 +11,7 @@
 #include "device/udev_linux/fake_udev_loader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/chromeos/events/keyboard_capability.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 
 namespace ash {

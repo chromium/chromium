@@ -25,7 +25,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator_map.h"
 #include "ui/base/ime/ash/input_method_manager.h"
-#include "ui/chromeos/events/keyboard_capability.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/input_device_event_observer.h"
 

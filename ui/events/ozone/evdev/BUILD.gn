@@ -220,6 +220,7 @@ source_set("event_device_info") {
     "//ash/webui/diagnostics_ui/backend:*",
     "//chromeos/ash/services/cros_healthd/*",
     "//ui/chromeos/*",
+    "//ui/events/ash/*",
   ]
 }
 

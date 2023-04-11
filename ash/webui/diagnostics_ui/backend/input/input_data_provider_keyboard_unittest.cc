@@ -21,7 +21,7 @@
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "content/public/test/browser_task_environment.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/chromeos/events/event_rewriter_chromeos.h"
+#include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"

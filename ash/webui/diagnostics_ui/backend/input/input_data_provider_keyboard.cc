@@ -68,7 +68,7 @@ constexpr auto kFKeyOrder =
                                                     {KEY_F15, kFKey15}});
 
 // Represents scancode value seen in scan code mapping received from
-// `EventRewriterChromeOS` which denotes that the FKey is missing on the
+// `EventRewriterAsh` which denotes that the FKey is missing on the
 // physical device.
 constexpr uint32_t kCustomScanCodeFKeyMissing = 0x00;
 
@@ -129,7 +129,7 @@ constexpr auto kCustomScancodeMapping =
     });
 
 // Hard-coded top-row key mappings. These are intended to match the behaviour of
-// EventRewriterChromeOS::RewriteFunctionKeys for historical keyboards. No
+// EventRewriterAsh::RewriteFunctionKeys for historical keyboards. No
 // updates should be needed, as all new keyboards are expected to be using
 // customizable top row keys (vivaldi).
 

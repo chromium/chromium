@@ -13,8 +13,8 @@
 #include "base/containers/flat_set.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_member.h"
-#include "ui/chromeos/events/mojom/modifier_key.mojom.h"
-#include "ui/chromeos/events/pref_names.h"
+#include "ui/events/ash/mojom/modifier_key.mojom.h"
+#include "ui/events/ash/pref_names.h"
 
 class PrefService;
 class PrefRegistrySimple;

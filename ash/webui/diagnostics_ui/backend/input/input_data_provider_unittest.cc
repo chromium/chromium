@@ -49,8 +49,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/chromeos/events/event_rewriter_chromeos.h"
-#include "ui/chromeos/events/keyboard_capability.h"
+#include "ui/events/ash/event_rewriter_ash.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/touch_device_transform.h"
@@ -549,12 +549,11 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
   }
 };
 
-// Test implementation of ui::EventRewriterChromeOS::Delegate used to check that
+// Test implementation of ui::EventRewriterAsh::Delegate used to check that
 // modifier key rewrites are suppressed appropriately in InputDataProvider.
-class TestEventRewriterChromeOSDelegate
-    : public ui::EventRewriterChromeOS::Delegate {
+class TestEventRewriterAshDelegate : public ui::EventRewriterAsh::Delegate {
  public:
-  // ui::EventRewriterChromeOS::Delegate:
+  // ui::EventRewriterAsh::Delegate:
   bool RewriteModifierKeys() override {
     return !suppress_modifier_key_rewrites_;
   }
@@ -594,10 +593,9 @@ class TestEventRewriterChromeOSDelegate
 // reference to the current event watchers.
 class TestInputDataProvider : public InputDataProvider {
  public:
-  TestInputDataProvider(
-      views::Widget* widget,
-      watchers_t& watchers,
-      ui::EventRewriterChromeOS::Delegate* event_rewriter_delegate)
+  TestInputDataProvider(views::Widget* widget,
+                        watchers_t& watchers,
+                        ui::EventRewriterAsh::Delegate* event_rewriter_delegate)
       : InputDataProvider(
             widget->GetNativeWindow(),
             std::make_unique<FakeDeviceManager>(),
@@ -643,8 +641,7 @@ class InputDataProviderTest : public AshTestBase {
     AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
 
-    event_rewriter_delegate_ =
-        std::make_unique<TestEventRewriterChromeOSDelegate>();
+    event_rewriter_delegate_ = std::make_unique<TestEventRewriterAshDelegate>();
 
     // Note: some init for creating widgets is performed in base SetUp
     // instead of the constructor, so our init must also be delayed until
@@ -773,7 +770,7 @@ class InputDataProviderTest : public AshTestBase {
   // All evdev watchers in use by provider_.
   watchers_t watchers_;
   std::unique_ptr<TestInputDataProvider> provider_;
-  std::unique_ptr<TestEventRewriterChromeOSDelegate> event_rewriter_delegate_;
+  std::unique_ptr<TestEventRewriterAshDelegate> event_rewriter_delegate_;
 
  private:
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;

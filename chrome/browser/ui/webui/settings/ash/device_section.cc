@@ -34,11 +34,11 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/chromeos/events/keyboard_capability.h"
-#include "ui/chromeos/events/keyboard_layout_util.h"
 #include "ui/display/display_features.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/touch_device_manager.h"
+#include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/keyboard_layout_util.h"
 #include "ui/events/devices/device_data_manager.h"
 
 namespace ash::settings {

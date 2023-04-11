@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_CHROMEOS_EVENTS_KEYBOARD_CAPABILITY_H_
-#define UI_CHROMEOS_EVENTS_KEYBOARD_CAPABILITY_H_
+#ifndef UI_EVENTS_ASH_KEYBOARD_CAPABILITY_H_
+#define UI_EVENTS_ASH_KEYBOARD_CAPABILITY_H_
 
 #include <memory>
 #include <vector>
@@ -13,7 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/chromeos/events/mojom/modifier_key.mojom-shared.h"
+#include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -341,4 +341,4 @@ class KeyboardCapability : public InputDeviceEventObserver {
 
 }  // namespace ui
 
-#endif  // UI_CHROMEOS_EVENTS_KEYBOARD_CAPABILITY_H_
+#endif  // UI_EVENTS_ASH_KEYBOARD_CAPABILITY_H_

@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ui/chromeos/events/event_rewriter_chromeos.h"
+#include "ui/events/ash/event_rewriter_ash.h"
 
 namespace ui {
 class Event;
@@ -27,7 +27,7 @@ class ASH_EXPORT EventRewriterController {
 
   // Initializes this controller after ash::Shell finishes initialization.
   virtual void Initialize(
-      ui::EventRewriterChromeOS::Delegate* event_rewriter_delegate,
+      ui::EventRewriterAsh::Delegate* event_rewriter_delegate,
       AccessibilityEventRewriterDelegate*
           accessibility_event_rewriter_delegate) = 0;
 

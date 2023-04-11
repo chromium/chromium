@@ -10,7 +10,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/logging.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/chromeos/events/keyboard_capability.h"
+#include "ui/events/ash/keyboard_capability.h"
 
 namespace ash {
 

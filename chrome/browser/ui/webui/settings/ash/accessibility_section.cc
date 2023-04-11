@@ -43,7 +43,7 @@
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/chromeos/events/keyboard_layout_util.h"
+#include "ui/events/ash/keyboard_layout_util.h"
 
 namespace ash::settings {
 

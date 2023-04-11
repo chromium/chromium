@@ -17,7 +17,7 @@ enum AcceleratorSource {
   // accelerator_controller_impl.cc.
   kAsh,
   // Event rewriters that are owned by ash and handled in
-  // event_rewriter_chromeos.cc.
+  // event_rewriter_ash.cc.
   kEventRewriter,
   // Accelerators that are owned by the browser and sources from
   // accelerator_table.cc.

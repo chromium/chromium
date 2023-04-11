@@ -8,8 +8,8 @@
 
 #include "ash/shell.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider.h"
-#include "ui/chromeos/events/event_rewriter_chromeos.h"
-#include "ui/chromeos/events/keyboard_capability.h"
+#include "ui/events/ash/event_rewriter_ash.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/device_util_linux.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/ozone/evdev/event_device_info.h"

@@ -112,7 +112,6 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ime/ash/fake_ime_keyboard.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/chromeos/events/event_rewriter_chromeos.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor_extra/shadow.h"
@@ -120,6 +119,7 @@
 #include "ui/display/display_switches.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
@@ -4828,7 +4828,7 @@ TEST_F(DesksRestoreMultiUserTest,
 
 // Simulates the same behavior of event rewriting that key presses go through.
 class DesksAcceleratorsTest : public DesksTest,
-                              public ui::EventRewriterChromeOS::Delegate {
+                              public ui::EventRewriterAsh::Delegate {
  public:
   DesksAcceleratorsTest() = default;
 
@@ -4842,13 +4842,13 @@ class DesksAcceleratorsTest : public DesksTest,
     DesksTest::SetUp();
 
     auto* event_rewriter_controller = EventRewriterController::Get();
-    auto event_rewriter = std::make_unique<ui::EventRewriterChromeOS>(
+    auto event_rewriter = std::make_unique<ui::EventRewriterAsh>(
         this, Shell::Get()->keyboard_capability(),
         Shell::Get()->sticky_keys_controller(), false, &fake_ime_keyboard_);
     event_rewriter_controller->AddEventRewriter(std::move(event_rewriter));
   }
 
-  // ui::EventRewriterChromeOS::Delegate:
+  // ui::EventRewriterAsh::Delegate:
   bool RewriteModifierKeys() override { return true; }
   void SuppressModifierKeyRewrites(bool should_supress) override {}
   bool RewriteMetaTopRowKeyComboEvents(int device_id) const override {

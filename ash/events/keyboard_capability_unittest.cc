@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/chromeos/events/keyboard_capability.h"
+#include "ui/events/ash/keyboard_capability.h"
 
 #include <memory>
 
@@ -14,7 +14,7 @@
 #include "base/ranges/algorithm.h"
 #include "components/prefs/pref_service.h"
 #include "device/udev_linux/fake_udev_loader.h"
-#include "ui/chromeos/events/mojom/modifier_key.mojom-shared.h"
+#include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"

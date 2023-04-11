@@ -61,7 +61,7 @@ ui::EventFlags MouseButtonToUIFlags(MouseEvent::MouseButton button) {
 bool IsLockKey(ui::DomCode dom_code) {
   switch (dom_code) {
     // Ignores all the keys that could possibly be mapped to Caps Lock in event
-    // rewriter. Please refer to ui::EventRewriterChromeOS::RewriteModifierKeys.
+    // rewriter. Please refer to ui::EventRewriterAsh::RewriteModifierKeys.
     case ui::DomCode::F16:
     case ui::DomCode::CAPS_LOCK:
     case ui::DomCode::META_LEFT:
