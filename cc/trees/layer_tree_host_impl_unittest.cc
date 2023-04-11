@@ -5824,6 +5824,47 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollHitTestOnScrollbar) {
   }
 }
 
+// This test verifies that we don't crash when a scrollbar layer is hit for
+// scroll but the scroller layer can't be found.
+TEST_P(ScrollUnifiedLayerTreeHostImplTest, NullScrollerLayerForScrollbarLayer) {
+  LayerTreeImpl* layer_tree_impl = host_impl_->active_tree();
+  SetupDefaultRootLayer(gfx::Size(200, 200));
+  LayerImpl* scroll = AddScrollableLayer(root_layer(), gfx::Size(100, 100),
+                                         gfx::Size(1000, 1000));
+  auto* scrollbar = AddLayer<PaintedScrollbarLayerImpl>(
+      layer_tree_impl, ScrollbarOrientation::VERTICAL, false, true);
+  SetupScrollbarLayer(scroll, scrollbar);
+  scrollbar->SetBounds(gfx::Size(15, 100));
+  scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(85, 0));
+  UpdateDrawProperties(layer_tree_impl);
+
+  // A successful hit test first.
+  auto status = GetInputHandler().ScrollBegin(
+      BeginState(gfx::Point(90, 50), gfx::Vector2d(0, 10),
+                 ui::ScrollInputType::kWheel)
+          .get(),
+      ui::ScrollInputType::kWheel);
+  EXPECT_EQ(ScrollThread::SCROLL_ON_IMPL_THREAD, status.thread);
+  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+            status.main_thread_scrolling_reasons);
+  GetInputHandler().ScrollEnd();
+
+  // Set the scrollbar's scroll element id to be different from the scroll
+  // layer's. The scroll should be ignored without crash.
+  scrollbar->SetScrollElementId(
+      ElementId(scrollbar->scroll_element_id().GetInternalValue() + 123));
+  UpdateDrawProperties(layer_tree_impl);
+  status = GetInputHandler().ScrollBegin(
+      BeginState(gfx::Point(90, 50), gfx::Vector2d(0, 10),
+                 ui::ScrollInputType::kWheel)
+          .get(),
+      ui::ScrollInputType::kWheel);
+  EXPECT_EQ(ScrollThread::SCROLL_IGNORED, status.thread);
+  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+            status.main_thread_scrolling_reasons);
+  GetInputHandler().ScrollEnd();
+}
+
 TEST_P(ScrollUnifiedLayerTreeHostImplTest,
        ScrollbarVisibilityChangeCausesRedrawAndCommit) {
   LayerTreeSettings settings = DefaultSettings();

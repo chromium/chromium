@@ -1367,23 +1367,19 @@ ScrollNode* InputHandler::FindScrollNodeForCompositedScrolling(
   const auto& non_fast_scrollable_nodes =
       NonFastScrollableNodes(device_viewport_point);
 
+  // If we hit a scrollbar layer, get the ScrollNode from its associated
+  // scrolling layer, rather than directly from the scrollbar layer. The latter
+  // would return the parent scroller's ScrollNode.
+  if (layer_impl && layer_impl->IsScrollbarLayer()) {
+    layer_impl = ActiveTree().LayerByElementId(
+        ToScrollbarLayer(layer_impl)->scroll_element_id());
+  }
+
   // Walk up the hierarchy and look for a scrollable layer.
   ScrollTree& scroll_tree = GetScrollTree();
   ScrollNode* impl_scroll_node = nullptr;
   if (layer_impl) {
-    // If this is a scrollbar layer, we can't directly use the associated
-    // scroll_node (because the scroll_node associated with this layer will be
-    // the owning scroller's parent). Instead, we first retrieve the scrollable
-    // layer corresponding to the scrollbars owner and then use its
-    // scroll_tree_index instead.
-    int scroll_tree_index = layer_impl->scroll_tree_index();
-    if (layer_impl->IsScrollbarLayer()) {
-      LayerImpl* owner_scroll_layer = ActiveTree().LayerByElementId(
-          ToScrollbarLayer(layer_impl)->scroll_element_id());
-      scroll_tree_index = owner_scroll_layer->scroll_tree_index();
-    }
-
-    ScrollNode* scroll_node = scroll_tree.Node(scroll_tree_index);
+    ScrollNode* scroll_node = scroll_tree.Node(layer_impl->scroll_tree_index());
     for (; scroll_tree.parent(scroll_node);
          scroll_node = scroll_tree.parent(scroll_node)) {
       // The content layer can also block attempts to scroll outside the main
@@ -1476,6 +1472,14 @@ InputHandler::ScrollHitTestResult InputHandler::HitTestScrollNode(
     }
   }
 
+  // If we hit a scrollbar layer, get the ScrollNode from its associated
+  // scrolling layer, rather than directly from the scrollbar layer. The latter
+  // would return the parent scroller's ScrollNode.
+  if (scroller_layer && scroller_layer->IsScrollbarLayer()) {
+    scroller_layer = ActiveTree().LayerByElementId(
+        ToScrollbarLayer(scroller_layer)->scroll_element_id());
+  }
+
   // It's theoretically possible to hit no layers or only non-scrolling layers.
   // e.g. an API hit test outside the viewport, or sending a scroll to an OOPIF
   // that does not have overflow. If we made it to here, we also don't have any
@@ -1486,15 +1490,6 @@ InputHandler::ScrollHitTestResult InputHandler::HitTestScrollNode(
       result.scroll_node = GetNodeToScroll(InnerViewportScrollNode());
 
     return result;
-  }
-
-  // If we hit a scrollbar layer, get the ScrollNode from its associated
-  // scrolling layer, rather than directly from the scrollbar layer. The latter
-  // would return the parent scroller's ScrollNode.
-  if (scroller_layer->IsScrollbarLayer()) {
-    scroller_layer = ActiveTree().LayerByElementId(
-        ToScrollbarLayer(scroller_layer)->scroll_element_id());
-    DCHECK(scroller_layer);
   }
 
   ScrollNode* scroll_node =
