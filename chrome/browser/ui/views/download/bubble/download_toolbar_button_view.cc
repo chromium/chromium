@@ -67,6 +67,8 @@
 
 namespace {
 
+using GetBadgeTextCallback = base::RepeatingCallback<gfx::RenderText&()>;
+
 constexpr int kProgressRingRadius = 9;
 constexpr int kProgressRingRadiusTouchMode = 12;
 constexpr float kProgressRingStrokeWidth = 1.7f;
@@ -79,13 +81,11 @@ constexpr base::TimeDelta kAutoClosePartialViewDelay = base::Seconds(5);
 class CircleBadgeImageSource : public gfx::CanvasImageSource {
  public:
   CircleBadgeImageSource(const gfx::Size& size,
-                         gfx::RenderText& render_text,
-                         SkColor text_color,
-                         SkColor background_color)
+                         SkColor background_color,
+                         GetBadgeTextCallback get_text_callback)
       : gfx::CanvasImageSource(size),
-        render_text_(&render_text),
-        text_color_(text_color),
-        background_color_(background_color) {}
+        background_color_(background_color),
+        get_text_callback_(std::move(get_text_callback)) {}
 
   CircleBadgeImageSource(const CircleBadgeImageSource&) = delete;
   CircleBadgeImageSource& operator=(const CircleBadgeImageSource&) = delete;
@@ -99,20 +99,17 @@ class CircleBadgeImageSource : public gfx::CanvasImageSource {
     flags.setAntiAlias(true);
     flags.setColor(background_color_);
 
-    const gfx::Rect& badge_rect = render_text_->display_rect();
+    gfx::RenderText& render_text = get_text_callback_.Run();
+    const gfx::Rect& badge_rect = render_text.display_rect();
     // Set the corner radius to make the rectangle appear like a circle.
     const int corner_radius = badge_rect.height() / 2;
     canvas->DrawRoundRect(badge_rect, corner_radius, flags);
-
-    render_text_->SetColor(text_color_);
-    render_text_->Draw(canvas);
+    render_text.Draw(canvas);
   }
 
  private:
-  // Pointee may be modified to change the text color upon painting.
-  const raw_ptr<gfx::RenderText, DanglingUntriaged> render_text_ = nullptr;
-  const SkColor text_color_;
   const SkColor background_color_;
+  GetBadgeTextCallback get_text_callback_;
 };
 
 gfx::Insets GetPrimaryViewMargin() {
@@ -172,7 +169,20 @@ gfx::ImageSkia DownloadToolbarButtonView::GetBadgeImage(
   if (!is_active || progress_download_count < 2) {
     return gfx::ImageSkia();
   }
+  const int badge_height = badge_image_view_->bounds().height();
+  // base::Unretained is safe because this owns the ImageView to which the
+  // image source is applied.
+  return gfx::CanvasImageSource::MakeImageSkia<CircleBadgeImageSource>(
+      gfx::Size(badge_height, badge_height), badge_background_color,
+      base::BindRepeating(&DownloadToolbarButtonView::GetBadgeText,
+                          base::Unretained(this), progress_download_count,
+                          badge_text_color));
+}
 
+gfx::RenderText& DownloadToolbarButtonView::GetBadgeText(
+    int progress_download_count,
+    SkColor badge_text_color) {
+  CHECK_GE(progress_download_count, 2);
   const int badge_height = badge_image_view_->bounds().height();
   bool use_placeholder = progress_download_count > kMaxDownloadCountDisplayed;
   const int index = use_placeholder ? 0 : progress_download_count - 1;
@@ -195,15 +205,12 @@ gfx::ImageSkia DownloadToolbarButtonView::GetBadgeImage(
     new_render_text->SetText(std::move(text));
     new_render_text->SetDisplayRect(
         gfx::Rect(gfx::Point(), gfx::Size(badge_height, badge_height)));
-    // Color is set by the CircleBadgeImageSource when drawing.
 
     render_text = new_render_text.get();
     render_texts_[index] = std::move(new_render_text);
   }
-
-  return gfx::CanvasImageSource::MakeImageSkia<CircleBadgeImageSource>(
-      gfx::Size(badge_height, badge_height), *render_text, badge_text_color,
-      badge_background_color);
+  render_text->SetColor(badge_text_color);
+  return *render_text;
 }
 
 void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
