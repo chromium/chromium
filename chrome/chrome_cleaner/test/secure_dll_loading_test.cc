@@ -132,8 +132,9 @@ INSTANTIATE_TEST_SUITE_P(SecureDLLLoading,
                                            L"chrome_cleanup_tool"),
                          chrome_cleaner::GetParamNameForTest());
 
+// Disabled to support shipping a no-op build of the software reporter.
 #if !BUILDFLAG(IS_OFFICIAL_CHROME_CLEANER_BUILD)
-TEST_P(SecureDLLLoadingTest, Disabled) {
+TEST_P(SecureDLLLoadingTest, DISABLED_Disabled) {
   base::Process process = LaunchProcess(/*disable_secure_dll_loading=*/true);
   EXPECT_TRUE(EmptyDLLLoaded(process));
 
@@ -142,7 +143,8 @@ TEST_P(SecureDLLLoadingTest, Disabled) {
 }
 #endif  // BUILDFLAG(IS_OFFICIAL_CHROME_CLEANER_BUILD)
 
-TEST_P(SecureDLLLoadingTest, Default) {
+// Disabled to support shipping a no-op build of the software reporter.
+TEST_P(SecureDLLLoadingTest, DISABLED_Default) {
   if (!::GetProcAddress(::GetModuleHandleW(L"kernel32.dll"),
                         "SetDefaultDllDirectories")) {
     // Skip this test if the SetDefaultDllDirectories function is unavailable

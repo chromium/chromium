@@ -126,7 +126,7 @@ chrome_cleaner_executable("chrome_cleanup_tool") {
 }
 
 chrome_cleaner_executable("software_reporter_tool") {
-  sources = [ "chrome_reporter_main.cc" ]
+  sources = [ "chrome_reporter_noop_main.cc" ]
 
   deps = [
     "//chrome/chrome_cleaner/constants:reporter_version_resource",
