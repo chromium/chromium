@@ -287,12 +287,10 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
         To<LayoutBox>(child_fragment->GetMutableLayoutObject());
     PhysicalOffset child_offset = child.Offset();
     if (container_style->IsFlippedBlocksWritingMode()) {
-      child_legacy_box->SetX(container_border_box_logical_height -
-                             child_offset.left - child_fragment->Size().width);
-    } else {
-      child_legacy_box->SetX(child_offset.left);
+      child_offset.left = container_border_box_logical_height -
+                          child_offset.left - child_fragment->Size().width;
     }
-    child_legacy_box->SetY(child_offset.top);
+    child_legacy_box->SetLocation(child_offset.ToLayoutPoint());
   }
   DCHECK_EQ(fragment.Children()[0]->GetLayoutObject(), this);
 }

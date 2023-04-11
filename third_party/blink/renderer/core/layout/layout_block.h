@@ -248,14 +248,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
     NOT_DESTROYED();
     return child.MarginEnd(Style());
   }
-  void SetMarginStartForChild(LayoutBox& child, LayoutUnit value) const {
-    NOT_DESTROYED();
-    child.SetMarginStart(value, Style());
-  }
-  void SetMarginEndForChild(LayoutBox& child, LayoutUnit value) const {
-    NOT_DESTROYED();
-    child.SetMarginEnd(value, Style());
-  }
   void SetMarginBeforeForChild(LayoutBox& child, LayoutUnit value) const {
     NOT_DESTROYED();
     child.SetMarginBefore(value, Style());

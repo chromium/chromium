@@ -256,22 +256,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return SnapSizeToPixel(Size().Height(), Location().Y());
   }
 
-  void SetX(LayoutUnit x) {
-    NOT_DESTROYED();
-    if (x == frame_location_.X()) {
-      return;
-    }
-    frame_location_.SetX(x);
-    LocationChanged();
-  }
-  void SetY(LayoutUnit y) {
-    NOT_DESTROYED();
-    if (y == frame_location_.Y()) {
-      return;
-    }
-    frame_location_.SetY(y);
-    LocationChanged();
-  }
   void SetWidth(LayoutUnit width) {
     NOT_DESTROYED();
     if (width == frame_size_.Width()) {
@@ -353,29 +337,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
         kPositionOfInteriorLineBoxes);
   }
 
-  void SetLogicalLeft(LayoutUnit left) {
-    NOT_DESTROYED();
-    if (StyleRef().IsHorizontalWritingMode())
-      SetX(left);
-    else
-      SetY(left);
-  }
-  void SetLogicalTop(LayoutUnit top) {
-    NOT_DESTROYED();
-    if (StyleRef().IsHorizontalWritingMode())
-      SetY(top);
-    else
-      SetX(top);
-  }
-  void SetLogicalLocation(const LayoutPoint& location) {
-    NOT_DESTROYED();
-    if (StyleRef().IsHorizontalWritingMode())
-      SetLocation(location);
-    else
-      SetLocation(location.TransposedPoint());
-  }
   void SetLogicalWidth(LayoutUnit size) {
     NOT_DESTROYED();
+    DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
     if (StyleRef().IsHorizontalWritingMode())
       SetWidth(size);
     else
@@ -383,6 +347,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
   void SetLogicalHeight(LayoutUnit size) {
     NOT_DESTROYED();
+    DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
     if (StyleRef().IsHorizontalWritingMode())
       SetHeight(size);
     else
@@ -422,6 +387,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   void SetSize(const LayoutSize& size) {
     NOT_DESTROYED();
+    DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
     if (size == frame_size_) {
       return;
     }
@@ -895,23 +861,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return margin_box_outsets_.Right();
   }
   void SetMargin(const NGPhysicalBoxStrut&);
-  void SetMarginTop(LayoutUnit margin) {
-    NOT_DESTROYED();
-    margin_box_outsets_.SetTop(margin);
-  }
-  void SetMarginBottom(LayoutUnit margin) {
-    NOT_DESTROYED();
-    margin_box_outsets_.SetBottom(margin);
-  }
-  void SetMarginLeft(LayoutUnit margin) {
-    NOT_DESTROYED();
-    margin_box_outsets_.SetLeft(margin);
-  }
-  void SetMarginRight(LayoutUnit margin) {
-    NOT_DESTROYED();
-    margin_box_outsets_.SetRight(margin);
-  }
-
   void SetMarginBefore(LayoutUnit value,
                        const ComputedStyle* override_style = nullptr) {
     NOT_DESTROYED();
@@ -921,16 +870,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                       const ComputedStyle* override_style = nullptr) {
     NOT_DESTROYED();
     LogicalMarginToPhysicalSetter(override_style).SetAfter(value);
-  }
-  void SetMarginStart(LayoutUnit value,
-                      const ComputedStyle* override_style = nullptr) {
-    NOT_DESTROYED();
-    LogicalMarginToPhysicalSetter(override_style).SetStart(value);
-  }
-  void SetMarginEnd(LayoutUnit value,
-                    const ComputedStyle* override_style = nullptr) {
-    NOT_DESTROYED();
-    LogicalMarginToPhysicalSetter(override_style).SetEnd(value);
   }
 
   void AbsoluteQuads(Vector<gfx::QuadF>&,
