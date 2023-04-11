@@ -20,6 +20,8 @@ import android.os.Vibrator;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.device.mojom.NdefError;
 import org.chromium.device.mojom.NdefErrorType;
 import org.chromium.device.mojom.NdefMessage;
@@ -45,6 +47,7 @@ public class NfcImpl implements Nfc {
     private static final String TAG = "NfcImpl";
     private static final String ANY_PATH = "/*";
     private static final long MIN_TIME_BETWEEN_VIBRATIONS_MS = 1000;
+    private static final long DELAY_TO_DISABLE_READER_MODE_MS = 500;
 
     private final int mHostId;
 
@@ -448,17 +451,21 @@ public class NfcImpl implements Nfc {
     }
 
     /**
+     * Returns true if there are active push / makeReadOnly / watch operations. Otherwise, false.
+     */
+    private boolean hasActiveOperations() {
+        return (mPendingPushOperation != null || mPendingMakeReadOnlyOperation != null
+                || mWatchIds.size() != 0);
+    }
+
+    /**
      * Enables reader mode, allowing NFC device to read / write / make read-only NFC tags.
      * @see android.nfc.NfcAdapter#enableReaderMode
      */
     private void enableReaderModeIfNeeded() {
         if (mReaderCallbackHandler != null || mActivity == null || mNfcAdapter == null) return;
 
-        // Do not enable reader mode, if there are no active push / makeReadOnly / watch operations.
-        if (mPendingPushOperation == null && mPendingMakeReadOnlyOperation == null
-                && mWatchIds.size() == 0) {
-            return;
-        }
+        if (!hasActiveOperations()) return;
 
         mReaderCallbackHandler = new ReaderCallbackHandler(this);
         mNfcAdapter.enableReaderMode(mActivity, mReaderCallbackHandler,
@@ -488,10 +495,11 @@ public class NfcImpl implements Nfc {
      * whenever necessary.
      */
     private void disableReaderModeIfNeeded() {
-        if (mPendingPushOperation == null && mPendingMakeReadOnlyOperation == null
-                && mWatchIds.size() == 0) {
-            disableReaderMode();
-        }
+        if (hasActiveOperations()) return;
+
+        PostTask.postDelayedTask(TaskTraits.BEST_EFFORT, () -> {
+            if (!hasActiveOperations()) disableReaderMode();
+        }, DELAY_TO_DISABLE_READER_MODE_MS);
     }
 
     /**
