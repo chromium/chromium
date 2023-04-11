@@ -309,6 +309,7 @@ scroll-padding-block-end: auto
 scroll-padding-block-start: auto
 scroll-padding-inline-end: auto
 scroll-padding-inline-start: auto
+scroll-timeline-attachment: local
 scroll-timeline-axis: block
 scroll-timeline-name: none
 scrollbar-gutter: auto
@@ -368,6 +369,7 @@ unicode-bidi: normal
 user-select: auto
 vector-effect: none
 vertical-align: baseline
+view-timeline-attachment: local
 view-timeline-axis: block
 view-timeline-inset: 0px
 view-timeline-name: none

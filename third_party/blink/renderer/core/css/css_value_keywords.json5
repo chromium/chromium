@@ -1423,6 +1423,10 @@
     // normal
     // always
 
+    // scroll-timeline-attachment
+    // view-timeline-attachment
+    "defer",
+    "ancestor",
 
     // containment
     // paint

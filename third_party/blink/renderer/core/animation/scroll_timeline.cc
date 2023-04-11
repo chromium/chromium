@@ -65,6 +65,8 @@ ScrollTimeline* ScrollTimeline::Create(Document& document,
   ScrollAxis axis =
       options->hasAxis() ? options->axis().AsEnum() : ScrollAxis::kBlock;
 
+  TimelineAttachment attachment = TimelineAttachment::kLocal;
+
   // The scrollingElement depends on style/layout-tree in quirks mode. Update
   // such that subsequent calls to ScrollingElementNoLayout returns up-to-date
   // information.
@@ -72,32 +74,36 @@ ScrollTimeline* ScrollTimeline::Create(Document& document,
     document.UpdateStyleAndLayoutTree();
 
   return Create(&document, source.value_or(document.ScrollingElementNoLayout()),
-                axis);
+                axis, attachment);
 }
 
 ScrollTimeline* ScrollTimeline::Create(Document* document,
                                        Element* source,
-                                       ScrollAxis axis) {
+                                       ScrollAxis axis,
+                                       TimelineAttachment attachment) {
   ScrollTimeline* scroll_timeline = MakeGarbageCollected<ScrollTimeline>(
-      document, ReferenceType::kSource, source, axis);
+      document, attachment, ReferenceType::kSource, source, axis);
   scroll_timeline->UpdateSnapshot();
 
   return scroll_timeline;
 }
 
 ScrollTimeline::ScrollTimeline(Document* document,
+                               TimelineAttachment attachment,
                                ReferenceType reference_type,
                                Element* reference,
                                ScrollAxis axis)
     : ScrollTimeline(
           document,
-          TimelineAttachmentType::kLocal,
-          MakeGarbageCollected<ScrollTimelineAttachment>(reference_type,
-                                                         reference,
-                                                         axis)) {}
+          attachment,
+          attachment == TimelineAttachment::kDefer
+              ? nullptr
+              : MakeGarbageCollected<ScrollTimelineAttachment>(reference_type,
+                                                               reference,
+                                                               axis)) {}
 
 ScrollTimeline::ScrollTimeline(Document* document,
-                               TimelineAttachmentType attachment_type,
+                               TimelineAttachment attachment_type,
                                ScrollTimelineAttachment* attachment)
     : AnimationTimeline(document),
       ScrollSnapshotClient(document->GetFrame()),

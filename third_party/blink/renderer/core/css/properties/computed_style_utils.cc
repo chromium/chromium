@@ -2455,11 +2455,15 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimelineList(
 
 CSSValue* ComputedStyleUtils::SingleValueForTimelineShorthand(
     const ScopedCSSName* name,
-    TimelineAxis axis) {
+    TimelineAxis axis,
+    TimelineAttachment attachment) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*ValueForCustomIdentOrNone(name));
   if (axis != TimelineAxis::kBlock) {
     list->Append(*CSSIdentifierValue::Create(axis));
+  }
+  if (attachment != TimelineAttachment::kLocal) {
+    list->Append(*CSSIdentifierValue::Create(attachment));
   }
   return list;
 }

@@ -30,7 +30,11 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
  public:
   static ViewTimeline* Create(Document&, ViewTimelineOptions*, ExceptionState&);
 
-  ViewTimeline(Document*, Element* subject, ScrollAxis axis, TimelineInset);
+  ViewTimeline(Document*,
+               TimelineAttachment attachment,
+               Element* subject,
+               ScrollAxis axis,
+               TimelineInset);
 
   bool IsViewTimeline() const override { return true; }
 

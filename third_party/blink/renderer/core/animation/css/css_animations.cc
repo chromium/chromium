@@ -509,10 +509,12 @@ class SpecifiedTimelines {
  public:
   explicit SpecifiedTimelines(const ScopedCSSNameList* names,
                               const Vector<TimelineAxis>& axes,
-                              const Vector<TimelineInset>* insets)
+                              const Vector<TimelineInset>* insets,
+                              const Vector<TimelineAttachment>& attachments)
       : names_(names ? &names->GetNames() : nullptr),
         axes_(axes),
-        insets_(insets) {}
+        insets_(insets),
+        attachments_(attachments) {}
 
   class Iterator {
     STACK_ALLOCATED();
@@ -521,11 +523,15 @@ class SpecifiedTimelines {
     Iterator(wtf_size_t index, const SpecifiedTimelines& timelines)
         : index_(index), timelines_(timelines) {}
 
-    std::tuple<Member<const ScopedCSSName>, TimelineAxis, TimelineInset>
+    std::tuple<Member<const ScopedCSSName>,
+               TimelineAxis,
+               TimelineInset,
+               TimelineAttachment>
     operator*() const {
       const HeapVector<Member<const ScopedCSSName>>& names = *timelines_.names_;
       const Vector<TimelineAxis>& axes = timelines_.axes_;
       const Vector<TimelineInset>* insets = timelines_.insets_;
+      const Vector<TimelineAttachment>& attachments = timelines_.attachments_;
 
       Member<const ScopedCSSName> name = names[index_];
       TimelineAxis axis = axes.empty()
@@ -535,8 +541,12 @@ class SpecifiedTimelines {
           (!insets || insets->empty())
               ? TimelineInset()
               : (*insets)[std::min(index_, insets->size() - 1)];
+      TimelineAttachment attachment =
+          attachments.empty()
+              ? TimelineAttachment::kLocal
+              : attachments[std::min(index_, attachments.size() - 1)];
 
-      return std::make_tuple(name, axis, inset);
+      return std::make_tuple(name, axis, inset, attachment);
     }
 
     void operator++() { index_ = timelines_.SkipPastNullptr(index_ + 1); }
@@ -569,6 +579,7 @@ class SpecifiedTimelines {
   const HeapVector<Member<const ScopedCSSName>>* names_;
   const Vector<TimelineAxis>& axes_;
   const Vector<TimelineInset>* insets_;
+  const Vector<TimelineAttachment> attachments_;
 };
 
 class SpecifiedScrollTimelines : public SpecifiedTimelines {
@@ -578,7 +589,8 @@ class SpecifiedScrollTimelines : public SpecifiedTimelines {
   explicit SpecifiedScrollTimelines(const ComputedStyleBuilder& style_builder)
       : SpecifiedTimelines(style_builder.ScrollTimelineName(),
                            style_builder.ScrollTimelineAxis(),
-                           /* insets */ nullptr) {}
+                           /* insets */ nullptr,
+                           style_builder.ScrollTimelineAttachment()) {}
 };
 
 class SpecifiedViewTimelines : public SpecifiedTimelines {
@@ -588,7 +600,8 @@ class SpecifiedViewTimelines : public SpecifiedTimelines {
   explicit SpecifiedViewTimelines(const ComputedStyleBuilder& style_builder)
       : SpecifiedTimelines(style_builder.ViewTimelineName(),
                            style_builder.ViewTimelineAxis(),
-                           &style_builder.ViewTimelineInset()) {}
+                           &style_builder.ViewTimelineInset(),
+                           style_builder.ViewTimelineAttachment()) {}
 };
 
 // Invokes `callback` for each timeline we would end up with had
@@ -776,7 +789,8 @@ CSSScrollTimelineMap CSSAnimations::CalculateChangedScrollTimelines(
 
   Document& document = animating_element.GetDocument();
 
-  for (auto [name, axis, inset] : SpecifiedScrollTimelines(style_builder)) {
+  for (auto [name, axis, inset, attachment] :
+       SpecifiedScrollTimelines(style_builder)) {
     // Note: ScrollTimeline does not use insets.
     ScrollTimeline* existing_timeline =
         GetTimeline(existing_scroll_timelines, *name);
@@ -787,8 +801,8 @@ CSSScrollTimelineMap CSSAnimations::CalculateChangedScrollTimelines(
       continue;
     }
     ScrollTimeline* new_timeline = MakeGarbageCollected<ScrollTimeline>(
-        &document, options.reference_type, options.reference_element,
-        options.axis);
+        &document, attachment, options.reference_type,
+        options.reference_element, options.axis);
     new_timeline->ServiceAnimations(kTimingUpdateOnDemand);
     changed_timelines.Set(name, new_timeline);
   }
@@ -803,7 +817,8 @@ CSSViewTimelineMap CSSAnimations::CalculateChangedViewTimelines(
   CSSViewTimelineMap changed_timelines =
       NullifyExistingTimelines(existing_view_timelines);
 
-  for (auto [name, axis, inset] : SpecifiedViewTimelines(style_builder)) {
+  for (auto [name, axis, inset, attachment] :
+       SpecifiedViewTimelines(style_builder)) {
     ViewTimeline* existing_timeline =
         GetTimeline(existing_view_timelines, *name);
     CSSViewTimelineOptions options(&animating_element, axis, inset);
@@ -812,8 +827,8 @@ CSSViewTimelineMap CSSAnimations::CalculateChangedViewTimelines(
       continue;
     }
     ViewTimeline* new_timeline = MakeGarbageCollected<ViewTimeline>(
-        &animating_element.GetDocument(), options.subject, options.axis,
-        options.inset);
+        &animating_element.GetDocument(), attachment, options.subject,
+        options.axis, options.inset);
     new_timeline->ServiceAnimations(kTimingUpdateOnDemand);
     changed_timelines.Set(name, new_timeline);
   }
@@ -985,9 +1000,9 @@ ScrollTimeline* ComputeScrollFunctionTimeline(
     return scroll_timeline;
   }
   // TODO(crbug.com/1356482): Cache/re-use timelines created from scroll().
-  return MakeGarbageCollected<ScrollTimeline>(&document, options.reference_type,
-                                              options.reference_element,
-                                              options.axis);
+  return MakeGarbageCollected<ScrollTimeline>(
+      &document, TimelineAttachment::kLocal, options.reference_type,
+      options.reference_element, options.axis);
 }
 
 AnimationTimeline* ComputeViewFunctionTimeline(
@@ -1004,7 +1019,8 @@ AnimationTimeline* ComputeViewFunctionTimeline(
   }
 
   ViewTimeline* new_timeline = MakeGarbageCollected<ViewTimeline>(
-      &element->GetDocument(), options.subject, options.axis, options.inset);
+      &element->GetDocument(), TimelineAttachment::kLocal, options.subject,
+      options.axis, options.inset);
   return new_timeline;
 }
 

@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_attachment.h"
-#include "third_party/blink/renderer/core/animation/timeline_attachment_type.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -53,12 +52,14 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
 
   static ScrollTimeline* Create(Document* document,
                                 Element* source,
-                                ScrollAxis axis);
+                                ScrollAxis axis,
+                                TimelineAttachment attachment);
 
   // Construct ScrollTimeline objects through one of the Create methods, which
   // perform initial snapshots, as it can't be done during the constructor due
   // to possibly depending on overloaded functions.
   ScrollTimeline(Document*,
+                 TimelineAttachment attachment,
                  ReferenceType reference_type,
                  Element* reference,
                  ScrollAxis axis);
@@ -145,7 +146,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   }
 
  protected:
-  ScrollTimeline(Document*, TimelineAttachmentType, ScrollTimelineAttachment*);
+  ScrollTimeline(Document*, TimelineAttachment, ScrollTimelineAttachment*);
 
   PhaseAndTime CurrentPhaseAndTime() override;
 
@@ -186,7 +187,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
 
   TimelineState ComputeTimelineState();
 
-  TimelineAttachmentType attachment_type_;
+  TimelineAttachment attachment_type_;
   Member<Node> resolved_source_;
   bool is_resolved_ = false;
 

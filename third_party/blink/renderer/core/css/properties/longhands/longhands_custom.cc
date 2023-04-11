@@ -6970,6 +6970,36 @@ const CSSValue* ScrollSnapType::CSSValueFromComputedStyleInternal(
                                                     style);
 }
 
+const CSSValue* ScrollTimelineAttachment::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  using css_parsing_utils::ConsumeCommaSeparatedList;
+  using css_parsing_utils::ConsumeSingleTimelineAttachment;
+  return ConsumeCommaSeparatedList(ConsumeSingleTimelineAttachment, range);
+}
+
+const CSSValue* ScrollTimelineAttachment::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  const Vector<TimelineAttachment>& vector = style.ScrollTimelineAttachment();
+  if (vector.empty()) {
+    return InitialValue();
+  }
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  for (TimelineAttachment attachment : vector) {
+    list->Append(*CSSIdentifierValue::Create(attachment));
+  }
+  return list;
+}
+
+const CSSValue* ScrollTimelineAttachment::InitialValue() const {
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  list->Append(*CSSIdentifierValue::Create(CSSValueID::kLocal));
+  return list;
+}
+
 const CSSValue* ScrollTimelineAxis::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -8310,6 +8340,36 @@ void VerticalAlign::ApplyValue(StyleResolverState& state,
     builder.SetVerticalAlignLength(To<CSSPrimitiveValue>(value).ConvertToLength(
         state.CssToLengthConversionData()));
   }
+}
+
+const CSSValue* ViewTimelineAttachment::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  using css_parsing_utils::ConsumeCommaSeparatedList;
+  using css_parsing_utils::ConsumeSingleTimelineAttachment;
+  return ConsumeCommaSeparatedList(ConsumeSingleTimelineAttachment, range);
+}
+
+const CSSValue* ViewTimelineAttachment::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  const Vector<TimelineAttachment>& vector = style.ViewTimelineAttachment();
+  if (vector.empty()) {
+    return InitialValue();
+  }
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  for (TimelineAttachment attachment : vector) {
+    list->Append(*CSSIdentifierValue::Create(attachment));
+  }
+  return list;
+}
+
+const CSSValue* ViewTimelineAttachment::InitialValue() const {
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  list->Append(*CSSIdentifierValue::Create(CSSValueID::kLocal));
+  return list;
 }
 
 const CSSValue* ViewTimelineAxis::ParseSingleValue(

@@ -4397,6 +4397,17 @@
       computable: false,
     },
     {
+      name: "scroll-timeline-attachment",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
+      field_group: "*->timeline",
+      field_template: "external",
+      default_value: "Vector<TimelineAttachment>()",
+      type_name: "Vector<TimelineAttachment>",
+      converter: "ConvertViewTimelineAttachment",
+      separator: ",",
+      runtime_flag: "CSSScrollTimeline",
+    },
+    {
       name: "scroll-timeline-axis",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
       field_group: "*->timeline",
@@ -5154,6 +5165,17 @@
       keywords: ["baseline", "sub", "super", "text-top", "text-bottom", "middle"],
       valid_for_first_letter: true,
       valid_for_first_line: true,
+    },
+    {
+      name: "view-timeline-attachment",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "InitialValue"],
+      field_group: "*->timeline",
+      field_template: "external",
+      default_value: "Vector<TimelineAttachment>()",
+      type_name: "Vector<TimelineAttachment>",
+      converter: "ConvertViewTimelineAttachment",
+      separator: ",",
+      runtime_flag: "CSSViewTimeline",
     },
     {
       name: "view-timeline-axis",
@@ -7171,7 +7193,7 @@
     },
     {
       name: "scroll-timeline",
-      longhands: ["scroll-timeline-name", "scroll-timeline-axis"],
+      longhands: ["scroll-timeline-name", "scroll-timeline-axis", "scroll-timeline-attachment"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       runtime_flag: "CSSScrollTimeline",
     },
@@ -7197,7 +7219,7 @@
     },
     {
       name: "view-timeline",
-      longhands: ["view-timeline-name", "view-timeline-axis"],
+      longhands: ["view-timeline-name", "view-timeline-axis", "view-timeline-attachment"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       runtime_flag: "CSSViewTimeline",
     },

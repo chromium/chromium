@@ -67515,6 +67515,9 @@ Called by update_use_counter_css.py.-->
   <int value="746" label="text-wrap"/>
   <int value="747" label="text-box-trim"/>
   <int value="748" label="overlay"/>
+  <int value="749" label="white-space-collapse"/>
+  <int value="750" label="scroll-timeline-attachment"/>
+  <int value="751" label="view-timeline-attachment"/>
 </enum>
 
 <enum name="MappedEditingCommands">

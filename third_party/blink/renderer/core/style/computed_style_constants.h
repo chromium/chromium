@@ -403,6 +403,17 @@ enum class ViewportUnitFlag {
 };
 
 enum class TimelineAxis { kBlock, kInline, kVertical, kHorizontal };
+enum class TimelineAttachment {
+  // The timeline is not attached to another timeline, and other timelines
+  // can not be attached to this timeline.
+  kLocal,
+  // The timeline can be attached to by descendant timelines with attachment
+  // type kAncestor.
+  kDefer,
+  // The timeline is attached to an exclusive flat-tree ancestor with
+  // attachment type kDefer.
+  kAncestor
+};
 enum class TimelineScroller { kNearest, kRoot, kSelf };
 
 }  // namespace blink

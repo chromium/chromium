@@ -228,7 +228,7 @@ ViewTimeline* ViewTimeline::Create(Document& document,
                                              subject, inset_start_side);
 
   ViewTimeline* view_timeline = MakeGarbageCollected<ViewTimeline>(
-      &document, subject, axis,
+      &document, TimelineAttachment::kLocal, subject, axis,
       TimelineInset(inset_start_side, inset_end_side));
 
   if (start_inset_value && IsStyleDependent(start_inset_value.value()))
@@ -241,13 +241,18 @@ ViewTimeline* ViewTimeline::Create(Document& document,
 }
 
 ViewTimeline::ViewTimeline(Document* document,
+                           TimelineAttachment attachment,
                            Element* subject,
                            ScrollAxis axis,
                            TimelineInset inset)
     : ScrollTimeline(
           document,
-          TimelineAttachmentType::kLocal,
-          MakeGarbageCollected<ViewTimelineAttachment>(subject, axis, inset)) {
+          attachment,
+          attachment == TimelineAttachment::kDefer
+              ? nullptr
+              : MakeGarbageCollected<ViewTimelineAttachment>(subject,
+                                                             axis,
+                                                             inset)) {
   // Ensure that the timeline stays alive as long as the subject.
   if (subject)
     subject->RegisterScrollTimeline(this);

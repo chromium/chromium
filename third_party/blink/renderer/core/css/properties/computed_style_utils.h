@@ -184,7 +184,8 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForAnimationTimelineList(const CSSAnimationData*);
 
   static CSSValue* SingleValueForTimelineShorthand(const ScopedCSSName* name,
-                                                   TimelineAxis);
+                                                   TimelineAxis,
+                                                   TimelineAttachment);
   static CSSValueList* ValuesForBorderRadiusCorner(const LengthSize&,
                                                    const ComputedStyle&);
   static CSSValue* ValueForBorderRadiusCorner(const LengthSize&,
