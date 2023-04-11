@@ -265,6 +265,21 @@ class CORE_EXPORT StyleCascade {
     // already have done that).
     bool AppendFallback(const TokenSequence&, wtf_size_t byte_limit);
 
+    // Remove all token comment from tokens_ (does not affect original_text_).
+    // This is required if you're actually sending the token range
+    // on to a Parse() function, since many of them don't expect
+    // comment tokens.
+    //
+    // In many ways, it would be nicer just not to include the comment tokens
+    // in the first place, but when constructing the original text during
+    // variable substitution, we check tokens_.back() to see if we need to
+    // insert blank comments or not, so we can't just discard them. There are
+    // cases where we don't _need_ the original text, though, and in those cases
+    // we could also probably strip tokens immediately. But it seems this
+    // requires building what is effectively two separate variants (or a large
+    // template machinery) of TokenSequence and everything calling it.
+    void StripCommentTokens();
+
     scoped_refptr<CSSVariableData> BuildVariableData();
 
    private:
