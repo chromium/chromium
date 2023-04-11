@@ -3220,7 +3220,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="OfflinePages.Background.TimeToStart"/>
   <affected-histogram name="OfflinePages.Background.TimeToStart.Svelte"/>
   <affected-histogram name="OfflinePages.PageAccessInterval"/>
-  <affected-histogram name="OfflinePages.PageLifetime"/>
   <affected-histogram name="OfflinePages.PageSize"/>
   <affected-histogram name="OfflinePages.SavePage.AddPageTime"/>
   <affected-histogram name="OfflinePages.SavePage.ComputeDigestTime"/>

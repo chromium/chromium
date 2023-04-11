@@ -8,22 +8,16 @@
 #include <string>
 #include <utility>
 
-#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/time/time.h"
-#include "build/build_config.h"
 #include "components/offline_pages/core/model/get_pages_task.h"
 #include "components/offline_pages/core/model/offline_page_model_utils.h"
-#include "components/offline_pages/core/offline_clock.h"
 #include "components/offline_pages/core/offline_page_client_policy.h"
 #include "components/offline_pages/core/offline_page_metadata_store.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #include "components/offline_pages/core/offline_page_types.h"
-#include "components/offline_pages/core/offline_store_utils.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -46,22 +40,6 @@ using DeletePageTaskResult = DeletePageTask::DeletePageTaskResult;
 
 namespace {
 
-void ReportDeletePageHistograms(
-    const std::vector<OfflinePageItem>& deleted_pages) {
-  const int max_minutes = base::Days(365).InMinutes();
-  base::Time delete_time = OfflineTimeNow();
-  for (const auto& item : deleted_pages) {
-    base::UmaHistogramCustomCounts(
-        model_utils::AddHistogramSuffix(item.client_id.name_space,
-                                        "OfflinePages.PageLifetime"),
-        (delete_time - item.creation_time).InMinutes(), 1, max_minutes, 100);
-    base::UmaHistogramCustomCounts(
-        model_utils::AddHistogramSuffix(item.client_id.name_space,
-                                        "OfflinePages.AccessCount"),
-        item.access_count, 1, 1000000, 50);
-  }
-}
-
 // Deletes pages. This will return a DeletePageTaskResult which contains the
 // deleted pages (which are successfully deleted from the disk and the store)
 // and a DeletePageResult. For each page to be deleted, the deletion will delete
@@ -77,8 +55,6 @@ DeletePageTaskResult DeletePagesSync(
   // If there's no page to delete, return an empty list with SUCCESS.
   if (pages_to_delete.size() == 0)
     return {DeletePageResult::SUCCESS, deleted_pages};
-
-  ReportDeletePageHistograms(pages_to_delete);
 
   bool any_archive_deleted = false;
   for (auto& item : pages_to_delete) {
@@ -208,7 +184,7 @@ DeletePageTask::DeletePageTask(OfflinePageMetadataStore* store,
   DCHECK(!callback_.is_null());
 }
 
-DeletePageTask::~DeletePageTask() {}
+DeletePageTask::~DeletePageTask() = default;
 
 void DeletePageTask::Run() {
   store_->Execute(std::move(func_),

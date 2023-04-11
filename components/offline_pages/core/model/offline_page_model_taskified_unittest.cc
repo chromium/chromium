@@ -13,13 +13,11 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_mock_time_task_runner.h"
 #include "base/time/clock.h"
 #include "build/build_config.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
@@ -28,7 +26,6 @@
 #include "components/offline_pages/core/model/offline_page_model_utils.h"
 #include "components/offline_pages/core/model/offline_page_test_utils.h"
 #include "components/offline_pages/core/model/persistent_page_consistency_check_task.h"
-#include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_page_item.h"
 #include "components/offline_pages/core/offline_page_metadata_store.h"
 #include "components/offline_pages/core/offline_page_metadata_store_test_util.h"
@@ -38,7 +35,6 @@
 #include "components/offline_pages/core/offline_page_types.h"
 #include "components/offline_pages/core/offline_store_utils.h"
 #include "components/offline_pages/core/test_scoped_offline_clock.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -203,7 +199,7 @@ class OfflinePageModelTaskifiedTest : public testing::Test,
 OfflinePageModelTaskifiedTest::OfflinePageModelTaskifiedTest()
     : clock_(task_environment_.GetMockClock()) {}
 
-OfflinePageModelTaskifiedTest::~OfflinePageModelTaskifiedTest() {}
+OfflinePageModelTaskifiedTest::~OfflinePageModelTaskifiedTest() = default;
 
 void OfflinePageModelTaskifiedTest::SetUp() {
   BuildStore();
@@ -856,14 +852,6 @@ TEST_F(OfflinePageModelTaskifiedTest, DeletePagesWithCriteria) {
   histogram_tester()->ExpectUniqueSample(
       "OfflinePages.DeletePageResult",
       static_cast<int>(DeletePageResult::SUCCESS), 1);
-  histogram_tester()->ExpectTotalCount(
-      model_utils::AddHistogramSuffix(page1.client_id.name_space,
-                                      "OfflinePages.PageLifetime"),
-      1);
-  histogram_tester()->ExpectTotalCount(
-      model_utils::AddHistogramSuffix(page1.client_id.name_space,
-                                      "OfflinePages.AccessCount"),
-      1);
 }
 
 TEST_F(OfflinePageModelTaskifiedTest, DeletePagesByUrlPredicate) {
@@ -905,14 +893,6 @@ TEST_F(OfflinePageModelTaskifiedTest, DeletePagesByUrlPredicate) {
   histogram_tester()->ExpectUniqueSample(
       "OfflinePages.DeletePageResult",
       static_cast<int>(DeletePageResult::SUCCESS), 1);
-  histogram_tester()->ExpectTotalCount(
-      model_utils::AddHistogramSuffix(page1.client_id.name_space,
-                                      "OfflinePages.PageLifetime"),
-      1);
-  histogram_tester()->ExpectTotalCount(
-      model_utils::AddHistogramSuffix(page1.client_id.name_space,
-                                      "OfflinePages.AccessCount"),
-      1);
 }
 
 TEST_F(OfflinePageModelTaskifiedTest, GetPageByOfflineId) {
