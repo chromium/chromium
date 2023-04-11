@@ -244,12 +244,14 @@ void InstallFromSyncCommand::OnDidPerformInstallableCheck(
     return;
   }
 
-  const bool manifest_has_icons = opt_manifest && !opt_manifest->icons.empty();
-
+  // If the page doesn't have a favicon, then the icon fetcher will hang
+  // forever.
+  // TODO(https://crbug.com/1328977): Allow favicons without waiting for them to
+  // be updated on the page.
   base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*install_info_);
   data_retriever_->GetIcons(
       &lock_->shared_web_contents(), std::move(icon_urls),
-      /*skip_page_favicons=*/manifest_has_icons,
+      /*skip_page_favicons=*/true,
       base::BindOnce(&InstallFromSyncCommand::OnIconsRetrievedFinalizeInstall,
                      weak_ptr_factory_.GetWeakPtr(),
                      FinalizeMode::kNormalWebAppInfo));
