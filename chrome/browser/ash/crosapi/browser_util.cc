@@ -958,6 +958,9 @@ Channel GetLacrosSelectionUpdateChannel(LacrosSelection selection) {
       // For 'stateful' Lacros directly check the channel of stateful-lacros
       // that the user is on.
       return GetStatefulLacrosChannel();
+    case LacrosSelection::kDeployedLocally:
+      // For locally deployed Lacros there is no channel so return unknown.
+      return Channel::UNKNOWN;
   }
 }
 

@@ -425,6 +425,8 @@ crosapi::mojom::BrowserInitParams::LacrosSelection GetLacrosSelection(
       return crosapi::mojom::BrowserInitParams::LacrosSelection::kRootfs;
     case browser_util::LacrosSelection::kStateful:
       return crosapi::mojom::BrowserInitParams::LacrosSelection::kStateful;
+    case browser_util::LacrosSelection::kDeployedLocally:
+      return crosapi::mojom::BrowserInitParams::LacrosSelection::kUnspecified;
   }
 }
 

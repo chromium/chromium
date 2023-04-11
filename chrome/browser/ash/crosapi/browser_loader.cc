@@ -101,7 +101,7 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
   if (!lacros_chrome_path.empty()) {
     // TODO(cbug.com/1429137): LacrosSelection::kStateful is not appropriate
     // here. We should introduce unknown state and set it here.
-    OnLoadComplete(std::move(callback), LacrosSelection::kStateful,
+    OnLoadComplete(std::move(callback), LacrosSelection::kDeployedLocally,
                    base::Version(), lacros_chrome_path);
     return;
   }
@@ -119,6 +119,12 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
         return;
       case browser_util::LacrosSelection::kStateful:
         SelectStatefulLacros(std::move(callback));
+        return;
+      case browser_util::LacrosSelection::kDeployedLocally:
+        NOTREACHED();
+        std::move(callback).Run(base::FilePath(),
+                                LacrosSelection::kDeployedLocally,
+                                base::Version());
         return;
     }
   }
@@ -195,6 +201,12 @@ void BrowserLoader::OnLoadVersionSelection(
       LOG(WARNING) << "stateful lacros is selected";
       SelectStatefulLacros(std::move(callback));
       break;
+    }
+    case LacrosSelection::kDeployedLocally: {
+      NOTREACHED();
+      std::move(callback).Run(
+          base::FilePath(), LacrosSelection::kDeployedLocally, base::Version());
+      return;
     }
   }
 }

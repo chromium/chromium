@@ -81,6 +81,7 @@ class BrowserLoader {
   FRIEND_TEST_ALL_PREFIXES(
       BrowserLoaderTest,
       OnLoadSelectionPolicyIsUserChoiceAndCommandLineIsStateful);
+  FRIEND_TEST_ALL_PREFIXES(BrowserLoaderTest, OnLoadLacrosSpecifiedBySwitch);
 
   // `load_stateful_lacros` specifies whether we should start the installation
   // of stateful lacros in the background.
