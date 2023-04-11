@@ -192,6 +192,7 @@ public class AndroidShareSheetControllerUnitTest {
 
     @After
     public void tearDown() {
+        ShadowLinkToTextCoordinator.setForceToFail(null);
         mWindow.destroy();
         TrackerFactory.setTrackerForTests(null);
     }
@@ -424,6 +425,37 @@ public class AndroidShareSheetControllerUnitTest {
                 shareIntent3.getStringExtra(Intent.EXTRA_TEXT));
     }
 
+    @Test
+    @Config(shadows = {ShadowLinkToTextCoordinator.class, ShadowBuildCompatForU.class,
+                    ShadowChooserActionHelper.class})
+    public void
+    shareLinkToHighlightTextFailed() {
+        ShadowLinkToTextCoordinator.setForceToFail(true);
+
+        ShareParams params = new ShareParams.Builder(mWindow, "", JUnitTestGURLs.EXAMPLE_URL)
+                                     .setFileContentType("text/plain")
+                                     .setText("highlight")
+                                     .setBypassFixingDomDistillerUrl(true)
+                                     .build();
+        ChromeShareExtras chromeShareExtras =
+                new ChromeShareExtras.Builder()
+                        .setDetailedContentType(DetailedContentType.HIGHLIGHTED_TEXT)
+                        .build();
+        AndroidShareSheetController.showShareSheet(params, chromeShareExtras,
+                mBottomSheetController,
+                () -> mTab, () -> mTabModelSelector, () -> mProfile, mPrintCallback::notifyCalled);
+
+        // Since link to share failed, the content being shared is a plain text.
+        Intent chooserIntent = Shadows.shadowOf((Activity) mActivity).peekNextStartedActivity();
+        Intent shareIntent = chooserIntent.getParcelableExtra(Intent.EXTRA_INTENT);
+        Assert.assertEquals("Text being shared is different.", "highlight",
+                shareIntent.getStringExtra(Intent.EXTRA_TEXT));
+        Assert.assertNull("Modify action should be null when generating link to text failed.",
+                chooserIntent.getParcelableExtra(INTENT_EXTRA_CHOOSER_MODIFY_SHARE_ACTION));
+
+        assertCustomActions(chooserIntent, R.string.sharing_long_screenshot);
+    }
+
     private void setFaviconToFetchForTest(Bitmap favicon) {
         doAnswer(invocation -> {
             FaviconHelper.FaviconImageCallback callback = invocation.getArgument(4);
@@ -519,9 +551,16 @@ public class AndroidShareSheetControllerUnitTest {
 
         public ShadowLinkToTextCoordinator() {}
 
+        static Boolean sForceToFail;
+
+        static void setForceToFail(Boolean forceToFail) {
+            sForceToFail = forceToFail;
+        }
+
         @Implementation
         protected void shareLinkToText() {
-            mRealObj.onSelectorReady(SELECTOR_FOR_LINK_TO_TEXT);
+            boolean fail = sForceToFail != null && sForceToFail;
+            mRealObj.onSelectorReady(fail ? "" : SELECTOR_FOR_LINK_TO_TEXT);
         }
     }
 }

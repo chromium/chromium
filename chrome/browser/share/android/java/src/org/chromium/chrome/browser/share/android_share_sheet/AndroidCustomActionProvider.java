@@ -113,7 +113,7 @@ class AndroidCustomActionProvider extends ChromeProvidedSharingOptionsProviderBa
         }
 
         // getLinkToTextSuccessful is only populated when an link is generated for share.
-        if (mShareParams.getLinkToTextSuccessful() != null
+        if (mShareParams.getLinkToTextSuccessful() != null && mShareParams.getLinkToTextSuccessful()
                 && mChromeShareExtras.getDetailedContentType()
                         == ChromeShareExtras.DetailedContentType.HIGHLIGHTED_TEXT) {
             FirstPartyOption option = TextUtils.isEmpty(mShareParams.getUrl())
