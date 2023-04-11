@@ -54,3 +54,4 @@ Local Modifications:
  - #include path was modified "base/allocator/buildflags.h" ->
    "base/allocator/partition_allocator/partition_alloc_buildflags.h", because
    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) was moved. crrev.com/c/3963596
+ - Branch cp ada8dfa4a7ea `ios: Always reset IOSIntermediateDumpWriter fd`
