@@ -139,9 +139,11 @@ TEST_F(AuthenticatedConnectionTest, RequestWifiCredentials) {
   EXPECT_TRUE(wifi_request_payload.FindBool("request_wifi"));
   EXPECT_EQ(wifi_request_payload.FindInt("SESSION_ID"), session_id);
 
-  // TODO(b/234655072): Create kSecondarySharedSecret const and check value
-  // equals after AuthenticatedConnection refactor is merged.
-  EXPECT_TRUE(wifi_request_payload.FindString("shared_secret"));
+  std::string shared_secret_str(kSharedSecret.begin(), kSharedSecret.end());
+  std::string shared_secret_base64;
+  base::Base64Encode(shared_secret_str, &shared_secret_base64);
+  EXPECT_EQ(*wifi_request_payload.FindString("shared_secret"),
+            shared_secret_base64);
 }
 
 TEST_F(AuthenticatedConnectionTest, RequestAccountTransferAssertion) {
