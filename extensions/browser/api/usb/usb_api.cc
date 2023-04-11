@@ -129,10 +129,10 @@ const int kMaxPacketLength = 64 * 1024;
 bool ConvertDirectionFromApi(const Direction& input,
                              UsbTransferDirection* output) {
   switch (input) {
-    case usb::DIRECTION_IN:
+    case usb::Direction::kIn:
       *output = UsbTransferDirection::INBOUND;
       return true;
-    case usb::DIRECTION_OUT:
+    case usb::Direction::kOut:
       *output = UsbTransferDirection::OUTBOUND;
       return true;
     default:
@@ -144,16 +144,16 @@ bool ConvertDirectionFromApi(const Direction& input,
 bool ConvertRequestTypeFromApi(const RequestType& input,
                                UsbControlTransferType* output) {
   switch (input) {
-    case usb::REQUEST_TYPE_STANDARD:
+    case usb::RequestType::kStandard:
       *output = UsbControlTransferType::STANDARD;
       return true;
-    case usb::REQUEST_TYPE_CLASS:
+    case usb::RequestType::kClass:
       *output = UsbControlTransferType::CLASS;
       return true;
-    case usb::REQUEST_TYPE_VENDOR:
+    case usb::RequestType::kVendor:
       *output = UsbControlTransferType::VENDOR;
       return true;
-    case usb::REQUEST_TYPE_RESERVED:
+    case usb::RequestType::kReserved:
       *output = UsbControlTransferType::RESERVED;
       return true;
     default:
@@ -165,16 +165,16 @@ bool ConvertRequestTypeFromApi(const RequestType& input,
 bool ConvertRecipientFromApi(const Recipient& input,
                              UsbControlTransferRecipient* output) {
   switch (input) {
-    case usb::RECIPIENT_DEVICE:
+    case usb::Recipient::kDevice:
       *output = UsbControlTransferRecipient::DEVICE;
       return true;
-    case usb::RECIPIENT_INTERFACE:
+    case usb::Recipient::kInterface:
       *output = UsbControlTransferRecipient::INTERFACE;
       return true;
-    case usb::RECIPIENT_ENDPOINT:
+    case usb::Recipient::kEndpoint:
       *output = UsbControlTransferRecipient::ENDPOINT;
       return true;
-    case usb::RECIPIENT_OTHER:
+    case usb::Recipient::kOther:
       *output = UsbControlTransferRecipient::OTHER;
       return true;
     default:
@@ -231,28 +231,28 @@ base::Value::Dict PopulateConnectionHandle(int handle,
 TransferType ConvertTransferTypeToApi(const UsbTransferType& input) {
   switch (input) {
     case UsbTransferType::CONTROL:
-      return usb::TRANSFER_TYPE_CONTROL;
+      return usb::TransferType::kControl;
     case UsbTransferType::INTERRUPT:
-      return usb::TRANSFER_TYPE_INTERRUPT;
+      return usb::TransferType::kInterrupt;
     case UsbTransferType::ISOCHRONOUS:
-      return usb::TRANSFER_TYPE_ISOCHRONOUS;
+      return usb::TransferType::kIsochronous;
     case UsbTransferType::BULK:
-      return usb::TRANSFER_TYPE_BULK;
+      return usb::TransferType::kBulk;
     default:
       NOTREACHED();
-      return usb::TRANSFER_TYPE_NONE;
+      return usb::TransferType::kNone;
   }
 }
 
 Direction ConvertDirectionToApi(const UsbTransferDirection& input) {
   switch (input) {
     case UsbTransferDirection::INBOUND:
-      return usb::DIRECTION_IN;
+      return usb::Direction::kIn;
     case UsbTransferDirection::OUTBOUND:
-      return usb::DIRECTION_OUT;
+      return usb::Direction::kOut;
     default:
       NOTREACHED();
-      return usb::DIRECTION_NONE;
+      return usb::Direction::kNone;
   }
 }
 
@@ -260,36 +260,36 @@ SynchronizationType ConvertSynchronizationTypeToApi(
     const UsbSynchronizationType& input) {
   switch (input) {
     case UsbSynchronizationType::NONE:
-      return usb::SYNCHRONIZATION_TYPE_NONE;
+      return usb::SynchronizationType::kNone;
     case UsbSynchronizationType::ASYNCHRONOUS:
-      return usb::SYNCHRONIZATION_TYPE_ASYNCHRONOUS;
+      return usb::SynchronizationType::kAsynchronous;
     case UsbSynchronizationType::ADAPTIVE:
-      return usb::SYNCHRONIZATION_TYPE_ADAPTIVE;
+      return usb::SynchronizationType::kAdaptive;
     case UsbSynchronizationType::SYNCHRONOUS:
-      return usb::SYNCHRONIZATION_TYPE_SYNCHRONOUS;
+      return usb::SynchronizationType::kSynchronous;
     default:
       NOTREACHED();
-      return usb::SYNCHRONIZATION_TYPE_NONE;
+      return usb::SynchronizationType::kNone;
   }
 }
 
 usb::UsageType ConvertUsageTypeToApi(const UsbUsageType& input) {
   switch (input) {
     case UsbUsageType::DATA:
-      return usb::USAGE_TYPE_DATA;
+      return usb::UsageType::kData;
     case UsbUsageType::FEEDBACK:
-      return usb::USAGE_TYPE_FEEDBACK;
+      return usb::UsageType::kFeedback;
     case UsbUsageType::EXPLICIT_FEEDBACK:
-      return usb::USAGE_TYPE_EXPLICITFEEDBACK;
+      return usb::UsageType::kExplicitFeedback;
     case UsbUsageType::PERIODIC:
-      return usb::USAGE_TYPE_PERIODIC;
+      return usb::UsageType::kPeriodic;
     case UsbUsageType::NOTIFICATION:
-      return usb::USAGE_TYPE_NOTIFICATION;
+      return usb::UsageType::kNotification;
     case UsbUsageType::RESERVED:
-      return usb::USAGE_TYPE_NONE;
+      return usb::UsageType::kNone;
     default:
       NOTREACHED();
-      return usb::USAGE_TYPE_NONE;
+      return usb::UsageType::kNone;
   }
 }
 
