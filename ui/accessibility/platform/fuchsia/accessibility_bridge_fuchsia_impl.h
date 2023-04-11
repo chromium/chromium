@@ -5,7 +5,7 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_FUCHSIA_ACCESSIBILITY_BRIDGE_FUCHSIA_IMPL_H_
 #define UI_ACCESSIBILITY_PLATFORM_FUCHSIA_ACCESSIBILITY_BRIDGE_FUCHSIA_IMPL_H_
 
-#include <fuchsia/accessibility/semantics/cpp/fidl.h>
+#include <fidl/fuchsia.accessibility.semantics/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/inspect/cpp/vmo/types.h>
 
@@ -47,14 +47,14 @@ class COMPONENT_EXPORT(AX_PLATFORM) AccessibilityBridgeFuchsiaImpl final
   // do not reconnect).
   AccessibilityBridgeFuchsiaImpl(
       aura::Window* root_window,
-      fuchsia::ui::views::ViewRef view_ref,
+      fuchsia_ui_views::ViewRef view_ref,
       base::RepeatingCallback<void(bool)> on_semantics_enabled,
       OnConnectionClosedCallback on_connection_closed,
       inspect::Node inspect_node);
   ~AccessibilityBridgeFuchsiaImpl() override;
 
   // AccessibilityBridgeFuchsia overrides.
-  void UpdateNode(fuchsia::accessibility::semantics::Node node) override;
+  void UpdateNode(fuchsia_accessibility_semantics::Node node) override;
   void DeleteNode(uint32_t node_id) override;
   void OnAccessibilityHitTestResult(int hit_test_request_id,
                                     absl::optional<uint32_t> result) override;
@@ -66,11 +66,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AccessibilityBridgeFuchsiaImpl final
   bool OnSemanticsManagerConnectionClosed(zx_status_t status) override;
   bool OnAccessibilityAction(
       uint32_t node_id,
-      fuchsia::accessibility::semantics::Action action) override;
-  void OnHitTest(
-      fuchsia::math::PointF point,
-      fuchsia::accessibility::semantics::SemanticListener::HitTestCallback
-          callback) override;
+      fuchsia_accessibility_semantics::Action action) override;
+  void OnHitTest(fuchsia_math::PointF point, HitTestCallback callback) override;
   void OnSemanticsEnabled(bool enabled) override;
 
   // Test-only method to set `semantic_provider_`.
@@ -99,10 +96,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AccessibilityBridgeFuchsiaImpl final
 
   // Holds callbacks for hit tests that have not yet completed, keyed by a
   // request ID that this class generates.
-  base::flat_map<
-      int /* request_id */,
-      fuchsia::accessibility::semantics::SemanticListener::HitTestCallback>
-      pending_hit_test_callbacks_;
+  base::flat_map<int /* request_id */, HitTestCallback>
+      pending_hit_test_completers_;
 
   // Next hit test request ID to use.
   int next_hittest_request_id_ = 1;
