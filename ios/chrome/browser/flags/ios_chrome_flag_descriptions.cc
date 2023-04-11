@@ -217,6 +217,11 @@ const char kEnablePopoutOmniboxIpadDescription[] =
     "Make omnibox popup appear in a detached rounded rectangle below the "
     "omnibox.";
 
+extern const char kMagicStackName[] = "Enable Magic Stack";
+extern const char kMagicStackDescription[] =
+    "When enabled, a Magic Stack will be shown in the Home surface displaying "
+    "a variety of modules.";
+
 extern const char kMapsExperienceKitName[] = "Experience Kit Maps";
 extern const char kMapsExperienceKitDescription[] =
     "When enabled, long pressing on an address will trigger Experience Kit Maps"

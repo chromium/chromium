@@ -535,6 +535,11 @@ extern const char kLockBottomToolbarDescription[];
 extern const char kLogBreadcrumbsName[];
 extern const char kLogBreadcrumbsDescription[];
 
+// Title and Description for the flag that controls displaying the Magic Stack
+// in the Home Surface,
+extern const char kMagicStackName[];
+extern const char kMagicStackDescription[];
+
 // Title and description for the flag to control camera and/or microphone access
 // for a specific site through site settings during its lifespan.
 extern const char kMediaPermissionsControlName[];

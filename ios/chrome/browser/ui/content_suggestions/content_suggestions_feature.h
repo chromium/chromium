@@ -31,6 +31,9 @@ BASE_DECLARE_FEATURE(kContentSuggestionsUIModuleRefresh);
 // study.
 BASE_DECLARE_FEATURE(kContentSuggestionsUIModuleRefreshNewUser);
 
+// Feature for the Magic Stack.
+BASE_DECLARE_FEATURE(kMagicStack);
+
 // Name of the field trial for when kContentSuggestionsUIModuleRefresh is
 // enabled in about_flags.
 extern const char
@@ -74,6 +77,9 @@ bool ShouldMinimizeSpacingForModuleRefresh();
 // Whether the module header should not be shown for the Content Suggestions UI
 // Module Refresh feature.
 bool ShouldRemoveHeadersForModuleRefresh();
+
+// Whether the Magic Stack should be shown.
+bool IsMagicStackEnabled();
 
 // Whether the Trending Queries module feature is enabled.
 bool IsTrendingQueriesModuleEnabled();
