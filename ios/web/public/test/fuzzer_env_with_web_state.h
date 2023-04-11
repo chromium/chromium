@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/at_exit.h"
 #import "ios/web/public/browser_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_client.h"
@@ -26,6 +27,7 @@ class FuzzerEnvWithWebState {
   web::WebState* web_state();
 
  private:
+  base::AtExitManager at_exit_manager_;
   std::unique_ptr<WebClient> web_client_;
   std::unique_ptr<WebTaskEnvironment> task_environment_;
   std::unique_ptr<BrowserState> browser_state_;
