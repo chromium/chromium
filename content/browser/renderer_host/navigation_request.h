@@ -1178,10 +1178,11 @@ class CONTENT_EXPORT NavigationRequest
   // Creates a WebUI object for this navigation and saves it in `web_ui_`. Later
   // on, the WebUI created will be moved to `frame_host` (if `frame_host` is
   // null, it means a RenderFrameHost has not been picked for the navigation).
-  // Returns true iff a WebUI object is successfully created and saved.
-  bool CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host);
+  void CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host);
 
   bool HasWebUI() { return !!web_ui_; }
+
+  WebUIImpl* web_ui() { return web_ui_.get(); }
 
   std::unique_ptr<WebUIImpl> TakeWebUI() {
     CHECK(HasWebUI());

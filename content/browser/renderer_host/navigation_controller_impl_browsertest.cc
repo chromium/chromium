@@ -22613,7 +22613,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(b1_navigation.WaitForNavigationFinished());
   EXPECT_FALSE(b1_navigation.was_committed());
 
-  // Assert that the navigation to A1 succesfully commits.
+  // Assert that the navigation to A1 successfully commits.
   ASSERT_TRUE(a1_navigation.WaitForNavigationFinished());
   EXPECT_TRUE(a1_navigation.was_successful());
   // Assert that the correct NavigationEntry is used, and no entry gets
@@ -23067,6 +23067,102 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(new_history_navigation_manager.WaitForNavigationFinished());
   EXPECT_TRUE(new_history_navigation_manager.was_successful());
   EXPECT_EQ(url_1, contents()->GetLastCommittedURL());
+}
+
+// Tests that when a WebUI navigation couldn't create a speculative
+// RenderFrameHost yet due to navigation queueing, a WebUI object is still
+// created successfully and eventually gets moved to the final RenderFrameHost.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       WebUICreatedForQueuedNavigation) {
+  GURL url_1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_2(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  GURL url_webui(std::string(kChromeUIScheme) + "://" +
+                 std::string(kChromeUIGpuHost));
+
+  // Load `url_1`.
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  FrameTreeNode* root = contents()->GetPrimaryFrameTree().root();
+
+  // Start loading `url_2`, but ignore its DidCommit IPC, so that it will stay
+  // at the "pending commit" stage indefinitely. Then, start a navigation to
+  // `url_webui`, which should create WebUI Objects.
+  TestNavigationManager pending_commit_nav_manager(contents(), url_2);
+  TestNavigationManager webui_nav_manager(contents(), url_webui);
+  WebUIImpl* created_webui = nullptr;
+  {
+    DidCommitNavigationCanceller ignore_url_2_commit(
+        contents(), url_2,
+        base::BindLambdaForTesting([&]() { shell()->LoadURL(url_webui); }));
+    shell()->LoadURL(url_2);
+    EXPECT_TRUE(pending_commit_nav_manager.WaitForResponse());
+
+    // Check that a speculative RenderFrameHost was created for the navigation
+    // to `url_2`. Continue the `url_2` navigation, which will stay at the
+    // "pending commit" stage.
+    RenderFrameHostImplWrapper spec_rfh(
+        root->render_manager()->speculative_frame_host());
+    EXPECT_TRUE(spec_rfh.get());
+
+    pending_commit_nav_manager.ResumeNavigation();
+
+    // Ensure that the WebUI navigation starts correctly and created a WebUI
+    // object even though it hasn't created a RenderFrameHost yet.
+    EXPECT_TRUE(webui_nav_manager.WaitForRequestStart());
+    NavigationRequest* webui_nav = static_cast<NavigationRequest*>(
+        webui_nav_manager.GetNavigationHandle());
+    EXPECT_FALSE(webui_nav->HasRenderFrameHost());
+    EXPECT_TRUE(webui_nav->HasWebUI());
+    created_webui = webui_nav->web_ui();
+    EXPECT_FALSE(created_webui->has_frame_host());
+
+    // The pending commit RenderFrameHost for `url_2` is still around and
+    // doesn't have a WebUI Object.
+    EXPECT_EQ(spec_rfh.get(), root->render_manager()->speculative_frame_host());
+    EXPECT_TRUE(spec_rfh->HasPendingCommitForCrossDocumentNavigation());
+    EXPECT_NE(webui_nav->dest_site_instance(), spec_rfh->GetSiteInstance());
+    EXPECT_FALSE(spec_rfh->web_ui());
+  }
+
+  // Trigger the `url_2` pending commit RFH & NavigationRequest deletion, so
+  // that the WebUI navigation can continue. Note that the pending commit RFH
+  // deletion can't actually happen in real life, but this is the best we can
+  // do since we've dropped the DidCommit IPC before. Ideally, we would just
+  // re-trigger the DidCommit IPC that we dropped, so that the pending commit
+  // RFH & NavigationRequest will finish the commit and trigger the resume
+  // callback of the queued navigation, but there's currently no way to do that
+  // in test (we have BeginNavigationInCommitCallbackInterceptor but that only
+  // triggers renderer-initiated navigations, which can't navigate to WebUI).
+  // Also, normally we discourage the deletion of pending commit RFHs as that
+  // will result in a confused renderer, but in this case the renderer for
+  // `url_2` is a brand new renderer that we will never reuse anyways, so it's
+  // fine to discard the pending commit RFH.
+  // TODO(https://crbug.com/1220337): Use ResumeCommitClosureSetObserver and
+  // BeginNavigationInCommitCallbackInterceptor instead of doing this.
+  root->render_manager()->DiscardSpeculativeRenderFrameHostForShutdown();
+  EXPECT_TRUE(pending_commit_nav_manager.WaitForNavigationFinished());
+  EXPECT_FALSE(pending_commit_nav_manager.was_committed());
+
+  // Thew WebUI navigation continues successfully and the WebUI object
+  // successfully moved to the newly created RenderFrameHost.
+  webui_nav_manager.ResumeNavigation();
+  EXPECT_TRUE(webui_nav_manager.WaitForResponse());
+  NavigationRequest* webui_nav =
+      static_cast<NavigationRequest*>(webui_nav_manager.GetNavigationHandle());
+  EXPECT_TRUE(webui_nav->HasRenderFrameHost());
+  EXPECT_FALSE(webui_nav->HasWebUI());
+  EXPECT_EQ(created_webui, webui_nav->GetRenderFrameHost()->web_ui());
+  EXPECT_TRUE(created_webui->has_frame_host());
+  EXPECT_EQ(created_webui->frame_host(), webui_nav->GetRenderFrameHost());
+  EXPECT_EQ(webui_nav->GetRenderFrameHost(),
+            root->render_manager()->speculative_frame_host());
+
+  // Commit the navigation.
+  webui_nav_manager.ResumeNavigation();
+  EXPECT_TRUE(webui_nav_manager.WaitForNavigationFinished());
+  EXPECT_TRUE(webui_nav_manager.was_successful());
+  EXPECT_EQ(url_webui, contents()->GetLastCommittedURL());
+  EXPECT_EQ(created_webui, current_main_frame_host()->web_ui());
+  EXPECT_EQ(created_webui->frame_host(), current_main_frame_host());
 }
 
 INSTANTIATE_TEST_SUITE_P(

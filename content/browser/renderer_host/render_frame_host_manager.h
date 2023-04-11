@@ -839,8 +839,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // reuse the current RFH instead of using a new speculative RFH. If an
   // existing RFH is reused, this function might notify its WebUI (if it exists)
   // that it is being reused.
-  // Returns true if a new WebUI object is created for `request`.
-  bool CreateWebUIForNavigationIfNeeded(NavigationRequest* request,
+  void CreateWebUIForNavigationIfNeeded(NavigationRequest* request,
                                         SiteInstanceImpl* dest_site_instance,
                                         bool use_current_rfh);
 

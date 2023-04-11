@@ -104,6 +104,8 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
     return frame_host_;
   }
 
+  bool has_frame_host() const { return !!frame_host_; }
+
  private:
   friend class WebUIMainFrameObserver;
 
@@ -143,7 +145,8 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   // might not be created until the final response for the navigation is
   // received in some cases (after `NavigationRequest::OnResponseStarted()`).
   // See also `SetRenderFrameHost()` for more details.
-  raw_ptr<RenderFrameHostImpl, DisableDanglingPtrDetection> frame_host_;
+  raw_ptr<RenderFrameHostImpl, DisableDanglingPtrDetection> frame_host_ =
+      nullptr;
 
   // The WebUIMessageHandlers we own.
   std::vector<std::unique_ptr<WebUIMessageHandler>> handlers_;

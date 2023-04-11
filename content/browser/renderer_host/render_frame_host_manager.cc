@@ -1295,12 +1295,18 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   // Create WebUI objects for this navigation if it is needed. Note that we
   // create this earlier than the `use_current_rfh` if clause below to ensure
   // we still create the WebUI objects even if we return early due to the
-  // kBlockedByPendingCommit case.
-  // TODO(https://crbug.com/1430336): Ensure that in the kBlockedByPendingCommit
-  // case, we move the WebUI objects from the NavigationRequest to the
-  // RenderFrameHost successfully after it has been created.
-  bool notify_webui_of_rf_creation = CreateWebUIForNavigationIfNeeded(
-      request, dest_site_instance.get(), use_current_rfh);
+  // kBlockedByPendingCommit case. After a RenderFrameHost has been picked for
+  // this navigation (either now or later on after this function is called again
+  // upon reaching OnResponseStarted, in the case of navigation queueing), the
+  // ownership of the WebUIImpl will move from the NavigationRequest to the
+  // RenderFrameHost.
+  // Note: We need to create the WebUI objects early in the navigation even when
+  // there is no RenderFrameHost to host it yet, because the creation of
+  // WebUIImpl will trigger the creation of WebUI data sources, which is needed
+  // for WebUI navigations to reach the OnResponseStarted stage.
+  CreateWebUIForNavigationIfNeeded(request, dest_site_instance.get(),
+                                   use_current_rfh);
+  bool notify_webui_of_rf_creation = request->HasWebUI();
 
   // We only do this if the policy allows it and are recovering a crashed frame.
   bool recovering_without_early_commit =
@@ -1451,7 +1457,7 @@ RenderFrameHostManager::GetFrameHostForNavigation(
         // non-early commit cases, which won't run if we already run this code
         // because `HasWebUI()` will return false after we take the WebUI from
         // the NavigationRequest here.
-        navigation_rfh->SetWebUI(*request, request->TakeWebUI());
+        navigation_rfh->SetWebUI(*request);
         CHECK(navigation_rfh->web_ui());
       }
 
@@ -1503,7 +1509,7 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   if (request->HasWebUI()) {
     // If a WebUI has been created for the NavigationRequest, set it on the
     // RenderFrameHost picked for the navigation.
-    navigation_rfh->SetWebUI(*request, request->TakeWebUI());
+    navigation_rfh->SetWebUI(*request);
     CHECK(navigation_rfh->web_ui());
   }
   if (notify_webui_of_rf_creation && navigation_rfh->web_ui()) {
@@ -1548,16 +1554,24 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   return navigation_rfh;
 }
 
-bool RenderFrameHostManager::CreateWebUIForNavigationIfNeeded(
+void RenderFrameHostManager::CreateWebUIForNavigationIfNeeded(
     NavigationRequest* request,
     SiteInstanceImpl* dest_site_instance,
     bool use_current_rfh) {
+  if (request->HasWebUI()) {
+    // It's possible for the navigation to already have a WebUI associated with
+    // it if this function is called from OnResponseStarted.
+    CHECK_GE(request->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
+    CHECK(!request->web_ui()->has_frame_host());
+    return;
+  }
+
   BrowserContext* browser_context =
       render_frame_host_->GetSiteInstance()->GetBrowserContext();
   if (!WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
           browser_context, request->common_params().url) ||
       request->state() >= NavigationRequest::CANCELING) {
-    return false;
+    return;
   }
 
   // If the navigation is to a WebUI URL, the WebUI needs to be created to
@@ -1591,7 +1605,7 @@ bool RenderFrameHostManager::CreateWebUIForNavigationIfNeeded(
       // a navigation, the else branch would be taken. Explicit check for
       // `web_ui()` is required, otherwise we will allocate a new instance
       // unnecessarily here.
-      return request->CreateWebUIIfNeeded(render_frame_host_.get());
+      request->CreateWebUIIfNeeded(render_frame_host_.get());
     }
   } else if (speculative_render_frame_host_ &&
              speculative_render_frame_host_->GetSiteInstance() ==
@@ -1600,17 +1614,13 @@ bool RenderFrameHostManager::CreateWebUIForNavigationIfNeeded(
     // a WebUI might have already been created in the speculative RFH, but it's
     // OK because `CreateWebUIIfNeeded()` won't create a new WebUI in that case
     // and this function will return false.
-    return request->CreateWebUIIfNeeded(speculative_render_frame_host_.get());
+    request->CreateWebUIIfNeeded(speculative_render_frame_host_.get());
   } else {
     // The navigation will create a new speculative RenderFrameHost, so pass in
     // nullptr to `CreateWebUIIfNeeded()` as the RenderFrameHost is yet to be
     // created.
-    return request->CreateWebUIIfNeeded(nullptr);
+    request->CreateWebUIIfNeeded(nullptr);
   }
-
-  // If we haven't returned yet, it means we didn't call `CreateWebUIIfNeeded()`
-  // so no new WebUI was created.
-  return false;
 }
 
 void RenderFrameHostManager::DiscardSpeculativeRFHIfUnused(

@@ -5512,6 +5512,9 @@ void NavigationRequest::CommitNavigation() {
   // A navigation request should only commit once the response has been
   // processed.
   DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
+  // If a WebUI was created for this navigation, it must have been moved to the
+  // RenderFrameHost we're about to commit in already.
+  CHECK(!HasWebUI());
   CheckSoftNavigationHeuristicsInvariants();
 
   if (!CoopCoepSanityCheck())
@@ -9343,7 +9346,7 @@ bool NavigationRequest::GetIsThirdPartyCookiesUserBypassEnabled() {
   return GetParentFrame()->GetIsThirdPartyCookiesUserBypassEnabled();
 }
 
-bool NavigationRequest::CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host) {
+void NavigationRequest::CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host) {
   TRACE_EVENT1("content", "NavigationRequest::CreateWebUI", "url", GetURL());
 
   WebUI::TypeID new_web_ui_type =
@@ -9352,7 +9355,7 @@ bool NavigationRequest::CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host) {
           GetURL());
   if (new_web_ui_type == WebUI::kNoWebUI) {
     // The navigation doesn't need a WebUI.
-    return false;
+    return;
   }
   CHECK(!web_ui_);
 
@@ -9363,7 +9366,7 @@ bool NavigationRequest::CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host) {
   // if the WebUI type differs.
   if (frame_host && frame_host->web_ui()) {
     CHECK_EQ(new_web_ui_type, frame_host->web_ui_type());
-    return false;
+    return;
   }
 
   web_ui_ = std::make_unique<WebUIImpl>(this);
@@ -9373,7 +9376,7 @@ bool NavigationRequest::CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host) {
           ->CreateWebUIControllerForURL(web_ui_.get(), GetURL()));
   if (!controller) {
     // TODO(https://crbug.com/1220337): Make this a CHECK instead.
-    return false;
+    return;
   }
 
   // If we have assigned (zero or more) bindings to the NavigationEntry in
@@ -9390,11 +9393,10 @@ bool NavigationRequest::CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host) {
     // happen and crash immediately if it does, because there are no easy ways
     // to recover.
     CHECK(self);
-    return false;
+    return;
   }
 
   web_ui_->SetController(std::move(controller));
-  return true;
 }
 
 }  // namespace content

@@ -10076,8 +10076,8 @@ bool RenderFrameHostImpl::IsFocused() {
          focused_rfh->IsDescendantOfWithinFrameTree(this);
 }
 
-void RenderFrameHostImpl::SetWebUI(NavigationRequest& request,
-                                   std::unique_ptr<WebUIImpl> new_web_ui) {
+void RenderFrameHostImpl::SetWebUI(NavigationRequest& request) {
+  std::unique_ptr<WebUIImpl> new_web_ui = request.TakeWebUI();
   // This function should only be called to set a WebUI object. To clear an
   // existing WebUI object, call `ClearWebUI()` instead.
   CHECK(new_web_ui);
