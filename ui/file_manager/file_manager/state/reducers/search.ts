@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {SearchData, State} from '../../externs/ts/state.js';
-import {SearchAction} from '../actions.js';
+import {SearchAction} from '../actions/search.js';
 
 export function search(state: State, action: SearchAction): State {
   const payload = action.payload;

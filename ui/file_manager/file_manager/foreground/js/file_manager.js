@@ -29,7 +29,7 @@ import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfa
 import {ForegroundWindow} from '../../externs/foreground_window.js';
 import {PropStatus} from '../../externs/ts/state.js';
 import {Store} from '../../externs/ts/store.js';
-import {updateSearch} from '../../state/actions.js';
+import {updateSearch} from '../../state/actions/search.js';
 import {addUiEntry, removeUiEntry} from '../../state/actions/ui_entries.js';
 import {trashRootKey} from '../../state/reducers/volumes.js';
 import {getEmptyState, getStore} from '../../state/store.js';

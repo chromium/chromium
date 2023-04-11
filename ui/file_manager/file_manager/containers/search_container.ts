@@ -11,7 +11,7 @@ import {PropStatus, SearchData, SearchLocation, SearchOptions, SearchRecency, St
 import {VolumeManager} from '../externs/volume_manager.js';
 import {PathComponent} from '../foreground/js/path_component.js';
 import {SearchAutocompleteList} from '../foreground/js/ui/search_autocomplete_list.js';
-import {clearSearch, updateSearch} from '../state/actions.js';
+import {clearSearch, updateSearch} from '../state/actions/search.js';
 import {getDefaultSearchOptions, getStore, Store} from '../state/store.js';
 import {XfPathDisplayElement} from '../widgets/xf_path_display.js';
 import {OptionKind, SEARCH_OPTIONS_CHANGED, SearchOptionsChangedEvent, XfSearchOptionsElement} from '../widgets/xf_search_options.js';
