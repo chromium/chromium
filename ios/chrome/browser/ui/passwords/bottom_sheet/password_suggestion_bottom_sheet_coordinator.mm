@@ -13,11 +13,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-// Sets a custom radius for the half sheet presentation.
-constexpr CGFloat kHalfSheetCornerRadius = 20;
-}  // namespace
-
 @interface PasswordSuggestionBottomSheetCoordinator ()
 
 // This mediator is used to fetch data related to the bottom sheet.
@@ -54,22 +49,6 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  if (@available(iOS 15, *)) {
-    self.viewController.modalPresentationStyle = UIModalPresentationPageSheet;
-    UISheetPresentationController* presentationController =
-        self.viewController.sheetPresentationController;
-    presentationController.prefersEdgeAttachedInCompactHeight = YES;
-    presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached =
-        YES;
-    presentationController.detents = @[
-      UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-    presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
-  } else {
-    self.viewController.modalPresentationStyle = UIModalPresentationFormSheet;
-  }
-
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES
                                       completion:nil];

@@ -30,11 +30,18 @@
 #endif
 
 namespace {
+// Base height value for the bottom sheet without the table view.
+// TODO(crbug.com/1422350): This needs some proper calculation.
+CGFloat const kBaseHeightForBottomSheet = 190;
+
 // Spacing size before image if there are no navigation bar.
 CGFloat const kCustomSpacingBeforeImageIfNoNavigationBar = 24;
 
 // Spacing size after image.
 CGFloat const kCustomSpacingAfterImage = 30;
+
+// Sets a custom radius for the half sheet presentation.
+CGFloat const kHalfSheetCornerRadius = 20;
 
 // Row height for each cell in the table view.
 CGFloat const kTableViewRowHeight = 75;
@@ -84,6 +91,8 @@ CGFloat const kTableViewCornerRadius = 10;
   self = [super init];
   if (self) {
     _faviconLoader = faviconLoader;
+
+    [self setUpBottomSheet];
   }
   return self;
 }
@@ -220,6 +229,34 @@ CGFloat const kTableViewCornerRadius = 10;
 
 #pragma mark - Private
 
+// Configures the bottom sheet's appearance and detents.
+- (void)setUpBottomSheet {
+  self.modalPresentationStyle = UIModalPresentationPageSheet;
+  UISheetPresentationController* presentationController =
+      self.sheetPresentationController;
+  presentationController.prefersEdgeAttachedInCompactHeight = YES;
+  presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
+  if (@available(iOS 16, *)) {
+    CGFloat bottomSheetHeight = [self initialHeight];
+    auto detentBlock = ^CGFloat(
+        id<UISheetPresentationControllerDetentResolutionContext> context) {
+      return bottomSheetHeight;
+    };
+    UISheetPresentationControllerDetent* customDetent =
+        [UISheetPresentationControllerDetent
+            customDetentWithIdentifier:@"customDetent"
+                              resolver:detentBlock];
+    presentationController.detents = @[ customDetent ];
+    presentationController.selectedDetentIdentifier = @"customDetent";
+  } else {
+    presentationController.detents = @[
+      [UISheetPresentationControllerDetent mediumDetent],
+      [UISheetPresentationControllerDetent largeDetent]
+    ];
+  }
+  presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
+}
+
 // Configures the title view of this ViewController.
 - (UIView*)setUpTitleView {
   NSString* title = l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER);
@@ -246,8 +283,7 @@ CGFloat const kTableViewCornerRadius = 10;
 
   UITableView* tableView = _tableViewController.tableView;
   tableView.layer.cornerRadius = kTableViewCornerRadius;
-  // FIXME(sugoi): The row height below must be dynamic for accessibility.
-  tableView.rowHeight = kTableViewRowHeight;
+  tableView.rowHeight = [self rowHeight];
   tableView.showsVerticalScrollIndicator = NO;
   tableView.delegate = self;
   tableView.dataSource = self;
@@ -337,6 +373,18 @@ CGFloat const kTableViewCornerRadius = 10;
         [FaviconAttributes attributesWithImage:[self globeIcon]];
   }
   return _defaultWorldIconAttributes;
+}
+
+- (CGFloat)rowHeight {
+  // TODO(crbug.com/1422350): The row height below must be dynamic for
+  // accessibility.
+  return kTableViewRowHeight;
+}
+
+// Returns the initial height of the bottom sheet.
+- (CGFloat)initialHeight {
+  // Initial size for the bottom sheet while showing a single row.
+  return kBaseHeightForBottomSheet + [self rowHeight];
 }
 
 @end
