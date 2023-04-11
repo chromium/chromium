@@ -2564,6 +2564,9 @@ extern const char kNtpDummyModulesDescription[];
 extern const char kNtpHistoryClustersModuleName[];
 extern const char kNtpHistoryClustersModuleDescription[];
 
+extern const char kNtpChromeCartInHistoryClustersModuleName[];
+extern const char kNtpChromeCartInHistoryClustersModuleDescription[];
+
 extern const char kNtpMiddleSlotPromoDismissalName[];
 extern const char kNtpMiddleSlotPromoDismissalDescription[];
 

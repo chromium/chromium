@@ -279,6 +279,12 @@ BASE_FEATURE(kNtpModulesHeaderIcon,
              "NtpModulesHeaderIcon",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, ChromeCart tile will show in the History clusters module when
+// available.
+BASE_FEATURE(kNtpChromeCartInHistoryClusterModule,
+             "NtpChromeCartInHistoryClusterModule",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<double>
     kNtpElementLuminosityChangeForLightBackgroundParam{
         &kNtpComprehensiveTheming,

@@ -4469,6 +4469,12 @@ const char kNtpHistoryClustersModuleName[] = "NTP Journeys Module";
 const char kNtpHistoryClustersModuleDescription[] =
     "Shows the Journeys module on the New Tab Page.";
 
+const char kNtpChromeCartInHistoryClustersModuleName[] =
+    "NTP ChromeCart in Journeys Module";
+const char kNtpChromeCartInHistoryClustersModuleDescription[] =
+    "Shows ChromeCart tile in the Journeys module when available on the New "
+    "Tab Page.";
+
 const char kNtpMiddleSlotPromoDismissalName[] =
     "NTP Middle Slot Promo Dismissal";
 const char kNtpMiddleSlotPromoDismissalDescription[] =
