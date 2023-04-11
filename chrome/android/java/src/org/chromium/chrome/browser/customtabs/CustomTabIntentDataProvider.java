@@ -247,7 +247,19 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     /**
      * Extra that, if set, makes the Custom Tab Activity's width to be x pixels, the Custom Tab
-     * will behave as a side sheet. x will be clamped between 33% and 100% of screen width.
+     * will behave as a side sheet. x will be clamped between 33% and 100% of window's width based
+     * on the window size classes as defined by the Android documentation:
+     * <ul>
+     *     <li>Compact, window width < 600dp - a side sheet will not be displayed.</li>
+     *     <li>Medium, window width >=600dp and< 840 dp - minimum side sheet size is 50% of the
+     *     window's width.</li>
+     *     <li>Expanded, window width >= 840dp - minimum side sheet size is 33% of the
+     *     window's width.</li>
+     * </ul>
+     *
+     * <a
+     * href="https://developer.android.com/guide/topics/large-screens/support-different-screen-sizes#window_size_classes">Android
+     * Size Classes</a>
      */
     public static final String EXTRA_INITIAL_ACTIVITY_WIDTH_PX =
             "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_WIDTH_PX";
@@ -271,9 +283,13 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             "androidx.browser.customtabs.extra.ACTIVITY_HEIGHT_RESIZE_BEHAVIOR";
 
     /**
-     * Extra that, if set, allows you to set a custom breakpoint for PCCT side sheet -
+     * Extra that, if set, allows you to set a custom breakpoint for the Custom Tab -
      * a value, x, for which if the screen's width is higher than x, the Custom Tab will behave as a
-     * side sheet, otherwise it will behave as a bottom sheet.
+     * side sheet (if {@link EXTRA_INITIAL_ACTIVITY_WIDTH_PX} is set), otherwise it will behave as a
+     * bottom sheet (if {@link EXTRA_INITIAL_ACTIVITY_HEIGHT_PX} is set). The default breakpoint
+     * value if this Intent Extra is not set is 840dp.
+     *
+     * If x is set to < 600dp it will automatically be defaulted to 600dp.
      */
     public static final String EXTRA_ACTIVITY_SIDE_SHEET_BREAKPOINT_DP =
             "androidx.browser.customtabs.extra.ACTIVITY_SIDE_SHEET_BREAKPOINT_DP";

@@ -29,6 +29,7 @@ import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.P
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_HEIGHT_LANDSCAPE;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_WIDTH;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_WIDTH_LANDSCAPE;
+import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.DEVICE_WIDTH_MEDIUM;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.FULL_HEIGHT;
 import static org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTestRule.NAVBAR_HEIGHT;
 
@@ -61,7 +62,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @LooperMode(Mode.PAUSED)
 @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
 public class PartialCustomTabSideSheetStrategyTest {
-    private static final float MINIMAL_WIDTH_RATIO = 0.33f;
+    private static final float MINIMAL_WIDTH_RATIO_EXPANDED = 0.33f;
+    private static final float MINIMAL_WIDTH_RATIO_MEDIUM = 0.5f;
     private static final boolean RTL = true;
     private static final boolean LTR = false;
     private static final boolean RIGHT = true;
@@ -140,14 +142,25 @@ public class PartialCustomTabSideSheetStrategyTest {
     }
 
     @Test
-    public void create_smallWidthLandscape() {
+    public void create_smallWidthLandscape_Expanded() {
         mPCCTTestRule.configLandscapeMode();
         createPcctSideSheetStrategy(100);
         mPCCTTestRule.verifyWindowFlagsSet();
 
         assertTabIsAtFullLandscapeHeight();
         assertEquals("Side-sheet has wrong width",
-                (int) (DEVICE_WIDTH_LANDSCAPE * MINIMAL_WIDTH_RATIO),
+                (int) (DEVICE_WIDTH_LANDSCAPE * MINIMAL_WIDTH_RATIO_EXPANDED),
+                mPCCTTestRule.mAttributeResults.get(0).width);
+    }
+
+    @Test
+    public void create_smallWidthLandscape_Medium() {
+        mPCCTTestRule.configDeviceWidthMedium();
+        createPcctSideSheetStrategy(100);
+        mPCCTTestRule.verifyWindowFlagsSet();
+
+        assertEquals("Side-sheet has wrong width",
+                (int) (DEVICE_WIDTH_MEDIUM * MINIMAL_WIDTH_RATIO_MEDIUM),
                 mPCCTTestRule.mAttributeResults.get(0).width);
     }
 

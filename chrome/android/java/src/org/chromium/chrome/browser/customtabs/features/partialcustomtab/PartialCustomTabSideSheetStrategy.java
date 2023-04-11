@@ -42,7 +42,9 @@ import org.chromium.ui.base.LocalizationUtils;
  * class should be owned by the CustomTabActivity.
  */
 public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrategy {
-    private static final float MINIMAL_WIDTH_RATIO = 0.33f;
+    private static final int WINDOW_WIDTH_EXPANDED_CUTOFF_DP = 840;
+    private static final float MINIMAL_WIDTH_RATIO_EXPANDED = 0.33f;
+    private static final float MINIMAL_WIDTH_RATIO_MEDIUM = 0.5f;
     private static final NoAnimator NO_ANIMATOR = new NoAnimator();
 
     private final @Px int mUnclampedInitialWidth;
@@ -335,8 +337,12 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     }
 
     private int calculateWidth(int unclampedWidth) {
-        int width = mVersionCompat.getDisplayWidth();
-        return MathUtils.clamp(unclampedWidth, width, (int) (width * MINIMAL_WIDTH_RATIO));
+        int displayWidth = mVersionCompat.getDisplayWidth();
+        int displayWidthDp = mVersionCompat.getDisplayWidthDp();
+        float minWidthRatio = displayWidthDp < WINDOW_WIDTH_EXPANDED_CUTOFF_DP
+                ? MINIMAL_WIDTH_RATIO_MEDIUM
+                : MINIMAL_WIDTH_RATIO_EXPANDED;
+        return MathUtils.clamp(unclampedWidth, displayWidth, (int) (displayWidth * minWidthRatio));
     }
 
     private float calculateElevation() {

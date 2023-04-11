@@ -107,8 +107,16 @@ public class PartialCustomTabDisplayManagerTest {
     }
 
     @Test
+    public void create_FullSize_WidthSetCompactDevice() {
+        mPCCTTestRule.configCompactDevice();
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(0, 500);
+        assertEquals("Full-Size PCCT should be created", PartialCustomTabType.FULL_SIZE,
+                displayManager.getActiveStrategyType());
+    }
+
+    @Test
     public void create_SideSheet_WidthSetHeightNot_BelowBreakpoint() {
-        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(0, 100);
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(0, 800);
         assertEquals("Full-Size PCCT should be created", PartialCustomTabType.FULL_SIZE,
                 displayManager.getActiveStrategyType());
     }
@@ -117,6 +125,8 @@ public class PartialCustomTabDisplayManagerTest {
     public void create_SideSheet_WidthSetHeightNot_AboveBreakpoint() {
         PartialCustomTabDisplayManager displayManager =
                 createPcctDisplayManager(0, 2000, 840, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT);
+        assertEquals(
+                "Breakpoint value is incorrect", 840, displayManager.getBreakPointDpForTesting());
         assertEquals("Side-Sheet PCCT should be created", PartialCustomTabType.SIDE_SHEET,
                 displayManager.getActiveStrategyType());
     }
@@ -127,6 +137,17 @@ public class PartialCustomTabDisplayManagerTest {
         PartialCustomTabDisplayManager displayManager = createPcctDisplayManager();
 
         assertEquals("Side-Sheet PCCT should be created", PartialCustomTabType.SIDE_SHEET,
+                displayManager.getActiveStrategyType());
+    }
+
+    @Test
+    public void create_BottomSheet_HeightWidthSet_Compact() {
+        mPCCTTestRule.configCompactDevice();
+        PartialCustomTabDisplayManager displayManager = createPcctDisplayManager(
+                350, 450, 400, ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DEFAULT);
+        assertEquals(
+                "Breakpoint value is incorrect", 600, displayManager.getBreakPointDpForTesting());
+        assertEquals("Bottom-Sheet PCCT should be created", PartialCustomTabType.BOTTOM_SHEET,
                 displayManager.getActiveStrategyType());
     }
 
