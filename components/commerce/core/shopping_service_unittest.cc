@@ -22,6 +22,7 @@
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/search/ntp_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using optimization_guide::OptimizationGuideDecision;
@@ -111,6 +112,27 @@ TEST_F(ShoppingServiceTest, TestProductInfoResponse) {
             run_loop->Quit();
           },
           &run_loop));
+  run_loop.Run();
+}
+
+// Test that the product info api fails gracefully (callback run with nullopt)
+// if it is disabled.
+TEST_F(ShoppingServiceTest, TestProductInfoResponse_ApiDisabled) {
+  // Ensure a feature that uses product info is disabled.
+  test_features_.InitWithFeatures({},
+                                  {kShoppingList, kShoppingListRegionLaunched,
+                                   ntp_features::kNtpChromeCartModule});
+
+  base::RunLoop run_loop;
+  shopping_service_->GetProductInfoForUrl(
+      GURL(kProductUrl), base::BindOnce(
+                             [](base::RunLoop* run_loop, const GURL& url,
+                                const absl::optional<ProductInfo>& info) {
+                               ASSERT_EQ(kProductUrl, url.spec());
+                               ASSERT_FALSE(info.has_value());
+                               run_loop->Quit();
+                             },
+                             &run_loop));
   run_loop.Run();
 }
 
@@ -379,6 +401,24 @@ TEST_F(ShoppingServiceTest, TestMerchantInfoResponse) {
             run_loop->Quit();
           },
           &run_loop));
+  run_loop.Run();
+}
+
+// Test that the merchant info fails gracefully when the api is disabled.
+TEST_F(ShoppingServiceTest, TestMerchantInfoResponse_ApiDisabled) {
+  // Ensure a feature that uses merchant info is disabled.
+  test_features_.InitAndDisableFeature(kCommerceMerchantViewer);
+
+  base::RunLoop run_loop;
+  shopping_service_->GetMerchantInfoForUrl(
+      GURL(kMerchantUrl), base::BindOnce(
+                              [](base::RunLoop* run_loop, const GURL& url,
+                                 absl::optional<MerchantInfo> info) {
+                                ASSERT_EQ(kMerchantUrl, url.spec());
+                                ASSERT_FALSE(info.has_value());
+                                run_loop->Quit();
+                              },
+                              &run_loop));
   run_loop.Run();
 }
 

@@ -310,11 +310,11 @@ void ShoppingService::PDPMetricsCallback(
 
 void ShoppingService::GetProductInfoForUrl(const GURL& url,
                                            ProductInfoCallback callback) {
-  if (!opt_guide_)
+  if (!opt_guide_ || !IsProductInfoApiEnabled()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), url, absl::nullopt));
     return;
-
-  // Crash if this API is used without a valid experiment.
-  CHECK(IsProductInfoApiEnabled());
+  }
 
   const ProductInfo* cached_info = GetFromProductInfoCache(url);
   if (cached_info) {
@@ -381,11 +381,11 @@ size_t ShoppingService::GetMaxProductBookmarkUpdatesPerBatch() {
 
 void ShoppingService::GetMerchantInfoForUrl(const GURL& url,
                                             MerchantInfoCallback callback) {
-  if (!opt_guide_)
+  if (!opt_guide_ || !IsMerchantViewerEnabled()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), url, absl::nullopt));
     return;
-
-  // Crash if this API is used without a valid experiment.
-  CHECK(IsMerchantViewerEnabled());
+  }
 
   opt_guide_->CanApplyOptimization(
       url,
