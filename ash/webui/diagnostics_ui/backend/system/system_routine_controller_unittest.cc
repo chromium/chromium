@@ -1045,4 +1045,13 @@ TEST_F(SystemRoutineControllerTest, SendRoutineResultDoesNotCrash) {
   EXPECT_TRUE(routine_runner->result.is_null());
 }
 
+TEST_F(SystemRoutineControllerTest,
+       SendRoutineResultWithNullRunnerDoesNotCrash) {
+  // Intentionally do not initialize routine_runner.
+  EXPECT_NO_FATAL_FAILURE(CallSendRoutineResult(mojom::RoutineResultInfo::New(
+      mojom::RoutineType::kCpuStress,
+      mojom::RoutineResult::NewSimpleResult(
+          mojom::StandardRoutineResult::kTestPassed))));
+}
+
 }  // namespace ash::diagnostics
