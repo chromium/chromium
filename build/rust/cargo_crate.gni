@@ -90,8 +90,17 @@ template("cargo_crate") {
       _tempepoch = string_replace(invoker.epoch, ".", "_")
       _epochlabel = "v${_tempepoch}"
     }
-    build_script_name =
+
+    # This name includes the target name to ensure it's unique for each possible
+    # build target in the same BUILD.gn file.
+    _build_script_name =
         "${_crate_name}_${target_name}_${_epochlabel}_build_script"
+
+    # Where the OUT_DIR will point when running the build script exe, and
+    # compiling the crate library/binaries. This directory must include the
+    # target name to avoid collisions between multiple GN targets that exist
+    # in the same BUILD.gn.
+    _build_script_env_out_dir = "$target_gen_dir/$target_name"
   }
 
   _rustenv = []
@@ -194,15 +203,6 @@ template("cargo_crate") {
         test_deps = invoker.dev_deps
       }
 
-      # Another copy of the `_build_script_env_out_dir` from the
-      # `${build_script_name}_output` target, which is where the OUT_DIR will
-      # point when running the build script exe. See the other definition of
-      # `_build_script_target_out_dir` for how this is constructed.
-      _build_script_target_out_dir =
-          get_label_info(":${build_script_name}_output", "target_out_dir")
-      _build_script_env_out_dir =
-          "$_build_script_target_out_dir/$_orig_target_name"
-
       # This... is a bit weird. We generate a file called cargo_flags.rs which
       # does not actually contain Rust code, but instead some flags to add
       # to the rustc command line. We need it to end in a .rs extension so that
@@ -227,16 +227,16 @@ template("cargo_crate") {
           inputs += [ "$_build_script_env_out_dir/$extra_source" ]
         }
       }
-      deps += [ ":${build_script_name}_output" ]
+      deps += [ ":${_build_script_name}_output" ]
     }
   }
 
   if (defined(invoker.build_root)) {
     # Extra targets required to make build script work
-    action("${build_script_name}_output") {
+    action("${_build_script_name}_output") {
       script = rebase_path("//build/rust/run_build_script.py")
       build_script_target =
-          ":${build_script_name}($host_toolchain_no_sanitizers)"
+          ":${_build_script_name}($host_toolchain_no_sanitizers)"
       deps = [ build_script_target ]
 
       # The build script output is always in the name-specific output dir. It
@@ -245,16 +245,11 @@ template("cargo_crate") {
       _build_script_target_out_dir =
           get_label_info(build_script_target, "target_out_dir")
       _build_script_exe =
-          "$_build_script_target_out_dir/$_orig_target_name/$build_script_name"
+          "$_build_script_target_out_dir/$_orig_target_name/$_build_script_name"
       if (is_win) {
         _build_script_exe = "${_build_script_exe}.exe"
       }
 
-      # Unlike the location of _build_script_exe, the OUT_DIR when running the
-      # exe will always be in the target toolchain's output directory, under a
-      # unique directory for the GN target name to avoid collisions from a
-      # single BUILD.gn with multiple build scripts.
-      _build_script_env_out_dir = "$target_out_dir/$_orig_target_name"
       _flags_file = "$_build_script_env_out_dir/cargo_flags.rs"
 
       inputs = [ _build_script_exe ]
@@ -298,7 +293,7 @@ template("cargo_crate") {
     }
 
     if (current_toolchain == host_toolchain_no_sanitizers) {
-      rust_target(build_script_name) {
+      rust_target(_build_script_name) {
         target_type = "executable"
         sources = invoker.build_sources
         crate_root = invoker.build_root
@@ -308,7 +303,8 @@ template("cargo_crate") {
 
         # An rlib's build script may be built differently for tests and for
         # production, so they must be in a name specific to the GN target. The
-        # ${build_script_name}_output target looks for the exe in this location.
+        # ${_build_script_name}_output target looks for the exe in this
+        # location.
         output_dir = "$target_out_dir/$_orig_target_name"
         rustenv = _rustenv
         forward_variables_from(invoker,

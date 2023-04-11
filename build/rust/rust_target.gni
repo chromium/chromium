@@ -47,14 +47,12 @@ template("rust_target") {
   if (defined(invoker.output_dir) && invoker.output_dir != "") {
     # This is where the build target (.exe, .rlib, etc) goes.
     _output_dir = invoker.output_dir
-
-    # This is where the OUT_DIR environment variable points to when running a
-    # build script and when compiling the build target, for consuming generated
-    # files.
-    _env_out_dir = invoker.output_dir
-  } else {
-    _env_out_dir = target_out_dir
   }
+
+  # This is where the OUT_DIR environment variable points to when running a
+  # build script and when compiling the build target, for consuming generated
+  # files.
+  _env_out_dir = "$target_gen_dir/$_target_name"
 
   _allow_unsafe = false
   if (defined(invoker.allow_unsafe)) {
