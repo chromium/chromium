@@ -341,6 +341,7 @@ crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] conforma
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/oes-texture-half-float-linear.html [ Slow ]
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Slow ]
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/reading/read-pixels-test.html [ Slow ]
+crbug.com/1426916 [ win angle-swiftshader ] conformance/reading/read-pixels-test.html [ Slow ]
 
 ###################
 # Failures/Flakes #
