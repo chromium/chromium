@@ -111,10 +111,9 @@ export class FileHandlerPageElement extends HTMLElement {
           localHandlerCard.$('#container')!.classList.add('round-bottom');
         }
         this.addLocalHandlerCard(localHandlerCard);
-
-        // Set local tasks to indicate completion (used in tests).
-        this.localTasks = dialogArgs.args.localTasks;
       }
+      // Set local tasks to indicate completion (used in tests).
+      this.localTasks = dialogArgs.args.localTasks;
     } catch (e) {
       // TODO(b:243095484) Define expected behavior.
       console.error(
