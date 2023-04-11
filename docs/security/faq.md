@@ -419,6 +419,15 @@ security bugs. A read or write to the NULL page results in a non-exploitable cra
 If the offset is larger than a page, or if there's uncertainty about whether the
 offset is controllable, it is considered a security bug.
 
+<a name="TOC-Indexing-a-container-out-of-bounds-hits-a-libcpp-verbose-abort--is-this-a-security-bug-"></a>
+### Indexing a container out of bounds hits a __libcpp_verbose_abort, is this a security bug?
+
+`std::vector` and other containers are now protected by libc++ hardening on all
+platforms [crbug.com/1335422](https://crbug.com/1335422). Indexing these
+containers out of bounds is now a safe crash - if a proof-of-concept reliably
+causes a crash in production builds we consider these to be functional rather than
+security issues.
+
 <a name="TOC-Are-stack-overflows-considered-security-bugs-"></a>
 ### Are stack overflows considered security bugs?
 
