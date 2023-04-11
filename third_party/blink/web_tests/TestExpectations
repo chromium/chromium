@@ -6704,3 +6704,9 @@ crbug.com/1416271 external/wpt/js-self-profiling/time-domain.window.html [ Crash
 
 # Flake 2023-04-07
 crbug.com/1431272 [ Win ] external/wpt/cookies/attributes/domain.sub.html [ Pass Timeout ]
+
+# Sheriff 2023-04-11
+crbug.com/1432100 [ Linux ] inspector-protocol/memory/sampling-native-snapshot.js [ Failure Pass ]
+crbug.com/1432100 [ Linux ] inspector-protocol/memory/sampling-native-profile.js [ Failure Pass ]
+crbug.com/1432100 [ Linux ] inspector-protocol/memory/sampling-native-profile-partition-alloc.js [ Failure Pass ]
+crbug.com/1432100 [ Linux ] inspector-protocol/memory/sampling-native-profile-blink-gc.js [ Failure Pass ]
