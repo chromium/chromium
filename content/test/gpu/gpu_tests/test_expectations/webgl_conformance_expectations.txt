@@ -343,6 +343,9 @@ crbug.com/1426916 [ chromeos chromeos-board-amd64-generic no-passthrough ] confo
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/reading/read-pixels-test.html [ Slow ]
 crbug.com/1426916 [ win angle-swiftshader ] conformance/reading/read-pixels-test.html [ Slow ]
 
+# Timeouts on Windows + debug + VANGLE
+crbug.com/1432294 [ debug angle-vulkan passthrough win ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Slow ]
+
 ###################
 # Failures/Flakes #
 ###################
