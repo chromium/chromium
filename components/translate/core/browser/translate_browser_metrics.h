@@ -143,9 +143,6 @@ void ReportTranslateHrefHintStatus(HrefTranslateStatus status);
 void ReportTranslateHrefHintPrefsFilterStatus(
     HrefTranslatePrefsFilterStatus status);
 
-// Called when Chrome Translate target language is determined.
-void ReportTranslateTargetLanguageOrigin(TargetLanguageOrigin origin);
-
 }  // namespace TranslateBrowserMetrics
 
 }  // namespace translate

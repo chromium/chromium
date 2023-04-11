@@ -804,6 +804,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.TargetLanguage.Origin"
     enum="TranslateTargetLanguageOrigin" expires_after="2023-03-19">
+  <obsolete>
+    Replaced by Translate.PageLoad.InitialTargetLanguage.Origin in M114.
+  </obsolete>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
