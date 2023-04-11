@@ -77,9 +77,9 @@ bool FromProto(
 
   output.reserve(input.values_size());
   for (const auto& entry : input.values()) {
-    {{mojom_type}} value;
+    {{mojom_type}} value{ {{- kind.kind|default_constructor_args -}} };
 {%-   if kind.kind|is_nullable_kind %}
-    {{mojom_maybe_type}} maybe_value;
+    {{mojom_maybe_type}} maybe_value{ {{- kind.kind|default_constructor_args -}} };
     if (FromProto(entry.value(), maybe_value)) {
       value = std::move(maybe_value);
     }
@@ -130,9 +130,9 @@ bool FromProto(
   bool result = true;
   for (const auto& entry : input.values()) {
 {%-   if kind.value_kind|is_nullable_kind %}
-    {{mojom_key_type}} key;
-    {{mojom_value_type}} value;
-    {{mojom_maybe_value_type}} maybe_value;
+    {{mojom_key_type}} key{ {{- kind.key_kind|default_constructor_args -}} };
+    {{mojom_value_type}} value{ {{- kind.value_kind|default_constructor_args -}} };
+    {{mojom_maybe_value_type}} maybe_value{ {{- kind.value_kind|default_constructor_args -}} };
 
     if (FromProto(entry.key(), key)) {
       if (FromProto(entry.value(), maybe_value)) {
@@ -144,8 +144,8 @@ bool FromProto(
       break;
     }
 {%-   else %}
-    {{mojom_key_type}} key;
-    {{mojom_value_type}} value;
+    {{mojom_key_type}} key{ {{- kind.key_kind|default_constructor_args -}} };
+    {{mojom_value_type}} value{ {{- kind.value_kind|default_constructor_args -}} };
 
     if (FromProto(entry.key(), key)
         && FromProto(entry.value(), value)) {
