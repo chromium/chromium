@@ -2375,6 +2375,9 @@ TEST_F(PrivacySandboxServiceTest, SampleFpsData) {
   EXPECT_EQ(u"google.com",
             privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
                 GURL("https://youtube.com")));
+  EXPECT_EQ(u"münchen.de",
+            privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
+                GURL("https://muenchen.de")));
   EXPECT_EQ(absl::nullopt,
             privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
                 GURL("https://example.com")));
