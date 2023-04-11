@@ -24,7 +24,8 @@ class WebState;
 
 // Designated initializer.
 - (instancetype)initWithWebState:(web::WebState*)webState
-                           tabID:(NSString*)tabID NS_DESIGNATED_INITIALIZER;
+              snapshotIdentifier:(NSString*)snapshotIdentifier
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -53,11 +54,23 @@ class WebState;
 // snapshot image.
 - (UIImage*)generateSnapshotWithOverlays:(BOOL)shouldAddOverlay;
 
+// Hint that the snapshot will likely be saved to disk when the application is
+// backgrounded.  The snapshot is then saved in memory, so it does not need to
+// be read off disk.
+- (void)willBeSavedGreyWhenBackgrounding;
+
+// Write a grey copy of the snapshot to disk, but if and only if a color
+// version of the snapshot already exists in memory or on disk.
+- (void)saveGreyInBackground;
+
 // Requests deletion of the current page snapshot from disk and memory.
 - (void)removeSnapshot;
 
 // The SnapshotGenerator delegate.
 @property(nonatomic, weak) id<SnapshotGeneratorDelegate> delegate;
+
+// The snapshot identifier.
+@property(nonatomic, readonly) NSString* snapshotIdentifier;
 
 @end
 

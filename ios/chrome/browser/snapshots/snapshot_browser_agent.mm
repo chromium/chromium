@@ -113,7 +113,8 @@ NSSet<NSString*>* SnapshotBrowserAgent::GetTabIDs() {
       [NSMutableSet setWithCapacity:web_state_list->count()];
   for (int index = 0; index < web_state_list->count(); ++index) {
     web::WebState* web_state = web_state_list->GetWebStateAt(index);
-    [tab_ids addObject:web_state->GetStableIdentifier()];
+    [tab_ids addObject:SnapshotTabHelper::FromWebState(web_state)
+                           ->GetSnapshotIdentifier()];
   }
   return tab_ids;
 }
