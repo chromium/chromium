@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/cocoa/history_menu_bridge.h"
 
 #include <stddef.h>
+#include <string>
 
 #include "base/functional/bind.h"
 #include "base/mac/foundation_util.h"
@@ -188,6 +189,14 @@ void HistoryMenuBridge::TabRestoreServiceDestroyed(
   DCHECK_EQ(service, tab_restore_service_);
   tab_restore_service_observation_.Reset();
   tab_restore_service_ = nullptr;
+}
+
+void HistoryMenuBridge::TabRestoreServiceLoaded(
+    sessions::TabRestoreService* service) {
+  // `TabRestoreServiceChanged()` is not called if the tab restore service is
+  // empty when it is loaded. The menu still needs to be updated and
+  // `tab_restore_service_keep_alive_` must be released.
+  TabRestoreServiceChanged(service);
 }
 
 void HistoryMenuBridge::ResetMenu() {

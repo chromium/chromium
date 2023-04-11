@@ -217,6 +217,9 @@ class HistoryMenuBridgeLifetimeTest : public testing::Test {
                            NSInteger index) {
     bridge->AddItemToMenu(std::move(item), menu, tag, index);
   }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 void CheckMenuItemVisibility(HistoryMenuBridgeTest* test, bool is_incognito) {
@@ -575,7 +578,6 @@ TEST_F(HistoryMenuBridgeTest, MenuItemVisibilityForIncognitoMode) {
 
 // Does a full setup and tear down of the bridge.
 TEST_F(HistoryMenuBridgeLifetimeTest, ShutdownAfterProfile) {
-  content::BrowserTaskEnvironment task_environment;
   TestingProfile::Builder profile_builder;
   profile_builder.AddTestingFactory(
       TabRestoreServiceFactory::GetInstance(),
@@ -592,7 +594,6 @@ TEST_F(HistoryMenuBridgeLifetimeTest, ShutdownAfterProfile) {
 
 // Does a full setup and tear down of the bridge.
 TEST_F(HistoryMenuBridgeLifetimeTest, ShutdownBeforeProfile) {
-  content::BrowserTaskEnvironment task_environment;
   TestingProfile::Builder profile_builder;
   profile_builder.AddTestingFactory(
       TabRestoreServiceFactory::GetInstance(),
@@ -608,7 +609,6 @@ TEST_F(HistoryMenuBridgeLifetimeTest, ShutdownBeforeProfile) {
 // Initializes the menu, then destroys the Profile but keeps the
 // HistoryMenuBridge around.
 TEST_F(HistoryMenuBridgeLifetimeTest, StillValidAfterProfileShutdown) {
-  content::BrowserTaskEnvironment task_environment;
   TestingProfile::Builder profile_builder;
   profile_builder.AddTestingFactory(FaviconServiceFactory::GetInstance(),
                                     FaviconServiceFactory::GetDefaultFactory());
@@ -677,6 +677,39 @@ TEST_F(HistoryMenuBridgeLifetimeTest, StillValidAfterProfileShutdown) {
 
   bridge.reset();
   [NSApp setDelegate:nil];
+}
+
+TEST_F(HistoryMenuBridgeLifetimeTest, EmptyTabRestoreService) {
+  TestingProfile::Builder profile_builder;
+  profile_builder.AddTestingFactory(FaviconServiceFactory::GetInstance(),
+                                    FaviconServiceFactory::GetDefaultFactory());
+  profile_builder.AddTestingFactory(
+      TabRestoreServiceFactory::GetInstance(),
+      TabRestoreServiceFactory::GetDefaultFactory());
+  profile_builder.AddTestingFactory(HistoryServiceFactory::GetInstance(),
+                                    HistoryServiceFactory::GetDefaultFactory());
+  std::unique_ptr<TestingProfile> profile = profile_builder.Build();
+  base::FilePath profile_dir = profile->GetPath();
+
+  auto bridge = std::make_unique<MockBridge>(profile.get());
+  NSMenu* menu = HistoryMenu(bridge.get());
+
+  // Prepopulate the menu with some recently closed item.
+  AddItemToBridgeMenu(bridge.get(), CreateItem(u"http://foo/"), menu,
+                      HistoryMenuBridge::kRecentlyClosed, 0);
+  EXPECT_EQ(1, [menu numberOfItems]);
+
+  // Load an empty `TabRestoreService`. `TabRestoreServiceChanged()` is not
+  // called because the service is empty.
+  std::unique_ptr<MockTRS> trs(new MockTRS(profile.get()));
+  MockTRS::Entries no_entries;
+  EXPECT_CALL(*trs.get(), entries()).WillOnce(testing::ReturnRef(no_entries));
+  bridge->TabRestoreServiceLoaded(trs.get());
+
+  // Recently closed tabs are removed.
+  EXPECT_EQ(0, [menu numberOfItems]);
+
+  bridge.reset();
 }
 
 }  // namespace

@@ -139,6 +139,7 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   void TabRestoreServiceChanged(sessions::TabRestoreService* service) override;
   void TabRestoreServiceDestroyed(
       sessions::TabRestoreService* service) override;
+  void TabRestoreServiceLoaded(sessions::TabRestoreService* service) override;
 
   // MainMenuItem:
   void ResetMenu() override;
