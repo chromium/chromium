@@ -96854,6 +96854,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="Loop exception"/>
 </enum>
 
+<enum name="SplitViewSwapWindowsSource">
+  <int value="0" label="Double tap"/>
+  <int value="1" label="Swap windows button"/>
+</enum>
+
 <enum name="SqliteErrorCode">
   <summary>Error codes returned by SQLite - see sqlite3.h</summary>
   <int value="0" label="SQLITE_OK">Successful result</int>

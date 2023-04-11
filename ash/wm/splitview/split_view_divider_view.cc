@@ -185,7 +185,8 @@ void SplitViewDividerView::OnMouseReleased(const ui::MouseEvent& event) {
   split_view_controller_->EndResizeWithDivider(location);
   OnResizeStatusChanged();
   if (event.GetClickCount() == 2) {
-    split_view_controller_->SwapWindows();
+    split_view_controller_->SwapWindows(
+        SplitViewController::SwapWindowsSource::kDoubleTap);
   }
 }
 
@@ -195,7 +196,8 @@ void SplitViewDividerView::OnGestureEvent(ui::GestureEvent* event) {
   switch (event->type()) {
     case ui::ET_GESTURE_TAP:
       if (event->details().tap_count() == 2) {
-        split_view_controller_->SwapWindows();
+        split_view_controller_->SwapWindows(
+            SplitViewController::SwapWindowsSource::kDoubleTap);
       }
       break;
     case ui::ET_GESTURE_TAP_DOWN:

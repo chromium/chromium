@@ -55,7 +55,8 @@ class SnapGroupExpandedMenuView : public views::View {
   // shown on the other half of the screen.
   void OnUpdateSecondaryWindowButtonPressed();
 
-  // Child views of this class, which are listed from top to bottom.
+  // Child views of this class, which are listed from top to bottom (horizontal
+  // screen orientation) or left to right (vertical screen orientation).
   IconButton* swap_windows_button_;
   IconButton* update_primary_window_button_;
   IconButton* update_secondary_window_button_;

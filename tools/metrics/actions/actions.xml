@@ -32872,6 +32872,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SplitView_SwapWindowsButtonSwapWindows">
+  <owner>michelefan@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <description>
+    Recorded when the user clicks on the swap windows button in the expanded
+    menu shown on the kebab button toggled in Chrome OS.
+  </description>
+</action>
+
 <action name="SSL.DisplayedInsecureContent" not_user_triggered="true">
   <obsolete>Deprecated 02/2017</obsolete>
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>

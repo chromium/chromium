@@ -7,12 +7,14 @@
 #include <memory>
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/icon_button.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_lock_or_unlock_button.h"
 #include "ash/wm/splitview/split_view_constants.h"
+#include "ash/wm/splitview/split_view_controller.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -29,6 +31,10 @@ namespace {
 
 constexpr auto kExpandedMenuPadding = gfx::Insets::VH(8, 3);
 constexpr int kSpaceBetweenButton = 3;
+
+SplitViewController* split_view_controller() {
+  return SplitViewController::Get(Shell::GetPrimaryRootWindow());
+}
 
 }  // namespace
 
@@ -81,18 +87,18 @@ SnapGroupExpandedMenuView::SnapGroupExpandedMenuView(SnapGroup* snap_group)
 SnapGroupExpandedMenuView::~SnapGroupExpandedMenuView() = default;
 
 void SnapGroupExpandedMenuView::OnUpdatePrimaryWindowButtonPressed() {
-  // TODO(b/267663000): Implement this function.
-  base::DoNothing();
+  split_view_controller()->OpenOverviewOnTheOtherSideOfTheScreen(
+      SplitViewController::SnapPosition::kSecondary);
 }
 
 void SnapGroupExpandedMenuView::OnUpdateSecondaryWindowButtonPressed() {
-  // TODO(b/267663000): Implement this function.
-  base::DoNothing();
+  split_view_controller()->OpenOverviewOnTheOtherSideOfTheScreen(
+      SplitViewController::SnapPosition::kPrimary);
 }
 
 void SnapGroupExpandedMenuView::OnSwapWindowsButtonPressed() {
-  // TODO(b/267663000): Implement this function.
-  base::DoNothing();
+  split_view_controller()->SwapWindows(
+      SplitViewController::SwapWindowsSource::kSnapGroupSwapWindowsButton);
 }
 
 BEGIN_METADATA(SnapGroupExpandedMenuView, views::View)

@@ -5496,6 +5496,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.SplitView.SwapWindowSource"
+    enum="SplitViewSwapWindowsSource" expires_after="2024-04-10">
+  <owner>michelefan@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    Recorded whenever two windows in split view are swapped. The recorded enum
+    indicates where the swap operation is triggered, which can either be from
+    double tap or swap button on the snap group expanded menu.
+  </summary>
+</histogram>
+
 <histogram name="Ash.SplitView.TimeInMultiDisplaySplitView" units="ms"
     expires_after="2023-07-02">
   <owner>xdai@chromium.org</owner>
