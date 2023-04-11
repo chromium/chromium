@@ -12,53 +12,50 @@
     "//build/config/fuchsia/test/chromium_system_test_facet.shard.test-cml",
     "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml",
     "sys/component/realm_builder_absolute.shard.cml",
+
     "syslog/client.shard.cml",
   ],
   program: {
     binary: "cast_streaming_shell_exe",
   },
-  use: [
+  offer: [
     {
+      // Required capabilities for WebInstanceHost in a child Component.
       protocol: [
-        "fuchsia.accessibility.semantics.SemanticsManager",
-        "fuchsia.buildinfo.Provider",
-        "fuchsia.device.NameProvider",
-        "fuchsia.fonts.Provider",
-        "fuchsia.intl.PropertyProvider",
-        "fuchsia.kernel.VmexResource",
-        "fuchsia.logger.LogSink",
-        "fuchsia.media.Audio",
-        "fuchsia.media.AudioDeviceEnumerator",
-        "fuchsia.media.ProfileProvider",
-        "fuchsia.media.SessionAudioConsumerFactory",
-        "fuchsia.mediacodec.CodecFactory",
-        "fuchsia.memorypressure.Provider",
-        "fuchsia.net.interfaces.State",
-        "fuchsia.net.name.Lookup",
-        "fuchsia.posix.socket.Provider",
-        "fuchsia.process.Launcher",
-        "fuchsia.sysmem.Allocator",
-        "fuchsia.ui.composition.Allocator",
-        "fuchsia.ui.composition.Flatland",
-        "fuchsia.ui.scenic.Scenic",
+        "fuchsia.feedback.ComponentDataRegister",
+        "fuchsia.feedback.CrashReportingProductRegister",
       ],
+      from: "parent",
+      to: "#realm_builder",
     },
+
+    // Offered for use by the relaunched
+    // `fuchsia_web/shell/web_engine_shell_for_web_instance_host.cml`
+    // TODO(crbug.com/1410937): Remove when running as a non-test component and
+    // thus the relaunch is no longer needed.
     {
       protocol: [
+        // Required to display the View in Scene Manager unless running in
+        // `--headless` mode.
         "fuchsia.element.GraphicalPresenter",
-        "fuchsia.tracing.perfetto.ProducerConnector",
 
-        // TODO(crbug.com/1402457): Remove fuchsia.ui.policy.Presenter.
+        // Required to display the View in Root Presenter unless running in
+        // `--headless` mode.
+        // TODO(crbug.com/1402457): Remove after transition is complete.
         "fuchsia.ui.policy.Presenter",
       ],
+      from: "parent",
+      to: "#realm_builder",
       availability: "optional",
     },
-  ],
-  offer: [
-    // The chromium test realm offers the system-wide config-data dir to test
-    // components. Route the web_engine sub-directory of this as required by
-    // WebInstanceHost.
+
+    // The remaining are offered from the parent to `web_instance.cm` via
+    // `RealmBuilder` when not in `--use-context-provider` mode.
+
     {
+      // The chromium test realm offers the system-wide config-data dir to test
+      // components. Route the web_engine sub-directory of this as required by
+      // WebInstanceHost.
       directory: "config-data",
       from: "parent",
       as: "config-data-for-web-instance",
@@ -66,38 +63,21 @@
       subdir: "web_engine",
       availability: "optional",
     },
-
-    // Required on account of fuchsia.web/ContextFeatureFlags.NETWORK.
     {
+      // Required by `fuchsia.web/ContextFeatureFlags.NETWORK`.
       directory: "root-ssl-certificates",
       from: "parent",
       to: "#realm_builder",
     },
-
-    // Protocols used directly by cast_streaming_shell_for_web_instance_host.cm.
     {
-      protocol: [
-        "fuchsia.element.GraphicalPresenter",
-
-        // TODO(crbug.com/1402457): Remove fuchsia.ui.policy.Presenter.
-        "fuchsia.ui.policy.Presenter",
-      ],
-      from: "parent",
-      to: "#realm_builder",
-      availability: "optional",
-    },
-    {
+      // Required capabilities for all WebInstance configurations.
       protocol: [
         "fuchsia.buildinfo.Provider",
         "fuchsia.device.NameProvider",
-        "fuchsia.feedback.ComponentDataRegister",
-        "fuchsia.feedback.CrashReportingProductRegister",
         "fuchsia.fonts.Provider",
         "fuchsia.hwinfo.Product",
         "fuchsia.intl.PropertyProvider",
-        "fuchsia.kernel.VmexResource",
-        "fuchsia.logger.LogSink",
-        "fuchsia.media.ProfileProvider",
+        // "fuchsia.logger/LogSink", is included by the shard above.
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.sysmem.Allocator",
@@ -105,68 +85,70 @@
       from: "parent",
       to: "#realm_builder",
     },
-
-    // Required on account of fuchsia.web/ContextFeatureFlags.NETWORK.
     {
       protocol: [
+        // Allows CPU scheduling profiles to be applied to threads to
+        // tune their performance, especially for media rendering.
+        // TODO(crbug.com/1224707): Migrate to `fuchsia.scheduler`.
+        "fuchsia.media.ProfileProvider",
+
+        // Optionally used by the tracing service.
+        // TODO(crbug.com/1364196): Offer only when enabled.
+        "fuchsia.tracing.perfetto.ProducerConnector",
+      ],
+      from: "parent",
+      to: "#realm_builder",
+      availability: "optional",
+    },
+    {
+      protocol: [
+        // Required by `fuchsia.web/ContextFeatureFlags.NETWORK`.
         "fuchsia.net.interfaces.State",
         "fuchsia.net.name.Lookup",
         "fuchsia.posix.socket.Provider",
-      ],
-      from: "parent",
-      to: "#realm_builder",
-    },
 
-    // Required on account of fuchsia.web/ContextFeatureFlags.AUDIO.
-    {
-      protocol: [
+        // Required by `fuchsia.web/ContextFeatureFlags.AUDIO`.
         "fuchsia.media.Audio",
         "fuchsia.media.AudioDeviceEnumerator",
         "fuchsia.media.SessionAudioConsumerFactory",
-      ],
-      from: "parent",
-      to: "#realm_builder",
-    },
 
-    // Required on account of fuchsia.web/ContextFeatureFlags.VULKAN
-    {
-      protocol: [
+        // Required by `fuchsia.web/ContextFeatureFlags.VULKAN`.
+        // "fuchsia.tracing.provider.Registry" is optionally used by the
+        // tracing service.
         "fuchsia.tracing.provider.Registry",
         "fuchsia.vulkan.loader.Loader",
+
+        // Required by `fuchsia.web/ContextFeatureFlags.HARDWARE_VIDEO_DECODER`.
+        "fuchsia.mediacodec.CodecFactory",
       ],
       from: "parent",
       to: "#realm_builder",
     },
-
-    // Required on account of
-    // fuchsia.web/ContextFeatureFlags.HARDWARE_VIDEO_DECODER.
-    {
-      protocol: [ "fuchsia.mediacodec.CodecFactory" ],
-      from: "parent",
-      to: "#realm_builder",
-    },
-
-    // Required on account of no fuchsia.web/ContextFeatureFlags.HEADLESS
     {
       protocol: [
+        // Required by the absence of
+        // `fuchsia.web/ContextFeatureFlags.HEADLESS`.
         "fuchsia.accessibility.semantics.SemanticsManager",
         "fuchsia.ui.composition.Allocator",
         "fuchsia.ui.composition.Flatland",
+        // TODO(crbug.com/1427170): Remove Scenic after migration is complete.
         "fuchsia.ui.scenic.Scenic",
       ],
       from: "parent",
       to: "#realm_builder",
     },
-
-    // Optional capabilities, dependent on availability of tracing services.
     {
-      protocol: "fuchsia.tracing.perfetto.ProducerConnector",
+      protocol: [
+        // Required by the absence of
+        // `fuchsia.web/ContextFeatureFlags.DISABLE_DYNAMIC_CODE_GENERATION`.
+        "fuchsia.kernel.VmexResource",
+      ],
       from: "parent",
       to: "#realm_builder",
-      availability: "optional",
     },
   ],
   facets: {
+    // TODO(crbug.com/1410937): Remove when converting to a non-test component.
     "fuchsia.test": {
       "deprecated-allowed-packages": [ "web_engine" ],
     },
