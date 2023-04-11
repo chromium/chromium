@@ -2886,7 +2886,9 @@ TEST_F(BrowserAccessibilityWinTest, TestNewMisspellingsInSimpleTextFields) {
                                    marker_ends);
   ui::AXTree* tree = const_cast<ui::AXTree*>(manager->ax_tree());
   ASSERT_NE(nullptr, tree);
-  ASSERT_TRUE(tree->Unserialize(MakeAXTreeUpdateForTesting(static_text2)));
+  ui::AXTreeUpdate update = MakeAXTreeUpdateForTesting(static_text2);
+  update.tree_data.tree_id = manager->GetTreeID();
+  ASSERT_TRUE(tree->Unserialize(update));
 
   // Ensure that value1 is still not marked misspelled.
   for (LONG offset = 0; offset < value1_length; ++offset) {

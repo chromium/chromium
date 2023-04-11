@@ -14831,6 +14831,13 @@ void RenderFrameHostImpl::SetEmbeddingToken(
       lifecycle_state_ != LifecycleStateImpl::kPrerendering) {
     outermost->UpdateAXTreeData();
   }
+
+  // Finally, since the AXTreeID changed, we have to ensure the
+  // BrowserAccessibilityManager gets a new tree as well.
+  if (browser_accessibility_manager_) {
+    browser_accessibility_manager_->DetachFromParentManager();
+    browser_accessibility_manager_.reset();
+  }
 }
 
 bool RenderFrameHostImpl::DocumentUsedWebOTP() {

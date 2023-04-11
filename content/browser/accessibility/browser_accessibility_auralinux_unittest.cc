@@ -663,7 +663,9 @@ TEST_F(BrowserAccessibilityAuraLinuxTest,
   // which won't modify this.
   container.SetName("container");
   ui::AXTree* tree = const_cast<ui::AXTree*>(manager->ax_tree());
-  ASSERT_TRUE(tree->Unserialize(MakeAXTreeUpdateForTesting(container)));
+  ui::AXTreeUpdate container_update = MakeAXTreeUpdateForTesting(container);
+  container_update.tree_data.tree_id = tree->GetAXTreeID();
+  ASSERT_TRUE(tree->Unserialize(container_update));
   ASSERT_FALSE(combo_box_node->IsChildOfLeaf());
   ASSERT_EQ(original_atk_object, combo_box_node->GetNativeViewAccessible());
 
@@ -824,7 +826,9 @@ TEST_F(BrowserAccessibilityAuraLinuxTest, TextAtkStaticTextChange) {
 
   text.SetName("Text2");
   ui::AXTree* tree = const_cast<ui::AXTree*>(manager->ax_tree());
-  ASSERT_TRUE(tree->Unserialize(MakeAXTreeUpdateForTesting(text)));
+  ui::AXTreeUpdate text_update = MakeAXTreeUpdateForTesting(text);
+  text_update.tree_data.tree_id = manager->GetTreeID();
+  ASSERT_TRUE(tree->Unserialize(text_update));
 
   // The change to the static text node should have triggered an update of the
   // containing div's hypertext.
