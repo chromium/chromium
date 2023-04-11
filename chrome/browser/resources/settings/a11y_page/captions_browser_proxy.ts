@@ -9,7 +9,20 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
-import {LiveCaptionLanguageList} from './live_caption_section.js';
+/**
+ * |name| is the display name of a language, ex. German.
+ * |code| is the language code, ex. de-DE.
+ * |downloadProgress| is the display-friendly download progress as the language
+ *     model is being downloaded.
+ */
+export interface LiveCaptionLanguage {
+  displayName: string;
+  nativeDisplayName: string;
+  code: string;
+  downloadProgress: string;
+}
+
+export type LiveCaptionLanguageList = LiveCaptionLanguage[];
 
 export interface CaptionsBrowserProxy {
   /**

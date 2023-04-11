@@ -21,7 +21,7 @@ import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 
-import {CaptionsBrowserProxy, CaptionsBrowserProxyImpl} from './captions_browser_proxy.js';
+import {CaptionsBrowserProxy, CaptionsBrowserProxyImpl, LiveCaptionLanguage, LiveCaptionLanguageList} from './captions_browser_proxy.js';
 import {getTemplate} from './live_caption_section.html.js';
 
 // clang-format off
@@ -43,20 +43,6 @@ import {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 // </if>
 // clang-format on
 
-/**
- * |name| is the display name of a language, ex. German.
- * |code| is the language code, ex. de-DE.
- * |downloadProgress| is the display-friendly download progress as the language
- *     model is being downloaded.
- */
-interface LiveCaptionLanguage {
-  displayName: string;
-  nativeDisplayName: string;
-  code: string;
-  downloadProgress: string;
-}
-
-export type LiveCaptionLanguageList = LiveCaptionLanguage[];
 
 // <if expr="is_chromeos">
 const SettingsLiveCaptionElementBase =

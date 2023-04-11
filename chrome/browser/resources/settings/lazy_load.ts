@@ -91,8 +91,8 @@ export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_
 export {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 export {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 // <if expr="not is_chromeos">
-export {CaptionsBrowserProxy, CaptionsBrowserProxyImpl} from './a11y_page/captions_browser_proxy.js';
-export {LiveCaptionLanguageList, SettingsLiveCaptionElement} from './a11y_page/live_caption_section.js';
+export {CaptionsBrowserProxy, CaptionsBrowserProxyImpl, LiveCaptionLanguageList} from './a11y_page/captions_browser_proxy.js';
+export {SettingsLiveCaptionElement} from './a11y_page/live_caption_section.js';
 export {SettingsLiveTranslateElement} from './a11y_page/live_translate_section.js';
 // </if>
 
