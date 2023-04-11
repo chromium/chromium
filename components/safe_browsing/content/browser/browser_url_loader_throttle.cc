@@ -18,6 +18,7 @@
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_experimenter.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
+#include "components/safe_browsing/core/browser/utils/scheme_logger.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -358,6 +359,7 @@ void BrowserURLLoaderThrottle::WillStartRequest(
   pending_checks_++;
   start_request_time_ = base::TimeTicks::Now();
   is_start_request_called_ = true;
+  request_destination_ = request->destination;
   if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
     sb_checker_->Start(request->headers, request->load_flags,
                        request->destination, request->has_user_gesture,
@@ -448,16 +450,28 @@ void BrowserURLLoaderThrottle::WillProcessResponse(
   is_response_from_cache_ =
       response_head->was_fetched_via_cache && !response_head->network_accessed;
   if (is_start_request_called_) {
-    base::TimeTicks process_time = base::TimeTicks::Now();
+    base::TimeDelta interval = base::TimeTicks::Now() - start_request_time_;
     base::UmaHistogramTimes(
         "SafeBrowsing.BrowserThrottle.IntervalBetweenStartAndProcess",
-        process_time - start_request_time_);
+        interval);
     base::UmaHistogramTimes(
         base::StrCat(
             {"SafeBrowsing.BrowserThrottle.IntervalBetweenStartAndProcess",
              is_response_from_cache_ ? kFromCacheUmaSuffix
                                      : kFromNetworkUmaSuffix}),
-        process_time - start_request_time_);
+        interval);
+    // TODO(crbug.com/1410939): Below histograms are for debugging. Remove them
+    // afterwards.
+    if (!is_response_from_cache_ && interval <= base::Milliseconds(2)) {
+      base::UmaHistogramEnumeration(
+          "SafeBrowsing.BrowserThrottle.FastRequestFromNetwork."
+          "RequestDestination",
+          request_destination_);
+      safe_browsing::scheme_logger::LogScheme(
+          original_url_,
+          "SafeBrowsing.BrowserThrottle.FastRequestFromNetwork.UrlScheme");
+    }
+
     if (check_completed) {
       LogTotalDelay2MetricsWithResponseType(is_response_from_cache_,
                                             base::TimeDelta());

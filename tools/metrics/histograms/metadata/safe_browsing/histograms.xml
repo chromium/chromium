@@ -263,6 +263,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="SafeBrowsing.BrowserThrottle.FastRequestFromNetwork.RequestDestination"
+    enum="RequestDestination" expires_after="2023-07-07">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the request destination of the URL that is checked by browser URL
+    loader throttle. Logged each time the resource is fetched over the network
+    and it is faster than 2ms.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.BrowserThrottle.FastRequestFromNetwork.UrlScheme"
+    enum="SafeBrowsingUrlScheme" expires_after="2023-07-07">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the scheme of the URL that is checked by browser URL loader throttle.
+    Logged each time the resource is fetched over the network and it is faster
+    than 2ms.
+  </summary>
+</histogram>
+
+<histogram
     name="SafeBrowsing.BrowserThrottle.IsCheckCompletedOnProcessResponse"
     enum="BooleanCompleted" expires_after="2023-08-06">
   <owner>xinghuilu@chromium.org</owner>
