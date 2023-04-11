@@ -25,6 +25,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
+import android.view.View;
 
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
@@ -55,6 +56,7 @@ import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.content_settings.CookieControlsMode;
@@ -63,6 +65,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -90,6 +93,12 @@ public class PrivacyGuideFragmentTest {
 
     @Rule
     public SigninTestRule mSigninTestRule = new SigninTestRule();
+
+    @Rule
+    public ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(ChromeRenderTestRule.Component.UI_SETTINGS_PRIVACY)
+                    .build();
 
     @Mock
     private PrivacyGuideMetricsDelegate mPrivacyGuideMetricsDelegateMock;
@@ -231,6 +240,65 @@ public class PrivacyGuideFragmentTest {
         testButtonVisibility(R.string.next, nextVisible);
         testButtonVisibility(R.string.back, backVisible);
         testButtonVisibility(R.string.privacy_guide_finish_button, finishVisible);
+    }
+
+    private View getRootView() {
+        return mSettingsActivityTestRule.getActivity()
+                .findViewById(android.R.id.content)
+                .getRootView();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void testRenderWelcomeCard() throws IOException {
+        launchPrivacyGuide();
+        mRenderTestRule.render(getRootView(), "privacy_guide_welcome");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void testRenderMSBBCard() throws IOException {
+        launchPrivacyGuide();
+        navigateFromWelcomeToMSBBCard();
+        mRenderTestRule.render(getRootView(), "privacy_guide_msbb");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void testRenderHistorySyncCard() throws IOException {
+        launchPrivacyGuide();
+        goToHistorySyncCard();
+        mRenderTestRule.render(getRootView(), "privacy_guide_history_sync");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void testRenderSBCard() throws IOException {
+        launchPrivacyGuide();
+        goToSafeBrowsingCard();
+        mRenderTestRule.render(getRootView(), "privacy_guide_sb");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRenderCookiesCard() throws IOException {
+        launchPrivacyGuide();
+        goToCookiesCard();
+        mRenderTestRule.render(getRootView(), "privacy_guide_cookies");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRenderCompletionCard() throws IOException {
+        launchPrivacyGuide();
+        goToCompletionCard();
+        mRenderTestRule.render(getRootView(), "privacy_guide_completion");
     }
 
     @Test

@@ -19,8 +19,11 @@ found in the LICENSE file.
 
         <ImageView
             android:layout_marginVertical="@dimen/welcome_done_step_illustration_marginVertical"
-            android:layout_height="150dp"
-            android:layout_width="250dp"
+            android:layout_marginHorizontal="@dimen/welcome_done_step_illustration_marginHorizontal"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:maxHeight="150dp"
+            android:adjustViewBounds="true"
             android:layout_gravity="center_horizontal"
             android:importantForAccessibility="no"
             app:srcCompat="@drawable/privacy_guide_illustration" />
