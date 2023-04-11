@@ -638,7 +638,7 @@ TEST_F(ShapeResultBloberizerTest, SubRunWithZeroGlyphs) {
 
   CachingWordShaper shaper(font);
   gfx::RectF glyph_bounds;
-  ASSERT_GT(shaper.Width(text_run, nullptr, &glyph_bounds), 0);
+  ASSERT_GT(shaper.Width(text_run, &glyph_bounds), 0);
 
   TextRunPaintInfo run_info(text_run);
   run_info.to = 8;

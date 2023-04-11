@@ -38,7 +38,6 @@ namespace blink {
 struct CharacterRange;
 class Font;
 class ShapeCache;
-class SimpleFontData;
 struct GlyphData;
 struct TextRunPaintInfo;
 
@@ -51,9 +50,7 @@ class PLATFORM_EXPORT CachingWordShaper final {
   CachingWordShaper& operator=(const CachingWordShaper&) = delete;
   ~CachingWordShaper() = default;
 
-  float Width(const TextRun&,
-              HashSet<const SimpleFontData*>* fallback_fonts,
-              gfx::RectF* glyph_bounds);
+  float Width(const TextRun&, gfx::RectF* glyph_bounds);
   int OffsetForPosition(const TextRun&,
                         float target_x,
                         IncludePartialGlyphsOption,

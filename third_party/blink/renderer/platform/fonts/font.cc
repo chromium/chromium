@@ -382,12 +382,10 @@ gfx::RectF Font::TextInkBounds(const NGTextFragmentPaintInfo& text_info) const {
   return text_info.shape_result->ComputeInkBounds();
 }
 
-float Font::Width(const TextRun& run,
-                  HashSet<const SimpleFontData*>* fallback_fonts,
-                  gfx::RectF* glyph_bounds) const {
+float Font::Width(const TextRun& run, gfx::RectF* glyph_bounds) const {
   FontCachePurgePreventer purge_preventer;
   CachingWordShaper shaper(*this);
-  return shaper.Width(run, fallback_fonts, glyph_bounds);
+  return shaper.Width(run, glyph_bounds);
 }
 
 namespace {  // anonymous namespace

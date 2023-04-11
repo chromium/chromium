@@ -94,7 +94,7 @@ void TextMetrics::Update(const Font& font,
         run.Direction(), /* directional_override */ false);
     text_run.SetNormalizeSpace(true);
     gfx::RectF run_glyph_bounds;
-    float run_width = font.Width(text_run, nullptr, &run_glyph_bounds);
+    float run_width = font.Width(text_run, &run_glyph_bounds);
 
     // Accumulate the position and the glyph bounding box.
     run_glyph_bounds.Offset(xpos, 0);

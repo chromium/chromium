@@ -145,9 +145,7 @@ class PLATFORM_EXPORT Font {
   // Glyph bounds will be the minimum rect containing all glyph strokes, in
   // coordinates using (<text run x position>, <baseline position>) as the
   // origin.
-  float Width(const TextRun&,
-              HashSet<const SimpleFontData*>* fallback_fonts = nullptr,
-              gfx::RectF* glyph_bounds = nullptr) const;
+  float Width(const TextRun&, gfx::RectF* glyph_bounds = nullptr) const;
 
   int OffsetForPosition(const TextRun&,
                         float position,
