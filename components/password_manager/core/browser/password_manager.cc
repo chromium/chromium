@@ -133,7 +133,7 @@ bool ShouldShowManualFallbackForGeneratedPassword(
 #endif
 }
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
 // Finds the matched form manager with id |form_renderer_id| in
 // |form_managers|.
 PasswordFormManager* FindMatchedManagerByRendererId(
@@ -146,7 +146,7 @@ PasswordFormManager* FindMatchedManagerByRendererId(
   }
   return nullptr;
 }
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(USE_BLINK)
 
 bool HasSingleUsernameVote(const FormPredictions& form) {
   return base::ranges::any_of(
@@ -855,7 +855,7 @@ PasswordFormManager* PasswordManager::ProvisionallySaveForm(
   return matched_manager;
 }
 
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
 void PasswordManager::LogFirstFillingResult(
     PasswordManagerDriver* driver,
     autofill::FormRendererId form_renderer_id,
@@ -866,7 +866,7 @@ void PasswordManager::LogFirstFillingResult(
     return;
   matching_manager->GetMetricsRecorder()->RecordFirstFillingResult(result);
 }
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(USE_BLINK)
 
 void PasswordManager::NotifyStorePasswordCalled() {
   store_password_called_ = true;

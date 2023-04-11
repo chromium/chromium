@@ -32,6 +32,7 @@ if (is_ios) {
 
 if (is_ios) {
   bundle_data("components_tests_pak_bundle_data") {
+    testonly = true
     public_deps = [
       ":components_tests_pak",
       "//ui/resources:ui_test_pak",
@@ -40,6 +41,10 @@ if (is_ios) {
       "$root_out_dir/components_tests_resources.pak",
       "$root_out_dir/ui_test.pak",
     ]
+    if (use_blink) {
+      public_deps += [ "//content/shell:pak" ]
+      sources += [ "$root_out_dir/content_shell.pak" ]
+    }
     outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
   }
 }
@@ -793,7 +798,7 @@ if (is_android) {
   }
 }
 
-if (!is_ios) {
+if (use_blink) {
   test("components_browsertests") {
     use_xvfb = use_xvfb_in_this_config
 
@@ -896,6 +901,10 @@ if (!is_ios) {
     if (is_mac) {
       data_deps += [ "//content/shell:content_shell" ]
       data += [ "$root_out_dir/Content Shell.app/" ]
+    }
+
+    if (is_ios) {
+      deps += [ ":components_tests_pak_bundle_data" ]
     }
 
     if (enable_pdf) {
