@@ -243,6 +243,22 @@ public class BackPressManagerUnitTest {
                 manager.getCallback().isEnabled());
     }
 
+    @Test
+    public void testObservableSupplierNullValue() {
+        BackPressManager manager = new BackPressManager();
+        EmptyBackPressHandler h1 = new EmptyBackPressHandler();
+        EmptyBackPressHandler h2 = new EmptyBackPressHandler();
+        manager.addHandler(h1, 0);
+        manager.addHandler(h2, 1);
+        h1.getHandleBackPressChangedSupplier().set(true);
+        Assert.assertTrue("Callback should be enabled if any of handlers are enabled",
+                manager.getCallback().isEnabled());
+
+        h1.getHandleBackPressChangedSupplier().set(null);
+        Assert.assertFalse("Callback should be disabled if no handler is enabled",
+                manager.getCallback().isEnabled());
+    }
+
     private int getHandlerCount(BackPressManager manager) {
         int count = 0;
         for (BackPressHandler handler : manager.getHandlersForTesting()) {
