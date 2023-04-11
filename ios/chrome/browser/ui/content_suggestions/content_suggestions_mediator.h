@@ -31,6 +31,7 @@ class PrefRegistrySyncable;
 @protocol ApplicationCommands;
 class Browser;
 @protocol BrowserCoordinatorCommands;
+@class ContentSuggestionsMetricsRecorder;
 @protocol FeedDelegate;
 class GURL;
 class LargeIconCache;
@@ -90,6 +91,10 @@ class WebStateList;
 
 // Recorder for the metrics related to the NTP.
 @property(nonatomic, assign) NTPHomeMetrics* NTPMetrics;
+
+// Recorder for content suggestions metrics.
+@property(nonatomic, assign)
+    ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
 
 // Disconnects the mediator.
 - (void)disconnect;

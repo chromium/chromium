@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_favicon_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_tile_saver.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
@@ -309,27 +310,24 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
     ContentSuggestionsMostVisitedActionItem* mostVisitedItem =
         base::mac::ObjCCastStrict<ContentSuggestionsMostVisitedActionItem>(
             item);
+    [self.contentSuggestionsMetricsRecorder
+        recordShortcutTileTapped:mostVisitedItem.collectionShortcutType];
     switch (mostVisitedItem.collectionShortcutType) {
       case NTPCollectionShortcutTypeBookmark:
-        base::RecordAction(base::UserMetricsAction("MobileNTPShowBookmarks"));
         LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
         [self.dispatcher showBookmarksManager];
         break;
       case NTPCollectionShortcutTypeReadingList:
-        base::RecordAction(base::UserMetricsAction("MobileNTPShowReadingList"));
         [self.dispatcher showReadingList];
         break;
       case NTPCollectionShortcutTypeRecentTabs:
-        base::RecordAction(base::UserMetricsAction("MobileNTPShowRecentTabs"));
         [self.dispatcher showRecentTabs];
         break;
       case NTPCollectionShortcutTypeHistory:
-        base::RecordAction(base::UserMetricsAction("MobileNTPShowHistory"));
         [self.dispatcher showHistory];
         break;
       case NTPCollectionShortcutTypeWhatsNew:
         SetWhatsNewUsed(self.promosManager);
-        base::RecordAction(base::UserMetricsAction("MobileNTPShowWhatsNew"));
         [self.dispatcher showWhatsNew];
         break;
       case NTPCollectionShortcutTypeCount:
@@ -350,8 +348,8 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 }
 
 - (void)loadSuggestedQuery:(QuerySuggestionConfig*)config {
-  UMA_HISTOGRAM_ENUMERATION("IOS.TrendingQueries", config.index,
-                            kMaxTrendingQueries);
+  [self.contentSuggestionsMetricsRecorder
+      recordTrendingQueryTappedAtIndex:config.index];
   [self.NTPMetrics recordContentSuggestionsActionForType:
                        IOSContentSuggestionsActionType::kTrendingQuery];
   UrlLoadParams params = UrlLoadParams::InCurrentTab(config.URL);
@@ -362,8 +360,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 - (void)openMostRecentTab {
   [self.NTPMetrics recordContentSuggestionsActionForType:
                        IOSContentSuggestionsActionType::kReturnToRecentTab];
-  base::RecordAction(
-      base::UserMetricsAction("IOS.StartSurface.OpenMostRecentTab"));
+  [self.contentSuggestionsMetricsRecorder recordMostRecentTabOpened];
   [self hideRecentTabTile];
   WebStateList* web_state_list = self.browser->GetWebStateList();
   web::WebState* web_state =
@@ -413,7 +410,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 }
 
 - (void)removeMostVisited:(ContentSuggestionsMostVisitedItem*)item {
-  base::RecordAction(base::UserMetricsAction("MostVisited_UrlBlacklisted"));
+  [self.contentSuggestionsMetricsRecorder recordMostVisitedTileRemoved];
   [self blockMostVisitedURL:item.URL];
   [self showMostVisitedUndoForURL:item.URL];
 }
@@ -548,7 +545,7 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       recordAction:new_tab_page_uma::ACTION_OPENED_MOST_VISITED_ENTRY];
   [self.NTPMetrics recordContentSuggestionsActionForType:
                        IOSContentSuggestionsActionType::kMostVisitedTile];
-  base::RecordAction(base::UserMetricsAction("MobileNTPMostVisited"));
+  [self.contentSuggestionsMetricsRecorder recordMostVisitedTileOpened];
   RecordNTPTileClick(mostVisitedIndex, item.source, item.titleSource,
                      item.attributes, GURL());
 }

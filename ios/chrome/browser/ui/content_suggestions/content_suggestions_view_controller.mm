@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
@@ -520,7 +521,7 @@ CGFloat ModuleVerticalSpacing() {
     index++;
   }
   [self populateMostVisitedModule];
-  base::RecordAction(base::UserMetricsAction("MobileNTPShowMostVisited"));
+  [self.contentSuggestionsMetricsRecorder recordMostVisitedTilesShown];
   // Trigger a relayout so that the MVTs will be counted in the Content
   // Suggestions height. Upon app startup when this is often added
   // asynchronously as the NTP is constructing the entire surface, so accurate

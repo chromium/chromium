@@ -11,6 +11,7 @@
 
 @protocol ContentSuggestionsCommands;
 @protocol ContentSuggestionsMenuProvider;
+@class ContentSuggestionsMetricsRecorder;
 @protocol ContentSuggestionsViewControllerAudience;
 class UrlLoadingBrowserAgent;
 
@@ -36,6 +37,11 @@ class UrlLoadingBrowserAgent;
 // Provider of menu configurations for the contentSuggestions component.
 @property(nonatomic, weak) id<ContentSuggestionsMenuProvider> menuProvider;
 @property(nonatomic, assign) UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
+
+// Recorder for content suggestions metrics.
+@property(nonatomic, assign)
+    ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_VIEW_CONTROLLER_H_

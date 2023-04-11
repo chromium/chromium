@@ -126,6 +126,8 @@ source_set("content_suggestions") {
 
 source_set("metrics") {
   sources = [
+    "content_suggestions_metrics_recorder.h",
+    "content_suggestions_metrics_recorder.mm",
     "ntp_home_metrics.h",
     "ntp_home_metrics.mm",
   ]
@@ -137,6 +139,7 @@ source_set("metrics") {
     "//ios/chrome/browser/metrics:metrics_internal",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/content_suggestions/cells:constants",
   ]
 }
 
