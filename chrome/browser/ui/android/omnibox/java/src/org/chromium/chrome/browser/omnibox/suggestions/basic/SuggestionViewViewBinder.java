@@ -48,7 +48,10 @@ public class SuggestionViewViewBinder {
         } else if (propertyKey == SuggestionViewProperties.ALLOW_WRAP_AROUND) {
             final boolean allowWrapAround = model.get(SuggestionViewProperties.ALLOW_WRAP_AROUND);
             TextView tv = view.findViewById(R.id.line_1);
-            tv.setMaxLines(allowWrapAround ? 2 : 1);
+            int maxLines = allowWrapAround ? 2 : 1;
+            if (tv.getMaxLines() != maxLines) {
+                tv.setMaxLines(maxLines);
+            }
         }
     }
 
