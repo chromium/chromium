@@ -9,6 +9,7 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
@@ -77,26 +78,38 @@ void ConfigureComboboxButtonInkDrop(Button* host_view) {
     // active instead of layering underneath it causing flashing.
     InkDrop::UseInkDropForFloodFillRipple(InkDrop::Get(host_view),
                                           /*highlight_on_hover=*/true);
+    // Chrome Refresh colors already have opacity applied for hover and pressed
+    // states. Set the highlight opacity to 1 so the two values don't compound.
+    InkDrop::Get(host_view)->SetHighlightOpacity(1);
   } else {
     InkDrop::UseInkDropForSquareRipple(InkDrop::Get(host_view),
                                        /*highlight_on_hover=*/false);
   }
   views::InkDrop::Get(host_view)->SetBaseColorCallback(base::BindRepeating(
       [](Button* host) {
-        // Use the same foreground base color as a label button.
         return color_utils::DeriveDefaultIconColor(
-            host->GetColorProvider()->GetColor(views::style::GetColorId(
-                views::style::CONTEXT_BUTTON, views::style::STYLE_PRIMARY)));
+            host->GetColorProvider()->GetColor(
+                features::IsChromeRefresh2023()
+                    ? ui::kColorComboboxInkDropHovered
+                    : views::style::GetColorId(views::style::CONTEXT_BUTTON,
+                                               views::style::STYLE_PRIMARY)));
       },
       host_view));
+  // Chrome Refresh colors already have opacity applied for ripple state. Set
+  // the ripple opacity to 1 so the two values don't compound.
   InkDrop::Get(host_view)->SetCreateRippleCallback(base::BindRepeating(
       [](Button* host) -> std::unique_ptr<views::InkDropRipple> {
         return std::make_unique<views::FloodFillInkDropRipple>(
             InkDrop::Get(host), host->size(),
             InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
-            host->GetColorProvider()->GetColor(style::GetColorId(
-                style::CONTEXT_TEXTFIELD, style::STYLE_PRIMARY)),
-            InkDrop::Get(host)->GetVisibleOpacity());
+            host->GetColorProvider()->GetColor(
+                features::IsChromeRefresh2023()
+                    ? ui::kColorComboboxInkDropRipple
+                    : style::GetColorId(style::CONTEXT_TEXTFIELD,
+                                        style::STYLE_PRIMARY)),
+            features::IsChromeRefresh2023()
+                ? 1
+                : InkDrop::Get(host)->GetVisibleOpacity());
       },
       host_view));
 }

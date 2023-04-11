@@ -554,7 +554,7 @@ void Combobox::UpdateBorder() {
         kBorderThickness, GetCornerRadius(),
         invalid_
             ? ui::kColorAlertHighSeverity
-            : border_color_id_.value_or(ui::kColorFocusableBorderUnfocused)));
+            : border_color_id_.value_or(ui::kColorComboboxContainerOutline)));
   } else {
     auto border = std::make_unique<FocusableBorder>();
     border->SetColorId(invalid_ ? ui::kColorAlertHighSeverity

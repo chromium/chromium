@@ -48,6 +48,9 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorComboboxBackground] = {kColorSysSurface};
   mixer[kColorComboboxBackgroundDisabled] = {GetResultingPaintColor(
       {kColorSysStateDisabledContainer}, {kColorComboboxBackground})};
+  mixer[kColorComboboxContainerOutline] = {kColorSysNeutralOutline};
+  mixer[kColorComboboxInkDropHovered] = {kColorSysStateHoverOnSubtle};
+  mixer[kColorComboboxInkDropRipple] = {kColorSysStateRippleNeutralOnSubtle};
   mixer[kColorFocusableBorderFocused] = {kColorSysStateFocusRing};
   mixer[kColorFocusableBorderUnfocused] = {kColorSysOutline};
   mixer[kColorFrameActive] = {kColorSysHeader};
