@@ -4,10 +4,10 @@
   <!-- Pass through the "body" slot. -->
   <div slot="body"><slot name="body"></slot></div>
   <div slot="button-container">
-    <cr-button class="cancel-button" on-click="onCancelTap_">
+    <cr-button class="cancel-button" on-click="onCancelClick_">
       [[cancelButtonText]]
     </cr-button>
-    <cr-button class="action-button" on-click="onAcceptTap_">
+    <cr-button class="action-button" on-click="onAcceptClick_">
       [[acceptButtonText]]
     </cr-button>
   </div>

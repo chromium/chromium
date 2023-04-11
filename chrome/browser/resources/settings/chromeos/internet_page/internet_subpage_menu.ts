@@ -80,7 +80,7 @@ class SettingsInternetSubpageMenuElement extends
     return isCellularSubpage && (!!this.euicc_ || !!this.deviceState?.imei);
   }
 
-  private onShowDeviceInfoTap_(): void {
+  private onShowDeviceInfoClick_(): void {
     this.closeMenu_();
     this.showDeviceNetworkInfoDialog_ = true;
   }

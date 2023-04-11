@@ -316,7 +316,7 @@ class OsSettingsPrivacyPageElement extends OsSettingsPrivacyPageElementBase {
     this.setModes_ = undefined;
   }
 
-  private onConfigureLockTap_(e: Event): void {
+  private onConfigureLockClick_(e: Event): void {
     // Navigating to the lock screen will always open the password prompt
     // dialog, so prevent the end of the tap event to focus what is underneath
     // it, which takes focus from the dialog.

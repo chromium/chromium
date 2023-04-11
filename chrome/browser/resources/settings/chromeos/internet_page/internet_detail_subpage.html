@@ -90,31 +90,31 @@
       </cr-policy-indicator>
     </template>
   </div>
-  <cr-button class="signin-button" id="signinButton" on-click="onSigninTap_"
+  <cr-button class="signin-button" id="signinButton" on-click="onSigninClick_"
       hidden$="[[!showSignin_(managedProperties_)]]"
       disabled="[[disableSignin_(managedProperties_, disabled_)]]">
     <div class="signin-icon cr-icon icon-external"></div>
       $i18n{networkButtonSignin}
   </cr-button>
-  <cr-button id="forgetButton" on-click="onForgetTap_"
+  <cr-button id="forgetButton" on-click="onForgetClick_"
       hidden$="[[!showForget_(managedProperties_)]]"
       disabled="[[disableForget_(managedProperties_,
           prefs.vpn_config_allowed, disabled_)]]">
     $i18n{networkButtonForget}
   </cr-button>
   <cr-button id="viewAccountButton"
-      on-click="onViewAccountTap_"
+      on-click="onViewAccountClick_"
       hidden$="[[!showViewAccount_(managedProperties_)]]"
       disabled="[[disabled_]]">
     $i18n{networkButtonViewAccount}
   </cr-button>
   <cr-button id="activateButton"
-      on-click="onActivateTap_"
+      on-click="onActivateClick_"
       hidden$="[[!showActivate_(managedProperties_)]]"
       disabled="[[disabled_]]">
     $i18n{networkButtonActivate}
   </cr-button>
-  <cr-button id="configureButton" on-click="onConfigureTap_"
+  <cr-button id="configureButton" on-click="onConfigureClick_"
       hidden$="[[!showConfigure_(managedProperties_, globalPolicy,
           managedNetworkAvailable)]]"
       disabled="[[disableConfigure_(managedProperties_,
@@ -125,7 +125,7 @@
   <!-- Use policy properties from vpn_config_allowed to indicate when that
       pref disables buttons in this row. -->
   <controlled-button id="connectDisconnect" class="action-button"
-      on-click="onConnectDisconnectTap_"
+      on-click="onConnectDisconnectClick_"
       hidden$="[[shouldConnectDisconnectButtonBeHidden_(
           managedProperties_, globalPolicy, managedNetworkAvailable,
           deviceState_)]]"

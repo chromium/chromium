@@ -59,11 +59,11 @@ class AddPrintServerDialogElement extends PolymerElement {
     this.browserProxy_ = CupsPrintersBrowserProxyImpl.getInstance();
   }
 
-  private onCancelTap_(): void {
+  private onCancelClick_(): void {
     this.shadowRoot!.querySelector('add-printer-dialog')!.close();
   }
 
-  private onAddPrintServerTap_(): void {
+  private onAddPrintServerClick_(): void {
     this.inProgress_ = true;
     this.shadowRoot!.querySelector<CrInputElement>(
                         '#printServerAddressInput')!.invalid = false;
@@ -106,7 +106,7 @@ class AddPrintServerDialogElement extends PolymerElement {
     }
     event.stopPropagation();
 
-    this.onAddPrintServerTap_();
+    this.onAddPrintServerClick_();
   }
 }
 

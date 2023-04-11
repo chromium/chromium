@@ -95,11 +95,11 @@ class OsSettingsSearchPageElement extends OsSettingsSearchPageElementBase {
     this.attemptDeepLink();
   }
 
-  private onSearchTap_() {
+  private onSearchClick_() {
     Router.getInstance().navigateTo(routes.SEARCH_SUBPAGE);
   }
 
-  private onGoogleAssistantTap_() {
+  private onGoogleAssistantClick_() {
     assert(this.isAssistantAllowed_);
     Router.getInstance().navigateTo(routes.GOOGLE_ASSISTANT);
   }

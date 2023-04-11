@@ -492,8 +492,11 @@ suite('AppsPageTests', function() {
       const remove = subpage.shadowRoot.querySelector('#remove');
       assertTrue(!!remove);
 
-      subpage.onRemoveTap_();
+      const button = remove.querySelector('cr-button');
+      assertTrue(!!button);
+      button.click();
       flush();
+
       assertTrue(dialog.open);
       dialog.close();
     });

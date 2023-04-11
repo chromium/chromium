@@ -140,7 +140,7 @@ class SettingsPinAutosubmitDialogElement extends
     this.error_ = null;
   }
 
-  private onCancelTap_(): void {
+  private onCancelClick_(): void {
     this.close();
   }
 

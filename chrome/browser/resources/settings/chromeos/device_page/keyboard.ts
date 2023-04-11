@@ -238,11 +238,11 @@ class SettingsKeyboardElement extends SettingsKeyboardElementBase {
     this.showAppleCommandKey_ = keyboardParams['showAppleCommandKey'];
   }
 
-  private onShowKeyboardShortcutViewerTap_() {
+  private onShowKeyboardShortcutViewerClick_() {
     this.browserProxy_.showKeyboardShortcutViewer();
   }
 
-  private onShowInputSettingsTap_() {
+  private onShowInputSettingsClick_() {
     Router.getInstance().navigateTo(
         routes.OS_LANGUAGES_INPUT,
         /*dynamicParams=*/ undefined, /*removeSearch=*/ true);

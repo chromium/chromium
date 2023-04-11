@@ -384,7 +384,7 @@ export class SettingsCursorAndTouchpadPageElement extends
   }
 
 
-  private onMouseTap_(): void {
+  private onMouseClick_(): void {
     Router.getInstance().navigateTo(
         routes.POINTERS,
         /* dynamicParams= */ undefined, /* removeSearch= */ true);

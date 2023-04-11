@@ -83,11 +83,11 @@
   </div>
   <div slot="button-container">
     <cr-button id="cancel" class="cancel-button"
-        on-click="onCancelTap_">
+        on-click="onCancelClick_">
       $i18n{cancel}
     </cr-button>
     <cr-button id="done" class="action-button"
-        on-click="onDoneTap_"
+        on-click="onDoneClick_"
         disabled="[[isInputInvalid_]]"
         aria-label="[[i18n('aboutDeviceNameDoneBtnA11yLabel', deviceName_)]]">
       $i18n{done}

@@ -389,7 +389,7 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
     this.aboutBrowserProxy_.openProductLicenseOther();
   }
 
-  private onReleaseNotesTap_() {
+  private onReleaseNotesClick_() {
     this.aboutBrowserProxy_.launchReleaseNotes();
   }
 

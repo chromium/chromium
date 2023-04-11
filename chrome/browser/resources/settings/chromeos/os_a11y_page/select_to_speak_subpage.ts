@@ -607,7 +607,7 @@ class SettingsSelectToSpeakSubpageElement extends
     }
   }
 
-  private onTextToSpeechSettingsTap_(): void {
+  private onTextToSpeechSettingsClick_(): void {
     Router.getInstance().navigateTo(
         routes.MANAGE_TTS_SETTINGS,
         /* dynamicParams= */ undefined, /* removeSearch= */ true);

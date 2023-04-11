@@ -184,13 +184,13 @@ class SettingsDisplayAndMagnificationElement extends
                   'screenMagnifierDescriptionOff');
   }
 
-  private onDisplayTap_(): void {
+  private onDisplayClick_(): void {
     Router.getInstance().navigateTo(
         routes.DISPLAY,
         /* dynamicParams= */ undefined, /* removeSearch= */ true);
   }
 
-  private onAppearanceTap_(): void {
+  private onAppearanceClick_(): void {
     chrome.send('showBrowserAppearanceSettings');
   }
 }

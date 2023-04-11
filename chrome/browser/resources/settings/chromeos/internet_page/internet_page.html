@@ -49,7 +49,7 @@
         <div class="list-frame vertical-list">
           <template is="dom-if" if="[[shouldShowAddWiFiRow_(globalPolicy_,
               managedNetworkAvailable, deviceStates)]]">
-            <div actionable class="list-item" on-click="onAddWiFiTap_">
+            <div actionable class="list-item" on-click="onAddWiFiClick_">
               <div class="start settings-box-text"
                   id="add-wifi-label" aria-hidden="true">
                 $i18n{internetAddWiFi}
@@ -59,7 +59,7 @@
             </div>
           </template>
           <div actionable$="[[!vpnIsProhibited_]]" class="list-item"
-              on-click="onAddVpnTap_">
+              on-click="onAddVpnClick_">
             <div class="start settings-box-text"
                 id="add-vpn-label" aria-hidden="true">
               $i18n{internetAddVPN}
@@ -78,7 +78,7 @@
           </div>
           <template is="dom-repeat" items="[[vpnProviders_]]">
             <div actionable class="list-item"
-                on-click="onAddThirdPartyVpnTap_">
+                on-click="onAddThirdPartyVpnClick_">
               <div class="start settings-box-text">
                 [[getAddThirdPartyVpnLabel_(item)]]
               </div>

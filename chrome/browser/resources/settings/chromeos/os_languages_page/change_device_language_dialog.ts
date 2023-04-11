@@ -158,14 +158,14 @@ export class OsSettingsChangeDeviceLanguageDialogElement extends
     return this.selectedLanguage_ === null;
   }
 
-  private onCancelButtonTap_(): void {
+  private onCancelButtonClick_(): void {
     this.$.dialog.close();
   }
 
   /**
    * Sets device language and restarts device.
    */
-  private onActionButtonTap_(): void {
+  private onActionButtonClick_(): void {
     // Safety: This method is only called as an event listener on the action
     // button, which is only enabled if `disableActionButton_` is false - i.e.
     // `this.selectedLanguage_ !== null`.

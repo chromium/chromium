@@ -427,7 +427,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
     menu.showAt(e.target as HTMLElement);
   }
 
-  private onShowEidDialogTap_(): void {
+  private onShowEidDialogClick_(): void {
     const actionMenu =
         castExists(this.shadowRoot!.querySelector('cr-action-menu'));
     actionMenu.close();
@@ -513,7 +513,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
     return OncMojo.deviceIsInhibited(this.cellularDeviceState);
   }
 
-  private onAddEsimButtonTap_(): void {
+  private onAddEsimButtonClick_(): void {
     const event = new CustomEvent('show-cellular-setup', {
       bubbles: true,
       composed: true,

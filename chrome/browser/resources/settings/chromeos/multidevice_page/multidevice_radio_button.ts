@@ -81,7 +81,7 @@ class MultideviceRadioButtonElement extends MultideviceRadioButtonElementBase {
    * Prevents on-click handles on the control from being activated when the
    * indicator is clicked.
    */
-  private onIndicatorTap_(e: Event): void {
+  private onIndicatorClick_(e: Event): void {
     e.preventDefault();
     e.stopPropagation();
   }

@@ -376,12 +376,12 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
     }
   }
 
-  private onSyncTap_(): void {
+  private onSyncClick_(): void {
     // Users can go to sync subpage regardless of sync status.
     Router.getInstance().navigateTo(routes.SYNC);
   }
 
-  private onAccountManagerTap_(): void {
+  private onAccountManagerClick_(): void {
     if (this.isAccountManagerEnabled_) {
       Router.getInstance().navigateTo(routes.ACCOUNT_MANAGER);
     }

@@ -111,7 +111,7 @@ export class SettingsGoogleDriveSubpageElement extends
    * connected, show the confirmation dialog instead of immediately updating the
    * preference when the button is pressed.
    */
-  private onConnectDisconnectTap_(): void {
+  private onConnectDisconnectClick_(): void {
     if (this.driveDisabled_) {
       this.setPrefValue(GOOGLE_DRIVE_DISABLED_PREF, false);
       return;

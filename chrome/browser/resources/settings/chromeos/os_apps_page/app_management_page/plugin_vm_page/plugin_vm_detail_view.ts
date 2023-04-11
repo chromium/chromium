@@ -111,7 +111,7 @@ class AppManagementPluginVmDetailViewElement extends
     }
   }
 
-  private onRelaunchTap_(): void {
+  private onRelaunchClick_(): void {
     this.pendingPermissionItem_.syncPermission();
     this.pluginVmBrowserProxy_.relaunchPluginVm();
     this.showDialog_ = false;

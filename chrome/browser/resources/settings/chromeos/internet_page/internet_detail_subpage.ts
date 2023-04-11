@@ -1481,7 +1481,7 @@ class SettingsInternetDetailPageElement extends
         '#passpointRemovalDialog'));
   }
 
-  private handleConnectTap_(): void {
+  private handleConnectClick_(): void {
     assertExists(this.managedProperties_);
     if (this.managedProperties_.type === NetworkType.kTether &&
         (!this.managedProperties_.typeProperties.tether!.hasConnectedToHost)) {
@@ -1510,7 +1510,7 @@ class SettingsInternetDetailPageElement extends
     recordSettingChange();
   }
 
-  private async handleDisconnectTap_(): Promise<void> {
+  private async handleDisconnectClick_(): Promise<void> {
     recordSettingChange();
     const response = await this.networkConfig_.startDisconnect(this.guid);
     if (!response.success) {
@@ -1518,17 +1518,17 @@ class SettingsInternetDetailPageElement extends
     }
   }
 
-  private onConnectDisconnectTap_(): void {
+  private onConnectDisconnectClick_(): void {
     if (this.enableConnect_(
             this.managedProperties_, this.defaultNetwork,
             this.propertiesReceived_, this.outOfRange_, this.globalPolicy,
             this.managedNetworkAvailable, this.deviceState_)) {
-      this.handleConnectTap_();
+      this.handleConnectClick_();
       return;
     }
 
     if (this.showDisconnect_(this.managedProperties_)) {
-      this.handleDisconnectTap_();
+      this.handleDisconnectClick_();
       return;
     }
   }
@@ -1570,7 +1570,7 @@ class SettingsInternetDetailPageElement extends
     return '';
   }
 
-  private async onForgetTap_(): Promise<void> {
+  private async onForgetClick_(): Promise<void> {
     if (this.isPasspointWifi_(this.managedProperties_)) {
       // Ask user confirmation before removing a Passpoint Wi-Fi and the
       // associated subscription.
@@ -1595,15 +1595,15 @@ class SettingsInternetDetailPageElement extends
     this.close();
   }
 
-  private onSigninTap_(): void {
+  private onSigninClick_(): void {
     this.browserProxy_.showPortalSignin(this.guid);
   }
 
-  private onActivateTap_(): void {
+  private onActivateClick_(): void {
     this.browserProxy_.showCellularSetupUi(this.guid);
   }
 
-  private onConfigureTap_(): void {
+  private onConfigureClick_(): void {
     if (this.managedProperties_ &&
         (this.isThirdPartyVpn_(this.managedProperties_) ||
          this.isArcVpn_(this.managedProperties_))) {
@@ -1625,7 +1625,7 @@ class SettingsInternetDetailPageElement extends
     this.dispatchEvent(showConfigEvent);
   }
 
-  private onViewAccountTap_(): void {
+  private onViewAccountClick_(): void {
     this.browserProxy_.showCarrierAccountDetail(this.guid);
   }
 

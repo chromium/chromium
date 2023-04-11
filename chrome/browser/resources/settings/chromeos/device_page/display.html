@@ -76,7 +76,7 @@
       <div class="secondary self-start">
         <cr-checkbox id="displayMirrorCheckbox"
             checked="[[isMirrored_(displays)]]"
-            on-click="onMirroredTap_"
+            on-click="onMirroredClick_"
             aria-label="[[getDisplayMirrorText_(displays)]]"
             deep-link-focus-id$="[[Setting.kDisplayMirroring]]">
           <div class="text-area">[[getDisplayMirrorText_(displays)]]</div>
@@ -108,7 +108,7 @@
         </div>
       </div>
       <cr-toggle checked="[[unifiedDesktopMode_]]"
-          on-click="onUnifiedDesktopTap_"
+          on-click="onUnifiedDesktopClick_"
           aria-labelledby="displayUnifiedDesktopCheckboxLabel"
           deep-link-focus-id$="[[Setting.kAllowWindowsToSpanDisplays]]">
       </cr-toggle>
@@ -272,7 +272,7 @@
 
   <cr-link-row class="indented hr" id="overscan"
       label="$i18n{displayOverscanPageTitle}"
-      sub-label="$i18n{displayOverscanPageText}" on-click="onOverscanTap_"
+      sub-label="$i18n{displayOverscanPageText}" on-click="onOverscanClick_"
       hidden$="[[!showOverscanSetting_(selectedDisplay)]]" embedded
       deep-link-focus-id$="[[Setting.kDisplayOverscan]]">
   </cr-link-row>
@@ -286,7 +286,7 @@
   <cr-link-row class="indented hr" id="touchCalibration"
       label="$i18n{displayTouchCalibrationTitle}"
       sub-label="$i18n{displayTouchCalibrationText}"
-      on-click="onTouchCalibrationTap_"
+      on-click="onTouchCalibrationClick_"
       hidden$="[[!showTouchCalibrationSetting_(selectedDisplay)]]" embedded
       deep-link-focus-id$="[[Setting.kTouchscreenCalibration]]">
   </cr-link-row>

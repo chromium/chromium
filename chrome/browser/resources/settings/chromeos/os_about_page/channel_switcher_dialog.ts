@@ -111,18 +111,18 @@ class SettingsChannelSwitcherDialogElement extends PolymerElement {
     return castExists(this.shadowRoot!.querySelector('cr-radio-group'));
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.$.dialog.close();
   }
 
-  private onChangeChannelTap_() {
+  private onChangeChannelClick_() {
     const selectedChannel = this.getRadioGroup_().selected as BrowserChannel;
     this.browserProxy_.setChannel(selectedChannel, false);
     this.$.dialog.close();
     this.fireTargetChannelChangedEvent_(selectedChannel);
   }
 
-  private onChangeChannelAndPowerwashTap_() {
+  private onChangeChannelAndPowerwashClick_() {
     const selectedChannel = this.getRadioGroup_().selected as BrowserChannel;
     this.browserProxy_.setChannel(selectedChannel, true);
     this.$.dialog.close();

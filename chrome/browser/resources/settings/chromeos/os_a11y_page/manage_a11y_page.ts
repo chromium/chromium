@@ -534,46 +534,46 @@ export class SettingsManageA11yPageElement extends
     this.manageBrowserProxy_.setStartupSoundEnabled(e.detail);
   }
 
-  private onManageTtsSettingsTap_(): void {
+  private onManageTtsSettingsClick_(): void {
     Router.getInstance().navigateTo(routes.MANAGE_TTS_SETTINGS);
   }
 
-  private onChromeVoxSettingsTap_(): void {
+  private onChromeVoxSettingsClick_(): void {
     this.manageBrowserProxy_.showChromeVoxSettings();
   }
 
-  private onChromeVoxNewSettingsTap_(): void {
+  private onChromeVoxNewSettingsClick_(): void {
     Router.getInstance().navigateTo(routes.A11Y_CHROMEVOX);
   }
 
-  private onChromeVoxTutorialTap_(): void {
+  private onChromeVoxTutorialClick_(): void {
     this.manageBrowserProxy_.showChromeVoxTutorial();
   }
 
-  private onSelectToSpeakSettingsTap_(): void {
+  private onSelectToSpeakSettingsClick_(): void {
     this.manageBrowserProxy_.showSelectToSpeakSettings();
   }
 
-  private onSelectToSpeakNewSettingsTap_(): void {
+  private onSelectToSpeakNewSettingsClick_(): void {
     Router.getInstance().navigateTo(routes.A11Y_SELECT_TO_SPEAK);
   }
 
-  private onSwitchAccessSettingsTap_(): void {
+  private onSwitchAccessSettingsClick_(): void {
     Router.getInstance().navigateTo(routes.MANAGE_SWITCH_ACCESS_SETTINGS);
   }
 
-  private onDisplayTap_(): void {
+  private onDisplayClick_(): void {
     Router.getInstance().navigateTo(
         routes.DISPLAY,
         /* dynamicParams */ undefined, /* removeSearch */ true);
   }
 
-  private onAppearanceTap_(): void {
+  private onAppearanceClick_(): void {
     // Open browser appearance section in a new browser tab.
     window.open('chrome://settings/appearance');
   }
 
-  private onKeyboardTap_(): void {
+  private onKeyboardClick_(): void {
     Router.getInstance().navigateTo(
         routes.KEYBOARD,
         /* dynamicParams */ undefined, /* removeSearch */ true);
@@ -667,7 +667,7 @@ export class SettingsManageA11yPageElement extends
   }
 
 
-  private onMouseTap_(): void {
+  private onMouseClick_(): void {
     Router.getInstance().navigateTo(
         routes.POINTERS,
         /* dynamicParams */ undefined, /* removeSearch */ true);

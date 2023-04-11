@@ -165,7 +165,7 @@ found in the LICENSE file.
   <cr-link-row class="settings-box"
       label="$i18n{chromeVoxTtsSettingsLink}"
       sub-label="$i18n{chromeVoxTtsSettingsDescription}"
-      on-click="onTtsSettingsTap_" external embedded>
+      on-click="onTtsSettingsClick_" external embedded>
   </cr-link-row>
 </div>
 <h2>$i18n{chromeVoxBrailleLabel}</h2>
@@ -244,7 +244,7 @@ found in the LICENSE file.
     <cr-link-row class="settings-box"
         label="$i18n{chromeVoxEventLogLink}"
         sub-label="$i18n{chromeVoxEventLogDescription}"
-        on-click="onEventLogTap_" external embedded>
+        on-click="onEventLogClick_" external embedded>
     </cr-link-row>
     <template is="dom-if" if="[[prefs.settings.a11y.chromevox.enable_event_stream_logging.value]]">
       <div class="indented">

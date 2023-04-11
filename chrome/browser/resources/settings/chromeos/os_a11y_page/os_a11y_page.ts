@@ -219,27 +219,27 @@ export class OsSettingsA11yPageElement extends OsSettingsA11yPageElementBase {
     }
   }
 
-  private onManageAccessibilityFeaturesTap_(): void {
+  private onManageAccessibilityFeaturesClick_(): void {
     Router.getInstance().navigateTo(routes.MANAGE_ACCESSIBILITY);
   }
 
-  private onTextToSpeechTap_(): void {
+  private onTextToSpeechClick_(): void {
     Router.getInstance().navigateTo(routes.A11Y_TEXT_TO_SPEECH);
   }
 
-  private onDisplayAndMagnificationTap_(): void {
+  private onDisplayAndMagnificationClick_(): void {
     Router.getInstance().navigateTo(routes.A11Y_DISPLAY_AND_MAGNIFICATION);
   }
 
-  private onKeyboardAndTextInputTap_(): void {
+  private onKeyboardAndTextInputClick_(): void {
     Router.getInstance().navigateTo(routes.A11Y_KEYBOARD_AND_TEXT_INPUT);
   }
 
-  private onCursorAndTouchpadTap_(): void {
+  private onCursorAndTouchpadClick_(): void {
     Router.getInstance().navigateTo(routes.A11Y_CURSOR_AND_TOUCHPAD);
   }
 
-  private onAudioAndCaptionsTap_(): void {
+  private onAudioAndCaptionsClick_(): void {
     Router.getInstance().navigateTo(routes.A11Y_AUDIO_AND_CAPTIONS);
   }
 

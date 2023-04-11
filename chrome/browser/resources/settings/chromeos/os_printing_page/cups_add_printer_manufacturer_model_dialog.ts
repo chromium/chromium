@@ -226,7 +226,7 @@ class AddPrinterManufacturerModelDialogElement extends PolymerElement {
     this.newUserPPD_ = getBaseName(path);
   }
 
-  private onCancelTap_(): void {
+  private onCancelClick_(): void {
     this.close();
     this.browserProxy_.cancelPrinterSetUp(this.activePrinter);
   }

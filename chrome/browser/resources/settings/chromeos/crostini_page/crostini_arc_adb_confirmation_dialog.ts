@@ -67,11 +67,11 @@ class SettingsCrostiniArcAdbConfirmationDialogElement extends PolymerElement {
     return this.action === 'disable';
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.$.dialog.close();
   }
 
-  private onRestartTap_() {
+  private onRestartClick_() {
     if (this.isEnabling_()) {
       this.browserProxy_.enableArcAdbSideload();
       recordSettingChange();

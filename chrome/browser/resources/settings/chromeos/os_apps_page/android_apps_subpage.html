@@ -2,7 +2,7 @@
 
 <template is="dom-if" if="[[androidAppsInfo.settingsAppAvailable]]" restamp>
   <cr-link-row id="manageApps" label="$i18n{androidAppsManageApps}"
-      on-click="onManageAndroidAppsTap_" external
+      on-click="onManageAndroidAppsClick_" external
       deep-link-focus-id$="[[Setting.kManageAndroidPreferences]]">
   </cr-link-row>
 </template>
@@ -23,7 +23,7 @@
     <div id="androidRemoveLabel" class="start">
       $i18n{androidAppsRemove}
     </div>
-    <cr-button on-click="onRemoveTap_"
+    <cr-button on-click="onRemoveClick_"
         aria-labelledby="androidRemoveLabel"
         deep-link-focus-id$="[[Setting.kRemovePlayStore]]">
       $i18n{androidAppsRemoveButton}

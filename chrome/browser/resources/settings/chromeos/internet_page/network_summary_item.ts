@@ -402,7 +402,7 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
    * list or showing details about a network or doing nothing based on the
    * device and networks states.
    */
-  private onShowDetailsTap_(event: Event): void {
+  private onShowDetailsClick_(event: Event): void {
     if (!this.deviceIsEnabled_(this.deviceState)) {
       if (this.enableToggleIsEnabled_(this.deviceState)) {
         const type = this.deviceState!.type;
@@ -451,9 +451,9 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
    * to showing the corresponding networks list or showing details about
    * a network or doing nothing based on the device and networks states.
    * TODO(b/253326370) Cleanup duplicate functionality between this
-   * function and `onShowDetailsTap_`.
+   * function and `onShowDetailsClick_`.
    */
-  private onShowDetailsArrowTap_(event: Event): void {
+  private onShowDetailsArrowClick_(event: Event): void {
     if (this.shouldShowSubpage_(this.deviceState, this.networkStateList)) {
       const showNetworksEvent = new CustomEvent('show-networks', {
         bubbles: true,
@@ -487,7 +487,7 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
       activeNetworkState: OncMojo.NetworkStateProperties,
       deviceState: OncMojo.DeviceStateProperties|undefined,
       networkStateList: OncMojo.NetworkStateProperties[]): boolean {
-    // The boolean logic here matches onShowDetailsTap_ method that handles the
+    // The boolean logic here matches onShowDetailsClick_ method that handles the
     // item click event.
 
     if (!this.deviceIsEnabled_(this.deviceState)) {
@@ -554,7 +554,7 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
   }
 
   /**
-   * Make sure events in embedded components do not propagate to onDetailsTap_.
+   * Make sure events in embedded components do not propagate to onDetailsClick_.
    */
   private doNothing_(event: Event): void {
     event.stopPropagation();

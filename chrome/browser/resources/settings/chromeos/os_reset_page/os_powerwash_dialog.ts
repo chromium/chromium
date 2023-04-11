@@ -99,17 +99,17 @@ class OsSettingsPowerwashDialogElement extends PolymerElement {
     this.$.dialog.showModal();
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.$.dialog.close();
   }
 
-  private onRestartTap_() {
+  private onRestartClick_() {
     recordSettingChange();
     LifetimeBrowserProxyImpl.getInstance().factoryReset(
         this.requestTpmFirmwareUpdate);
   }
 
-  private onContinueTap_() {
+  private onContinueClick_() {
     this.hasContinueBeenTapped_ = true;
   }
 

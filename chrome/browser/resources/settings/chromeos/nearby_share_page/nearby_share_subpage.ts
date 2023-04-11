@@ -189,18 +189,18 @@ class SettingsNearbyShareSubpageElement extends
     }
   }
 
-  private onDeviceNameTap_(): void {
+  private onDeviceNameClick_(): void {
     if (this.showDeviceNameDialog_) {
       return;
     }
     this.showDeviceNameDialog_ = true;
   }
 
-  private onVisibilityTap_(): void {
+  private onVisibilityClick_(): void {
     this.showVisibilityDialog_ = true;
   }
 
-  private onDataUsageTap_(): void {
+  private onDataUsageClick_(): void {
     this.showDataUsageDialog_ = true;
   }
 
@@ -221,7 +221,7 @@ class SettingsNearbyShareSubpageElement extends
     this.inHighVisibility_ = false;
   }
 
-  private onManageContactsTap_(): void {
+  private onManageContactsClick_(): void {
     window.open(this.manageContactsUrl_);
   }
 

@@ -352,7 +352,7 @@
       <template is="dom-if"
           if="[[shouldShowReauthenticationButton_(item)]]">
         <cr-button title="[[getAccountManagerSignedOutTitle_(item)]]"
-            class="reauth-button" on-click="onReauthenticationTap_"
+            class="reauth-button" on-click="onReauthenticationClick_"
             aria-labelledby$="fullName-[[index]] email-[[index]]">
           [[getAccountManagerSignedOutLabel_(item.unmigrated)]]
         </cr-button>
@@ -364,13 +364,13 @@
           aria-describedby$="fullName-[[index]]
                               arc-status-[[index]]
                               edu-account-label-[[index]]"
-          on-click="onAccountActionsMenuButtonTap_"
+          on-click="onAccountActionsMenuButtonClick_"
           deep-link-focus-id$="[[Setting.kRemoveAccount]]">
       </cr-icon-button>
     </div>
   </template>
   <cr-action-menu role-description="$i18n{menu}">
-    <button class="dropdown-item" on-click="onRemoveAccountTap_">
+    <button class="dropdown-item" on-click="onRemoveAccountClick_">
       $i18n{removeAccountLabel}
     </button>
     <template is="dom-if" if="[[isArcAccountRestrictionsEnabled_]]">
@@ -389,11 +389,11 @@
   </div>
   <div slot="button-container">
     <cr-button class="cancel-button"
-        on-click="onRemoveAccountDialogCancelTap_">
+        on-click="onRemoveAccountDialogCancelClick_">
       $i18n{removeLacrosAccountDialogCancel}
     </cr-button>
     <cr-button id="removeConfirmationButton" class="action-button"
-        on-click="onRemoveAccountDialogRemoveTap_">
+        on-click="onRemoveAccountDialogRemoveClick_">
       $i18n{removeLacrosAccountDialogRemove}
     </cr-button>
   </div>

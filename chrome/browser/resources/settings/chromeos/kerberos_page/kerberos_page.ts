@@ -56,7 +56,7 @@ class SettingsKerberosPageElement extends SettingsKerberosPageElementBase {
 
   private focusConfig_: Map<string, string>;
 
-  private onKerberosAccountsTap_(): void {
+  private onKerberosAccountsClick_(): void {
     Router.getInstance().navigateTo(routes.KERBEROS_ACCOUNTS_V2);
   }
 }

@@ -119,7 +119,7 @@ class SettingsAndroidAppsSubpageElement extends
   /**
    * Shows a confirmation dialog when disabling android apps.
    */
-  private onRemoveTap_(): void {
+  private onRemoveClick_(): void {
     this.$.confirmDisableDialog.showModal();
   }
 
@@ -144,7 +144,7 @@ class SettingsAndroidAppsSubpageElement extends
     focusWithoutInk(castExists(this.shadowRoot!.querySelector('#remove')));
   }
 
-  private onManageAndroidAppsTap_(event: MouseEvent): void {
+  private onManageAndroidAppsClick_(event: MouseEvent): void {
     // |event.detail| is the click count. Keyboard events will have 0 clicks.
     const isKeyboardAction = event.detail === 0;
     AndroidAppsBrowserProxyImpl.getInstance().showAndroidAppsSettings(

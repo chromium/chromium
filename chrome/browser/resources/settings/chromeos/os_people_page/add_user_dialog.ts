@@ -142,7 +142,7 @@ export class SettingsUsersAddUserDialogElement extends
     return this.isEmail_ && !this.isEmpty_;
   }
 
-  private onCancelTap_(): void {
+  private onCancelClick_(): void {
     this.$.dialog.cancel();
   }
 

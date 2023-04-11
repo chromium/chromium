@@ -161,11 +161,11 @@ class ExtraContainersCreateDialog extends PolymerElement {
         !this.validContainerName_ || !this.isValidVmName(this.inputVmName_);
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.$.dialog.close();
   }
 
-  private onCreateTap_() {
+  private onCreateClick_() {
     if (this.advancedToggleExpanded_) {
       // These elements are part of a dom-if on |advancedToggleExpanded_|
       this.inputImageServer_ = this.$.imageServerInput.value;

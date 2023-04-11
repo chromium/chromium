@@ -390,7 +390,7 @@ class SettingsChromeVoxSubpageElement extends
     ];
   }
 
-  private onTtsSettingsTap_(): void {
+  private onTtsSettingsClick_(): void {
     Router.getInstance().navigateTo(
         routes.MANAGE_TTS_SETTINGS,
         /* dynamicParams= */ undefined, /* removeSearch= */ true);
@@ -442,7 +442,7 @@ class SettingsChromeVoxSubpageElement extends
     }
   }
 
-  private onEventLogTap_(): void {
+  private onEventLogClick_(): void {
     window.open(
         'chrome-extension://' + CHROMEVOX_EXTENSION_ID +
         '/chromevox/log_page/log.html');

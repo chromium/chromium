@@ -173,11 +173,11 @@ export class SettingsKeyboardAndTextInputPageElement extends
     this.attemptDeepLink();
   }
 
-  private onSwitchAccessSettingsTap_(): void {
+  private onSwitchAccessSettingsClick_(): void {
     Router.getInstance().navigateTo(routes.MANAGE_SWITCH_ACCESS_SETTINGS);
   }
 
-  private onKeyboardTap_(): void {
+  private onKeyboardClick_(): void {
     Router.getInstance().navigateTo(
         routes.KEYBOARD,
         /* dynamicParams= */ undefined, /* removeSearch= */ true);

@@ -676,21 +676,21 @@ class SettingsInternetSubpageElement extends
     this.dispatchEvent(event);
   }
 
-  private onAddWifiButtonTap_(): void {
+  private onAddWifiButtonClick_(): void {
     assert(this.deviceState, 'Device state is falsey - Wifi expected.');
     const type = this.deviceState.type;
     assert(type === NetworkType.kWiFi, 'Wifi type expected.');
     this.dispatchShowConfigEvent_(OncMojo.getNetworkTypeString(type));
   }
 
-  private onAddVpnButtonTap_(): void {
+  private onAddVpnButtonClick_(): void {
     assert(this.deviceState, 'Device state is falsey - VPN expected.');
     const type = this.deviceState.type;
     assert(type === NetworkType.kVPN, 'VPN type expected.');
     this.dispatchShowConfigEvent_(OncMojo.getNetworkTypeString(type));
   }
 
-  private onAddThirdPartyVpnTap_(event: DomRepeatEvent<VpnProvider>): void {
+  private onAddThirdPartyVpnClick_(event: DomRepeatEvent<VpnProvider>): void {
     const provider = event.model.item;
     this.browserProxy_.addThirdPartyVpn(provider.appId);
     recordSettingChange();
@@ -704,7 +704,7 @@ class SettingsInternetSubpageElement extends
   /**
    * Event triggered when the known networks button is clicked.
    */
-  private onKnownNetworksTap_(): void {
+  private onKnownNetworksClick_(): void {
     assert(this.deviceState?.type === NetworkType.kWiFi);
     const showKnownNetworksEvent = new CustomEvent('show-known-networks', {
       bubbles: true,

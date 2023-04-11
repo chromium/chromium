@@ -43,7 +43,7 @@
         deep-link-focus-id$="[[Setting.k24HourClock]]">
     </settings-toggle-button>
     <cr-link-row class="hr" id="setDateTime"
-        on-click="onSetDateTimeTap_" hidden$="[[!canSetDateTime_]]"
+        on-click="onSetDateTimeClick_" hidden$="[[!canSetDateTime_]]"
         label="$i18n{setDateTime}">
       <template is="dom-if" if="[[displayManagedByParentIcon_]]">
         <cr-policy-indicator indicator-type="parent"></cr-policy-indicator>

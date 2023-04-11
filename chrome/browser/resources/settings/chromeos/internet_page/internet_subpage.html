@@ -88,7 +88,7 @@
     <!-- The add button in this row is only shown for WiFi networks. -->
     <cr-icon-button class="icon-add-wifi add-button" id="addWifiButton"
         hidden$="[[!showAddWifiButton_(deviceState, globalPolicy)]]"
-        aria-label="$i18n{internetAddWiFi}" on-click="onAddWifiButtonTap_"
+        aria-label="$i18n{internetAddWiFi}" on-click="onAddWifiButtonClick_"
         tabindex$="[[tabindex]]"
         deep-link-focus-id$="[[Setting.kWifiAddNetwork]]">
     </cr-icon-button>
@@ -109,7 +109,7 @@
       id="knownNetworksSubpageButton"
       class="hr"
       label="$i18n{knownNetworksButton}"
-      on-click="onKnownNetworksTap_"
+      on-click="onKnownNetworksClick_"
       role-description="$i18n{subpageArrowRoleDescription}">
   </cr-link-row>
 </template>
@@ -127,7 +127,7 @@
         <cr-icon-button class="icon-add-circle"
             disabled="[[!vpnIsEnabled_]]"
             aria-label="$i18n{internetAddVPN}"
-            on-click="onAddVpnButtonTap_"
+            on-click="onAddVpnButtonClick_"
             tabindex$="[[tabindex]]">
         </cr-icon-button>
       </div>
@@ -200,7 +200,7 @@
           <div class="flex settings-box-text">[[item.providerName]]</div>
           <cr-icon-button class="icon-add-circle"
               aria-label$="[[getAddThirdPartyVpnA11yString_(item)]]"
-              on-click="onAddThirdPartyVpnTap_" tabindex$="[[tabindex]]">
+              on-click="onAddThirdPartyVpnClick_" tabindex$="[[tabindex]]">
           </cr-icon-button>
         </div>
         <network-list show-buttons

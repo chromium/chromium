@@ -475,7 +475,7 @@ export class SettingsTtsSubpageElement extends SettingsTtsSubpageElementBase {
         this.previewText_, this.$.previewVoice.value);
   }
 
-  private onEngineSettingsTap_(event: DomRepeatEvent<TtsHandlerExtension>):
+  private onEngineSettingsClick_(event: DomRepeatEvent<TtsHandlerExtension>):
       void {
     this.ttsBrowserProxy_.wakeTtsEngine();
     window.open(event.model.item.optionsPage);

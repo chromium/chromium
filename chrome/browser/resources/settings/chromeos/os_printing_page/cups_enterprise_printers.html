@@ -34,7 +34,7 @@
 </style>
 
 <cr-action-menu role-description="$i18n{menu}">
-  <button id="viewButton" class="dropdown-item" on-click="onViewTap_">
+  <button id="viewButton" class="dropdown-item" on-click="onViewClick_">
     $i18n{viewPrinter}
   </button>
   <button id="removeButton" class="dropdown-item" disabled>
@@ -60,7 +60,7 @@
     <div id="show-more-text">$i18n{showMorePrinters}</div>
     <cr-icon-button class="action-button" id="show-more-icon"
         iron-icon="cr:expand-more"
-        on-click="onShowMoreTap_"
+        on-click="onShowMoreClick_"
         title="$i18n{showMorePrinters}">
     </cr-icon-button>
   </div>

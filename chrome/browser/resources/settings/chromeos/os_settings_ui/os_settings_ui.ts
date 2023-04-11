@@ -429,7 +429,7 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
     this.navigateToActiveRoute_();
   }
 
-  private onMenuButtonTap_() {
+  private onMenuButtonClick_() {
     if (!this.showNavMenu_) {
       return;
     }

@@ -121,14 +121,14 @@
   <div slot="button-container">
     <template is="dom-if" if="[[!errorMessage_]]" restamp>
       <cr-button id="cancel"
-          on-click="onCancelTap_"
+          on-click="onCancelClick_"
           disabled="[[isRenameInProgress_]]"
           class="cancel-button">
         $i18n{eSimRenameProfileDialogCancel}
       </cr-button>
     </template>
     <cr-button id="done"
-        on-click="onRenameDialogDoneTap_"
+        on-click="onRenameDialogDoneClick_"
         disabled="[[isDoneButtonDisabled_(isRenameInProgress_,
             esimProfileName_)]]"
         aria-label$="[[getDoneBtnA11yLabel_(esimProfileName_)]]"

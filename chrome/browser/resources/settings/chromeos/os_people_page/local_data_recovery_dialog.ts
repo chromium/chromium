@@ -74,11 +74,11 @@ class LocalDataRecoveryDialogElement extends
     this.close();
   }
 
-  private onCancelTap_(): void {
+  private onCancelClick_(): void {
     this.close();
   }
 
-  private async onDisableTap_(): Promise<void> {
+  private async onDisableClick_(): Promise<void> {
     try {
       if (!this.authToken) {
         console.error('Recovery changed with expired token.');

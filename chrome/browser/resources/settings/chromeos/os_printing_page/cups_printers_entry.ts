@@ -66,7 +66,7 @@ export class SettingsCupsPrintersEntryElement extends
    * Fires a custom event when the menu button is clicked. Sends the details of
    * the printer and where the menu should appear.
    */
-  private onOpenActionMenuTap_(
+  private onOpenActionMenuClick_(
       e: CustomEvent<{target: HTMLElement, item: PrinterListEntry}>): void {
     const openActionMenuEvent = new CustomEvent('open-action-menu', {
       bubbles: true,
@@ -79,7 +79,7 @@ export class SettingsCupsPrintersEntryElement extends
     this.dispatchEvent(openActionMenuEvent);
   }
 
-  private onAddDiscoveredPrinterTap_(): void {
+  private onAddDiscoveredPrinterClick_(): void {
     const queryDiscoveredPrinterEvent =
         new CustomEvent('query-discovered-printer', {
           bubbles: true,
@@ -89,7 +89,7 @@ export class SettingsCupsPrintersEntryElement extends
     this.dispatchEvent(queryDiscoveredPrinterEvent);
   }
 
-  private onAddAutomaticPrinterTap_(): void {
+  private onAddAutomaticPrinterClick_(): void {
     const addAutomaticPrinterEvent = new CustomEvent('add-automatic-printer', {
       bubbles: true,
       composed: true,
@@ -98,7 +98,7 @@ export class SettingsCupsPrintersEntryElement extends
     this.dispatchEvent(addAutomaticPrinterEvent);
   }
 
-  private onAddServerPrinterTap_(): void {
+  private onAddServerPrinterClick_(): void {
     const addPrintServer = new CustomEvent('add-print-server-printer', {
       bubbles: true,
       composed: true,

@@ -144,7 +144,7 @@ class SettingsDateTimePageElement extends SettingsDateTimePageElementBase {
     this.canSetDateTime_ = canSetDateTime;
   }
 
-  private onSetDateTimeTap_() {
+  private onSetDateTimeClick_() {
     this.browserProxy_.showSetDateTimeUi();
   }
 

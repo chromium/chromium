@@ -265,7 +265,7 @@ class SettingsCupsEditPrinterDialogElement extends
     this.printerInfoChanged_ = true;
   }
 
-  private onCancelTap_(): void {
+  private onCancelClick_(): void {
     this.shadowRoot!.querySelector('add-printer-dialog')!.close();
   }
 
@@ -292,7 +292,7 @@ class SettingsCupsEditPrinterDialogElement extends
     this.errorText_ = getErrorText((result));
   }
 
-  private onSaveTap_(): void {
+  private onSaveClick_(): void {
     this.updateActivePrinter_();
     if (!this.needsReconfigured_ || !this.isOnline_) {
       // If we don't need to reconfigure or we are offline, just update the

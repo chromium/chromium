@@ -160,12 +160,12 @@ class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
     this.attemptDeepLink();
   }
 
-  private onEnableTap_(event: Event) {
+  private onEnableClick_(event: Event) {
     this.browserProxy_.requestCrostiniInstallerView();
     event.stopPropagation();
   }
 
-  private onSubpageTap_(event: Event) {
+  private onSubpageClick_(event: Event) {
     // We do not open the subpage if the click was on a link.
     if (event.target && (event.target as HTMLElement).tagName === 'A') {
       event.stopPropagation();
@@ -177,13 +177,13 @@ class SettingsCrostiniPageElement extends SettingsCrostiniPageElementBase {
     }
   }
 
-  private onBruschettaEnableTap_(event: Event) {
+  private onBruschettaEnableClick_(event: Event) {
     this.browserProxy_.requestBruschettaInstallerView();
-    // Stop propagation so that onBruschettaSubpageTap_ isn't called.
+    // Stop propagation so that onBruschettaSubpageClick_ isn't called.
     event.stopPropagation();
   }
 
-  private onBruschettaSubpageTap_() {
+  private onBruschettaSubpageClick_() {
     // This function is called on-click even if actionable=false.
     if (this.getPref('bruschetta.installed.value')) {
       Router.getInstance().navigateTo(routes.BRUSCHETTA_DETAILS);

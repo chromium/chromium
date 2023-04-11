@@ -382,77 +382,77 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   /**
    * Handler for tapping the mouse and touchpad settings menu item.
    */
-  private onPointersTap_() {
+  private onPointersClick_() {
     Router.getInstance().navigateTo(routes.POINTERS);
   }
 
   /**
    * Handler for tapping the mouse and touchpad settings menu item.
    */
-  private onPerDeviceKeyboardTap_() {
+  private onPerDeviceKeyboardClick_() {
     Router.getInstance().navigateTo(routes.PER_DEVICE_KEYBOARD);
   }
 
   /**
    * Handler for tapping the Mouse settings menu item.
    */
-  private onPerDeviceMouseTap_() {
+  private onPerDeviceMouseClick_() {
     Router.getInstance().navigateTo(routes.PER_DEVICE_MOUSE);
   }
 
   /**
    * Handler for tapping the Touchpad settings menu item.
    */
-  private onPerDeviceTouchpadTap_() {
+  private onPerDeviceTouchpadClick_() {
     Router.getInstance().navigateTo(routes.PER_DEVICE_TOUCHPAD);
   }
 
   /**
    * Handler for tapping the Pointing stick settings menu item.
    */
-  private onPerDevicePointingStickTap_() {
+  private onPerDevicePointingStickClick_() {
     Router.getInstance().navigateTo(routes.PER_DEVICE_POINTING_STICK);
   }
 
   /**
    * Handler for tapping the Keyboard settings menu item.
    */
-  private onKeyboardTap_() {
+  private onKeyboardClick_() {
     Router.getInstance().navigateTo(routes.KEYBOARD);
   }
 
   /**
    * Handler for tapping the Stylus settings menu item.
    */
-  private onStylusTap_() {
+  private onStylusClick_() {
     Router.getInstance().navigateTo(routes.STYLUS);
   }
 
   /**
    * Handler for tapping the Display settings menu item.
    */
-  private onDisplayTap_() {
+  private onDisplayClick_() {
     Router.getInstance().navigateTo(routes.DISPLAY);
   }
 
   /**
    * Handler for tapping the Audio settings menu item.
    */
-  private onAudioTap_() {
+  private onAudioClick_() {
     Router.getInstance().navigateTo(routes.AUDIO);
   }
 
   /**
    * Handler for tapping the Storage settings menu item.
    */
-  private onStorageTap_() {
+  private onStorageClick_() {
     Router.getInstance().navigateTo(routes.STORAGE);
   }
 
   /**
    * Handler for tapping the Power settings menu item.
    */
-  private onPowerTap_() {
+  private onPowerClick_() {
     Router.getInstance().navigateTo(routes.POWER);
   }
 

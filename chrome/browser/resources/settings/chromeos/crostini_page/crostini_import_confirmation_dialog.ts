@@ -57,11 +57,11 @@ class SettingsCrostiniImportConfirmationDialogElement extends PolymerElement {
     this.$.dialog.showModal();
   }
 
-  private onCancelTap_() {
+  private onCancelClick_() {
     this.$.dialog.close();
   }
 
-  private onContinueTap_() {
+  private onContinueClick_() {
     this.browserProxy_.importCrostiniContainer(this.importContainerId);
     this.$.dialog.close();
   }

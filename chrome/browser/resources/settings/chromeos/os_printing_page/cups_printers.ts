@@ -391,7 +391,7 @@ class SettingsCupsPrintersElement extends SettingsCupsPrintersElementBase {
     this.entryManager_.setEnterprisePrintersList(this.enterprisePrinters_);
   }
 
-  private onAddPrinterTap_(): void {
+  private onAddPrinterClick_(): void {
     this.$.addPrinterDialog.open();
   }
 

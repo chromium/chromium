@@ -333,12 +333,12 @@ class SettingsDetailedBuildInfoSubpageElement extends
         CrPolicyIndicatorType.OWNER;
   }
 
-  private onChangeChannelTap_(e: Event) {
+  private onChangeChannelClick_(e: Event) {
     e.preventDefault();
     this.showChannelSwitcherDialog_ = true;
   }
 
-  private onEditHostnameTap_(e: Event) {
+  private onEditHostnameClick_(e: Event) {
     e.preventDefault();
     this.showEditHostnameDialog_ = true;
   }
@@ -347,7 +347,7 @@ class SettingsDetailedBuildInfoSubpageElement extends
     return !!this.versionInfo_ && !!this.channelInfo_;
   }
 
-  private onCopyBuildDetailsToClipBoardTap_() {
+  private onCopyBuildDetailsToClipBoardClick_() {
     const buildInfo: {[key: string]: string|boolean} = {
       'application_label': loadTimeData.getString('aboutBrowserVersion'),
       'platform': this.versionInfo_.osVersion,
@@ -401,7 +401,7 @@ class SettingsDetailedBuildInfoSubpageElement extends
     this.showConsumerAutoUpdateToggleDialog_ = false;
   }
 
-  private onVisitBuildDetailsPageTap_(e: Event) {
+  private onVisitBuildDetailsPageClick_(e: Event) {
     e.preventDefault();
     window.open('chrome://version');
   }

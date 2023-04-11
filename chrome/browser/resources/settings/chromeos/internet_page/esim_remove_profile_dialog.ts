@@ -105,7 +105,7 @@ class EsimRemoveProfileDialogElement extends
     return this.i18n('esimRemoveProfileDialogTitle', this.esimProfileName_);
   }
 
-  private onRemoveProfileTap_(): void {
+  private onRemoveProfileClick_(): void {
     this.esimProfileRemote_!.uninstallProfile().then((response) => {
       if (response.result === ESimOperationResult.kFailure) {
         this.fireShowErrorToastEvent_();
@@ -118,7 +118,7 @@ class EsimRemoveProfileDialogElement extends
         routes.INTERNET_NETWORKS, params, /*isPopState=*/ true);
   }
 
-  private onCancelTap_(): void {
+  private onCancelClick_(): void {
     this.$.dialog.close();
   }
 

@@ -30,7 +30,7 @@ class SettingsConsumerAutoUpdateToggleDialogElement extends PolymerElement {
     this.$.dialog.showModal();
   }
 
-  private onTurnOffTap_() {
+  private onTurnOffClick_() {
     this.dispatchEvent(new CustomEvent('set-consumer-auto-update', {
       bubbles: true,
       composed: true,
@@ -41,7 +41,7 @@ class SettingsConsumerAutoUpdateToggleDialogElement extends PolymerElement {
     this.$.dialog.close();
   }
 
-  private onKeepUpdatesTap_() {
+  private onKeepUpdatesClick_() {
     this.dispatchEvent(new CustomEvent('set-consumer-auto-update', {
       bubbles: true,
       composed: true,

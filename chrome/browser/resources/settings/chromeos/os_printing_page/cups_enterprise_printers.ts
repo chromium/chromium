@@ -187,7 +187,7 @@ class SettingsCupsEnterprisePrintersElement extends
         updatedPrinters);
   }
 
-  private onShowMoreTap_(): void {
+  private onShowMoreClick_(): void {
     this.hasShowMoreBeenTapped_ = true;
   }
 
@@ -244,7 +244,7 @@ class SettingsCupsEnterprisePrintersElement extends
     this.getCrActionMenu().showAt(target);
   }
 
-  private onViewTap_(): void {
+  private onViewClick_(): void {
     // Event is caught by 'settings-cups-printers'.
     const editCupsPrinterDetailsEvent = new CustomEvent(
         'edit-cups-printer-details', {bubbles: true, composed: true});

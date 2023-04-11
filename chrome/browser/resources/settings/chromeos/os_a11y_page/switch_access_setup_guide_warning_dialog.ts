@@ -38,11 +38,11 @@ class SettingsSwitchAccessSetupGuideWarningDialogElement extends
     this.$.dialog.showModal();
   }
 
-  private onCancelTap_(): void {
+  private onCancelClick_(): void {
     this.$.dialog.cancel();
   }
 
-  private onRerunSetupGuideTap_(): void {
+  private onRerunSetupGuideClick_(): void {
     this.$.dialog.close();
   }
 }

@@ -102,11 +102,11 @@ class GuestOsSharedUsbDevicesAddDialog extends
     });
   }
 
-  private onCancelTap_(): void {
+  private onCancelClick_(): void {
     this.$.dialog.close();
   }
 
-  private onAddTap_(): void {
+  private onAddClick_(): void {
     const sharedUsbDevice = this.sharedUsbDevices.find(
         ({device}) => device.guid === this.$.selectDevice.value);
     const {device} = castExists(sharedUsbDevice);
