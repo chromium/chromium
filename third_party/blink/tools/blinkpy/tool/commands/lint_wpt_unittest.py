@@ -31,11 +31,13 @@ class LintWPTTest(LoggingTestCase):
             json.dumps({
                 'version': 8,
                 'items': {
-                    'testharness': {
-                        'test.html': [
+                    'reftest': {
+                        'reftest.html': [
                             'd933fd981d4a33ba82fb2b000234859bdda1494e',
                             [None, {}],
                         ],
+                    },
+                    'testharness': {
                         'dir': {
                             'multiglob.https.any.js': [
                                 'd6498c3e388e0c637830fa080cca78b0ab0e5305',
@@ -83,7 +85,7 @@ class LintWPTTest(LoggingTestCase):
 
     def _check_metadata(self,
                         contents: str,
-                        path: str = 'test.html.ini') -> List[LintError]:
+                        path: str = 'reftest.html.ini') -> List[LintError]:
         return self.command.check_metadata(
             self.finder.path_from_wpt_tests(), path,
             io.BytesIO(textwrap.dedent(contents).encode()))
@@ -94,7 +96,7 @@ class LintWPTTest(LoggingTestCase):
             path='wptrunner.blink.ini')
         self.assertEqual(errors, [])
 
-    def test_metadata_valid(self):
+    def test_valid_test_metadata(self):
         errors = self._check_metadata(
             """\
             [variant.html?foo=bar/abc]
@@ -109,14 +111,21 @@ class LintWPTTest(LoggingTestCase):
             """, 'variant.html.ini')
         self.assertEqual(errors, [])
 
+    def test_valid_dir_metadata(self):
+        errors = self._check_metadata(
+            """\
+            disabled: neverfix
+            """, 'dir/__dir__.ini')
+        self.assertEqual(errors, [])
+
     def test_metadata_bad_syntax(self):
         (error, ) = self._check_metadata("""\
-            [test.html]
+            [reftest.html]
               [subtest with [literal] unescaped square brackets]
             """)
         name, description, path, line = error
         self.assertEqual(name, 'META-BAD-SYNTAX')
-        self.assertEqual(path, 'test.html.ini')
+        self.assertEqual(path, 'reftest.html.ini')
         self.assertEqual(
             description,
             'WPT metadata file could not be parsed: Junk before EOL u')
@@ -124,7 +133,7 @@ class LintWPTTest(LoggingTestCase):
         self.assertEqual(line, 2)
 
     def test_metadata_unsorted_sections(self):
-        out_of_order_tests, out_of_order_subtests = self._check_metadata(
+        out_of_order_subtests, out_of_order_tests = self._check_metadata(
             """\
             [variant.html?foo=baz]
               expected: TIMEOUT
@@ -196,3 +205,44 @@ class LintWPTTest(LoggingTestCase):
         self.assertEqual(
             description, 'Test ID does not exist: '
             "'dir/multiglob.https.any.sharedworker.html'")
+
+    def test_reftest_metadata_section_too_deep(self):
+        (error, ) = self._check_metadata("""\
+            [reftest.html]
+              [subtest]
+                expected: FAIL
+            """)
+        name, description, path, _ = error
+        self.assertEqual(name, 'META-SECTION-TOO-DEEP')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(
+            description,
+            "Test section '[reftest.html]' should not contain subheadings")
+
+    def test_testharness_metadata_section_too_deep(self):
+        (error, ) = self._check_metadata(
+            """\
+            [variant.html?foo=baz]
+              [subtest]
+                expected: FAIL
+                [bad indentation]
+                  expected: FAIL
+            """, 'variant.html.ini')
+        name, description, path, _ = error
+        self.assertEqual(name, 'META-SECTION-TOO-DEEP')
+        self.assertEqual(path, 'variant.html.ini')
+        self.assertEqual(
+            description,
+            "Subtest section '[subtest]' should not contain subheadings")
+
+    def test_dir_metadata_section_too_deep(self):
+        (error, ) = self._check_metadata(
+            """\
+            [multiglob.https.any.js]
+              expected: ERROR
+            """, 'dir/__dir__.ini')
+        name, description, path, _ = error
+        self.assertEqual(name, 'META-SECTION-TOO-DEEP')
+        self.assertEqual(path, 'dir/__dir__.ini')
+        self.assertEqual(description,
+                         "Directory section should not contain subheadings")

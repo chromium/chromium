@@ -4,12 +4,14 @@
 """Lint WPT files and metadata."""
 
 import argparse
+import contextlib
+import enum
 import io
 import logging
 import optparse
 import pathlib
 import urllib.parse
-from typing import Iterator, List, Optional, Tuple
+from typing import List, Optional, Tuple, Type
 
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
@@ -27,6 +29,13 @@ _log = logging.getLogger(__name__)
 
 class MetadataRule(rules.Rule):
     """Base type for metadata-related rules."""
+
+
+class SectionType(enum.Enum):
+    DIRECTORY = enum.auto()
+    ROOT = enum.auto()
+    TEST = enum.auto()
+    SUBTEST = enum.auto()
 
 
 class MetadataBadSyntax(MetadataRule):
@@ -54,7 +63,7 @@ class MetadataUnsortedSection(MetadataRule):
 
 class MetadataEmptySection(MetadataRule):
     name = 'META-EMPTY-SECTION'
-    description = 'Empty section can be removed: %(heading)r'
+    description = 'Empty section can be removed:%(heading)s'
     to_fix = """
     A section without keys or subsections has no effect and should be removed.
     The (sub)tests represented by empty sections default to enabled and
@@ -67,6 +76,18 @@ class MetadataUnknownTest(MetadataRule):
     description = 'Test ID does not exist: %(test)r'
     to_fix = """
     Check that the top-level section headings are not misspelled.
+    """
+
+
+class MetadataSectionTooDeep(MetadataRule):
+    name = 'META-SECTION-TOO-DEEP'
+    description = ('%(section_type)s section%(heading)s '
+                   'should not contain subheadings')
+    to_fix = """
+    Check that sections are indented correctly for the metadata and test type.
+    In particular:
+      * `__dir__.ini` should not contain sections.
+      * Only metadata for `testharness` tests may contain subtest sections.
     """
 
 
@@ -117,26 +138,111 @@ class LintWPT(Command):
 
     def check_metadata(self, repo_root: str, path: str,
                        metadata_file: io.BytesIO) -> List[LintError]:
-        # TODO(crbug.com/1406669): Check `__dir__.ini` too for relevant rules.
         manifest = self._manifest(repo_root)
-        if not self._is_metadata_file(manifest, path):
+        test_path = self._test_path(manifest, path)
+        if not test_path and not self._is_dir_metadata(path):
             return []
         try:
             ast = wptmanifest.parse(metadata_file)
         except wptmanifest.parser.ParseError as error:
             context = {'detail': error.detail}
             return [MetadataBadSyntax.error(path, context, error.line)]
-        return [
-            *self._check_metadata_sorted(path, ast),
-            *self._check_metadata_nonempty_sections(path, ast),
-            *self._check_metadata_valid_test_ids(path, ast, manifest),
-            # TODO(crbug.com/1406669): Implement remaining rules.
-        ]
 
-    def _check_metadata_sorted(self, path: str,
-                               node: wptnode.Node) -> Iterator[LintError]:
-        if not isinstance(node, wptnode.DataNode):
+        test_type = manifest.get_test_type(test_path) if test_path else None
+        linter = MetadataLinter(path, test_type, manifest)
+        return linter.find_errors(ast)
+
+    def _manifest(self, repo_root: str) -> WPTManifest:
+        wpt_dir = self._fs.normpath(
+            self._fs.relpath(repo_root, self._finder.path_from_web_tests()))
+        return self._default_port.wpt_manifest(wpt_dir)
+
+    def _is_dir_metadata(self, path: str) -> bool:
+        return self._fs.basename(path) == '__dir__.ini'
+
+    def _test_path(self, manifest: WPTManifest,
+                   metadata_path: str) -> Optional[str]:
+        test_path, extension = self._fs.splitext(metadata_path)
+        if extension == '.ini' and manifest.is_test_file(test_path):
+            return test_path
+        return None
+
+
+class MetadataLinter(wptnode.NodeVisitor):
+    def __init__(self, path: str, test_type: str, manifest: WPTManifest):
+        self.path = path
+        self.test_type = test_type
+        self.manifest = manifest
+        # `context` contains information about the current section type,
+        # heading, and key as it becomes available during the traversal. It's
+        # also provided to the error message formatter.
+        self.context = {}
+        self.errors = set()
+
+    @contextlib.contextmanager
+    def using_context(self, **context):
+        """Set some context variables that will be reset on exit."""
+        prev_context = self.context
+        try:
+            self.context = {**prev_context, **context}
+            yield
+        finally:
+            self.context = prev_context
+
+    def find_errors(self, ast: wptnode.DataNode) -> List[LintError]:
+        self.errors.clear()
+        if self.test_type:
+            initial_type = SectionType.ROOT
+        else:
+            initial_type = SectionType.DIRECTORY
+        with self.using_context(next_type=initial_type):
+            self.visit(ast)
+        return sorted(self.errors, key=lambda error: error[:3])
+
+    def visit(self, node: wptnode.Node):
+        try:
+            return super().visit(node)
+        except AttributeError:
+            # When no handler is explicitly specified, default to traversing
+            # the node's children.
+            for child in node.children:
+                self.visit(child)
+
+    def visit_DataNode(self, node: wptnode.DataNode):
+        section_type = self.context.get('next_type')
+        if not section_type:
+            self._error(MetadataSectionTooDeep)
             return
+        heading = f' {_format_node(node)!r}' if node.data else ''
+        with self.using_context(heading=heading, section_type=section_type):
+            next_type = None
+            if section_type is SectionType.ROOT:
+                next_type = SectionType.TEST
+            elif section_type is SectionType.TEST:
+                assert node.data
+                # Intentionally replaces the basename in `path`.
+                test_id = urllib.parse.urljoin(
+                    pathlib.Path(self.path).as_posix(), node.data)
+                if not self.manifest.is_test_url(test_id):
+                    self._error(MetadataUnknownTest, test=test_id)
+                elif self.test_type == 'testharness':
+                    next_type = SectionType.SUBTEST
+            if not node.children:
+                assert heading
+                self._error(MetadataEmptySection)
+            self._check_section_sorted(node)
+            with self.using_context(next_type=next_type):
+                for child in node.children:
+                    self.visit(child)
+
+    def _error(self, rule: Type[MetadataRule], **extra):
+        context = {**self.context, **extra}
+        section_type = context.get('section_type')
+        if section_type:
+            context['section_type'] = section_type.name.capitalize()
+        self.errors.add(rule.error(self.path, context))
+
+    def _check_section_sorted(self, node: wptnode.DataNode):
         sort_key = lambda child: (isinstance(child, wptnode.DataNode), child.
                                   data or '')
         sorted_children = sorted(node.children, key=sort_key)
@@ -147,49 +253,11 @@ class LintWPT(Command):
                 # potentially inaccurate. Therefore, instead of reporting a line
                 # number, show the exact contents of the first pair of
                 # out-of-order lines. This is probably more helpful anyway.
-                context = {
-                    'predecessor': _format_node(sorted_child),
-                    'successor': _format_node(child),
-                }
-                yield MetadataUnsortedSection.error(path, context)
+                self._error(MetadataUnsortedSection,
+                            predecessor=_format_node(sorted_child),
+                            successor=_format_node(child))
                 # Only report one error per block to avoid spam.
                 break
-        for child in node.children:
-            yield from self._check_metadata_sorted(path, child)
-
-    def _check_metadata_nonempty_sections(
-            self, path: str, node: wptnode.Node) -> Iterator[LintError]:
-        if not isinstance(node, wptnode.DataNode):
-            return
-        if not node.children:
-            context = {'heading': _format_node(node)}
-            yield MetadataEmptySection.error(path, context)
-        for child in node.children:
-            yield from self._check_metadata_nonempty_sections(path, child)
-
-    def _check_metadata_valid_test_ids(
-        self,
-        path: str,
-        node: wptnode.Node,
-        manifest: WPTManifest,
-    ) -> Iterator[LintError]:
-        for child in node.children:
-            if isinstance(child, wptnode.DataNode):
-                assert child.data
-                # Intentionally replaces the basename in `path`.
-                test_id = urllib.parse.urljoin(
-                    pathlib.Path(path).as_posix(), child.data)
-                if not manifest.is_test_url(test_id):
-                    yield MetadataUnknownTest.error(path, {'test': test_id})
-
-    def _manifest(self, repo_root: str) -> WPTManifest:
-        wpt_dir = self._fs.normpath(
-            self._fs.relpath(repo_root, self._finder.path_from_web_tests()))
-        return self._default_port.wpt_manifest(wpt_dir)
-
-    def _is_metadata_file(self, manifest: WPTManifest, path: str) -> bool:
-        test_path, extension = self._fs.splitext(path)
-        return extension == '.ini' and manifest.is_test_file(test_path)
 
 
 def _format_node(node: wptnode.Node) -> str:
