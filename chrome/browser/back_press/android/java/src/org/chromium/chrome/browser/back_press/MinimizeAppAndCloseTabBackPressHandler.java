@@ -42,6 +42,7 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
     private final Callback<Tab> mOnTabChanged = this::onTabChanged;
     private final ObservableSupplier<Tab> mActivityTabSupplier;
     private final Runnable mCallbackOnBackPress;
+    private final boolean mUseSystemBack;
 
     private static Integer sVersionForTesting;
 
@@ -109,9 +110,10 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
         mBackShouldCloseTab = backShouldCloseTab;
         mSendToBackground = sendToBackground;
         mActivityTabSupplier = activityTabSupplier;
-        mBackPressSupplier.set(!shouldUseSystemBack());
+        mUseSystemBack = shouldUseSystemBack();
+        mBackPressSupplier.set(!mUseSystemBack);
         mCallbackOnBackPress = callbackOnBackPress;
-        if (shouldUseSystemBack()) {
+        if (mUseSystemBack) {
             mActivityTabSupplier.addObserver(mOnTabChanged);
         }
     }
@@ -123,7 +125,7 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
         Tab currentTab = mActivityTabSupplier.get();
 
         if (currentTab == null) {
-            assert !shouldUseSystemBack()
+            assert !mUseSystemBack
                 : "Should be disabled when there is no valid tab and back press will be consumed.";
             minimizeApp = true;
             shouldCloseTab = false;
@@ -150,7 +152,7 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
                                   : MinimizeAppAndCloseTabType.MINIMIZE_APP);
             // If system back is enabled, we should let system handle the back press when
             // no tab is about to be closed.
-            assert shouldCloseTab || !shouldUseSystemBack();
+            assert shouldCloseTab || !mUseSystemBack;
             mSendToBackground.onResult(shouldCloseTab ? currentTab : null);
         } else { // shouldCloseTab is always true if minimizeApp is false.
             record(MinimizeAppAndCloseTabType.CLOSE_TAB);
@@ -171,7 +173,7 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
     }
 
     private void onTabChanged(Tab tab) {
-        assert shouldUseSystemBack() : "Should not observe changes when system back is disabled";
+        assert mUseSystemBack : "Should not observe changes when system back is disabled";
         mBackPressSupplier.set(tab != null && mBackShouldCloseTab.test(tab));
     }
 
