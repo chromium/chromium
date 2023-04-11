@@ -30130,6 +30130,7 @@ Called by update_document_policy_enum.py.-->
   <int value="25" label="P-521"/>
   <int value="29" label="X25519"/>
   <int value="16696" label="CECPQ2"/>
+  <int value="25497" label="Kyber+X25519"/>
 </enum>
 
 <enum name="EcheNotificationInteraction">

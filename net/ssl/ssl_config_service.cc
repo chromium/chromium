@@ -19,10 +19,10 @@ namespace {
 bool SSLContextConfigsAreEqual(const net::SSLContextConfig& config1,
                                const net::SSLContextConfig& config2) {
   return std::tie(config1.version_min, config1.version_max,
-                  config1.disabled_cipher_suites, config1.cecpq2_enabled,
+                  config1.disabled_cipher_suites, config1.post_quantum_enabled,
                   config1.ech_enabled, config1.insecure_hash_enabled) ==
          std::tie(config2.version_min, config2.version_max,
-                  config2.disabled_cipher_suites, config2.cecpq2_enabled,
+                  config2.disabled_cipher_suites, config2.post_quantum_enabled,
                   config2.ech_enabled, config2.insecure_hash_enabled);
 }
 

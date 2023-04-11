@@ -134,15 +134,6 @@ BASE_FEATURE(kPostQuantumKyber,
              "PostQuantumKyber",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPostQuantumCECPQ2,
-             "PostQuantumCECPQ2",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kPostQuantumCECPQ2SomeDomains,
-             "PostQuantumCECPQ2SomeDomains",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string>
-    kPostQuantumCECPQ2Prefix(&kPostQuantumCECPQ2SomeDomains, "prefix", "a");
-
 BASE_FEATURE(kNetUnusedIdleSocketTimeout,
              "NetUnusedIdleSocketTimeout",
              base::FEATURE_DISABLED_BY_DEFAULT);

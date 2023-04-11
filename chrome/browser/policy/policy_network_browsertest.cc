@@ -84,56 +84,32 @@ class SSLPolicyTest : public PolicyTest {
   net::EmbeddedTestServer https_server_;
 };
 
-class CECPQ2PolicyTest : public SSLPolicyTest {
+class PostQuantumPolicyTest : public SSLPolicyTest {
  public:
-  CECPQ2PolicyTest() {
+  PostQuantumPolicyTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        net::features::kPostQuantumCECPQ2);
+        net::features::kPostQuantumKyber);
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(CECPQ2PolicyTest, CECPQ2EnabledPolicy) {
-  net::SSLServerConfig ssl_config;
-  ssl_config.curves_for_testing = {NID_CECPQ2};
-  ASSERT_TRUE(StartTestServer(ssl_config));
-
-  // Should be able to load a page from the test server because CECPQ2 is
-  // enabled.
-  EXPECT_TRUE(GetBooleanPref(prefs::kCECPQ2Enabled));
-  LoadResult result = LoadPage("/title2.html");
-  EXPECT_TRUE(result.success);
-  EXPECT_EQ(u"Title Of Awesomeness", result.title);
-
-  // Disable the policy.
-  PolicyMap policies;
-  SetPolicy(&policies, key::kCECPQ2Enabled, base::Value(false));
-  UpdateProviderPolicy(policies);
-  content::FlushNetworkServiceInstanceForTesting();
-
-  // Page loads should now fail.
-  EXPECT_FALSE(GetBooleanPref(prefs::kCECPQ2Enabled));
-  result = LoadPage("/title3.html");
-  EXPECT_FALSE(result.success);
-}
-
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_F(CECPQ2PolicyTest, ChromeVariations) {
+IN_PROC_BROWSER_TEST_F(PostQuantumPolicyTest, ChromeVariations) {
   net::SSLServerConfig ssl_config;
-  ssl_config.curves_for_testing = {NID_CECPQ2};
+  ssl_config.curves_for_testing = {NID_X25519Kyber768};
   ASSERT_TRUE(StartTestServer(ssl_config));
 
-  // Should be able to load a page from the test server because CECPQ2 is
+  // Should be able to load a page from the test server because Kyber is
   // enabled.
-  EXPECT_TRUE(GetBooleanPref(prefs::kCECPQ2Enabled));
+  EXPECT_TRUE(GetBooleanPref(prefs::kPostQuantumEnabled));
   LoadResult result = LoadPage("/title2.html");
   EXPECT_TRUE(result.success);
   EXPECT_EQ(u"Title Of Awesomeness", result.title);
 
   // Setting ChromeVariations to a non-zero value should also disable
-  // CECPQ2.
+  // Kyber.
   const auto* const variations_key =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       // On Chrome OS the ChromeVariations policy doesn't exist and is

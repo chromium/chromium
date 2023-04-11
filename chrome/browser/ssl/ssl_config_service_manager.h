@@ -65,7 +65,7 @@ class SSLConfigServiceManager {
   StringPrefMember ssl_version_min_;
   StringPrefMember ssl_version_max_;
   StringListPrefMember h2_client_cert_coalescing_host_patterns_;
-  BooleanPrefMember cecpq2_enabled_;
+  BooleanPrefMember post_quantum_enabled_;
   BooleanPrefMember ech_enabled_;
   BooleanPrefMember insecure_hash_enabled_;
 
