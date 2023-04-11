@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SettingsMultideviceCombinedSetupItemElement} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {MultiDeviceFeatureState, SyncBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestSyncBrowserProxy} from '../test_os_sync_browser_proxy.js';
 
-import {TestSyncBrowserProxy} from './test_os_sync_browser_proxy.js';
+suite('<settings-multidevice-combined-setup-item>', () => {
+  let combinedSetupItem: SettingsMultideviceCombinedSetupItemElement;
 
-suite('Multidevice', function() {
-  let combinedSetupItem;
-
-  setup(function() {
+  setup(() => {
     const browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
-
-    PolymerTest.clearBody();
 
     combinedSetupItem =
         document.createElement('settings-multidevice-combined-setup-item');
@@ -25,14 +25,14 @@ suite('Multidevice', function() {
     flush();
   });
 
-  teardown(function() {
+  teardown(() => {
     combinedSetupItem.remove();
   });
 
   test('Setup button is disabled when PhoneHub is disabled.', async () => {
-    let button = combinedSetupItem.shadowRoot.querySelector(
+    let button = combinedSetupItem.shadowRoot!.querySelector<CrButtonElement>(
         'cr-button[slot=feature-controller]');
-    assertTrue(!!button);
+    assert(button);
     assertFalse(button.disabled);
 
     combinedSetupItem.pageContentData = Object.assign(
@@ -40,9 +40,9 @@ suite('Multidevice', function() {
         {phoneHubState: MultiDeviceFeatureState.DISABLED_BY_USER});
     flush();
 
-    button = combinedSetupItem.shadowRoot.querySelector(
+    button = combinedSetupItem.shadowRoot!.querySelector(
         'cr-button[slot=feature-controller]');
-    assertTrue(!!button);
+    assert(button);
     assertTrue(button.disabled);
   });
 
@@ -57,13 +57,13 @@ suite('Multidevice', function() {
         flush();
 
         assertEquals(
-            combinedSetupItem.getSetupName_(),
             combinedSetupItem.i18n(
-                'multidevicePhoneHubCameraRollNotificationsAndAppsItemTitle'));
+                'multidevicePhoneHubCameraRollNotificationsAndAppsItemTitle'),
+            combinedSetupItem.get('setupName_'));
         assertEquals(
-            combinedSetupItem.getSetupSummary_(),
             combinedSetupItem.i18n(
-                'multidevicePhoneHubCameraRollNotificationsAndAppsItemSummary'));
+                'multidevicePhoneHubCameraRollNotificationsAndAppsItemSummary'),
+            combinedSetupItem.get('setupSummary_'));
       });
 
   test(
@@ -76,13 +76,13 @@ suite('Multidevice', function() {
         flush();
 
         assertEquals(
-            combinedSetupItem.getSetupName_(),
             combinedSetupItem.i18n(
-                'multidevicePhoneHubCameraRollAndNotificationsItemTitle'));
+                'multidevicePhoneHubCameraRollAndNotificationsItemTitle'),
+            combinedSetupItem.get('setupName_'));
         assertEquals(
-            combinedSetupItem.getSetupSummary_(),
             combinedSetupItem.i18n(
-                'multidevicePhoneHubCameraRollAndNotificationsItemSummary'));
+                'multidevicePhoneHubCameraRollAndNotificationsItemSummary'),
+            combinedSetupItem.get('setupSummary_'));
       });
 
   test('Correct strings are shown for camera roll and apps.', async () => {
@@ -93,13 +93,12 @@ suite('Multidevice', function() {
     flush();
 
     assertEquals(
-        combinedSetupItem.getSetupName_(),
-        combinedSetupItem.i18n(
-            'multidevicePhoneHubCameraRollAndAppsItemTitle'));
+        combinedSetupItem.i18n('multidevicePhoneHubCameraRollAndAppsItemTitle'),
+        combinedSetupItem.get('setupName_'));
     assertEquals(
-        combinedSetupItem.getSetupSummary_(),
         combinedSetupItem.i18n(
-            'multidevicePhoneHubCameraRollAndAppsItemSummary'));
+            'multidevicePhoneHubCameraRollAndAppsItemSummary'),
+        combinedSetupItem.get('setupSummary_'));
   });
 
   test('Correct strings are shown for notifications and apps.', async () => {
@@ -110,12 +109,12 @@ suite('Multidevice', function() {
     flush();
 
     assertEquals(
-        combinedSetupItem.getSetupName_(),
         combinedSetupItem.i18n(
-            'multidevicePhoneHubAppsAndNotificationsItemTitle'));
+            'multidevicePhoneHubAppsAndNotificationsItemTitle'),
+        combinedSetupItem.get('setupName_'));
     assertEquals(
-        combinedSetupItem.getSetupSummary_(),
         combinedSetupItem.i18n(
-            'multidevicePhoneHubAppsAndNotificationsItemSummary'));
+            'multidevicePhoneHubAppsAndNotificationsItemSummary'),
+        combinedSetupItem.get('setupSummary_'));
   });
 });

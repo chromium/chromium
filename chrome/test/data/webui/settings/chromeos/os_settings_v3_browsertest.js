@@ -365,7 +365,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ],
  ['LockScreenSubpage', 'lock_screen_subpage_tests.js'],
  ['ManageUsersSubpage', 'manage_users_subpage_tests.js'],
- ['MultideviceCombinedSetupItem', 'multidevice_combined_setup_item_tests.js'],
  // TODO(b/208932892): Re-enable once flakiness is fixed.
  // ['MultideviceFeatureItem', 'multidevice_feature_item_tests.js'],
  ['MultideviceFeatureToggle', 'multidevice_feature_toggle_tests.js'],
@@ -374,6 +373,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'multidevice_notification_access_setup_dialog_tests.js',
  ],
  ['MultidevicePage', 'multidevice_page_tests.js'],
+ [
+   'MultiDevicePageMultideviceCombinedSetupItem',
+   'multidevice_page/multidevice_combined_setup_item_tests.js'
+ ],
  [
    'MultidevicePageMultideviceWifiSyncItem',
    'multidevice_page/multidevice_wifi_sync_item_tests.js'

@@ -108,7 +108,7 @@ export {SettingsSliderElement} from '../controls/settings_slider.js';
 export {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 export {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 export {ProfileInfoBrowserProxyImpl} from '../people_page/profile_info_browser_proxy.js';
-export {PageStatus, StatusAction, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
+export {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../people_page/sync_browser_proxy.js';
 export {PrivacyPageBrowserProxyImpl, SecureDnsMode, SecureDnsUiManagementMode} from '../privacy_page/privacy_page_browser_proxy.js';
 export {setCrosAudioConfigForTesting} from './device_page/cros_audio_config.js';
 export {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, setDisplayApiForTesting, StorageSpaceState} from './device_page/device_page_browser_proxy.js';

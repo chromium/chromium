@@ -72,7 +72,6 @@ build_webui_tests("build") {
     "kerberos_page_test.js",
     "lock_screen_subpage_tests.ts",
     "manage_users_subpage_tests.js",
-    "multidevice_combined_setup_item_tests.js",
     "multidevice_feature_item_tests.js",
     "multidevice_feature_toggle_tests.js",
     "multidevice_notification_access_setup_dialog_tests.js",
@@ -134,7 +133,7 @@ build_webui_tests("build") {
     "test_os_lifetime_browser_proxy.js",
     "test_os_reset_browser_proxy.js",
     "test_os_settings_search_box_browser_proxy.js",
-    "test_os_sync_browser_proxy.js",
+    "test_os_sync_browser_proxy.ts",
     "test_personalization_hub_browser_proxy.js",
     "test_privacy_hub_browser_proxy.js",
     "test_profile_info_browser_proxy.js",
@@ -200,6 +199,7 @@ build_webui_tests("build") {
 
     "keyboard_shortcut_banner/keyboard_shortcut_banner_test.ts",
 
+    "multidevice_page/multidevice_combined_setup_item_tests.ts",
     "multidevice_page/multidevice_wifi_sync_item_tests.ts",
 
     "nearby_share_page/nearby_share_confirm_page_test.ts",
