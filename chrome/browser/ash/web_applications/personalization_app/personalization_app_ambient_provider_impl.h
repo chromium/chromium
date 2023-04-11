@@ -63,6 +63,9 @@ class PersonalizationAppAmbientProviderImpl
   void SetPageViewed() override;
   void FetchSettingsAndAlbums() override;
   void StartScreenSaverPreview() override;
+  void ShouldShowTimeOfDayBanner(
+      ShouldShowTimeOfDayBannerCallback callback) override;
+  void HandleTimeOfDayBannerDismissed() override;
 
   // Notify WebUI the latest values.
   void OnAmbientModeEnabledChanged();

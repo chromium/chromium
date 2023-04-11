@@ -9,6 +9,7 @@
 
 import './ambient/ambient_preview_large_element.js';
 
+import {getShouldShowTimeOfDayBanner} from './ambient/ambient_controller.js';
 import {isAmbientModeAllowed, isDarkLightModeEnabled, isPersonalizationJellyEnabled, isRgbKeyboardSupported} from './load_time_booleans.js';
 import {getTemplate} from './personalization_main_element.html.js';
 import {WithPersonalizationStore} from './personalization_store.js';
@@ -55,6 +56,8 @@ export class PersonalizationMain extends WithPersonalizationStore {
         'shouldShowTimeOfDayBanner_',
         state => state.ambient.shouldShowTimeOfDayBanner);
     this.updateFromStore();
+
+    getShouldShowTimeOfDayBanner(this.getStore());
   }
 }
 

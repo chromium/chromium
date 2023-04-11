@@ -58,6 +58,11 @@ class MockPersonalizationAppAmbientProvider
   MOCK_METHOD(void, SetPageViewed, (), (override));
   MOCK_METHOD(void, StartScreenSaverPreview, (), (override));
   MOCK_METHOD(void, FetchSettingsAndAlbums, (), (override));
+  MOCK_METHOD(void,
+              ShouldShowTimeOfDayBanner,
+              (ShouldShowTimeOfDayBannerCallback callback),
+              (override));
+  MOCK_METHOD(void, HandleTimeOfDayBannerDismissed, (), (override));
 };
 
 class MockPersonalizationAppKeyboardBacklightProvider

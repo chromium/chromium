@@ -10,6 +10,7 @@
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/constants/ambient_theme.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
@@ -155,7 +156,12 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
       : ash::AshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
             std::make_unique<content::BrowserTaskEnvironment>(
                 base::test::TaskEnvironment::TimeSource::MOCK_TIME))),
-        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+        profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kTimeOfDayWallpaper,
+         ash::features::kTimeOfDayScreenSaver},
+        {});
+  }
   PersonalizationAppAmbientProviderImplTest(
       const PersonalizationAppAmbientProviderImplTest&) = delete;
   PersonalizationAppAmbientProviderImplTest& operator=(
@@ -367,6 +373,7 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfileManager profile_manager_;
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;
@@ -1035,6 +1042,25 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
               Contains(Pointee(AllOf(
                   Field(&mojom::AmbientModeAlbum::id, Eq(kNewMexicoAlbumId)),
                   Field(&mojom::AmbientModeAlbum::checked, IsTrue())))));
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       DismissingBannerHidesItForever) {
+  bool called = false;
+  ambient_provider_remote()->ShouldShowTimeOfDayBanner(
+      base::BindLambdaForTesting([&called](bool should_show_banner) {
+        called = true;
+        EXPECT_TRUE(should_show_banner);
+      }));
+  ambient_provider_remote().FlushForTesting();
+  EXPECT_TRUE(called);
+
+  ambient_provider_remote()->HandleTimeOfDayBannerDismissed();
+
+  ambient_provider_remote()->ShouldShowTimeOfDayBanner(
+      base::BindLambdaForTesting(
+          [](bool should_show_nudge) { EXPECT_FALSE(should_show_nudge); }));
+  ambient_provider_remote().FlushForTesting();
 }
 
 }  // namespace ash::personalization_app

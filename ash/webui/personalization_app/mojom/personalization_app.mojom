@@ -651,6 +651,12 @@ interface AmbientProvider {
 
   // Starts the screen saver preview.
   StartScreenSaverPreview();
+
+  // Determines whether to show the time of day promo banner.
+  ShouldShowTimeOfDayBanner() => (bool should_show_banner);
+
+  // Called when the time of day promo banner is dismissed.
+  HandleTimeOfDayBannerDismissed();
 };
 
 // The supported preset colors for keyboard backlight.

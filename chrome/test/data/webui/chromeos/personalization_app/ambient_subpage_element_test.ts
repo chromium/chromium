@@ -908,4 +908,21 @@ suite('AmbientSubpageTest', function() {
     albums[0].click();
     assertTrue(albums[0].selected!);
   });
+
+  test(
+      'dismisses the time of day banner if ambient mode is enabled',
+      async () => {
+        personalizationStore.setReducersEnabled(true);
+        ambientSubpageElement = await displayMainSettings(
+            TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+            /*ambientModeEnabled=*/ false);
+
+        personalizationStore.data.ambient.shouldShowTimeOfDayBanner = true;
+        personalizationStore.data.ambient.ambientModeEnabled = true;
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(ambientSubpageElement);
+        assertFalse(
+            personalizationStore.data.ambient.shouldShowTimeOfDayBanner,
+            'banner is dismissed');
+      });
 });

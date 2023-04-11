@@ -8,6 +8,7 @@ import {AmbientModeAlbum, AmbientProviderInterface, AnimationTheme, TemperatureU
 import {PersonalizationStore} from '../personalization_store.js';
 
 import {setAlbumSelectedAction, setAmbientModeEnabledAction, setAnimationThemeAction, setShouldShowTimeOfDayBannerAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
+import {getAmbientProvider} from './ambient_interface_provider.js';
 import {isValidTopicSourceAndTheme} from './utils.js';
 
 /**
@@ -76,11 +77,23 @@ export function startScreenSaverPreview(provider: AmbientProviderInterface):
   provider.startScreenSaverPreview();
 }
 
+export async function getShouldShowTimeOfDayBanner(
+    store: PersonalizationStore) {
+  const {shouldShowBanner} =
+      await getAmbientProvider().shouldShowTimeOfDayBanner();
+
+  // Dispatch action to set the should show banner boolean.
+  store.dispatch(setShouldShowTimeOfDayBannerAction(shouldShowBanner));
+}
+
+
 // Sets shouldShowTimeOfDayBanner to false.
 export function dismissTimeOfDayBanner(store: PersonalizationStore): void {
   if (!store.data.ambient.shouldShowTimeOfDayBanner) {
     // Do nothing if the banner is already dismissed;
     return;
   }
+  getAmbientProvider().handleTimeOfDayBannerDismissed();
+
   store.dispatch(setShouldShowTimeOfDayBannerAction(false));
 }

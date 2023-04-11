@@ -54,6 +54,9 @@ class FakePersonalizationAppAmbientProvider
   void SetPageViewed() override {}
   void StartScreenSaverPreview() override {}
   void FetchSettingsAndAlbums() override {}
+  void ShouldShowTimeOfDayBanner(
+      ShouldShowTimeOfDayBannerCallback callback) override;
+  void HandleTimeOfDayBannerDismissed() override {}
 
  private:
   mojo::Receiver<ash::personalization_app::mojom::AmbientProvider>
