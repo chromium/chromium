@@ -124,11 +124,11 @@ struct SameSizeAsPaintLayer : GarbageCollected<PaintLayer>, DisplayItemClient {
 #if DCHECK_IS_ON()
   bool is_destroyed;
 #endif
-  Member<void*> members1[6];
+  Member<void*> members[9];
   PhysicalOffset offset;
   LayoutSize size;
   LayoutUnit layout_units[2];
-  Member<void*> members2[3];
+  std::unique_ptr<void*> pointer;
 };
 
 ASSERT_SIZE(PaintLayer, SameSizeAsPaintLayer);
@@ -165,13 +165,6 @@ PaintLayer* SlowContainingLayer(const PaintLayer* ancestor,
 }
 
 }  // namespace
-
-PaintLayerRareData::PaintLayerRareData() = default;
-PaintLayerRareData::~PaintLayerRareData() = default;
-
-void PaintLayerRareData::Trace(Visitor* visitor) const {
-  visitor->Trace(resource_info);
-}
 
 PaintLayer::PaintLayer(LayoutBoxModelObject* layout_object)
     : is_root_layer_(IsA<LayoutView>(layout_object)),
@@ -231,14 +224,14 @@ void PaintLayer::Destroy() {
 #if DCHECK_IS_ON()
   DCHECK(!is_destroyed_);
 #endif
-  if (rare_data_ && rare_data_->resource_info) {
+  if (resource_info_) {
     const ComputedStyle& style = GetLayoutObject().StyleRef();
     if (style.HasFilter())
-      style.Filter().RemoveClient(*rare_data_->resource_info);
+      style.Filter().RemoveClient(*resource_info_);
     if (auto* reference_clip =
             DynamicTo<ReferenceClipPathOperation>(style.ClipPath()))
-      reference_clip->RemoveClient(*rare_data_->resource_info);
-    rare_data_->resource_info->ClearLayer();
+      reference_clip->RemoveClient(*resource_info_);
+    resource_info_->ClearLayer();
   }
 
   // Reset this flag before disposing scrollable_area_ to prevent
@@ -352,9 +345,9 @@ void PaintLayer::UpdateTransformAfterStyleChange(
 
   if (has_transform != had_transform) {
     if (has_transform)
-      EnsureRareData().transform = std::make_unique<gfx::Transform>();
+      transform_ = std::make_unique<gfx::Transform>();
     else
-      rare_data_->transform.reset();
+      transform_.reset();
   }
 
   UpdateTransform();
@@ -2438,12 +2431,10 @@ void PaintLayer::UpdateCompositorFilterOperationsForBackdropFilter(
 }
 
 PaintLayerResourceInfo& PaintLayer::EnsureResourceInfo() {
-  PaintLayerRareData& rare_data = EnsureRareData();
-  if (!rare_data.resource_info) {
-    rare_data.resource_info =
-        MakeGarbageCollected<PaintLayerResourceInfo>(this);
+  if (!resource_info_) {
+    resource_info_ = MakeGarbageCollected<PaintLayerResourceInfo>(this);
   }
-  return *rare_data.resource_info;
+  return *resource_info_;
 }
 
 void PaintLayer::SetNeedsReorderOverlayOverflowControls(bool b) {
@@ -2589,7 +2580,7 @@ void PaintLayer::Trace(Visitor* visitor) const {
   visitor->Trace(last_);
   visitor->Trace(scrollable_area_);
   visitor->Trace(stacking_node_);
-  visitor->Trace(rare_data_);
+  visitor->Trace(resource_info_);
   DisplayItemClient::Trace(visitor);
 }
 

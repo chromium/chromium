@@ -89,21 +89,6 @@ enum PaintLayerIteration {
       kNegativeZOrderChildren | kNormalFlowChildren | kPositiveZOrderChildren
 };
 
-struct CORE_EXPORT PaintLayerRareData final
-    : public GarbageCollected<PaintLayerRareData> {
- public:
-  PaintLayerRareData();
-  PaintLayerRareData(const PaintLayerRareData&) = delete;
-  PaintLayerRareData& operator=(const PaintLayerRareData&) = delete;
-  ~PaintLayerRareData();
-
-  void Trace(Visitor* visitor) const;
-
-  std::unique_ptr<gfx::Transform> transform;
-
-  Member<PaintLayerResourceInfo> resource_info;
-};
-
 // PaintLayer is an old object that handles lots of unrelated operations.
 //
 // We want it to die at some point and be replaced by more focused objects,
@@ -334,17 +319,14 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   }
 
   // Note that this transform has the transform-origin baked in.
-  gfx::Transform* Transform() const {
-    return rare_data_ ? rare_data_->transform.get() : nullptr;
-  }
+  gfx::Transform* Transform() const { return transform_.get(); }
 
   // Returns *Transform(), or identity matrix if Transform() is nullptr.
   gfx::Transform CurrentTransform() const;
 
   bool Preserves3D() const { return GetLayoutObject().Preserves3D(); }
   bool Has3DTransform() const {
-    return rare_data_ && rare_data_->transform &&
-           !rare_data_->transform->Is2dTransform();
+    return transform_ && !transform_->Is2dTransform();
   }
 
   // Returns |true| if any property that renders using filter operations is
@@ -398,9 +380,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return has_filter_that_moves_pixels_;
   }
 
-  PaintLayerResourceInfo* ResourceInfo() const {
-    return rare_data_ ? rare_data_->resource_info.Get() : nullptr;
-  }
+  PaintLayerResourceInfo* ResourceInfo() const { return resource_info_; }
   PaintLayerResourceInfo& EnsureResourceInfo();
 
   // Filter reference box is the area over which the filter is computed, in the
@@ -701,12 +681,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   void MarkCompositingContainerChainForNeedsRepaint();
 
-  PaintLayerRareData& EnsureRareData() {
-    if (!rare_data_)
-      rare_data_ = MakeGarbageCollected<PaintLayerRareData>();
-    return *rare_data_;
-  }
-
   void MergeNeedsPaintPhaseFlagsFrom(const PaintLayer& layer) {
     needs_paint_phase_descendant_outlines_ |=
         layer.needs_paint_phase_descendant_outlines_;
@@ -802,6 +776,10 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   Member<PaintLayer> first_;
   Member<PaintLayer> last_;
 
+  Member<PaintLayerScrollableArea> scrollable_area_;
+  Member<PaintLayerStackingNode> stacking_node_;
+  Member<PaintLayerResourceInfo> resource_info_;
+
   // Our (x,y) coordinates are in our containing layer's coordinate space,
   // excluding positioning offset and scroll.
   PhysicalOffset location_without_position_offset_;
@@ -817,11 +795,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   LayoutUnit static_inline_position_;
   LayoutUnit static_block_position_;
 
-  Member<PaintLayerScrollableArea> scrollable_area_;
-
-  Member<PaintLayerStackingNode> stacking_node_;
-
-  Member<PaintLayerRareData> rare_data_;
+  std::unique_ptr<gfx::Transform> transform_;
 
   // For layer_list_mutation_allowed_.
   friend class PaintLayerListMutationDetector;
