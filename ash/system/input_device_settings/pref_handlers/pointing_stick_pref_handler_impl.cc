@@ -260,4 +260,9 @@ void PointingStickPrefHandlerImpl::UpdateLoginScreenPointingStickSettings(
                    pointing_stick, /*force_persistence=*/{}, settings_dict)));
 }
 
+void PointingStickPrefHandlerImpl::InitializeWithDefaultPointingStickSettings(
+    mojom::PointingStick* pointing_stick) {
+  pointing_stick->settings = GetDefaultPointingStickSettings();
+}
+
 }  // namespace ash

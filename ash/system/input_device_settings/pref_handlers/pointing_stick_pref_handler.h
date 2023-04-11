@@ -34,6 +34,11 @@ class ASH_EXPORT PointingStickPrefHandler {
       const AccountId& account_id,
       mojom::PointingStick* pointing_stick) = 0;
 
+  // Updates the `settings` member of the `mojom::PointingStick` object using
+  // default settings.
+  virtual void InitializeWithDefaultPointingStickSettings(
+      mojom::PointingStick* pointing_stick) = 0;
+
   // Updates device settings stored in prefs to match the values in
   // `pointing_stick.settings`.
   virtual void UpdatePointingStickSettings(

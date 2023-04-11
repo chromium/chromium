@@ -277,16 +277,13 @@ void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
     DispatchMouseSettingsChanged(id);
   }
   for (const auto& [id, pointing_stick] : pointing_sticks_) {
-    pointing_stick_pref_handler_->InitializePointingStickSettings(
-        active_pref_service_, pointing_stick.get());
-    if (active_pref_service_) {
-      metrics_manager_->RecordPointingStickInitialMetrics(*pointing_stick);
-    }
+    InitializePointingStickSettings(pointing_stick.get());
     DispatchPointingStickSettingsChanged(id);
   }
 
   RefreshStoredLoginScreenKeyboardSettings();
   RefreshStoredLoginScreenMouseSettings();
+  RefreshStoredLoginScreenPointingStickSettings();
 }
 
 void InputDeviceSettingsControllerImpl::
@@ -349,6 +346,38 @@ void InputDeviceSettingsControllerImpl::
   }
 }
 
+void InputDeviceSettingsControllerImpl::
+    RefreshStoredLoginScreenPointingStickSettings() {
+  if (!local_state_ || !active_account_id_.has_value()) {
+    return;
+  }
+
+  // Our map of pointing sticks is sorted so iterating in reverse order
+  // guarantees that we'll select the most recently connected device.
+  auto external_iter =
+      base::ranges::find(pointing_sticks_.rbegin(), pointing_sticks_.rend(),
+                         /*value=*/true, [](const auto& pointing_stick) {
+                           return pointing_stick.second->is_external;
+                         });
+  auto internal_iter =
+      base::ranges::find(pointing_sticks_.rbegin(), pointing_sticks_.rend(),
+                         /*value=*/false, [](const auto& pointing_stick) {
+                           return pointing_stick.second->is_external;
+                         });
+
+  if (external_iter != pointing_sticks_.rend()) {
+    auto& external_pointing_stick = *external_iter->second;
+    pointing_stick_pref_handler_->UpdateLoginScreenPointingStickSettings(
+        local_state_, active_account_id_.value(), external_pointing_stick);
+  }
+
+  if (internal_iter != pointing_sticks_.rend()) {
+    auto& internal_pointing_stick = *internal_iter->second;
+    pointing_stick_pref_handler_->UpdateLoginScreenPointingStickSettings(
+        local_state_, active_account_id_.value(), internal_pointing_stick);
+  }
+}
+
 void InputDeviceSettingsControllerImpl::OnLoginScreenFocusedPodChanged(
     const AccountId& account_id) {
   active_account_id_ = account_id;
@@ -365,6 +394,12 @@ void InputDeviceSettingsControllerImpl::OnLoginScreenFocusedPodChanged(
         local_state_, account_id, policy_handler_->mouse_policies(),
         mouse.get());
     DispatchMouseSettingsChanged(id);
+  }
+
+  for (const auto& [id, pointing_stick] : pointing_sticks_) {
+    pointing_stick_pref_handler_->InitializeLoginScreenPointingStickSettings(
+        local_state_, account_id, pointing_stick.get());
+    DispatchPointingStickSettingsChanged(id);
   }
 }
 
@@ -609,6 +644,8 @@ void InputDeviceSettingsControllerImpl::SetPointingStickSettings(
       DispatchPointingStickSettingsChanged(device_id);
     }
   }
+
+  RefreshStoredLoginScreenPointingStickSettings();
 }
 
 void InputDeviceSettingsControllerImpl::AddObserver(Observer* observer) {
@@ -792,12 +829,7 @@ void InputDeviceSettingsControllerImpl::OnPointingStickListUpdated(
     std::vector<DeviceId> pointing_stick_ids_to_remove) {
   for (const auto& pointing_stick : pointing_sticks_to_add) {
     auto mojom_pointing_stick = BuildMojomPointingStick(pointing_stick);
-    pointing_stick_pref_handler_->InitializePointingStickSettings(
-        active_pref_service_, mojom_pointing_stick.get());
-    if (active_pref_service_) {
-      metrics_manager_->RecordPointingStickInitialMetrics(
-          *mojom_pointing_stick);
-    }
+    InitializePointingStickSettings(mojom_pointing_stick.get());
     pointing_sticks_.insert_or_assign(pointing_stick.id,
                                       std::move(mojom_pointing_stick));
     DispatchPointingStickConnected(pointing_stick.id);
@@ -806,6 +838,8 @@ void InputDeviceSettingsControllerImpl::OnPointingStickListUpdated(
   for (const auto id : pointing_stick_ids_to_remove) {
     DispatchPointingStickDisconnectedAndEraseFromList(id);
   }
+
+  RefreshStoredLoginScreenPointingStickSettings();
 }
 
 void InputDeviceSettingsControllerImpl::InitializeKeyboardSettings(
@@ -871,6 +905,27 @@ void InputDeviceSettingsControllerImpl::InitializeMouseSettings(
   mouse_pref_handler_->InitializeLoginScreenMouseSettings(
       local_state_, active_account_id_.value(),
       policy_handler_->mouse_policies(), mouse);
+}
+
+void InputDeviceSettingsControllerImpl::InitializePointingStickSettings(
+    mojom::PointingStick* pointing_stick) {
+  if (active_pref_service_) {
+    pointing_stick_pref_handler_->InitializePointingStickSettings(
+        active_pref_service_, pointing_stick);
+    metrics_manager_->RecordPointingStickInitialMetrics(*pointing_stick);
+    return;
+  }
+
+  // Ensure `pointing_stick.settings` is left in a valid state. This state
+  // occurs during OOBE setup and when signing in a new user.
+  if (!active_account_id_.has_value() || !local_state_) {
+    pointing_stick_pref_handler_->InitializeWithDefaultPointingStickSettings(
+        pointing_stick);
+    return;
+  }
+
+  pointing_stick_pref_handler_->InitializeLoginScreenPointingStickSettings(
+      local_state_, active_account_id_.value(), pointing_stick);
 }
 
 }  // namespace ash
