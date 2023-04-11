@@ -80,6 +80,8 @@ class MEDIA_GPU_EXPORT AndroidVideoEncodeAccelerator
   // frames are cropped to the nearest 16x16 alignment.
   bool SetInputBufferLayout();
 
+  void NotifyErrorStatus(EncoderStatus status);
+
   // Used to DCHECK that we are called on the correct sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 
