@@ -1174,6 +1174,19 @@ void GLES2InterfaceStub::ReadbackARGBImagePixelsINTERNAL(
     GLint /* src_y */,
     GLint /* plane_index */,
     void* /* pixels */) {}
+void GLES2InterfaceStub::WritePixelsINTERNAL(const GLbyte* /* mailbox */,
+                                             const void* /* src_color_space */,
+                                             GLuint /* src_color_space_size */,
+                                             GLuint /* src_size */,
+                                             GLuint /* src_width */,
+                                             GLuint /* src_height */,
+                                             GLuint /* src_sk_color_type */,
+                                             GLuint /* src_sk_alpha_type */,
+                                             GLuint /* src_row_bytes */,
+                                             GLint /* x_offset */,
+                                             GLint /* y_offset */,
+                                             GLint /* plane_index */,
+                                             const void* /* src_pixels */) {}
 void GLES2InterfaceStub::EnableiOES(GLenum /* target */, GLuint /* index */) {}
 void GLES2InterfaceStub::DisableiOES(GLenum /* target */, GLuint /* index */) {}
 void GLES2InterfaceStub::BlendEquationiOES(GLuint /* buf */,

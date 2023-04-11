@@ -1051,6 +1051,29 @@ error::Error GLES2DecoderPassthroughImpl::HandlePixelStorei(
   return DoPixelStorei(pname, param);
 }
 
+error::Error GLES2DecoderPassthroughImpl::HandleWritePixelsINTERNAL(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::WritePixelsINTERNAL& c =
+      *static_cast<const volatile gles2::cmds::WritePixelsINTERNAL*>(cmd_data);
+  GLint x_offset = static_cast<GLint>(c.x_offset);
+  GLint y_offset = static_cast<GLint>(c.y_offset);
+  GLint plane_index = static_cast<GLint>(c.plane_index);
+  GLuint src_width = static_cast<GLuint>(c.src_width);
+  GLuint src_height = static_cast<GLuint>(c.src_height);
+  GLuint src_row_bytes = static_cast<GLuint>(c.src_row_bytes);
+  GLuint src_sk_color_type = static_cast<GLuint>(c.src_sk_color_type);
+  GLuint src_sk_alpha_type = static_cast<GLuint>(c.src_sk_alpha_type);
+  GLint shm_id = static_cast<GLint>(c.shm_id);
+  GLuint shm_offset = static_cast<GLuint>(c.shm_offset);
+  GLuint pixels_offset = static_cast<GLuint>(c.pixels_offset);
+  GLuint mailbox_offset = static_cast<GLuint>(c.mailbox_offset);
+  DoWritePixelsINTERNAL(x_offset, y_offset, plane_index, src_width, src_height,
+                        src_row_bytes, src_sk_color_type, src_sk_alpha_type,
+                        shm_id, shm_offset, pixels_offset, mailbox_offset);
+  return error::kNoError;
+}
+
 error::Error GLES2DecoderPassthroughImpl::HandleReadbackARGBImagePixelsINTERNAL(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

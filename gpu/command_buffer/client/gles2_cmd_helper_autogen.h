@@ -3253,6 +3253,27 @@ void ReadbackARGBImagePixelsINTERNAL(GLint src_x,
   }
 }
 
+void WritePixelsINTERNAL(GLint x_offset,
+                         GLint y_offset,
+                         GLint plane_index,
+                         GLuint src_width,
+                         GLuint src_height,
+                         GLuint src_row_bytes,
+                         GLuint src_sk_color_type,
+                         GLuint src_sk_alpha_type,
+                         GLint shm_id,
+                         GLuint shm_offset,
+                         GLuint pixels_offset,
+                         GLuint mailbox_offset) {
+  gles2::cmds::WritePixelsINTERNAL* c =
+      GetCmdSpace<gles2::cmds::WritePixelsINTERNAL>();
+  if (c) {
+    c->Init(x_offset, y_offset, plane_index, src_width, src_height,
+            src_row_bytes, src_sk_color_type, src_sk_alpha_type, shm_id,
+            shm_offset, pixels_offset, mailbox_offset);
+  }
+}
+
 void EnableiOES(GLenum target, GLuint index) {
   gles2::cmds::EnableiOES* c = GetCmdSpace<gles2::cmds::EnableiOES>();
   if (c) {
