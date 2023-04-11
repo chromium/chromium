@@ -11,9 +11,11 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/value_builder.h"
@@ -111,6 +113,10 @@ class ExtensionErrorControllerUnitTest : public ExtensionServiceTestBase {
   // Add an extension to chrome, and mark it as blocklisted in the prefs.
   testing::AssertionResult AddBlocklistedExtension(const Extension* extension);
 
+  // Set enterprise policy to block `extension`. Use nullptr to not block any
+  // extension.
+  void SetBlockExtensionPolicy(const Extension* extension);
+
   // Return the ExtensionPrefs associated with the test.
   ExtensionPrefs* GetPrefs();
 };
@@ -142,6 +148,17 @@ ExtensionErrorControllerUnitTest::AddBlocklistedExtension(
   }
 
   return testing::AssertionSuccess();
+}
+
+void ExtensionErrorControllerUnitTest::SetBlockExtensionPolicy(
+    const Extension* extension) {
+  base::Value::List block_list;
+  if (extension) {
+    block_list.Append(extension->id());
+  }
+
+  testing_pref_service()->SetManagedPref(pref_names::kInstallDenyList,
+                                         std::move(block_list));
 }
 
 ExtensionPrefs* ExtensionErrorControllerUnitTest::GetPrefs() {
@@ -210,6 +227,50 @@ TEST_F(ExtensionErrorControllerUnitTest, DontWarnForAcknowledgedBlocklisted) {
   // We should never have made an alert, because the extension should already
   // be acknowledged.
   ASSERT_FALSE(g_error_ui);
+}
+
+// Test there is no error ui if no extension is blocked by policy.
+TEST_F(ExtensionErrorControllerUnitTest,
+       ExtensionIsNotBlockedByEnterprisePolicy) {
+  scoped_refptr<const Extension> extension = BuildExtension();
+  service_->Init();
+  service_->AddExtension(extension.get());
+
+  EXPECT_FALSE(g_error_ui);
+}
+
+// Test error ui is presented and acknowledged whe an extension is blocked by
+// policy.
+TEST_F(ExtensionErrorControllerUnitTest, ExtensionIsBlockedByEnterprisePolicy) {
+  scoped_refptr<const Extension> extension = BuildExtension();
+  service_->Init();
+  service_->AddExtension(extension.get());
+  SetBlockExtensionPolicy(extension.get());
+
+  ASSERT_TRUE(g_error_ui);
+
+  g_error_ui->Accept();
+  EXPECT_TRUE(GetPrefs()->IsBlocklistedExtensionAcknowledged(extension->id()));
+  EXPECT_FALSE(g_error_ui);
+}
+
+// Test the case that the error UI is accepted when we no longer need to show
+// error for a blocked extension. It includes the case that the policy is
+// updated or the extension is moved to the disabled list.
+TEST_F(ExtensionErrorControllerUnitTest, ExtensionIsUnblockedBeforeUIAccepted) {
+  scoped_refptr<const Extension> extension = BuildExtension();
+  service_->Init();
+  service_->AddExtension(extension.get());
+  SetBlockExtensionPolicy(extension.get());
+
+  ASSERT_TRUE(g_error_ui);
+
+  // Reset extension policy
+  SetBlockExtensionPolicy(nullptr);
+
+  g_error_ui->Accept();
+  EXPECT_TRUE(GetPrefs()->IsBlocklistedExtensionAcknowledged(extension->id()));
+  EXPECT_FALSE(g_error_ui);
 }
 
 }  // namespace extensions

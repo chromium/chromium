@@ -34,11 +34,15 @@ ExtensionErrorController::ExtensionErrorController(
 ExtensionErrorController::~ExtensionErrorController() {}
 
 void ExtensionErrorController::ShowErrorIfNeeded() {
+  if (error_ui_.get()) {
+    return;
+  }
+
   IdentifyAlertableExtensions();
 
   // Make sure there's something to show, and that there isn't currently a
   // bubble displaying.
-  if (!blocklisted_extensions_.empty() && !error_ui_.get()) {
+  if (!blocklisted_extensions_.empty()) {
     if (!is_first_run_) {
       error_ui_.reset(g_create_ui(this));
       if (!error_ui_->ShowErrorInBubbleView())  // Couldn't find a browser.
@@ -113,6 +117,9 @@ void ExtensionErrorController::IdentifyAlertableExtensions() {
   ManagementPolicy* management_policy = system->management_policy();
   PendingExtensionManager* pending_extension_manager =
       system->extension_service()->pending_extension_manager();
+  // We only show the error UI for the enabled set. This means that an
+  // extension that is blocked while browser is not running will never
+  // be displayed in the UI.
   const ExtensionSet& enabled_set = registry->enabled_extensions();
 
   for (ExtensionSet::const_iterator iter = enabled_set.begin();
