@@ -58,6 +58,7 @@
 -org.chromium.chrome.browser.bookmarks.BookmarkPersonalizedSigninPromoDismissTest.testPromoImpressionCountIncrementAfterDisplayingSigninPromo
 
 # crbug.com/1429741
+-org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitCover
 -org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitCoverForced
 -org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitCoverNoCutout
 
@@ -72,3 +73,15 @@
 
 # crbug.com/1430319
 -org.chromium.chrome.browser.ntp.NewTabPageTest.testRecordHistogramHomeButtonClick_Ntp
+
+# crbug.com/1416433
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentURIWithFileSchemeDoesNothing
+
+# crbug.com/1432046
+-org.chromium.chrome.browser.DragAndDropLauncherActivityTest.testDragAndDropLauncherActivity_openInExistingTabbedActivity
+
+# crbug.com/1432048
+-org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryModernViewTest.testDismissesSwipingEducationBubbleOnTap
+
+# crbug.com/1432049
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSelectionEditorPosition
