@@ -38,7 +38,7 @@ import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.autofill.prefeditor.EditorObserverForTest;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.UserSelectableType;
 
 /**
  * Autofill profiles fragment, which allows the user to edit autofill profiles.
@@ -252,7 +252,7 @@ public class AutofillProfilesFragment
     private boolean isAddressSyncEnabled() {
         SyncService syncService = SyncService.get();
         return syncService != null && syncService.isSyncFeatureEnabled()
-                && syncService.getSelectedTypes().contains(ModelType.AUTOFILL_PROFILE);
+                && syncService.getSelectedTypes().contains(UserSelectableType.AUTOFILL);
     }
 
     private Context getStyledContext() {
