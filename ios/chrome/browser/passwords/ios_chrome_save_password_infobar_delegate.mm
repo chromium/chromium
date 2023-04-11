@@ -94,6 +94,8 @@ void RecordPresentationMetrics(
 void RecordDismissalMetrics(
     password_manager::PasswordFormManagerForUI* form_to_save,
     password_manager::metrics_util::UIDismissalReason infobar_response,
+    password_manager::metrics_util::PasswordAccountStorageUserState
+        account_storage_user_state,
     bool update_infobar) {
   form_to_save->GetMetricsRecorder()->RecordUIDismissalReason(infobar_response);
 
@@ -105,7 +107,7 @@ void RecordDismissalMetrics(
     password_manager::metrics_util::LogSaveUIDismissalReason(
         infobar_response,
         form_to_save->GetPendingCredentials().submission_event,
-        /*user_state=*/absl::nullopt);
+        account_storage_user_state);
   }
 }
 
@@ -126,20 +128,24 @@ using password_manager::PasswordFormManagerForUI;
 IOSChromeSavePasswordInfoBarDelegate::IOSChromeSavePasswordInfoBarDelegate(
     absl::optional<std::string> account_to_store_password,
     bool password_update,
+    password_manager::metrics_util::PasswordAccountStorageUserState
+        account_storage_user_state,
     std::unique_ptr<PasswordFormManagerForUI> form_to_save)
     : form_to_save_(std::move(form_to_save)),
       infobar_type_(password_update
                         ? PasswordInfobarType::kPasswordInfobarTypeUpdate
                         : PasswordInfobarType::kPasswordInfobarTypeSave),
       account_to_store_password_(account_to_store_password),
+      account_storage_user_state_(account_storage_user_state),
       password_update_(password_update) {}
 
 IOSChromeSavePasswordInfoBarDelegate::~IOSChromeSavePasswordInfoBarDelegate() {
     // If by any reason this delegate gets dealloc before the Infobar is
     // dismissed, record the dismissal metrics.
     if (infobar_presenting_) {
-      RecordDismissalMetrics(form_to_save_.get(), infobar_response_,
-                             IsUpdateInfobar(infobar_type_));
+    RecordDismissalMetrics(form_to_save_.get(), infobar_response_,
+                           account_storage_user_state_,
+                           IsUpdateInfobar(infobar_type_));
     }
 }
 
@@ -250,6 +256,7 @@ void IOSChromeSavePasswordInfoBarDelegate::InfobarDismissed() {
     return;
 
   RecordDismissalMetrics(form_to_save_.get(), infobar_response_,
+                         account_storage_user_state_,
                          IsUpdateInfobar(infobar_type_));
   // After the metrics have been recorded we can reset the response.
   infobar_response_ = password_manager::metrics_util::NO_DIRECT_INTERACTION;
