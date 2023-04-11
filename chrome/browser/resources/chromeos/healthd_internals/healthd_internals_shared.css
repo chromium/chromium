@@ -1,0 +1,15 @@
+/* Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=//resources/cr_elements/cr_shared_style.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+h1,
+h2,
+p {
+  color: var(--cr-primary-text-color);
+}

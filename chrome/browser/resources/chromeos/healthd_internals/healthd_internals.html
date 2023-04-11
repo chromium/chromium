@@ -1,18 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+
 <head>
   <meta charset="utf-8">
-  <title>Healthd Internals Page</title>
-  <link rel="stylesheet" href="healthd_internals.css">
-  <script type="module" src="healthd_internals.js"></script>
+  <title>Healthd Internals</title>
   <style>
-    p {
-      white-space: pre-wrap;
+    html,
+    body {
+      height: 100%;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      html {
+        background: var(--md-background-color);
+      }
+    }
+
+    body {
+      margin: 0;
     }
   </style>
+  <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+  <script type="module" src="app.js"></script>
 </head>
+
 <body>
-  <h1>healthd_internals Page</h1>
-  <p>Welcome to the healthd_internals page!</p>
+  <healthd-internals-app></healthd-internals-app>
 </body>
+
 </html>
