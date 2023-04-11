@@ -419,7 +419,6 @@ non_web_component_files = [
   "people_page/profile_info_browser_proxy.ts",
   "people_page/sync_browser_proxy.ts",
   "privacy_page/privacy_page_browser_proxy.ts",
-  "relaunch_mixin.ts",
 ]
 
 mojom_webui_files = [
