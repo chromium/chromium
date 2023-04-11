@@ -83,6 +83,7 @@ source_set("metrics") {
     "//components/metrics_services_manager",
     "//components/navigation_metrics",
     "//components/omnibox/browser",
+    "//components/password_manager/core/browser",
     "//components/prefs",
     "//components/previous_session_info",
     "//components/signin/core/browser",

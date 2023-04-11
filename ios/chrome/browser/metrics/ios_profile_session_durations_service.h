@@ -7,13 +7,20 @@
 
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/driver/sync_session_durations_metrics_recorder.h"
+
+class PrefService;
+
+namespace password_manager {
+class PasswordSessionDurationsMetricsRecorder;
+}
 
 namespace signin {
 class IdentityManager;
 }
+
 namespace syncer {
 class SyncService;
+class SyncSessionDurationsMetricsRecorder;
 }
 
 // Tracks the active browsing time that the user spends signed in and/or syncing
@@ -21,9 +28,9 @@ class SyncService;
 class IOSProfileSessionDurationsService : public KeyedService {
  public:
   // Callers must ensure that the parameters outlive this object.
-  // If `sync_service` and `identity_manager` are null, then this object does
-  // not monitor profile session durations.
+  // `sync_service`, `pref_service` and `identity_manager` must be non-null.
   IOSProfileSessionDurationsService(syncer::SyncService* sync_service,
+                                    PrefService* pref_service,
                                     signin::IdentityManager* identity_manager);
 
   IOSProfileSessionDurationsService(const IOSProfileSessionDurationsService&) =
@@ -46,9 +53,16 @@ class IOSProfileSessionDurationsService : public KeyedService {
   bool IsSignedIn() const;
   bool IsSyncing() const;
 
+ protected:
+  // Test-only constructor that doesn't do anything and fake implementations
+  // can invoke.
+  IOSProfileSessionDurationsService();
+
  private:
   std::unique_ptr<syncer::SyncSessionDurationsMetricsRecorder>
-      metrics_recorder_;
+      sync_metrics_recorder_;
+  std::unique_ptr<password_manager::PasswordSessionDurationsMetricsRecorder>
+      password_metrics_recorder_;
 
   bool is_session_active_ = false;
 };

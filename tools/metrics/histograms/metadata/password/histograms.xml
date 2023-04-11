@@ -567,7 +567,7 @@ chromium-metrics-reviews@google.com.
     measured are unlikely to be helpful. Instead, please compare total
     durations.
 
-    This metric is only recorded on Win/Mac/Linux.
+    This metric is only recorded on Win/Mac/Linux/iOS (iOS from M113).
 
     Note: As part of crbug/1223007, we discovered that histogram
     PasswordManager.AccountStorageUserStateDuration.SignedOutUser was recorded
