@@ -234,6 +234,20 @@ class FileURLDirectoryLoader
 
     data_producer_ =
         std::make_unique<mojo::DataPipeProducer>(std::move(producer_handle));
+
+    const std::u16string& title = path_.AsUTF16Unsafe();
+    pending_data_.append(net::GetDirectoryListingHeader(title));
+
+    // If not a top-level directory, add a link to the parent directory. To
+    // figure this out, first normalize |path_| by stripping trailing
+    // separators. Then compare the result to its DirName(). For the top-level
+    // directory, e.g. "/" or "c:\\", the normalized path is equal to its own
+    // DirName().
+    base::FilePath stripped_path = path_.StripTrailingSeparators();
+    if (stripped_path != stripped_path.DirName()) {
+      pending_data_.append(net::GetParentDirectoryLink());
+    }
+    MaybeTransferPendingData();
   }
 
   void OnMojoDisconnect() {
@@ -252,22 +266,6 @@ class FileURLDirectoryLoader
   // net::DirectoryLister::DirectoryListerDelegate:
   void OnListFile(
       const net::DirectoryLister::DirectoryListerData& data) override {
-    if (!wrote_header_) {
-      wrote_header_ = true;
-
-      const std::u16string& title = path_.AsUTF16Unsafe();
-      pending_data_.append(net::GetDirectoryListingHeader(title));
-
-      // If not a top-level directory, add a link to the parent directory. To
-      // figure this out, first normalize |path_| by stripping trailing
-      // separators. Then compare the result to its DirName(). For the top-level
-      // directory, e.g. "/" or "c:\\", the normalized path is equal to its own
-      // DirName().
-      base::FilePath stripped_path = path_.StripTrailingSeparators();
-      if (stripped_path != stripped_path.DirName())
-        pending_data_.append(net::GetParentDirectoryLink());
-    }
-
     // Skip current / parent links from the listing.
     base::FilePath filename = data.info.GetName();
     if (filename.value() != base::FilePath::kCurrentDirectory &&
@@ -288,7 +286,11 @@ class FileURLDirectoryLoader
   void OnListDone(int error) override {
     listing_result_ = error;
     lister_.reset();
-    MaybeDeleteSelf();
+    if (!pending_data_.empty()) {
+      MaybeTransferPendingData();
+    } else {
+      MaybeDeleteSelf();
+    }
   }
 
   void MaybeTransferPendingData() {
@@ -344,7 +346,6 @@ class FileURLDirectoryLoader
 
   base::FilePath path_;
   std::unique_ptr<net::DirectoryLister> lister_;
-  bool wrote_header_ = false;
   int listing_result_;
 
   mojo::Receiver<network::mojom::URLLoader> receiver_{this};
