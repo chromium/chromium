@@ -5109,6 +5109,7 @@ if (is_chromeos_lacros) {
       "data/extensions/",
       "data/media/",
       "data/policy/test_certs/",
+      "data/result_queue.js",
       "data/webapps_integration/",
       "data/web_app_badging/",
       "data/web_app_shortcuts/",

@@ -18,19 +18,19 @@
           handle: handle,
           permittedOrigins: permittedOrigins,
         });
-        window.domAutomationController.send("capture-handle-set");
+        return "capture-handle-set";
       }
 
       function clickLinkToPageBottom() {
         document.getElementById("link_to_bottom").click();
-        window.domAutomationController.send("navigated");
+        return "navigated";
       }
 
       function clickLinkToUrl(url) {
         let link = document.getElementById("link");
         link.href = url;
         link.click();
-        window.domAutomationController.send("link-success");
+        return "link-success";
       }
     </script>
   </head>

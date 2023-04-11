@@ -11,7 +11,7 @@
  * Returns the list of devices available.
  */
 function enumerateDevices() {
-  navigator.mediaDevices.enumerateDevices().then(function(devices) {
-    returnToTest(JSON.stringify(devices));
+  return navigator.mediaDevices.enumerateDevices().then(function(devices) {
+    return JSON.stringify(devices);
   });
 }

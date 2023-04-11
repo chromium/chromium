@@ -34,7 +34,7 @@ const char kIsApprtcCallUpJavascript[] =
     "var remoteVideoActive ="
     "    remoteVideo != null &&"
     "    remoteVideo.classList.contains('active');"
-    "window.domAutomationController.send(remoteVideoActive.toString());";
+    "remoteVideoActive.toString();";
 
 // WebRTC-AppRTC integration test. Requires a real webcam and microphone
 // on the running system. This test is not meant to run in the main browser
@@ -148,14 +148,9 @@ class WebRtcApprtcBrowserTest : public WebRtcTestBase {
         ui_test_utils::NavigateToURL(browser(), GURL("http://localhost:9998")));
     content::WebContents* tab_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    std::string javascript =
-        "window.domAutomationController.send(document.title)";
-    std::string result;
-    if (!content::ExecuteScriptAndExtractString(tab_contents, javascript,
-                                                &result))
-      return false;
-
-    return result == kTitlePageOfAppEngineAdminPage;
+    std::string javascript = "document.title";
+    return content::EvalJs(tab_contents, javascript) ==
+           kTitlePageOfAppEngineAdminPage;
   }
 
   bool WaitForCallToComeUp(content::WebContents* tab_contents) {
