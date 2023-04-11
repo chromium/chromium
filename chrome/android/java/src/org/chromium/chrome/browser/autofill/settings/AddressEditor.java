@@ -424,7 +424,14 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
         @Nullable
         String email = getUserEmail();
         if (email == null) return null;
-        return mContext.getString(R.string.autofill_edit_account_address_source_notice)
+
+        if (isAlreadySavedInAccount()) {
+            return mContext
+                    .getString(R.string.autofill_address_already_saved_in_account_source_notice)
+                    .replace("$1", email);
+        }
+
+        return mContext.getString(R.string.autofill_address_will_be_saved_in_account_source_notice)
                 .replace("$1", email);
     }
 
@@ -443,8 +450,16 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
         return mContext.getString(R.string.autofill_delete_local_address_source_notice);
     }
 
+    private boolean willBeSavedInAccount() {
+        return mIsMigrationToAccount || (mProfile.getSource() == Source.ACCOUNT && !mIsUpdate);
+    }
+
+    private boolean isAlreadySavedInAccount() {
+        return mProfile.getSource() == Source.ACCOUNT && mIsUpdate;
+    }
+
     private boolean isAccountAddressProfile() {
-        return mProfile.getSource() == Source.ACCOUNT || mIsMigrationToAccount;
+        return willBeSavedInAccount() || isAlreadySavedInAccount();
     }
 
     private boolean isAddressSyncOn() {

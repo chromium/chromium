@@ -90,7 +90,9 @@ std::u16string SaveUpdateAddressProfilePromptController::GetSourceNotice(
          "user's Google Account";
 
   return l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_SAVE_IN_ACCOUNT_PROMPT_ADDRESS_SOURCE_NOTICE,
+      original_profile_
+          ? IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_SOURCE_NOTICE
+          : IDS_AUTOFILL_ADDRESS_WILL_BE_SAVED_IN_ACCOUNT_SOURCE_NOTICE,
       base::UTF8ToUTF16(account_info.email));
 }
 

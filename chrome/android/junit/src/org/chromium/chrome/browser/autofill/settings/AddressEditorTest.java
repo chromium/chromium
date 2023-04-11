@@ -427,7 +427,8 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_account_address_source_notice)
                         .replace("$1", USER_EMAIL);
         final String sourceNotice =
-                mActivity.getString(R.string.autofill_edit_account_address_source_notice)
+                mActivity
+                        .getString(R.string.autofill_address_will_be_saved_in_account_source_notice)
                         .replace("$1", USER_EMAIL);
 
         checkUiStringsHaveExpectedValues(
@@ -449,7 +450,8 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_account_address_source_notice)
                         .replace("$1", USER_EMAIL);
         final String sourceNotice =
-                mActivity.getString(R.string.autofill_edit_account_address_source_notice)
+                mActivity
+                        .getString(R.string.autofill_address_will_be_saved_in_account_source_notice)
                         .replace("$1", USER_EMAIL);
 
         checkUiStringsHaveExpectedValues(
@@ -471,7 +473,8 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_account_address_source_notice)
                         .replace("$1", USER_EMAIL);
         final String sourceNotice =
-                mActivity.getString(R.string.autofill_edit_account_address_source_notice)
+                mActivity
+                        .getString(R.string.autofill_address_already_saved_in_account_source_notice)
                         .replace("$1", USER_EMAIL);
 
         checkUiStringsHaveExpectedValues(

@@ -382,7 +382,7 @@ public class AutofillProfilesFragmentTest {
         TextView footerMessage = editorDialog.findViewById(R.id.footer_message);
         Assert.assertEquals(View.VISIBLE, footerMessage.getVisibility());
         String expectedMessage =
-                context.getString(R.string.autofill_edit_account_address_source_notice)
+                context.getString(R.string.autofill_address_already_saved_in_account_source_notice)
                         .replace("$1", email);
         Assert.assertEquals(expectedMessage, footerMessage.getText());
 

@@ -259,7 +259,7 @@ TEST_P(SaveUpdateAddressProfilePromptControllerTest,
   if (ShouldShowFooter()) {
     EXPECT_EQ(
         l10n_util::GetStringFUTF16(
-            IDS_AUTOFILL_SAVE_IN_ACCOUNT_PROMPT_ADDRESS_SOURCE_NOTICE,
+            IDS_AUTOFILL_ADDRESS_WILL_BE_SAVED_IN_ACCOUNT_SOURCE_NOTICE,
             base::ASCIIToUTF16(kUserEmail)),
         controller_->GetSourceNotice(identity_test_env_.identity_manager()));
   } else {
@@ -287,7 +287,7 @@ TEST_P(SaveUpdateAddressProfilePromptControllerTest,
   if (ShouldShowFooter()) {
     EXPECT_EQ(
         l10n_util::GetStringFUTF16(
-            IDS_AUTOFILL_SAVE_IN_ACCOUNT_PROMPT_ADDRESS_SOURCE_NOTICE,
+            IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_SOURCE_NOTICE,
             base::ASCIIToUTF16(kUserEmail)),
         controller_->GetSourceNotice(identity_test_env_.identity_manager()));
   } else {
@@ -318,7 +318,7 @@ TEST_P(SaveUpdateAddressProfilePromptControllerTest,
   if (ShouldShowFooter()) {
     EXPECT_EQ(
         l10n_util::GetStringFUTF16(
-            IDS_AUTOFILL_SAVE_IN_ACCOUNT_PROMPT_ADDRESS_SOURCE_NOTICE,
+            IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_SOURCE_NOTICE,
             base::ASCIIToUTF16(kUserEmail)),
         controller_->GetSourceNotice(identity_test_env_.identity_manager()));
   } else {
