@@ -6,7 +6,7 @@
 // access data of the clipboard. This is a temporary solution for
 // chromeos platform apps until open-web alternative is available. It will be
 // deprecated once open-web solution is available, which could be in 2017 Q4.
-[platforms=("chromeos", "lacros"),
+[modernised_enums, platforms=("chromeos", "lacros"),
  implemented_in="extensions/browser/api/clipboard/clipboard_api.h"]
 namespace clipboard {
   // Supported image types.

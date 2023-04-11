@@ -91,12 +91,12 @@ bool ClipboardSetImageDataFunction::IsAdditionalItemsParamValid(
   bool has_text_html = false;
   for (const clipboard::AdditionalDataItem& item : items) {
     switch (item.type) {
-      case clipboard::DATA_ITEM_TYPE_TEXTPLAIN:
+      case clipboard::DataItemType::kTextPlain:
         if (has_text_plain)
           return false;
         has_text_plain = true;
         break;
-      case clipboard::DATA_ITEM_TYPE_TEXTHTML:
+      case clipboard::DataItemType::kTextHtml:
         if (has_text_html)
           return false;
         has_text_html = true;
