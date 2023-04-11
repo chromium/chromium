@@ -58,15 +58,12 @@ const char* kFetchScript = R"(
 )";
 
 // JavaScript snippet which performs a fetch given a URL expression to be
-// substituted as %s, then sends back the fetched content using the
-// domAutomationController.
+// substituted as %s.
 const char* kDOMFetchScript = R"(
   fetch(%s).then(function(result) {
     return result.text();
-  }).then(function(text) {
-    window.domAutomationController.send(text);
   }).catch(function(err) {
-    window.domAutomationController.send(String(err));
+    return String(err);
   });
 )";
 
@@ -217,12 +214,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionFetchTest,
       embedded_test_server()->GetURL("example.com", "/empty.html"));
 
   // TODO(kalman): Test this from a content script too.
-  std::string fetch_result;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      empty_tab,
-      GetDOMFetchScript(GetQuotedURL(extension->GetResourceURL("text"))),
-      &fetch_result));
-  EXPECT_EQ("text content", fetch_result);
+  EXPECT_EQ(
+      "text content",
+      content::EvalJs(empty_tab, GetDOMFetchScript(GetQuotedURL(
+                                     extension->GetResourceURL("text")))));
 }
 
 // Calling fetch() from a http(s) service worker context to a
@@ -274,12 +269,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionFetchTest,
       embedded_test_server()->GetURL("example.com", "/empty.html"));
 
   // TODO(kalman): Test this from a content script too.
-  std::string fetch_result;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      empty_tab,
-      GetDOMFetchScript(GetQuotedURL(extension->GetResourceURL("text"))),
-      &fetch_result));
-  EXPECT_EQ("TypeError: Failed to fetch", fetch_result);
+  EXPECT_EQ(
+      "TypeError: Failed to fetch",
+      content::EvalJs(empty_tab, GetDOMFetchScript(GetQuotedURL(
+                                     extension->GetResourceURL("text")))));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionFetchTest, FetchResponseType) {

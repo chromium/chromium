@@ -248,12 +248,8 @@ IN_PROC_BROWSER_TEST_P(PageActionApiTest, TestTriggerPageAction) {
   }
 
   // Verify that the browser action turned the background color red.
-  const std::string script =
-      "window.domAutomationController.send(document.body.style."
-      "backgroundColor);";
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(tab, script, &result));
-  EXPECT_EQ(result, "red");
+  const std::string script = "document.body.style.backgroundColor;";
+  EXPECT_EQ(content::EvalJs(tab, script), "red");
 }
 
 }  // namespace

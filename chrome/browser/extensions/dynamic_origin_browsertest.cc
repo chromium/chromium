@@ -134,20 +134,17 @@ IN_PROC_BROWSER_TEST_F(DynamicOriginBrowserTest, FetchGuidFromFrame) {
     EXPECT_EQ(expected_frame_url,
               web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
 
-    std::string result;
     constexpr char kFetchScriptTemplate[] =
         R"(
         fetch($1).then(result => {
           return result.text();
-        }).then(text => {
-          domAutomationController.send(text);
         }).catch(err => {
-          domAutomationController.send(String(err));
+          return String(err);
         });)";
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents,
-        content::JsReplace(kFetchScriptTemplate, fetch_url.spec()), &result));
-    EXPECT_EQ(expected_fetch_url_contents, result);
+    EXPECT_EQ(
+        expected_fetch_url_contents,
+        content::EvalJs(web_contents, content::JsReplace(kFetchScriptTemplate,
+                                                         fetch_url.spec())));
   };
 
   // clang-format off

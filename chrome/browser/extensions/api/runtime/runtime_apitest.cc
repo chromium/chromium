@@ -781,17 +781,14 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest,
       ui_test_utils::NavigateToURL(browser(), extension_page_url);
   ASSERT_TRUE(new_host);
 
-  std::string result;
   static constexpr char kScript[] =
       R"((async () => {
            let contexts =
                await chrome.runtime.getContexts({contextTypes: ['BACKGROUND']});
-           domAutomationController.send(JSON.stringify(contexts));
+           return JSON.stringify(contexts);
          })();)";
-  EXPECT_TRUE(
-      content::ExecuteScriptAndExtractString(new_host, kScript, &result));
   // No contexts should have been returned.
-  EXPECT_EQ("[]", result);
+  EXPECT_EQ("[]", content::EvalJs(new_host, kScript));
 }
 
 // Tests the filter matching behavior of `runtime.getContexts()`.
@@ -1104,30 +1101,27 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest,
   static constexpr char kNavigateTemplate[] =
       R"(let frame = document.createElement('iframe');
          frame.src = '%s';
-         frame.onload = () => { domAutomationController.send('success'); };
-         frame.onerror = (e) => {
-           domAutomationController.send('failure: ' + e.toString());
-         };
-         document.body.appendChild(frame);)";
+         new Promise(resolve => {
+           frame.onload = () => { resolve('success'); };
+           frame.onerror = (e) => {
+             resolve('failure: ' + e.toString());
+           };
+           document.body.appendChild(frame);
+         });
+         )";
 
-  std::string navigation_result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      incognito_main_frame,
-      base::StringPrintf(kNavigateTemplate, incognito_url.spec().c_str()),
-      &navigation_result));
-  EXPECT_EQ("success", navigation_result);
+  EXPECT_EQ("success",
+            content::EvalJs(incognito_main_frame,
+                            base::StringPrintf(kNavigateTemplate,
+                                               incognito_url.spec().c_str())));
 
   // Verify the frame loaded properly by checking both the URL and the content.
   content::RenderFrameHost* incognito_extension_frame =
       content::ChildFrameAt(incognito_main_frame, 0);
   ASSERT_TRUE(incognito_extension_frame);
   EXPECT_EQ(incognito_url, incognito_extension_frame->GetLastCommittedURL());
-  std::string incognito_frame_content;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      incognito_extension_frame,
-      "domAutomationController.send(document.body.textContent);",
-      &incognito_frame_content));
-  EXPECT_EQ("Incognito", incognito_frame_content);
+  EXPECT_EQ("Incognito", content::EvalJs(incognito_extension_frame,
+                                         "document.body.textContent;"));
 
   // A helper method to retrieve the contexts for the given `profile`.
   auto run_get_contexts_in_profile = [extension](Profile* profile) {

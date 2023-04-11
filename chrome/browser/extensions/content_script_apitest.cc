@@ -564,20 +564,15 @@ IN_PROC_BROWSER_TEST_F(ContentScriptCssInjectionTest,
     SCOPED_TRACE(base::StringPrintf(
         "URL: %s; Selector: %s",
         web_contents->GetLastCommittedURL().spec().c_str(), query_selector));
-    std::string color;
     constexpr char kGetColor[] =
         R"((function() {
              let element = document.querySelector('%s');
              style = window.getComputedStyle(element);
-             domAutomationController.send(style.backgroundColor);
+             return style.backgroundColor;
             })();)";
-    if (!content::ExecuteScriptAndExtractString(
-            get_active_tab(), base::StringPrintf(kGetColor, query_selector),
-            &color)) {
-      return "<Failed to execute>";
-    }
-
-    return color;
+    return content::EvalJs(get_active_tab(),
+                           base::StringPrintf(kGetColor, query_selector))
+        .ExtractString();
   };
   // Returns the number of stylesheets attached to the document.
   auto get_style_sheet_count = [&get_active_tab]() {
@@ -642,14 +637,13 @@ IN_PROC_BROWSER_TEST_F(ContentScriptCssInjectionTest,
            sheet.type = 'text/css';
            sheet.rel = 'stylesheet';
            sheet.href = 'test_file_with_style2.css';
-           sheet.onload = () => { domAutomationController.send('success'); };
-           sheet.onerror = () => { domAutomationController.send('error'); };
-           document.head.appendChild(sheet);
+           return new Promise(resolve => {
+             sheet.onload = () => { resolve('success'); };
+             sheet.onerror = () => { resolve('error'); };
+             document.head.appendChild(sheet);
+           });
          })();)";
-  std::string result;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      get_active_tab(), kLoadExtraStylesheet, &result));
-  EXPECT_EQ("success", result);
+  EXPECT_EQ("success", content::EvalJs(get_active_tab(), kLoadExtraStylesheet));
   EXPECT_EQ(kInjectedDivColor, get_element_color("#div3"));
 }
 

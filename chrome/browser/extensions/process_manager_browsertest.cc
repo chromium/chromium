@@ -70,13 +70,12 @@ namespace {
 
 GURL CreateBlobURL(content::RenderFrameHost* frame,
                    const std::string& content) {
-  std::string blob_url_string;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      frame,
-      "var blob = new Blob(['<html><body>" + content + "</body></html>'],\n"
-      "                    {type: 'text/html'});\n"
-      "domAutomationController.send(URL.createObjectURL(blob));\n",
-      &blob_url_string));
+  std::string blob_url_string =
+      EvalJs(frame, "var blob = new Blob(['<html><body>" + content +
+                        "   </body></html>'],\n"
+                        "   {type: 'text/html'});\n"
+                        "URL.createObjectURL(blob);\n")
+          .ExtractString();
   GURL blob_url(blob_url_string);
   EXPECT_TRUE(blob_url.is_valid());
   EXPECT_TRUE(blob_url.SchemeIsBlob());
@@ -85,22 +84,25 @@ GURL CreateBlobURL(content::RenderFrameHost* frame,
 
 GURL CreateFileSystemURL(content::RenderFrameHost* frame,
                          const std::string& content) {
-  std::string filesystem_url_string;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      frame,
-      "var blob = new Blob(['<html><body>" + content + "</body></html>'],\n"
-      "                    {type: 'text/html'});\n"
-      "window.webkitRequestFileSystem(TEMPORARY, blob.size, fs => {\n"
-      "  fs.root.getFile('foo.html', {create: true}, file => {\n"
-      "    file.createWriter(writer => {\n"
-      "      writer.write(blob);\n"
-      "      writer.onwriteend = () => {\n"
-      "        domAutomationController.send(file.toURL());\n"
-      "      }\n"
-      "    });\n"
-      "  });\n"
-      "});\n",
-      &filesystem_url_string));
+  std::string filesystem_url_string =
+      EvalJs(
+          frame,
+          "var blob = new Blob(['<html><body>" + content +
+              "</body></html>'],\n"
+              "                    {type: 'text/html'});\n"
+              "new Promise(resolve => {\n"
+              "  window.webkitRequestFileSystem(TEMPORARY, blob.size, fs => {\n"
+              "    fs.root.getFile('foo.html', {create: true}, file => {\n"
+              "      file.createWriter(writer => {\n"
+              "        writer.write(blob);\n"
+              "        writer.onwriteend = () => {\n"
+              "          resolve(file.toURL());\n"
+              "        }\n"
+              "      });\n"
+              "    });\n"
+              "  });\n"
+              "});\n")
+          .ExtractString();
   GURL filesystem_url(filesystem_url_string);
   EXPECT_TRUE(filesystem_url.is_valid());
   EXPECT_TRUE(filesystem_url.SchemeIsFileSystem());
@@ -108,10 +110,7 @@ GURL CreateFileSystemURL(content::RenderFrameHost* frame,
 }
 
 std::string GetTextContent(content::RenderFrameHost* frame) {
-  std::string result;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      frame, "domAutomationController.send(document.body.innerText)", &result));
-  return result;
+  return EvalJs(frame, "document.body.innerText").ExtractString();
 }
 
 // Helper to send a postMessage from |sender| to |opener| via window.opener,
@@ -119,22 +118,19 @@ std::string GetTextContent(content::RenderFrameHost* frame) {
 // handlers.
 void VerifyPostMessageToOpener(content::RenderFrameHost* sender,
                                content::RenderFrameHost* opener) {
-  EXPECT_TRUE(
-      ExecuteScript(opener,
-                    "window.addEventListener('message', function(event) {\n"
-                    "  event.source.postMessage(event.data, '*');\n"
-                    "});"));
+  EXPECT_TRUE(ExecJs(opener,
+                     "window.addEventListener('message', function(event) {\n"
+                     "  event.source.postMessage(event.data, '*');\n"
+                     "});"));
 
-  EXPECT_TRUE(
-      ExecuteScript(sender,
-                    "window.addEventListener('message', function(event) {\n"
-                    "  window.domAutomationController.send(event.data);\n"
-                    "});"));
-
-  std::string result;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      sender, "opener.postMessage('foo', '*');", &result));
-  EXPECT_EQ("foo", result);
+  EXPECT_EQ("foo",
+            EvalJs(sender,
+                   "new Promise(resolve => {\n"
+                   "  window.addEventListener('message', function(event) {\n"
+                   "    resolve(event.data);\n"
+                   "  });\n"
+                   "  opener.postMessage('foo', '*');"
+                   "});"));
 }
 
 // Takes a snapshot of all frames upon construction. When Wait() is called, a

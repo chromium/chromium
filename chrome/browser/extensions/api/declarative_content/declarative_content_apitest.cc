@@ -85,14 +85,15 @@ constexpr char kBackgroundHelpers[] =
        var onPageChanged = chrome.declarativeContent.onPageChanged;
 
        function setRulesInPageEnvironment(rules, responseString) {
-         onPageChanged.removeRules(undefined, function() {
-           onPageChanged.addRules(rules, function() {
-             if (chrome.runtime.lastError) {
-               window.domAutomationController.send(
-                   chrome.runtime.lastError.message);
-               return;
-             }
-             window.domAutomationController.send(responseString);
+         return new Promise(resolve => {
+           onPageChanged.removeRules(undefined, function() {
+             onPageChanged.addRules(rules, function() {
+               if (chrome.runtime.lastError) {
+                 resolve(chrome.runtime.lastError.message);
+                 return;
+               }
+               resolve(responseString);
+             });
            });
          });
        };
@@ -559,9 +560,9 @@ void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
          }], 'test_rule');)";
   static constexpr char kSuccessStr[] = "test_rule";
 
-  std::string result;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      tab, base::StringPrintf(kScript, GetParam().show_type), &result));
+  std::string result =
+      content::EvalJs(tab, base::StringPrintf(kScript, GetParam().show_type))
+          .ExtractString();
 
   // Since extensions with no action provided are given a page action by default
   // (for visibility reasons) and ShowAction() should also work with

@@ -247,22 +247,18 @@ IN_PROC_BROWSER_TEST_P(SandboxedPagesTest, WebAccessibleResourcesTest) {
         browser(), extension->GetResourceURL(frame_url)));
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    std::string result;
     constexpr char kFetchScriptTemplate[] =
         R"(
         fetch($1).then(result => {
           return result.text();
-        }).then(text => {
-          domAutomationController.send(text);
         }).catch(err => {
-          domAutomationController.send(String(err));
+          return String(err);
         });)";
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents,
-        content::JsReplace(kFetchScriptTemplate,
-                           extension->GetResourceURL(fetch_url)),
-        &result));
-    EXPECT_EQ(result, fetch_url);
+    EXPECT_EQ(content::EvalJs(
+                  web_contents,
+                  content::JsReplace(kFetchScriptTemplate,
+                                     extension->GetResourceURL(fetch_url))),
+              fetch_url);
     histograms.ExpectBucketCount(kHistogramName, is_web_accessible_resource,
                                  count);
     EXPECT_EQ(expected_frame_origin, web_contents->GetPrimaryMainFrame()

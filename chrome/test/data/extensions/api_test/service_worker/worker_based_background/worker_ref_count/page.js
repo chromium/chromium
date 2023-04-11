@@ -29,18 +29,19 @@ window.testSendMessage = function() {
 };
 
 window.roundtripToWorker = function() {
-  getServiceWorker().then(function(serviceWorker) {
-    if (serviceWorker == null) {
-      window.domAutomationController.send('roundtrip-failed');
-    }
-    var channel = new MessageChannel();
-    channel.port1.onmessage = function(e) {
-      if (e.data == 'roundtrip-response') {
-        window.domAutomationController.send('roundtrip-succeeded');
-      } else {
-        window.domAutomationController.send('roundtrip-failed');
+  return getServiceWorker().then(function(serviceWorker) {
+    return new Promise(resolve => {
+      if (serviceWorker == null) {
+        return resolve('roundtrip-failed');
       }
-    };
-    serviceWorker.postMessage('roundtrip-request', [channel.port2]);
+      var channel = new MessageChannel();
+      channel.port1.onmessage = function(e) {
+        if (e.data == 'roundtrip-response') {
+          return resolve('roundtrip-succeeded');
+        }
+        return resolve('roundtrip-failed');
+      };
+      serviceWorker.postMessage('roundtrip-request', [channel.port2]);
+    });
   });
 };

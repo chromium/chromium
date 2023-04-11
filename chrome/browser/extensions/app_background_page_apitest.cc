@@ -565,11 +565,10 @@ IN_PROC_BROWSER_TEST_F(AppBackgroundPageApiTest, OpenThenClose) {
   content::RenderFrameHost* background_opener =
       background_contents->web_contents()->GetOpener();
   ASSERT_TRUE(background_opener);
-  std::string window_opener_href;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      background_contents->web_contents(),
-      "domAutomationController.send(window.opener.location.href);",
-      &window_opener_href));
+  std::string window_opener_href =
+      content::EvalJs(background_contents->web_contents(),
+                      "window.opener.location.href;")
+          .ExtractString();
   EXPECT_EQ(window_opener_href,
             background_opener->GetLastCommittedURL().spec());
 

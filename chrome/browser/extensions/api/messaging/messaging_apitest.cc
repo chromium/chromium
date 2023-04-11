@@ -586,16 +586,14 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
                                            const Extension* extension,
                                            bool include_tls_channel_id,
                                            const char* message) {
-    std::string result;
     std::string args = "'" + extension->id() + "', ";
     args += include_tls_channel_id ? "true" : "false";
     if (message)
       args += std::string(", '") + message + "'";
-    CHECK(content::ExecuteScriptAndExtractString(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        base::StringPrintf("assertions.%s(%s)", method, args.c_str()),
-        &result));
-    return result;
+    return content::EvalJs(
+               browser()->tab_strip_model()->GetActiveWebContents(),
+               base::StringPrintf("assertions.%s(%s)", method, args.c_str()))
+        .ExtractString();
   }
 
   TestExtensionDir web_connectable_dir_extension_;

@@ -188,13 +188,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, NoExportOverriding) {
                      "/extensions/api_test/bindings/override_exports.html")));
 
   // See chrome/test/data/extensions/api_test/bindings/override_exports.html.
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.domAutomationController.send("
-          "document.getElementById('status').textContent.trim());",
-      &result));
-  EXPECT_EQ("success", result);
+  EXPECT_EQ(
+      "success",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "document.getElementById('status').textContent.trim();"));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, NoGinDefineOverriding) {
@@ -212,13 +209,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, NoGinDefineOverriding) {
       browser()->tab_strip_model()->GetActiveWebContents()->IsCrashed());
 
   // See chrome/test/data/extensions/api_test/bindings/override_gin_define.html.
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "window.domAutomationController.send("
-          "document.getElementById('status').textContent.trim());",
-      &result));
-  EXPECT_EQ("success", result);
+  EXPECT_EQ(
+      "success",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "document.getElementById('status').textContent.trim();"));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, HandlerFunctionTypeChecking) {
@@ -230,13 +224,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest, HandlerFunctionTypeChecking) {
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(web_contents->IsCrashed());
   // See handler_function_type_checking.html.
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents,
-      "window.domAutomationController.send("
-          "document.getElementById('status').textContent.trim());",
-      &result));
-  EXPECT_EQ("success", result);
+  EXPECT_EQ(
+      "success",
+      content::EvalJs(web_contents,
+                      "document.getElementById('status').textContent.trim();"));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
@@ -255,11 +246,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_FALSE(web_contents->IsCrashed());
   // See function_interceptions.html.
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents, "window.domAutomationController.send(window.testStatus);",
-      &result));
-  EXPECT_EQ("success", result);
+  EXPECT_EQ("success", content::EvalJs(web_contents, "window.testStatus;"));
 }
 
 class FramesExtensionBindingsApiTest : public ExtensionBindingsApiTest {
@@ -883,12 +870,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBindingsApiTest,
            message = 'Tabs not defined';
          else
            message = 'success';
-         domAutomationController.send(message);)";
-  std::string result;
-  // Note: Can't use EvalJs() because of CSP in extension pages.
-  EXPECT_TRUE(
-      content::ExecuteScriptAndExtractString(web_contents, kScript, &result));
-  EXPECT_EQ("success", result);
+         message;)";
+  EXPECT_EQ("success", content::EvalJs(web_contents, kScript));
 }
 
 // Tests the aliasing of chrome.extension methods to their chrome.runtime

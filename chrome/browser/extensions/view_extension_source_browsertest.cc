@@ -91,9 +91,5 @@ IN_PROC_BROWSER_TEST_F(ViewExtensionSourceTest, ViewSourceTabRestore) {
   // renderer-side URL is correct.
   EXPECT_GT(EvalJs(view_source_tab, "document.body.innerText.length"), 0);
 
-  std::string location;
-  EXPECT_TRUE(ExecuteScriptAndExtractString(
-      view_source_tab, "domAutomationController.send(location.href)",
-      &location));
-  EXPECT_EQ(bookmarks_extension_url, location);
+  EXPECT_EQ(bookmarks_extension_url, EvalJs(view_source_tab, "location.href"));
 }

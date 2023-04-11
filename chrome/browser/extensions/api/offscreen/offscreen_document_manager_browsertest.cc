@@ -161,12 +161,10 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentManagerBrowserTest,
     static constexpr char kScript[] =
         R"({
              let div = document.getElementById('signal');
-             domAutomationController.send(div ? div.innerText : '<no div>');
+             div ? div.innerText : '<no div>';
            })";
-    std::string result;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        offscreen_document->host_contents(), kScript, &result));
-    EXPECT_EQ("Hello, World", result);
+    EXPECT_EQ("Hello, World",
+              content::EvalJs(offscreen_document->host_contents(), kScript));
   }
 
   // The manager should now have a record of a document for the extension.

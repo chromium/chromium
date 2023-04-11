@@ -313,12 +313,8 @@ class DeclarativeNetRequestBrowserTest
   content::PageType GetPageType() const { return GetPageType(browser()); }
 
   std::string GetPageBody() const {
-    std::string result;
-    const char* script =
-        "domAutomationController.send(document.body.innerText.trim())";
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(web_contents(), script,
-                                                       &result));
-    return result;
+    const char* script = "document.body.innerText.trim()";
+    return content::EvalJs(web_contents(), script).ExtractString();
   }
 
   void set_config_flags(unsigned flags) { flags_ = flags; }
@@ -2217,10 +2213,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
       ui_test_utils::NavigateToURL(browser(), GetURLForFilter("example.com")));
   EXPECT_EQ(content::PAGE_TYPE_ERROR, GetPageType());
 
-  std::string body;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents(),
-      "window.domAutomationController.send(document.body.textContent)", &body));
+  std::string body =
+      content::EvalJs(web_contents(), "document.body.textContent")
+          .ExtractString();
 
   EXPECT_TRUE(
       base::Contains(body, "This page has been blocked by an extension"));
@@ -6424,10 +6419,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
         allRequestMethods.map(method =>
           fetch(url, {method}).catch(() => { blockedMethods.push(method); })
         )
-      ).then(() =>
-      {
-        window.domAutomationController.send(blockedMethods.sort().join());
-      });
+      ).then(() => blockedMethods.sort().join());
     }
   )";
 
@@ -6437,14 +6429,11 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(base::StringPrintf("Path: %s", test_case.path.c_str()));
-    std::string actual_blocked_request_methods;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        main_frame,
-        base::StringPrintf(kPerformRequestWithAllMethodsScript,
-                           test_case.path.c_str()),
-        &actual_blocked_request_methods));
-    EXPECT_EQ(test_case.expected_blocked_request_methods,
-              actual_blocked_request_methods);
+    EXPECT_EQ(
+        test_case.expected_blocked_request_methods,
+        content::EvalJs(main_frame,
+                        base::StringPrintf(kPerformRequestWithAllMethodsScript,
+                                           test_case.path.c_str())));
   }
 }
 
@@ -6516,22 +6505,16 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
             });
           })
         )
-      ).then(() =>
-      {
-        window.domAutomationController.send(blockedTestCases.sort().join());
-      });
+      ).then(() => blockedTestCases.sort().join());
     }
   )";
 
   content::RenderFrameHost* main_frame = GetPrimaryMainFrame();
 
-  std::string actual_blocked;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      main_frame,
-      base::StringPrintf(kOpenWebSocketsScript, websocket_url.c_str()),
-      &actual_blocked));
-  EXPECT_EQ("all_methods_excluded,default,some_methods_excluded",
-            actual_blocked);
+  EXPECT_EQ(
+      "all_methods_excluded,default,some_methods_excluded",
+      content::EvalJs(main_frame, base::StringPrintf(kOpenWebSocketsScript,
+                                                     websocket_url.c_str())));
 }
 
 class DeclarativeNetRequestWebTransportTest

@@ -351,10 +351,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
       tab, "location.href = '" + extension_url.spec() + "';"));
   observer.Wait();
   EXPECT_EQ(extension_url, tab->GetPrimaryMainFrame()->GetLastCommittedURL());
-  std::string result;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      tab, "domAutomationController.send(document.body.innerText)", &result));
-  EXPECT_EQ("HOWDIE!!!", result);
+  EXPECT_EQ("HOWDIE!!!", content::EvalJs(tab, "document.body.innerText"));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
