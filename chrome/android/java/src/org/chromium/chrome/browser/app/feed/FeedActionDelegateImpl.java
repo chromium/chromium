@@ -14,9 +14,7 @@ import org.chromium.chrome.browser.app.creator.CreatorActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
-import org.chromium.chrome.browser.feed.SingleWebFeedEntryPoint;
 import org.chromium.chrome.browser.feed.signinbottomsheet.SigninBottomSheetCoordinator;
-import org.chromium.chrome.browser.feed.webfeed.CreatorIntentConstants;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
@@ -120,7 +118,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
     }
 
     @Override
-    public void openWebFeed(String webFeedName, @SingleWebFeedEntryPoint int entryPoint) {
+    public void openWebFeed(String webFeedName) {
         if (!FeatureList.isInitialized()
                 || !ChromeFeatureList.isEnabled(ChromeFeatureList.CORMORANT)) {
             return;
@@ -129,8 +127,7 @@ public class FeedActionDelegateImpl implements FeedActionDelegate {
         assert ThreadUtils.runningOnUiThread();
         Class<?> creatorActivityClass = CreatorActivity.class;
         Intent intent = new Intent(mActivityContext, creatorActivityClass);
-        intent.putExtra(CreatorIntentConstants.CREATOR_WEB_FEED_ID, webFeedName.getBytes());
-        intent.putExtra(CreatorIntentConstants.CREATOR_ENTRY_POINT, entryPoint);
+        intent.putExtra("CREATOR_WEB_FEED_ID", webFeedName.getBytes());
         mActivityContext.startActivity(intent);
     }
 

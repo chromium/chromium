@@ -240,11 +240,6 @@ feedwire::Request CreateFeedQueryRequest(
             feedwire::FeedEntryPointSource::
                 CHROME_SINGLE_WEB_FEED_RECOMMENDATION);
         break;
-      case SingleWebFeedEntryPoint::kGroupHeader:
-        entry_point.set_feed_entry_point_source_value(
-            feedwire::FeedEntryPointSource::
-                CHROME_SINGLE_WEB_FEED_GROUP_HEADER);
-        break;
       case SingleWebFeedEntryPoint::kOther:
         entry_point.set_feed_entry_point_source_value(
             feedwire::FeedEntryPointSource::CHROME_SINGLE_WEB_FEED_OTHER);

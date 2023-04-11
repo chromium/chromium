@@ -71,14 +71,13 @@ public class CreatorActivity extends SnackbarActivity {
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        byte[] webFeedId =
+        byte[] mWebFeedId =
                 getIntent().getByteArrayExtra(CreatorIntentConstants.CREATOR_WEB_FEED_ID);
         String url = getIntent().getStringExtra(CreatorIntentConstants.CREATOR_URL);
         boolean following =
                 getIntent().getBooleanExtra(CreatorIntentConstants.CREATOR_FOLLOWING, false);
-        int entryPoint = getIntent().getIntExtra(
+        int mEntryPoint = getIntent().getIntExtra(
                 CreatorIntentConstants.CREATOR_ENTRY_POINT, SingleWebFeedEntryPoint.OTHER);
-
         mActivityTabProvider = new ActivityTabProvider();
         mLifecycleDispatcher = new ActivityLifecycleDispatcherImpl(this);
         mShareDelegateSupplier = new ShareDelegateSupplier();
@@ -98,9 +97,9 @@ public class CreatorActivity extends SnackbarActivity {
                 /* isCustomTab */ false);
         mTabShareDelegateSupplier.set(tabshareDelegate);
 
-        CreatorCoordinator coordinator = new CreatorCoordinator(this, webFeedId,
+        CreatorCoordinator coordinator = new CreatorCoordinator(this, mWebFeedId,
                 getSnackbarManager(), mWindowAndroid, mProfile, url, this::createWebContents,
-                this::createNewTab, mTabShareDelegateSupplier, entryPoint, following,
+                this::createNewTab, mTabShareDelegateSupplier, mEntryPoint, following,
                 this::showSignInInterstitial);
 
         mBottomSheetController = coordinator.getBottomSheetController();

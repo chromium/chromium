@@ -191,8 +191,6 @@ std::ostream& operator<<(std::ostream& out, SingleWebFeedEntryPoint value) {
       return out << "kAttribution";
     case SingleWebFeedEntryPoint::kRecommendation:
       return out << "kRecommendation";
-    case SingleWebFeedEntryPoint::kGroupHeader:
-      return out << "kGroupHeader";
     case SingleWebFeedEntryPoint::kOther:
       return out << "kOther";
   }

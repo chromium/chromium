@@ -273,10 +273,8 @@ enum class SingleWebFeedEntryPoint : int {
   kAttribution = 1,
   // Feed Recomentation
   kRecommendation = 2,
-  // Feed Recomentation
-  kGroupHeader = 3,
   // Other
-  kOther = 4,
+  kOther = 3,
 
   kMaxValue = kOther,
 };

@@ -442,8 +442,7 @@ void FeedStream::UpdateExperiments(Experiments experiments) {
 
 void FeedStream::AttachSurface(FeedStreamSurface* surface) {
   metrics_reporter_->SurfaceOpened(surface->GetStreamType(),
-                                   surface->GetSurfaceId(),
-                                   surface->GetSingleWebFeedEntryPoint());
+                                   surface->GetSurfaceId());
   Stream& stream = GetStream(surface->GetStreamType());
   // Skip normal processing when overriding stream data from the internals page.
   if (forced_stream_update_for_debugging_.updated_slices_size() > 0) {

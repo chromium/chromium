@@ -95954,14 +95954,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Navigation API intercept"/>
 </enum>
 
-<enum name="SingleWebFeedEntryPoint">
-  <int value="0" label="Menu"/>
-  <int value="1" label="Attribtuion"/>
-  <int value="2" label="Recommendation"/>
-  <int value="3" label="Group Header"/>
-  <int value="4" label="Other"/>
-</enum>
-
 <enum name="SiteEngagementLevel">
   <int value="0" label="None"/>
   <int value="1" label="Minimal"/>
