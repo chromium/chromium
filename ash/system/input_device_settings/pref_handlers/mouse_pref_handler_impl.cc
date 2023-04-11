@@ -337,4 +337,10 @@ void MousePrefHandlerImpl::UpdateLoginScreenMouseSettings(
               mouse, mouse_policies, /*force_persistence=*/{}, settings_dict)));
 }
 
+void MousePrefHandlerImpl::InitializeWithDefaultMouseSettings(
+    const mojom::MousePolicies& mouse_policies,
+    mojom::Mouse* mouse) {
+  mouse->settings = GetDefaultMouseSettings(mouse_policies);
+}
+
 }  // namespace ash

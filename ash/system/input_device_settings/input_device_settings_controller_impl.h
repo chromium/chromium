@@ -117,6 +117,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   // Correctly initializes settings depending on whether we have an active
   // user session or not.
   void InitializeKeyboardSettings(mojom::Keyboard* keyboard);
+  void InitializeMouseSettings(mojom::Mouse* mouse);
 
   // Update the cached per-user keyboard settings on the login screen using the
   // most recently connected internal/external device (if applicable). This
@@ -126,6 +127,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   // - A user makes an update to a device setting.
   // - The active pref service changes.
   void RefreshStoredLoginScreenKeyboardSettings();
+  void RefreshStoredLoginScreenMouseSettings();
 
   base::ObserverList<InputDeviceSettingsController::Observer> observers_;
 

@@ -273,11 +273,7 @@ void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
     DispatchTouchpadSettingsChanged(id);
   }
   for (const auto& [id, mouse] : mice_) {
-    mouse_pref_handler_->InitializeMouseSettings(
-        active_pref_service_, policy_handler_->mouse_policies(), mouse.get());
-    if (active_pref_service_) {
-      metrics_manager_->RecordMouseInitialMetrics(*mouse);
-    }
+    InitializeMouseSettings(mouse.get());
     DispatchMouseSettingsChanged(id);
   }
   for (const auto& [id, pointing_stick] : pointing_sticks_) {
@@ -288,7 +284,9 @@ void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
     }
     DispatchPointingStickSettingsChanged(id);
   }
+
   RefreshStoredLoginScreenKeyboardSettings();
+  RefreshStoredLoginScreenMouseSettings();
 }
 
 void InputDeviceSettingsControllerImpl::
@@ -321,6 +319,36 @@ void InputDeviceSettingsControllerImpl::
   }
 }
 
+void InputDeviceSettingsControllerImpl::
+    RefreshStoredLoginScreenMouseSettings() {
+  if (!local_state_ || !active_account_id_.has_value()) {
+    return;
+  }
+
+  // Our map of mice is sorted so iterating in reverse order guarantees
+  // that we'll select the most recently connected device.
+  auto external_iter = base::ranges::find(
+      mice_.rbegin(), mice_.rend(), /*value=*/true,
+      [](const auto& mouse) { return mouse.second->is_external; });
+  auto internal_iter = base::ranges::find(
+      mice_.rbegin(), mice_.rend(), /*value=*/false,
+      [](const auto& mouse) { return mouse.second->is_external; });
+
+  if (external_iter != mice_.rend()) {
+    auto& external_mouse = *external_iter->second;
+    mouse_pref_handler_->UpdateLoginScreenMouseSettings(
+        local_state_, active_account_id_.value(),
+        policy_handler_->mouse_policies(), external_mouse);
+  }
+
+  if (internal_iter != mice_.rend()) {
+    auto& internal_mouse = *internal_iter->second;
+    mouse_pref_handler_->UpdateLoginScreenMouseSettings(
+        local_state_, active_account_id_.value(),
+        policy_handler_->mouse_policies(), internal_mouse);
+  }
+}
+
 void InputDeviceSettingsControllerImpl::OnLoginScreenFocusedPodChanged(
     const AccountId& account_id) {
   active_account_id_ = account_id;
@@ -330,6 +358,13 @@ void InputDeviceSettingsControllerImpl::OnLoginScreenFocusedPodChanged(
         local_state_, account_id, policy_handler_->keyboard_policies(),
         keyboard.get());
     DispatchKeyboardSettingsChanged(id);
+  }
+
+  for (const auto& [id, mouse] : mice_) {
+    mouse_pref_handler_->InitializeLoginScreenMouseSettings(
+        local_state_, account_id, policy_handler_->mouse_policies(),
+        mouse.get());
+    DispatchMouseSettingsChanged(id);
   }
 }
 
@@ -544,6 +579,7 @@ void InputDeviceSettingsControllerImpl::SetMouseSettings(
       DispatchMouseSettingsChanged(device_id);
     }
   }
+  RefreshStoredLoginScreenMouseSettings();
 }
 
 void InputDeviceSettingsControllerImpl::SetPointingStickSettings(
@@ -739,12 +775,7 @@ void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
     std::vector<DeviceId> mouse_ids_to_remove) {
   for (const auto& mouse : mice_to_add) {
     auto mojom_mouse = BuildMojomMouse(mouse);
-    mouse_pref_handler_->InitializeMouseSettings(
-        active_pref_service_, policy_handler_->mouse_policies(),
-        mojom_mouse.get());
-    if (active_pref_service_) {
-      metrics_manager_->RecordMouseInitialMetrics(*mojom_mouse);
-    }
+    InitializeMouseSettings(mojom_mouse.get());
     mice_.insert_or_assign(mouse.id, std::move(mojom_mouse));
     DispatchMouseConnected(mouse.id);
   }
@@ -752,6 +783,8 @@ void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
   for (const auto id : mouse_ids_to_remove) {
     DispatchMouseDisconnectedAndEraseFromList(id);
   }
+
+  RefreshStoredLoginScreenMouseSettings();
 }
 
 void InputDeviceSettingsControllerImpl::OnPointingStickListUpdated(
@@ -816,6 +849,28 @@ bool InputDeviceSettingsControllerImpl::GetGeneralizedTopRowAreFKeys() {
     return internal_iter->second->settings->top_row_are_fkeys;
   }
   return false;
+}
+
+void InputDeviceSettingsControllerImpl::InitializeMouseSettings(
+    mojom::Mouse* mouse) {
+  if (active_pref_service_) {
+    mouse_pref_handler_->InitializeMouseSettings(
+        active_pref_service_, policy_handler_->mouse_policies(), mouse);
+    metrics_manager_->RecordMouseInitialMetrics(*mouse);
+    return;
+  }
+
+  // Ensure `mouse.settings` is left in a valid state. This state occurs
+  // during OOBE setup and when signing in a new user.
+  if (!active_account_id_.has_value() || !local_state_) {
+    mouse_pref_handler_->InitializeWithDefaultMouseSettings(
+        policy_handler_->mouse_policies(), mouse);
+    return;
+  }
+
+  mouse_pref_handler_->InitializeLoginScreenMouseSettings(
+      local_state_, active_account_id_.value(),
+      policy_handler_->mouse_policies(), mouse);
 }
 
 }  // namespace ash

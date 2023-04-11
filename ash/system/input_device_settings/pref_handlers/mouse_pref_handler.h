@@ -35,6 +35,12 @@ class ASH_EXPORT MousePrefHandler {
       const mojom::MousePolicies& mouse_policies,
       mojom::Mouse* mouse) = 0;
 
+  // Updates the `settings` member of the `mojom::Mouse` object using
+  // default settings.
+  virtual void InitializeWithDefaultMouseSettings(
+      const mojom::MousePolicies& mouse_policies,
+      mojom::Mouse* mouse) = 0;
+
   // Updates device settings stored in prefs to match the values in
   // `mouse.settings`.
   virtual void UpdateMouseSettings(PrefService* pref_service,
