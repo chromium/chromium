@@ -96,7 +96,10 @@ CGFloat const kTableViewCornerRadius = 10;
   self.titleView = [self setUpTitleView];
   self.underTitleView = [self createTableView];
 
+  // Set the properties read by the super when constructing the
+  // views in `-[ConfirmationAlertViewController viewDidLoad]`.
   self.imageHasFixedSize = YES;
+  self.showsVerticalScrollIndicator = NO;
   self.showDismissBarButton = NO;
   self.customSpacingBeforeImageIfNoNavigationBar =
       kCustomSpacingBeforeImageIfNoNavigationBar;
