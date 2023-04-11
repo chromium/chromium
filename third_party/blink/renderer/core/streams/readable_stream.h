@@ -306,12 +306,12 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   friend class ReadableStreamDefaultController;
   friend class ReadableStreamDefaultReader;
   friend class ReadableStreamGenericReader;
+  friend class TeeEngine;
 
   class PullAlgorithm;
   class CancelAlgorithm;
   class PipeToEngine;
   class ReadHandleImpl;
-  class TeeEngine;
   class ByteStreamTeeEngine;
 
   // https://streams.spec.whatwg.org/#rs-constructor

@@ -58,7 +58,6 @@ class CORE_EXPORT ReadableStreamGenericReader : public ScriptWrappable {
 
  private:
   friend class ReadableStreamDefaultController;
-  friend class ReadableStream;
 
   Member<StreamPromiseResolver> closed_promise_;
 
