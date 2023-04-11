@@ -20,13 +20,14 @@ import org.chromium.webengine.interfaces.INavigationParams;
 class NavigationObserverDelegate extends INavigationObserverDelegate.Stub {
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
+    @NonNull
     private Tab mTab;
 
+    @NonNull
     private ObserverList<NavigationObserver> mNavigationObservers =
             new ObserverList<NavigationObserver>();
 
     public NavigationObserverDelegate(Tab tab) {
-        // Assert on UI thread as ObserverList can only be accessed from one thread.
         ThreadCheck.ensureOnUiThread();
 
         mTab = tab;

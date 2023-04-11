@@ -20,8 +20,10 @@ import org.chromium.webengine.interfaces.ITabNavigationControllerProxy;
  * TabNavigationController controls the navigation in a Tab.
  */
 public class TabNavigationController {
+    @NonNull
     private ITabNavigationControllerProxy mTabNavigationControllerProxy;
 
+    @NonNull
     private NavigationObserverDelegate mNavigationObserverDelegate;
 
     private final class RequestNavigationCallback extends IBooleanCallback.Stub {
@@ -57,6 +59,7 @@ public class TabNavigationController {
      * @param uri The destination URI.
      */
     public void navigate(@NonNull String uri) {
+        ThreadCheck.ensureOnUiThread();
         if (mTabNavigationControllerProxy == null) {
             throw new IllegalStateException("WebSandbox has been destroyed");
         }
@@ -70,6 +73,7 @@ public class TabNavigationController {
      * Navigates to the previous navigation.
      */
     public void goBack() {
+        ThreadCheck.ensureOnUiThread();
         if (mTabNavigationControllerProxy == null) {
             throw new IllegalStateException("WebSandbox has been destroyed");
         }
@@ -83,6 +87,7 @@ public class TabNavigationController {
      * Navigates to the next navigation.
      */
     public void goForward() {
+        ThreadCheck.ensureOnUiThread();
         if (mTabNavigationControllerProxy == null) {
             throw new IllegalStateException("WebSandbox has been destroyed");
         }
@@ -96,6 +101,7 @@ public class TabNavigationController {
      * Reloads this Tab. Does nothing if there are no navigations.
      */
     public void reload() {
+        ThreadCheck.ensureOnUiThread();
         if (mTabNavigationControllerProxy == null) {
             throw new IllegalStateException("WebSandbox has been destroyed");
         }
@@ -109,6 +115,7 @@ public class TabNavigationController {
      * Stops in progress loading. Does nothing if not in the process of loading.
      */
     public void stop() {
+        ThreadCheck.ensureOnUiThread();
         if (mTabNavigationControllerProxy == null) {
             throw new IllegalStateException("WebSandbox has been destroyed");
         }
@@ -119,13 +126,12 @@ public class TabNavigationController {
     }
 
     /**
-     * Returns true if there is a navigation before the current one.
-     *
-     * @return ListenableFuture with a Boolean stating if there is a navigation before the current
-     *         one.
+     * Returns a ListenablePromise that resolves to true if there is a navigation before the current
+     * one.
      */
     @NonNull
     public ListenableFuture<Boolean> canGoBack() {
+        ThreadCheck.ensureOnUiThread();
         if (mTabNavigationControllerProxy == null) {
             return Futures.immediateFailedFuture(
                     new IllegalStateException("WebSandbox has been destroyed"));
@@ -139,13 +145,12 @@ public class TabNavigationController {
     }
 
     /**
-     * Returns true if there is a navigation after the current one.
-     *
-     * @return ListenableFuture with a Boolean stating if there is a navigation after the current
-     *         one.
+     * Returns a ListenablePromise that resolves to true if there is a navigation after the current
+     * one.
      */
     @NonNull
     public ListenableFuture<Boolean> canGoForward() {
+        ThreadCheck.ensureOnUiThread();
         if (mTabNavigationControllerProxy == null) {
             return Futures.immediateFailedFuture(
                     new IllegalStateException("WebSandbox has been destroyed"));
@@ -162,10 +167,9 @@ public class TabNavigationController {
      * Registers a {@link NavigationObserver} and returns if successful.
      *
      * @param navigationObserver The {@link NavigationObserver}.
-     *
-     * @return true if observer was added to the list of observers.
      */
     public boolean registerNavigationObserver(@NonNull NavigationObserver navigationObserver) {
+        ThreadCheck.ensureOnUiThread();
         return mNavigationObserverDelegate.registerObserver(navigationObserver);
     }
 
@@ -177,6 +181,7 @@ public class TabNavigationController {
      * @return true if observer was removed from the list of observers.
      */
     public boolean unregisterNavigationObserver(@NonNull NavigationObserver navigationObserver) {
+        ThreadCheck.ensureOnUiThread();
         return mNavigationObserverDelegate.unregisterObserver(navigationObserver);
     }
 

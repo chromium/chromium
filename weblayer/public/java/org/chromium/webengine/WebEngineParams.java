@@ -38,6 +38,10 @@ public class WebEngineParams {
     public static final class Builder {
         private WebEngineParams mParams = new WebEngineParams();
 
+        /**
+         * Returns the WebEngineParam instance asscoaiated with this Builder.
+         */
+        @NonNull
         public WebEngineParams build() {
             return mParams;
         }

@@ -179,7 +179,7 @@ public class PostMessageTest {
         Tab tab2 = runOnUiThreadBlocking(() -> webEngine.getTabManager().createTab()).get();
         mActivityTestRule.navigateAndWait(tab2, getTestDataURL("postmessage.html"));
 
-        tab2.postMessage("hello", "*");
+        runOnUiThreadBlocking(() -> tab2.postMessage("hello", "*"));
         try {
             waitForPostMessage();
             Assert.fail("postMessage was delivered to the wrong origin");

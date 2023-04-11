@@ -29,13 +29,19 @@ import java.util.Set;
  * Access only via ListenableFuture through WebEngine.
  */
 public class TabManager {
+    @NonNull
     private ITabManagerDelegate mDelegate;
+
+    @NonNull
     private WebEngine mWebEngine;
 
+    @NonNull
     private TabRegistry mTabRegistry;
 
+    @NonNull
     private final TabListObserverDelegate mTabListObserverDelegate;
 
+    @NonNull
     private Callback mInitializedTabsCallback;
 
     private final class TabCallback extends ITabCallback.Stub {
@@ -80,10 +86,9 @@ public class TabManager {
      * Registers a tab observer and returns if successful.
      *
      * @param tabListObserver The TabListObserver.
-     *
-     * @return true if observer was added to the list of observers.
      */
     public boolean registerTabListObserver(@NonNull TabListObserver tabListObserver) {
+        ThreadCheck.ensureOnUiThread();
         return mTabListObserverDelegate.registerObserver(tabListObserver);
     }
 
@@ -91,17 +96,14 @@ public class TabManager {
      * Unregisters a tab observer and returns if successful.
      *
      * @param tabListObserver The TabListObserver to remove.
-     *
-     * @return true if observer was removed from the list of observers.
      */
     public boolean unregisterTabListObserver(@NonNull TabListObserver tabListObserver) {
+        ThreadCheck.ensureOnUiThread();
         return mTabListObserverDelegate.unregisterObserver(tabListObserver);
     }
 
     /**
      * Returns the currently active Tab or null if no Tab is active.
-     *
-     * @return the active Tab.
      */
     @Nullable
     public Tab getActiveTab() {
@@ -110,11 +112,10 @@ public class TabManager {
 
     /**
      * Creates a new Tab and returns it in a ListenableFuture.
-     *
-     * @return ListenableFuture for the new Tab.
      */
     @NonNull
     public ListenableFuture<Tab> createTab() {
+        ThreadCheck.ensureOnUiThread();
         if (mDelegate == null) {
             return Futures.immediateFailedFuture(
                     new IllegalStateException("WebSandbox has been destroyed"));
@@ -130,6 +131,10 @@ public class TabManager {
         });
     }
 
+    /**
+     * Returns a set of all the tabs.
+     */
+    @NonNull
     public Set<Tab> getAllTabs() {
         return mTabRegistry.getTabs();
     }

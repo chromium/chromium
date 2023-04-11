@@ -25,14 +25,22 @@ import org.chromium.webengine.interfaces.IWebFragmentEventsDelegate;
  * obtain its Fragment.
  */
 public class WebEngine {
+    @NonNull
     private WebSandbox mWebSandbox;
+
+    @NonNull
     private String mTag;
 
+    @NonNull
     private IWebEngineDelegate mDelegate;
 
+    @NonNull
     private WebFragment mFragment;
 
+    @NonNull
     private TabManager mTabManager;
+
+    @NonNull
     private CookieManager mCookieManager;
 
     private WebEngine(WebSandbox webSandbox, IWebEngineDelegate delegate,
@@ -67,18 +75,16 @@ public class WebEngine {
 
     /**
      * Returns the TabManager.
-     *
-     * @return TabManager Tab manager to interact with tabs.
      */
+    @NonNull
     public TabManager getTabManager() {
         return mTabManager;
     }
 
     /**
      * Returns the CookieManager.
-     *
-     * @return CookiesManager CookieManager to interact with cookies of the associated Profile.
      */
+    @NonNull
     public CookieManager getCookieManager() {
         return mCookieManager;
     }
@@ -113,11 +119,10 @@ public class WebEngine {
      * Navigates back inside the currently active tab if possible. If that is not possible,
      * checks if any Tab was added to the WebEngine before the currently active Tab,
      * if so, the currently active Tab is closed and this Tab is set to active.
-     *
-     * @return ListenableFuture with a Boolean stating if back navigation was successful.
      */
     @NonNull
     public ListenableFuture<Boolean> tryNavigateBack() {
+        ThreadCheck.ensureOnUiThread();
         if (mDelegate == null) {
             return Futures.immediateFailedFuture(
                     new IllegalStateException("WebSandbox has been destroyed"));
@@ -130,15 +135,17 @@ public class WebEngine {
     }
 
     /**
-     * Returns the Fragment.
-     *
-     * @return WebFragment Fragment that can be inflated in an Activity.
+     * Returns the WebFragment.
      */
+    @NonNull
     public WebFragment getFragment() {
-        ThreadCheck.ensureOnUiThread();
         return mFragment;
     }
 
+    /**
+     * Returns the tag associated with this WebEngine instance.
+     */
+    @NonNull
     public String getTag() {
         return mTag;
     }

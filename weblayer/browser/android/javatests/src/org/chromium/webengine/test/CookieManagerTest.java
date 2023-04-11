@@ -101,7 +101,7 @@ public class CookieManagerTest {
         String cookie =
                 runOnUiThreadBlocking(() -> mCookieManager.getCookie(mServer.getBaseUrl())).get();
         Assert.assertEquals(cookie, "");
-        mCookieManager.setCookie(mServer.getBaseUrl(), "foo=bar");
+        runOnUiThreadBlocking(() -> mCookieManager.setCookie(mServer.getBaseUrl(), "foo=bar"));
         String setCookie =
                 runOnUiThreadBlocking(() -> mCookieManager.getCookie(mServer.getBaseUrl())).get();
         Assert.assertEquals(setCookie, "foo=bar");
