@@ -3789,6 +3789,14 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
   while (ExpandRow())
     PlaceItems();
 
+  if (fragmentainer_space != kIndefiniteSize) {
+    // Encompass any fragmentainer overflow (caused by monolithic content). We
+    // want this to contribute to the grid container fragment size, and it is
+    // also needed to shift any breakpoints all the way into the next
+    // fragmentainer.
+    fragmentainer_space = std::max(fragmentainer_space, max_item_block_end);
+  }
+
   // See if we need to take a row break-point, and if-so re-run |PlaceItems()|.
   // We only need to do this once.
   if (ShiftBreakpointIntoNextFragmentainer())
@@ -3811,10 +3819,7 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
     container_builder_.SetLastBaseline(*last_baseline);
 
   if (fragmentainer_space != kIndefiniteSize) {
-    // If there are items overflowing the fragmentainer (due to monolithic
-    // content), also include that in the consumed grid block-size.
-    *consumed_grid_block_size +=
-        std::max(fragmentainer_space, max_item_block_end);
+    *consumed_grid_block_size += fragmentainer_space;
   }
 }
 
