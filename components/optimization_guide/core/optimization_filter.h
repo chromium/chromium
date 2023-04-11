@@ -10,6 +10,7 @@
 
 #include "base/sequence_checker.h"
 #include "components/optimization_guide/core/bloom_filter.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 
@@ -23,10 +24,11 @@ typedef std::vector<std::unique_ptr<re2::RE2>> RegexpList;
 // of the proto data.
 class OptimizationFilter {
  public:
-  explicit OptimizationFilter(std::unique_ptr<BloomFilter> bloom_filter,
-                              std::unique_ptr<RegexpList> regexps,
-                              std::unique_ptr<RegexpList> exclusion_regexps,
-                              bool skip_host_suffix_checking);
+  OptimizationFilter(std::unique_ptr<BloomFilter> bloom_filter,
+                     std::unique_ptr<RegexpList> regexps,
+                     std::unique_ptr<RegexpList> exclusion_regexps,
+                     bool skip_host_suffix_checking,
+                     proto::BloomFilterFormat format);
 
   OptimizationFilter(const OptimizationFilter&) = delete;
   OptimizationFilter& operator=(const OptimizationFilter&) = delete;
@@ -57,6 +59,8 @@ class OptimizationFilter {
   std::unique_ptr<RegexpList> exclusion_regexps_;
 
   bool skip_host_suffix_checking_ = false;
+
+  proto::BloomFilterFormat bloom_filter_format_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

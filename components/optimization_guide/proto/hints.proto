@@ -292,9 +292,16 @@ message BloomFilter {
   optional bytes data = 3;
 }
 
+// The format for input to the bloom filter.
+enum BloomFilterFormat {
+  BLOOM_FILTER_FORMAT_UNKNOWN = 0;
+  BLOOM_FILTER_FORMAT_PLAINTEXT = 1;
+  BLOOM_FILTER_FORMAT_SHA256 = 2;
+}
+
 // A scalable filter for an optimization type.
 //
-// Next ID: 6
+// Next ID: 7
 message OptimizationFilter {
   // The type of optimization this filter applies to.
   optional OptimizationType optimization_type = 1;
@@ -312,6 +319,9 @@ message OptimizationFilter {
   // Whether additional host suffixes (other than the host) should be checked
   // against the filter.
   optional bool skip_host_suffix_checking = 4;
+  // The format to check against the bloom filter. Note this only applies
+  // to checks in the bloom_filter and not regexps.
+  optional BloomFilterFormat bloom_filter_format = 6;
 }
 
 message Configuration {
