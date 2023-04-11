@@ -318,6 +318,19 @@ class BookmarkButton : public BookmarkButtonBase {
       base::UmaHistogramEnumeration("Prerender.Experimental.BookmarkMetrics",
                                     PreloadBookmarkMetricsEvent::kMouseDown);
     }
+    // Record duration if the event happens before PressedCallback invocation.
+    if (!mouse_has_been_pressed_ && mouse_entered_time_.has_value()) {
+      mouse_has_been_pressed_ = true;
+      base::TimeDelta duration = base::TimeTicks::Now() - *mouse_entered_time_;
+      base::UmaHistogramTimes(
+          "Prerender.Experimental.BookmarkBar.EnterToPressDuration", duration);
+      if (event.IsOnlyLeftMouseButton()) {
+        base::UmaHistogramTimes(
+            "Prerender.Experimental.BookmarkBar.EnterToPressDuration."
+            "LeftButton",
+            duration);
+      }
+    }
     return result;
   }
 
@@ -328,7 +341,10 @@ class BookmarkButton : public BookmarkButtonBase {
   mutable std::u16string tooltip_text_;
   PressedCallback callback_;
   const raw_ref<const GURL> url_;
+
+  // Information for metrics.
   absl::optional<base::TimeTicks> mouse_entered_time_;
+  bool mouse_has_been_pressed_ = false;
 };
 
 BEGIN_METADATA(BookmarkButton, BookmarkButtonBase)
