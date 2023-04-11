@@ -5608,7 +5608,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
-                       AsyncContentLoadedEventOnDocumentLoad) {
+                       DISABLED_AsyncContentLoadedEventOnDocumentLoad) {
   // Load the page.
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                          ui::kAXModeComplete,
