@@ -56,6 +56,11 @@ constexpr int kIconLabelAnimationDurationMs = 600;
 
 }  // namespace
 
+SkAlpha IconLabelBubbleView::Delegate::GetIconLabelBubbleSeparatorAlpha()
+    const {
+  return 0x69;
+}
+
 SkColor IconLabelBubbleView::Delegate::GetIconLabelBubbleInkDropColor() const {
   return GetIconLabelBubbleSurroundingForegroundColor();
 }
@@ -74,7 +79,8 @@ void IconLabelBubbleView::SeparatorView::OnPaint(gfx::Canvas* canvas) {
   // IconLabelBubbleView has been emphasized (e.g. red text for a security
   // error) the separator will still blend into the background.
   const SkColor separator_color = SkColorSetA(
-      owner_->delegate_->GetIconLabelBubbleSurroundingForegroundColor(), 0x69);
+      owner_->delegate_->GetIconLabelBubbleSurroundingForegroundColor(),
+      owner_->delegate_->GetIconLabelBubbleSeparatorAlpha());
   const float x = GetLocalBounds().right() -
                   owner_->GetEndPaddingWithSeparator() -
                   1.0f / canvas->image_scale();

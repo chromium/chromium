@@ -429,25 +429,31 @@ BASE_FEATURE(kExpandedStateShape,
              "OmniboxExpandedStateShape",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Omnibox "expanded state" colors are updated to match CR23
+// guidelines.
+BASE_FEATURE(kExpandedStateColors,
+             "OmniboxExpandedStateColors",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, use Assistant for omnibox voice query recognition instead of
 // Android's built-in voice recognition service. Only works on Android.
 BASE_FEATURE(kOmniboxAssistantVoiceSearch,
              "OmniboxAssistantVoiceSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, Omnibox LHS and RHS icons are updated to match GM3
+// If enabled, Omnibox LHS and RHS icons are updated to match CR23
 // guidelines.
 BASE_FEATURE(kOmniboxCR23SteadyStateIcons,
              "kOmniboxCR23SteadyStateIcons",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, Omnibox "steady state" background color is updated to match GM3
+// If enabled, Omnibox "steady state" background color is updated to match CR23
 // guidelines.
 BASE_FEATURE(kOmniboxSteadyStateBackgroundColor,
              "OmniboxSteadyStateBackgroundColor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Specifies the GM3 omnibox background color in Dark Mode.
+// Specifies the CR23 omnibox background color in Dark Mode.
 //
 // In order to control the value of this param via Finch, the
 // `kOmniboxSteadyStateBackgroundColor` feature flag must be enabled.
@@ -465,7 +471,7 @@ const base::FeatureParam<std::string> kOmniboxDarkBackgroundColor(
     "OmniboxDarkBackgroundColor",
     "0x2A2A2A");
 
-// Specifies the GM3 omnibox background color in Dark Mode (on-hover).
+// Specifies the CR23 omnibox background color in Dark Mode (on-hover).
 //
 // In order to control the value of this param via Finch, the
 // `kOmniboxSteadyStateBackgroundColor` feature flag must be enabled.
@@ -483,7 +489,7 @@ const base::FeatureParam<std::string> kOmniboxDarkBackgroundColorHovered(
     "OmniboxDarkBackgroundColorHovered",
     "0x4C4C4B");
 
-// Specifies the GM3 omnibox background color in Light Mode.
+// Specifies the CR23 omnibox background color in Light Mode.
 //
 // In order to control the value of this param via Finch, the
 // `kOmniboxSteadyStateBackgroundColor` feature flag must be enabled.
@@ -501,7 +507,7 @@ const base::FeatureParam<std::string> kOmniboxLightBackgroundColor(
     "OmniboxLightBackgroundColor",
     "0xEBEFF7");
 
-// Specifies the GM3 omnibox background color in Light Mode (on-hover).
+// Specifies the CR23 omnibox background color in Light Mode (on-hover).
 //
 // In order to control the value of this param via Finch, the
 // `kOmniboxSteadyStateBackgroundColor` feature flag must be enabled.
@@ -520,24 +526,24 @@ const base::FeatureParam<std::string> kOmniboxLightBackgroundColorHovered(
     "0xE3E7F0");
 
 // If enabled, Omnibox "steady state" height is increased from 28 dp to 34 dp to
-// match GM3 guidelines.
+// match CR23 guidelines.
 BASE_FEATURE(kOmniboxSteadyStateHeight,
              "OmniboxSteadyStateHeight",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, Omnibox "steady state" text style is updated to match GM3
+// If enabled, Omnibox "steady state" text style is updated to match CR23
 // guidelines.
 BASE_FEATURE(kOmniboxSteadyStateTextStyle,
              "OmniboxSteadyStateTextStyle",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, Omnibox "steady state" text color is updated to match GM3
+// If enabled, Omnibox "steady state" text color is updated to match CR23
 // guidelines.
 BASE_FEATURE(kOmniboxSteadyStateTextColor,
              "OmniboxSteadyStateTextColor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Specifies the GM3 omnibox text color in Dark Mode.
+// Specifies the CR23 omnibox text color in Dark Mode.
 //
 // In order to control the value of this param via Finch, the
 // `kOmniboxSteadyStateTextColor` feature flag must be enabled.
@@ -553,7 +559,7 @@ const base::FeatureParam<std::string> kOmniboxTextColorDarkMode(
     "OmniboxTextColorDarkMode",
     "0xE3E3E3");
 
-// Specifies the GM3 omnibox text color in Dark Mode (dimmed).
+// Specifies the CR23 omnibox text color in Dark Mode (dimmed).
 //
 // In order to control the value of this param via Finch, the
 // `kOmniboxSteadyStateTextColor` feature flag must be enabled.
@@ -569,7 +575,7 @@ const base::FeatureParam<std::string> kOmniboxTextColorDimmedDarkMode(
     "OmniboxTextColorDimmedDarkMode",
     "0xC7C7C7");
 
-// Specifies the GM3 omnibox text color in Light Mode.
+// Specifies the CR23 omnibox text color in Light Mode.
 //
 // In order to control the value of this param via Finch, the
 // `kOmniboxSteadyStateTextColor` feature flag must be enabled.
@@ -585,7 +591,7 @@ const base::FeatureParam<std::string> kOmniboxTextColorLightMode(
     "OmniboxTextColorLightMode",
     "0x1F1F1F");
 
-// Specifies the GM3 omnibox text color in Light Mode (dimmed).
+// Specifies the CR23 omnibox text color in Light Mode (dimmed).
 //
 // In order to control the value of this param via Finch, the
 // `kOmniboxSteadyStateTextColor` feature flag must be enabled.

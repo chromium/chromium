@@ -214,6 +214,8 @@
   E_CPONLY(kColorOmniboxChipForegroundLowVisibility) \
   E_CPONLY(kColorOmniboxChipForegroundNormalVisibility) \
   E_CPONLY(kColorOmniboxKeywordSelected) \
+  E_CPONLY(kColorOmniboxKeywordSeparator) \
+  E_CPONLY(kColorOmniboxNullResultMessage) \
   E_CPONLY(kColorOmniboxResultsBackground) \
   E_CPONLY(kColorOmniboxResultsBackgroundHovered) \
   E_CPONLY(kColorOmniboxResultsBackgroundSelected) \

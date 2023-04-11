@@ -5369,6 +5369,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "omnibox-cr23-expanded-state-colors",
+    "owners": [ "khalidpeer", "manukh", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "omnibox-cr23-expanded-state-height",
     "owners": [ "yohanes", "manukh", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120

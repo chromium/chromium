@@ -898,7 +898,24 @@ WebContents* LocationBarView::GetWebContents() {
 }
 
 SkColor LocationBarView::GetIconLabelBubbleSurroundingForegroundColor() const {
-  return GetColorProvider()->GetColor(kColorOmniboxText);
+  // If keyword mode is active, then override the "surrounding foreground color"
+  // to ensure that the keyword mode separator has a distinct color. Otherwise,
+  // fall back to the usual omnibox text color to ensure UI consistency.
+  // In either case, all IconLabelBubbleViews situated within the location bar
+  // will inherit the selected "surrounding foreground color".
+  const auto color_id = ShouldShowKeywordBubble()
+                            ? kColorOmniboxKeywordSeparator
+                            : kColorOmniboxText;
+  return GetColorProvider()->GetColor(color_id);
+}
+
+SkAlpha LocationBarView::GetIconLabelBubbleSeparatorAlpha() const {
+  if (features::GetChromeRefresh2023Level() ==
+          features::ChromeRefresh2023Level::kLevel2 ||
+      base::FeatureList::IsEnabled(omnibox::kExpandedStateColors)) {
+    return 0xFF;
+  }
+  return IconLabelBubbleView::Delegate::GetIconLabelBubbleSeparatorAlpha();
 }
 
 SkColor LocationBarView::GetIconLabelBubbleBackgroundColor() const {
