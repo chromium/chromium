@@ -800,7 +800,7 @@ void KnownUser::CleanEphemeralUsers() {
     if (!value.is_dict())
       return false;
 
-    absl::optional<bool> is_ephemeral = value.FindBoolKey(kIsEphemeral);
+    absl::optional<bool> is_ephemeral = value.GetDict().FindBool(kIsEphemeral);
     return is_ephemeral && *is_ephemeral;
   });
 }
@@ -811,7 +811,7 @@ void KnownUser::CleanObsoletePrefs() {
     if (!user_entry.is_dict())
       continue;
     for (const std::string& key : kObsoleteKeys)
-      user_entry.RemoveKey(key);
+      user_entry.GetDict().Remove(key);
   }
 }
 
