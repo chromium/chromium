@@ -1776,7 +1776,7 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
     // Migrate wallpaper info to syncable prefs.
     if (!pref_manager_->GetSyncedWallpaperInfo(account_id, &synced_info) &&
         pref_manager_->GetLocalWallpaperInfo(account_id, &local_info) &&
-        IsWallpaperTypeSyncable(local_info.type)) {
+        WallpaperPrefManager::IsWallpaperTypeSyncable(local_info.type)) {
       if (local_info.type == WallpaperType::kCustomized) {
         base::FilePath source = GetCustomWallpaperDir(kOriginalWallpaperSubDir)
                                     .Append(local_info.location);
@@ -2867,25 +2867,6 @@ void WallpaperControllerImpl::OnAllOnlineWallpaperVariantsDownloaded(
 
   OnOnlineWallpaperDecoded(params, /*save_file=*/false, std::move(callback),
                            variant_to_use);
-}
-
-constexpr bool WallpaperControllerImpl::IsWallpaperTypeSyncable(
-    WallpaperType type) {
-  switch (type) {
-    case WallpaperType::kDaily:
-    case WallpaperType::kCustomized:
-    case WallpaperType::kOnline:
-    case WallpaperType::kOnceGooglePhotos:
-    case WallpaperType::kDailyGooglePhotos:
-      return true;
-    case WallpaperType::kDefault:
-    case WallpaperType::kPolicy:
-    case WallpaperType::kThirdParty:
-    case WallpaperType::kDevice:
-    case WallpaperType::kOneShot:
-    case WallpaperType::kCount:
-      return false;
-  }
 }
 
 void WallpaperControllerImpl::SetDailyRefreshCollectionId(

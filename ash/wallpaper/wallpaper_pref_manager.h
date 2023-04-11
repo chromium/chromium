@@ -77,6 +77,8 @@ class ASH_EXPORT WallpaperPrefManager
   static const char kOnlineWallpaperTypeNodeName[];
   static const char kOnlineWallpaperUrlNodeName[];
 
+  static bool IsWallpaperTypeSyncable(WallpaperType type);
+
   static std::unique_ptr<WallpaperPrefManager> Create(PrefService* local_state);
 
   // Create a PrefManager where pref service retrieval can be modified through

@@ -701,8 +701,6 @@ class ASH_EXPORT WallpaperControllerImpl
       const OnlineWallpaperParams& params,
       SetWallpaperCallback callback);
 
-  constexpr bool IsWallpaperTypeSyncable(WallpaperType type);
-
   // If daily refresh wallpapers is enabled by the user.
   bool IsDailyRefreshEnabled() const;
 
