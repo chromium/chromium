@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 ថ្ងៃមុន}other{# ថ្ងៃមុន}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 នាទី​មុន}other{# នាទី​មុន}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 ន}other{# ន}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{1 ថ្ងៃមុន}other{# ថ្ងៃ​មុន}}</translation>
 <translation id="1181037720776840403">ដកចេញ</translation>
 <translation id="1243314992276662751">ទាញឡើង</translation>
 <translation id="1266864766717917324">មិនអាចចែករំលែក <ph name="CONTENT_TYPE" /> បានទេ</translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">ពីឆ្វេងទៅស្តាំ</translation>
 <translation id="1383876407941801731">ស្វែងរក</translation>
 <translation id="1398853756734560583">ពង្រីក</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{1 នាទី​មុន}other{# នាទីមុន}}</translation>
 <translation id="1450753235335490080">មិន​អាច​ចែក​រំលែក <ph name="CONTENT_TYPE" />​ បាន​ទេ</translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{1 ខែមុន}other{# ខែ​មុន}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 នាទី និង }other{# នាទី និង }}</translation>
 <translation id="1643823602425662293">ការ​ជូន​ដំណឹង</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">រូបភាព</translation>
 <translation id="4565377596337484307">លាក់​ពាក្យ​សម្ងាត់</translation>
 <translation id="4588090240171750605">ទាញចុះទៅខាងស្តាំ</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{1 ឆ្នាំ​មុន}other{# ឆ្នាំ​មុន}}</translation>
 <translation id="4724120544754982507">ការជូន​ដំណឹងដែល​មិនទាន់​អាន​ចំនួន <ph name="UNREAD_NOTIFICATION_COUNT" /> នៅក្នុង​មជ្ឈមណ្ឌល​ជូនដំណឹង</translation>
 <translation id="4729257764711776855">លេខ</translation>
 <translation id="4746179598275229723">បានដកខ្ទាស់​កម្មវិធីបន្ថែម</translation>
@@ -212,10 +216,12 @@
 <translation id="8867568208303837180">កំពុងផ្ញើ...</translation>
 <translation id="8876215549894133151">ទម្រង់៖</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{1 ម៉ោង​មុន}other{# ម៉ោង​មុន}}</translation>
 <translation id="8996630695507351249">ត្រូវប្រាកដថា <ph name="TARGET_DEVICE_NAME" /> មានការតភ្ជាប់អ៊ីនធឺណិត។</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 វិនាទី}other{# វិនាទី}}</translation>
 <translation id="9059834730836941392">បង្រួមការ​ជូន​ដំណឹង</translation>
 <translation id="9170848237812810038">បកក្រោយ</translation>
 <translation id="932327136139879170">ទំព័រដើម</translation>
 <translation id="944069440740578670">ការ​ជូន​ដំណឹង​មិន​ទាន់​អាន</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{1 វិនាទីមុន}other{# វិនាទី​មុន}}</translation>
 </translationbundle>

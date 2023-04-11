@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Podes volver aquí para abrir de novo as pestanas que pechaches recentemente</translation>
 <translation id="1016495303386450659">Actualizouse o elemento</translation>
 <translation id="1035980983510608210">Ao pechar todas as pestanas, tamén se cerrarán as fixadas.</translation>
+<translation id="1036348656032585052">Desactivar</translation>
 <translation id="1044891598689252897">Os sitios funcionarán con normalidade</translation>
 <translation id="1049743911850919806">Modo de incógnito</translation>
 <translation id="105093091697134113">As contas seguintes utilizan contrasinais que quedaron expostas nunha violación da seguranza dos datos de terceiros ou que entraron nun sitio web enganoso. Cámbiaos inmediatamente para protexer as túas contas.</translation>
@@ -216,6 +217,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2482878487686419369">Notificacións</translation>
 <translation id="2496626742194544812">Ir á primeira pestana</translation>
 <translation id="2500374554657206846">Opcións para gardar contrasinais</translation>
+<translation id="2502415369140591438"><ph name="COUNT" /> contrasinais reutilizados</translation>
 <translation id="2523363575747517183">Este sitio web está tentando abrir outra aplicación.</translation>
 <translation id="2529021024822217800">Abrir todo</translation>
 <translation id="2547458583188611426">A sincronización non funciona. Para comezar a sincronizar datos, escribe a túa frase de acceso.</translation>
@@ -225,6 +227,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2576499762020411840">Usar e gardar contrasinais da túa Conta de Google</translation>
 <translation id="2578571896248130439">Enviar páxina web</translation>
 <translation id="2584132361465095047">Engadir conta...</translation>
+<translation id="2595587704210555261">{COUNT,plural, =1{As pestanas abertas que leven un día ou máis sen uso móvense a Pestanas inactivas para que te poidas centrar nas que máis utilizas. Podes cambiar esta opción en calquera momento en Configuración.}other{As pestanas abertas que leven {COUNT} días ou máis sen uso móvense a Pestanas inactivas para que te poidas centrar nas que máis utilizas. Podes cambiar esta opción en calquera momento en Configuración.}}</translation>
 <translation id="2600682495497606169">Borrar cookies dos sitios</translation>
 <translation id="2609008503159898744">Queres pechar todas as pestanas?</translation>
 <translation id="2625189173221582860">Copiouse o contrasinal</translation>
@@ -292,6 +295,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="2932085390869194046">Suxerir contrasinal…</translation>
 <translation id="2932765531295814441">Engadir contrasinais manualmente</translation>
 <translation id="2952581218264071393">1. Abre a configuración de Chrome</translation>
+<translation id="2953871438216280742">Inicia sesión para abrir e gardar a lista de lectura na túa Conta de Google.</translation>
 <translation id="2958718410589002129">Contrasinais</translation>
 <translation id="2961210776189273067">Tratamento</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceiros</translation>
@@ -385,6 +389,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3581564640715911333">Ofrece a tradución de páxinas noutros idiomas</translation>
 <translation id="3588820906588687999">Abrir imaxe nunha pestana nova</translation>
 <translation id="3595252146048399851">Sempre podes escoller na <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> o contido que queres sincronizar. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} contrasinal pouco seguro}other{{COUNT} contrasinais pouco seguros}}</translation>
 <translation id="3603009562372709545">Copiar URL da ligazón</translation>
 <translation id="3607167657931203000">Autocompletar datos</translation>
 <translation id="3608008480985212611">Iniciar sesión para xestionar as túas preferencias.</translation>
@@ -571,6 +576,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="4844899002472726590">Consulta e edita os temas que che interesan</translation>
 <translation id="4848999860252535517">Queres eliminar o contrasinal de <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Definir un código</translation>
+<translation id="4856498338299082007">Na túa Conta de Google</translation>
 <translation id="4858786880085262208">Actualiza a HTTPS cando sexa posible. Os sitios seguros poden ter inserido contido non seguro.</translation>
 <translation id="4860895144060829044">Chamar</translation>
 <translation id="4872323082491632254">Comprobar contrasinais</translation>
@@ -622,6 +628,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5211488077761630279">Queres permitir que "<ph name="SITE_NAME" />" utilice a túa <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Axudar a mellorar a seguranza na Web para todos</translation>
+<translation id="5221339005270097309">Comprobando contrasinais…</translation>
 <translation id="5228579091201413441">Activar sincronización</translation>
 <translation id="5232485538978018676">Iniciar sesión cunha conta xestionada</translation>
 <translation id="5234764350956374838">Rexeitar</translation>
@@ -661,6 +668,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 Handoff tamén debe estar activado na sección Xeral da configuración e os teus dispositivos deben utilizar a mesma conta iCloud.</translation>
 <translation id="5551897871312988470">Ofrecer a tradución</translation>
 <translation id="5556459405103347317">Volver cargar</translation>
+<translation id="555749644339804659">Comprobando contrasinais…</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5597915316964418992">Abre a grade de pestanas</translation>
 <translation id="560322036295180549">Opción desactivada pola túa organización</translation>
@@ -740,6 +748,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" /> (<ph name="PUBLICATION_DATE" />)</translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6042308850641462728">Máis</translation>
+<translation id="6054613632208573261">Utiliza Chrome de forma predeterminada</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla as túas historias e a túa actividade aquí</translation>
 <translation id="6064824697233747382">A túa organización esixe que desactives a sincronización.</translation>
@@ -1087,6 +1096,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="821809831108207540">Inicia sesión e activa a sincronización para personalizar Chrome e o teu feed de Discover.</translation>
 <translation id="8225985093977202398">Imaxes e ficheiros en caché</translation>
 <translation id="8237382152611443140">Abre os axustes de AutoFill Passwords (Autocompletar contrasinais)</translation>
+<translation id="8248969482078657578">Pestanas inactivas axúdanche a concentrarte</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8264966119170358612">Algúns dos teus contrasinais gardados quedaron expostos nunha violación da seguranza dos datos allea a Google. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8265018477030547118">Almacenaríase só neste dispositivo</translation>

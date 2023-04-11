@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">Dispositivo USB-C (puerto delantero)</translation>
 <translation id="1013598600051641573">Se cambió la resolución de <ph name="DISPLAY_NAME" /> a <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Para mantener este cambio, haz clic en Confirmar. En <ph name="TIMEOUT_SECONDS" />, se restablecerá la configuración anterior.</translation>
 <translation id="1013923882670373915">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para sincronizarse. Ingresa el siguiente código de PIN en el dispositivo: <ph name="PINCODE" />.</translation>
+<translation id="1017556409696559990">Minimizar la ventana superior cuando no hay historial del botón Atrás en Chrome</translation>
 <translation id="1024364763893396229">Guarda tu <ph name="NAME" /></translation>
 <translation id="1032891413405719768">El nivel de la batería de la pluma stylus está bajo</translation>
 <translation id="1036073649888683237">Para administrar las notificaciones, ve a Configuración.</translation>
@@ -343,6 +344,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2621713457727696555">Segura</translation>
 <translation id="263399434338050016">"Seleccionar todo"</translation>
+<translation id="2644422758626431000">Fijar ventana a la izquierda</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2647092942972307022">Memoria disponible: <ph name="USED_MEMORY" /> de <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2653019840645008922">Captura de ventana</translation>
@@ -1055,6 +1057,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5920710855273935292">El micrófono está silenciado.</translation>
+<translation id="5922962980596822074">Recorrer las ventanas desde la ventana utilizada más recientemente</translation>
 <translation id="5924855612669061715">El hotspot está activado</translation>
 <translation id="5946788582095584774">La función <ph name="FEATURE_NAME" /> está activada.</translation>
 <translation id="5947494881799873997">Revertir</translation>
@@ -1144,6 +1147,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6352082849089527770">Redes desconocidas</translation>
 <translation id="6359587239691116345">Obtén las funciones y mejoras de seguridad más recientes. Si rechazas esta actualización, es posible que el dispositivo ya no funcione de manera adecuada y que tengas problemas de seguridad y rendimiento.</translation>
 <translation id="6376931439017688372">Se activó la conexión Bluetooth</translation>
+<translation id="6378515133128829137">Fijar la ventana a la derecha</translation>
 <translation id="6381109794406942707">Para desbloquear el dispositivo, ingresa el PIN.</translation>
 <translation id="638716340450135524">Activar el acceso a la cámara</translation>
 <translation id="639644700271529076">El bloqueo de mayúsculas está desactivado.</translation>
@@ -1163,6 +1167,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6459472438155181876">Ampliando pantalla para <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">No se puede descargar el archivo</translation>
 <translation id="6482559668224714696">Lupa de pantalla completa</translation>
+<translation id="6483727822843292440">Recorrer las ventanas desde la ventana menos usada</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (puerto derecho)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> requiere que actualices tu <ph name="DEVICE_TYPE" /> antes de la fecha límite</translation>
 <translation id="649452524636452238">PIN de la tarjeta inteligente</translation>
@@ -1216,6 +1221,7 @@ Nueva instalación</translation>
 <translation id="6683022854667115063">Auriculares</translation>
 <translation id="6696025732084565524">Tu teclado desmontable necesita una actualización muy importante</translation>
 <translation id="6700713906295497288">Botón de menú IME</translation>
+<translation id="6705577071209924099">Ajustar la iluminación</translation>
 <translation id="6707693040195709527">Se superó la fecha límite para cambiar el dispositivo a la versión anterior</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6723839937902243910">Alimentación</translation>

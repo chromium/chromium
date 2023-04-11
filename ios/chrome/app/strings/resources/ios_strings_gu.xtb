@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">તમે તાજેતરમાં બંધ કરેલા ટૅબ ફરીથી ખોલવા માટે, તમે અહીં પાછા આવી શકો છો</translation>
 <translation id="1016495303386450659">આઇટમ અપડેટ કરી</translation>
 <translation id="1035980983510608210">બધી ટૅબ બંધ કરવાથી પિન કરેલી ટૅબ પણ બંધ થઈ જશે.</translation>
+<translation id="1036348656032585052">બંધ કરો</translation>
 <translation id="1044891598689252897">સાઇટ સામાન્ય રીતે કાર્ય કરશે</translation>
 <translation id="1049743911850919806">છૂપી</translation>
 <translation id="105093091697134113">નીચેનાં એકાઉન્ટમાં એ પાસવર્ડનો ઉપયોગ થાય છે જે ત્રીજા-પક્ષના ડેટાના ઉલ્લંઘન સંબંધે જાહેર થયા હતા અથવા છેતરામણી વેબસાઇટ પર દાખલ કરવામાં આવ્યા હતા. તમારા બધા એકાઉન્ટને સલામત રાખવા માટે, આ બધા પાસવર્ડ તાત્કાલિક બદલો.</translation>
@@ -610,6 +611,7 @@
 <translation id="5118764316110575523">બંધ</translation>
 <translation id="5119391094379141756">Chrome પસંદ કરો</translation>
 <translation id="5121618895923301719">તમે આ પ્રોડક્ટને પહેલેથી જ ટ્રૅક કરી રહ્યાં છો. આ પેજ <ph name="BEGIN_LINK" />મોબાઇલ બુકમાર્ક<ph name="END_LINK" />માં સાચવવામાં આવ્યું છે.</translation>
+<translation id="5126465625664020024">સાઇન ઇન કરો અને સમન્વયિત કરો</translation>
 <translation id="5132942445612118989">બધા ડિવાઇસ પર તમારા પાસવર્ડ, ઇતિહાસ અને વધુ સિંક કરો</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} નબળો પાસવર્ડ}one{{COUNT} નબળો પાસવર્ડ}other{{COUNT} નબળા પાસવર્ડ}}</translation>
 <translation id="5149188072385105201">પાસવર્ડ ઉમેરો...</translation>
@@ -747,6 +749,7 @@
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="6042308850641462728">વધુ</translation>
+<translation id="6054613632208573261">ડિફૉલ્ટ તરીકે Chromeનો ઉપયોગ કરો</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">તમારી સ્ટોરી અને પ્રવૃત્તિને અહીં નિયંત્રિત કરો</translation>
 <translation id="6064824697233747382">તમારી સંસ્થા માટે જરૂરી છે કે તમે સિંકની સુવિધા બંધ કરો.</translation>

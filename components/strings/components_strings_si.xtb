@@ -1987,6 +1987,7 @@
 <translation id="5872692522325383488">IBAN සුරකින ලදි</translation>
 <translation id="5873013647450402046">ඔබගේ බැංකුවට මේ ඔබ බව තහවුරු කර ගැනීමට අවශ්‍යයි.</translation>
 <translation id="5877831137320480913">රූපාලංකරණ සහ යෝග්‍යතාව</translation>
+<translation id="5879989559903563723">ආගන්තුක ප්‍රකාරයේ ඉඩ නොදෙයි</translation>
 <translation id="5884465125445718607">ලියුම් කවරය චීන #6</translation>
 <translation id="5887400589839399685">කාඩ්පත සුරැකිණි</translation>
 <translation id="5887687176710214216">අවසන් වරට ඊයේ පිවිසි</translation>
@@ -2340,7 +2341,6 @@
 <translation id="678982761784843853">ආරක්ෂිත අන්තර්ගත ID</translation>
 <translation id="6790428901817661496">වාදනය කරන්න</translation>
 <translation id="679355240208270552">ප්‍රතිපත්තිය මඟින් පෙරනිමි සෙවීම සබල කර නැති නිසා නොසලකා හරිනු ලැබේ.</translation>
-<translation id="6794049111359324414">WiFi ජාල පිහිටුවීමට <ph name="APP_NAME" /> යෙදුමට ඉඩ දෙන්නද?</translation>
 <translation id="6794951432696553238">දැන් සිට Windows Hello භාවිත කිරීමෙන් ඔබේ කාඩ්පත් වඩා වේගයෙන් තහවුරු කරන්න</translation>
 <translation id="6798460514924505775">ලියුම් කවරය චෞ 3</translation>
 <translation id="6805030849054648206">ලියුම් කවරය B6/C4</translation>
@@ -3228,6 +3228,7 @@
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">නීතිය සහ රජය</translation>
 <translation id="8957210676456822347">බැඳි ද්වාර සත්‍යාපනය</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">අඩවි සැකසීම් වෙත යන්න</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />යෝජනා:<ph name="MARKUP_2" />ඔබට දත්ත සබැඳුමක් ඇති බව සහතික කර ගන්න<ph name="MARKUP_3" />මෙම වෙබ් පිටුව පසුව පූරණය කරන්න<ph name="MARKUP_4" />ඔබ ඇතුළත් කළ ලිපිනය පරීක්ෂා කරන්න<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">කාඩ්පත සුරකින්න</translation>
@@ -3382,7 +3383,6 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" අස්ථාපනය හෝ අබල කිරීමට උත්සාහ කරන්න&lt;/li&gt;
     &lt;li&gt;වෙනත් ජාලයකට සබැඳීමට උත්සාහ කරන්න&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">මෙම යෙදුම නව WiFi ජාල පිහිටුවීමට අවසරය ඉල්ලයි. පිහිටුවීමෙන් පසු, ඔබේ <ph name="DEVICE_TYPE" /> සහභාගී වන WiFi ජාල වෙත ස්වයංක්‍රීයව සම්බන්ධ වනු ඇත. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Pay වෙතින්</translation>
 </translationbundle>

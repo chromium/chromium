@@ -4,6 +4,8 @@
 <translation id="1012876632442809908">USB-C ഉപകരണം (മുൻവശത്തെ പോർട്ട്)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" />, <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) എന്ന റെസല്യൂഷനിലേക്ക് മാറ്റി. മാറ്റങ്ങൾ നിലനിർത്താൻ 'സ്ഥിരീകരിക്കുക' ക്ലിക്ക് ചെയ്യുക. മുമ്പത്തെ ക്രമീകരണം <ph name="TIMEOUT_SECONDS" /> പുനഃസ്ഥാപിക്കും.</translation>
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" എന്ന Bluetooth ഉപകരണം ജോടിയാക്കുന്നതിനുള്ള അനുമതി ആവശ്യപ്പെടുന്നു. ആ ഉപകരണത്തിൽ ഈ പിൻ കോഡ് നൽകുക: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285"><ph name="APP_NAME" /> എന്നതിനെയും ലൊക്കേഷൻ അനുമതിയുള്ള എല്ലാ ആപ്പുകളെയും വെബ്സൈറ്റുകളെയും ChromeOS-നെയും വൈഫൈ, മൊബൈൽ നെറ്റ്‌വർക്കുകളുടെ ലൊക്കേഷൻ ഉപയോഗിക്കാൻ ഇത് അനുവദിക്കുന്നു.</translation>
+<translation id="1017556409696559990">Chrome-ൽ മുൻചരിത്രം ഇല്ലെങ്കിൽ ടോപ് വിൻഡോ ചുരുക്കുക</translation>
 <translation id="1024364763893396229">നിങ്ങളുടെ <ph name="NAME" /> സംരക്ഷിക്കുക</translation>
 <translation id="1032891413405719768">സ്‌റ്റൈലസ് ബാറ്ററി കുറവാണ്</translation>
 <translation id="1036073649888683237">അറിയിപ്പുകൾ മാനേജ് ചെയ്യാൻ ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
@@ -146,6 +148,7 @@
 <translation id="1651914502370159744">ചരിത്രം പേജ് തുറക്കുക</translation>
 <translation id="1654477262762802994">ഒരു ശബ്‌ദ ചോദ്യം ആരംഭിക്കുക</translation>
 <translation id="1668469839109562275">ബിൽറ്റ് ഇൻ VPN</translation>
+<translation id="1675844249244994876">വലതുവശത്തെ വിൻഡോ അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ശേഷിക്കുന്നു</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> കണക്‌റ്റ് ചെയ്‌തിട്ടില്ല.</translation>
 <translation id="1677582821739292812">ആരോ നിങ്ങളുടെ സ്ക്രീനിലേക്ക് നോക്കുന്നു</translation>
@@ -190,6 +193,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ഇതർനെറ്റ്: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">ലൊക്കേഷൻ ആക്‌സസ് ഓണാക്കുക</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> അൺപിൻ ചെയ്‌തു</translation>
 <translation id="1838895407229022812">നൈറ്റ് ലൈറ്റ് ഓഫാണ്.</translation>
 <translation id="1854180393107901205">കാസ്റ്റ് ചെയ്യുന്നത് നിർത്തുക</translation>
@@ -343,6 +347,7 @@
 <translation id="2620436844016719705">സിസ്റ്റം</translation>
 <translation id="2621713457727696555">സുരക്ഷിതമാക്കി</translation>
 <translation id="263399434338050016">"എല്ലാം തിരഞ്ഞെടുക്കുക"</translation>
+<translation id="2644422758626431000">വിൻഡോ ഇടതുഭാഗത്ത് പിൻ ചെയ്യുക</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022"><ph name="TOTAL_MEMORY" />-യിൽ <ph name="USED_MEMORY" /> ലഭ്യമാണ്</translation>
 <translation id="2653019840645008922">വിൻഡോ ക്യാപ്‌ചർ</translation>
@@ -466,6 +471,7 @@
 <translation id="3255483164551725916">നിങ്ങൾക്ക് എന്ത് ചെയ്യാനാവും?</translation>
 <translation id="3256109297135787951">നിങ്ങളുടെ ഷെൽഫിലെ ഒരു ഇനത്തിൽ നിന്ന് ഹൈലൈറ്റ് നീക്കം ചെയ്യുക</translation>
 <translation id="3260969790895726815">സംഭാഷണം ലോക്കലായി പ്രോസസ് ചെയ്യുകയും കേട്ടെഴുത്ത് ഓഫ്‌ലൈനായി പ്രവർത്തിക്കുകയും ചെയ്യുന്നു, എന്നാൽ ചില ശബ്ദ കമാൻഡുകൾ പ്രവർത്തിക്കില്ല.</translation>
+<translation id="3265032511221679826">കൃത്യമായ ലൊക്കേഷൻ ആക്‌സസ് ഓണാക്കണോ?</translation>
 <translation id="3269597722229482060">വലത് ക്ലിക്ക്</translation>
 <translation id="3289364673986435196">പവർ മെനു</translation>
 <translation id="3289544412142055976">Linux ആപ്പുകൾക്ക് നിലവിൽ പിന്തുണയില്ല</translation>
@@ -576,6 +582,7 @@
 <translation id="366222428570480733">നിയന്ത്രിത ഉപയോക്താവ് <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">നിങ്ങളുടെ ഫ്ലോട്ടിംഗ് വിൻഡോ മറയ്ക്കാൻ സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="367531336287639526">വിലാസ ബാറിന്റെ ഇടതുവശത്തുള്ള ആദ്യ ഐക്കൺ തിരഞ്ഞെടുക്കുക</translation>
+<translation id="3677931086890821290">ലൊക്കേഷൻ അനുമതിയുള്ള എല്ലാ ആപ്പുകളെയും വെബ്സൈറ്റുകളെയും ChromeOS-നെയും വൈഫൈ, മൊബൈൽ നെറ്റ്‌വർക്കുകളുടെ ലൊക്കേഷൻ ഉപയോഗിക്കാൻ ഇത് അനുവദിക്കുന്നു.</translation>
 <translation id="3679827876008292680">വിൻഡോയിലെ അവസാന ടാബിലേക്ക് പോകുക</translation>
 <translation id="36813544980941320">നിങ്ങളുടെ ഫോണിനും <ph name="DEVICE_NAME" /> എന്നതിനുമിടയിൽ വെെഫെെ നെറ്റ്‌വർക്കുകൾ പങ്കിടും</translation>
 <translation id="3694122362646626770">വെബ്‌സൈറ്റുകൾ</translation>
@@ -842,6 +849,7 @@
 <translation id="493076006037866439">സ്ക്രീൻ സൂം ഔട്ട് ചെയ്യുക</translation>
 <translation id="4936329710968938986">എല്ലാവരും, ഓഫാണ്</translation>
 <translation id="4938176435186993759">എല്ലാ നിർദ്ദേശങ്ങളും മറയ്ക്കുക</translation>
+<translation id="4943007472417128747">വൈഫൈ ഉപയോഗിക്കുന്നതിന് ഹോട്ട്‌സ്‌പോട്ട് ഓഫാക്കി. ഹോട്ട്‌സ്‌പോട്ട് ഉപയോഗിക്കുന്നതിന്, വൈഫൈ ഓഫാക്കുക.</translation>
 <translation id="4945196315133970626">അറിയിപ്പുകൾ ഓഫാക്കുക</translation>
 <translation id="4946376291507881335">ക്യാപ്‌ചർ ചെയ്യുക</translation>
 <translation id="495046168593986294">മുകളിലേക്ക് സ്ക്രോള്‍ ചെയ്യുക</translation>
@@ -1054,6 +1062,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ഓൺ ചെയ്യുക</translation>
 <translation id="5920710855273935292">മൈക്ക് മ്യൂട്ട് ചെയ്തിരിക്കുന്നു.</translation>
+<translation id="5922962980596822074">അവസാനമായി ഉപയോഗിച്ച വിൻഡോ ആദ്യം എന്ന ക്രമത്തിൽ വിൻഡോകൾ പരിശോധിക്കുക</translation>
 <translation id="5924855612669061715">ഹോട്ട്സ്പോട്ട് ഓണാണ്</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ഓണാണ്.</translation>
 <translation id="5947494881799873997">പഴയപടിയാക്കുക</translation>
@@ -1143,6 +1152,7 @@
 <translation id="6352082849089527770">അജ്ഞാതമായ നെറ്റ്‌വർക്കുകൾ</translation>
 <translation id="6359587239691116345">ഏറ്റവും പുതിയ ഫീച്ചറുകളും സുരക്ഷാ മെച്ചപ്പെടുത്തലുകളും നേടുക. ഈ അപ്ഡേറ്റ് നിങ്ങൾ നിരസിക്കുകയാണെങ്കിൽ, ഉപകരണം ഇനി ശരിയായി പ്രവർത്തിച്ചേക്കില്ല, സുരക്ഷയും പ്രകടനവുമായി ബന്ധപ്പെട്ട പ്രശ്നങ്ങൾ നിങ്ങൾ നേരിട്ടേക്കാം.</translation>
 <translation id="6376931439017688372">Bluetooth ഓണാണ്</translation>
+<translation id="6378515133128829137">വിൻഡോ വലതുഭാഗത്ത് പിൻ ചെയ്യുക</translation>
 <translation id="6381109794406942707">ഉപകരണം അൺലോക്ക് ചെയ്യാൻ, നിങ്ങളുടെ പിൻ നൽകുക.</translation>
 <translation id="638716340450135524">ക്യാമറ ആക്‌സസ് ഓണാക്കുക</translation>
 <translation id="639644700271529076">CAPS LOCK ഓഫാണ്</translation>
@@ -1162,6 +1172,7 @@
 <translation id="6459472438155181876">സ്‌ക്രീൻ <ph name="DISPLAY_NAME" /> എന്നതിലേക്ക് വികസിപ്പിക്കുന്നു</translation>
 <translation id="6477681113376365978">ഫയൽ ഡൗൺലോഡ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="6482559668224714696">പൂർണ്ണസ്‌ക്രീൻ മാഗ്‌നിഫയർ</translation>
+<translation id="6483727822843292440">ഏറ്റവും കുറവ് ഉപയോഗിച്ച വിൻഡോ ആദ്യം എന്ന ക്രമത്തിൽ വിൻഡോകൾ പരിശോധിക്കുക</translation>
 <translation id="6490471652906364588">USB-C ഉപകരണം (വലത് പോർട്ട്)</translation>
 <translation id="6491071886865974820">സമയപരിധി അവസാനിക്കുന്നതിന് മുമ്പ് നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> അപ്‌ഡേറ്റ് ചെയ്യാൻ <ph name="MANAGER" /> ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="649452524636452238">സ്‌മാർട്ട് കാർഡ് പിൻ</translation>
@@ -1383,6 +1394,7 @@
 ഉപകരണം ഷട്ട് ഡൗൺ ചെയ്യാൻ, ഉപകരണത്തിലെ പവർ ബട്ടൺ വീണ്ടും അമർത്തിപ്പിടിക്കുക.</translation>
 <translation id="7526573455193969409">നെറ്റ്‌വർക്ക് നിരീക്ഷിക്കപ്പെടാം</translation>
 <translation id="7536035074519304529">IP വിലാസം: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">ഇടതുവശത്തെ വിൻഡോ അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="7543399541175347147">Linux ആപ്പുകളും അദൃശ്യ വിൻഡോകളും നിലവിൽ പിന്തുണയ്ക്കുന്നില്ല. മറ്റ് ആപ്പുകൾ സംരക്ഷിക്കും.</translation>
 <translation id="7544300628205093162">കീബോർഡ് ബാക്ക്‌ലൈറ്റ് ഓണാണ്</translation>
 <translation id="7548434653388805669">ഉറങ്ങാൻ സമയമായി</translation>
@@ -1463,6 +1475,7 @@
 <translation id="7893503627044934815">ഈ ഫയൽ കാണിക്കാൻ ആഗ്രഹിക്കുന്നില്ല</translation>
 <translation id="7895348134893321514">ടോട്ട്</translation>
 <translation id="7897375687985782769">നിങ്ങൾ സ്‌ക്രീൻ തിരിക്കുന്നതിനായി കീബോഡ് കുറുക്കുവഴി അമർത്തി. സ്‌ക്രീൻ തിരിക്കണോ?</translation>
+<translation id="7901190436359881020">വിൻഡോകൾ സ്വാപ്പ് ചെയ്യുക</translation>
 <translation id="7901405293566323524">ഫോൺ ഹബ്</translation>
 <translation id="7902625623987030061">ഫിംഗർപ്രിന്റ് സെൻസർ സ്‌പർശിക്കുക</translation>
 <translation id="7904094684485781019">ഈ അക്കൗണ്ടിന്റെ അഡ്‌മിനിസ്‌ട്രേറ്റർ ഒന്നിലധികം സൈൻ-ഇൻ അനുവദിക്കുന്നില്ല.</translation>
@@ -1738,6 +1751,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" />റെസല്യൂഷൻ <ph name="RESOLUTION" /> എന്നതിലേക്ക് മാറ്റി. മാറ്റങ്ങൾ നിലനിർത്താൻ 'സ്ഥിരീകരിക്കുക' ക്ലിക്ക് ചെയ്യുക. മുമ്പത്തെ ക്രമീകരണം <ph name="TIMEOUT_SECONDS" /> സെക്കൻഡിൽ പുനഃസ്ഥാപിക്കും.</translation>
 <translation id="9201044636667689546">ഈ Chromebook-ലേക്ക് <ph name="NAME" /> കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
+<translation id="9207682216934703221"><ph name="APP_NAME" />, <ph name="APP2_NAME" /> എന്നിവയെയും ലൊക്കേഷൻ അനുമതിയുള്ള എല്ലാ ആപ്പുകളെയും വെബ്സൈറ്റുകളെയും ChromeOS-നെയും വൈഫൈ, മൊബൈൽ നെറ്റ്‌വർക്കുകളുടെ ലൊക്കേഷൻ ഉപയോഗിക്കാൻ ഇത് അനുവദിക്കുന്നു.</translation>
 <translation id="9210037371811586452">ഏകീകൃത ഡെസ്‌ക്‌ടോപ്പ് മോഡിൽ നിന്ന് പുറത്തുകടക്കുന്നു</translation>
 <translation id="9211490828691860325">എല്ലാ ഡെസ്കുകളും</translation>
 <translation id="9211681782751733685">ബാറ്ററി പൂർണ്ണമായി ചാർജ് ആകാൻ <ph name="TIME_REMAINING" /> ശേഷിക്കുന്നു.</translation>

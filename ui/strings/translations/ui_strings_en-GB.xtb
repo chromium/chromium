@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 day ago}other{# days ago}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 minute ago}other{# minutes ago}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 m}other{# m}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{1 Day Ago}other{# Days Ago}}</translation>
 <translation id="1181037720776840403">Remove</translation>
 <translation id="1243314992276662751">Upload</translation>
 <translation id="1266864766717917324">Couldn't share <ph name="CONTENT_TYPE" /></translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">Left to Right</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1398853756734560583">Maximise</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{1 Minute Ago}other{# Minutes Ago}}</translation>
 <translation id="1450753235335490080">Can't share <ph name="CONTENT_TYPE" /></translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{1 Month Ago}other{# Months Ago}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minute and }other{# minutes and }}</translation>
 <translation id="1643823602425662293">Notification</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">Image</translation>
 <translation id="4565377596337484307">Hide password</translation>
 <translation id="4588090240171750605">Scroll Right</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{1 Year Ago}other{# Years Ago}}</translation>
 <translation id="4724120544754982507">Notification Centre, <ph name="UNREAD_NOTIFICATION_COUNT" /> unread notifications</translation>
 <translation id="4729257764711776855">number</translation>
 <translation id="4746179598275229723">Extension unpinned</translation>
@@ -212,10 +216,12 @@
 <translation id="8867568208303837180">Sending...</translation>
 <translation id="8876215549894133151">Format:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{1 Hour Ago}other{# Hours Ago}}</translation>
 <translation id="8996630695507351249">Make sure that <ph name="TARGET_DEVICE_NAME" /> is connected to the Internet.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 sec}other{# secs}}</translation>
 <translation id="9059834730836941392">Collapse notification</translation>
 <translation id="9170848237812810038">&amp;Undo</translation>
 <translation id="932327136139879170">Home</translation>
 <translation id="944069440740578670">Unread notifications</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{1 Second Ago}other{# Seconds Ago}}</translation>
 </translationbundle>

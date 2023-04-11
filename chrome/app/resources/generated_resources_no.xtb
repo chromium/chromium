@@ -1189,7 +1189,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1999115740519098545">Ved oppstart</translation>
 <translation id="1999315477791571194">I Google Passordlagring <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="2002109485265116295">Sanntid</translation>
-<translation id="2003130567827682533">For å aktivere «<ph name="NAME" />»-dataene må du først koble til et Wifi-nettverk</translation>
+<translation id="2003130567827682533">For å aktivere «<ph name="NAME" />»-dataene må du først koble til et wifi-nettverk</translation>
 <translation id="2004697686368036666">Det kan hende at funksjoner på noen nettsteder ikke fungerer</translation>
 <translation id="2005199804247617997">Andre profiler</translation>
 <translation id="2005967212456643969">Tilpass tillatelser for hver utvidelse</translation>
@@ -3431,7 +3431,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3930737994424905957">Leter etter enheter</translation>
 <translation id="3930968231047618417">Bakgrunnsfarge</translation>
 <translation id="3933283459331715412">Gjenopprett slettet passord for <ph name="USERNAME" /></translation>
-<translation id="3936260554100916852"><ph name="DEVICE_NAME" /> deler et Wifi-nettverk med deg</translation>
+<translation id="3936260554100916852"><ph name="DEVICE_NAME" /> deler et wifi-nettverk med deg</translation>
 <translation id="3936390757709632190">&amp;Åpne lyd i ny fane</translation>
 <translation id="3936925983113350642">Passordet du velger, er nødvendig for å gjenopprette dette sertifikatet på et senere tidspunkt. Oppbevar det på et sikkert sted.</translation>
 <translation id="3937640725563832867">Alternativt navn på sertifikatutsteder</translation>
@@ -4101,6 +4101,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4545759655004063573">Manglende tillatelser gjør lagring umulig her. Lagre på et annet sted.</translation>
 <translation id="4546308221697447294">Surf raskt med Google Chrome</translation>
 <translation id="4546345569117159016">Høyre knapp</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> vil bruke denne utvidelsen:</translation>
 <translation id="4546692474302123343">Google Assistent-taleinndata</translation>
 <translation id="4547659257713117923">Ingen faner fra andre enheter</translation>
 <translation id="4547672827276975204">Angi automatisk</translation>
@@ -4534,7 +4535,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4932733599132424254">Dato</translation>
 <translation id="4933484234309072027">lagt til på <ph name="URL" /></translation>
 <translation id="4936042273057045735">Synkronisering av varsler støttes ikke for telefoner i jobbprofiler</translation>
-<translation id="4937676329899947885">Mottar et Wifi-nettverk</translation>
+<translation id="4937676329899947885">Mottar et wifi-nettverk</translation>
 <translation id="4938788218358929252">disse oppskriftsideene</translation>
 <translation id="4939805055470675027">Kunne ikke koble til <ph name="CARRIER_NAME" /></translation>
 <translation id="4940364377601827259"><ph name="PRINTER_COUNT" /> skrivere er tilgjengelige for lagring.</translation>
@@ -4958,6 +4959,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5338503421962489998">Lokal lagring</translation>
 <translation id="5339031667684712858">Nettsteder du har fjernet</translation>
 <translation id="5340638867532133571">Tillat at nettsteder installerer betalingsbehandlere (anbefales)</translation>
+<translation id="5340787663756381836">&amp;Finn og rediger</translation>
 <translation id="5341793073192892252">Følgende informasjonskapsler er blokkert (informasjonskapsler fra tredjeparter blokkeres uten unntak)</translation>
 <translation id="5342091991439452114">PIN-koden må inneholde minst <ph name="MINIMUM" /> sifre</translation>
 <translation id="5344036115151554031">Gjenoppretter Linux</translation>
@@ -5714,6 +5716,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6019851026059441029">Kjempebra – HD</translation>
 <translation id="6020431688553761150">Tjeneren autoriserte ikke tilgang til denne ressursen for deg.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> apper støttes ikke lenger</translation>
+<translation id="6021969570711251331">Innfelt</translation>
 <translation id="6022526133015258832">Åpne i fullskjerm</translation>
 <translation id="6022659036123304283">Gi Chrome et personlig preg</translation>
 <translation id="6023643151125006053">Denne enheten (SN: <ph name="SERIAL_NUMBER" />) ble låst av <ph name="SAML_DOMAIN" />-administratoren.</translation>
@@ -9348,6 +9351,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="939401694733344652">Disse kontoene brukes ikke med Android-apper akkurat nå. Hvis du velger en konto som skal brukes med denne Android-appen, kan kontoen også brukes med andre Android-apper. Du kan endre Android-apptilgangen i <ph name="LINK_BEGIN" />Innstillinger &gt; Kontoer<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Angi en passordfrase</translation>
 <translation id="939736085109172342">Ny mappe</translation>
+<translation id="940212040923880623">&amp;Finn og rediger</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> deler lyd og en fane fra Chrome.</translation>
 <translation id="944799160843436808">Det oppsto et problem med konfigurering av Steam på Chromebook</translation>
 <translation id="945522503751344254">Send tilbakemelding</translation>

@@ -700,6 +700,7 @@
 <translation id="1593594475886691512">फ़ॉर्मेट किया जा रहा है...</translation>
 <translation id="159359590073980872">इमेज कैश</translation>
 <translation id="1593926297800505364">भुगतान का तरीका सेव करें</translation>
+<translation id="1594703455918849716">जांच करने वाले पेज पर जाएं</translation>
 <translation id="1595492813686795610">Linux अपग्रेड हो रहा है</translation>
 <translation id="1596286373007273895">कास्ट करने के लिए उपलब्ध जगह</translation>
 <translation id="1596709061955594992">ब्लूटूथ बंद है. उपलब्ध डिवाइसों को देखने के लिए, ब्लूटूथ चालू करें.</translation>
@@ -1695,6 +1696,7 @@
 <translation id="2399699884460174994">सूचनाएं चालू की गईं</translation>
 <translation id="2399939490305346086">सुरक्षा कुंजी पर साइन इन का डेटा</translation>
 <translation id="2400664245143453337">तुरंत अपडेट करने की ज़रूरत है</translation>
+<translation id="2402226831639195063">टोन</translation>
 <translation id="2406153734066939945">क्या आप यह प्रोफ़ाइल और इसका डेटा मिटाना चाहते हैं?</translation>
 <translation id="2408018932941436077">कार्ड को सेव किया जा रहा है</translation>
 <translation id="2408955596600435184">अपना पिन डालें</translation>
@@ -1706,6 +1708,7 @@
 <translation id="241082044617551207">अज्ञात प्लग इन</translation>
 <translation id="2410940059315936967">किसी साइट को विज़िट करने पर, वह दूसरी साइटों का कॉन्टेंट एम्बेड कर सकती है. जैसे: इमेज, विज्ञापन, और टेक्स्ट. ये दूसरी साइटें जो कुकी सेट करती हैं उन्हें तीसरे पक्ष की कुकी कहा जाता है.</translation>
 <translation id="2411666601450687801">इस डिवाइस पर वर्चुअल मशीन की अनुमति नहीं है</translation>
+<translation id="2412015533711271895">आपको माता-पिता या अभिभावक से अनुमति लेनी होगी, ताकि आप इस एक्सटेंशन का इस्तेमाल कर सकें</translation>
 <translation id="2412753904894530585">केर्बेरोस</translation>
 <translation id="2414886740292270097">गहरा</translation>
 <translation id="2416435988630956212">कीबोर्ड के फ़ंक्शन बटन</translation>
@@ -3032,6 +3035,7 @@
 <translation id="3609277884604412258">तेज़ी से खोजने की सुविधा</translation>
 <translation id="3610241585790874201">साइटों को आपके डिवाइस पर डेटा सेव करने की अनुमति नहीं है</translation>
 <translation id="3610369246614755442">डॉक के पंखे को मरम्मत की ज़रूरत है</translation>
+<translation id="3610961622607302617"><ph name="WEBSITE" /> का पासवर्ड बदलें</translation>
 <translation id="361106536627977100">फ़्लैश डेटा</translation>
 <translation id="3611655097742243705">ज़्यादा ऐप्लिकेशन पाने के लिए, 'Play Store' पर जाएं</translation>
 <translation id="3611658447322220736">हाल ही में बंद की गई साइटें, डेटा भेजने और पाने की प्रकिया को पूरा कर सकती हैं</translation>
@@ -3088,6 +3092,7 @@
 <translation id="3651488188562686558">वाई-फ़ाई से डिसकनेक्ट करें</translation>
 <translation id="3652817283076144888">शुरू हो रहा है</translation>
 <translation id="3653160965917900914">नेटवर्क फ़ाइल शेयर</translation>
+<translation id="3653887973853407813">इस एक्सटेंशन का इस्तेमाल नहीं किया जा सकता. आपके माता-पिता या अभिभावक ने Chrome के लिए, “साइटों, ऐप्लिकेशन, और एक्सटेंशन के लिए अनुमतियों” की सुविधा बंद कर दी है.</translation>
 <translation id="3653999333232393305"><ph name="HOST" /> को अपना माइक्रोफ़ोन एक्सेस करते रहने दें</translation>
 <translation id="3654045516529121250">अपनी सुलभता सेटिंग पढ़ें</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{उसे एक फ़ाइल की स्‍थायी एक्सेस मिली हुई है.}one{उसे # फ़ाइलों की स्‍थायी एक्सेस मिली हुई है.}other{उसे # फ़ाइलों की स्‍थायी एक्सेस मिली हुई है.}}</translation>
@@ -4104,6 +4109,7 @@
 <translation id="4545759655004063573">कम अनुमतियां होने की वजह से सेव नहीं कर सकते. कृपया किसी दूसरी जगह पर सेव करें.</translation>
 <translation id="4546308221697447294">Google Chrome के ज़रिए तेज़ी से ब्राउज़़ करें</translation>
 <translation id="4546345569117159016">दायां बटन</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> को इस एक्सटेंशन का इस्तेमाल करना है:</translation>
 <translation id="4546692474302123343">Google Assistant में बोलकर लिखने की सुविधा</translation>
 <translation id="4547659257713117923">अन्य डिवाइसों से कोई टैब नहीं</translation>
 <translation id="4547672827276975204">अपने आप सेट करें</translation>
@@ -5159,6 +5165,7 @@
 <translation id="5517304475148761050">इस ऐप्लिकेशन काे 'Play Store' के ऐक्सेस की ज़रूरत है</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" /> - <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">जब कोई साइट क्लिपबोर्ड पर कॉपी किए गए लेख और इमेज देखना चाहे, तो इसके लिए पूछें</translation>
+<translation id="5518949581554491184">Android फ़ोन के साथ सेट अप करें</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">क्या यह वही होम पेज है जिसे आप देखना चाह रहे थे?</translation>
 <translation id="5522156646677899028">इस एक्सटेंशन में गंभीर सुरक्षा भेद्यता शामिल है.</translation>
@@ -5717,6 +5724,7 @@
 <translation id="6019851026059441029">बहुत अच्छा - एचडी</translation>
 <translation id="6020431688553761150">इस संसाधन को एक्सेस करने के लिए सर्वर ने आपको अनुमति नहीं दी.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> ऐप्स अब उपलब्ध नहीं है</translation>
+<translation id="6021969570711251331">इंटरलीव</translation>
 <translation id="6022526133015258832">पूरी स्‍क्रीन खोलें</translation>
 <translation id="6022659036123304283">Chrome को अपने मुताबिक बनाएं</translation>
 <translation id="6023643151125006053">इस डिवाइस (क्रमांक: <ph name="SERIAL_NUMBER" />) को <ph name="SAML_DOMAIN" /> के एडमिन ने लॉक कर दिया था.</translation>
@@ -6048,6 +6056,7 @@
 <translation id="6318125393809743217">नीति के कॉन्फ़िगरेशन के साथ एक policies.json फ़ाइल शामिल करें.</translation>
 <translation id="6318407754858604988">डाउनलोड शुरू हो गया</translation>
 <translation id="6318944945640833942">प्रिंटर नहीं मिला. कृपया प्रिंटर का पता फिर से डालें.</translation>
+<translation id="6320808462673705899">आपकी खोज से मिलता-जुलता कोई बुकमार्क नहीं है.</translation>
 <translation id="6322370287306604163">फ़िंगरप्रिंट की मदद से ज़्यादा तेज़ी से अनलॉक करें</translation>
 <translation id="6322559670748154781">इस फ़ाइल को आम तौर पर डाउनलोड नहीं किया जाता है और इसे 'बेहतर सुरक्षा' सेटिंग ने ब्लॉक कर रखा है</translation>
 <translation id="6324916366299863871">शॉर्टकट में बदलाव करें</translation>
@@ -6494,6 +6503,7 @@
 <translation id="6725206449694821596">इंटरनेट प्रिंटिंग प्रोटोकॉल (IPP)</translation>
 <translation id="6725970970008349185">प्रति पेज प्रदर्शित किए जाने वाले उम्मीदवारों की संख्या</translation>
 <translation id="672609503628871915">देखें कि नया क्या है</translation>
+<translation id="6726800386221816228">खास वर्ण</translation>
 <translation id="67269783048918309">इस्तेमाल और निदान से जुड़ा डेटा भेजें. यह डिवाइस फ़िलहाल Google को निदान, डिवाइस, और ऐप्लिकेशन के इस्तेमाल से जुड़ा डेटा अपने आप भेज रहा है. इसका इस्तेमाल आपके बच्चे की पहचान करने के लिए नहीं किया जाएगा. यह सिस्टम और ऐप्लिकेशन की स्थिरता और दूसरे सुधारों में मदद करेगा. कुछ एग्रीगेट डेटा Google ऐप्लिकेशन और पार्टनर, जैसे कि Android डेवलपरों की भी मदद करेगा. यह <ph name="BEGIN_LINK1" />सेटिंग<ph name="END_LINK1" /> डिवाइस के मालिक ने लागू की है. अगर आपके बच्चे के लिए दूसरी 'वेब और ऐप्लिकेशन गतिविधि' सेटिंग चालू है, तो यह डेटा उसके Google खाते में सेव किया जा सकता है. <ph name="BEGIN_LINK2" />ज़्यादा जानें<ph name="END_LINK2" /></translation>
 <translation id="6728528977475057549"><ph name="LAST_FOUR_DIGITS" /> से खत्म होने वाला IBAN</translation>
 <translation id="6729192290958770680">अपना उपयोगकर्ता नाम डालें</translation>
@@ -6896,6 +6906,7 @@
 <translation id="7063129466199351735">शॉर्टकट प्रोसेस हो रहे हैं...</translation>
 <translation id="7063311912041006059">क्वेरी की जगह <ph name="SPECIAL_SYMBOL" /> वाला यूआरएल</translation>
 <translation id="706342288220489463">मदद करने के लिए, Assistant को स्क्रीन पर मौजूद जानकारी का इस्तेमाल करने की अनुमति दें</translation>
+<translation id="70641621694466590">पासवर्ड पेज पर जाएं</translation>
 <translation id="7064734931812204395">Linux कंटेनर कॉन्फ़िगर हो रही है. इसमें 30 मिनट तक लग सकते हैं.</translation>
 <translation id="7065223852455347715">इस डिवाइस को ऐसे मोड में लॉक किया गया है जो एंटरप्राइज़ नामांकन को रोकता है.  अगर आप इस डिवाइस का नामांकन करना चाहते हैं, तो आपको पहले डिवाइस पुनर्प्राप्ति से गुज़रना होगा.</translation>
 <translation id="7065534935986314333">सिस्टम के बारे में</translation>
@@ -7396,6 +7407,7 @@
 <translation id="7541773865713908457"><ph name="APP_NAME" /> ऐप्लिकेशन से <ph name="ACTION_NAME" /> करें</translation>
 <translation id="754207240458482646">आपके खाते पर अन्य डिवाइस से सिंक किया गया. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">इस <ph name="IDS_SHORT_PRODUCT_NAME" /> डिवाइस पर डीबग करने की सुविधाएं चालू करें</translation>
+<translation id="7544977292347272434">अपने माता-पिता से एक्सटेंशन की अनुमति देने के लिए कहें</translation>
 <translation id="7545466883021407599">सर्वर से कनेक्ट नहीं किया जा सका. अपने इंटरनेट कनेक्शन की जांच करें और फिर से कोशिश करें. अगर आपको अब भी समस्या हो रही है, तो Chromebook को रीस्टार्ट करके देखें. गड़बड़ी कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">चेतावनी: आपकी <ph name="PRODUCT_NAME" /> सेटिंग नेटवर्क डिस्क पर संग्रहित हैं. इसके परिणामस्वरूप यह धीमा हो सकता है, क्रैश हो सकता है, या डेटा का नुकसान भी हो सकता है.</translation>
 <translation id="7548856833046333824">लेमोनेड</translation>
@@ -7624,6 +7636,7 @@
 <translation id="7728668285692163452">चैनल बदलाव बाद में लागू किया जाएगा</translation>
 <translation id="7730449930968088409">अपनी स्क्रीन की सामग्री कैप्चर करें</translation>
 <translation id="7730683939467795481">"<ph name="EXTENSION_NAME" />" एक्सटेंशन ने इस पेज में बदलाव किया है</translation>
+<translation id="773511996612364297">उच्चारण के चिह्न</translation>
 <translation id="7735165285389721951">Steam का कोई अन्य सेटअप इंस्टॉल हो रहा है. दोबारा कोशिश करने से पहले, कृपया इसके पूरा होने तक इंतज़ार करें</translation>
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" से जोड़ा जा रहा है ...</translation>
 <translation id="7737203573077018777"><ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> निर्देश मिला</translation>
@@ -7705,6 +7718,7 @@
 <translation id="7792388396321542707">शेयर करना बंद करें</translation>
 <translation id="779308894558717334">हल्का हरा</translation>
 <translation id="7793098747275782155">गहरा नीला</translation>
+<translation id="7796453472368605346">खास तरह के चिह्न</translation>
 <translation id="7797571222998226653">बंद है</translation>
 <translation id="7798504574384119986">वेब की अनुमतियां देखें</translation>
 <translation id="7798844538707273832"><ph name="PERMISSION" /> को अपने-आप ब्लॉक किया गया है</translation>
@@ -7789,6 +7803,7 @@
 <translation id="7876027585589532670">शॉर्टकट में बदलाव नहीं किया जा सकता</translation>
 <translation id="7877451762676714207">अज्ञात सर्वर गड़बड़ी. कृपया फिर से प्रयास करें, या सर्वर व्यवस्थापक से संपर्क करें.</translation>
 <translation id="7878945852730162014">फ़ाइलों के डाउनलोड होने के बाद उन्हें मैनेज करें और खोलें</translation>
+<translation id="7879172417209159252">एक्सटेंशन का इस्तेमाल नहीं किया जा सकता</translation>
 <translation id="7879478708475862060">इनपुट मोड का अनुसरण करें</translation>
 <translation id="7879631849810108578">शॉर्टकट सेट हो गया: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880823633812189969">जब आप रीस्टार्ट करेंगे, तो स्थानीय डेटा मिटा दिया जाएगा</translation>

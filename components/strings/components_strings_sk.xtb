@@ -2336,7 +2336,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="678982761784843853">Identifikátory chráneného obsahu</translation>
 <translation id="6790428901817661496">Prehrať</translation>
 <translation id="679355240208270552">Ignorované, pretože predvolené vyhľadávanie je zakázané pravidlom.</translation>
-<translation id="6794049111359324414">Chcete povoliť aplikácii <ph name="APP_NAME" /> nastavovať siete Wi‑Fi?</translation>
 <translation id="6794951432696553238">Odteraz môžete potvrdzovať karty rýchlejšie pomocou funkcie Windows Hello</translation>
 <translation id="6798460514924505775">Obálka Chou 3</translation>
 <translation id="6805030849054648206">Obálka B6/C4</translation>
@@ -3380,7 +3379,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
     &lt;li&gt;skúste softvér <ph name="SOFTWARE_NAME" /> odinštalovať alebo vypnúť,&lt;/li&gt;
     &lt;li&gt;skúste sa pripojiť k inej sieti Wi-Fi.&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">Táto aplikácia požaduje povolenie nastavovať nové siete Wi‑Fi. Po nastavení sa <ph name="DEVICE_TYPE" /> bude automaticky pripájať k zúčastneným sieťam Wi‑Fi. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Zo služby Google Pay</translation>
 </translationbundle>

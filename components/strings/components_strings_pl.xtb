@@ -2341,7 +2341,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="678982761784843853">Identyfikatory treści chronionych</translation>
 <translation id="6790428901817661496">Odtwórz</translation>
 <translation id="679355240208270552">Ignorowana, ponieważ wyszukiwarka domyślna nie jest dozwolona przez zasadę.</translation>
-<translation id="6794049111359324414">Zezwolić aplikacji <ph name="APP_NAME" /> na konfigurowanie sieci Wi-Fi?</translation>
 <translation id="6794951432696553238">Potwierdzaj karty szybciej przy użyciu Windows Hello</translation>
 <translation id="6798460514924505775">Koperta Chou 3</translation>
 <translation id="6805030849054648206">Koperta B6/C4</translation>
@@ -3384,7 +3383,6 @@ Dodatkowe informacje:
     &lt;li&gt;Odinstaluj lub wyłącz oprogramowanie „<ph name="SOFTWARE_NAME" />”.&lt;/li&gt;
     &lt;li&gt;Połącz się z inną siecią.&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">Ta aplikacja żąda uprawnień do skonfigurowania nowych sieci Wi-Fi. Po zakończeniu konfiguracji <ph name="DEVICE_TYPE" /> automatycznie połączy się z sieciami Wi-Fi, które uczestniczą w programie. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Z Google Pay</translation>
 </translationbundle>

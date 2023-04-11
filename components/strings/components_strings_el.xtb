@@ -730,6 +730,7 @@
 <translation id="2718207025093645426">Δεν έχει φορτωθεί πολιτική για τον διαχειριζόμενο χρήστη ή τη συσκευή.</translation>
 <translation id="2721148159707890343">Το αίτημα ήταν επιτυχές</translation>
 <translation id="2723669454293168317">Εκτέλεση ελέγχου ασφαλείας στις ρυθμίσεις του Chrome</translation>
+<translation id="2725492561136085792">Πατήστε Enter για να ενεργοποιήσετε αυτήν την ενέργεια.</translation>
 <translation id="2726001110728089263">Πλευρικός τροφοδότης χαρτιού</translation>
 <translation id="2728127805433021124">Το πιστοποιητικό του διακομιστή είναι υπογεγραμμένο με έναν αδύναμο αλγόριθμο υπογραφής.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Να εκτελέσετε τα Διαγνωστικά στοιχεία συνδεσιμότητας<ph name="END_LINK" /></translation>
@@ -826,6 +827,7 @@
 <translation id="299990983510665749">Αυτοκίνητα τύπου hatchback</translation>
 <translation id="3002501248619246229">Έλεγχος μέσων δίσκου εισαγωγής</translation>
 <translation id="3005723025932146533">Εμφάνιση αποθηκευμένου αντιγράφου</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab για να περιηγηθείτε στις διαθέσιμες ενέργειες και έπειτα πατήστε Enter για να εκτελέσετε την επιλεγμένη ενέργεια.</translation>
 <translation id="3013291976881901233">Συσκευές MIDI</translation>
 <translation id="301521992641321250">Αποκλείστηκε αυτόματα</translation>
 <translation id="3016780570757425217">Πρόσβαση στην τοποθεσία σας</translation>
@@ -1741,6 +1743,8 @@
 <translation id="5234764350956374838">Παράβλεψη</translation>
 <translation id="5239623327352565343">Η πρόσβαση στην τοποθεσία επιτράπηκε</translation>
 <translation id="5242889659037569123">Αξεσουάρ αποσκευών και ταξιδίου</translation>
+<translation id="5244732203286792411">Φόρτωση…
+    Η διαδικασία ενδέχεται να διαρκέσει μερικά λεπτά.</translation>
 <translation id="5250209940322997802">"Σύνδεση σε δίκτυο"</translation>
 <translation id="52517543715119994">Μάθετε σχετικά με τις λειτουργίες του Chrome</translation>
 <translation id="5251803541071282808">Cloud</translation>
@@ -1986,6 +1990,7 @@
 <translation id="5872692522325383488">Το IBAN αποθηκεύτηκε</translation>
 <translation id="5873013647450402046">Η τράπεζά σας θέλει να επιβεβαιώσει την ταυτότητά σας.</translation>
 <translation id="5877831137320480913">Ομορφιά και φυσική κατάσταση</translation>
+<translation id="5879989559903563723">Δεν επιτρέπεται σε λειτουργία επισκέπτη</translation>
 <translation id="5884465125445718607">Κινεζικός φάκελος #6</translation>
 <translation id="5887400589839399685">Η κάρτα αποθηκεύτηκε</translation>
 <translation id="5887687176710214216">Τελευταία επίσκεψη χθες</translation>
@@ -2339,7 +2344,6 @@
 <translation id="678982761784843853">Προστατευμένα αναγνωριστικά περιεχομένου</translation>
 <translation id="6790428901817661496">Αναπαραγωγή</translation>
 <translation id="679355240208270552">Έγινε παράβλεψη επειδή η προεπιλεγμένη αναζήτηση δεν έχει ενεργοποιηθεί από την πολιτική.</translation>
-<translation id="6794049111359324414">Να επιτρέπεται στην εφαρμογή <ph name="APP_NAME" /> η ρύθμιση δικτύων Wi-Fi;</translation>
 <translation id="6794951432696553238">Επιβεβαιώστε πιο γρήγορα τις κάρτες σας, χρησιμοποιώντας το Windows Hello από εδώ και στο εξής</translation>
 <translation id="6798460514924505775">Φάκελος Chou 3</translation>
 <translation id="6805030849054648206">Φάκελος B6/C4</translation>
@@ -3228,6 +3232,7 @@
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Νομοθεσία και κυβέρνηση</translation>
 <translation id="8957210676456822347">Εξουσιοδότηση πύλης υποδοχής</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Μετάβαση στις ρυθμίσεις ιστοτόπου</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Προτάσεις:<ph name="MARKUP_2" />Βεβαιωθείτε ότι έχετε μια σύνδεση δεδομένων<ph name="MARKUP_3" />Επαναλάβετε τη φόρτωση αυτής της ιστοσελίδας αργότερα<ph name="MARKUP_4" />Ελέγξτε τη διεύθυνση που έχετε εισαγάγει<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Αποθήκευση κάρτας</translation>
@@ -3382,7 +3387,6 @@
     &lt;li&gt;Δοκιμάστε να απεγκαταστήσετε το λογισμικό "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;Δοκιμάστε να συνδεθείτε σε κάποιο άλλο δίκτυο&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">Αυτή η εφαρμογή ζητά άδεια για τη ρύθμιση νέων δικτύων Wi-Fi. Μετά τη ρύθμιση, η συσκευή <ph name="DEVICE_TYPE" /> θα συνδεθεί αυτόματα στα δίκτυα Wi-Fi που συμμετέχουν. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Από το Google Pay</translation>
 </translationbundle>

@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C device (front port)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> changed to <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair. Please enter this PIN code on that device: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">This allows <ph name="APP_NAME" /> and all apps and websites with the location permission and ChromeOS to use Wi-Fi and mobile networks location.</translation>
 <translation id="1017556409696559990">Minimise top window when there's no back history in Chrome</translation>
 <translation id="1024364763893396229">Save your <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Stylus battery is low</translation>
@@ -147,6 +148,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1651914502370159744">Open History page</translation>
 <translation id="1654477262762802994">Start a voice query</translation>
 <translation id="1668469839109562275">Built-in VPN</translation>
+<translation id="1675844249244994876">Update the right window</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> left</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> is not connected.</translation>
 <translation id="1677582821739292812">Someone is looking at your screen</translation>
@@ -191,6 +193,7 @@ Here are some things that you can try to get started.</translation>
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Turn on location access</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> was un-pinned</translation>
 <translation id="1838895407229022812">Night Light is off.</translation>
 <translation id="1854180393107901205">Stop casting</translation>
@@ -468,6 +471,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3255483164551725916">What can you do?</translation>
 <translation id="3256109297135787951">Remove the highlight from an item on your shelf</translation>
 <translation id="3260969790895726815">Speech is processed locally and dictation works offline, but some voice commands won’t work.</translation>
+<translation id="3265032511221679826">Turn on precise location access?</translation>
 <translation id="3269597722229482060">Right-click</translation>
 <translation id="3289364673986435196">Power menu</translation>
 <translation id="3289544412142055976">Linux apps aren’t currently supported</translation>
@@ -578,6 +582,7 @@ Connect your device to power.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> managed user</translation>
 <translation id="3666266999138159418">Swipe to hide your floating window</translation>
 <translation id="367531336287639526">Select first icon to the left of address bar</translation>
+<translation id="3677931086890821290">This allows all apps and websites with the location permission and ChromeOS to use Wi-Fi and mobile networks location.</translation>
 <translation id="3679827876008292680">Go to last tab in window</translation>
 <translation id="36813544980941320">Wi-Fi networks will be shared between your phone and <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Websites</translation>
@@ -844,6 +849,7 @@ Connect your device to power.</translation>
 <translation id="493076006037866439">Zoom out of screen</translation>
 <translation id="4936329710968938986">Everyone, off</translation>
 <translation id="4938176435186993759">Hide all suggestions</translation>
+<translation id="4943007472417128747">Hotspot has been turned off to use Wi-Fi. To use Hotspot, turn Wi-Fi off.</translation>
 <translation id="4945196315133970626">Turn off notifications</translation>
 <translation id="4946376291507881335">Capture</translation>
 <translation id="495046168593986294">Scroll up</translation>
@@ -1388,6 +1394,7 @@ New install</translation>
 To shut down the device, press and hold the power button on the device again.</translation>
 <translation id="7526573455193969409">Network may be monitored</translation>
 <translation id="7536035074519304529">IP address: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Update the left window</translation>
 <translation id="7543399541175347147">Linux apps and incognito windows aren’t currently supported. Other apps will be saved.</translation>
 <translation id="7544300628205093162">Keyboard backlight is on</translation>
 <translation id="7548434653388805669">Time for bed</translation>
@@ -1468,6 +1475,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7893503627044934815">Don't want this file shown</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">You pressed the keyboard shortcut for screen rotation. Do you want to rotate the screen?</translation>
+<translation id="7901190436359881020">Swap the windows</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Touch the fingerprint sensor</translation>
 <translation id="7904094684485781019">The administrator for this account has disallowed multiple sign-in.</translation>
@@ -1743,6 +1751,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> resolution changed to <ph name="RESOLUTION" />. Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Connect <ph name="NAME" /> to this Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, managed by your administrator</translation>
+<translation id="9207682216934703221">This allows <ph name="APP_NAME" />, <ph name="APP2_NAME" /> and all apps and websites with the location permission and ChromeOS to use Wi-Fi and mobile networks location.</translation>
 <translation id="9210037371811586452">Exiting unified desktop mode</translation>
 <translation id="9211490828691860325">All desks</translation>
 <translation id="9211681782751733685"><ph name="TIME_REMAINING" /> remaining until battery is fully charged.</translation>

@@ -1742,6 +1742,8 @@
 <translation id="5234764350956374838">閉じる</translation>
 <translation id="5239623327352565343">位置情報が許可されています</translation>
 <translation id="5242889659037569123">旅行バッグ、旅行用品</translation>
+<translation id="5244732203286792411">読み込んでいます...
+    しばらくお待ちください。</translation>
 <translation id="5250209940322997802">「ネットワークに接続してください」</translation>
 <translation id="52517543715119994">Chrome の機能を確認します</translation>
 <translation id="5251803541071282808">クラウド</translation>
@@ -2341,7 +2343,6 @@
 <translation id="678982761784843853">保護されたコンテンツ ID</translation>
 <translation id="6790428901817661496">再生</translation>
 <translation id="679355240208270552">ポリシーによって既定の検索エンジンが有効になっていないため、無視されました。</translation>
-<translation id="6794049111359324414"><ph name="APP_NAME" /> アプリに Wi-Fi ネットワークのセットアップを許可しますか？</translation>
 <translation id="6794951432696553238">今後 Windows Hello を使用して、カードの確認をより迅速に行います</translation>
 <translation id="6798460514924505775">長形 3 号封筒</translation>
 <translation id="6805030849054648206">B6/C4 封筒</translation>
@@ -3385,7 +3386,6 @@
     &lt;li&gt;「<ph name="SOFTWARE_NAME" />」をアンインストールまたは無効化してみてください&lt;/li&gt;
     &lt;li&gt;別のネットワークに接続してみてください&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">このアプリは、新しい Wi-Fi ネットワークをセットアップする権限をリクエストしています。セットアップが完了すると、<ph name="DEVICE_TYPE" /> は登録されている Wi-Fi ネットワークに自動的に接続します。<ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Pay から</translation>
 </translationbundle>

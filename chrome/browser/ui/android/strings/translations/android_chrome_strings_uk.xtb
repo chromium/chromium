@@ -65,7 +65,6 @@
 <translation id="1298077576058087471">Заощаджуйте до 60% даних і читайте сьогоднішні новини</translation>
 <translation id="1303339473099049190">Не вдалося знайти такий пароль. Перевірте правильність написання та повторіть спробу.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> – Надіслано з пристрою "<ph name="DEVICE_NAME" />"</translation>
-<translation id="1310482092992808703">Згрупувати вкладки</translation>
 <translation id="1311657260431405215">Цей QR-код (<ph name="QRCODEVALUE" />) не є URL-адресою</translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1320912611264252795">Вікно зберігання закладки, відкрите на всю висоту</translation>
@@ -542,6 +541,7 @@
 <translation id="3999683152997576765">Ви можете переглядати й вилучати цікаві теми, на основі яких сайти показують вам оголошення. Chrome оцінює, які теми вас цікавлять, за вашою нещодавньою історією веб-перегляду.</translation>
 <translation id="4000212216660919741">Дім у режимі офлайн</translation>
 <translation id="4016425174436051808">Не вдалося підписатися. Сталася помилка.</translation>
+<translation id="4024768890073681126">Веб-переглядачем керує один із твоїх батьків</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# год}one{# год}few{# год}many{# год}other{# год}}</translation>
 <translation id="4035877632587724847">Не дозволяти</translation>
 <translation id="4036177530563778041">Продовжуйте роботу з місця, де ви зупинилися</translation>

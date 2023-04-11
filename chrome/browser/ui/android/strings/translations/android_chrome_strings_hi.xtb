@@ -65,7 +65,6 @@
 <translation id="1298077576058087471">60% तक डेटा बचाएं, आज की खबरें पढ़ें</translation>
 <translation id="1303339473099049190">वह पासवर्ड नहीं मिला. अपनी स्पेलिंग की जांच करें और फिर से कोशिश करें.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> से भेजा गया</translation>
-<translation id="1310482092992808703">टैब को समूह में लगाएं</translation>
 <translation id="1311657260431405215">यह क्यूआर कोड, यूआरएल नहीं है: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1320912611264252795">बुकमार्क सेव फ़्लो के फ़ोल्डर, पूरी स्क्रीन पर खुले हैं</translation>
@@ -162,6 +161,7 @@
 <translation id="1910950723001426294">शेयर करने के विकल्पों की सूची बंद है.</translation>
 <translation id="1919130412786645364">Chrome में साइन-इन करने दें</translation>
 <translation id="1922362554271624559">सुझाई गई भाषाएं</translation>
+<translation id="1924255092154549435">टैब को बड़ा किया गया</translation>
 <translation id="1925021887439448749">पसंद के मुताबिक वेब पता डालें</translation>
 <translation id="1928696683969751773">अपडेट</translation>
 <translation id="19288952978244135">Chrome को फिर से खोलें.</translation>
@@ -542,6 +542,7 @@
 <translation id="3999683152997576765">आपके पास अपनी पसंद के उन विषयों को देखने और हटाने का विकल्प होता है जिनका इस्तेमाल करके, साइटें आपको विज्ञापन दिखाती हैं. Chrome आपके हाल के ब्राउज़िंग इतिहास के आधार पर, आपकी पसंद के विषयों का अनुमान लगाता है.</translation>
 <translation id="4000212216660919741">ऑफ़लाइन होम</translation>
 <translation id="4016425174436051808">फ़ॉलो नहीं कर सकते. कोई गड़बड़ी हुई.</translation>
+<translation id="4024768890073681126">आपके ब्राउज़र को आपके माता-पिता मैनेज करते हैं</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# घंटा}one{# घंटे}other{# घंटे}}</translation>
 <translation id="4035877632587724847">अनुमति न दें</translation>
 <translation id="4036177530563778041">जहां आपने छोड़ा था वहीं से आसानी से जारी रखें</translation>
@@ -769,6 +770,7 @@
 <translation id="5161254044473106830">टाइटल आवश्‍यक</translation>
 <translation id="5170568018924773124">फ़ोल्डर में दिखाएं</translation>
 <translation id="5171045022955879922">यूआरएल खोजें या टाइप करें</translation>
+<translation id="5174700554036517242">टैब की लंबाई पहले जैसी कर दी गई है</translation>
 <translation id="5184329579814168207">Chrome में खोलें</translation>
 <translation id="5191251636205085390">तीसरे पक्ष की कुकी की जगह इस्तेमाल करने के मकसद से बनाई गई नई टेक्नोलॉजी के बारे में जानें और उन्हें कंट्रोल करें</translation>
 <translation id="5193988420012215838">आपके क्लिपबोर्ड पर कॉपी की गई</translation>
@@ -1251,6 +1253,7 @@
 <translation id="7686086654630106285">'साइट के सुझाए गए विज्ञापन' सेटिंग के बारे में ज़्यादा जानकारी</translation>
 <translation id="768618399695552958">आपके विज़िट किए गए पेजों में से कुछ पेज पहले से ही लोड किए गए होते हैं. Google साइट से लिंक होने पर, Google के सर्वर की मदद से, पेज पहले से लोड किए गए हो सकते हैं.</translation>
 <translation id="7691043218961417207">उस कॉन्टेंट को एक्सप्लोर करें जिसे फ़ॉलो करना है</translation>
+<translation id="7697383401610880082">खींचकर छोड़ने वाला हैंडल</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> में ईमेल बनाएं</translation>
 <translation id="7707922173985738739">मोबाइल डेटा का उपयोग करें</translation>
 <translation id="7709094866268987903">हटाए गए पसंद के विषय यहां दिखेंगे</translation>

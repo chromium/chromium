@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">Устройство USB-C (порт спереди)</translation>
 <translation id="1013598600051641573">Для экрана "<ph name="DISPLAY_NAME" />" установлено разрешение <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Чтобы сохранить изменения, нажмите "Подтвердить". Предыдущие настройки восстановятся через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth. Введите на нем PIN-код: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">Приложение "<ph name="APP_NAME" />", операционная система ChromeOS, а также все приложения и сайты с доступом к данным о местоположении смогут использовать Wi-Fi и мобильную сеть для геолокации.</translation>
 <translation id="1017556409696559990">Свернуть верхнее окно Chrome, если нет истории изменений</translation>
 <translation id="1024364763893396229">Сохраните <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Батарея стилуса почти разряжена</translation>
@@ -191,6 +192,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Открыть доступ к геоданным</translation>
 <translation id="1830308660060964064">Объект "<ph name="ITEM_TITLE" />" откреплен</translation>
 <translation id="1838895407229022812">Ночная подсветка отключена</translation>
 <translation id="1854180393107901205">Прекратить трансляцию</translation>
@@ -468,6 +470,7 @@
 <translation id="3255483164551725916">Что ты умеешь?</translation>
 <translation id="3256109297135787951">Снять выделение с объекта на панели запуска.</translation>
 <translation id="3260969790895726815">Вы можете использовать голосовой ввод в офлайн-режиме, так как речь обрабатывается локально, но некоторые голосовые команды будут недоступны.</translation>
+<translation id="3265032511221679826">Открыть доступ к данным о точном местоположении?</translation>
 <translation id="3269597722229482060">Правый клик</translation>
 <translation id="3289364673986435196">Меню кнопки питания</translation>
 <translation id="3289544412142055976">Приложения для Linux пока не поддерживаются</translation>
@@ -578,6 +581,7 @@
 <translation id="366222428570480733">Управляемый пользователь <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Чтобы скрыть плавающее окно, проведите по нему в сторону.</translation>
 <translation id="367531336287639526">Выбрать первый значок слева от адресной строки</translation>
+<translation id="3677931086890821290">Операционная система ChromeOS, а также все приложения и сайты с доступом к данным о местоположении смогут использовать Wi-Fi и мобильную сеть для геолокации.</translation>
 <translation id="3679827876008292680">Перейти на последнюю вкладку в окне</translation>
 <translation id="36813544980941320">На вашем телефоне и устройстве <ph name="DEVICE_NAME" /> будут использоваться одинаковые сети Wi-Fi.</translation>
 <translation id="3694122362646626770">Сайты</translation>
@@ -1220,6 +1224,7 @@
 <translation id="6683022854667115063">Наушники</translation>
 <translation id="6696025732084565524">Необходимо обновить внешнюю клавиатуру</translation>
 <translation id="6700713906295497288">Кнопка меню редактора методов ввода</translation>
+<translation id="6705577071209924099">Изменить яркость</translation>
 <translation id="6707693040195709527">Срок возврата к предыдущей версии ОС истек</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6723839937902243910">Питание</translation>
@@ -1742,6 +1747,7 @@
 <translation id="9198992156681343238">У экрана "<ph name="DISPLAY_NAME" />" установлено разрешение <ph name="RESOLUTION" />. Чтобы сохранить изменения, нажмите "Подтвердить". Предыдущие настройки восстановятся через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Подключите устройство "<ph name="NAME" />" к Chromebook</translation>
 <translation id="9201374708878217446">Статус подключения – "<ph name="CONNECTION_STATUS" />", под управлением администратора</translation>
+<translation id="9207682216934703221">Приложения "<ph name="APP_NAME" />" и "<ph name="APP2_NAME" />", операционная система ChromeOS, а также все приложения и сайты с доступом к данным о местоположении смогут использовать Wi-Fi и мобильную сеть для геолокации.</translation>
 <translation id="9210037371811586452">Выход из режима единого рабочего стола…</translation>
 <translation id="9211490828691860325">Все рабочие столы</translation>
 <translation id="9211681782751733685">Оставшееся время до полной зарядки батареи: <ph name="TIME_REMAINING" />.</translation>

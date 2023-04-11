@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Puedes volver aquí para abrir de nuevo las últimas pestañas que hayas cerrado recientemente.</translation>
 <translation id="1016495303386450659">Elemento actualizado</translation>
 <translation id="1035980983510608210">Si cierras todas las pestañas, también se cerrarán las pestañas fijas.</translation>
+<translation id="1036348656032585052">Desactivar</translation>
 <translation id="1044891598689252897">Los sitios funcionarán con normalidad</translation>
 <translation id="1049743911850919806">Incógnito</translation>
 <translation id="105093091697134113">Estas cuentas usan contraseñas que se han visto expuestas en una brecha de seguridad de datos externa o que se han introducido en un sitio web engañoso. Cámbialas de inmediato para proteger tus cuentas.</translation>
@@ -216,6 +217,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2496626742194544812">Ir a la primera pestaña</translation>
 <translation id="2500374554657206846">Opciones para guardar las contraseñas</translation>
+<translation id="2502415369140591438"><ph name="COUNT" /> contraseñas reutilizadas</translation>
 <translation id="2523363575747517183">Este sitio web está intentando abrir otra aplicación reiteradamente.</translation>
 <translation id="2529021024822217800">Abrir todos</translation>
 <translation id="2547458583188611426">La sincronización no funciona. Para iniciar la sincronización, introduce tu frase de contraseña.</translation>
@@ -225,6 +227,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2576499762020411840">Usar y guardar contraseñas en tu cuenta de Google</translation>
 <translation id="2578571896248130439">Enviar página web</translation>
 <translation id="2584132361465095047">Añadir cuenta…</translation>
+<translation id="2595587704210555261">{COUNT,plural, =1{Las pestañas abiertas que no se utilicen durante un día o más se moverán a las pestañas inactivas para que puedas concentrarte fácilmente en las pestañas que más utilizas. Puedes cambiar esta opción en cualquier momento en la configuración.}other{Las pestañas abiertas que no se utilicen durante {COUNT} días o más se moverán a las pestañas inactivas para que puedas concentrarte fácilmente en las pestañas que más utilizas. Puedes cambiar esta opción en cualquier momento en la configuración.}}</translation>
 <translation id="2600682495497606169">Borrar cookies del sitio web</translation>
 <translation id="2609008503159898744">¿Cerrar todas las pestañas?</translation>
 <translation id="2625189173221582860">Se ha copiado la contraseña</translation>
@@ -292,6 +295,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="2932085390869194046">Sugerir contraseña...</translation>
 <translation id="2932765531295814441">Añade contraseñas manualmente</translation>
 <translation id="2952581218264071393">1. Abre la configuración de Chrome.</translation>
+<translation id="2953871438216280742">Inicia sesión para abrir y guardar la lista de lectura en tu cuenta de Google.</translation>
 <translation id="2958718410589002129">Contraseñas</translation>
 <translation id="2961210776189273067">Título</translation>
 <translation id="2964349545761222050">Bloquear cookies de terceros</translation>
@@ -385,6 +389,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3581564640715911333">Ofrecer la traducción de páginas que estén en otros idiomas</translation>
 <translation id="3588820906588687999">Abrir imagen en una pestaña nueva</translation>
 <translation id="3595252146048399851">Siempre puedes seleccionar qué contenido quieres sincronizar en los <ph name="BEGIN_LINK" />ajustes<ph name="END_LINK" />. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} contraseña poco segura}other{{COUNT} contraseñas poco seguras}}</translation>
 <translation id="3603009562372709545">Copiar URL de enlace</translation>
 <translation id="3607167657931203000">Datos de la función Autocompletar</translation>
 <translation id="3608008480985212611">Inicia sesión para gestionar tus preferencias.</translation>
@@ -571,6 +576,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="4844899002472726590">Consulta y edita los temas que te interesan</translation>
 <translation id="4848999860252535517">¿Eliminar la contraseña de <ph name="WEBSITE" />?</translation>
 <translation id="4854345657858711387">Establecer una contraseña</translation>
+<translation id="4856498338299082007">En tu cuenta de Google</translation>
 <translation id="4858786880085262208">Cambia a HTTPS cuando sea posible. Los sitios seguros podrían insertar contenido que no es seguro.</translation>
 <translation id="4860895144060829044">Llamar</translation>
 <translation id="4872323082491632254">Comprobar contraseñas</translation>
@@ -605,6 +611,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5118764316110575523">Desactivado</translation>
 <translation id="5119391094379141756">Selecciona Chrome</translation>
 <translation id="5121618895923301719">Ya estás siguiendo este producto. Esta página se ha guardado en <ph name="BEGIN_LINK" />Marcadores del móvil<ph name="END_LINK" />.</translation>
+<translation id="5126465625664020024">Iniciar sesión y sincronizar</translation>
 <translation id="5132942445612118989">Sincroniza tus contraseñas, tu historial y más en todos tus dispositivos</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} contraseña poco segura}other{{COUNT} contraseñas poco seguras}}</translation>
 <translation id="5149188072385105201">Añadir contraseña...</translation>
@@ -622,6 +629,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="5197255632782567636">Internet</translation>
 <translation id="5211488077761630279">¿Permitir que <ph name="SITE_NAME" /> use tu <ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">Ayudar a mejorar la seguridad de todos los usuarios en la Web</translation>
+<translation id="5221339005270097309">Comprobando contraseñas…</translation>
 <translation id="5228579091201413441">Habilitar sincronización</translation>
 <translation id="5232485538978018676">Iniciar sesión con una cuenta gestionada</translation>
 <translation id="5234764350956374838">Cerrar</translation>
@@ -661,6 +669,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 Handoff también debe estar habilitado en la sección General de Configuración, y los dispositivos deben utilizar la misma cuenta de iCloud.</translation>
 <translation id="5551897871312988470">Ofrecer la traducción</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
+<translation id="555749644339804659">Comprobando contraseñas…</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5597915316964418992">Abre la cuadrícula de pestañas</translation>
 <translation id="560322036295180549">Desactivado por tu organización</translation>
@@ -740,6 +749,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6042308850641462728">Más</translation>
+<translation id="6054613632208573261">Usa Chrome de forma predeterminada</translation>
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Controla tus noticias y tu actividad aquí</translation>
 <translation id="6064824697233747382">Tu organización requiere que desactives la sincronización.</translation>
@@ -1087,6 +1097,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="821809831108207540">Para personalizar tu feed de Discover y Chrome, inicia sesión y activa la sincronización.</translation>
 <translation id="8225985093977202398">Archivos e imágenes en caché</translation>
 <translation id="8237382152611443140">Abre los ajustes de Autorrellenar contraseñas</translation>
+<translation id="8248969482078657578">Las pestañas inactivas te ayudan a mantener la concentración</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8264966119170358612">Algunas de tus contraseñas guardadas se han visto expuestas en una brecha de seguridad de datos ajena a Google. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8265018477030547118">Solo en este dispositivo</translation>

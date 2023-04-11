@@ -5458,6 +5458,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6049117606554031363">Habilitar los informes de estado de la placa del dispositivo</translation>
 <translation id="6050796253724099706">Habilitar los comentarios por voz en la pantalla de acceso</translation>
 <translation id="605132676434455096">No permitir que se agreguen perfiles nuevos</translation>
+<translation id="6053260874233331700">No permitir el acceso a la ubicación geográfica en la pantalla de acceso</translation>
 <translation id="6053681087509103368">Permitir que WebRTC use versiones obsoletas del protocolo TLD/DTLS</translation>
 <translation id="6056517174496942473">Habilitar el flujo de certificación de <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> para ver una lista de URLs</translation>
 <translation id="6058879286588763839">A menos que especifiques <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> (que anula <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />), si estableces <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />, se especificará la política de administración de energía en el modo de carga de la batería (cuando lo admita el dispositivo). Para extender la duración de la batería, la política controlará de forma dinámica la carga de la batería y reducirá su desgaste debido al uso.
@@ -7222,6 +7223,29 @@ Esto reemplaza la política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_N
 <translation id="759957074386651883">Configuración de Navegación segura</translation>
 <translation id="7602621823177962064">Inhabilitar los informes de la memoria del dispositivo</translation>
 <translation id="7604169113182304895">Las apps de Android pueden respetar esta lista de forma voluntaria, pero no puedes forzarlas a que lo hagan.</translation>
+<translation id="7605203688694672897">Establece el nivel de acceso a la ubicación geográfica a nivel del dispositivo para el
+sistema <ph name="PRODUCT_OS_NAME" />, que tiene
+vigencia antes de que acceda un usuario. Luego de acceder, los usuarios pueden controlar el
+nivel de acceso de la ubicación geográfica mediante la configuración por usuario.
+
+Si no lo estableces o lo estableces como <ph name="ALLOW" />, se permite el acceso a la ubicación geográfica
+de la pantalla de acceso para los dispositivos administrados. Si se establece un valor de la política no válido,
+el acceso vuelve a ser
+<ph name="DISALLOW" />. En los dispositivos no administrados, siempre es
+<ph name="DISALLOW" />.
+
+ADVERTENCIA: Ten cuidado cuando cambies esta configuración, ya que podría desconfigurar otras políticas
+que involucran la ubicación geográfica
+(p. ej., <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />).
+En particular, si esta política se establece como <ph name="DISALLOW" />,
+entonces, las
+opciones <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" />
+y
+<ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" />
+de la política
+<ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />
+no funcionarán y solo usarán la ubicación basada en <ph name="IP" />
+en la pantalla de <ph name="LOG_IN" />.</translation>
 <translation id="7608186022704392724">La función de envío automático de PIN cambia la manera en la que se ingresan los PIN en <ph name="PRODUCT_OS_NAME" />.
           En lugar de mostrar el mismo campo de texto que se utiliza para ingresar contraseñas, esta
           función mostrará una IU especial que le indicará al usuario con claridad la cantidad de
@@ -8048,6 +8072,7 @@ Si estableces alguna de las siguientes políticas, deberás establecerla como in
       Si no la habilitas, no se mostrará un diálogo de advertencia cuando el usuario intente salir.</translation>
 <translation id="830440838848984847">Permitir que los usuarios accedan a <ph name="PRODUCT_NAME" /></translation>
 <translation id="8306117673860983372">Configuración de acceso</translation>
+<translation id="8307340233340602723">Permitir o denegar el acceso a la ubicación geográfica del dispositivo</translation>
 <translation id="830819203330820450">Si se habilita o no se configura (predeterminado), una página web podrá utilizar
       las API para compartir pantalla (p. ej., getDisplayMedia() o la API de la extensión Captura del escritorio)
       para solicitarle al usuario que seleccione una pestaña, una ventana o un escritorio para capturar.
@@ -9072,6 +9097,7 @@ Si no estableces la política, <ph name="PRODUCT_NAME" /> podrá recopilar y sub
 <translation id="9213751049772256263">Inhabilitar todas las variaciones</translation>
 <translation id="9217154963008402249">Frecuencia de envío de paquetes de red de control</translation>
 <translation id="9220314833408124365">Usar una política de referente predeterminado con el valor no-referrer-when-downgrade</translation>
+<translation id="9221827710437832530">Permitir el acceso a la ubicación geográfica en la pantalla de acceso</translation>
 <translation id="922540222991413931">Configurar fuentes de instalación de secuencias de comandos de usuario, aplicaciones y extensiones</translation>
 <translation id="924557436754151212">Importar las contraseñas guardadas del navegador predeterminado en la primera ejecución</translation>
 <translation id="926104720905645793">Esta política controla los informes en la nube de <ph name="PRODUCT_NAME" />, que suben información sobre el funcionamiento del navegador a <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.

@@ -3021,6 +3021,7 @@
 <translation id="3609277884604412258">Быстрый поиск</translation>
 <translation id="3610241585790874201">Запрещено сохранять данные на устройстве</translation>
 <translation id="3610369246614755442">Вентилятору док-станции необходимо техническое обслуживание</translation>
+<translation id="3610961622607302617">Изменить пароль для <ph name="WEBSITE" /></translation>
 <translation id="361106536627977100">Данные Flash</translation>
 <translation id="3611655097742243705">Найдите приложения в Google Play.</translation>
 <translation id="3611658447322220736">Разрешить недавно закрытым сайтам завершать отправку и получение данных</translation>
@@ -4951,6 +4952,7 @@
 <translation id="5338503421962489998">Локальное хранилище</translation>
 <translation id="5339031667684712858">Сайты, которые вы удалили</translation>
 <translation id="5340638867532133571">Разрешить сайтам устанавливать обработчики платежей (рекомендуется).</translation>
+<translation id="5340787663756381836">&amp;Найти и изменить</translation>
 <translation id="5341793073192892252">Были заблокированы следующие файлы cookie (сторонние файлы cookie блокируются без исключения):</translation>
 <translation id="5342091991439452114">PIN-код должен содержать не менее <ph name="MINIMUM" /> знаков</translation>
 <translation id="5344036115151554031">Восстановление Linux</translation>
@@ -5708,6 +5710,7 @@
 <translation id="6019851026059441029">Отличное – HD</translation>
 <translation id="6020431688553761150">Сервер не разрешил вам доступ к этому ресурсу.</translation>
 <translation id="6021293122504240352">Приложений, поддержка которых прекратилась: <ph name="APPS" /></translation>
+<translation id="6021969570711251331">Чередующийся</translation>
 <translation id="6022526133015258832">Открыть в полноэкранном режиме</translation>
 <translation id="6022659036123304283">Настройте Chrome для себя</translation>
 <translation id="6023643151125006053">Устройство (серийный номер <ph name="SERIAL_NUMBER" />) заблокировано администратором домена <ph name="SAML_DOMAIN" />.</translation>
@@ -6039,6 +6042,7 @@
 <translation id="6318125393809743217">Включить файл policies.json в правила</translation>
 <translation id="6318407754858604988">Скачивание началось</translation>
 <translation id="6318944945640833942">Принтер не найден. Укажите адрес ещё раз.</translation>
+<translation id="6320808462673705899">По вашему запросу нет закладок.</translation>
 <translation id="6322370287306604163">Снимайте блокировку с помощью отпечатка пальца ещё быстрее</translation>
 <translation id="6322559670748154781">Этот файл скачивают редко. Он заблокирован Дополнительной защитой.</translation>
 <translation id="6324916366299863871">Изменить ярлык</translation>
@@ -9349,6 +9353,7 @@
 <translation id="939401694733344652">Эти аккаунты сейчас не используются в приложениях для Android. После входа в аккаунт в этом приложении Android его можно будет использовать и в других. Чтобы изменить параметры доступа для приложений Android, выберите <ph name="LINK_BEGIN" />Настройки &gt; Аккаунты<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Введите кодовую фразу</translation>
 <translation id="939736085109172342">Новая папка</translation>
+<translation id="940212040923880623">&amp;Найти и изменить</translation>
 <translation id="942532530371314860">Приложение "<ph name="APP_NAME" />" предоставило доступ к вкладке Chrome и к аудио.</translation>
 <translation id="944799160843436808">При установке Steam для Chromebook произошла ошибка</translation>
 <translation id="945522503751344254">Отправить отзыв</translation>

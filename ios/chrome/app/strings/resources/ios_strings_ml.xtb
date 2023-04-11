@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">നിങ്ങൾ അടുത്തിടെ അടച്ച ടാബുകൾ ഇവിടേക്ക് തിരികെ വന്ന് നിങ്ങൾക്ക് വീണ്ടും തുറക്കാം</translation>
 <translation id="1016495303386450659">ഇനം അപ്‌ഡേറ്റ് ചെയ്‌തു</translation>
 <translation id="1035980983510608210">എല്ലാ ടാബുകളും അടച്ചാൽ പിൻ ചെയ്‌ത ടാബുകളും അടയും.</translation>
+<translation id="1036348656032585052">ഓഫാക്കുക</translation>
 <translation id="1044891598689252897">സൈറ്റുകൾ സാധാരണ രീതിയിൽ പ്രവർത്തിക്കും</translation>
 <translation id="1049743911850919806">ആള്‍‌മാറാട്ടം</translation>
 <translation id="105093091697134113">ചുവടെയുള്ള അക്കൗണ്ടുകൾ ഒരു മൂന്നാം കക്ഷി ഡാറ്റാ ലംഘനത്തിൽ വെളിപ്പെടുത്തിയതോ വഞ്ചനാപരമായ വെബ്‌സൈറ്റിൽ നൽകിയതോ ആയ പാസ്‌വേഡുകൾ ഉപയോഗിക്കുന്നു. നിങ്ങളുടെ അക്കൗണ്ടുകൾ സുരക്ഷിതമായി നിലനിർത്തുന്നതിന് ഈ പാസ്‌വേഡുകൾ ഉടൻ മാറ്റുക.</translation>
@@ -216,6 +217,7 @@
 <translation id="2482878487686419369">അറിയിപ്പുകൾ</translation>
 <translation id="2496626742194544812">ആദ്യ ടാബിലേക്ക് പോകുക</translation>
 <translation id="2500374554657206846">പാസ്‌വേഡ് സംരക്ഷിക്കാനുള്ള ഓപ്‌ഷനുകൾ</translation>
+<translation id="2502415369140591438">ആവർത്തിച്ച് ഉപയോഗിക്കുന്ന <ph name="COUNT" /> പാസ്‌വേഡുകൾ</translation>
 <translation id="2523363575747517183">മറ്റൊരു ആപ്പ് തുറക്കാൻ ഈ വെബ്‌സൈറ്റ് ആവർത്തിച്ച് ശ്രമിക്കുന്നു.</translation>
 <translation id="2529021024822217800">എല്ലാം തുറക്കുക</translation>
 <translation id="2547458583188611426">സമന്വയിപ്പിക്കൽ പ്രവർത്തിക്കുന്നില്ല. സമന്വയിപ്പിക്കാൻ തുടങ്ങുന്നതിന് നിങ്ങളുടെ പാസ്‌ഫ്രെയ്‌സ് നൽകുക.</translation>
@@ -293,6 +295,7 @@
 <translation id="2932085390869194046">പാസ്‌വേഡ് നിർദ്ദേശിക്കുക...</translation>
 <translation id="2932765531295814441">പാസ്‌വേഡുകൾ നേരിട്ട് ചേർക്കുക</translation>
 <translation id="2952581218264071393">1. Chrome ക്രമീകരണം തുറക്കുക</translation>
+<translation id="2953871438216280742">നിങ്ങളുടെ വായിക്കാനുള്ളവയുടെ ലിസ്റ്റ് Google Account-ൽ തുറക്കാനും സംരക്ഷിക്കാനും സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="2958718410589002129">പാസ്‌വേഡുകൾ</translation>
 <translation id="2961210776189273067">ശീർഷകം</translation>
 <translation id="2964349545761222050">മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്യുക</translation>
@@ -386,6 +389,7 @@
 <translation id="3581564640715911333">പേജുകൾ മറ്റ് ഭാഷകളിലേക്ക് വിവർത്തനം ചെയ്യാനുള്ള ഓഫർ</translation>
 <translation id="3588820906588687999">ചിത്രം പുതിയ ടാബിൽ തുറക്കുക</translation>
 <translation id="3595252146048399851">എന്തൊക്കെ സമന്വയിപ്പിക്കണമെന്ന് നിങ്ങൾക്ക് എല്ലായ്‌പ്പോഴും <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> തിരഞ്ഞെടുക്കാം. നിങ്ങളുടെ ചരിത്രത്തെ അടിസ്ഥാനമാക്കി, Search, മറ്റ് സേവനങ്ങൾ എന്നിവ Google വ്യക്തിപരമാക്കിയേക്കാം.</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{ദുർബലമായ {COUNT} പാസ്‌വേഡ്}other{ദുർബലമായ {COUNT} പാസ്‌വേഡുകൾ}}</translation>
 <translation id="3603009562372709545">ലിങ്ക് URL പകർത്തുക</translation>
 <translation id="3607167657931203000">സ്വയമേവ പൂരിപ്പിക്കൽ ഡാറ്റ</translation>
 <translation id="3608008480985212611">നിങ്ങളുടെ മുൻഗണനകൾ മാനേജ് ചെയ്യാൻ സൈൻ ഇൻ ചെയ്യുക.</translation>
@@ -607,6 +611,7 @@
 <translation id="5118764316110575523">ഓഫാണ്</translation>
 <translation id="5119391094379141756">Chrome തിരഞ്ഞെടുക്കുക</translation>
 <translation id="5121618895923301719">നിങ്ങൾ ഇതിനകം ഈ ഉൽപ്പന്നം ട്രാക്ക് ചെയ്യുന്നുണ്ട്. ഈ പേജ് <ph name="BEGIN_LINK" />മൊബൈൽ ബുക്ക്‌മാർക്കുകളിൽ<ph name="END_LINK" /> സംരക്ഷിച്ചിരിക്കുന്നു.</translation>
+<translation id="5126465625664020024">പ്രവേശിച്ച്, സമന്വയിപ്പിക്കുക</translation>
 <translation id="5132942445612118989">നിങ്ങളുടെ പാസ്‌വേഡുകളും ചരിത്രവും മറ്റും എല്ലാ ഉപകരണങ്ങളിലും സമന്വയിപ്പിക്കുക</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{ദുർബലമായ {COUNT} പാസ്‌വേഡ്}other{ദുർബലമായ {COUNT} പാസ്‌വേഡുകൾ}}</translation>
 <translation id="5149188072385105201">പാസ്‌വേഡ് ചേർക്കുക...</translation>
@@ -624,6 +629,7 @@
 <translation id="5197255632782567636">ഇന്‍റര്‍നെറ്റ്</translation>
 <translation id="5211488077761630279">"<ph name="SITE_NAME" />" എന്നതിനെ നിങ്ങളുടെ <ph name="PERMISSION" /> ഉപയോഗിക്കാൻ അനുവദിക്കണോ?</translation>
 <translation id="5219295696240154694">എല്ലാവർക്കുമായി വെബിലെ സുരക്ഷ മെച്ചപ്പെടുത്താൻ സഹായിക്കുക</translation>
+<translation id="5221339005270097309">പാസ്‌വേഡ് പരിശോധന…</translation>
 <translation id="5228579091201413441">സമന്വയം പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="5232485538978018676">മാനേജ് ചെയ്യപ്പെടുന്ന അക്കൗണ്ട് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="5234764350956374838">ഡിസ്മിസ്സ് ചെയ്യുക</translation>
@@ -663,6 +669,7 @@
 ക്രമീകരണത്തിന്റെ പൊതു വിഭാഗത്തിലും Handoff പ്രവർത്തനക്ഷമമായിരിക്കുകയും നിങ്ങളുടെ ഉപകരണങ്ങൾ ഒരേ iCloud അക്കൗണ്ട് തന്നെ ഉപയോഗിക്കുകയും വേണം.</translation>
 <translation id="5551897871312988470">വിവർത്തനം ചെയ്യാനുള്ള ഓഫർ</translation>
 <translation id="5556459405103347317">വീണ്ടും ലോഡ് ചെയ്യുക</translation>
+<translation id="555749644339804659">പാസ്‌വേഡ് പരിശോധന…</translation>
 <translation id="556042886152191864">ബട്ടൺ</translation>
 <translation id="5597915316964418992">ടാബ് ഗ്രിഡ് തുറക്കുക</translation>
 <translation id="560322036295180549">നിങ്ങളുടെ സ്ഥാപനം ഓഫാക്കിയിരിക്കുന്നു</translation>
@@ -742,6 +749,7 @@
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">അടയ്ക്കുക</translation>
 <translation id="6042308850641462728">കൂടുതൽ</translation>
+<translation id="6054613632208573261">ഡിഫോൾട്ടായി Chrome ഉപയോഗിക്കുക</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">നിങ്ങളുടെ സ്‌റ്റോറികളും ആക്റ്റിവിറ്റികളും ഇവിടെ നിയന്ത്രിക്കുക</translation>
 <translation id="6064824697233747382">സമന്വയിപ്പിക്കൽ ഓഫാക്കാൻ നിങ്ങളുടെ സ്ഥാപനം ആവശ്യപ്പെടുന്നു.</translation>
@@ -1017,6 +1025,7 @@
 <translation id="7781011649027948662">പേജ് വിവർത്തനം ചെയ്യണോ?</translation>
 <translation id="7781069478569868053">പുതിയ ടാബ് പേജ്</translation>
 <translation id="7781829728241885113">ഇന്നലെ</translation>
+<translation id="7786246662347093005">{COUNT,plural, =1{ഒരു ദിവസത്തിന് ശേഷം}other{{COUNT} ദിവസത്തിന് ശേഷം}}</translation>
 <translation id="778855399387580014">പുതിയ Chrome ടാബിൽ തിരയൽ ആരംഭിക്കുക.</translation>
 <translation id="7791543448312431591">ചേര്‍ക്കൂ</translation>
 <translation id="7807060072011926525">Google നൽകുന്നത്</translation>
@@ -1081,6 +1090,7 @@
 <translation id="8136856065410661948">Chrome, Google Lens എന്നിവയിൽ നിന്ന് Apple കലണ്ടറിൽ ഇവന്റുകൾ സൃഷ്ടിക്കാൻ ഇത് ഉപയോഗിക്കും.</translation>
 <translation id="8156478151976189188">പാസ്‌വേഡ് സമന്വയം പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> അക്കൗണ്ടുകൾ</translation>
+<translation id="8159358225423560600">തൊട്ടുമുമ്പ്</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />നിങ്ങളുടെ ഉപകരണങ്ങൾ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">പേജ് വിവർത്തനം ചെയ്യുക</translation>
@@ -1111,6 +1121,7 @@
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> ദിവസത്തിനിടെ ഉപയോഗിച്ചിട്ടില്ലാത്ത ടാബുകൾ</translation>
 <translation id="8407669440184693619">ഈ സൈറ്റിനുള്ള പാസ്‍വേഡുകളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="842017693807136194">ഇതുപയോഗിച്ച് സൈൻ ഇൻ ചെയ്‌‌തു</translation>
+<translation id="8423121072346537366">തൊട്ടുമുമ്പ്</translation>
 <translation id="8425693829365242963">നിങ്ങളുടെ പാസ്‌വേഡുകൾ മുമ്പ് ഉപയോഗിച്ചിട്ടില്ല</translation>
 <translation id="8428045167754449968">നഗരം / പട്ടണം</translation>
 <translation id="8428213095426709021">ക്രമീകരണം</translation>

@@ -201,6 +201,7 @@
 <translation id="8393700583063109961">Sūtīt ziņojumu</translation>
 <translation id="8394908167088220973">Multivide — atskaņot/apturēt</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 g.}zero{# g.}one{# g.}other{# g.}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623">Fails <ph name="SAVEAS_EXTENSION_TYPE" /> (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
 <translation id="8725488761726303204">vēl <ph name="NUMBER" /></translation>

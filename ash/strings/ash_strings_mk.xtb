@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-Ц уред (предна порта)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> се промени на <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Кликнете „Потврди“ за да ги задржите промените. Претходната поставка ќе се врати за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Уредот со Bluetooth „<ph name="DEVICE_NAME" />“ бара дозвола за спарување. Внесете го овој PIN-код на тој уред: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Минимизирајте го прозорецот најгоре кога нема задна историја во Chrome</translation>
 <translation id="1024364763893396229">Зачувајте: <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Батеријата на пенкалото е слаба</translation>
 <translation id="1036073649888683237">За да управувате со известувањата, одете во „Поставки“</translation>
@@ -343,6 +344,7 @@
 <translation id="2620436844016719705">Систем</translation>
 <translation id="2621713457727696555">Заштитена</translation>
 <translation id="263399434338050016">„Избери сѐ“</translation>
+<translation id="2644422758626431000">Закачете прозорец на левата страна</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2647092942972307022">Достапно: <ph name="USED_MEMORY" /> од <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2653019840645008922">Снимање прозорец</translation>
@@ -1055,6 +1057,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Вклучено</translation>
 <translation id="5920710855273935292">Звукот на микрофонот е исклучен.</translation>
+<translation id="5922962980596822074">Разгледајте ги прозорците така што ќе започнете од последно користениот прозорец</translation>
 <translation id="5924855612669061715">Точката на пристап е вклучена</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> е вклучено.</translation>
 <translation id="5947494881799873997">Врати</translation>
@@ -1144,6 +1147,7 @@
 <translation id="6352082849089527770">Непознати мрежи</translation>
 <translation id="6359587239691116345">Преземете ги најновите функции и подобрувања на безбедноста. Ако го одбиете ажурирањево, можно е уредот да не ви функционира правилно и може да наидете на проблеми со безбедноста и изведбата.</translation>
 <translation id="6376931439017688372">Bluetooth е вклучен</translation>
+<translation id="6378515133128829137">Закачете прозорец на десната страна</translation>
 <translation id="6381109794406942707">За да го отклучите уредот, внесете го вашиот PIN.</translation>
 <translation id="638716340450135524">Вклучете го пристапот до камерата</translation>
 <translation id="639644700271529076">CAPS LOCK е исклучено</translation>
@@ -1163,6 +1167,7 @@
 <translation id="6459472438155181876">Проширување екран на <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Датотеката не може да се преземе</translation>
 <translation id="6482559668224714696">Лупа за цел екран</translation>
+<translation id="6483727822843292440">Разгледајте ги прозорците така што ќе започнете од најмалку користениот прозорец</translation>
 <translation id="6490471652906364588">USB-Ц уред (десна порта)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> бара да го ажурирате вашиот <ph name="DEVICE_TYPE" /> пред крајниот рок</translation>
 <translation id="649452524636452238">PIN-код на паметна картичка</translation>
@@ -1216,6 +1221,7 @@
 <translation id="6683022854667115063">Слушалки</translation>
 <translation id="6696025732084565524">Отстранливата тастатура има потреба од важно ажурирање</translation>
 <translation id="6700713906295497288">Копче за мени на IME</translation>
+<translation id="6705577071209924099">Приспособување на осветлувањето</translation>
 <translation id="6707693040195709527">Рокот за промена на уредот кон претходната верзија е изминат</translation>
 <translation id="6710213216561001401">Претходно</translation>
 <translation id="6723839937902243910">Енергија</translation>

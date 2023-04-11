@@ -2164,6 +2164,7 @@
 <translation id="2804043232879091219">ບໍ່ສາມາດເປີດໂປຣແກຣມທ່ອງເວັບສຳຮອງໄດ້</translation>
 <translation id="2804667941345577550">ທ່ານຈະຖືກນຳອອກຈາກລະບົບເວັບໄຊນີ້, ຮວມທັງໃນແຖບທີ່ເປີດຢູ່</translation>
 <translation id="2804680522274557040">ປິດກ້ອງຖ່າຍຮູບແລ້ວ</translation>
+<translation id="2804742109948581745">ສະແດງຄູ່ກັນ</translation>
 <translation id="2805539617243680210">ທ່ານພ້ອມໝົດແລ້ວ!</translation>
 <translation id="2805646850212350655">ລະ​ບົບ​ໄຟລ​໌ການໃສ່ລະຫັດ Microsoft</translation>
 <translation id="2805756323405976993">ແອັບ</translation>
@@ -4656,6 +4657,7 @@
 <translation id="5056950756634735043">ກຳລັງເຊື່ອມຕໍ່ຫາກ່ອງບັນຈຸ</translation>
 <translation id="5057110919553308744">ເມື່ອທ່ານຄລິກສ່ວນຂະຫຍາຍ</translation>
 <translation id="5059241099014281248">ຈຳກັດການເຂົ້າສູ່ລະບົບ</translation>
+<translation id="5059429103770496207">ຮູບແບບສະແດງຜົນ</translation>
 <translation id="5059526285558225588">ເລືອກສິ່ງທີ່ຈະແບ່ງປັນ</translation>
 <translation id="5060332552815861872">ມີເຄື່ອງພິມ 1 ເຄື່ອງພ້ອມໃຫ້ບັນທຶກໄວ້.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{ໂຟນເດີນີ້ປະກອບມີໜຶ່ງບຸກມາກ. ທ່ານແນ່ໃຈບໍວ່າທ່ານຕ້ອງການລຶບມັນ?}other{ໂຟນເດີນີ້ປະກອບມີ # ບຸກມາກ. ທ່ານແນ່ໃຈບໍວ່າທ່ານຕ້ອງການລຶບມັນ?}}</translation>
@@ -5722,6 +5724,7 @@
 <translation id="6019851026059441029">ດີເລີດ - HD</translation>
 <translation id="6020431688553761150">ເຊີບເວີບໍ່ໃຫ້ສິດທ່ານເຂົ້າຫາຂໍ້ມູນນີ້.</translation>
 <translation id="6021293122504240352">ບໍ່ຮອງຮັບ <ph name="APPS" /> ແອັບອີກຕໍ່ໄປແລ້ວ</translation>
+<translation id="6021969570711251331">ແຊກສະຫຼັບ</translation>
 <translation id="6022526133015258832">ເປີດເຕັມໜ້າຈໍ</translation>
 <translation id="6022659036123304283">ເຮັດໃຫ້ Chrome ເປັນຂອງທ່ານ</translation>
 <translation id="6023643151125006053">ອຸປະກອນນີ້ (SN: <ph name="SERIAL_NUMBER" />) ຖືກລັອກໄວ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບ <ph name="SAML_DOMAIN" />.</translation>

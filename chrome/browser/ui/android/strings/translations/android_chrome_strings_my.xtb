@@ -65,7 +65,6 @@
 <translation id="1298077576058087471">ဒေတာ ၆၀ ရာခိုင်နှုန်းအထိ ချွေတာပါ၊ ယနေ့သတင်းများကို ဖတ်ပါ</translation>
 <translation id="1303339473099049190">ထိုစကားဝှက်ကို ရှာမတွေ့ပါ။ စာလုံးပေါင်းစစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" /> မှ ပို့ထားသည်</translation>
-<translation id="1310482092992808703">တဘ်များကို အုပ်စုဖွဲ့ရန်</translation>
 <translation id="1311657260431405215">ဤ 'QR ကုဒ်' သည် URL မဟုတ်ပါ- <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1320912611264252795">လိပ်စာသိမ်းရန် လုပ်ငန်းစဉ်ကို မြင်ကွင်းအပြည့်ဖွင့်ထားသည်</translation>
@@ -108,6 +107,7 @@
 <translation id="1493287004536771723"><ph name="SITE_NAME" /> ကို လိုက်ကြည့်နေသည်</translation>
 <translation id="1502010315804028179">စကားဝှက်များစီမံရန် Google Play ဝန်ဆောင်မှုများကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="1506061864768559482">ရှာဖွေရေး အင်ဂျင်</translation>
+<translation id="1508960385613684700">ကိုယ်ရေးအချက်အလက်လုံခြုံမှုလမ်းညွှန် <ph name="BEGIN_NEW" />အသစ်<ph name="END_NEW" /></translation>
 <translation id="1513352483775369820">စာညှပ်များ နှင့် ဝဘ် မှတ်တမ်း</translation>
 <translation id="1513814250881909472">သင်၏အခြားစက်ပစ္စည်းများမှ တဘ်များရယူရန် စင့်ခ်လုပ်ပါ</translation>
 <translation id="1513858653616922153">စကားဝှက်ကို ဖျက်ရန်</translation>
@@ -162,6 +162,7 @@
 <translation id="1910950723001426294">မျှဝေရန် ရွေးချယ်စရာစာရင်းကို ပိတ်ထားသည်။</translation>
 <translation id="1919130412786645364">Chrome သို့ လက်မှတ်ထိုးဝင်ခွင့် ပေးပါ</translation>
 <translation id="1922362554271624559">အကြံပြုထားသည့် ဘာသာစကားများ</translation>
+<translation id="1924255092154549435">တဘ်ကို ဖြန့်ထားသည်</translation>
 <translation id="1925021887439448749">စိတ်ကြိုက်ဝဘ်လိပ်စာကို ထည့်ရန်</translation>
 <translation id="1928696683969751773">အဆင့်မြှင့်မှုများ</translation>
 <translation id="19288952978244135">Chrome ပြန်ဖွင့်ပါ။</translation>
@@ -770,6 +771,7 @@
 <translation id="5161254044473106830">ခေါင်းစီးလိုအပ်သည်</translation>
 <translation id="5170568018924773124">ဖိုလ်ဒါ ထဲမှာ ပြရန်</translation>
 <translation id="5171045022955879922">ရှာကြည့်ရန် သို့မဟုတ် URL ရိုက်ထည့်ရန်</translation>
+<translation id="5174700554036517242">တဘ်သည် မူလအမြင့်သို့ ပြန်ရောက်သွားပြီ</translation>
 <translation id="5184329579814168207">Chrome ထဲတွင် ဖွင့်မည်</translation>
 <translation id="5191251636205085390">ပြင်ပကုမ္ပဏီကွတ်ကီးများကို အစားထိုးမည့် နည်းပညာသစ်များအကြောင်း လေ့လာပြီး စီမံပါ</translation>
 <translation id="5193988420012215838">သင့်ကလစ်ဘုတ်သို့ မိတ္တူကူးထားသည်</translation>
@@ -1251,6 +1253,7 @@
 <translation id="7686086654630106285">ဝဘ်ဆိုက်က အကြံပြုထားသည့် ကြော်ငြာဆိုင်ရာ နောက်ထပ်အချက်အလက်</translation>
 <translation id="768618399695552958">သင်ဝင်ကြည့်သော စာမျက်နှာတစ်ချို့ကို ကြိုဖွင့်ထားသည်။ Google ဝဘ်ဆိုက်တစ်ခုမှ လင့်ခ်ချိတ်သည့်အခါ Google ဆာဗာများမှတစ်ဆင့် စာမျက်နှာများကို ကြိုဖွင့်ထားနိုင်ပါသည်။</translation>
 <translation id="7691043218961417207">လိုက်ကြည့်မည့် အကြောင်းအရာကို စူးစမ်းလေ့လာရန်</translation>
+<translation id="7697383401610880082">ဖိဆွဲအထိန်း</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" />  တွင် အီးမေးလ်ရေးပါ</translation>
 <translation id="7707922173985738739">မိုဘိုင်းဒေတာကို သုံးရန်</translation>
 <translation id="7709094866268987903">သင်ဖယ်ရှားလိုက်သည့် စိတ်ဝင်စားမှုများ ဤနေရာတွင် ပေါ်ပါမည်</translation>

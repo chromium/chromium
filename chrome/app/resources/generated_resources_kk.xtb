@@ -4090,6 +4090,7 @@
 <translation id="4545759655004063573">Рұқсат жеткіліксіз болғандықтан, сақтау мүмкін емес. Басқа орынға сақтаңыз.</translation>
 <translation id="4546308221697447294">Google Chrome арқылы жылдам шолу</translation>
 <translation id="4546345569117159016">Оң жақ түйме</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> осы кеңейтімді пайдалануды қалайды:</translation>
 <translation id="4546692474302123343">Google Assistant қолданбасында дауыспен енгізу</translation>
 <translation id="4547659257713117923">Басқа құрылғыларда қойындылар жоқ</translation>
 <translation id="4547672827276975204">Автоматты орнату</translation>
@@ -4947,6 +4948,7 @@
 <translation id="5338503421962489998">Жергілікті сақтау орны</translation>
 <translation id="5339031667684712858">Өшірілген сайттар</translation>
 <translation id="5340638867532133571">Сайттарға төлем өңдегіштерін орнатуға рұқсат ету (ұсынылады)</translation>
+<translation id="5340787663756381836">&amp;Табу және өзгерту</translation>
 <translation id="5341793073192892252">Мына cookie файлдарына тыйым салынды (үшінші тараптың cookie файлдарына түбегейлі тыйым салынады)</translation>
 <translation id="5342091991439452114">PIN коды кемінде <ph name="MINIMUM" /> таңбадан құралуы керек</translation>
 <translation id="5344036115151554031">Linux қалпына келтірілуде</translation>
@@ -5701,6 +5703,7 @@
 <translation id="6019851026059441029">Тамаша – HD</translation>
 <translation id="6020431688553761150">Сервер бұл ресурсқа кіру рұқсатын бермеген.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> қолданбаға бұдан былай қолдау көрсетілмейді</translation>
+<translation id="6021969570711251331">Кезектесу</translation>
 <translation id="6022526133015258832">Толық экранда ашу</translation>
 <translation id="6022659036123304283">Chrome браузерін өз талғамыңызға сай реттеңіз</translation>
 <translation id="6023643151125006053">Бұл құрылғыны (сериялық нөмірі: <ph name="SERIAL_NUMBER" />) <ph name="SAML_DOMAIN" /> әкімшісі құлыптады.</translation>
@@ -9333,6 +9336,7 @@
 <translation id="939401694733344652">Қазір бұл аккаунттар Android қолданбаларымен пайдаланылмайды. Егер аккаунтты осы Android қолданбасымен пайдаланғыңыз келсе, оны басқа Android қолданбалары да пайдалана алады. Android қолданбасының рұқсатын <ph name="LINK_BEGIN" />Параметрлер &gt; Аккаунттар<ph name="LINK_END" /> бөлімінен өзгерте аласыз.</translation>
 <translation id="939598580284253335">Құпия фразаны енгізу</translation>
 <translation id="939736085109172342">Жаңа қалта</translation>
+<translation id="940212040923880623">&amp;Табу және өзгерту</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> қолданбасы Chrome қойындысын және аудионы бөлісуде.</translation>
 <translation id="944799160843436808">Chromebook-та Steam реттеу кезінде мәселе туындады</translation>
 <translation id="945522503751344254">Пікір жіберу</translation>

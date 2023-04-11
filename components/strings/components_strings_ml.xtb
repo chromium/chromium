@@ -1741,6 +1741,8 @@
 <translation id="5234764350956374838">ഡിസ്മിസ്സ് ചെയ്യുക</translation>
 <translation id="5239623327352565343">ലൊക്കേഷൻ ആക്സസ് അനുവദിച്ചു</translation>
 <translation id="5242889659037569123">ലഗേജും യാത്രാ ആക്‌സസറികളും</translation>
+<translation id="5244732203286792411">ലോഡ് ചെയ്യുന്നു...
+    ഇതിന് ഒരു മിനിറ്റ് എടുത്തേക്കാം.</translation>
 <translation id="5250209940322997802">"നെറ്റ്‌വർക്കിലേക്ക് കണക്‌റ്റ് ചെയ്യുക"</translation>
 <translation id="52517543715119994">Chrome ഫീച്ചറുകളെ കുറിച്ച് അറിയുക</translation>
 <translation id="5251803541071282808">ക്ലൗഡ്</translation>
@@ -1986,6 +1988,7 @@
 <translation id="5872692522325383488">IBAN സംരക്ഷിച്ചു</translation>
 <translation id="5873013647450402046">ഇത് നിങ്ങൾ തന്നെയാണെന്ന് ബാങ്കിന് സ്ഥിരീകരിക്കേണ്ടതുണ്ട്.</translation>
 <translation id="5877831137320480913">സൗന്ദര്യവും ശാരീരികക്ഷമതയും</translation>
+<translation id="5879989559903563723">അതിഥി മോഡിൽ ഉപയോഗിക്കാൻ അനുവാദമില്ല</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
 <translation id="5887400589839399685">കാർഡ് സംരക്ഷിച്ചു</translation>
 <translation id="5887687176710214216">അവസാനം സന്ദർശിച്ചത് ഇന്നലെയാണ്</translation>
@@ -2339,7 +2342,6 @@
 <translation id="678982761784843853">പരിരക്ഷിത ഉള്ളടക്ക ഐഡികൾ</translation>
 <translation id="6790428901817661496">പ്ലേചെയ്യുക</translation>
 <translation id="679355240208270552">നയ പ്രകാരം, ഡിഫോൾട്ട് തിരയൽ പ്രവർത്തനക്ഷമമാക്കാത്തതിനാൽ അവഗണിച്ചു.</translation>
-<translation id="6794049111359324414">വൈഫൈ നെറ്റ്‌വർക്കുകൾ സജ്ജീകരിക്കാൻ <ph name="APP_NAME" /> ആപ്പിനെ അനുവദിക്കണോ?</translation>
 <translation id="6794951432696553238">Windows Hello ഉപയോഗിച്ച് നിങ്ങളുടെ കാർഡുകൾ ഇപ്പോൾ മുതൽ വേഗത്തിൽ സ്ഥിരീകരിക്കുക</translation>
 <translation id="6798460514924505775">Envelope Chou 3</translation>
 <translation id="6805030849054648206">Envelope B6/C4</translation>
@@ -3225,6 +3227,7 @@
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">നിയമവും സർക്കാരും</translation>
 <translation id="8957210676456822347">ക്യാപ്‌റ്റീവ് പോർട്ടൽ അംഗീകരിക്കൽ</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">സൈറ്റിന്റെ ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />നിർദ്ദേശങ്ങൾ:<ph name="MARKUP_2" />നിങ്ങൾക്കൊരു ഡാറ്റ കണക്ഷൻ ഉണ്ടെന്ന് ഉറപ്പാക്കുക<ph name="MARKUP_3" />ഈ വെബ്‌പേജ് പിന്നീട് വീണ്ടും ലോഡ് ചെയ്യുക<ph name="MARKUP_4" />നിങ്ങൾ നൽകിയ വിലാസം പരിശോധിക്കുക<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">കാർഡ് സംരക്ഷിക്കുക</translation>
@@ -3379,7 +3382,6 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" അൺഇൻസ്‌റ്റാൾ ചെയ്യുന്നതോ പ്രവർത്തനരഹിതമാക്കുന്നതോ പരീക്ഷിക്കുക&lt;/li&gt;
     &lt;li&gt;മറ്റൊരു നെറ്റ്‍വര്‍ക്കിലേക്ക് കണക്റ്റ് ചെയ്യുന്നത് പരീക്ഷിക്കുക&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">പുതിയ വൈഫൈ നെറ്റ്‌വർക്കുകൾ സജ്ജീകരിക്കാൻ ഈ ആപ്പ് അനുമതി അഭ്യർത്ഥിക്കുന്നു. സജ്ജീകരിച്ചതിന് ശേഷം, പങ്കെടുക്കുന്ന വൈഫൈ നെറ്റ്‌വർക്കുകളുമായി നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> സ്വയമേവ കണക്റ്റ് ചെയ്യും. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Pay-യിൽ നിന്ന്</translation>
 </translationbundle>

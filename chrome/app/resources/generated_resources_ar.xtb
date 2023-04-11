@@ -4954,6 +4954,7 @@
 <translation id="5338503421962489998">تخزين محلي</translation>
 <translation id="5339031667684712858">المواقع الإلكترونية التي أزلتها</translation>
 <translation id="5340638867532133571">السماح للمواقع الإلكترونية بتثبيت معالجات الدفع (مستحسن)</translation>
+<translation id="5340787663756381836">بحث وتعديل</translation>
 <translation id="5341793073192892252">تم حظر ملفات تعريف الارتباط التالية (يتم حظر ملفات تعريف الارتباط التي تنتمي إلى جهات خارجية بدون استثناء)</translation>
 <translation id="5342091991439452114">يجب أن يتكوَّن رقم التعريف الشخصي من <ph name="MINIMUM" /> من الأرقام على الأقل</translation>
 <translation id="5344036115151554031">‏استعادة نظام التشغيل Linux</translation>
@@ -5711,6 +5712,7 @@
 <translation id="6019851026059441029">‏رائعة - HD</translation>
 <translation id="6020431688553761150">لا يسمح لك الخادم بالوصول إلى هذا المورد.</translation>
 <translation id="6021293122504240352">تم إيقاف <ph name="APPS" /> تطبيق نهائيًا</translation>
+<translation id="6021969570711251331">المضمَّن</translation>
 <translation id="6022526133015258832">فتح في وضع ملء الشاشة</translation>
 <translation id="6022659036123304283">‏اجعل Chrome متصفِّحك الدائم.</translation>
 <translation id="6023643151125006053">تم إقفال هذا الجهاز (الرقم التسلسلي: <ph name="SERIAL_NUMBER" />) من خلال مشرف <ph name="SAML_DOMAIN" />.</translation>
@@ -9358,6 +9360,7 @@
 <translation id="939401694733344652">‏لا يتم استخدام هذه الحسابات مع تطبيقات Android في الوقت الحالي. إذا اخترت حسابًا لاستخدامه مع تطبيق Android هذا، يمكن أيضًا استخدام الحساب مع تطبيقات Android الأخرى. ويمكنك تغيير الحساب المستخدَم للدخول إلى تطبيق Android من خلال <ph name="LINK_BEGIN" />الإعدادات &gt; الحسابات<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">إدخال عبارة المرور</translation>
 <translation id="939736085109172342">مجلد جديد</translation>
+<translation id="940212040923880623">بحث وتعديل</translation>
 <translation id="942532530371314860">‏يشارك <ph name="APP_NAME" /> علامة تبويب متصفح Chrome والصوت.</translation>
 <translation id="944799160843436808">‏حدثت مشكلة أثناء إعداد تطبيق Steam on Chromebook</translation>
 <translation id="945522503751344254">إرسال تعليقات</translation>

@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">می‌توانید به اینجا برگردید و برگه‌هایی را که اخیراً بسته‌اید مجدداً باز کنید</translation>
 <translation id="1016495303386450659">مورد به‌روز شد</translation>
 <translation id="1035980983510608210">با بستن همه برگه‌ها، برگه‌های سنجاق‌شده نیز بسته خواهند شد.</translation>
+<translation id="1036348656032585052">خاموش کردن</translation>
 <translation id="1044891598689252897">عملکرد سایت‌ها عادی خواهد بود</translation>
 <translation id="1049743911850919806">ناشناس</translation>
 <translation id="105093091697134113">در حساب‌های زیر از گذرواژه‌هایی استفاده شده که دراثر نقض داده شخص ثالث لو رفته‌اند یا در وب‌سایت فریب‌دهنده‌ای وارد شده‌اند. برای حفظ امنیت حساب‌هایتان، فوراً این گذرواژه‌ها را تغییر دهید.</translation>
@@ -610,6 +611,7 @@
 <translation id="5118764316110575523">خاموش</translation>
 <translation id="5119391094379141756">‏Chrome را انتخاب کنید</translation>
 <translation id="5121618895923301719">ازقبل این محصول را پیگیری می‌کنید. این صفحه در <ph name="BEGIN_LINK" />نشانک‌های دستگاه همراه<ph name="END_LINK" /> ذخیره شده است.</translation>
+<translation id="5126465625664020024">ورود به سیستم و همگام‌سازی</translation>
 <translation id="5132942445612118989">همگام‌سازی گذرواژه‌ها، سابقه و موارد دیگر در همه دستگاه‌ها</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} گذرواژه ضعیف}one{{COUNT} گذرواژه ضعیف}other{{COUNT} گذرواژه ضعیف}}</translation>
 <translation id="5149188072385105201">افزودن گذرواژه…</translation>
@@ -747,6 +749,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6039429417015973673"><ph name="TITLE" />، <ph name="PUBLISHER_INFORMATION" />، <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="6042308850641462728">بیشتر</translation>
+<translation id="6054613632208573261">‏استفاده از Chrome به‌طور پیش‌فرض</translation>
 <translation id="605721222689873409">سال</translation>
 <translation id="6059830886158432458">داستان‌ها و فعالیت خود را اینجا کنترل کنید</translation>
 <translation id="6064824697233747382">سازمانتان اجازه نمی‌دهد همگام‌سازی را روشن کنید.</translation>

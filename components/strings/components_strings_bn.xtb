@@ -731,6 +731,7 @@
 <translation id="2718207025093645426">ম্যানেজ করা ব্যবহারকারী বা ডিভাইসের কোনও নীতি লোড নেই।</translation>
 <translation id="2721148159707890343">অনুরোধ সফল হয়েছে</translation>
 <translation id="2723669454293168317">Chrome সেটিংস থেকে 'নিরাপত্তা সংক্রান্ত পরীক্ষা' চালান</translation>
+<translation id="2725492561136085792">এই অ্যাকশন চালু করতে এন্টার প্রেস করুন।</translation>
 <translation id="2726001110728089263">সাইড ট্রে</translation>
 <translation id="2728127805433021124">একটি দুর্বল স্বাক্ষর অ্যালগোরিদম ব্যবহার করে সার্ভারের সার্টিফিকেটে সাইন করা হয়েছে৷</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />সংযোগের ডায়গনিস্টিক্স চালান<ph name="END_LINK" /></translation>
@@ -827,6 +828,7 @@
 <translation id="299990983510665749">হ্যাচব্যাক</translation>
 <translation id="3002501248619246229">ইনপুট ট্রে মিডিয়া চেক করুন</translation>
 <translation id="3005723025932146533">সেভ করা কপি দেখুন</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, উপলভ্য অ্যাকশন ব্রাউজ করতে ট্যাব প্রেস করুন, তারপরে বেছে নেওয়া অ্যাকশন এডিট করতে এন্টার প্রেস করুন।</translation>
 <translation id="3013291976881901233">MIDI ডিভাইসগুলি</translation>
 <translation id="301521992641321250">স্বয়ংক্রিয়ভাবে ব্লক করা হয়েছে</translation>
 <translation id="3016780570757425217">আপনার লোকেশন জানুন</translation>
@@ -1986,6 +1988,7 @@
 <translation id="5872692522325383488">IBAN সেভ করা হয়েছে</translation>
 <translation id="5873013647450402046">এটি যে আপনিই সেই বিষয়ে আপনার ব্যাঙ্ক নিশ্চিত হতে চায়।</translation>
 <translation id="5877831137320480913">রূপচর্চা ও ফিটনেস</translation>
+<translation id="5879989559903563723">গেস্ট মোডে অনুমোদিত নয়</translation>
 <translation id="5884465125445718607">এনভেলপ চিনা #৬</translation>
 <translation id="5887400589839399685">কার্ড সেভ করা হয়েছে</translation>
 <translation id="5887687176710214216">গতকাল শেষবার দেখা হয়েছে</translation>
@@ -2338,7 +2341,6 @@
 <translation id="678982761784843853">সুরক্ষিত কন্টেন্টের আইডি</translation>
 <translation id="6790428901817661496">চালু করুন</translation>
 <translation id="679355240208270552">নীতি অনুযায়ী ডিফল্ট সার্চ সক্ষম করা হয়নি তাই উপেক্ষা করা হয়েছে৷</translation>
-<translation id="6794049111359324414"><ph name="APP_NAME" /> অ্যাপকে ওয়াই ফাই নেটওয়ার্ক সেট-আপ করার অনুমতি দেবেন?</translation>
 <translation id="6794951432696553238">এখন থেকে কার্ডগুলি আরও দ্রুত কনফার্ম করতে Windows Hello ব্যবহার করুন</translation>
 <translation id="6798460514924505775">এনভেলপ চৌ ৩</translation>
 <translation id="6805030849054648206">এনভেলপ B6/C4</translation>
@@ -3226,6 +3228,7 @@
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">আইন ও সরকার</translation>
 <translation id="8957210676456822347">ক্যাপটিভ পোর্টাল অনুমোদন</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">সাইট সেটিংসে যান</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />পরামর্শগুলি:<ph name="MARKUP_2" />নিশ্চিত হোন যে আপনার একটি ডেটা কানেকশন আছে<ph name="MARKUP_3" />পরবর্তীতে এই ওয়েব পৃষ্ঠাটি পুনরায় লোড করুন<ph name="MARKUP_4" />আপনার লেখা ঠিকানাটি পরীক্ষা করুন<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">কার্ড সেভ করুন</translation>
@@ -3380,7 +3383,6 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" আন-ইনস্টল অথবা অক্ষম করে দেখুন&lt;/li&gt;
     &lt;li&gt;অন্য ওয়াই-ফাই নেটওয়ার্কের সাথে সংযুক্ত করে দেখুন&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">এই অ্যাপটি নতুন ওয়াই ফাই নেটওয়ার্ক সেট-আপ করার জন্য অনুমতি চাইছে। সেট-আপ হয়ে গেলে, আপনার <ph name="DEVICE_TYPE" /> অটোমেটিক অংশগ্রহণকারী ওয়াই ফাই নেটওয়ার্কের সাথে কানেক্ট হয়ে যাবে। <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Pay থেকে</translation>
 </translationbundle>

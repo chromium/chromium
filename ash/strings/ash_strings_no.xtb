@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C-enhet (porten foran)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> endret til <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klikk på bekreft for å beholde endringene. De forrige innstillingene blir gjenopprettet om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til. Skriv inn denne PIN-koden på den aktuelle enheten: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">Dette gjør at <ph name="APP_NAME" />, apper og nettsteder med posisjonstillatelse og ChromeOS kan bruke wifi- og mobilnettverksposisjoner.</translation>
 <translation id="1017556409696559990">Minimer det øverste vinduet når det ikke er noen tilbakelogg i Chrome</translation>
 <translation id="1024364763893396229">Lagre <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Pekepennen har lite batteri</translation>
@@ -147,6 +148,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1651914502370159744">Åpne loggsiden</translation>
 <translation id="1654477262762802994">Start et talesøk</translation>
 <translation id="1668469839109562275">Innebygd VPN</translation>
+<translation id="1675844249244994876">Oppdater vinduet til høyre</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> igjen</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> er ikke tilkoblet.</translation>
 <translation id="1677582821739292812">Noen ser på skjermen din</translation>
@@ -191,6 +193,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Slå på posisjonstilgang</translation>
 <translation id="1830308660060964064">Løsnet <ph name="ITEM_TITLE" /></translation>
 <translation id="1838895407229022812">Nattlys er av.</translation>
 <translation id="1854180393107901205">Stopp castingen</translation>
@@ -468,6 +471,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3255483164551725916">Hva kan du gjøre?</translation>
 <translation id="3256109297135787951">Fjern fremhevingen av et element på hyllen</translation>
 <translation id="3260969790895726815">Tale behandles lokalt, og diktering fungerer uten nett, men enkelte talekommandoer fungerer ikke.</translation>
+<translation id="3265032511221679826">Vil du slå på nøyaktig posisjonstilgang?</translation>
 <translation id="3269597722229482060">Høyreklikk</translation>
 <translation id="3289364673986435196">Av/på-meny</translation>
 <translation id="3289544412142055976">Linux-apper støttes ikke for øyeblikket</translation>
@@ -578,6 +582,7 @@ Koble enheten til strøm.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – administrert bruker</translation>
 <translation id="3666266999138159418">Sveip for å skjule det flytende vinduet</translation>
 <translation id="367531336287639526">Velg det første ikonet til venstre for adressefeltet</translation>
+<translation id="3677931086890821290">Dette gir alle apper og nettsteder med posisjonstillatelse og ChromeOS tillatelse til å bruke wifi- og mobilnettverksposisjon.</translation>
 <translation id="3679827876008292680">Gå til den siste fanen i vinduet</translation>
 <translation id="36813544980941320">Wifi-nettverk blir delt mellom telefonen din og <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Nettsteder</translation>
@@ -844,6 +849,7 @@ Koble enheten til strøm.</translation>
 <translation id="493076006037866439">Zoom ut på skjermen</translation>
 <translation id="4936329710968938986">Alle, av</translation>
 <translation id="4938176435186993759">Skjul alle forslag</translation>
+<translation id="4943007472417128747">Wifi-sone er slått av for å bruke wifi. Slå av wifi for å bruke wifi-sone.</translation>
 <translation id="4945196315133970626">Slå av varsler</translation>
 <translation id="4946376291507881335">Ta bilde</translation>
 <translation id="495046168593986294">Rull opp</translation>
@@ -1388,6 +1394,7 @@ Nylig installert</translation>
 For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</translation>
 <translation id="7526573455193969409">Nettverket kan være overvåket</translation>
 <translation id="7536035074519304529">IP-adresse: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Oppdater vinduet til venstre</translation>
 <translation id="7543399541175347147">Linux-apper og inkognitovinduer støttes ikke for øyeblikket. Andre apper blir lagret.</translation>
 <translation id="7544300628205093162">Tastaturets bakgrunnsbelysning er på</translation>
 <translation id="7548434653388805669">Nå er det sengetid</translation>
@@ -1468,6 +1475,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7893503627044934815">Vil ikke at denne filen skal vises</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Du har trykket på hurtigtasten for skjermrotasjon. Vil du rotere skjermen?</translation>
+<translation id="7901190436359881020">Bytt vinduer</translation>
 <translation id="7901405293566323524">Telefonstyring</translation>
 <translation id="7902625623987030061">Trykk på fingeravtrykkssensoren</translation>
 <translation id="7904094684485781019">Administratoren for denne kontoen har forbudt multipålogging.</translation>
@@ -1743,6 +1751,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="9198992156681343238">Oppløsningen for <ph name="DISPLAY_NAME" /> ble endret til <ph name="RESOLUTION" />. Klikk på bekreft for å beholde endringene. De forrige innstillingene blir gjenopprettet om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Koble <ph name="NAME" /> til denne Chromebooken</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" /> – administreres av administratoren din</translation>
+<translation id="9207682216934703221">Dette gjør at <ph name="APP_NAME" />, <ph name="APP2_NAME" /> og alle apper og nettsteder med posisjonstillatelse og ChromeOS kan bruke wifi- og mobilnettverksposisjoner.</translation>
 <translation id="9210037371811586452">Avslutter enhetlig skrivebordsmodus</translation>
 <translation id="9211490828691860325">Alle skrivebord</translation>
 <translation id="9211681782751733685"><ph name="TIME_REMAINING" /> gjenstår til batteriet er fulladet.</translation>

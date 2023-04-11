@@ -4082,6 +4082,7 @@
 <translation id="4545759655004063573">因权限不足而无法保存。请保存到其他位置。</translation>
 <translation id="4546308221697447294">使用 Google Chrome 进行快速浏览</translation>
 <translation id="4546345569117159016">右键</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" />想使用此扩展程序：</translation>
 <translation id="4546692474302123343">Google 助理语音输入</translation>
 <translation id="4547659257713117923">没有从其他设备打开的标签页</translation>
 <translation id="4547672827276975204">自动设置</translation>
@@ -5693,6 +5694,7 @@
 <translation id="6019851026059441029">非常好 - 高清</translation>
 <translation id="6020431688553761150">服务器未授予您访问此资源的权限。</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> 款应用不再受支持</translation>
+<translation id="6021969570711251331">交错</translation>
 <translation id="6022526133015258832">以全屏模式打开</translation>
 <translation id="6022659036123304283">定制您的专属 Chrome</translation>
 <translation id="6023643151125006053">此设备（序列号：<ph name="SERIAL_NUMBER" />）已被 <ph name="SAML_DOMAIN" /> 管理员锁定。</translation>

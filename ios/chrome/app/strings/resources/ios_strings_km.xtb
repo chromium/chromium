@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">អ្នកអាច​ត្រឡប់មកត្រង់នេះវិញ ដើម្បីបើកផ្ទាំង​ដែលអ្នកទើបតែបិទ​ម្ដងទៀត</translation>
 <translation id="1016495303386450659">ធាតុត្រូវបានធ្វើបច្ចុប្បន្នភាព</translation>
 <translation id="1035980983510608210">ការ​បិទផ្ទាំង​ទាំងអស់​នឹង​បិទ​ផ្ទាំង​ដែល​បានខ្ទាស់ផង​​ដែរ។</translation>
+<translation id="1036348656032585052">បិទ</translation>
 <translation id="1044891598689252897">គេហទំព័រនឹងដំណើរការធម្មតា</translation>
 <translation id="1049743911850919806">អនាមិក</translation>
 <translation id="105093091697134113">គណនីខាងក្រោម​ប្រើពាក្យសម្ងាត់ ដែលបានបញ្ចេញ​នៅក្នុង​ការបែកធ្លាយ​ទិន្នន័យរបស់ភាគីទីបី ឬបានបញ្ចូលនៅក្នុង​គេហទំព័របញ្ឆោត។ សូមប្ដូរ​ពាក្យសម្ងាត់​ទាំងនេះ​ភ្លាមៗ ដើម្បី​រក្សា​សុវត្ថិភាព​គណនី​របស់អ្នក។</translation>
@@ -747,6 +748,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">បិទ</translation>
 <translation id="6042308850641462728">ច្រើនទៀត</translation>
+<translation id="6054613632208573261">ប្រើ Chrome តាម​លំនាំដើម</translation>
 <translation id="605721222689873409">ឆ្នាំ</translation>
 <translation id="6059830886158432458">គ្រប់គ្រង​អត្ថបទ និង​សកម្មភាព​របស់អ្នក​នៅទីនេះ</translation>
 <translation id="6064824697233747382">ស្ថាប័ន​របស់អ្នក​តម្រូវឱ្យអ្នក​បិទការធ្វើ​សមកាលកម្ម។</translation>
@@ -1022,6 +1024,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7781011649027948662">បកប្រែទំព័រ​ឬ?</translation>
 <translation id="7781069478569868053">ទំព័រផ្ទាំងថ្មី</translation>
 <translation id="7781829728241885113">ម្សិលមិញ</translation>
+<translation id="7786246662347093005">{COUNT,plural, =1{ក្រោយពេល 1 ថ្ងៃ}other{ក្រោយពេល {COUNT} ថ្ងៃ}}</translation>
 <translation id="778855399387580014">ចាប់ផ្ដើមការស្វែងរកនៅក្នុងផ្ទាំង Chrome ថ្មី។</translation>
 <translation id="7791543448312431591">បន្ថែម</translation>
 <translation id="7807060072011926525">បានផ្ដល់ដោយ Google</translation>
@@ -1086,6 +1089,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8136856065410661948">សកម្មភាពនេះ​នឹង​ត្រូវបាន​ប្រើ ដើម្បីបង្កើត​ព្រឹត្តិការណ៍​នៅក្នុង Apple Calendar របស់អ្នកពី Chrome និង Google Lens។</translation>
 <translation id="8156478151976189188">សមកាលកម្ម​ពាក្យសម្ងាត់​មិនដំណើរការទេ</translation>
 <translation id="8157532349231307196">គណនីចនួន <ph name="NUMBER_OF_ACCOUNTS" /></translation>
+<translation id="8159358225423560600">អម្បាញ់មិញ</translation>
 <translation id="8179976553408161302">បញ្ចូល</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />ឧបករណ៍របស់អ្នក<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">បកប្រែទំព័រ</translation>
@@ -1116,6 +1120,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8393889347136007944">ផ្ទាំង​មិន​ត្រូ​វបានប្រើប្រាស់​រយៈពេល <ph name="THRESHOLD" /> ថ្ងៃ</translation>
 <translation id="8407669440184693619">រកមិនឃើញ​ពាក្យសម្ងាត់​សម្រាប់គេហទំព័រ​នេះទេ</translation>
 <translation id="842017693807136194">បានចូល​គណនី​ដោយប្រើ</translation>
+<translation id="8423121072346537366">អម្បាញ់មិញ</translation>
 <translation id="8425693829365242963">ពាក្យសម្ងាត់របស់អ្នកមានលក្ខណៈខុសប្លែកពីគេ</translation>
 <translation id="8428045167754449968">រដ្ឋធានី ឬ ទីក្រុង</translation>
 <translation id="8428213095426709021">ការកំណត់</translation>

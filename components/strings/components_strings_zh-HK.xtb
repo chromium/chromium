@@ -368,6 +368,7 @@
 <translation id="1801812870656502108">虛擬卡詳情</translation>
 <translation id="1803020234906945288">健康飲食</translation>
 <translation id="1803351196216024260">可要求使用麥克風</translation>
+<translation id="1806174020048213474">這個應用程式要求你授權安裝 Wi-Fi 憑證。設定完成後，<ph name="DEVICE_TYPE" /> 將自動連線到設定好的 Wi-Fi 網路。如要移除這些憑證，請解除安裝應用程式。</translation>
 <translation id="1807246157184219062">淺色</translation>
 <translation id="1807528111851433570">起始工作表</translation>
 <translation id="180991881384371158">CVC 喺信用卡嘅背面，即係簽名欄右上方嘅最後 3 位數字。</translation>
@@ -1340,6 +1341,7 @@
 <translation id="4270541775497538019">堆疊器 6</translation>
 <translation id="4274173425554582601">電腦和電子產品</translation>
 <translation id="4275830172053184480">重新啟動裝置</translation>
+<translation id="4276974990916607331">不用了，謝謝</translation>
 <translation id="4277028893293644418">重設密碼</translation>
 <translation id="4277937682389409325">本機位址</translation>
 <translation id="4278390842282768270">已允許</translation>
@@ -1701,6 +1703,7 @@
 <translation id="5129534298163637277">確認對話框</translation>
 <translation id="5135404736266831032">管理地址…</translation>
 <translation id="5136841603454277753">請輸入正確的驗證碼</translation>
+<translation id="5137761395480718572">這個應用程式要求你授權安裝 Wi-Fi 憑證。設定完成後，<ph name="DEVICE_TYPE" /> 將自動連線到設定好的 Wi-Fi 網路。如要移除這些憑證，請解除安裝應用程式。<ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">目前無法使用虛擬卡，請聯絡您的銀行</translation>
 <translation id="5138227688689900538">顯示較少</translation>
 <translation id="5145883236150621069">政策回應中存在錯誤代碼</translation>
@@ -1757,6 +1760,7 @@
 <translation id="5273881944177595304">網絡應用程式和網上工具</translation>
 <translation id="5274025349362408263">書籍及文學</translation>
 <translation id="5279286380302340275">管理下載檔案</translation>
+<translation id="5279453600310613955">不用了，謝謝</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">文件屬性</translation>
 <translation id="528468243742722775">結束</translation>
@@ -2252,6 +2256,7 @@
 <translation id="6529173248185917884">第七卷</translation>
 <translation id="6529602333819889595">重做刪除(&amp;R)</translation>
 <translation id="6535751101619004418">貨幣和外幣兌換</translation>
+<translation id="6536221421038631327">從 <ph name="DEVICE_TYPE" /> 移除 Passpoint 訂閱後，相關聯的網路也會一併移除。如要變更訂閱方案，請聯絡「<ph name="FRIENDLY_NAME" />」。<ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">互惠基金</translation>
 <translation id="6545864417968258051">藍牙掃瞄</translation>
 <translation id="6547208576736763147">雙孔 (左側)</translation>
@@ -2342,7 +2347,6 @@
 <translation id="678982761784843853">受保護的 Content ID</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="679355240208270552">由於政策未啟用預設搜尋設定，因此系統已忽略政策值。</translation>
-<translation id="6794049111359324414">要允許「<ph name="APP_NAME" />」應用程式設定 Wi-Fi 網絡嗎？</translation>
 <translation id="6794951432696553238">使用·Windows Hello 即可加快確認付款卡。</translation>
 <translation id="6798460514924505775">Chou 3 信封</translation>
 <translation id="6805030849054648206">B6/C4 信封</translation>
@@ -3349,6 +3353,7 @@
 <translation id="9219103736887031265">圖片</translation>
 <translation id="922152298093051471">自訂 Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">要允許「<ph name="APP_NAME" />」應用程式設定 Wi-Fi 網路嗎？</translation>
 <translation id="936602727769022409">您可能會失去 Google 帳戶存取權。Chromium 建議您立即變更密碼。系統會要求您登入。</translation>
 <translation id="937457230470581909">動物園、水族館和保護區</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />系統會使用什麼資料：<ph name="END_BOLD" />系統會根據您最近的瀏覽記錄 (即在此裝置上使用 Chrome 瀏覽的網站清單) 顯示廣告主題。</translation>
@@ -3385,7 +3390,6 @@
     &lt;li&gt;嘗試解除安裝「<ph name="SOFTWARE_NAME" />」&lt;/li&gt;
     &lt;li&gt;嘗試連接至其他 Wi-Fi 網絡&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">此應用程式現在要求權限以設定新的 Wi-Fi 網絡。設定完成後，您的 <ph name="DEVICE_TYPE" /> 將會自動連線至參與的 Wi-Fi 網絡。<ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">來自 Google Pay</translation>
 </translationbundle>

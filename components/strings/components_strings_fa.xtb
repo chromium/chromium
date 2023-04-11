@@ -2341,7 +2341,6 @@
 <translation id="678982761784843853">شناسه‌های محتوای محافظت‌شده</translation>
 <translation id="6790428901817661496">پخش</translation>
 <translation id="679355240208270552">نادیده گرفته شد، زیرا جستجوی پیش‌فرض توسط خط‌مشی فعال نشده است.</translation>
-<translation id="6794049111359324414">‏به برنامه <ph name="APP_NAME" /> اجازه می‌دهید شبکه Wi-Fi راه‌اندازی کند؟</translation>
 <translation id="6794951432696553238">‏ازاین‌پس، برای به‌تأیید رساندن سریع‌تر کارت‌ها، از Windows Hello استفاده شود</translation>
 <translation id="6798460514924505775">پاکت چو ۳</translation>
 <translation id="6805030849054648206">پاکت بی۶/سی۴</translation>
@@ -3384,7 +3383,6 @@
     &lt;li&gt;«<ph name="SOFTWARE_NAME" />» را حذف‌نصب یا غیرفعال کنید&lt;/li&gt;
     &lt;li&gt;به شبکه دیگری متصل شوید&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">‏این برنامه اجازه می‌خواهد شبکه‌های Wi-Fi جدیدی راه‌اندازی کند. پس‌از راه‌اندازی، <ph name="DEVICE_TYPE" /> به‌طور خودکار به شبکه‌های Wi-Fi شرکت‌کننده متصل خواهد شد. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">‏از Google Pay</translation>
 </translationbundle>

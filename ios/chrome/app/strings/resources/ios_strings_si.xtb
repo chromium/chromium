@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">ඔබ මෑතකදී වසා දැමූ ටැබ නැවත විවෘත කිරීමට ඔබට නැවත මෙහි පැමිණිය හැකිය</translation>
 <translation id="1016495303386450659">අයිතමය යාවත්කාලීන කරන ලදි</translation>
 <translation id="1035980983510608210">සියලු පටිති වැසීමෙන් අමුණන ලද පටිති ද වැසෙනු ඇත.</translation>
+<translation id="1036348656032585052">ක්‍රියා විරහිතය</translation>
 <translation id="1044891598689252897">වෙබ් අඩවි සාමාන්‍යයෙන් ක්‍රියා කරයි</translation>
 <translation id="1049743911850919806">අප්‍රකට</translation>
 <translation id="105093091697134113">පහත දැක්වෙන ගිණුම් තෙවන පාර්ශ්ව දත්ත උල්ලංඝනය කිරීමකට නිරාවරණය වූ හෝ රැවටිලිකාර වෙබ් අඩවියකට ඇතුළත් කළ මුරපද භාවිත කරයි. ඔබේ ගිණුම් ආරක්ෂිතව තබා ගැනීමට මෙම මුරපද වහාම වෙනස් කරන්න.</translation>
@@ -216,6 +217,7 @@
 <translation id="2482878487686419369">දැනුම්දීම්</translation>
 <translation id="2496626742194544812">පළමු පටිත්ත වෙත යන්න</translation>
 <translation id="2500374554657206846">මුරපදය සුරැකීමට විකල්ප</translation>
+<translation id="2502415369140591438">යළි භාවිතා කළ මුරපද <ph name="COUNT" />ක්</translation>
 <translation id="2523363575747517183">මෙම වෙබ් අඩවිය තවත් යෙදුමක් විවෘත කිරීමට නැවත නැවතත් උත්සාහ කරයි.</translation>
 <translation id="2529021024822217800">සියල්ල විවෘත කරන්න</translation>
 <translation id="2547458583188611426">සමමුහුර්ත කිරීම ක්‍රියා නොකරයි. සමමුහුර්ත කිරීම ආරම්භ කිරීමට, ඔබේ මුර-වැකිකඩ ඇතුළු කරන්න.</translation>
@@ -293,6 +295,7 @@
 <translation id="2932085390869194046">මුරපදය යෝජනා කරන්න...</translation>
 <translation id="2932765531295814441">මුරපද හස්තීයව එක් කරන්න</translation>
 <translation id="2952581218264071393">1. Chrome සැකසීම් විවෘත කරන්න</translation>
+<translation id="2953871438216280742">ඔබේ Google ගිණුමේ ඔබේ කියවීම් ලැයිස්තුව විවෘත කිරීමට සහ සුරැකීමට පුරන්න.</translation>
 <translation id="2958718410589002129">මුරපද</translation>
 <translation id="2961210776189273067">මාතෘකාව</translation>
 <translation id="2964349545761222050">තෙවන පාර්ශ්ව කුකී අවහිර කරන්න</translation>
@@ -386,6 +389,7 @@
 <translation id="3581564640715911333">වෙනත් භාෂාවල පිටු පරිවර්තනයට පිරිනමන්න</translation>
 <translation id="3588820906588687999">රූපය නව පටිත්තක විවෘත කරන්න</translation>
 <translation id="3595252146048399851">ඔබට සැම විට <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ සමමුහුර්ත කළ යුතු දේ තෝරා ගත හැක. Google ඔබේ ඉතිහාසය මත පදනම්ව සෙවීම් සහ අනෙකුත් සේවාවන් පෞද්ගලීකරණය කිරීමට ඉඩ ඇත.</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} දුර්වල මුරපදයක්}one{දුර්වල මුරපද {COUNT}ක්}other{දුර්වල මුරපද {COUNT}ක්}}</translation>
 <translation id="3603009562372709545">සබැඳි URL පිටපත් කරන්න</translation>
 <translation id="3607167657931203000">ස්වයං පිරවුම් දත්ත</translation>
 <translation id="3608008480985212611">ඔබේ මනාප කළමනාකරණය කිරීමට පුරන්න.</translation>
@@ -624,6 +628,7 @@
 <translation id="5197255632782567636">අන්තර්ජාලය</translation>
 <translation id="5211488077761630279">ඔබේ <ph name="PERMISSION" /> භාවිතා කිරීමට "<ph name="SITE_NAME" />" හට ඉඩ දෙන්න ද?</translation>
 <translation id="5219295696240154694">සියලු දෙනා සඳහා වෙබයේ ආරක්ෂාව වැඩි දියුණු කිරීමට උදවු කරන්න</translation>
+<translation id="5221339005270097309">මුරපද පරීක්ෂා කරමින්…</translation>
 <translation id="5228579091201413441">සමමුහුර්ත කිරීම සබල කරන්න</translation>
 <translation id="5232485538978018676">කළමනාකරණය කරන ලද ගිණුම සමගින් පුරන්න</translation>
 <translation id="5234764350956374838">ඉවත් කරන්න</translation>
@@ -663,6 +668,7 @@
 සැකසුම්වල පොදු අංශය තුළද Handoff සබල කළ යුතු අතර ඔබේ උපාංග එකම iCloud ගිණුම භාවිත කළ යුතුය.</translation>
 <translation id="5551897871312988470">පරිවර්තන කිරීමට පිරිනමන්න</translation>
 <translation id="5556459405103347317">නැවත</translation>
+<translation id="555749644339804659">මුරපද පරීක්ෂා කරමින්…</translation>
 <translation id="556042886152191864">බොත්තම</translation>
 <translation id="5597915316964418992">පටිති ජාලකය විවෘත කරන්න</translation>
 <translation id="560322036295180549">ඔබගේ සංවිධානය විසින් ක්‍රියාවිරහිත කරන ලදි</translation>
@@ -742,6 +748,7 @@
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">වසන්න</translation>
 <translation id="6042308850641462728">වැඩිදුර</translation>
+<translation id="6054613632208573261">පෙරනිමියෙන් Chrome භාවිත කරන්න</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">මෙහි ඔබේ කතා සහ ක්‍රියාකාරකම් පාලන කරන්න</translation>
 <translation id="6064824697233747382">ඔබගේ සංවිධානයට ඔබ සමමුහුර්තය ක්‍රියාවිරහිත කිරීම අවශ්‍ය වේ.</translation>

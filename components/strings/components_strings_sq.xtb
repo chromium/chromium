@@ -730,6 +730,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2718207025093645426">Përdoruesi ose pajisja e menaxhuar nuk ka asnjë politikë të ngarkuar.</translation>
 <translation id="2721148159707890343">Kërkesa pati sukses</translation>
 <translation id="2723669454293168317">Ekzekuto një kontroll sigurie te cilësimet e Chrome</translation>
+<translation id="2725492561136085792">Shtyp tastin "Enter" për të aktivizuar këtë veprim.</translation>
 <translation id="2726001110728089263">Tabakaja rrëshqitëse</translation>
 <translation id="2728127805433021124">Certifikata e serverit është nënshkruar duke përdorur një algoritëm të dobët nënshkrimi.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Po ekzekuton diagnostikimin e lidhjes<ph name="END_LINK" /></translation>
@@ -826,6 +827,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="299990983510665749">Automjet me portobagazh</translation>
 <translation id="3002501248619246229">Kontrollo median e tabakasë së hyrjes</translation>
 <translation id="3005723025932146533">Shfaq një kopje të ruajtur</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp tastin "Tab" për të shfletuar veprimet e disponueshme dhe më pas tastin "Enter" për të ekzekutuar veprimin e zgjedhur.</translation>
 <translation id="3013291976881901233">Pajisjet MIDI</translation>
 <translation id="301521992641321250">Bllokuar automatikisht</translation>
 <translation id="3016780570757425217">Njihu me vendndodhjen tënde</translation>
@@ -1985,6 +1987,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5872692522325383488">Numri IBAN u ruajt</translation>
 <translation id="5873013647450402046">Banka jote dëshiron të konfirmojë që je ti.</translation>
 <translation id="5877831137320480913">Estetika dhe fitnesi</translation>
+<translation id="5879989559903563723">Nuk lejohet në modalitetin "vizitor"</translation>
 <translation id="5884465125445718607">Zarf kinez nr. 6</translation>
 <translation id="5887400589839399685">Karta u ruajt</translation>
 <translation id="5887687176710214216">Vizituar së fundi dje</translation>
@@ -2337,7 +2340,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="678982761784843853">ID-të e përmbajtjeve të mbrojtura</translation>
 <translation id="6790428901817661496">Luaj</translation>
 <translation id="679355240208270552">U shpërfill sepse kërkimi i parazgjedhur nuk është aktivizuar nga politika.</translation>
-<translation id="6794049111359324414">Të lejohet që aplikacioni <ph name="APP_NAME" /> të konfigurojë rrjetet WiFi?</translation>
 <translation id="6794951432696553238">Konfirmo kartat e tua më shpejt duke përdorur Windows Hello nga tani e tutje</translation>
 <translation id="6798460514924505775">Zarf Chou 3</translation>
 <translation id="6805030849054648206">Zarf B6/C4</translation>
@@ -3225,6 +3227,7 @@ Detaje shtesë:
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Ligji dhe qeverisja</translation>
 <translation id="8957210676456822347">Autorizimi i portalit izolues</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Shko te cilësimet e faqes</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Sugjerime:<ph name="MARKUP_2" />Sigurohu që të kesh një lidhje të të dhënave<ph name="MARKUP_3" />Ringarko këtë faqe uebi më vonë<ph name="MARKUP_4" />Kontrollo adresën që fute<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Ruaj kartën</translation>
@@ -3379,7 +3382,6 @@ Detaje shtesë:
     &lt;li&gt;Provo të çinstalosh ose të çaktivizosh "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;Provo të lidhesh me një rrjet tjetër&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">Ky aplikacion po kërkon leje për të konfiguruar rrjetet WiFi. Pas konfigurimit, pajisja jote <ph name="DEVICE_TYPE" /> do të lidhet automatikisht me rrjetet pjesëmarrëse WiFi. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Nga Google Pay</translation>
 </translationbundle>

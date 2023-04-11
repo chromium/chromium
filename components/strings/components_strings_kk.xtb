@@ -1741,6 +1741,8 @@
 <translation id="5234764350956374838">Жабу</translation>
 <translation id="5239623327352565343">Локацияны пайдалануға рұқсат берілді.</translation>
 <translation id="5242889659037569123">Багаж және саяхат керек-жарақтары</translation>
+<translation id="5244732203286792411">Жүктелуде…
+    Бір минут уақыт алуы мүмкін.</translation>
 <translation id="5250209940322997802">"Желіге қосылу"</translation>
 <translation id="52517543715119994">Chrome функциялары туралы білу</translation>
 <translation id="5251803541071282808">Бұлт</translation>
@@ -2340,7 +2342,6 @@
 <translation id="678982761784843853">Қорғалған контент идентификаторлары</translation>
 <translation id="6790428901817661496">Ойнату</translation>
 <translation id="679355240208270552">Саясатта әдепкі іздеу мүмкіндігі қосылмағандықтан, еленбеді.</translation>
-<translation id="6794049111359324414"><ph name="APP_NAME" /> қолданбасының WiFi желілерін реттеуіне мүмкіндік беру керек пе?</translation>
 <translation id="6794951432696553238">Қазірден бастап Windows Hello арқылы карталарыңызды жылдам растаңыз</translation>
 <translation id="6798460514924505775">Chou 3 хатқалтасы</translation>
 <translation id="6805030849054648206">B6/C4 хатқалтасы</translation>
@@ -3383,7 +3384,6 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" бағдарламалық құралын жойып не өшіріп көріңіз&lt;/li&gt;
     &lt;li&gt;Басқа желіге қосылып көріңіз&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">Бұл қолданба жаңа WiFi желілерін реттеу рұқсатын сұрауда. Реттеуден кейін, <ph name="DEVICE_TYPE" /> құрылғысы қатысатын WiFi желілеріне автоматты түрде қосылады. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Pay қызметінен алынды</translation>
 </translationbundle>

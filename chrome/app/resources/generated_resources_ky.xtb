@@ -3034,6 +3034,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3609277884604412258">Ыкчам издөө</translation>
 <translation id="3610241585790874201">Маалыматты түзмөгүңүзгө сактоого тыюу салынган</translation>
 <translation id="3610369246614755442">Док бекеттин желдеткичин оңдоо керек</translation>
+<translation id="3610961622607302617"><ph name="WEBSITE" /> сырсөзүн өзгөртүү</translation>
 <translation id="361106536627977100">Флэш дайындар</translation>
 <translation id="3611655097742243705">Дагы башка колдонмолорду табуу үчүн Play Store'го өтүңүз</translation>
 <translation id="3611658447322220736">Жакында жабылган сайттар маалымат жөнөтүүнү жана алууну токтото алат</translation>
@@ -5722,6 +5723,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6019851026059441029">Укмуш – HD</translation>
 <translation id="6020431688553761150">Сервер бул ресурска кирүү мүмкүнчүлүгүн берген жок.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> колдонмо мындан ары колдоого алынбайт</translation>
+<translation id="6021969570711251331">Айкалышкан</translation>
 <translation id="6022526133015258832">Толук экранда ачуу</translation>
 <translation id="6022659036123304283">Chrome'ду каалагандай ыңгайлаштырып алыңыз</translation>
 <translation id="6023643151125006053">Бул түзмөк (SN: <ph name="SERIAL_NUMBER" />) <ph name="SAML_DOMAIN" /> сайтынын администратору тарабынан кулпуланган.</translation>
@@ -6053,6 +6055,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6318125393809743217">Саясаттын конфигурацияларында policies.json файлы камтылсын.</translation>
 <translation id="6318407754858604988">Жүктөп алуу башталды</translation>
 <translation id="6318944945640833942">Принтер аныкталган жок. Принтердин дарегин кайра киргизиңиз.</translation>
+<translation id="6320808462673705899">Издеген нерсеңизге дал келген кыстармалар жок.</translation>
 <translation id="6322370287306604163">Манжаңыздын изи менен кулпусун тезирээк ачыңыз</translation>
 <translation id="6322559670748154781">Бул файл көп жүктөлүп алынбайт жана Өркүндөтүлгөн коргоо тарабынан бөгөттөлгөн</translation>
 <translation id="6324916366299863871">Кыска жолду түзөтүү</translation>

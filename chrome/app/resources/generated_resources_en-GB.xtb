@@ -4109,6 +4109,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4545759655004063573">Cannot save due to insufficient permissions. Please save to another location.</translation>
 <translation id="4546308221697447294">Browse fast with Google Chrome</translation>
 <translation id="4546345569117159016">Right button</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> wants to use this extension:</translation>
 <translation id="4546692474302123343">Google Assistant voice input</translation>
 <translation id="4547659257713117923">No Tabs From Other Devices</translation>
 <translation id="4547672827276975204">Set automatically</translation>
@@ -4966,6 +4967,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5338503421962489998">Local storage</translation>
 <translation id="5339031667684712858">Sites that you removed</translation>
 <translation id="5340638867532133571">Allow sites to install payment handlers (recommended)</translation>
+<translation id="5340787663756381836">&amp;Find and edit</translation>
 <translation id="5341793073192892252">The following cookies were blocked (third-party cookies are being blocked without exception)</translation>
 <translation id="5342091991439452114">PIN must be at least <ph name="MINIMUM" /> digits</translation>
 <translation id="5344036115151554031">Restoring Linux</translation>
@@ -5723,6 +5725,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6019851026059441029">Great – HD</translation>
 <translation id="6020431688553761150">Server did not authorise you to access this resource.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> apps are no longer supported</translation>
+<translation id="6021969570711251331">Interleave</translation>
 <translation id="6022526133015258832">Open Full Screen</translation>
 <translation id="6022659036123304283">Make Chrome your own</translation>
 <translation id="6023643151125006053">This device (SN: <ph name="SERIAL_NUMBER" />) was locked by the <ph name="SAML_DOMAIN" /> administrator.</translation>
@@ -9357,6 +9360,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="939401694733344652">These accounts aren't being used with Android apps at the moment. If you select an account to use with this Android app, the account can also be used with other Android apps. You can change Android app access in <ph name="LINK_BEGIN" />Settings &gt; Accounts<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Enter passphrase</translation>
 <translation id="939736085109172342">New folder</translation>
+<translation id="940212040923880623">&amp;Find and Edit</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> is sharing a Chrome tab and audio.</translation>
 <translation id="944799160843436808">There was a problem setting up Steam on Chromebook</translation>
 <translation id="945522503751344254">Send feedback</translation>

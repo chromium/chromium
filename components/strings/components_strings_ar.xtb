@@ -2345,7 +2345,6 @@
 <translation id="678982761784843853">معرّفات المحتوى المحمي</translation>
 <translation id="6790428901817661496">التشغيل</translation>
 <translation id="679355240208270552">تم التجاهل نظرًا لأنه لم يتم تفعيل البحث التلقائي بواسطة السياسة.</translation>
-<translation id="6794049111359324414">‏هل تريد السماح لتطبيق <ph name="APP_NAME" /> بإعداد شبكات Wi-Fi؟</translation>
 <translation id="6794951432696553238">‏التأكد من بطاقاتك بشكلٍ أسرع باستخدام Windows Hello من الآن فصاعدًا</translation>
 <translation id="6798460514924505775">‏ظرف Chou 3</translation>
 <translation id="6805030849054648206">‏ظرف B6/C4</translation>
@@ -3391,7 +3390,6 @@
     &lt;li&gt;حاوِل إلغاء تثبيت "<ph name="SOFTWARE_NAME" />" أو إيقاف&lt;/li&gt;
     &lt;li&gt;حاوِل الاتصال بشبكة أخرى&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">‏يطلب هذا التطبيق إذنًا لإعداد شبكات Wi-Fi جديدة. بعد الإعداد، سيتم تلقائيًا توصيل جهاز <ph name="DEVICE_TYPE" /> بشبكات Wi-Fi المشارِكة. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">‏من Google Pay</translation>
 </translationbundle>

@@ -147,6 +147,7 @@
 <translation id="1651914502370159744">打开“历史记录”页</translation>
 <translation id="1654477262762802994">启动语音查询</translation>
 <translation id="1668469839109562275">内置 VPN</translation>
+<translation id="1675844249244994876">更新右侧窗口</translation>
 <translation id="1677472565718498478">电量尚余 <ph name="TIME" /></translation>
 <translation id="1677507110654891115">未连接“<ph name="FEATURE_NAME" />”。</translation>
 <translation id="1677582821739292812">有人正在看着您的屏幕</translation>
@@ -844,6 +845,7 @@
 <translation id="493076006037866439">缩小屏幕</translation>
 <translation id="4936329710968938986">所有人，已关闭</translation>
 <translation id="4938176435186993759">隐藏所有建议</translation>
+<translation id="4943007472417128747">为了使用 Wi-Fi，已关闭热点。若要使用热点，请关闭 Wi-Fi。</translation>
 <translation id="4945196315133970626">关闭通知</translation>
 <translation id="4946376291507881335">截图</translation>
 <translation id="495046168593986294">向上滚动</translation>
@@ -1385,6 +1387,7 @@
 要将设备关机，请再次按住设备上的电源按钮。</translation>
 <translation id="7526573455193969409">网络可能受到了监控</translation>
 <translation id="7536035074519304529">IP 地址：<ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">更新左侧窗口</translation>
 <translation id="7543399541175347147">目前不支持 Linux 应用和无痕式窗口。其他应用会被保存。</translation>
 <translation id="7544300628205093162">键盘背光已开启</translation>
 <translation id="7548434653388805669">该睡觉了</translation>
@@ -1465,6 +1468,7 @@
 <translation id="7893503627044934815">不想让系统显示此文件</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">您按下了旋转屏幕的键盘快捷键。要旋转屏幕吗？</translation>
+<translation id="7901190436359881020">切换窗口</translation>
 <translation id="7901405293566323524">手机中心</translation>
 <translation id="7902625623987030061">请轻触指纹传感器</translation>
 <translation id="7904094684485781019">此帐号的管理员已停用多帐号登录。</translation>

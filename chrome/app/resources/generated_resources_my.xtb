@@ -4106,6 +4106,7 @@
 <translation id="4545759655004063573">ခွင့်ပြုချက် မလုံလောက်သောကြောင့် သိမ်းဆည်းမရပါ။ အခြားနေရာတစ်ခုတွင် သိမ်းဆည်းပါ။</translation>
 <translation id="4546308221697447294">Google Chrome ကို အသုံးပြု၍ ဝဘ်ဆိုက်များကို အမြန် ဖွင့်ကြည့်လိုက်ပါ</translation>
 <translation id="4546345569117159016">ညာခလုတ်</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> က ဤနောက်ဆက်တွဲကို သုံးလိုသည်-</translation>
 <translation id="4546692474302123343">Google Assistant အသံဖြင့် ထည့်သွင်းရန်</translation>
 <translation id="4547659257713117923">အခြားစက်ပစ္စည်းများမှ တဲဘ်များ မရှိပါ</translation>
 <translation id="4547672827276975204">အလိုအလျောက် သတ်မှတ်ရန်</translation>
@@ -4963,6 +4964,7 @@
 <translation id="5338503421962489998">အတွင်း သိုလှောင်မှု</translation>
 <translation id="5339031667684712858">သင်ဖယ်ရှားထားသော ဝဘ်ဆိုက်များ</translation>
 <translation id="5340638867532133571">ငွေပေးချေမှု စီမံသူများ ထည့်သွင်းရန် ဝဘ်ဆိုက်များကို ခွင့်ပြုပါ (အကြံပြုထားသည်)</translation>
+<translation id="5340787663756381836">&amp;ရှာရန်နှင့် ပြင်ရန်</translation>
 <translation id="5341793073192892252">အောက်ပါကွတ်ကီးများကို ပိတ်ထားသည် (ပြင်ပကုမ္ပဏီ၏ ကွတ်ကီးများကို ခြွင်းချက်မရှိ ပိတ်ထားပါသည်)</translation>
 <translation id="5342091991439452114">ပင်နံပါတ်သည် အနည်းဆုံးဂဏန်း <ph name="MINIMUM" /> လုံးရှိရပါမည်</translation>
 <translation id="5344036115151554031">Linux ကို ပြန်ယူနေသည်</translation>
@@ -5719,6 +5721,7 @@
 <translation id="6019851026059441029">အလွန်ကောင်း - HD</translation>
 <translation id="6020431688553761150">ဆာဗာက ဒီရင်းမြစ်ကို သင့်အား ရယူသုံးမှုကို ခွင့်မပြုပါ။</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> ခုကို ခွင့်မပြုတော့ပါ။</translation>
+<translation id="6021969570711251331">အပေါ်အောက်ပုံစံ</translation>
 <translation id="6022526133015258832">မျက်နှာပြင် အပြည့် ဖွင့်ရန်</translation>
 <translation id="6022659036123304283">Chrome ကို သင့်စိတ်ကြိုက်ပြင်ဆင်လိုက်ပါ</translation>
 <translation id="6023643151125006053">ဤစက်ပစ္စည်း (SN- <ph name="SERIAL_NUMBER" />) ကို <ph name="SAML_DOMAIN" /> စီမံခန့်ခွဲသူက လော့ခ်ချထားသည်။</translation>
@@ -9351,6 +9354,7 @@
 <translation id="939401694733344652">ဤအကောင့်များကို Android အက်ပ်များနှင့် လောလောဆယ်သုံးမနေပါ။ ဤ Android အက်ပ်နှင့်သုံးရန် အကောင့်ရွေးပါက အကောင့်ကို အခြား Android အက်ပ်များနှင့်လည်း သုံးနိုင်သည်။ <ph name="LINK_BEGIN" />ဆက်တင်များ &gt; အကောင့်များ<ph name="LINK_END" /> တွင် Android အက်ပ်သုံးခွင့်ကို ပြောင်းနိုင်သည်။</translation>
 <translation id="939598580284253335">စကားစုဝှက်ကို ရိုက်ထည့်ရန်</translation>
 <translation id="939736085109172342">ဖိုင်တွဲအသစ်</translation>
+<translation id="940212040923880623">&amp;ရှာရန်နှင့် ပြင်ရန်</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> သည် Chrome တဘ်နှင့် အသံကို မျှဝေနေသည်။</translation>
 <translation id="944799160843436808">Chromebook တွင် Steam ကို စနစ်ထည့်သွင်းရာတွင် ပြဿနာရှိနေသည်</translation>
 <translation id="945522503751344254">အကြံပြုချက် ပေးပို့မည်</translation>

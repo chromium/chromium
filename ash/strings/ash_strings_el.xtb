@@ -4,6 +4,8 @@
 <translation id="1012876632442809908">Συσκευή USB-C (μπροστινή θύρα)</translation>
 <translation id="1013598600051641573">Η ανάλυση της οθόνης <ph name="DISPLAY_NAME" /> άλλαξε σε <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Κάντε κλικ στην Επιβεβαίωση για να κρατήσετε τις αλλαγές. Θα γίνει επαναφορά των προηγούμενων ρυθμίσεων σε <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Η συσκευή Bluetooth "<ph name="DEVICE_NAME" />" ζητά δικαιώματα σύζευξης. Καταχωρίστε αυτόν τον κωδικό PIN στη συγκεκριμένη συσκευή: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">Αυτό επιτρέπει στην εφαρμογή <ph name="APP_NAME" /> και σε όλες τις εφαρμογές και τους ιστοτόπους με την άδεια τοποθεσίας και το ChromeOS να χρησιμοποιούν την τοποθεσία σε δίκτυα Wi-Fi και κινητής τηλεφωνίας.</translation>
+<translation id="1017556409696559990">Ελαχιστοποίηση του επάνω παραθύρου όταν δεν υπάρχει ιστορικό στο Chrome</translation>
 <translation id="1024364763893396229">Αποθήκευση της συσκευής <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Το επίπεδο της μπαταρίας της γραφίδας είναι χαμηλό</translation>
 <translation id="1036073649888683237">Για να διαχειριστείτε τις ειδοποιήσεις, μεταβείτε στις Ρυθμίσεις</translation>
@@ -146,6 +148,7 @@
 <translation id="1651914502370159744">Άνοιγμα σελίδας Ιστορικό</translation>
 <translation id="1654477262762802994">Έναρξη φωνητικού ερωτήματος</translation>
 <translation id="1668469839109562275">Ενσωματωμένο VPN</translation>
+<translation id="1675844249244994876">Ενημέρωση του δεξιού παραθύρου</translation>
 <translation id="1677472565718498478">Απομένουν <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Η λειτουργία <ph name="FEATURE_NAME" /> δεν συνδέθηκε.</translation>
 <translation id="1677582821739292812">Κάποιο άτομο βλέπει την οθόνη σας</translation>
@@ -190,6 +193,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Ενεργοποίηση πρόσβασης στην τοποθεσία</translation>
 <translation id="1830308660060964064">Το στοιχείο <ph name="ITEM_TITLE" /> ξεκαρφιτσώθηκε</translation>
 <translation id="1838895407229022812">Ο Νυχτερινός φωτισμός είναι ανενεργός.</translation>
 <translation id="1854180393107901205">Διακοπή μετάδοσης</translation>
@@ -343,6 +347,7 @@
 <translation id="2620436844016719705">Σύστημα</translation>
 <translation id="2621713457727696555">Unsecured</translation>
 <translation id="263399434338050016">"Επιλογή όλων"</translation>
+<translation id="2644422758626431000">Καρφίτσωμα παραθύρου στα αριστερά</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2647092942972307022"><ph name="USED_MEMORY" /> από <ph name="TOTAL_MEMORY" /> διαθέσιμα</translation>
 <translation id="2653019840645008922">Λήψη παραθύρου</translation>
@@ -466,6 +471,7 @@
 <translation id="3255483164551725916">Τι μπορείς να κάνεις;</translation>
 <translation id="3256109297135787951">Κατάργηση της επισήμανσης από κάποιο στοιχείο στο ράφι σας</translation>
 <translation id="3260969790895726815">Η επεξεργασία της ομιλίας γίνεται τοπικά και η υπαγόρευση λειτουργεί εκτός σύνδεσης, αλλά ορισμένες φωνητικές εντολές δεν θα λειτουργούν.</translation>
+<translation id="3265032511221679826">Ενεργοποίηση πρόσβασης στην ακριβή τοποθεσία;</translation>
 <translation id="3269597722229482060">Δεξί κλικ</translation>
 <translation id="3289364673986435196">Μενού λειτουργίας</translation>
 <translation id="3289544412142055976">Προς το παρόν, δεν υποστηρίζονται οι εφαρμογές Linux</translation>
@@ -576,6 +582,7 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Διαχειριζόμενος χρήστης</translation>
 <translation id="3666266999138159418">Σύρετε για απόκρυψη του κινούμενου παραθύρου</translation>
 <translation id="367531336287639526">Επιλογή πρώτου εικονιδίου στα αριστερά της γραμμής διευθύνσεων</translation>
+<translation id="3677931086890821290">Αυτό επιτρέπει σε όλες τις εφαρμογές και τους ιστοτόπους με την άδεια τοποθεσίας και το ChromeOS να χρησιμοποιούν την τοποθεσία σε δίκτυα Wi-Fi και κινητής τηλεφωνίας.</translation>
 <translation id="3679827876008292680">Μετάβαση στην τελευταία καρτέλα στο παράθυρο</translation>
 <translation id="36813544980941320">Θα γίνει κοινοποίηση των δικτύων Wi-Fi μεταξύ του τηλεφώνου σας και της συσκευής <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Ιστότοποι</translation>
@@ -842,6 +849,7 @@
 <translation id="493076006037866439">Σμίκρυνση οθόνης</translation>
 <translation id="4936329710968938986">Όλοι, απενεργοποιημένο</translation>
 <translation id="4938176435186993759">Απόκρυψη όλων των προτάσεων</translation>
+<translation id="4943007472417128747">Το σημείο πρόσβασης Wi-Fi απενεργοποιήθηκε για να χρησιμοποιηθεί το Wi-Fi. Για να χρησιμοποιήσετε το σημείο πρόσβασης Wi-Fi, απενεργοποιήστε το Wi-Fi.</translation>
 <translation id="4945196315133970626">Απενεργοποίηση ειδοποιήσεων</translation>
 <translation id="4946376291507881335">Λήψη</translation>
 <translation id="495046168593986294">Κύλιση προς τα επάνω</translation>
@@ -1054,6 +1062,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Ενεργό</translation>
 <translation id="5920710855273935292">Έγινε σίγαση του μικροφώνου</translation>
+<translation id="5922962980596822074">Πλοηγηθείτε σε παράθυρα από το παράθυρο που χρησιμοποιήσατε πιο πρόσφατα</translation>
 <translation id="5924855612669061715">Σημείο πρόσβασης Wi-Fi ενεργό</translation>
 <translation id="5946788582095584774">Η λειτουργία <ph name="FEATURE_NAME" /> είναι ενεργοποιημένη.</translation>
 <translation id="5947494881799873997">Επαναφορά</translation>
@@ -1143,6 +1152,7 @@
 <translation id="6352082849089527770">Άγνωστα δίκτυα</translation>
 <translation id="6359587239691116345">Αποκτήστε τις πιο πρόσφατες λειτουργίες και βελτιώσεις ασφάλειας. Εάν απορρίψετε αυτήν την ενημέρωση, η συσκευή σας ενδέχεται να μην λειτουργεί σωστά πλέον και ίσως αντιμετωπίσετε ζητήματα ασφάλειας και απόδοσης.</translation>
 <translation id="6376931439017688372">Το Bluetooth είναι ενεργοποιημένο</translation>
+<translation id="6378515133128829137">Καρφίτσωμα παραθύρου στα δεξιά</translation>
 <translation id="6381109794406942707">Για να ξεκλειδώσετε τη συσκευή, εισαγάγετε το PIN σας.</translation>
 <translation id="638716340450135524">Ενεργοποίηση πρόσβασης στην κάμερα</translation>
 <translation id="639644700271529076">Το CAPS LOCK είναι απενεργοποιημένο</translation>
@@ -1162,6 +1172,7 @@
 <translation id="6459472438155181876">Επέκταση οθόνης σε <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Δεν είναι δυνατή η λήψη του αρχείου</translation>
 <translation id="6482559668224714696">Μεγεθυντικός φακός πλήρους οθόνης</translation>
+<translation id="6483727822843292440">Πλοηγηθείτε σε παράθυρα από το παράθυρο που χρησιμοποιείτε λιγότερο</translation>
 <translation id="6490471652906364588">Συσκευή USB-C (δεξιά θύρα)</translation>
 <translation id="6491071886865974820">Ο τομέας <ph name="MANAGER" /> απαιτεί να ενημερώσετε τη συσκευή <ph name="DEVICE_TYPE" /> πριν από την προθεσμία</translation>
 <translation id="649452524636452238">PIN έξυπνης κάρτας</translation>
@@ -1215,6 +1226,7 @@
 <translation id="6683022854667115063">Ακουστικά</translation>
 <translation id="6696025732084565524">Απαιτείται σημαντική ενημέρωση του αποσπώμενου πληκτρολογίου σας</translation>
 <translation id="6700713906295497288">Κουμπί μενού IME</translation>
+<translation id="6705577071209924099">Προσαρμογή φωτισμού</translation>
 <translation id="6707693040195709527">Η αλλαγή της συσκευής στην προηγούμενη έκδοση είναι εκπρόθεσμη</translation>
 <translation id="6710213216561001401">Προηγούμενο</translation>
 <translation id="6723839937902243910">Ενεργοποίηση</translation>
@@ -1382,6 +1394,7 @@
 Για να τερματίσετε τη λειτουργία της συσκευής, πατήστε παρατεταμένα το κουμπί λειτουργίας στη συσκευή σας ξανά.</translation>
 <translation id="7526573455193969409">Το δίκτυο ενδέχεται να παρακολουθείται</translation>
 <translation id="7536035074519304529">Διεύθυνση IP: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Ενημέρωση του αριστερού παραθύρου</translation>
 <translation id="7543399541175347147">Προς το παρόν, δεν υποστηρίζονται εφαρμογές Linux και παράθυρα για ανώνυμη περιήγηση. Οι άλλες εφαρμογές θα αποθηκευτούν.</translation>
 <translation id="7544300628205093162">Ο οπίσθιος φωτισμός πληκτρολογίου είναι ενεργός.</translation>
 <translation id="7548434653388805669">Ώρα για ύπνο</translation>
@@ -1462,6 +1475,7 @@
 <translation id="7893503627044934815">Δεν θέλω να εμφανίζεται αυτό το αρχείο</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Πατήσατε τη συντόμευση πληκτρολογίου για την περιστροφή οθόνης. Θέλετε να περιστρέψετε την οθόνη;</translation>
+<translation id="7901190436359881020">Εναλλαγή παραθύρων</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Αγγίξτε τον αισθητήρα δακτυλικών αποτυπωμάτων.</translation>
 <translation id="7904094684485781019">Ο διαχειριστής αυτού του λογαριασμού δεν έχει επιτρέψει τις πολλαπλές συνδέσεις.</translation>
@@ -1737,6 +1751,7 @@
 <translation id="9198992156681343238">Η ανάλυση της οθόνης <ph name="DISPLAY_NAME" /> άλλαξε σε <ph name="RESOLUTION" />. Κάντε κλικ στην Επιβεβαίωση για να κρατήσετε τις αλλαγές. Θα γίνει επαναφορά των προηγούμενων ρυθμίσεων σε <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Σύνδεση <ph name="NAME" /> σε αυτό το Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, Διαχειριζόμενο από τον διαχειριστή σας</translation>
+<translation id="9207682216934703221">Αυτό επιτρέπει στις εφαρμογές <ph name="APP_NAME" />, <ph name="APP2_NAME" /> και όλες τις εφαρμογές και τους ιστοτόπους με την άδεια τοποθεσίας και το ChromeOS να χρησιμοποιούν την τοποθεσία σε δίκτυα Wi-Fi και κινητής τηλεφωνίας.</translation>
 <translation id="9210037371811586452">Έξοδος από λειτουργία ενοποιημένης επιφάνειας εργασίας</translation>
 <translation id="9211490828691860325">Όλα τα γραφεία</translation>
 <translation id="9211681782751733685">Απομένουν <ph name="TIME_REMAINING" /> έως την πλήρη φόρτιση της μπαταρίας.</translation>

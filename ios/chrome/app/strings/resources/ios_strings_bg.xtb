@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">Можете да се върнете тук, за да отворите отново разделите, които сте затворили наскоро</translation>
 <translation id="1016495303386450659">Елементът е актуализиран</translation>
 <translation id="1035980983510608210">Ако затворите всички раздели, ще бъдат затворени и фиксираните.</translation>
+<translation id="1036348656032585052">Изключване</translation>
 <translation id="1044891598689252897">Сайтовете ще работят нормално</translation>
 <translation id="1049743911850919806">„Инкогнито“</translation>
 <translation id="105093091697134113">Следните профили използват пароли, които са разкрити при нарушение на сигурността на данните от трета страна или са въведени в измамнически сайт. Променете ги незабавно, за да защитите профилите си.</translation>
@@ -610,6 +611,7 @@
 <translation id="5118764316110575523">Изкл.</translation>
 <translation id="5119391094379141756">Изберете Chrome.</translation>
 <translation id="5121618895923301719">Вече проследявате този продукт. Тази страница е запазена в <ph name="BEGIN_LINK" />Мобилни отметки<ph name="END_LINK" />.</translation>
+<translation id="5126465625664020024">Вход и синхронизиране</translation>
 <translation id="5132942445612118989">Синхронизиране на паролите, историята ви и др. на всички устройства</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ненадеждна парола}other{{COUNT} ненадеждни пароли}}</translation>
 <translation id="5149188072385105201">Добавяне на парола...</translation>
@@ -747,6 +749,7 @@
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Затваряне</translation>
 <translation id="6042308850641462728">Още</translation>
+<translation id="6054613632208573261">Използване на Chrome по подразбиране</translation>
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Управлявайте материалите и активността си тук</translation>
 <translation id="6064824697233747382">Организацията ви изисква да изключите синхронизирането.</translation>

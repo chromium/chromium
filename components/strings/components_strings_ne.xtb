@@ -2338,7 +2338,6 @@
 <translation id="678982761784843853">संरक्षित सामग्रीका ID</translation>
 <translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
 <translation id="679355240208270552">डिफल्ट खोजलाई नीतिअनुसार असक्षम नपारिएको हुनाले बेवास्ता गरियो।</translation>
-<translation id="6794049111359324414"><ph name="APP_NAME" /> एपलाई WiFi नेटवर्कहरू सेटअप गर्ने अनुमति दिने हो?</translation>
 <translation id="6794951432696553238">अब उप्रान्त Windows Hello प्रयोग गरी आफ्ना कार्डहरू अझ छिटो पुष्टि गर्नुहोस्</translation>
 <translation id="6798460514924505775">Envelope Chou 3</translation>
 <translation id="6805030849054648206">Envelope B6/C4</translation>
@@ -3381,7 +3380,6 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" को स्थापना रद्द गरी हेर्नुहोस्‌&lt;/li&gt;
     &lt;li&gt;अर्को नेटवर्कमा जडान गरी हेर्नुहोस्&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">यो एपले नयाँ WiFi नेटवर्कहरू सेटअप गर्ने अनुमति मागिरहेको छ। सेटअप गर्ने प्रक्रिया पूरा भएपछि तपाईंको <ph name="DEVICE_TYPE" /> सहभागी WiFi नेटवर्कहरूमा स्वतः कनेक्ट हुने छ। <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Pay बाट</translation>
 </translationbundle>

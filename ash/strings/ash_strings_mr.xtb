@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C डिव्‍हाइस (पुढील बाजूचे पोर्ट)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> बदलून <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) केले गेले. बदल राखण्यासाठी निश्चित करा वर क्लिक करा. मागील सेटिंग्ज <ph name="TIMEOUT_SECONDS" /> मध्ये रिस्टोअर केली जातील.</translation>
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" Bluetooth डिव्हाइस जोडण्यासाठी परवानगी घेऊ इच्छिते. कृपया त्या डिव्हाइसवर हा पिन एंटर करा: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">हे <ph name="APP_NAME" /> आणि स्थान परवानगीसह सर्व अ‍ॅप्स व वेबसाइट आणि ChromeOS ला वाय-फाय व मोबाइल नेटवर्क स्थान वापरण्याची अनुमती देते.</translation>
 <translation id="1017556409696559990">Chrome मध्ये कोणताही मागील इतिहास नसल्यास सर्वात वरील विंडो लहान करा</translation>
 <translation id="1024364763893396229">तुमचे <ph name="NAME" /> सेव्ह करा</translation>
 <translation id="1032891413405719768">स्टायलस बॅटरी कमी आहे</translation>
@@ -191,6 +192,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">इथरनेट: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">स्थान ॲक्सेस सुरू करा</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> अनपिन केला गेला</translation>
 <translation id="1838895407229022812">रात्रीचा प्रकाश बंद आहे.</translation>
 <translation id="1854180393107901205">कास्ट करणे थांबवा</translation>
@@ -468,6 +470,7 @@
 <translation id="3255483164551725916">तुला काय करता येते?</translation>
 <translation id="3256109297135787951">तुमच्या शेल्फवरील आयटमवरील हायलाइट काढून टाका</translation>
 <translation id="3260969790895726815">स्पीचवर स्थानिकरीत्या प्रक्रिया केली जाते आणि डिक्टेशन ऑफलाइन काम करते, पण काही व्हॉइस कमांड काम करणार नाहीत.</translation>
+<translation id="3265032511221679826">अचूक स्थान अ‍ॅक्सेस सुरू करायचा आहे करा?</translation>
 <translation id="3269597722229482060">राइट क्लिक</translation>
 <translation id="3289364673986435196">पॉवर मेनू</translation>
 <translation id="3289544412142055976">Linux ॲप्सना सध्या सपोर्ट नाही</translation>
@@ -578,6 +581,7 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> व्यवस्थापित वापरकर्ता</translation>
 <translation id="3666266999138159418">तुमची फ्लोटिंग विंडो लपवण्यासाठी स्वाइप करा</translation>
 <translation id="367531336287639526">अ‍ॅड्रेस बारच्या डावीकडील पहिला आयकन निवडा</translation>
+<translation id="3677931086890821290">हे स्थान परवानगीसह सर्व अ‍ॅप्स व वेबसाइट आणि ChromeOS ला वाय-फाय व मोबाइल नेटवर्क स्थान वापरण्याची अनुमती देते.</translation>
 <translation id="3679827876008292680">विंडोमधील मागील टॅबवर जा</translation>
 <translation id="36813544980941320">तुमचा फोन आणि <ph name="DEVICE_NAME" /> यांच्या दरम्यान वाय-फाय नेटवर्क शेअर केली जातील</translation>
 <translation id="3694122362646626770">वेबसाइट</translation>
@@ -1744,6 +1748,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> रेझोल्यूशन <ph name="RESOLUTION" /> वर बदलले. बदल ठेवण्यासाठी खात्री करा वर क्लिक करा. मागील सेटिंग्ज <ph name="TIMEOUT_SECONDS" /> मध्ये रिस्टोअर केली जातील.</translation>
 <translation id="9201044636667689546"><ph name="NAME" /> या Chromebook शी कनेक्ट करा</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, तुमच्‍या ॲडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>
+<translation id="9207682216934703221">हे <ph name="APP_NAME" />, <ph name="APP2_NAME" /> आणि स्थान परवानगीसह सर्व अ‍ॅप्स व वेबसाइट आणि ChromeOS ला वाय-फाय व मोबाइल नेटवर्क स्थान वापरण्याची अनुमती देते.</translation>
 <translation id="9210037371811586452">एकीकृत डेस्कटॉप मोडमधून बाहेर पडत आहे</translation>
 <translation id="9211490828691860325">सर्व डेस्क</translation>
 <translation id="9211681782751733685">बॅटरी पूर्णपणे चार्ज होण्यासाठी <ph name="TIME_REMAINING" /> तास बाकी.</translation>

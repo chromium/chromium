@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">ここでは、最近閉じたタブをもう一度開くことができます</translation>
 <translation id="1016495303386450659">更新済みのアイテム</translation>
 <translation id="1035980983510608210">すべてのタブを閉じると、固定されたタブも閉じます。</translation>
+<translation id="1036348656032585052">オフにする</translation>
 <translation id="1044891598689252897">サイトは通常どおり動作します</translation>
 <translation id="1049743911850919806">シークレット モード</translation>
 <translation id="105093091697134113">次のアカウントでは、第三者のデータ侵害で漏洩したパスワード、または不正なサイトで入力されたパスワードが使用されています。アカウントのセキュリティ保護のため、今すぐ次のパスワードを変更してください。</translation>
@@ -610,6 +611,7 @@
 <translation id="5118764316110575523">オフ</translation>
 <translation id="5119391094379141756">[Chrome] を選択します</translation>
 <translation id="5121618895923301719">この商品はすでにトラッキングしています。このページは<ph name="BEGIN_LINK" />モバイルのブックマーク<ph name="END_LINK" />に保存されます。</translation>
+<translation id="5126465625664020024">ログインして同期</translation>
 <translation id="5132942445612118989">すべてのデバイスでパスワード、履歴、その他の設定を同期する</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{脆弱なパスワード: {COUNT} 件}other{脆弱なパスワード: {COUNT} 件}}</translation>
 <translation id="5149188072385105201">パスワードを追加...</translation>
@@ -747,6 +749,7 @@
 <translation id="6039429417015973673"><ph name="TITLE" />、<ph name="PUBLISHER_INFORMATION" />、<ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6042308850641462728">もっと見る</translation>
+<translation id="6054613632208573261">Chrome をデフォルトに設定</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">ここで記事やアクティビティを管理します</translation>
 <translation id="6064824697233747382">組織が同期をオフにするよう求めています。</translation>
@@ -1022,6 +1025,7 @@
 <translation id="7781011649027948662">ページを翻訳しますか？</translation>
 <translation id="7781069478569868053">新しいタブページ</translation>
 <translation id="7781829728241885113">昨日</translation>
+<translation id="7786246662347093005">{COUNT,plural, =1{1 日後}other{{COUNT} 日後}}</translation>
 <translation id="778855399387580014">新しい Chrome タブで検索を開始します。</translation>
 <translation id="7791543448312431591">追加</translation>
 <translation id="7807060072011926525">Google から提供</translation>

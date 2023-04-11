@@ -147,6 +147,7 @@
 <translation id="1651914502370159744">[履歴] ページを開く</translation>
 <translation id="1654477262762802994">音声検索を開始</translation>
 <translation id="1668469839109562275">組み込みの VPN</translation>
+<translation id="1675844249244994876">右側のウィンドウを更新する</translation>
 <translation id="1677472565718498478">残り <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> は接続されていません。</translation>
 <translation id="1677582821739292812">他の人があなたの画面を見ています</translation>
@@ -844,6 +845,7 @@
 <translation id="493076006037866439">画面を縮小する</translation>
 <translation id="4936329710968938986">全ユーザー対象（オフ）</translation>
 <translation id="4938176435186993759">すべての候補を非表示</translation>
+<translation id="4943007472417128747">Wi-Fi を使用するためアクセス ポイントがオフになりました。アクセス ポイントを使用するには、Wi-Fi をオフにしてください。</translation>
 <translation id="4945196315133970626">通知をオフにする</translation>
 <translation id="4946376291507881335">キャプチャ</translation>
 <translation id="495046168593986294">上にスクロール</translation>
@@ -1389,6 +1391,7 @@
 デバイスをシャットダウンするには、デバイスの電源ボタンをもう一度長押しします。</translation>
 <translation id="7526573455193969409">ネットワークが監視されている可能性があります</translation>
 <translation id="7536035074519304529">IP アドレス: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">左側のウィンドウを更新する</translation>
 <translation id="7543399541175347147">Linux アプリとシークレット ウィンドウは現在サポートされていません。他のアプリは保存されます。</translation>
 <translation id="7544300628205093162">キーボードのバックライトはオンです</translation>
 <translation id="7548434653388805669">おやすみの時間です</translation>
@@ -1469,6 +1472,7 @@
 <translation id="7893503627044934815">このファイルの表示を希望しない</translation>
 <translation id="7895348134893321514">トート</translation>
 <translation id="7897375687985782769">画面回転のキーボード ショートカットを押しました。画面を回転しますか？</translation>
+<translation id="7901190436359881020">ウィンドウを入れ替える</translation>
 <translation id="7901405293566323524">スマートフォン ハブ</translation>
 <translation id="7902625623987030061">指紋認証センサーをタッチ</translation>
 <translation id="7904094684485781019">このアカウントの管理者がマルチログインを許可していません。</translation>

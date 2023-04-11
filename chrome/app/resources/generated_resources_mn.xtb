@@ -3030,6 +3030,7 @@
 <translation id="3609277884604412258">Шуурхай хайлт</translation>
 <translation id="3610241585790874201">Таны төхөөрөмжид өгөгдөл хадгалахыг зөвшөөрөөгүй</translation>
 <translation id="3610369246614755442">Холбогчийн сэнсийг үйлчилгээнд хамруулах хэрэгтэй</translation>
+<translation id="3610961622607302617"><ph name="WEBSITE" />-н нууц үгийг өөрчлөх</translation>
 <translation id="361106536627977100">Флэш дата</translation>
 <translation id="3611655097742243705">Бусад аппыг олохын тулд Play Store-т зочилно уу</translation>
 <translation id="3611658447322220736">Саяхан хаасан сайтууд өгөгдөл илгээх болон хүлээн авахаа дуусгах боломжтой</translation>
@@ -5717,6 +5718,7 @@
 <translation id="6019851026059441029">Гайхалтай - HD</translation>
 <translation id="6020431688553761150">Танд энэ нөөцөд хандах зөвшөөрлийг сервер өгөөгүй.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> аппуудыг цаашид дэмжихээ больсон</translation>
+<translation id="6021969570711251331">Давхарласан</translation>
 <translation id="6022526133015258832">Дэлгэц дүүрэн нээх</translation>
 <translation id="6022659036123304283">Chrome-г хүссэнээрээ тохируулаарай</translation>
 <translation id="6023643151125006053"><ph name="SAML_DOMAIN" /> админ энэ төхөөрөмжийг (SN: <ph name="SERIAL_NUMBER" />) түгжсэн байна.</translation>
@@ -6048,6 +6050,7 @@
 <translation id="6318125393809743217">Бодлогын тохируулгатай policies.json файлыг багтаана.</translation>
 <translation id="6318407754858604988">Таталтыг эхлүүлсэн</translation>
 <translation id="6318944945640833942">Хэвлэгчийг илрүүлж чадсангүй. Хэвлэгчийн хаягийг дахин оруулна уу.</translation>
+<translation id="6320808462673705899">Таны хайлттай таарах ямар ч хавчуурга байхгүй байна.</translation>
 <translation id="6322370287306604163">Хурууны хээгээр түгжээг илүү хурдан тайлаарай</translation>
 <translation id="6322559670748154781">Энэ файлыг ихэвчлэн татдаггүй бөгөөд Дэвшилтэт хамгаалалтаас блоклосон байна</translation>
 <translation id="6324916366299863871">Товчлолыг засах</translation>

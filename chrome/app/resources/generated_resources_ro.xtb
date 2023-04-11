@@ -3020,6 +3020,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3609277884604412258">Căutare rapidă</translation>
 <translation id="3610241585790874201">Nu au permisiunea de a salva date pe dispozitiv</translation>
 <translation id="3610369246614755442">Ventilatorul dispozitivului de andocare necesită service</translation>
+<translation id="3610961622607302617">Schimbă parola pentru <ph name="WEBSITE" /></translation>
 <translation id="361106536627977100">Date Flash</translation>
 <translation id="3611655097742243705">Accesează Magazinul Play pentru a găsi mai multe aplicații</translation>
 <translation id="3611658447322220736">Site-urile închise recent pot să finalizeze trimiterea sau primirea datelor</translation>
@@ -5708,6 +5709,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6019851026059441029">Excelentă – HD</translation>
 <translation id="6020431688553761150">Serverul nu te-a autorizat să accesezi această resursă.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> aplicații nu mai sunt acceptate</translation>
+<translation id="6021969570711251331">Intercalat</translation>
 <translation id="6022526133015258832">Deschideți în ecran complet</translation>
 <translation id="6022659036123304283">Personalizează Chrome</translation>
 <translation id="6023643151125006053">Dispozitivul (NS: <ph name="SERIAL_NUMBER" />) a fost blocat de administratorul <ph name="SAML_DOMAIN" />.</translation>
@@ -6039,6 +6041,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6318125393809743217">Include un fișier policies.json cu configurațiile politicii.</translation>
 <translation id="6318407754858604988">A început descărcarea</translation>
 <translation id="6318944945640833942">Nu s-a detectat nicio imprimantă. Introdu din nou adresa imprimantei.</translation>
+<translation id="6320808462673705899">Nu există marcaje care să corespundă căutării tale.</translation>
 <translation id="6322370287306604163">Deblochează mai rapid folosind amprenta</translation>
 <translation id="6322559670748154781">Acest fișier nu este descărcat de obicei și a fost blocat de Protecția avansată</translation>
 <translation id="6324916366299863871">Editează o comandă rapidă</translation>

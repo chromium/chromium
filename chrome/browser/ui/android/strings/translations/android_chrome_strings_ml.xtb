@@ -65,7 +65,6 @@
 <translation id="1298077576058087471">60% വരെ ഡാറ്റ ലാഭിക്കൂ, ഇന്നത്തെ വാർത്തകൾ വായിക്കൂ</translation>
 <translation id="1303339473099049190">പാസ്‌വേഡ് കണ്ടെത്താനായില്ല. അക്ഷരത്തെറ്റ് പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - <ph name="DEVICE_NAME" />-ൽ നിന്ന് അയച്ചത്</translation>
-<translation id="1310482092992808703">ടാബുകൾ ഗ്രൂപ്പ് ചെയ്യൂ</translation>
 <translation id="1311657260431405215">ഈ QR കോഡ് ഒരു URL അല്ല: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
 <translation id="1320912611264252795">ബുക്ക്‌മാർക്ക് സംരക്ഷിക്കൽ ഫ്ലോ ഫോൾഡറുകൾ മുഴുവൻ ഉയരത്തിൽ തുറന്നു</translation>
@@ -108,6 +107,7 @@
 <translation id="1493287004536771723"><ph name="SITE_NAME" /> എന്നതിനെ നിങ്ങൾ പിന്തുടരുന്നു</translation>
 <translation id="1502010315804028179">നിങ്ങളുടെ പാസ്‌വേഡുകൾ മാനേജ് ചെയ്യാൻ, Google Play സേവനങ്ങൾ അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="1506061864768559482">തിരയൽ യന്ത്രം</translation>
+<translation id="1508960385613684700">സ്വകാര്യതാ ഗൈഡ് <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
 <translation id="1513352483775369820">ബുക്ക്‌മാർക്കുകളും വെബ് ചരിത്രവും</translation>
 <translation id="1513814250881909472">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള ടാബുകൾ ലഭിക്കാൻ സമന്വയിപ്പിക്കുക</translation>
 <translation id="1513858653616922153">പാസ്‌വേഡ് ഇല്ലാതാക്കുക</translation>
@@ -162,6 +162,7 @@
 <translation id="1910950723001426294">പങ്കിടൽ ഓപ്ഷനുകളുടെ ലിസ്റ്റ് അടച്ചു.</translation>
 <translation id="1919130412786645364">Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ അനുവദിക്കുക</translation>
 <translation id="1922362554271624559">നിർദ്ദേശിക്കുന്ന ഭാഷകൾ</translation>
+<translation id="1924255092154549435">ടാബ് വികസിപ്പിച്ചു</translation>
 <translation id="1925021887439448749">ഇഷ്‌ടാനുസൃത വെബ് വിലാസം നൽകുക</translation>
 <translation id="1928696683969751773">അപ്‌ഡേറ്റ് ചെയ്യുന്നു</translation>
 <translation id="19288952978244135">Chrome വീണ്ടും തുറക്കുക.</translation>
@@ -770,6 +771,7 @@
 <translation id="5161254044473106830">പേര് ആവശ്യമാണ്</translation>
 <translation id="5170568018924773124">ഫോള്‍ഡറില്‍ കാണിക്കുക</translation>
 <translation id="5171045022955879922">തിരയുക അല്ലെങ്കിൽ URL ടൈപ്പ് ചെയ്യുക</translation>
+<translation id="5174700554036517242">ടാബ് പ്രാഥമിക ഉയരത്തിലേക്ക് തിരിച്ചെത്തിയിരിക്കുന്നു</translation>
 <translation id="5184329579814168207">Chrome-ൽ തുറക്കുക</translation>
 <translation id="5191251636205085390">മൂന്നാം കക്ഷി കുക്കികൾക്ക് പകരം നിലവിൽ വരാൻ പോകുന്ന പുതിയ സാങ്കേതികവിദ്യകളെക്കുറിച്ച് അറിയുകയും അവയെ നിയന്ത്രിക്കുകയും ചെയ്യുക</translation>
 <translation id="5193988420012215838">നിങ്ങളുടെ ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി</translation>
@@ -1252,6 +1254,7 @@
 <translation id="7686086654630106285">സൈറ്റുകൾ നിർദ്ദേശിക്കുന്ന പരസ്യങ്ങളെ കുറിച്ചുള്ള കൂടുതൽ വിവരങ്ങൾ</translation>
 <translation id="768618399695552958">നിങ്ങൾ സന്ദർശിക്കുന്ന ചില പേജുകൾ മുൻകൂട്ടി ലോഡ് ചെയ്തവയാണ്. ഒരു Google സൈറ്റിൽ നിന്ന് ലിങ്ക് ചെയ്തിരിക്കുമ്പോൾ, Google സെർവറുകൾ മുഖേന പേജുകൾ മുൻകൂട്ടി ലോഡ് ചെയ്തേക്കാം.</translation>
 <translation id="7691043218961417207">പിന്തുടരാൻ ഉള്ളടക്കം അടുത്തറിയുക</translation>
+<translation id="7697383401610880082">വലിച്ചിടുന്നതിനുള്ള ഹാൻഡിൽ</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> ആപ്പിൽ ഇമെയിൽ സൃഷ്‌ടിക്കുക</translation>
 <translation id="7707922173985738739">മൊബൈൽ ഡാറ്റ ഉപയോഗിക്കുക</translation>
 <translation id="7709094866268987903">നിങ്ങൾ നീക്കം ചെയ്ത താൽപ്പര്യങ്ങൾ ഇവിടെ ദൃശ്യമാകും</translation>

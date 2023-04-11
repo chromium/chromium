@@ -4085,6 +4085,7 @@
 <translation id="4545759655004063573">十分な権限がないため保存できません。別の場所に保存してください。</translation>
 <translation id="4546308221697447294">Google Chrome で高速なブラウジング</translation>
 <translation id="4546345569117159016">右ボタン</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> が、この拡張機能の使用を求めています。</translation>
 <translation id="4546692474302123343">Google アシスタントの音声入力</translation>
 <translation id="4547659257713117923">他のデバイスからのタブはありません</translation>
 <translation id="4547672827276975204">自動的に設定する</translation>
@@ -5697,6 +5698,7 @@
 <translation id="6019851026059441029">大変良い - HD</translation>
 <translation id="6020431688553761150">このリソースへのアクセスがサーバーで認証されませんでした。</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> 件のアプリが現在サポートされていません</translation>
+<translation id="6021969570711251331">インターリーブ</translation>
 <translation id="6022526133015258832">全画面表示</translation>
 <translation id="6022659036123304283">Chrome を独自にカスタマイズ</translation>
 <translation id="6023643151125006053">このデバイス（SN: <ph name="SERIAL_NUMBER" />）は <ph name="SAML_DOMAIN" /> の管理者によってロックされています。</translation>

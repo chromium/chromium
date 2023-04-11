@@ -2341,7 +2341,6 @@
 <translation id="678982761784843853">संरक्षित Content ID</translation>
 <translation id="6790428901817661496">प्ले करा</translation>
 <translation id="679355240208270552">दुर्लक्ष केले कारण डीफॉल्ट शोध धोरणाने सुरू केलेले नाही</translation>
-<translation id="6794049111359324414"><ph name="APP_NAME" /> अ‍ॅपला वायफाय नेटवर्क सेट करण्याची अनुमती द्यायची आहे का?</translation>
 <translation id="6794951432696553238">यापुढे Windows Hello वापरून तुमच्या कार्डांची जलद खात्री करा</translation>
 <translation id="6798460514924505775">एन्व्हलप चोउ ३</translation>
 <translation id="6805030849054648206">एन्व्हलप बी६/सी४</translation>
@@ -3384,7 +3383,6 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" अनइंस्टॉल किंवा बंद करून पहा&lt;/li&gt;
     &lt;li&gt;दुसर्‍या वाय-फाय नेटवर्कशी कनेक्ट करून पहा&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">हे ॲप नवीन वायफाय नेटवर्क सेट करण्यासाठी परवानगीकरिता विनंती करत आहे. सेट केल्यानंतर, तुमचे <ph name="DEVICE_TYPE" /> सहभागी वायफाय नेटवर्कशी आपोआप कनेक्ट होईल. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Pay वरून</translation>
 </translationbundle>

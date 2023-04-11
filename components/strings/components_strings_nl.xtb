@@ -2335,7 +2335,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="678982761784843853">ID's van beschermde content</translation>
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="679355240208270552">Genegeerd omdat de standaard zoekoptie is uitgezet door het beleid.</translation>
-<translation id="6794049111359324414">Toestaan dat de <ph name="APP_NAME" />-app wifi-netwerken instelt?</translation>
 <translation id="6794951432696553238">Bevestig je kaarten sneller door vanaf nu Windows Hello te gebruiken</translation>
 <translation id="6798460514924505775">Envelop Chou 3</translation>
 <translation id="6805030849054648206">Envelop B6/C4</translation>
@@ -3378,7 +3377,6 @@ Aanvullende informatie:
     &lt;li&gt;Probeer <ph name="SOFTWARE_NAME" /> te verwijderen of uit te zetten&lt;/li&gt;
     &lt;li&gt;Maak verbinding met een ander netwerk&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">Deze app vraagt rechten om nieuwe wifi-netwerken in te stellen. Na het instellen maakt je <ph name="DEVICE_TYPE" /> automatisch verbinding met deelnemende wifi-netwerken. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Van Google Pay</translation>
 </translationbundle>

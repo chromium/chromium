@@ -730,6 +730,7 @@
 <translation id="2718207025093645426">Хяналттай хэрэглэгч эсвэл төхөөрөмжид ачаалсан бодлого байхгүй байна.</translation>
 <translation id="2721148159707890343">Хүсэлт амжилттай боллоо.</translation>
 <translation id="2723669454293168317">Chrome-н тохиргоонд аюулгүй байдлын шалгалтыг ажиллуулна уу</translation>
+<translation id="2725492561136085792">Энэ үйлдлийг идэвхжүүлэхийн тулд Enter дарна уу.</translation>
 <translation id="2726001110728089263">Хажуугийн тавиур</translation>
 <translation id="2728127805433021124">Серверийн гэрчилгээнд сул гарын үсгийн алгоритмаар нэвтэрч байна.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Холболтын оношилгоог ажиллуулж байна<ph name="END_LINK" /></translation>
@@ -826,6 +827,7 @@
 <translation id="299990983510665749">Комби суудлын машин</translation>
 <translation id="3002501248619246229">Оролтын цаасны медиаг хянах</translation>
 <translation id="3005723025932146533">Хадгалагдсан хуулбарыг харуулах</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, боломжтой үйлдлүүдийг харахын тулд Tab, дараа нь сонгосон үйдлийг гүйцэтгэхийн тулд Enter дарна уу.</translation>
 <translation id="3013291976881901233">MIDI төхөөрөмж</translation>
 <translation id="301521992641321250">Автоматаар блок хийсэн</translation>
 <translation id="3016780570757425217">Байршлаа мэдэж аваарай</translation>
@@ -2339,7 +2341,6 @@
 <translation id="678982761784843853">Хамгаалагдсан контентын ID</translation>
 <translation id="6790428901817661496">Тоглуулах</translation>
 <translation id="679355240208270552">Өгөгдмөл хайлтыг удирдамжаар идэвхжүүлээгүй тул хэрэгсэхгүй орхисон.</translation>
-<translation id="6794049111359324414"><ph name="APP_NAME" /> аппад Wi-Fi сүлжээ тохируулахыг зөвшөөрөх үү?</translation>
 <translation id="6794951432696553238">Одооноос Windows Hello ашиглан картуудаа илүү хурдан баталгаажуулаарай</translation>
 <translation id="6798460514924505775">Чоу дугтуй 3</translation>
 <translation id="6805030849054648206">Дугтуй B6/C4</translation>
@@ -3382,7 +3383,6 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />"-г устгах эсвэл идэвхгүй болгоно уу&lt;/li&gt;
     &lt;li&gt;Өөр сүлжээнд холбогдоно уу&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">Энэ апп шинэ Wi-Fi сүлжээ тохируулах зөвшөөрөл хүсэж байна. Тохируулсны дараа таны <ph name="DEVICE_TYPE" /> оролцож буй Wi-Fi сүлжээнд автоматаар холбогдоно. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Pay-с</translation>
 </translationbundle>

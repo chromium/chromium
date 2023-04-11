@@ -1072,6 +1072,7 @@
 <translation id="5976112937189445008">㩒 Enter 掣就可以錄視窗畫面</translation>
 <translation id="5978382165065462689">透過「遠端協助」共用螢幕控制權。</translation>
 <translation id="5980301590375426705">結束訪客工作階段</translation>
+<translation id="5983567367406220847">由於閒置過久，無線基地台已關閉。</translation>
 <translation id="598407983968395253">使用範本</translation>
 <translation id="598882571027504733">如要下載更新，請連接鍵盤並重新啟動 Chromebook。</translation>
 <translation id="6002179289567220515">您已使用實體開關關閉 1 部相機。您亦可關閉所有相機的存取權。</translation>
@@ -1373,6 +1374,7 @@
 <translation id="7452560014878697800">某個應用程式正在使用攝錄機</translation>
 <translation id="7453330308669753048">移除咗搜尋記錄結果</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | 還有 <ph name="TIME" />便完成充電</translation>
+<translation id="7459485586006128091">由於發生內部錯誤，無線基地台已關閉。請過幾分鐘再重試連線。</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746232733191930409">螢幕錄影模式</translation>
 <translation id="7466449121337984263">請輕觸感應器</translation>
@@ -1446,6 +1448,7 @@
 <translation id="776344839111254542">按一下即可查看更新詳情</translation>
 <translation id="7768784765476638775">選取以朗讀</translation>
 <translation id="7769299611924763557">GIF 很快就能使用</translation>
+<translation id="7773536009433685931">改為開啟 Wi-Fi</translation>
 <translation id="7780094051999721182">捷徑</translation>
 <translation id="7780159184141939021">旋轉螢幕</translation>
 <translation id="7796735576426975947">已隱藏新通知</translation>

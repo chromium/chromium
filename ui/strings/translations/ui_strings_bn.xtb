@@ -201,6 +201,7 @@
 <translation id="8393700583063109961">বার্তা পাঠান</translation>
 <translation id="8394908167088220973">মিডিয়া প্লে করুন/বিরতি</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{১ বছর}one{# বছর}other{# বছর}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ফাইল (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> কেবি/সেকেণ্ড</translation>
 <translation id="8725488761726303204">আরও <ph name="NUMBER" />টি</translation>

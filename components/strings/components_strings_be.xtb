@@ -730,6 +730,7 @@
 <translation id="2718207025093645426">Для прылады або карыстальніка пад кіраваннем не загружана палітыка.</translation>
 <translation id="2721148159707890343">Запыт выкананы</translation>
 <translation id="2723669454293168317">Запусціць праверку бяспекі ў наладах Chrome</translation>
+<translation id="2725492561136085792">Каб актываваць гэта дзеянне, націсніце Enter.</translation>
 <translation id="2726001110728089263">Бакавы латок</translation>
 <translation id="2728127805433021124">Сертыфікат сервера падпісаны з выкарыстаннем ненадзейнага алгарытму.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Запусціць дыягностыку падключэння<ph name="END_LINK" />.</translation>
@@ -826,6 +827,7 @@
 <translation id="299990983510665749">Аўтамабілі з кузавам "хэтчбэк"</translation>
 <translation id="3002501248619246229">Праверыць носьбіт уваходнага латка</translation>
 <translation id="3005723025932146533">Паказаць захаваную копію</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, націсніце Tab, каб праглядзець даступныя дзеянні, а затым Enter, каб выканаць выбранае дзеянне.</translation>
 <translation id="3013291976881901233">Прылады MIDI</translation>
 <translation id="301521992641321250">Заблакіравана аўтаматычна</translation>
 <translation id="3016780570757425217">Ведаць ваша месцазнаходжанне</translation>
@@ -1984,6 +1986,7 @@
 <translation id="5872692522325383488">Нумар IBAN захаваны</translation>
 <translation id="5873013647450402046">Ваш банк хоча пацвердзіць, што гэта вы.</translation>
 <translation id="5877831137320480913">Прыгажосць і фітнес</translation>
+<translation id="5879989559903563723">Не дазволена ў гасцявым рэжыме</translation>
 <translation id="5884465125445718607">Канверт Chinese № 6</translation>
 <translation id="5887400589839399685">Картка захавана</translation>
 <translation id="5887687176710214216">Апошняе наведванне: учора</translation>
@@ -2337,7 +2340,6 @@
 <translation id="678982761784843853">Ідэнтыфікатары абароненага змесціва</translation>
 <translation id="6790428901817661496">Прайграць</translation>
 <translation id="679355240208270552">Праігнаравана, бо згодна з палітыкай стандартная служба пошуку не ўключана.</translation>
-<translation id="6794049111359324414">Дазволіць праграме "<ph name="APP_NAME" />" наладжваць сеткі Wi-Fi?</translation>
 <translation id="6794951432696553238">Калі выкарыстоўваць Windows Hello, пацвярджаць карткі можна будзе хутчэй</translation>
 <translation id="6798460514924505775">Канверт Chou 3</translation>
 <translation id="6805030849054648206">Канверт B6/C4</translation>
@@ -3226,6 +3228,7 @@
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Закон і ўрад</translation>
 <translation id="8957210676456822347">Аўтарызацыя праз партал узаемадзеяння</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_COUNT" /> з <ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Перайсці ў налады сайта</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Рэкамендацыі:<ph name="MARKUP_2" />Праверце, ці ёсць у вас падключэнне для перадачы даных.<ph name="MARKUP_3" />Перазагрузіце старонку пазней.<ph name="MARKUP_4" />Праверце ўведзены адрас.<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Захаваць картку</translation>
@@ -3379,7 +3382,6 @@
     &lt;li&gt;Паспрабуйце выдаліць або выключыць праграму "<ph name="SOFTWARE_NAME" />".&lt;/li&gt;
     &lt;li&gt;Паспрабуйце падключыцца да іншай сеткі.&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">Гэта праграма запытвае дазвол наладжваць новыя сеткі Wi-Fi. Пасля наладжвання ваша прылада (<ph name="DEVICE_TYPE" />) зможа аўтаматычна падключацца да адпаведных сетак. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS В1</translation>
 <translation id="997986563973421916">З Google Pay</translation>
 </translationbundle>

@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">يمكنك الرجوع إلى هذه الصفحة لإعادة فتح علامات التبويب التي أغلقتها مؤخرًا.</translation>
 <translation id="1016495303386450659">تم تحديث العنصر</translation>
 <translation id="1035980983510608210">سيؤدي إغلاق جميع علامات التبويب إلى إغلاق علامات التبويب المثبّتة أيضًا.</translation>
+<translation id="1036348656032585052">إيقاف</translation>
 <translation id="1044891598689252897">ستعمل المواقع الإلكترونية بشكلٍ طبيعي.</translation>
 <translation id="1049743911850919806">التصفح المتخفي</translation>
 <translation id="105093091697134113">تستخدِم الحسابات التالية كلمات مرور تم كشفها إمّا من خلال عملية اختراق للبيانات من قِبل جهة خارجية أو بعد إدخالها على موقع إلكتروني مريب. يجب تغيير كلمات المرور هذه فورًا للحفاظ على أمان حساباتك.</translation>
@@ -612,6 +613,7 @@
 <translation id="5118764316110575523">غير مفعَّل</translation>
 <translation id="5119391094379141756">‏اختَر Chrome.</translation>
 <translation id="5121618895923301719">يتم تتبُّع هذا المنتج حاليًا. تم حفظ هذه الصفحة في قائمة <ph name="BEGIN_LINK" />الإشارات المرجعية على الجوّال<ph name="END_LINK" />.</translation>
+<translation id="5126465625664020024">تسجيل الدخول والمزامنة</translation>
 <translation id="5132942445612118989">مزامنة كلمات المرور والسجلّ والمزيد على جميع الأجهزة</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{كلمة مرور واحدة ضعيفة ({COUNT})}zero{‫{COUNT} كلمة مرور ضعيفة}two{كلِمتا مرور ضعيفتان ({COUNT})}few{‫{COUNT} كلمات مرور ضعيفة}many{‫{COUNT} كلمة مرور ضعيفة}other{‫{COUNT} كلمة مرور ضعيفة}}</translation>
 <translation id="5149188072385105201">إضافة كلمة مرور…</translation>
@@ -749,6 +751,7 @@
 <translation id="6039429417015973673"><ph name="TITLE" />، <ph name="PUBLISHER_INFORMATION" />، <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="6042308850641462728">عرض المزيد</translation>
+<translation id="6054613632208573261">‏استخدام Chrome بشكلٍ تلقائي</translation>
 <translation id="605721222689873409">العام</translation>
 <translation id="6059830886158432458">يمكنك التحكُّم بقصصك ونشاطك هنا.</translation>
 <translation id="6064824697233747382">تفرض عليك مؤسستك إيقاف المزامنة.</translation>
@@ -1088,6 +1091,7 @@
 <translation id="8136856065410661948">‏سيتم استخدام هذه البيانات لإنشاء الأحداث في Apple Calendar (تطبيق "التقويم" من Apple) من Chrome و"عدسة Google".</translation>
 <translation id="8156478151976189188">ميزة "مزامنة كلمات المرور" لا تعمل حاليًا</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> من الحسابات</translation>
+<translation id="8159358225423560600">الآن</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />أجهزتك<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">ترجمة الصفحة</translation>
@@ -1118,6 +1122,7 @@
 <translation id="8393889347136007944">علامات التبويب التي لم يتم استخدامها لمدة <ph name="THRESHOLD" /> يوم</translation>
 <translation id="8407669440184693619">لم يتم العثور على كلمات مرور لهذا الموقع الإلكتروني</translation>
 <translation id="842017693807136194">تم تسجيل الدخول باستخدام</translation>
+<translation id="8423121072346537366">الآن</translation>
 <translation id="8425693829365242963">كلمات مرورك فريدة من نوعها</translation>
 <translation id="8428045167754449968">المدينة/البلدة</translation>
 <translation id="8428213095426709021">الإعدادات</translation>

@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C ডিভাইস (সামনের পোর্ট)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" />-এর রেজোলিউশন পরিবর্তন করে <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> হার্জ) করা হয়েছে। পরিবর্তিত সেটিংস রেখে দিতে 'কনফার্ম করুন' বিকল্পে ক্লিক করুন। <ph name="TIMEOUT_SECONDS" />-এর মধ্যে পুরনো সেটিংসে ফিরিয়ে নিয়ে যাওয়া হবে।</translation>
 <translation id="1013923882670373915">ব্লুটুথ ডিভাইস "<ph name="DEVICE_NAME" />" যুক্ত করার অনুমতি চাইছে। ডিভাইসটিতে এই পিন কোড দিন: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Chrome-এ আগের কোনও ইতিহাস না থাকলে উপরের উইন্ডোটি মিনিমাইজ করুন</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> সেভ করুন</translation>
 <translation id="1032891413405719768">স্টাইলাসের চার্জ কমে গেছে</translation>
 <translation id="1036073649888683237">সেটিংসে গিয়ে বিজ্ঞপ্তি ম্যানেজ করুন</translation>
@@ -343,6 +344,7 @@
 <translation id="2620436844016719705">সিস্টেম</translation>
 <translation id="2621713457727696555">সুরক্ষিত</translation>
 <translation id="263399434338050016">"সবকটি বেছে নিন"</translation>
+<translation id="2644422758626431000">বাঁদিকে উইন্ডো পিন করুন</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022"><ph name="TOTAL_MEMORY" />-এর মধ্যে <ph name="USED_MEMORY" /> উপলভ্য</translation>
 <translation id="2653019840645008922">উইন্ডো ক্যাপচার</translation>
@@ -1054,6 +1056,7 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">চালু</translation>
 <translation id="5920710855273935292">মাইক্রোফোন মিউট করা আছে।</translation>
+<translation id="5922962980596822074">অতি সম্প্রতি ব্যবহৃত উইন্ডো থেকে উইন্ডো ব্রাউজ করুন</translation>
 <translation id="5924855612669061715">হটস্পট চালু আছে</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> চালু আছে।</translation>
 <translation id="5947494881799873997">ফেরান</translation>
@@ -1143,6 +1146,7 @@
 <translation id="6352082849089527770">অজানা নেটওয়ার্ক</translation>
 <translation id="6359587239691116345">লেটেস্ট ফিচার এবং নিরাপত্তা সংক্রান্ত উন্নতি পান। আপনি এই আপডেটটি বাতিল করলে, আপনার ডিভাইস আর সঠিকভাবে কাজ নাও করতে পারে এবং আপনি নিরাপত্তা এবং পারফর্ম্যান্স সংক্রান্ত সমস্যার সম্মুখীন হতে পারেন।</translation>
 <translation id="6376931439017688372">ব্লুটুথ চালু আছে</translation>
+<translation id="6378515133128829137">ডানদিকে উইন্ডোটি পিন করুন</translation>
 <translation id="6381109794406942707">ডিভাইস আনলক করতে, আপনার পিন এন্টার করুন।</translation>
 <translation id="638716340450135524">ক্যামেরার অ্যাক্সেস চালু করুন</translation>
 <translation id="639644700271529076">CAPS LOCK বন্ধ আছে</translation>
@@ -1162,6 +1166,7 @@
 <translation id="6459472438155181876">স্ক্রিন <ph name="DISPLAY_NAME" /> তে প্রসারিত হচ্ছে</translation>
 <translation id="6477681113376365978">ফাইল ডাউনলোড করা যাচ্ছে না</translation>
 <translation id="6482559668224714696">ফুল-স্ক্রিন ম্যাগনিফায়ার</translation>
+<translation id="6483727822843292440">সবচেয়ে কম ব্যবহৃত উইন্ডো থেকে উইন্ডো ব্রাউজ করুন</translation>
 <translation id="6490471652906364588">USB-C ডিভাইস (ডান পোর্ট)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> আপনাকে ডেডলাইনের আগে <ph name="DEVICE_TYPE" /> আপডেট করতে বলছে</translation>
 <translation id="649452524636452238">স্মার্ট কার্ড পিন</translation>
@@ -1215,6 +1220,7 @@
 <translation id="6683022854667115063">হেডফোন</translation>
 <translation id="6696025732084565524">আলাদা করা যায় এমন কীবোর্ডের একটি জরুরি আপডেট প্রয়োজন</translation>
 <translation id="6700713906295497288">IME মেনু বোতাম</translation>
+<translation id="6705577071209924099">লাইট অ্যাডজাস্ট করুন</translation>
 <translation id="6707693040195709527">ডিভাইস আগের ভার্সনে ফিরিয়ে নিয়ে যাওয়ার ডেডলাইন পেরিয়ে গেছে</translation>
 <translation id="6710213216561001401">আগের</translation>
 <translation id="6723839937902243910">পাওয়ার</translation>

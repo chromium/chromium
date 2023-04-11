@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C-tæki (tengi að framan)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> var breytt í <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Veldu „Staðfesta“ til að halda breytingunum. Fyrri stillingar verða endurheimtar eftir <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth-tækið „<ph name="DEVICE_NAME" />“ óskar eftir heimild til pörunar. Sláðu þetta PIN-númer inn í því tæki: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">Minnka efsta gluggann þegar enginn ferill er til staðar í Chrome</translation>
 <translation id="1024364763893396229">Vistaðu <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Lítil hleðsla á pennarafhlöðu</translation>
 <translation id="1036073649888683237">Opnaðu stillingar til að stjórna tilkynningum</translation>
@@ -343,6 +344,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2620436844016719705">Kerfi</translation>
 <translation id="2621713457727696555">Læst</translation>
 <translation id="263399434338050016">„Velja allt“</translation>
+<translation id="2644422758626431000">Festa glugga til vinstri</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022"><ph name="USED_MEMORY" /> af <ph name="TOTAL_MEMORY" /> laus</translation>
 <translation id="2653019840645008922">Myndataka glugga</translation>
@@ -1054,6 +1056,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Kveikt</translation>
 <translation id="5920710855273935292">Slökkt er á hljóðnemanum.</translation>
+<translation id="5922962980596822074">Fara í gegnum glugga frá síðasta notaða glugga</translation>
 <translation id="5924855612669061715">Kveikt er á heitum reit</translation>
 <translation id="5946788582095584774">Kveikt er á <ph name="FEATURE_NAME" /></translation>
 <translation id="5947494881799873997">Afturkalla</translation>
@@ -1143,6 +1146,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="6352082849089527770">Óþekkt netkerfi</translation>
 <translation id="6359587239691116345">Fáðu nýjustu eiginleikana og öryggisúrbætur. Ef þú hafnar þessari uppfærslu er hugsanlegt að tækið þitt virki ekki lengur rétt og vandamál varðandi öryggi og afköst gætu komið upp.</translation>
 <translation id="6376931439017688372">Kveikt er á Bluetooth</translation>
+<translation id="6378515133128829137">Festa glugga til hægri</translation>
 <translation id="6381109794406942707">Til að opna tækið skaltu slá inn PIN-númerið þitt.</translation>
 <translation id="638716340450135524">Kveikja á aðgangi að myndavél</translation>
 <translation id="639644700271529076">Slökkt er á HÁSTAFALÁS</translation>
@@ -1162,6 +1166,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="6459472438155181876">Stækkar skjá yfir á <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Ekki tókst að sækja skrá</translation>
 <translation id="6482559668224714696">Stækkunargler á öllum skjánum</translation>
+<translation id="6483727822843292440">Fara í gegnum glugga frá minnst notaða glugganum</translation>
 <translation id="6490471652906364588">USB-C-tæki (hægra tengi)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> krefst þess að þú uppfærir <ph name="DEVICE_TYPE" /> áður en fresturinn rennur út</translation>
 <translation id="649452524636452238">PIN-númer snjallkorts</translation>

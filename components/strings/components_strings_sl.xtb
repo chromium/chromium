@@ -2342,7 +2342,6 @@ Poleg tega lahko v nastavitvah Chroma kadar koli blokirate, da bi spletno mesto 
 <translation id="678982761784843853">ID-ji zaščitene vsebine</translation>
 <translation id="6790428901817661496">Predvajanje</translation>
 <translation id="679355240208270552">Prezrto, ker pravilnik ne omogoča privzetega iskanja.</translation>
-<translation id="6794049111359324414">Želite aplikaciji <ph name="APP_NAME" /> dovoliti, da nastavi omrežja Wi-Fi?</translation>
 <translation id="6794951432696553238">Od zdaj naprej lahko uporabljate Windows Hello in kartice potrjujete hitreje</translation>
 <translation id="6798460514924505775">Kuverta Chou 3</translation>
 <translation id="6805030849054648206">Kuverta B6/C4</translation>
@@ -3385,7 +3384,6 @@ Dodatne podrobnosti:
     &lt;li&gt;Poskusite odstraniti »<ph name="SOFTWARE_NAME" />«&lt;/li&gt;
     &lt;li&gt;Poskusite se povezati z drugim omrežjem&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">Ta aplikacija zahteva dovoljenje za nastavitev novih omrežij Wi-Fi. Po nastavitvi se bo naprava <ph name="DEVICE_TYPE" /> samodejno povezala z vključenimi omrežji Wi-Fi. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Iz Googla Pay</translation>
 </translationbundle>

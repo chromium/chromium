@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C ierīce (priekšējā pieslēgvieta)</translation>
 <translation id="1013598600051641573">Displeja “<ph name="DISPLAY_NAME" />” izšķirtspēja tika mainīta uz <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Lai saglabātu izmaiņas, noklikšķiniet uz “Apstiprināt”. Iepriekšējie iestatījumi tiks atjaunoti pēc šāda laika: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth ierīce “<ph name="DEVICE_NAME" />” vēlas saņemt atļauju, lai izveidotu savienojumu pārī. Lūdzu, ierīcē ievadiet šo PIN: <ph name="PINCODE" />.</translation>
+<translation id="1017556409696559990">Minimizēt augšējo logu, ja pārlūkprogrammā Chrome nav izmaiņu vēstures</translation>
 <translation id="1024364763893396229">Ierīces (<ph name="NAME" />) saglabāšana</translation>
 <translation id="1032891413405719768">Skārienekrāna pildspalvas akumulatora līmenis ir zems</translation>
 <translation id="1036073649888683237">Lai pārvaldītu paziņojumus, pārejiet uz lietotni Iestatījumi.</translation>
@@ -343,6 +344,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2620436844016719705">Sistēma</translation>
 <translation id="2621713457727696555">Aizsargāts</translation>
 <translation id="263399434338050016">“Select all” (Atlasīt visu)</translation>
+<translation id="2644422758626431000">Piespraust logu kreisajā malā</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2647092942972307022">Aizņemtā vieta: <ph name="USED_MEMORY" /> no <ph name="TOTAL_MEMORY" /></translation>
 <translation id="2653019840645008922">Loga uzņemšana</translation>
@@ -1054,6 +1056,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Iesl.</translation>
 <translation id="5920710855273935292">Mikrofons ir izslēgts.</translation>
+<translation id="5922962980596822074">Rādīt logus, sākot ar pēdējo izmantoto logu</translation>
 <translation id="5924855612669061715">Tīklājs ir ieslēgts</translation>
 <translation id="5946788582095584774">Funkcija <ph name="FEATURE_NAME" /> ir ieslēgta.</translation>
 <translation id="5947494881799873997">Atjaunot</translation>
@@ -1143,6 +1146,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="6352082849089527770">Nezināmi tīkli</translation>
 <translation id="6359587239691116345">Iegūstiet jaunākās funkcijas un drošības uzlabojumus. Ja noraidīsiet šo atjauninājumu, iespējams, jūsu ierīce vairs nedarbosies pareizi un jūs saskarsieties ar drošības un veiktspējas problēmām.</translation>
 <translation id="6376931439017688372">Bluetooth ir ieslēgts</translation>
+<translation id="6378515133128829137">Piespraust logu labajā malā</translation>
 <translation id="6381109794406942707">Lai atbloķētu ierīci, ievadiet PIN.</translation>
 <translation id="638716340450135524">Ieslēgt piekļuvi kamerai</translation>
 <translation id="639644700271529076">Funkcija CAPS LOCK ir izslēgta.</translation>
@@ -1162,6 +1166,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="6459472438155181876">Paplašina ekrānu uz: <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Nevar lejupielādēt failu</translation>
 <translation id="6482559668224714696">Pilnekrāna lupa</translation>
+<translation id="6483727822843292440">Rādīt logus, sākot ar vismazāk izmantoto logu</translation>
 <translation id="6490471652906364588">USB-C ierīce (pieslēgvieta pa labi)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> pieprasa, lai jūs atjauninātu ierīci <ph name="DEVICE_TYPE" /> pirms noteiktā termiņa</translation>
 <translation id="649452524636452238">Viedkartes PIN</translation>
@@ -1215,6 +1220,7 @@ Jauna instalācija</translation>
 <translation id="6683022854667115063">Austiņas</translation>
 <translation id="6696025732084565524">Noņemamajai tastatūrai nepieciešams svarīgs atjauninājums</translation>
 <translation id="6700713906295497288">IME izvēlnes poga</translation>
+<translation id="6705577071209924099">Pielāgot apgaismojumu</translation>
 <translation id="6707693040195709527">Noteiktais termiņš iepriekšējās versijas atjaunošanai ierīcē jau ir pagājis</translation>
 <translation id="6710213216561001401">Iepriekšējais</translation>
 <translation id="6723839937902243910">Strāvas padeve</translation>

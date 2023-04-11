@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">Appareil USB de type C (port situé sur l'avant de l'appareil)</translation>
 <translation id="1013598600051641573">La résolution de "<ph name="DISPLAY_NAME" />" est passée à <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Cliquez sur "Confirmer" pour valider cette modification. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">L'appareil Bluetooth "<ph name="DEVICE_NAME" />" demande l'autorisation de s'associer. Veuillez saisir le code suivant sur l'appareil : <ph name="PINCODE" />.</translation>
+<translation id="1017556409696559990">Réduire la fenêtre supérieure en l'absence d'historique dans Chrome</translation>
 <translation id="1024364763893396229">Enregistrez "<ph name="NAME" />"</translation>
 <translation id="1032891413405719768">Le niveau de charge des piles du stylet est faible</translation>
 <translation id="1036073649888683237">Pour gérer les notifications, accédez aux paramètres</translation>
@@ -343,6 +344,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2620436844016719705">Système</translation>
 <translation id="2621713457727696555">Sécurisé</translation>
 <translation id="263399434338050016">"Tout sélectionner"</translation>
+<translation id="2644422758626431000">Épingler la fenêtre à gauche</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022"><ph name="USED_MEMORY" /> sur <ph name="TOTAL_MEMORY" /> disponibles</translation>
 <translation id="2653019840645008922">Capture de fenêtre</translation>
@@ -1053,6 +1055,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activé</translation>
 <translation id="5920710855273935292">Le son du micro est coupé.</translation>
+<translation id="5922962980596822074">Parcourir les fenêtres à partir de la dernière utilisée</translation>
 <translation id="5924855612669061715">Le point d'accès est activé</translation>
 <translation id="5946788582095584774">La fonctionnalité <ph name="FEATURE_NAME" /> est activée.</translation>
 <translation id="5947494881799873997">Rétablir</translation>
@@ -1142,6 +1145,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6352082849089527770">Réseaux inconnus</translation>
 <translation id="6359587239691116345">Bénéficiez des dernières fonctionnalités et améliorations de sécurité. Si vous refusez cette mise à jour, votre appareil risque de ne plus fonctionner correctement, et vous risquez de rencontrer des problèmes de sécurité et de performances.</translation>
 <translation id="6376931439017688372">Bluetooth activé</translation>
+<translation id="6378515133128829137">Épingler la fenêtre à droite</translation>
 <translation id="6381109794406942707">Pour déverrouiller l'appareil, saisissez votre code.</translation>
 <translation id="638716340450135524">Activer l'accès à l'appareil photo</translation>
 <translation id="639644700271529076">La touche de verrouillage des majuscules est désactivée.</translation>
@@ -1161,6 +1165,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6459472438155181876">Extension de l'écran pour <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Impossible de télécharger le fichier</translation>
 <translation id="6482559668224714696">Loupe plein écran</translation>
+<translation id="6483727822843292440">Parcourir les fenêtres à partir de celle la moins utilisée</translation>
 <translation id="6490471652906364588">Appareil USB de type C (port situé sur la droite de l'appareil)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> exige la mise à jour de votre <ph name="DEVICE_TYPE" /> avant la date limite</translation>
 <translation id="649452524636452238">Code de la carte à puce</translation>

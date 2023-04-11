@@ -3034,6 +3034,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3609277884604412258">Snabbsökning</translation>
 <translation id="3610241585790874201">Får inte spara data på enheten</translation>
 <translation id="3610369246614755442">Dockningsstationens fläkt behöver repareras</translation>
+<translation id="3610961622607302617">Ändra lösenordet för <ph name="WEBSITE" /></translation>
 <translation id="361106536627977100">Flash-data</translation>
 <translation id="3611655097742243705">Hitta fler appar i Play Butik</translation>
 <translation id="3611658447322220736">Webbplatser som stängts nyligen får fortsätta att skicka och ta emot data</translation>
@@ -4108,6 +4109,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4545759655004063573">Det gick inte att spara eftersom behörigheten var otillräcklig. Spara på en annan plats.</translation>
 <translation id="4546308221697447294">Surfa snabbt med Google Chrome</translation>
 <translation id="4546345569117159016">Höger knapp</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> vill använda detta tillägg:</translation>
 <translation id="4546692474302123343">Röstinmatning för Google Assistent</translation>
 <translation id="4547659257713117923">Inga flikar från andra enheter</translation>
 <translation id="4547672827276975204">Ange automatiskt</translation>
@@ -4965,6 +4967,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5338503421962489998">Lokal lagring</translation>
 <translation id="5339031667684712858">Webbplatser du har tagit bort</translation>
 <translation id="5340638867532133571">Tillåt att nya betalningshanterare installeras av webbplatser (rekommenderas)</translation>
+<translation id="5340787663756381836">Hitta och redigera</translation>
 <translation id="5341793073192892252">Följande cookies har blockerats (cookies från tredje part blockeras alltid)</translation>
 <translation id="5342091991439452114">Pinkoden måste bestå av minst <ph name="MINIMUM" /> siffror</translation>
 <translation id="5344036115151554031">Återställer Linux</translation>
@@ -5722,6 +5725,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6019851026059441029">Jättebra – HD</translation>
 <translation id="6020431688553761150">Servern auktoriserade inte din åtkomst till den här resursen.</translation>
 <translation id="6021293122504240352"><ph name="APPS" />-appar stöds inte längre</translation>
+<translation id="6021969570711251331">Omlott</translation>
 <translation id="6022526133015258832">Öppna helskärmsläge</translation>
 <translation id="6022659036123304283">Anpassa Chrome</translation>
 <translation id="6023643151125006053">Den här enheten (serienr: <ph name="SERIAL_NUMBER" />) har låsts av administratören för <ph name="SAML_DOMAIN" />.</translation>
@@ -6053,6 +6057,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6318125393809743217">Ta med filen policies.json med principkonfigurationer.</translation>
 <translation id="6318407754858604988">Nedladdning påbörjad</translation>
 <translation id="6318944945640833942">Det gick inte att hitta skrivaren. Ange skrivarens adress igen.</translation>
+<translation id="6320808462673705899">Det finns inga bokmärken som matchar sökningen.</translation>
 <translation id="6322370287306604163">Lås upp snabbare med fingeravtryck</translation>
 <translation id="6322559670748154781">Den här filen brukar inte laddas ned och har blockerats av Avancerat skydd</translation>
 <translation id="6324916366299863871">Redigera genväg</translation>
@@ -9355,6 +9360,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="939401694733344652">De här kontona används inte i några Android-appar just nu. Om du väljer ett konto som ska användas i den här Android-appen kan det kontot även användas i andra Android-appar. Du kan ändra åtkomstbehörigheten för Android-appar under <ph name="LINK_BEGIN" />Inställningar &gt; Konton<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Ange lösenfras</translation>
 <translation id="939736085109172342">Ny mapp</translation>
+<translation id="940212040923880623">Hitta och redigera</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> delar ljud och en flik från Chrome.</translation>
 <translation id="944799160843436808">Det gick inte att konfigurera Steam på Chromebook</translation>
 <translation id="945522503751344254">Skicka feedback</translation>

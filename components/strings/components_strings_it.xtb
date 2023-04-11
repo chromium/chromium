@@ -2337,7 +2337,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="678982761784843853">ID contenuti protetti</translation>
 <translation id="6790428901817661496">Riproduci</translation>
 <translation id="679355240208270552">Ignorato perché la ricerca predefinita non è attiva secondo la norma.</translation>
-<translation id="6794049111359324414">Vuoi consentire all'app <ph name="APP_NAME" /> di configurare le reti Wi-Fi?</translation>
 <translation id="6794951432696553238">Verifica più velocemente le tue carte usando Windows Hello d'ora in poi</translation>
 <translation id="6798460514924505775">Busta Chou 3</translation>
 <translation id="6805030849054648206">Busta B6/C4</translation>
@@ -3381,7 +3380,6 @@ Ulteriori dettagli:
     &lt;li&gt;Prova a disinstallare o disattivare "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;Prova a collegarti a un'altra rete&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">Questa app richiede l'autorizzazione per configurare nuove reti Wi-Fi. Dopo la configurazione, il tuo <ph name="DEVICE_TYPE" /> si connetterà automaticamente alle reti Wi-Fi partecipanti. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Da Google Pay</translation>
 </translationbundle>

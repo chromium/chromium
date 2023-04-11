@@ -2341,7 +2341,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="678982761784843853">Giá trị nhận dạng cho nội dung được bảo vệ</translation>
 <translation id="6790428901817661496">Phát</translation>
 <translation id="679355240208270552">Đã bỏ qua vì chính sách đã tắt tìm kiếm mặc định.</translation>
-<translation id="6794049111359324414">Cho phép ứng dụng <ph name="APP_NAME" /> thiết lập mạng Wi-Fi?</translation>
 <translation id="6794951432696553238">Từ giờ trở đi, bạn có thể xác nhận các thẻ nhanh hơn bằng Windows Hello</translation>
 <translation id="6798460514924505775">Phong bì Chou 3</translation>
 <translation id="6805030849054648206">Phong bì B6/C4</translation>
@@ -3385,7 +3384,6 @@ Thông tin chi tiết bổ sung:
     &lt;li&gt;Hãy thử gỡ cài đặt hoặc vô hiệu hóa "<ph name="SOFTWARE_NAME" />"&lt;/li&gt;
     &lt;li&gt;Hãy thử kết nối với một mạng khác&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">Ứng dụng này đang yêu cầu quyền để thiết lập mạng Wi-Fi mới. Sau khi thiết lập, <ph name="DEVICE_TYPE" /> sẽ tự động kết nối với các mạng Wi-Fi tham gia. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Từ Google Pay</translation>
 </translationbundle>

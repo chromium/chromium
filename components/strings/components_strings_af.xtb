@@ -730,6 +730,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2718207025093645426">Daar is geen beleid vir bestuurde gebruiker of toestel gelaai nie.</translation>
 <translation id="2721148159707890343">Versoek was suksesvol</translation>
 <translation id="2723669454293168317">Doen 'n veiligheidskontrole in Chrome-instellings</translation>
+<translation id="2725492561136085792">Druk Enter on hierdie handeling te aktiveer.</translation>
 <translation id="2726001110728089263">Kantlaai</translation>
 <translation id="2728127805433021124">Bediener se sertifikaat is met 'n swak handtekening-algoritme onderteken.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Voer tans konnektiwiteitdiagnostiek uit<ph name="END_LINK" /></translation>
@@ -826,6 +827,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="299990983510665749">Luikrugmotors</translation>
 <translation id="3002501248619246229">Gaan invoerlaaimedia na</translation>
 <translation id="3005723025932146533">Wys die kopie wat gestoor is</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab om deur beskikbare handelinge te blaai, en dan Enter om die gekose handeling uit te voer.</translation>
 <translation id="3013291976881901233">MIDI-toestelle</translation>
 <translation id="301521992641321250">Outomaties geblokkeer</translation>
 <translation id="3016780570757425217">Jou ligging ken</translation>
@@ -2339,7 +2341,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="678982761784843853">ID's van beskermde inhoud</translation>
 <translation id="6790428901817661496">Speel</translation>
 <translation id="679355240208270552">Geïgnoreer, want versteksoektog is nie deur beleid geaktiveer nie.</translation>
-<translation id="6794049111359324414">Laat die <ph name="APP_NAME" />-app toe om wi-fi-netwerke op te stel?</translation>
 <translation id="6794951432696553238">Gebruik van nou af Windows Hello om jou kaarte vinniger te bevestig</translation>
 <translation id="6798460514924505775">Koevert Chou 3</translation>
 <translation id="6805030849054648206">Koevert B6/C4</translation>
@@ -3382,7 +3383,6 @@ Bykomende besonderhede:
     &lt;li&gt;Probeer om "<ph name="SOFTWARE_NAME" />"&lt;/li&gt; te deïnstalleer of deaktiveer
     &lt;li&gt;Probeer om aan 'n ander netwerk te koppel&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">Hierdie app versoek tans toestemming om nuwe wi-fi-netwerke op te stel. Jou <ph name="DEVICE_TYPE" /> sal ná die opstelling outomaties aan deelnemende wi-fi-netwerke gekoppel word. <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Van Google Pay af</translation>
 </translationbundle>

@@ -201,6 +201,7 @@
 <translation id="8393700583063109961">Ուղարկել հաղորդագրություն</translation>
 <translation id="8394908167088220973">Մեդիայի նվագարկում/դադար</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 տ}one{# տ}other{# տ}}</translation>
+<translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ֆայլ (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> ԿԲ/վ</translation>
 <translation id="8725488761726303204">ևս <ph name="NUMBER" /> տարր</translation>

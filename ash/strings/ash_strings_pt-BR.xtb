@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">Dispositivo USB-C (porta frontal)</translation>
 <translation id="1013598600051641573">A resolução de <ph name="DISPLAY_NAME" /> mudou para <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Clique em "Confirmar" para manter as modificações. As configurações anteriores serão restauradas em <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" deseja permissão para realizar o pareamento. Digite este código PIN no dispositivo: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">Isso permite que o <ph name="APP_NAME" /> e todos os apps e sites com permissão de localização e o ChromeOS usem a localização de redes móveis e Wi-Fi.</translation>
 <translation id="1017556409696559990">Minimizar a janela superior quando não houver histórico no Chrome</translation>
 <translation id="1024364763893396229">Salve seu dispositivo <ph name="NAME" /></translation>
 <translation id="1032891413405719768">A bateria da stylus está fraca</translation>
@@ -147,6 +148,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1651914502370159744">Abrir a página "Histórico"</translation>
 <translation id="1654477262762802994">Iniciar uma consulta por voz</translation>
 <translation id="1668469839109562275">VPN integrado</translation>
+<translation id="1675844249244994876">Atualizar a janela à direita</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> restante(s)</translation>
 <translation id="1677507110654891115">O recurso <ph name="FEATURE_NAME" /> não está conectado.</translation>
 <translation id="1677582821739292812">Alguém está olhando para sua tela</translation>
@@ -191,6 +193,7 @@ Veja o que você pode fazer para começar.</translation>
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Ativar o acesso à localização</translation>
 <translation id="1830308660060964064">O <ph name="ITEM_TITLE" /> foi liberado</translation>
 <translation id="1838895407229022812">O Modo noturno está desativado.</translation>
 <translation id="1854180393107901205">Parar transmissão</translation>
@@ -468,6 +471,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="3255483164551725916">O que você pode fazer?</translation>
 <translation id="3256109297135787951">Remover o destaque de um item na estante</translation>
 <translation id="3260969790895726815">A fala é processada localmente e o ditado funciona off-line, mas alguns comandos de voz não vão funcionar.</translation>
+<translation id="3265032511221679826">Ativar o acesso ao local exato?</translation>
 <translation id="3269597722229482060">Clique com o botão direito do mouse</translation>
 <translation id="3289364673986435196">Menu liga/desliga</translation>
 <translation id="3289544412142055976">No momento, não há suporte para os apps do Linux</translation>
@@ -578,6 +582,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="366222428570480733">Usuário gerenciado <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Deslize para ocultar a janela flutuante</translation>
 <translation id="367531336287639526">Selecionar o primeiro ícone à esquerda da barra de endereço</translation>
+<translation id="3677931086890821290">Isso permite que todos os apps e sites com permissão de localização e o ChromeOS usem a localização de redes móveis e Wi-Fi.</translation>
 <translation id="3679827876008292680">Ir para a última guia na janela</translation>
 <translation id="36813544980941320">Redes Wi-Fi serão compartilhadas entre seu smartphone e o <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Websites</translation>
@@ -844,6 +849,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="493076006037866439">Diminuir o zoom na tela</translation>
 <translation id="4936329710968938986">Todos (desativado)</translation>
 <translation id="4938176435186993759">Ocultar todas as sugestões</translation>
+<translation id="4943007472417128747">O ponto de acesso foi desativado para usar o Wi-Fi. Para usar o ponto de acesso, desative o Wi-Fi.</translation>
 <translation id="4945196315133970626">Desativar notificações</translation>
 <translation id="4946376291507881335">Capturar</translation>
 <translation id="495046168593986294">Rolar para cima</translation>
@@ -1220,6 +1226,7 @@ Nova instalação</translation>
 <translation id="6683022854667115063">Fones de ouvido</translation>
 <translation id="6696025732084565524">Seu teclado removível precisa de uma atualização crítica</translation>
 <translation id="6700713906295497288">Botão do menu do IME</translation>
+<translation id="6705577071209924099">Ajustar a iluminação</translation>
 <translation id="6707693040195709527">A mudança do dispositivo para a versão anterior está atrasada</translation>
 <translation id="6710213216561001401">Anterior</translation>
 <translation id="6723839937902243910">Energia</translation>
@@ -1387,6 +1394,7 @@ Nova instalação</translation>
 Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.</translation>
 <translation id="7526573455193969409">A rede pode ser monitorada</translation>
 <translation id="7536035074519304529">Endereço IP: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Atualizar a janela à esquerda</translation>
 <translation id="7543399541175347147">No momento, não há suporte para apps do Linux e janelas anônimas. Outros apps serão salvos.</translation>
 <translation id="7544300628205093162">A luz de fundo do teclado está ligada</translation>
 <translation id="7548434653388805669">Hora de dormir</translation>
@@ -1467,6 +1475,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7893503627044934815">Não quero ver este arquivo</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Você pressionou o atalho de teclado para a rotação da tela. Gostaria de girar a tela?</translation>
+<translation id="7901190436359881020">Trocar as janelas</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Toque no sensor de digital</translation>
 <translation id="7904094684485781019">O administrador desta conta bloqueou o login múltiplo.</translation>
@@ -1742,6 +1751,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="9198992156681343238">A resolução de <ph name="DISPLAY_NAME" /> foi modificada para <ph name="RESOLUTION" />. Clique em "Confirmar" para manter as mudanças. As configurações anteriores serão restauradas em <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Conecte <ph name="NAME" /> ao Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, gerenciada pelo seu administrador</translation>
+<translation id="9207682216934703221">Isso permite que o <ph name="APP_NAME" />, o <ph name="APP2_NAME" /> e todos os apps e sites com permissão de localização e o ChromeOS usem a localização de redes móveis e Wi-Fi.</translation>
 <translation id="9210037371811586452">Saindo do modo de área de trabalho unificada</translation>
 <translation id="9211490828691860325">Todos os espaços de trabalho</translation>
 <translation id="9211681782751733685">Tempo restante até que a bateria esteja totalmente carregada: <ph name="TIME_REMAINING" />.</translation>

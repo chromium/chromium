@@ -4963,6 +4963,7 @@
 <translation id="5338503421962489998">स्‍थानिक स्टोरेज</translation>
 <translation id="5339031667684712858">तुम्ही काढून टाकलेल्या साइट</translation>
 <translation id="5340638867532133571">पेमेंट हँडलर इंस्टॉल करण्यासाठी साइटना अनुमती द्या (शिफारस केलेले)</translation>
+<translation id="5340787663756381836">&amp;शोधा आणि संपादित करा</translation>
 <translation id="5341793073192892252">पुढील कुकी ब्लॉक केल्या होत्‍या (तृतीय पक्षाच्या कुकी कोणत्याही एक्सेप्शनाशिवाय ब्लॉक केलेल्या आहेत)</translation>
 <translation id="5342091991439452114">पिन किमान <ph name="MINIMUM" /> अंकांचा असणे आवश्यक आहे</translation>
 <translation id="5344036115151554031">Linux रिस्टोअर करत आहे</translation>
@@ -5721,6 +5722,7 @@
 <translation id="6019851026059441029">उत्तम आहे - HD</translation>
 <translation id="6020431688553761150">हे संसाधन ॲक्सेस करण्यासाठी सर्व्हरने तुम्हाला परवानगी दिलेली नाही.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> अ‍ॅप्सना यापुढे सपोर्ट नाही</translation>
+<translation id="6021969570711251331">एकावर एक</translation>
 <translation id="6022526133015258832">फुल स्क्रीन उघडा</translation>
 <translation id="6022659036123304283">Chrome ला तुमच्या आवडीनुसार बनवा</translation>
 <translation id="6023643151125006053">हे डिव्हाइस (SN: <ph name="SERIAL_NUMBER" />) <ph name="SAML_DOMAIN" /> ॲडमिनिस्ट्रेटरने लॉक केले होते.</translation>
@@ -9354,6 +9356,7 @@
 <translation id="939401694733344652">ही खाती सध्या Android अ‍ॅप्ससह वापरली जात नाहीत. तुम्ही या Android अ‍ॅपसह वापरण्यासाठी खाते निवडल्यास, ते खाते इतर Android अ‍ॅप्ससहदेखील वापरले जाऊ शकते. तुम्ही <ph name="LINK_BEGIN" />सेटिंग्ज &gt; खाती<ph name="LINK_END" /> मध्ये Android अ‍ॅपचा अ‍ॅक्सेस बदलू शकता.</translation>
 <translation id="939598580284253335">सांकेतिक पासफ्रेझ एंटर करा</translation>
 <translation id="939736085109172342">नवीन फोल्‍डर</translation>
+<translation id="940212040923880623">&amp;शोधा आणि संपादित करा</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> Chrome टॅब आणि ऑडिओ शेअर करीत आहे.</translation>
 <translation id="944799160843436808">Steam ही Chromebook वर सेट करताना समस्या आली</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>

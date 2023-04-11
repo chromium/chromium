@@ -5,6 +5,7 @@
 <translation id="1013952917065545813">אפשר לחזור לפה כדי לפתוח כרטיסיות שסגרת לאחרונה</translation>
 <translation id="1016495303386450659">הפריט עודכן</translation>
 <translation id="1035980983510608210">אם סוגרים את כל הכרטיסיות, גם הכרטיסיות המוצמדות נסגרות.</translation>
+<translation id="1036348656032585052">כיבוי</translation>
 <translation id="1044891598689252897">אתרים יפעלו כרגיל</translation>
 <translation id="1049743911850919806">גלישה פרטית</translation>
 <translation id="105093091697134113">בחשבונות הבאים נעשה שימוש בסיסמאות שנחשפו בפרצה באבטחת מידע של צד שלישי או שהוזנו באתר מטעה. יש לשנות את הסיסמאות האלה מיד כדי להגן על החשבונות.</translation>
@@ -216,6 +217,7 @@
 <translation id="2482878487686419369">התראות</translation>
 <translation id="2496626742194544812">מעבר לכרטיסייה הראשונה</translation>
 <translation id="2500374554657206846">אפשרויות לשמירת סיסמה</translation>
+<translation id="2502415369140591438">יש <ph name="COUNT" /> סיסמאות בשימוש חוזר</translation>
 <translation id="2523363575747517183">האתר הזה מנסה שוב ושוב לפתוח אפליקציה אחרת.</translation>
 <translation id="2529021024822217800">פתיחת הכול</translation>
 <translation id="2547458583188611426">הסנכרון לא פועל. כדי להתחיל לסנכרן צריך להזין את ביטוי הסיסמה.</translation>
@@ -293,6 +295,7 @@
 <translation id="2932085390869194046">הצעת סיסמה...</translation>
 <translation id="2932765531295814441">הוספת סיסמאות באופן ידני</translation>
 <translation id="2952581218264071393">‏1. פותחים את ההגדרות של Chrome</translation>
+<translation id="2953871438216280742">‏יש להיכנס לחשבון כדי לפתוח ולשמור את רשימת הקריאה בחשבון Google שלך.</translation>
 <translation id="2958718410589002129">סיסמאות</translation>
 <translation id="2961210776189273067">תואר</translation>
 <translation id="2964349545761222050">‏חסימה של קובצי cookie מצדדים שלישיים</translation>
@@ -386,6 +389,7 @@
 <translation id="3581564640715911333">הצעה לתרגם דפים בשפות אחרות</translation>
 <translation id="3588820906588687999">פתיחת התמונה בכרטיסייה חדשה</translation>
 <translation id="3595252146048399851">‏תמיד אפשר לבחור מה לסנכרן דרך <ph name="BEGIN_LINK" />ההגדרות<ph name="END_LINK" />. Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
+<translation id="3595588371156514964">{COUNT,plural, =1{סיסמה חלשה אחת ({COUNT})}one{{COUNT} סיסמאות חלשות}two{{COUNT} סיסמאות חלשות}other{{COUNT} סיסמאות חלשות}}</translation>
 <translation id="3603009562372709545">‏העתקת URL של קישור</translation>
 <translation id="3607167657931203000">נתוני מילוי אוטומטי</translation>
 <translation id="3608008480985212611">צריך להיכנס לחשבון כדי לנהל את ההעדפות.</translation>
@@ -607,6 +611,7 @@
 <translation id="5118764316110575523">כבויה</translation>
 <translation id="5119391094379141756">‏בוחרים באפשרות Chrome</translation>
 <translation id="5121618895923301719">כבר מתבצע מעקב אחר המוצר הזה. הדף הזה שמור ב<ph name="BEGIN_LINK" />סימניות לנייד<ph name="END_LINK" />.</translation>
+<translation id="5126465625664020024">היכנס וסנכרן</translation>
 <translation id="5132942445612118989">סנכרון הסיסמאות, ההיסטוריה ונתונים נוספים בכל המכשירים</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{סיסמה חלשה אחת ({COUNT})}one{{COUNT} סיסמאות חלשות}two{{COUNT} סיסמאות חלשות}other{{COUNT} סיסמאות חלשות}}</translation>
 <translation id="5149188072385105201">הוספת סיסמאות…</translation>
@@ -624,6 +629,7 @@
 <translation id="5197255632782567636">אינטרנט</translation>
 <translation id="5211488077761630279">לאפשר לאתר <ph name="SITE_NAME" /> להשתמש ב<ph name="PERMISSION" />?</translation>
 <translation id="5219295696240154694">רוצה לעזור לשפר את האבטחה באינטרנט לכולם?</translation>
+<translation id="5221339005270097309">הסיסמאות נבדקות…</translation>
 <translation id="5228579091201413441">הפעלת סנכרון</translation>
 <translation id="5232485538978018676">כניסה באמצעות חשבון מנוהל</translation>
 <translation id="5234764350956374838">סגירה</translation>
@@ -663,6 +669,7 @@
 יש להפעיל את Handoff גם בקטע 'כללי' ב'הגדרות', ועל המכשירים להשתמש באותו חשבון iCloud.</translation>
 <translation id="5551897871312988470">הצעה לתרגום</translation>
 <translation id="5556459405103347317">טעינה מחדש</translation>
+<translation id="555749644339804659">הסיסמאות נבדקות…</translation>
 <translation id="556042886152191864">לחצן</translation>
 <translation id="5597915316964418992">פתיחה של תצוגת הכרטיסיות</translation>
 <translation id="560322036295180549">האפשרות הושבתה על ידי הארגון שלך</translation>
@@ -742,6 +749,7 @@
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">סגירה</translation>
 <translation id="6042308850641462728">עוד</translation>
+<translation id="6054613632208573261">‏שימוש ב-Chrome כברירת מחדל</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">כאן אפשר לנהל את הסטוריז והפעילות שלך</translation>
 <translation id="6064824697233747382">לפי דרישת הארגון שלך, עליך להשבית את הסנכרון.</translation>

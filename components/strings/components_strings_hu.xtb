@@ -1985,6 +1985,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5872692522325383488">IBAN-kód mentve</translation>
 <translation id="5873013647450402046">Bankja szeretné, ha megerősítené személyazonosságát.</translation>
 <translation id="5877831137320480913">Szépség és fitnesz</translation>
+<translation id="5879989559903563723">Vendég módban nem engedélyezett</translation>
 <translation id="5884465125445718607">6. kínai boríték</translation>
 <translation id="5887400589839399685">Kártya elmentve</translation>
 <translation id="5887687176710214216">Utolsó látogatás: tegnap</translation>
@@ -2338,7 +2339,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="678982761784843853">A védett tartalmak azonosítói</translation>
 <translation id="6790428901817661496">Lejátszás</translation>
 <translation id="679355240208270552">Figyelmen kívül hagyva, mert az alapértelmezett keresőmotort nem engedélyezi a házirend.</translation>
-<translation id="6794049111359324414">Engedélyezi, hogy a(z) <ph name="APP_NAME" /> alkalmazás Wi-Fi-hálózatokat állítson be?</translation>
 <translation id="6794951432696553238">Mostantól gyorsabban igazolhatja kártyáit a Windows Hello használatával</translation>
 <translation id="6798460514924505775">Chou 3 boríték</translation>
 <translation id="6805030849054648206">B6/C4 boríték</translation>
@@ -3227,6 +3227,7 @@ További részletek:
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Jog és közigazgatás</translation>
 <translation id="8957210676456822347">Hitelesítés hitelesítési portállal</translation>
+<translation id="8959282183248574156"><ph name="NICKNAME_MAX" />/<ph name="NICKNAME_COUNT" /></translation>
 <translation id="8963117664422609631">A webhely beállításainak megnyitása</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />Javaslatok:<ph name="MARKUP_2" />Ellenőrizze, hogy van-e adatkapcsolata<ph name="MARKUP_3" />Töltse be újra a weboldalt később<ph name="MARKUP_4" />Ellenőrizze a beírt internetcímet<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">Kártya mentése</translation>
@@ -3381,7 +3382,6 @@ További részletek:
     &lt;li&gt;Próbálkozzon a(z) „<ph name="SOFTWARE_NAME" />” eltávolításával vagy letiltásával.&lt;/li&gt;
     &lt;li&gt;Próbáljon másik hálózathoz csatlakozni.&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">Ez az alkalmazás engedélyt kér új Wi-Fi-hálózatok beállítására. A beállítás után a(z) <ph name="DEVICE_TYPE" /> automatikusan csatlakozik az egyik Wi-Fi-hálózathoz. <ph name="LEARN_MORE" />.</translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">A Google Payről</translation>
 </translationbundle>

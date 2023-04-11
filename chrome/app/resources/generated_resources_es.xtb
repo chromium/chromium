@@ -696,6 +696,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1593594475886691512">Formateando...</translation>
 <translation id="159359590073980872">Caché de imagen</translation>
 <translation id="1593926297800505364">Guardar el método de pago</translation>
+<translation id="1594703455918849716">Ir a la página Revisión</translation>
 <translation id="1595492813686795610">Linux se está actualizando</translation>
 <translation id="1596286373007273895">Disponible</translation>
 <translation id="1596709061955594992">El Bluetooth está desactivado. Para ver los dispositivos disponibles, activa el Bluetooth.</translation>
@@ -1680,6 +1681,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2399699884460174994">Notificaciones activadas</translation>
 <translation id="2399939490305346086">Datos de inicio de sesión de la llave de seguridad</translation>
 <translation id="2400664245143453337">Es necesario actualizar de inmediato</translation>
+<translation id="2402226831639195063">Tonos</translation>
 <translation id="2406153734066939945">¿Eliminar este perfil y sus datos?</translation>
 <translation id="2408018932941436077">Guardando tarjeta</translation>
 <translation id="2408955596600435184">Introduce tu PIN</translation>
@@ -1691,6 +1693,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="241082044617551207">Complemento desconocido</translation>
 <translation id="2410940059315936967">Un sitio que visites puede insertar contenido de otros sitios, como imágenes, anuncios y texto. Las cookies creadas por estos sitios se denominan cookies de terceros.</translation>
 <translation id="2411666601450687801">No se permiten máquinas virtuales en este dispositivo</translation>
+<translation id="2412015533711271895">Tu padre, madre o tutor/a debe aprobar que uses esta extensión</translation>
 <translation id="2412753904894530585">Kerberos</translation>
 <translation id="2414886740292270097">Oscuro</translation>
 <translation id="2416435988630956212">Teclas de funciones del teclado</translation>
@@ -3017,6 +3020,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3609277884604412258">Búsqueda rápida</translation>
 <translation id="3610241585790874201">No tienen permiso para guardar datos en tu dispositivo</translation>
 <translation id="3610369246614755442">El ventilador de la base necesita reparación</translation>
+<translation id="3610961622607302617">Cambiar contraseña de <ph name="WEBSITE" /></translation>
 <translation id="361106536627977100">Datos de Flash</translation>
 <translation id="3611655097742243705">Visita Play Store para buscar más aplicaciones.</translation>
 <translation id="3611658447322220736">Los sitios cerrados recientemente pueden terminar de enviar y recibir datos</translation>
@@ -3073,6 +3077,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3651488188562686558">Se desconectará de la red Wi-Fi</translation>
 <translation id="3652817283076144888">Inicializando</translation>
 <translation id="3653160965917900914">Sistema de archivos compartidos en red</translation>
+<translation id="3653887973853407813">No puedes usar esta extensión. Tu padre, madre o tutor/a ha desactivado "Permisos de sitios, aplicaciones y extensiones" en Chrome.</translation>
 <translation id="3653999333232393305">Seguir permitiendo que <ph name="HOST" /> acceda al micrófono</translation>
 <translation id="3654045516529121250">Leer tu configuración de accesibilidad</translation>
 <translation id="3655712721956801464">{NUM_FILES,plural, =1{Tiene acceso permanente a un archivo.}other{Tiene acceso permanente a # archivos.}}</translation>
@@ -5143,6 +5148,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5517304475148761050">Esta aplicación requiere acceso a Play Store</translation>
 <translation id="5517412723934627386"><ph name="NETWORK_TYPE" />: <ph name="NETWORK_DISPLAY_NAME" /></translation>
 <translation id="5518219166343146486">Preguntar cuando un sitio web quiera ver el texto y las imágenes que se hayan copiado en el portapapeles</translation>
+<translation id="5518949581554491184">Configurar con teléfono Android</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5521078259930077036">¿Es esta la página de inicio que esperabas?</translation>
 <translation id="5522156646677899028">Esta extensión tiene una vulnerabilidad de seguridad grave.</translation>
@@ -5701,6 +5707,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6019851026059441029">Fantástica - HD</translation>
 <translation id="6020431688553761150">El servidor no te ha autorizado a acceder a este recurso.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> aplicaciones ya no se admiten</translation>
+<translation id="6021969570711251331">Intercalado</translation>
 <translation id="6022526133015258832">Abrir en pantalla completa</translation>
 <translation id="6022659036123304283">Personaliza Chrome</translation>
 <translation id="6023643151125006053">El administrador de <ph name="SAML_DOMAIN" /> ha bloqueado este dispositivo (número de serie: <ph name="SERIAL_NUMBER" />).</translation>
@@ -6032,6 +6039,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6318125393809743217">Incluye un archivo policies.json con las configuraciones de las políticas.</translation>
 <translation id="6318407754858604988">Se ha iniciado la descarga</translation>
 <translation id="6318944945640833942">No se ha podido detectar la impresora. Vuelve a introducir la dirección de la impresora.</translation>
+<translation id="6320808462673705899">No hay marcadores que coincidan con tu búsqueda.</translation>
 <translation id="6322370287306604163">Desbloquear el dispositivo más rápido con una huella digital</translation>
 <translation id="6322559670748154781">Este archivo no se descarga habitualmente y Protección Avanzada lo ha bloqueado.</translation>
 <translation id="6324916366299863871">Editar acceso directo</translation>
@@ -6476,6 +6484,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6725206449694821596">Protocolo de impresión en Internet (IPP)</translation>
 <translation id="6725970970008349185">Número de candidatos por página</translation>
 <translation id="672609503628871915">Consultar las novedades</translation>
+<translation id="6726800386221816228">Caracteres especiales</translation>
 <translation id="67269783048918309">Enviar datos de uso y diagnóstico. Este dispositivo envía automáticamente a Google datos de diagnóstico, del dispositivo y del uso de las aplicaciones. Los datos no se usarán para identificar a tu hijo, sino para aumentar la estabilidad de las aplicaciones y del sistema y realizar otras mejoras. Parte de los datos recogidos también ayudarán a las aplicaciones y los colaboradores de Google, como los desarrolladores de Android. El propietario ha aplicado este <ph name="BEGIN_LINK1" />ajuste<ph name="END_LINK1" />. Si la opción Actividad en la Web y en Aplicaciones Adicional está activada, es posible que estos datos se guarden en la cuenta de Google de tu hijo. <ph name="BEGIN_LINK2" />Más información<ph name="END_LINK2" /></translation>
 <translation id="6728528977475057549">IBAN terminado en <ph name="LAST_FOUR_DIGITS" /></translation>
 <translation id="6729192290958770680">Introduce tu nombre de usuario</translation>
@@ -6878,6 +6887,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7063129466199351735">Procesando accesos directos...</translation>
 <translation id="7063311912041006059">URL con <ph name="SPECIAL_SYMBOL" /> en el lugar de la consulta</translation>
 <translation id="706342288220489463">Permite que el Asistente use la información de tu pantalla para ayudarte</translation>
+<translation id="70641621694466590">Ir a la página Contraseñas</translation>
 <translation id="7064734931812204395">Configurando el contenedor de Linux. Este proceso puede tardar hasta 30 minutos.</translation>
 <translation id="7065223852455347715">Este dispositivo está bloqueado en un modo que evita el registro de empresa. Si quieres registrar el dispositivo, primero debes pasar por el proceso de recuperación del dispositivo.</translation>
 <translation id="7065534935986314333">Acerca del sistema</translation>
@@ -7379,6 +7389,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> con la aplicación <ph name="APP_NAME" /></translation>
 <translation id="754207240458482646">La red está sincronizada con otros dispositivos de tu cuenta. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="7543104066686362383">Se habilitarán las funciones de depurado en este dispositivo <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
+<translation id="7544977292347272434">Pide a tu padre o madre que permita una extensión</translation>
 <translation id="7545466883021407599">No se ha podido conectar con el servidor. Revisa tu conexión de red e inténtalo de nuevo. Si sigues teniendo problemas, prueba a reiniciar tu Chromebook. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="7547317915858803630">Advertencia: la configuración de <ph name="PRODUCT_NAME" /> se almacena en una unidad de red, lo que puede provocar ralentizaciones, fallos e incluso pérdidas de datos.</translation>
 <translation id="7548856833046333824">Cóctel</translation>
@@ -7607,6 +7618,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7728668285692163452">El cambio del canal se aplicará más tarde</translation>
 <translation id="7730449930968088409">Captura contenido de la pantalla</translation>
 <translation id="7730683939467795481">La extensión <ph name="EXTENSION_NAME" /> ha cambiado esta página</translation>
+<translation id="773511996612364297">Acentos</translation>
 <translation id="7735165285389721951">Se está realizando otra configuración de Steam. Espera a que se complete antes de volver a intentarlo.</translation>
 <translation id="7737115349420013392">Vinculando con "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="7737203573077018777">Instrucción <ph name="PROOF_OF_POSSESSION_INSTRUCTION_NAME" /> recibida</translation>
@@ -7689,6 +7701,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7792388396321542707">Dejar de compartir</translation>
 <translation id="779308894558717334">Verde claro</translation>
 <translation id="7793098747275782155">Azul oscuro</translation>
+<translation id="7796453472368605346">Signos diacríticos</translation>
 <translation id="7797571222998226653">Desactivado</translation>
 <translation id="7798504574384119986">Ver permisos web</translation>
 <translation id="7798844538707273832">bloqueado automáticamente: <ph name="PERMISSION" /></translation>
@@ -7773,6 +7786,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7876027585589532670">No se puede editar el acceso directo</translation>
 <translation id="7877451762676714207">Se ha producido un error desconocido en el servidor. Vuelve a intentarlo o ponte en contacto con el administrador del servidor.</translation>
 <translation id="7878945852730162014">Gestiona los archivos mientras se descargan y ábrelos cuando se haya completado la descarga</translation>
+<translation id="7879172417209159252">No se puede usar la extensión</translation>
 <translation id="7879478708475862060">Seguir modo de entrada</translation>
 <translation id="7879631849810108578">Combinación de teclas establecida: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
 <translation id="7880823633812189969">Los datos locales se eliminarán cuando reinicies</translation>

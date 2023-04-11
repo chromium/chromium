@@ -1743,6 +1743,8 @@
 <translation id="5234764350956374838">ပယ်ရန်</translation>
 <translation id="5239623327352565343">တည်နေရာ ခွင့်ပြုထားသည်</translation>
 <translation id="5242889659037569123">ခရီးဆောင်အိတ်နှင့် ခရီးသွားဆက်စပ်ပစ္စည်းများ</translation>
+<translation id="5244732203286792411">ဖွင့်နေသည်...
+    တစ်မိနစ်ခန့် ကြာနိုင်သည်။</translation>
 <translation id="5250209940322997802">"ကွန်ရက်သို့ ချိတ်ဆက်ရန်"</translation>
 <translation id="52517543715119994">Chrome ဝန်ဆောင်မှုများအကြောင်း လေ့လာရန်</translation>
 <translation id="5251803541071282808">မိုးတိမ်</translation>
@@ -2341,7 +2343,6 @@
 <translation id="678982761784843853">ကာကွယ်ထားသည့် အကြောင်းအရာ ID များ</translation>
 <translation id="6790428901817661496">ဖွင့်ရန်</translation>
 <translation id="679355240208270552">မူလရှာဖွေမှုကို မူဝါဒဖြင့် ဖွင့်မထား၍ လျစ်လျူရှုထားသည်။</translation>
-<translation id="6794049111359324414"><ph name="APP_NAME" /> အက်ပ်ကို WiFi ကွန်ရက်များ စနစ်ထည့်သွင်းခွင့်ပြုမလား။</translation>
 <translation id="6794951432696553238">ယခုမှစ၍ Windows Hello ကို အသုံးပြု၍ သင့်ကတ်များကို ပိုမိုမြန်ဆန်စွာ အတည်ပြုလိုက်ပါ</translation>
 <translation id="6798460514924505775">Chou 3 စာအိတ်</translation>
 <translation id="6805030849054648206">B6/C4 စာအိတ်</translation>
@@ -3386,7 +3387,6 @@
     &lt;li&gt;"<ph name="SOFTWARE_NAME" />" ပရိုဂရမ်ကို ပိတ်ကြည့်ပါ သို့မဟုတ် ဖယ်ရှားကြည့်ပါ&lt;/li&gt;
     &lt;li&gt;အခြားကွန်ရက်သို့ ချိတ်ဆက်ကြည့်ပါ&lt;/li&gt;
     &lt;/ul&gt;</translation>
-<translation id="993612073656736454">ဤအက်ပ်သည် WiFi ကွန်ရက်သစ်များ စနစ်ထည့်သွင်းခွင့် တောင်းဆိုနေသည်။ စနစ်ထည့်သွင်းပြီးနောက် သင်၏ <ph name="DEVICE_TYPE" /> သည် ပါဝင်သည့် WiFi ကွန်ရက်များကို အလိုအလျောက်ချိတ်ဆက်မည်။ <ph name="LEARN_MORE" /></translation>
 <translation id="994346157028146140">JIS B1</translation>
 <translation id="997986563973421916">Google Pay မှ</translation>
 </translationbundle>

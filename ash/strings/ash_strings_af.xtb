@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB C-toestel (poort aan voorkant)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> het verander na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik Bevestig om veranderinge te hou. Die vorige instellings sal oor <ph name="TIMEOUT_SECONDS" /> teruggestel word.</translation>
 <translation id="1013923882670373915">Bluetooth-toestel "<ph name="DEVICE_NAME" />" vra toestemming om saam te bind. Voer asseblief hierdie PIN-kode op daardie toestel in: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">Dit laat <ph name="APP_NAME" /> en alle apps en webwerwe met die liggingtoestemming en ChromeOS toe om wi-fi- en selnetwerkligging te gebruik.</translation>
 <translation id="1017556409696559990">Maak boonste venster klein wanneer daar geen teruggeskiedenis in Chrome is nie</translation>
 <translation id="1024364763893396229">Stoor jou <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Stilus se battery is amper pap</translation>
@@ -191,6 +192,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Skakel liggingtoegang aan</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> is ontspeld</translation>
 <translation id="1838895407229022812">Aandbeligting is af.</translation>
 <translation id="1854180393107901205">Hou op uitsaai</translation>
@@ -468,6 +470,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3255483164551725916">Wat kan jy doen?</translation>
 <translation id="3256109297135787951">Verwyder die kleurmerk van 'n item op jou rak</translation>
 <translation id="3260969790895726815">Spraak word plaaslik verwerk en diktering werk vanlyn, maar sommige stemopdragte sal nie werk nie.</translation>
+<translation id="3265032511221679826">Skakel toegang tot presiese ligging aan?</translation>
 <translation id="3269597722229482060">Regsklik</translation>
 <translation id="3289364673986435196">Aan/af-kieslys</translation>
 <translation id="3289544412142055976">Linux-programme word nie tans gesteun nie</translation>
@@ -578,6 +581,7 @@ Koppel jou toestel aan krag.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Bestuurde gebruiker</translation>
 <translation id="3666266999138159418">Swiep om jou swewende venster te versteek</translation>
 <translation id="367531336287639526">Kies die eerste ikoon aan die linkerkant van die adresbalk</translation>
+<translation id="3677931086890821290">Dit laat alle apps en webwerwe met die liggingtoestemming en ChromeOS toe om wi-fi- en selnetwerkligging te gebruik.</translation>
 <translation id="3679827876008292680">Gaan na laaste oortjie in venster</translation>
 <translation id="36813544980941320">Wi-Fi-netwerke sal tussen jou foon en <ph name="DEVICE_NAME" /> gedeel word</translation>
 <translation id="3694122362646626770">Webwerwe</translation>
@@ -1221,6 +1225,7 @@ Nuwe installasie</translation>
 <translation id="6683022854667115063">Oorfone</translation>
 <translation id="6696025732084565524">Jou ontkoppelbare sleutelbord moet dringend opgedateer word</translation>
 <translation id="6700713906295497288">IME-kieslysknoppie</translation>
+<translation id="6705577071209924099">Verstel beligting</translation>
 <translation id="6707693040195709527">Toestelverandering na vorige weergawe is laat</translation>
 <translation id="6710213216561001401">Vorige</translation>
 <translation id="6723839937902243910">Intensiteit</translation>
@@ -1743,6 +1748,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" />-resolusie is verander na <ph name="RESOLUTION" />. Klik Bevestig om veranderinge te hou. Die vorige instellings sal oor <ph name="TIMEOUT_SECONDS" /> teruggestel word.</translation>
 <translation id="9201044636667689546">Koppel <ph name="NAME" /> aan hierdie Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, deur jou administrateur bestuur</translation>
+<translation id="9207682216934703221">Dit laat <ph name="APP_NAME" />, <ph name="APP2_NAME" /> en alle apps en webwerwe met die liggingtoestemming en ChromeOS toe om wi-fi- en selnetwerkligging te gebruik.</translation>
 <translation id="9210037371811586452">Verlaat tans verenigde werkskermmodus</translation>
 <translation id="9211490828691860325">Alle lessenaars</translation>
 <translation id="9211681782751733685"><ph name="TIME_REMAINING" /> oor totdat battery vol gelaai is.</translation>

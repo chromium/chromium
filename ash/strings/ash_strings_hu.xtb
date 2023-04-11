@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">C típusú USB-vel kompatibilis eszköz (elülső port)</translation>
 <translation id="1013598600051641573">A(z) <ph name="DISPLAY_NAME" /> felbontása a következőre módosult: <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). A módosítás megtartásához kattintson a Megerősítés gombra. A beállítás <ph name="TIMEOUT_SECONDS" /> múlva visszaáll a korábbi értékre.</translation>
 <translation id="1013923882670373915">A(z) „<ph name="DEVICE_NAME" />” Bluetooth-eszköz engedélyt kér a párosításra. Kérjük, adja meg ezt a PIN kódot azon az eszközön: <ph name="PINCODE" /></translation>
+<translation id="1017556409696559990">A legfelső ablak kis méretre állítása, ha nincsenek előzmények a Chrome-ban</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> eszközének mentése</translation>
 <translation id="1032891413405719768">Az érintőceruza töltöttségi szintje alacsony</translation>
 <translation id="1036073649888683237">Az értesítések kezeléséhez nyissa meg a Beállítások menüt</translation>
@@ -343,6 +344,7 @@
 <translation id="2620436844016719705">Rendszer</translation>
 <translation id="2621713457727696555">Biztonságos</translation>
 <translation id="263399434338050016">„Select all” (Az összes kijelölése)</translation>
+<translation id="2644422758626431000">Ablak kitűzése balra</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647092942972307022"><ph name="TOTAL_MEMORY" />/<ph name="USED_MEMORY" /> áll rendelkezésre</translation>
 <translation id="2653019840645008922">Felvétel készítése az ablakról</translation>
@@ -1055,6 +1057,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Be</translation>
 <translation id="5920710855273935292">A mikrofon le van némítva.</translation>
+<translation id="5922962980596822074">Ablakok léptetése a legutóbb használt ablaktól kezdve</translation>
 <translation id="5924855612669061715">A hotspot be van kapcsolva</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> bekapcsolva.</translation>
 <translation id="5947494881799873997">Visszavonás</translation>
@@ -1144,6 +1147,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6352082849089527770">Ismeretlen hálózatok</translation>
 <translation id="6359587239691116345">Szeretném megkapni a legújabb funkciókat és biztonsági fejlesztéseket. Ha elutasítja ezt a frissítést, akkor előfordulhat, hogy az eszköz a továbbiakban nem fog megfelelően működni, és biztonsággal, illetve teljesítménnyel kapcsolatos problémákat tapasztalhat.</translation>
 <translation id="6376931439017688372">A Bluetooth be van kapcsolva</translation>
+<translation id="6378515133128829137">Ablak kitűzése jobbra</translation>
 <translation id="6381109794406942707">Az eszköz feloldásához adja meg a PIN-kódot.</translation>
 <translation id="638716340450135524">Kamera-hozzáférés bekapcsolása</translation>
 <translation id="639644700271529076">A CAPS LOCK ki van kapcsolva</translation>
@@ -1163,6 +1167,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6459472438155181876">Képernyő kiterjesztése erre: <ph name="DISPLAY_NAME" /></translation>
 <translation id="6477681113376365978">Nem sikerült a fájl letöltése</translation>
 <translation id="6482559668224714696">Teljes képernyős nagyító</translation>
+<translation id="6483727822843292440">Ablakok léptetése a legrégebben használt ablaktól kezdve</translation>
 <translation id="6490471652906364588">C típusú USB-vel kompatibilis eszköz (jobb oldali port)</translation>
 <translation id="6491071886865974820">A(z) <ph name="MANAGER" /> megköveteli, hogy frissítse <ph name="DEVICE_TYPE" /> eszközét a határidőig</translation>
 <translation id="649452524636452238">Az intelligens kártya PIN-kódja</translation>
