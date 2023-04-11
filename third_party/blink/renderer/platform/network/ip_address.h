@@ -22,9 +22,13 @@ struct HashTraits<net::IPAddress> : GenericHashTraits<net::IPAddress> {
         base::make_span(ip_address.bytes().data(), ip_address.size())));
   }
 
-  static net::IPAddress DeletedValue() {
+  static bool IsDeletedValue(const net::IPAddress& value) {
+    return value.size() == 1;
+  }
+
+  static void ConstructDeletedValue(net::IPAddress& slot) {
     uint8_t deleted_val[1] = {0};
-    return net::IPAddress(deleted_val);
+    new (&slot) net::IPAddress(deleted_val);
   }
 };
 
