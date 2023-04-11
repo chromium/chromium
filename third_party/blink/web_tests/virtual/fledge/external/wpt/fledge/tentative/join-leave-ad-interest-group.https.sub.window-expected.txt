@@ -79,6 +79,8 @@ PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces"
 PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","adComponents":[{"renderUrl":"https://somewhere.test/","metadata":null}]}}
 PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","adComponents":[{"renderUrl":"https://somewhere.test/","metadata":null,"someOtherField":"foo"}]}}
 PASS Join and leave interest group: {"expectJoinSucces":true,"expectLeaveSucces":true,"interestGroup":{"owner":"https://web-platform.test:8444","name":"default name","extra":false,"fields":{"do":"not"},"matter":"at","all":[3,4,5]}}
+PASS Join and leave interest group: Largest possible interest group dictionary
+PASS Join and leave interest group: Oversized interest group dictionary
 PASS Join same interest group overwrites old matching group.
 PASS Leaving interest group actually leaves interest group.
 PASS Leave an interest group that was never joined.
