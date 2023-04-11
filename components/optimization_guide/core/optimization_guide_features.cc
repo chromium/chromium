@@ -130,7 +130,7 @@ BASE_FEATURE(kPageEntitiesPageContentAnnotations,
 // Enables the page visibility model to be annotated on every page load.
 BASE_FEATURE(kPageVisibilityPageContentAnnotations,
              "PageVisibilityPageContentAnnotations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This feature flag does not allow for the entities model to load the name and
 // prefix filters.
