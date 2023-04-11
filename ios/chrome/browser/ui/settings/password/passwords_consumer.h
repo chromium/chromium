@@ -35,6 +35,8 @@ typedef NS_ENUM(NSInteger, PasswordCheckUIState) {
   PasswordCheckStateDisabled,
   // When password check failed due to network issues, quota limit or others.
   PasswordCheckStateError,
+  // When password check failed due to user being signed out.
+  PasswordCheckStateSignedOut,
 };
 
 // Consumer for the Passwords Screen.

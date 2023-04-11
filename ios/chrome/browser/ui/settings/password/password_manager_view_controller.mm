@@ -140,6 +140,7 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
     case PasswordCheckStateRunning:
     case PasswordCheckStateDisabled:
     case PasswordCheckStateError:
+    case PasswordCheckStateSignedOut:
       return false;
   }
 }
@@ -1273,6 +1274,7 @@ bool AreStoresEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     case PasswordCheckStateSafe:
     case PasswordCheckStateDefault:
     case PasswordCheckStateError:
+    case PasswordCheckStateSignedOut:
     case PasswordCheckStateRunning:
     case PasswordCheckStateDisabled:
       if (oldState != PasswordCheckStateUnmutedCompromisedPasswords) {
@@ -1336,17 +1338,16 @@ bool AreStoresEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       case PasswordCheckStateDefault:
       case PasswordCheckStateError:
         self.shouldShowCheckButton = YES;
-        _checkForProblemsItem.textColor = [UIColor colorNamed:kBlueColor];
-        _checkForProblemsItem.accessibilityTraits &=
-            ~UIAccessibilityTraitNotEnabled;
+        [self setCheckForProblemsItemEnabled:YES];
+        break;
+      case PasswordCheckStateSignedOut:
+        self.shouldShowCheckButton = YES;
+        [self setCheckForProblemsItemEnabled:NO];
         break;
       // Fall through.
       case PasswordCheckStateDisabled:
         self.shouldShowCheckButton = YES;
-        _checkForProblemsItem.textColor =
-            [UIColor colorNamed:kTextSecondaryColor];
-        _checkForProblemsItem.accessibilityTraits |=
-            UIAccessibilityTraitNotEnabled;
+        [self setCheckForProblemsItemEnabled:NO];
         break;
     }
   } else {
@@ -1358,17 +1359,15 @@ bool AreStoresEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       case PasswordCheckStateDismissedWarnings:
       case PasswordCheckStateDefault:
       case PasswordCheckStateError:
-        _checkForProblemsItem.textColor = [UIColor colorNamed:kBlueColor];
-        _checkForProblemsItem.accessibilityTraits &=
-            ~UIAccessibilityTraitNotEnabled;
+        [self setCheckForProblemsItemEnabled:YES];
+        break;
+      case PasswordCheckStateSignedOut:
+        [self setCheckForProblemsItemEnabled:NO];
         break;
       case PasswordCheckStateRunning:
       // Fall through.
       case PasswordCheckStateDisabled:
-        _checkForProblemsItem.textColor =
-            [UIColor colorNamed:kTextSecondaryColor];
-        _checkForProblemsItem.accessibilityTraits |=
-            UIAccessibilityTraitNotEnabled;
+        [self setCheckForProblemsItemEnabled:NO];
         break;
     }
   }
@@ -1464,7 +1463,8 @@ bool AreStoresEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     }
     case PasswordCheckStateDefault:
       break;
-    case PasswordCheckStateError: {
+    case PasswordCheckStateError:
+    case PasswordCheckStateSignedOut: {
       _passwordProblemsItem.detailText =
           IsPasswordCheckupEnabled()
               ? l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_ERROR)
@@ -1484,6 +1484,23 @@ bool AreStoresEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
       state != PasswordCheckStateDisabled) {
     [self focusAccessibilityOnPasswordCheckStatus];
     self.shouldFocusAccessibilityOnPasswordCheckStatus = NO;
+  }
+}
+
+// Enables or disables the `_checkForProblemsItem` and sets it up accordingly.
+- (void)setCheckForProblemsItemEnabled:(BOOL)enabled {
+  if (!_checkForProblemsItem) {
+    return;
+  }
+
+  _checkForProblemsItem.enabled = enabled;
+  if (enabled) {
+    _checkForProblemsItem.textColor = [UIColor colorNamed:kBlueColor];
+    _checkForProblemsItem.accessibilityTraits &=
+        ~UIAccessibilityTraitNotEnabled;
+  } else {
+    _checkForProblemsItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    _checkForProblemsItem.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
   }
 }
 
@@ -1953,8 +1970,7 @@ bool AreStoresEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     case ItemTypePasswordCheckStatus:
       return IsPasswordCheckTappable(self.passwordCheckState);
     case ItemTypeCheckForProblemsButton:
-      return self.passwordCheckState != PasswordCheckStateRunning &&
-             self.passwordCheckState != PasswordCheckStateDisabled;
+      return _checkForProblemsItem.isEnabled;
     case ItemTypeAddPasswordButton:
       return [self allowsAddPassword];
   }
