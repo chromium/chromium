@@ -95,8 +95,7 @@ class PhoneHubNotificationControllerTest : public AshTestBase {
   void SetUp() override {
     feature_list_.InitWithFeatures(
         {features::kPhoneHub, features::kEcheSWA, features::kPhoneHubCameraRoll,
-         features::kPhoneHubMonochromeNotificationIcons,
-         features::kNotificationsRefresh},
+         features::kPhoneHubMonochromeNotificationIcons},
         {});
     AshTestBase::SetUp();
 
@@ -524,38 +523,6 @@ TEST_F(PhoneHubNotificationControllerTest, MinPriorityNotification) {
   auto* cros_notification = FindNotification(kCrOSNotificationId0);
   ASSERT_TRUE(cros_notification);
   EXPECT_EQ(message_center::MAX_PRIORITY, cros_notification->priority());
-}
-
-TEST_F(PhoneHubNotificationControllerTest,
-       MonochromeIconNotificationRefreshFeatureOff) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kPhoneHub, features::kEcheSWA,
-                            features::kPhoneHubCameraRoll},
-      /*disabled_features=*/{features::kPhoneHubMonochromeNotificationIcons,
-                             features::kNotificationsRefresh,
-                             chromeos::features::kDarkLightMode});
-  notification_manager_->SetNotificationsInternal(fake_notifications_);
-
-  phonehub::Notification updated_notification(
-      kPhoneHubNotificationId1,
-      phonehub::Notification::AppMetadata(
-          kAppName, kPackageName,
-          /*icon=*/gfx::Image(), /*icon_color =*/absl::nullopt,
-          /*icon_is_monochrome =*/true, kUserId,
-          phonehub::proto::AppStreamabilityStatus::STREAMABLE),
-      base::Time::Now(), phonehub::Notification::Importance::kDefault,
-      phonehub::Notification::Category::kConversation,
-      {{phonehub::Notification::ActionType::kInlineReply, 0}},
-      phonehub::Notification::InteractionBehavior::kNone, kTitle, kTextContent);
-  notification_manager_->SetNotification(updated_notification);
-
-  auto rich_notification_data =
-      FindNotification(kCrOSNotificationId1)->rich_notification_data();
-  EXPECT_FALSE(rich_notification_data.accent_color.has_value());
-  EXPECT_FALSE(rich_notification_data.ignore_accent_color_for_small_image);
-  EXPECT_TRUE(rich_notification_data.ignore_accent_color_for_text);
-  EXPECT_FALSE(rich_notification_data.small_image_needs_additional_masking);
 }
 
 }  // namespace ash

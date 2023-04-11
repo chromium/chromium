@@ -27,11 +27,6 @@ class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
   NotificationView& operator=(const NotificationView&) = delete;
   ~NotificationView() override;
 
-  // NotificationViewBase:
-  // TODO(crbug/1262372): Move this to private once CaptureModeNotificationView
-  // does not depend on this class.
-  void Layout() override;
-
   SkColor GetActionButtonColorForTesting(views::LabelButton* action_button);
 
  private:
@@ -58,6 +53,7 @@ class MESSAGE_CENTER_EXPORT NotificationView : public NotificationViewBase {
   void AddLayerToRegion(ui::Layer* layer, views::LayerRegion region) override;
   void RemoveLayerFromRegions(ui::Layer* layer) override;
   void PreferredSizeChanged() override;
+  void Layout() override;
 
   void UpdateHeaderViewBackgroundColor();
   SkColor GetNotificationHeaderViewBackgroundColor() const;
