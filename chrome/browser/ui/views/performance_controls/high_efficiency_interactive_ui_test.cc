@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
       NavigateWebContents(kFirstTabContents,
                           GetURL("/media/bigbuck-player.html")),
       ExecuteJsAt(kFirstTabContents, video, kPlayVideo),
-      WaitForStateChange(kFirstTabContents, std::move(video_is_playing)),
+      WaitForStateChange(kFirstTabContents, video_is_playing),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       TryDiscardTab(0), CheckTabIsNotDiscarded(0));
 }
@@ -258,9 +258,8 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyDiscardPolicyInteractiveTest,
       // Wait until the input text box is focused and simulate typing a letter
       ExecuteJsAt(kFirstTabContents, input_text_box,
                   "(el) => { el.focus(); el.select(); }"),
-      WaitForStateChange(kFirstTabContents, std::move(input_is_focused)),
-      PressKeyboard(),
-      WaitForStateChange(kFirstTabContents, std::move(input_value_updated)),
+      WaitForStateChange(kFirstTabContents, input_is_focused), PressKeyboard(),
+      WaitForStateChange(kFirstTabContents, input_value_updated),
 
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       TryDiscardTab(0), CheckTabIsNotDiscarded(0));

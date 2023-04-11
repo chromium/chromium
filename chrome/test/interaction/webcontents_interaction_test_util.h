@@ -5,6 +5,7 @@
 #ifndef CHROME_TEST_INTERACTION_WEBCONTENTS_INTERACTION_TEST_UTIL_H_
 #define CHROME_TEST_INTERACTION_WEBCONTENTS_INTERACTION_TEST_UTIL_H_
 
+#include <initializer_list>
 #include <map>
 #include <memory>
 #include <string>
@@ -58,7 +59,49 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
   //    - if the current element has a shadow root, switch to that
   //    - navigate to the next element of deep_query using querySelector()
   //  * the final element found is the result
-  using DeepQuery = std::vector<std::string>;
+  //
+  // Best practice is to use the smallest number of `segments` and the fewest
+  // terms within each segment.
+  //
+  // For example, rather than:
+  //   {
+  //     "my-app", "#container", ".body-list:nth-child(2)", "sub-component",
+  //     "div", "span", "#target"
+  //   }
+  //
+  // Prefer:
+  //   { "my-app", ".body-list:nth-child(2) sub-component", "#target" }
+  //
+  // More concise queries are easier to read and less fragile if the structure
+  // of the underlying page changes.
+  class DeepQuery {
+   public:
+    DeepQuery();
+    DeepQuery(std::initializer_list<std::string> segments);
+    DeepQuery(const DeepQuery& other);
+    DeepQuery& operator=(const DeepQuery& other);
+    DeepQuery& operator=(std::initializer_list<std::string> segments);
+    ~DeepQuery();
+
+    using const_iterator = std::vector<std::string>::const_iterator;
+    using size_type = std::vector<std::string>::size_type;
+
+    const_iterator begin() const { return segments_.begin(); }
+    const_iterator end() const { return segments_.end(); }
+
+    bool empty() const { return segments_.empty(); }
+    size_type size() const { return segments_.size(); }
+    const std::string& operator[](size_type which) const {
+      return segments_[which];
+    }
+
+   private:
+    friend void PrintTo(
+        const WebContentsInteractionTestUtil::DeepQuery& deep_query,
+        std::ostream* os);
+
+    std::vector<std::string> segments_;
+  };
 
   // Specifies a state change in a web page that we would like to poll for.
   // By using `event` and `timeout_event` you can determine both that an
@@ -66,8 +109,8 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
   // state change *doesn't* happen in a particular length of time.
   struct StateChange {
     StateChange();
-    StateChange(StateChange&& other);
-    StateChange& operator=(StateChange&& other);
+    StateChange(const StateChange& other);
+    StateChange& operator=(const StateChange& other);
     ~StateChange();
 
     // What type of state change are we watching for?
@@ -392,5 +435,12 @@ class WebContentsInteractionTestUtil : private content::WebContentsObserver,
   // specific browser or in any browser.
   std::unique_ptr<NewTabWatcher> new_tab_watcher_;
 };
+
+extern void PrintTo(const WebContentsInteractionTestUtil::DeepQuery& deep_query,
+                    std::ostream* os);
+
+extern std::ostream& operator<<(
+    std::ostream& os,
+    const WebContentsInteractionTestUtil::DeepQuery& deep_query);
 
 #endif  // CHROME_TEST_INTERACTION_WEBCONTENTS_INTERACTION_TEST_UTIL_H_

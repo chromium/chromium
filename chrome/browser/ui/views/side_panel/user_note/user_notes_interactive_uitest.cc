@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(UserNotesInteractiveTest,
       WaitForShow(kUserNotesSidePanelWebViewElementId),
       InstrumentNonTabWebView(kUserNotesElementId,
                               kUserNotesSidePanelWebViewElementId),
-      WaitForStateChange(kUserNotesElementId, std::move(state_change)),
+      WaitForStateChange(kUserNotesElementId, state_change),
       CheckJsResultAt(kUserNotesElementId, kLastUserNoteQuery,
                       "el => el.shadowRoot.activeElement === "
                       "el.shadowRoot.getElementById('noteContent')",

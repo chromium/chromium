@@ -328,8 +328,7 @@ IN_PROC_BROWSER_TEST_P(WebUITabStripDragInteractiveTest,
       // Verify there are two tabs.
       CheckResult(get_tab_count, 2),
       // Wait for the WebUI tabstrip contents to populate.
-      WaitForStateChange(kWebUiTabStripElementId,
-                         std::move(tab_populated_change)),
+      WaitForStateChange(kWebUiTabStripElementId, tab_populated_change),
       // Now that the tab is properly rendered, drag it out of the tabstrip.
       MoveMouseTo(kWebUiTabStripElementId, kSecondTabQuery),
       // Drag to the center of the main web contents pane, which should be

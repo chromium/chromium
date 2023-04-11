@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(OpenPageAndShowHelpBubbleBrowserTest,
   RunTestSequence(
       InstrumentTab(kTabId), Do(std::move(help_bubble_start_callback)),
       WaitForWebContentsNavigation(kTabId, GURL(kPageWithAnchorURL)),
-      WaitForStateChange(kTabId, std::move(bubble_is_visible)),
+      WaitForStateChange(kTabId, bubble_is_visible),
       CheckJsResultAt(kTabId, kPathToHelpBubbleCloseButton,
                       "(el) => el.getAttribute('aria-label')",
                       l10n_util::GetStringUTF8(IDS_CLOSE_PROMO)));

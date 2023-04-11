@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
 
       // Wait for an expected element to be present and move the mouse to that
       // element.
-      WaitForStateChange(kWebPageId, std::move(state_change)),
+      WaitForStateChange(kWebPageId, state_change),
       MoveMouseTo(kWebPageId, kDeepQuery),
 
       // Verify that the mouse cursor is now in the web contents.

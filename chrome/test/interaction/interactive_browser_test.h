@@ -177,7 +177,7 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // be set.
   [[nodiscard]] static MultiStep WaitForStateChange(
       ui::ElementIdentifier webcontents_id,
-      StateChange state_change,
+      const StateChange& state_change,
       bool expect_timeout = false);
 
   // Required to keep from hiding inherited versions of these methods.
@@ -189,14 +189,14 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // InAnyContext() block.
   [[nodiscard]] static StepBuilder EnsurePresent(
       ui::ElementIdentifier webcontents_id,
-      DeepQuery where);
+      const DeepQuery& where);
 
   // Ensures that there is no element at path `where` in `webcontents_id`.
   // Unlike InteractiveTestApi::EnsurePresent, this verb can be inside an
   // InAnyContext() block.
   [[nodiscard]] static StepBuilder EnsureNotPresent(
       ui::ElementIdentifier webcontents_id,
-      DeepQuery where);
+      const DeepQuery& where);
 
   // Execute javascript `function`, which should take no arguments, in
   // WebContents `webcontents_id`.
@@ -208,7 +208,7 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // argument, with the element at `where`, in WebContents `webcontents_id`.
   [[nodiscard]] static StepBuilder ExecuteJsAt(
       ui::ElementIdentifier webcontents_id,
-      DeepQuery where,
+      const DeepQuery& where,
       const std::string& function);
 
   // Executes javascript `function`, which should take no arguments and return a
@@ -243,7 +243,7 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // element specified by `where`, and fails if the result is not truthy.
   [[nodiscard]] static StepBuilder CheckJsResultAt(
       ui::ElementIdentifier webcontents_id,
-      DeepQuery where,
+      const DeepQuery& where,
       const std::string& function);
 
   // Executes javascript `function`, which should take a single DOM element as
@@ -255,7 +255,7 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   template <typename T>
   [[nodiscard]] static StepBuilder CheckJsResultAt(
       ui::ElementIdentifier webcontents_id,
-      DeepQuery where,
+      const DeepQuery& where,
       const std::string& function,
       T&& matcher);
 
@@ -268,14 +268,14 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // should be an instrumented WebContents; see Instrument*(). Move the mouse to
   // the element's center point in screen coordinates.
   [[nodiscard]] StepBuilder MoveMouseTo(ElementSpecifier web_contents,
-                                        DeepQuery where);
+                                        const DeepQuery& where);
 
   // Find the DOM element at the given path in the reference element, which
   // should be an instrumented WebContents; see Instrument*(). Perform a drag
   // from the mouse's current location to the element's center point in screen
   // coordinates, and then if `release` is true, releases the mouse button.
   [[nodiscard]] StepBuilder DragMouseTo(ElementSpecifier web_contents,
-                                        DeepQuery where,
+                                        const DeepQuery& where,
                                         bool release = true);
 
  protected:
@@ -284,7 +284,8 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
           private_test_impl);
 
  private:
-  static RelativePositionCallback DeepQueryToRelativePosition(DeepQuery query);
+  static RelativePositionCallback DeepQueryToRelativePosition(
+      const DeepQuery& query);
 
   Browser* GetBrowserFor(ui::ElementContext current_context,
                          BrowserSpecifier spec);
@@ -363,7 +364,7 @@ ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResult(
 template <typename T>
 ui::InteractionSequence::StepBuilder InteractiveBrowserTestApi::CheckJsResultAt(
     ui::ElementIdentifier webcontents_id,
-    DeepQuery where,
+    const DeepQuery& where,
     const std::string& function,
     T&& matcher) {
   return internal::JsResultChecker<T>::CheckJsResultAt(

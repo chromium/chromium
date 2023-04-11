@@ -515,7 +515,16 @@ for (let selector of deepQuery) {
 ```
 
 If at any point the selector fails, the target DOM element is determined not to
-exist. Often, this fails the test, but might not in all cases. 
+exist. Often, this fails the test, but might not in all cases.
+
+There is a strong preference to keep DeepQueries as simple as possible, both in
+number of queries and in complexity of each query, in order to avoid tests being
+fragile to small changes in page structure.
+ - Use one query string for each Shadow Dom to pierce plus one query for the
+   final element.
+ - Most query strings can be a single element name or HTML id (e.g.
+   "my-subcomponent" or "#enableButton"), only specify intervening elements if
+   it's necessary to find the one you care about.
 
 ### Automatic Conversion
 
