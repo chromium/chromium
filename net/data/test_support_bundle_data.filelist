@@ -205,7 +205,6 @@ data/ssl/certificates/unittest.key.bin
 data/ssl/certificates/unittest.selfsigned.der
 data/ssl/certificates/verisign_intermediate_ca_2011.pem
 data/ssl/certificates/verisign_intermediate_ca_2016.pem
-data/ssl/certificates/vrk_gov_root.pem
 data/ssl/certificates/weak_digest_md2_ee.pem
 data/ssl/certificates/weak_digest_md2_intermediate.pem
 data/ssl/certificates/weak_digest_md2_root.pem
