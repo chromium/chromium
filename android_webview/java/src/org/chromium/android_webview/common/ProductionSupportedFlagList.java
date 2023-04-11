@@ -157,6 +157,8 @@ public final class ProductionSupportedFlagList {
                             .ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER_NAME,
                     "When enabled, Android Autofill ViewStructures contain an additional "
                             + "hierarchy level."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_SPLIT_CREDIT_CARD_NUMBERS_CAUTIOUSLY,
+                    "Split credit card numbers over multiple fields more cautiously."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ACROSS_IFRAMES,
                     "Enable Autofill for frame-transcending forms (forms whose fields live in "
                             + "different frames)."),
