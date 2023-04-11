@@ -43,9 +43,9 @@ void ShellRuntimeAPIDelegate::OpenURL(const GURL& uninstall_url) {}
 
 bool ShellRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  info->os = api::runtime::PLATFORM_OS_CROS;
+  info->os = api::runtime::PlatformOs::kCros;
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  info->os = api::runtime::PLATFORM_OS_LINUX;
+  info->os = api::runtime::PlatformOs::kLinux;
 #endif
   return true;
 }

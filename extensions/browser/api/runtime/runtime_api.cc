@@ -809,7 +809,7 @@ ExtensionFunction::ResponseAction RuntimeGetContextsFunction::Run() {
   // match the filter.
   if (!filter.context_types ||
       base::Contains(*filter.context_types,
-                     api::runtime::CONTEXT_TYPE_BACKGROUND)) {
+                     api::runtime::ContextType::kBackground)) {
     if (absl::optional<api::runtime::ExtensionContext> worker =
             GetWorkerContext()) {
       result.push_back(std::move(*worker));
@@ -846,7 +846,7 @@ RuntimeGetContextsFunction::GetWorkerContext() {
   }
 
   api::runtime::ExtensionContext context;
-  context.context_type = api::runtime::CONTEXT_TYPE_BACKGROUND;
+  context.context_type = api::runtime::ContextType::kBackground;
   base::Uuid context_id =
       process_manager->GetContextIdForWorker(active_workers[0]);
   CHECK(context_id.is_valid());
@@ -880,11 +880,11 @@ RuntimeGetContextsFunction::GetFrameContexts() {
         break;
 
       case mojom::ViewType::kExtensionPopup:
-        return api::runtime::CONTEXT_TYPE_POPUP;
+        return api::runtime::ContextType::kPopup;
       case mojom::ViewType::kTabContents:
-        return api::runtime::CONTEXT_TYPE_TAB;
+        return api::runtime::ContextType::kTab;
       case mojom::ViewType::kOffscreenDocument:
-        return api::runtime::CONTEXT_TYPE_OFFSCREEN_DOCUMENT;
+        return api::runtime::ContextType::kOffscreenDocument;
 
       case mojom::ViewType::kExtensionSidePanel:
       case mojom::ViewType::kExtensionGuest:
@@ -892,7 +892,7 @@ RuntimeGetContextsFunction::GetFrameContexts() {
         break;
     }
 
-    return api::runtime::CONTEXT_TYPE_NONE;
+    return api::runtime::ContextType::kNone;
   };
 
   ProcessManager::FrameSet frames =
@@ -905,7 +905,7 @@ RuntimeGetContextsFunction::GetFrameContexts() {
     CHECK(web_contents);
 
     auto context_type = get_context_type(web_contents);
-    if (context_type == api::runtime::CONTEXT_TYPE_NONE) {
+    if (context_type == api::runtime::ContextType::kNone) {
       // Skip unsupported contexts.
       continue;
     }

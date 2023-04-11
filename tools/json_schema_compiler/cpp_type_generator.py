@@ -84,6 +84,8 @@ class CppTypeGenerator(object):
       dash-case: kDashCase
       camelCaseWithLowerFirst: kCamelCaseWithLowerFirst
       CamelCaseWithUpperFirst: kCamelCaseWithUpperFirst.
+      x86_64: kX86_64
+      x86_ARCH: kX86Arch
     """
     change_to_upper = True
     last_was_lower = True
@@ -92,6 +94,10 @@ class CppTypeGenerator(object):
       if char in {'_', '-'}:
         change_to_upper=True
       elif change_to_upper:
+        # Numbers must be kept separate, for better readability (e.g. kX86_64).
+        if char.isnumeric() and result and result[-1].isnumeric():
+          result += '_'
+
         result += char.upper()
         change_to_upper = False
         last_was_lower = False

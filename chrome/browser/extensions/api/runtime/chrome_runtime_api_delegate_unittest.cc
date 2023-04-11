@@ -292,20 +292,20 @@ TEST_F(ChromeRuntimeAPIDelegateTest, RequestUpdateCheck) {
 
   // Run an update check that should get a "no_update" response.
   downloader_test_delegate_.AddNoUpdateResponse(id);
-  DoUpdateCheck(id, api::runtime::REQUEST_UPDATE_CHECK_STATUS_NO_UPDATE, "");
+  DoUpdateCheck(id, api::runtime::RequestUpdateCheckStatus::kNoUpdate, "");
 
   // Check again after a short delay - we should be throttled because
   // not enough time has passed.
   clock_.Advance(base::Minutes(15));
   downloader_test_delegate_.AddNoUpdateResponse(id);
-  DoUpdateCheck(id, api::runtime::REQUEST_UPDATE_CHECK_STATUS_THROTTLED, "");
+  DoUpdateCheck(id, api::runtime::RequestUpdateCheckStatus::kThrottled, "");
 
   // Now simulate checking a few times at a 6 hour interval - none of these
   // should be throttled.
   for (int i = 0; i < 5; i++) {
     clock_.Advance(base::Hours(6));
     downloader_test_delegate_.AddNoUpdateResponse(id);
-    DoUpdateCheck(id, api::runtime::REQUEST_UPDATE_CHECK_STATUS_NO_UPDATE, "");
+    DoUpdateCheck(id, api::runtime::RequestUpdateCheckStatus::kNoUpdate, "");
   }
 
   // Run an update check that should get an "update_available" response. This
@@ -313,14 +313,14 @@ TEST_F(ChromeRuntimeAPIDelegateTest, RequestUpdateCheck) {
   // will not complete until we reload the extension.
   clock_.Advance(base::Days(1));
   downloader_test_delegate_.AddUpdateResponse(id, v2_path, "2.0");
-  DoUpdateCheck(id, api::runtime::REQUEST_UPDATE_CHECK_STATUS_UPDATE_AVAILABLE,
+  DoUpdateCheck(id, api::runtime::RequestUpdateCheckStatus::kUpdateAvailable,
                 "2.0");
 
   // Call again after short delay - it should be throttled instead of getting
   // another "update_available" response.
   clock_.Advance(base::Minutes(30));
   downloader_test_delegate_.AddUpdateResponse(id, v2_path, "2.0");
-  DoUpdateCheck(id, api::runtime::REQUEST_UPDATE_CHECK_STATUS_THROTTLED, "");
+  DoUpdateCheck(id, api::runtime::RequestUpdateCheckStatus::kThrottled, "");
 
   // Reload the extension, causing the delayed update to v2 to happen, then do
   // another update check - we should get a no_update instead of throttled.
@@ -331,16 +331,16 @@ TEST_F(ChromeRuntimeAPIDelegateTest, RequestUpdateCheck) {
   EXPECT_EQ("2.0", current->VersionString());
   clock_.Advance(base::Seconds(10));
   downloader_test_delegate_.AddNoUpdateResponse(id);
-  DoUpdateCheck(id, api::runtime::REQUEST_UPDATE_CHECK_STATUS_NO_UPDATE, "");
+  DoUpdateCheck(id, api::runtime::RequestUpdateCheckStatus::kNoUpdate, "");
 
   // Check again after short delay; we should be throttled.
   clock_.Advance(base::Minutes(5));
-  DoUpdateCheck(id, api::runtime::REQUEST_UPDATE_CHECK_STATUS_THROTTLED, "");
+  DoUpdateCheck(id, api::runtime::RequestUpdateCheckStatus::kThrottled, "");
 
   // Call again after a longer delay, we should should be unthrottled.
   clock_.Advance(base::Hours(8));
   downloader_test_delegate_.AddNoUpdateResponse(id);
-  DoUpdateCheck(id, api::runtime::REQUEST_UPDATE_CHECK_STATUS_NO_UPDATE, "");
+  DoUpdateCheck(id, api::runtime::RequestUpdateCheckStatus::kNoUpdate, "");
 }
 
 class ExtensionLoadWaiter : public ExtensionRegistryObserver {

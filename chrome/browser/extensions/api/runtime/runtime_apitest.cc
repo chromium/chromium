@@ -701,7 +701,7 @@ class RuntimeGetContextsApiTest : public ExtensionApiTest {
   auto GetBackgroundMatcher() {
     return testing::AllOf(
         testing::Field(&api::runtime::ExtensionContext::context_type,
-                       testing::Eq(api::runtime::CONTEXT_TYPE_BACKGROUND)),
+                       testing::Eq(api::runtime::ContextType::kBackground)),
         testing::Field(&api::runtime::ExtensionContext::tab_id,
                        testing::Eq(-1)),
         testing::Field(&api::runtime::ExtensionContext::window_id,
@@ -810,7 +810,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, FilterMatching) {
         GetContextStructs(R"({})");
     EXPECT_THAT(contexts, testing::UnorderedElementsAre(
                               GetBackgroundMatcher(),
-                              GetFrameMatcher(api::runtime::CONTEXT_TYPE_TAB,
+                              GetFrameMatcher(api::runtime::ContextType::kTab,
                                               extension_page_url)));
   }
   {
@@ -827,7 +827,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest, FilterMatching) {
         GetContextStructs(filter);
     EXPECT_THAT(contexts,
                 testing::ElementsAre(GetFrameMatcher(
-                    api::runtime::CONTEXT_TYPE_TAB, extension_page_url)));
+                    api::runtime::ContextType::kTab, extension_page_url)));
   }
   {
     // Try passing a filter for a context type with no corresponding matches. No
@@ -1029,7 +1029,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest,
         ContextValueToContextStructs(regular_results);
     EXPECT_THAT(contexts, testing::UnorderedElementsAre(
                               GetBackgroundMatcher(),
-                              GetFrameMatcher(api::runtime::CONTEXT_TYPE_TAB,
+                              GetFrameMatcher(api::runtime::ContextType::kTab,
                                               regular_url)));
   }
   {
@@ -1041,7 +1041,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest,
         ContextValueToContextStructs(incognito_results);
     EXPECT_THAT(contexts, testing::UnorderedElementsAre(
                               GetBackgroundMatcher(),
-                              GetFrameMatcher(api::runtime::CONTEXT_TYPE_TAB,
+                              GetFrameMatcher(api::runtime::ContextType::kTab,
                                               incognito_url)));
   }
 }
@@ -1145,7 +1145,7 @@ IN_PROC_BROWSER_TEST_F(RuntimeGetContextsApiTest,
         ContextValueToContextStructs(regular_results);
     EXPECT_THAT(contexts, testing::UnorderedElementsAre(
                               GetBackgroundMatcher(),
-                              GetFrameMatcher(api::runtime::CONTEXT_TYPE_TAB,
+                              GetFrameMatcher(api::runtime::ContextType::kTab,
                                               regular_url)));
   }
 }
