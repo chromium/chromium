@@ -153,21 +153,10 @@ void SparseHistogram::MarkSamplesAsLogged(const HistogramSamples& samples) {
 std::unique_ptr<HistogramSamples> SparseHistogram::SnapshotDelta() {
   DCHECK(!final_delta_created_);
 
-  // We can't re-use SnapshotUnloggedSamples() or MarkSamplesAsLogged() here
-  // since |lock_| is not re-entrant.
-  // TODO(crbug/1052796): Consider removing the lock in this function, and
-  // just directly calling SnapshotUnloggedSamples() and MarkSamplesAsLogged(),
-  // since the lock may not be needed in between (similarly to
-  // Histogram::SnapshotDelta()). This would still ensure eventual consistency.
-  // Also make those functions final in order to avoid vtable lookups.
-  std::unique_ptr<SampleMap> snapshot(new SampleMap(name_hash()));
+  std::unique_ptr<SampleMap> snapshot =
+      std::make_unique<SampleMap>(name_hash());
   base::AutoLock auto_lock(lock_);
-  if (base::FeatureList::IsEnabled(internal::kHistogramNewSnapshotDelta)) {
-    snapshot->Extract(*unlogged_samples_);
-  } else {
-    snapshot->Add(*unlogged_samples_);
-    unlogged_samples_->Subtract(*snapshot);
-  }
+  snapshot->Extract(*unlogged_samples_);
   logged_samples_->Add(*snapshot);
   return std::move(snapshot);
 }

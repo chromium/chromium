@@ -162,10 +162,6 @@ class HistogramThreadsafeTest : public testing::Test {
   ~HistogramThreadsafeTest() override = default;
 
   void SetUp() override {
-    // TODO(crbug/1293026): Remove this when enabled by default.
-    scoped_feature_list_.InitAndEnableFeature(
-        internal::kHistogramNewSnapshotDelta);
-
     GlobalHistogramAllocator::CreateWithLocalMemory(4 << 20, /*id=*/0,
                                                     /*name=*/"");
     ASSERT_TRUE(GlobalHistogramAllocator::Get());
@@ -287,8 +283,6 @@ class HistogramThreadsafeTest : public testing::Test {
   }
 
  private:
-  test::ScopedFeatureList scoped_feature_list_;
-
   // A view of the GlobalHistogramAllocator to simulate a subprocess having its
   // own view of some shared memory.
   std::unique_ptr<PersistentHistogramAllocator> allocator_view_;
