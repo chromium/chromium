@@ -859,6 +859,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.PageContentAnnotationsService.VisibilityScoreOfGoogleSRP"
+    units="score" expires_after="M117">
+  <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the visibility score of Google Search Result Pages when the page's
+    annotation is complete.
+  </summary>
+</histogram>
+
+<histogram
     name="OptimizationGuide.PageEntitiesModelExecutor.CreatedSuccessfully"
     enum="BooleanSuccess" expires_after="2023-03-26">
   <obsolete>
