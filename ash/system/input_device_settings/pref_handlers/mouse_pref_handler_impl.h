@@ -24,9 +24,22 @@ class ASH_EXPORT MousePrefHandlerImpl : public MousePrefHandler {
   void InitializeMouseSettings(PrefService* pref_service,
                                const mojom::MousePolicies& mouse_policies,
                                mojom::Mouse* mouse) override;
+
+  void InitializeLoginScreenMouseSettings(
+      PrefService* local_state,
+      const AccountId& account_id,
+      const mojom::MousePolicies& mouse_policies,
+      mojom::Mouse* mouse) override;
+
   void UpdateMouseSettings(PrefService* pref_service,
                            const mojom::MousePolicies& mouse_policies,
                            const mojom::Mouse& mouse) override;
+
+  void UpdateLoginScreenMouseSettings(
+      PrefService* local_state,
+      const AccountId& account_id,
+      const mojom::MousePolicies& mouse_policies,
+      const mojom::Mouse& mouse) override;
 };
 
 }  // namespace ash
