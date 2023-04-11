@@ -50,14 +50,6 @@ class TestExtensionSystem : public MockExtensionSystem {
   TestExtensionSystem& operator=(const TestExtensionSystem&) = delete;
 
   ~TestExtensionSystem() override {}
-
-  // MockExtensionSystem:
-  void RegisterExtensionWithRequestContexts(
-      const Extension* extension,
-      base::OnceClosure callback) override {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback));
-  }
 };
 
 class TestExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
@@ -137,15 +129,9 @@ class ExtensionRegistrarTest : public ExtensionsTest {
   // Adds the extension as enabled and verifies the result.
   void AddEnabledExtension() {
     SCOPED_TRACE("AddEnabledExtension");
-    ExtensionRegistry* extension_registry =
-        ExtensionRegistry::Get(browser_context());
-
     EXPECT_CALL(delegate_, PostActivateExtension(extension_));
     registrar_->AddExtension(extension_);
     ExpectInSet(ExtensionRegistry::ENABLED);
-    EXPECT_FALSE(IsExtensionReady());
-
-    TestExtensionRegistryObserver(extension_registry).WaitForExtensionReady();
     EXPECT_TRUE(IsExtensionReady());
 
     EXPECT_EQ(disable_reason::DISABLE_NONE,
@@ -239,15 +225,8 @@ class ExtensionRegistrarTest : public ExtensionsTest {
 
   void EnableExtension() {
     SCOPED_TRACE("EnableExtension");
-    ExtensionRegistry* extension_registry =
-        ExtensionRegistry::Get(browser_context());
-
     EXPECT_CALL(delegate_, PostActivateExtension(extension_));
     registrar_->EnableExtension(extension_->id());
-    ExpectInSet(ExtensionRegistry::ENABLED);
-    EXPECT_FALSE(IsExtensionReady());
-
-    TestExtensionRegistryObserver(extension_registry).WaitForExtensionReady();
     ExpectInSet(ExtensionRegistry::ENABLED);
     EXPECT_TRUE(IsExtensionReady());
 

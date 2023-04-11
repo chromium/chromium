@@ -174,11 +174,6 @@ class ExtensionRegistrar : public ProcessManagerObserver {
   // Returns true on success.
   bool ReplaceReloadedExtension(scoped_refptr<const Extension> extension);
 
-  // Marks the extension ready after URLRequestContexts have been updated on
-  // the IO thread.
-  void OnExtensionRegisteredWithRequestContexts(
-      scoped_refptr<const Extension> extension);
-
   // Upon reloading an extension, spins up its context if necessary.
   void MaybeSpinUpLazyContext(const Extension* extension, bool is_newly_added);
 

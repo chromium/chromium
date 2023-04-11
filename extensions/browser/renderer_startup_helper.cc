@@ -336,10 +336,6 @@ void RendererStartupHelper::OnDeveloperModeChanged(bool in_developer_mode) {
   }
 }
 
-void RendererStartupHelper::UnloadAllExtensionsForTest() {
-  extension_process_map_.clear();
-}
-
 mojo::PendingAssociatedRemote<mojom::Renderer>
 RendererStartupHelper::BindNewRendererRemote(
     content::RenderProcessHost* process) {

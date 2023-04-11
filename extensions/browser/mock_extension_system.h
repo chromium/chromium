@@ -44,7 +44,6 @@ class MockExtensionSystem : public ExtensionSystem {
   StateStore* rules_store() override;
   StateStore* dynamic_user_scripts_store() override;
   scoped_refptr<value_store::ValueStoreFactory> store_factory() override;
-  InfoMap* info_map() override;
   QuotaService* quota_service() override;
   AppSorting* app_sorting() override;
   const base::OneShotEvent& ready() const override;

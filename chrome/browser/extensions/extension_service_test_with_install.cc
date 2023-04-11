@@ -444,6 +444,7 @@ void ExtensionServiceTestWithInstall::InstallCRXInternal(
   // TODO(devlin): We shouldn't ignore manifest warnings here, but we always
   // did so a bunch of stuff fails. Migrate this over.
   extension_loader.set_ignore_manifest_warnings(true);
+  extension_loader.set_wait_for_renderers(false);
   extension_loader.LoadExtension(crx_path);
 }
 

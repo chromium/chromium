@@ -224,13 +224,14 @@ class PrinterProviderApiTest : public ExtensionApiTest,
   bool SimulateExtensionUnload(const std::string& extension_id) {
     ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile());
 
-    const Extension* extension = extension_registry->GetExtensionById(
-        extension_id, ExtensionRegistry::ENABLED);
+    scoped_refptr<const Extension> extension =
+        extension_registry->GetExtensionById(extension_id,
+                                             ExtensionRegistry::ENABLED);
     if (!extension)
       return false;
 
     extension_registry->RemoveEnabled(extension_id);
-    extension_registry->TriggerOnUnloaded(extension,
+    extension_registry->TriggerOnUnloaded(extension.get(),
                                           UnloadedExtensionReason::TERMINATE);
     return true;
   }

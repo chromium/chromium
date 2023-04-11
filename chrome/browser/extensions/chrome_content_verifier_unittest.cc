@@ -16,7 +16,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "extensions/browser/content_verifier/test_utils.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/info_map.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/switches.h"
 
@@ -76,7 +75,6 @@ class ChromeContentVerifierTest : public ExtensionServiceTestWithInstall {
     delegate_raw_ = delegate.get();
     content_verifier_ = base::MakeRefCounted<ContentVerifier>(
         browser_context(), std::move(delegate));
-    info_map()->SetContentVerifier(content_verifier_.get());
     content_verifier_->Start();
   }
 
@@ -102,7 +100,6 @@ class ChromeContentVerifierTest : public ExtensionServiceTestWithInstall {
   void AddExtensionToContentVerifier(
       const scoped_refptr<const Extension>& extension,
       VerifierObserver* verifier_observer) {
-    info_map()->AddExtension(extension.get(), base::Time::Now(), false, false);
     EXPECT_TRUE(
         ExtensionRegistry::Get(browser_context())->AddEnabled(extension));
     ExtensionRegistry::Get(browser_context())->TriggerOnLoaded(extension.get());
@@ -127,10 +124,6 @@ class ChromeContentVerifierTest : public ExtensionServiceTestWithInstall {
   }
 
  private:
-  InfoMap* info_map() {
-    return ExtensionSystem::Get(browser_context())->info_map();
-  }
-
   content::BrowserContext* browser_context() { return testing_profile_.get(); }
 
   scoped_refptr<const Extension> extension_;

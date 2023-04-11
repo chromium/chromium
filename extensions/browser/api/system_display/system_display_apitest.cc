@@ -200,15 +200,16 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, OverscanCalibrationAppNoComplete) {
   SetInfo(id, params);
 
   ResultCatcher catcher;
-  const Extension* extension = LoadApp("system/display/overscan_no_complete");
+  scoped_refptr<const Extension> extension =
+      LoadApp("system/display/overscan_no_complete");
   ASSERT_TRUE(extension);
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 
   // Calibration was started by the app but not completed.
   ASSERT_TRUE(provider_->calibration_started(id));
 
-  // Unloading the app should complete the calibraiton (and hide the overlay).
-  UnloadApp(extension);
+  // Unloading the app should complete the calibration (and hide the overlay).
+  UnloadApp(extension.get());
   ASSERT_FALSE(provider_->calibration_changed(id));
   ASSERT_FALSE(provider_->calibration_started(id));
 }

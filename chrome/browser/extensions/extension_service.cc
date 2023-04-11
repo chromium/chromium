@@ -2315,10 +2315,13 @@ bool ExtensionService::UserCanDisableInstalledExtension(
 void ExtensionService::UnloadAllExtensionsInternal() {
   profile_->GetExtensionSpecialStoragePolicy()->RevokeRightsForAllExtensions();
 
-  registry_->ClearAll();
+  const ExtensionSet extensions = registry_->GenerateInstalledExtensionsSet(
+      ExtensionRegistry::ENABLED | ExtensionRegistry::DISABLED |
+      ExtensionRegistry::TERMINATED);
 
-  RendererStartupHelperFactory::GetForBrowserContext(profile())
-      ->UnloadAllExtensionsForTest();  // IN-TEST
+  for (const auto& extension : extensions) {
+    UnloadExtension(extension->id(), UnloadedExtensionReason::UNINSTALL);
+  }
 
   // TODO(erikkay) should there be a notification for this?  We can't use
   // EXTENSION_UNLOADED since that implies that the extension has

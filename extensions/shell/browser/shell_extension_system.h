@@ -75,14 +75,8 @@ class ShellExtensionSystem : public ExtensionSystem {
   StateStore* rules_store() override;
   StateStore* dynamic_user_scripts_store() override;
   scoped_refptr<value_store::ValueStoreFactory> store_factory() override;
-  InfoMap* info_map() override;
   QuotaService* quota_service() override;
   AppSorting* app_sorting() override;
-  void RegisterExtensionWithRequestContexts(
-      const Extension* extension,
-      base::OnceClosure callback) override;
-  void UnregisterExtensionWithRequestContexts(
-      const std::string& extension_id) override;
   const base::OneShotEvent& ready() const override;
   bool is_ready() const override;
   ContentVerifier* content_verifier() override;
@@ -103,9 +97,6 @@ class ShellExtensionSystem : public ExtensionSystem {
   void OnExtensionRegisteredWithRequestContexts(
       scoped_refptr<Extension> extension);
   raw_ptr<content::BrowserContext> browser_context_;  // Not owned.
-
-  // Data to be accessed on the IO thread. Must outlive process_manager_.
-  scoped_refptr<InfoMap> info_map_;
 
   std::unique_ptr<ServiceWorkerManager> service_worker_manager_;
   std::unique_ptr<QuotaService> quota_service_;

@@ -19,7 +19,6 @@
 #include "extensions/browser/content_verifier.h"
 #include "extensions/browser/content_verifier/test_utils.h"
 #include "extensions/browser/extensions_test.h"
-#include "extensions/browser/info_map.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/file_util.h"
@@ -107,12 +106,10 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
   void SetUp() override {
     ExtensionsTest::SetUp();
 
-    extension_info_map_ = base::MakeRefCounted<InfoMap>();
     auto delegate = std::make_unique<MockContentVerifierDelegate>();
     content_verifier_delegate_ = delegate.get();
     content_verifier_ = base::MakeRefCounted<ContentVerifier>(
         &testing_context_, std::move(delegate));
-    extension_info_map_->SetContentVerifier(content_verifier_.get());
   }
 
   void TearDown() override {
@@ -250,7 +247,6 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
                                   base::Unretained(content_verifier_.get())));
   }
 
-  scoped_refptr<InfoMap> extension_info_map_;
   scoped_refptr<ContentVerifier> content_verifier_;
   raw_ptr<MockContentVerifierDelegate> content_verifier_delegate_ =
       nullptr;  // Owned by |content_verifier_|.

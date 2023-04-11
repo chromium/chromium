@@ -17,7 +17,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/app_runtime/app_runtime_api.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/info_map.h"
 #include "extensions/browser/null_app_sorting.h"
 #include "extensions/browser/quota_service.h"
 #include "extensions/browser/service_worker_manager.h"
@@ -112,12 +111,6 @@ ShellExtensionSystem::store_factory() {
   return store_factory_;
 }
 
-InfoMap* ShellExtensionSystem::info_map() {
-  if (!info_map_.get())
-    info_map_ = new InfoMap;
-  return info_map_.get();
-}
-
 QuotaService* ShellExtensionSystem::quota_service() {
   return quota_service_.get();
 }
@@ -125,20 +118,6 @@ QuotaService* ShellExtensionSystem::quota_service() {
 AppSorting* ShellExtensionSystem::app_sorting() {
   return app_sorting_.get();
 }
-
-void ShellExtensionSystem::RegisterExtensionWithRequestContexts(
-    const Extension* extension,
-    base::OnceClosure callback) {
-  content::GetIOThreadTaskRunner({})->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(&InfoMap::AddExtension, info_map(),
-                     base::RetainedRef(extension), base::Time::Now(), false,
-                     false),
-      std::move(callback));
-}
-
-void ShellExtensionSystem::UnregisterExtensionWithRequestContexts(
-    const std::string& extension_id) {}
 
 const base::OneShotEvent& ShellExtensionSystem::ready() const {
   return ready_;
