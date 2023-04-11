@@ -5,6 +5,7 @@
 #include "chrome/browser/dips/dips_features.h"
 
 #include "base/feature_list.h"
+#include "base/time/time.h"
 
 namespace dips {
 
@@ -57,4 +58,10 @@ const base::FeatureParam<DIPSTriggeringAction> kTriggeringAction{
     &kFeature, "triggering_action", DIPSTriggeringAction::kNone,
     &kTriggeringActionOptions};
 
+// Denotes the length of a time interval within which any client-side redirect
+// is viewed as a bounce (provided all other criteria are equally met). The
+// interval starts every time a page finishes a navigation (a.k.a. a commit is
+// registered).
+const base::FeatureParam<base::TimeDelta> kBounceTimeout{
+    &kFeature, "bounce_timeout", base::Seconds(10)};
 }  // namespace dips

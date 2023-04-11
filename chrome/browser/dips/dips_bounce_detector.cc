@@ -14,6 +14,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/dips/cookie_access_filter.h"
+#include "chrome/browser/dips/dips_features.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_storage.h"
@@ -46,11 +47,6 @@ ClientBounceDetectionState::ClientBounceDetectionState(
 }
 
 namespace {
-
-// The amount of time since finishing navigation to a page that a client-side
-// redirect must happen within to count as a bounce (provided that all other
-// criteria are met as well).
-const int kBounceThresholdSeconds = 10;
 
 inline void UmaHistogramTimeToBounce(base::TimeDelta sample) {
   base::UmaHistogramTimes("Privacy.DIPS.TimeFromNavigationCommitToClientBounce",
@@ -314,16 +310,16 @@ void DIPSBounceDetector::DidStartNavigation(
 
   DIPSRedirectInfoPtr client_redirect;
   if (client_detection_state_.has_value()) {
-    base::TimeDelta bounce_time = now - client_detection_state_->page_load_time;
+    base::TimeDelta bounce_delay =
+        now - client_detection_state_->page_load_time;
 
     if (!navigation_handle->HasUserGesture() &&
-        (bounce_time <
-         base::TimeDelta(base::Seconds(kBounceThresholdSeconds)))) {
+        (bounce_delay < dips::kBounceTimeout.Get())) {
       // Time between page load and client-side redirect starting is only
       // tracked for stateful bounces.
       if (client_detection_state_->cookie_access_type >
           CookieAccessType::kNone) {
-        UmaHistogramTimeToBounce(bounce_time);
+        UmaHistogramTimeToBounce(bounce_delay);
       }
 
       client_redirect = std::make_unique<DIPSRedirectInfo>(
@@ -334,7 +330,7 @@ void DIPSBounceDetector::DidStartNavigation(
           /*source_id=*/
           delegate_->GetPageUkmSourceId(),
           /*time=*/clock_->Now(),
-          /*client_bounce_delay=*/bounce_time,
+          /*client_bounce_delay=*/bounce_delay,
           /*has_sticky_activation=*/
           client_detection_state_->last_activation_time.has_value());
       // We cannot append |client_redirect| to |redirect_context_| immediately,
