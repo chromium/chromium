@@ -20,16 +20,23 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
+#include "ash/system/unified/unified_slider_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/video_conference/video_conference_tray.h"
 #include "base/functional/bind.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
 
 namespace ash {
 
 namespace {
+
+// The padding of QsRevamp slider toast.
+constexpr auto kQsToastSliderViewPadding = gfx::Insets::TLBR(8, 8, 8, 12);
+// The rounded corner radius of the QsRevamp `bubble_view_`.
+constexpr int kQsToastCornerRadius = 28;
 
 // Return true if a system tray bubble is shown in any display.
 bool IsAnyMainBubbleShown() {
@@ -41,7 +48,17 @@ bool IsAnyMainBubbleShown() {
   return false;
 }
 
-void ConfigureSliderViewStyle(views::View* slider_view) {
+void ConfigureSliderViewStyle(UnifiedSliderView* slider_view) {
+  if (features::IsQsRevampEnabled()) {
+    auto* layout =
+        slider_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kHorizontal,
+            kQsToastSliderViewPadding, kSliderChildrenViewSpacing));
+    layout->SetFlexForView(slider_view->slider()->parent(), /*flex=*/1);
+    layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+    return;
+  }
   slider_view->SetBorder(views::CreateEmptyBorder(kUnifiedSliderBubblePadding));
 }
 
@@ -279,6 +296,9 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
   init_params.anchor_rect = tray_->shelf()->GetSystemTrayAnchorRect();
   init_params.insets = GetTrayBubbleInsets();
   init_params.translucent = true;
+  if (features::IsQsRevampEnabled()) {
+    init_params.corner_radius = kQsToastCornerRadius;
+  }
 
   bubble_view_ = new TrayBubbleView(init_params);
   bubble_view_->SetCanActivate(false);

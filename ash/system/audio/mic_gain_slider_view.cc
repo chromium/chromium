@@ -76,7 +76,7 @@ MicGainSliderView::MicGainSliderView(MicGainSliderController* controller,
   if (features::IsQsRevampEnabled()) {
     auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kHorizontal, kRadioSliderViewPadding,
-        kRadioSliderViewSpacing));
+        kSliderChildrenViewSpacing));
     slider()->SetBorder(views::CreateEmptyBorder(kRadioSliderPadding));
     slider()->SetPreferredSize(kRadioSliderPreferredSize);
     slider_icon()->SetBorder(views::CreateEmptyBorder(kRadioSliderIconPadding));
@@ -93,7 +93,7 @@ MicGainSliderView::MicGainSliderView(MicGainSliderController* controller,
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kMicGainSliderViewPadding,
-      kRadioSliderViewSpacing));
+      kSliderChildrenViewSpacing));
   slider()->SetBorder(views::CreateEmptyBorder(kMicGainSliderPadding));
   layout->SetFlexForView(slider(), 1);
   layout->set_cross_axis_alignment(
