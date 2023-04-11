@@ -494,19 +494,26 @@ bool MaybeShowNewTermsAfterUpdateToFlex(Profile* profile) {
     network_portal_detector::GetInstance()->Enable();
     return false;
   }
-  if (!IsRevenUpdatedToFlex())
+  if (!IsRevenUpdatedToFlex()) {
     return false;
+  }
   const bool should_show_new_terms =
       (user_manager->IsCurrentUserOwner() &&
        !IsHwDataUsageDeviceSettingSet()) ||
       (features::IsOobeConsolidatedConsentEnabled() &&
        !profile->GetPrefs()->GetBoolean(
            prefs::kRevenOobeConsolidatedConsentAccepted));
-  if (should_show_new_terms) {
-    LoginDisplayHost::default_host()->GetSigninUI()->ShowNewTermsForFlexUsers();
-    return true;
+  if (!should_show_new_terms) {
+    return false;
   }
-  return false;
+  if (LoginDisplayHost::default_host() &&
+      LoginDisplayHost::default_host()->GetSigninUI()) {
+    LoginDisplayHost::default_host()->GetSigninUI()->ShowNewTermsForFlexUsers();
+  } else {
+    LOG(WARNING) << "Can't show additional terms of services for flex users as "
+                    "LoginDisplayHost has been already destroyed!";
+  }
+  return true;
 }
 
 void RecordKnownUser(const AccountId& account_id) {
@@ -1789,7 +1796,13 @@ bool UserSessionManager::MaybeStartNewUserOnboarding(Profile* profile) {
   if (!StartupUtils::IsDeviceRegistered())
     StartupUtils::MarkDeviceRegistered(base::OnceClosure());
 
-  LoginDisplayHost::default_host()->GetSigninUI()->StartUserOnboarding();
+  if (LoginDisplayHost::default_host() &&
+      LoginDisplayHost::default_host()->GetSigninUI()) {
+    LoginDisplayHost::default_host()->GetSigninUI()->StartUserOnboarding();
+  } else {
+    LOG(WARNING) << "Can't start user onboarding as LoginDisplayHost has been "
+                    "already  destroyed!";
+  }
 
   OnboardingUserActivityCounter::MaybeMarkForStart(profile);
 
@@ -1803,35 +1816,56 @@ bool MaybeResumeUserOnboardingFlow(Profile* profile) {
   std::string pending_screen =
       known_user.GetPendingOnboardingScreen(account_id);
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  if (!user_manager->IsCurrentUserNew() && !pending_screen.empty()) {
+  if (user_manager->IsCurrentUserNew() || pending_screen.empty()) {
+    return false;
+  }
+
+  if (LoginDisplayHost::default_host() &&
+      LoginDisplayHost::default_host()->GetSigninUI()) {
     LoginDisplayHost::default_host()->GetSigninUI()->ResumeUserOnboarding(
         *profile->GetPrefs(), OobeScreenId(pending_screen));
-    return true;
+  } else {
+    LOG(WARNING) << "Can't resume onboarding as LoginDisplayHost has been "
+                    "already destroyed!";
   }
-  return false;
+  return true;
 }
 
 bool MaybeStartManagementTransition(Profile* profile) {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  if (!user_manager->IsCurrentUserNew() &&
-      arc::GetManagementTransition(profile) !=
+  if (user_manager->IsCurrentUserNew() ||
+      arc::GetManagementTransition(profile) ==
           arc::ArcManagementTransition::NO_TRANSITION) {
+    return false;
+  }
+
+  if (LoginDisplayHost::default_host() &&
+      LoginDisplayHost::default_host()->GetSigninUI()) {
     LoginDisplayHost::default_host()
         ->GetSigninUI()
         ->StartManagementTransition();
-    return true;
+  } else {
+    LOG(WARNING) << "Can't start management transition as LoginDisplayHost has "
+                    "been already destroyed!";
   }
-  return false;
+  return true;
 }
 
 bool MaybeShowManagedTermsOfService(Profile* profile) {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  if (!user_manager->IsCurrentUserNew() &&
-      profile->GetPrefs()->IsManagedPreference(::prefs::kTermsOfServiceURL)) {
-    LoginDisplayHost::default_host()->GetSigninUI()->ShowTosForExistingUser();
-    return true;
+  if (user_manager->IsCurrentUserNew() ||
+      !profile->GetPrefs()->IsManagedPreference(::prefs::kTermsOfServiceURL)) {
+    return false;
   }
-  return false;
+
+  if (LoginDisplayHost::default_host() &&
+      LoginDisplayHost::default_host()->GetSigninUI()) {
+    LoginDisplayHost::default_host()->GetSigninUI()->ShowTosForExistingUser();
+  } else {
+    LOG(WARNING) << "Can't show additional terms of service as "
+                    "LoginDisplayHost has been already destroyed!";
+  }
+  return true;
 }
 
 bool UserSessionManager::InitializeUserSession(Profile* profile) {
@@ -1875,9 +1909,15 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
         !onboarding_completed_version.has_value()) {
       known_user.SetOnboardingCompletedVersion(
           account_id, base::Version(kOnboardingBackfillVersion));
-      LoginDisplayHost::default_host()
-          ->GetSigninUI()
-          ->ClearOnboardingAuthSession();
+      if (LoginDisplayHost::default_host() &&
+          LoginDisplayHost::default_host()->GetSigninUI()) {
+        LoginDisplayHost::default_host()
+            ->GetSigninUI()
+            ->ClearOnboardingAuthSession();
+      } else {
+        LOG(WARNING) << "Can't clear onboarding auth session as "
+                        "LoginDisplayHost has been already destroyed!";
+      }
     }
 
     if (MaybeStartNewUserOnboarding(profile)) {
