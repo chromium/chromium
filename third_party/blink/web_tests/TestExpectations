@@ -2703,7 +2703,6 @@ crbug.com/1012242 external/wpt/webvtt/rendering/cues-with-video/processing-model
 
 # Flaky tests (see also crbug.com/626703)
 crbug.com/1088475 [ Fuchsia ] external/wpt/webvtt/rendering/cues-with-video/processing-model/embedded_style_media_queries.html [ Failure Pass Timeout ]
-crbug.com/1088475 [ Linux ] external/wpt/webvtt/rendering/cues-with-video/processing-model/embedded_style_media_queries.html [ Failure Pass Timeout ]
 crbug.com/1088475 [ Mac10.13 ] external/wpt/webvtt/rendering/cues-with-video/processing-model/embedded_style_media_queries.html [ Failure Pass Timeout ]
 crbug.com/1088475 [ Mac10.15 ] external/wpt/webvtt/rendering/cues-with-video/processing-model/embedded_style_media_queries.html [ Failure Pass Timeout ]
 crbug.com/1088475 [ Mac11 ] external/wpt/webvtt/rendering/cues-with-video/processing-model/embedded_style_media_queries.html [ Failure Pass Timeout ]
@@ -2942,7 +2941,14 @@ crbug.com/626703 external/wpt/preload/preload-resource-match.https.html [ Failur
 crbug.com/1359555 external/wpt/speculation-rules/prerender/workers.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
+# Note: This test only crashes on CQ builders, not `*-blink-rel` ones, because
+# it fails a DCHECK:
+#   https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/layout/ng/ng_length_utils.cc;l=290;drc=07111ed630788923689d2e250bdebb4ad213c41e;bpv=0;bpt=0
+crbug.com/626703 external/wpt/css/css-multicol/file-control-crash.html [ Crash ]
+
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/webvtt/rendering/cues-with-video/processing-model/embedded_style_media_queries.html [ Failure ]
+crbug.com/626703 [ Mac10.14 ] external/wpt/webvtt/rendering/cues-with-video/processing-model/embedded_style_media_queries.html [ Failure ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video-sibling.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/html/cross-origin-opener-policy/resource-popup.https.html [ Crash ]
@@ -3012,7 +3018,6 @@ crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/simplecall-no-ssrcs.https.html
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/simplecall.https.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/simulcast/vp8.https.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webvtt/rendering/cues-with-video/processing-model/audio_has_no_subtitles.html [ Crash ]
-crbug.com/626703 [ Mac10.14 ] external/wpt/webvtt/rendering/cues-with-video/processing-model/embedded_style_media_queries.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webvtt/rendering/cues-with-video/processing-model/embedded_style_media_queries_resized.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStream-finished-add.https.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Crash ]

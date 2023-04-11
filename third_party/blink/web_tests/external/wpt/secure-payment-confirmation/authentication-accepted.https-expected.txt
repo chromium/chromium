@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-FAIL Successful SPC authentication promise_test: Unhandled rejection with value: object "Error: unimplemented"
+FAIL Successful SPC authentication promise_test: Unhandled rejection with value: object "Error: set_spc_transaction_mode() is not implemented by testdriver-vendor.js"
 Harness: the test ran to completion.
 
