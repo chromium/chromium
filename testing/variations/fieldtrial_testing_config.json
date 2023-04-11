@@ -2842,24 +2842,6 @@
             ]
         }
     ],
-    "ClearOmniboxFocusAsync": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "ClearOmniboxFocusAsync_20230112",
-                    "params": {
-                        "clear_focus_asynchronously": "true"
-                    },
-                    "enable_features": [
-                        "ClearOmniboxFocusAfterNavigation"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClientSideDetectionModelOptimizationGuide": [
         {
             "platforms": [
