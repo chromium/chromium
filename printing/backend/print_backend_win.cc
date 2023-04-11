@@ -112,30 +112,6 @@ gfx::Size GetDefaultDpi(HDC hdc) {
   return gfx::Size(dpi_x, dpi_y);
 }
 
-gfx::Rect LoadPaperPrintableAreaUm(const wchar_t* printer, DEVMODE* devmode) {
-  base::win::ScopedCreateDC hdc(
-      CreateDC(L"WINSPOOL", printer, nullptr, devmode));
-
-  gfx::Size default_dpi = GetDefaultDpi(hdc.get());
-
-  gfx::Rect printable_area_device_units =
-      GetPrintableAreaDeviceUnits(hdc.get());
-
-  // Device units can be non-square, so scale for non-square DPIs and convert to
-  // microns.
-  gfx::Rect printable_area_um =
-      gfx::Rect(ConvertUnit(printable_area_device_units.x(),
-                            default_dpi.width(), kMicronsPerInch),
-                ConvertUnit(printable_area_device_units.y(),
-                            default_dpi.height(), kMicronsPerInch),
-                ConvertUnit(printable_area_device_units.width(),
-                            default_dpi.width(), kMicronsPerInch),
-                ConvertUnit(printable_area_device_units.height(),
-                            default_dpi.height(), kMicronsPerInch));
-
-  return printable_area_um;
-}
-
 void LoadPaper(const wchar_t* printer,
                const wchar_t* port,
                DEVMODE* devmode,
@@ -167,8 +143,6 @@ void LoadPaper(const wchar_t* printer,
   if (names.size() != sizes.size())
     names.clear();
 
-  short initial_dm_paper_size = devmode ? devmode->dmPaperSize : -1;
-
   for (size_t i = 0; i < sizes.size(); ++i) {
     PrinterSemanticCapsAndDefaults::Paper paper;
     paper.size_um.SetSize(sizes[i].x * kToUm, sizes[i].y * kToUm);
@@ -188,11 +162,6 @@ void LoadPaper(const wchar_t* printer,
     if (!ids.empty())
       paper.vendor_id = base::NumberToString(ids[i]);
 
-    if (devmode) {
-      devmode->dmPaperSize = ids[i];
-      paper.printable_area_um = LoadPaperPrintableAreaUm(printer, devmode);
-    }
-
     // Default to the paper size if printable area is missing.
     // We've seen some drivers have a printable area that goes out of bounds of
     // the paper size. In those cases, set the printable area to be the size.
@@ -208,9 +177,6 @@ void LoadPaper(const wchar_t* printer,
 
   if (!devmode)
     return;
-
-  // Restore the initial default paper size.
-  devmode->dmPaperSize = initial_dm_paper_size;
 
   // Copy paper with the same ID as default paper.
   if (devmode->dmFields & DM_PAPERSIZE) {
