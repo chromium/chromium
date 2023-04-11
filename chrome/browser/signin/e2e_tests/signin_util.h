@@ -11,6 +11,11 @@
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
+#include "content/public/browser/web_contents.h"
+
+namespace content {
+class WebContents;
+}
 
 namespace signin::test {
 
@@ -42,7 +47,8 @@ class SignInFunctions {
   void SignInFromSettings(const TestAccount& test_account,
                           int previously_signed_in_accounts);
 
-  void SignInFromCurrentPage(const TestAccount& test_account,
+  void SignInFromCurrentPage(content::WebContents* web_contents,
+                             const TestAccount& test_account,
                              int previously_signed_in_accounts);
 
   void TurnOnSync(const TestAccount& test_account,
