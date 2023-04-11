@@ -7,6 +7,7 @@
     "linux-chromeos-rel": "Ubuntu-22.04",
     "linux-lacros-rel": "Ubuntu-22.04",
     "linux-rel": "Ubuntu-22.04",
+    "linux-rel-compilator": "Ubuntu-22.04",
     "linux_chromium_tsan_rel_ng": "Ubuntu-22.04"
   }
 }
