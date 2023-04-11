@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/layout/text_run_constructor.h"
 
 #include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/platform/text/bidi_text_run.h"
+#include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 
 namespace blink {
 
@@ -125,11 +125,12 @@ TextRun ConstructTextRun(const Font& font,
                          const String& string,
                          const ComputedStyle& style,
                          TextRunFlags flags) {
-  return ConstructTextRun(font, string, style,
-                          string.empty() || string.Is8Bit()
-                              ? TextDirection::kLtr
-                              : DetermineDirectionality(string),
-                          flags);
+  return ConstructTextRun(
+      font, string, style,
+      string.empty() || string.Is8Bit()
+          ? TextDirection::kLtr
+          : BidiParagraph::BaseDirectionForStringOrLtr(string),
+      flags);
 }
 
 }  // namespace blink
