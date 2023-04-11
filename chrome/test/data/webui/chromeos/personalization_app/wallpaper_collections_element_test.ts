@@ -224,13 +224,13 @@ suite('WallpaperCollectionsTest', function() {
       {
         id: 'asdf',
         name: 'asdf name',
-        description: 'asdf description',
+        descriptionContent: 'asdf description',
         previews: [{url: createSvgDataUrl('asdf')}],
       },
       {
         id: 'qwerty',
         name: 'qwerty name',
-        description: '',
+        descriptionContent: '',
         previews: [{url: createSvgDataUrl('qwerty')}],
       },
     ]);

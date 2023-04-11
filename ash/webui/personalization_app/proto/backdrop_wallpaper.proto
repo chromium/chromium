@@ -49,16 +49,14 @@ message Image {
   // The type of this image in the unit.
   optional ImageType image_type = 7;
 
-  message Description {
-    // A title for this image, e.g. "Artwork by [Artist]".
-    optional string title = 1;
-    // Detailed description text for this image.
-    optional string content = 2;
-  }
+  // User facing description text about this image e.g.
+  // "[Artist name] was inspired to create this by [inspiring thing]."
+  // May be multi-line.
+  optional string description_content = 8;
 
-  // Supplemental description of the image.
-  // TODO(b/250617579) replace with real value.
-  optional Description description = 100;
+  // User facing description title about this image e.g.
+  // "Art by [Artist Name]"
+  optional string description_title = 9;
 }
 
 // A logical grouping of images e.g. landscapes or space photography.
@@ -73,10 +71,9 @@ message Collection {
   // image will be returned.
   repeated Image preview = 3;
 
-  // Supplemental description of the collection e.g.
+  // User-facing supplemental description of the collection e.g.
   // "Celebrate [Holiday] with Google".
-  // TODO(b/250617579) replace with real value.
-  optional string description = 100;
+  optional string description_content = 4;
 }
 
 message GetCollectionsRequest {

@@ -82,8 +82,9 @@ struct WallpaperCollection {
     // Name of this collection to be displayed to the user.
     string name;
 
-    // Extra description text about the wallpaper collection.
-    string description;
+    // Extra description text about the wallpaper collection. May be empty
+    // string.
+    string description_content;
 
     // The preview image URLs of this collection.
     array<url.mojom.Url> previews;
@@ -178,11 +179,6 @@ struct FetchGooglePhotosPhotosResponse {
     string? resume_token;
 };
 
-struct CurrentWallpaperDescription {
-  string title;
-  string content;
-};
-
 // Represents the currently selected wallpaper image.
 struct CurrentWallpaper {
   // Attribution text such as "Photo by John Doe" or the file name of the local
@@ -199,10 +195,16 @@ struct CurrentWallpaper {
   // |WallpaperImage| or local image the user has selected.
   string key;
 
-  // Extra description content about the image. Currently only supplied for
+  // Extra description title about the image. Currently only supplied for
   // images supplied by backdrop server with type
   // `WallpaperType::{kDaily, kOnline}`.
-  CurrentWallpaperDescription? description;
+  // May be empty string.
+  string description_title;
+
+  // Extra description content about the image. Same as above, only supplied for
+  // `WallpaperType::{kDaily, kOnline}`.
+  // May be empty string.
+  string description_content;
 };
 
 // Receives updated wallpaper information whenever it is changed.

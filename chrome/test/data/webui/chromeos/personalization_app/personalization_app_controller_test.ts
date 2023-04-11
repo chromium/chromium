@@ -919,7 +919,8 @@ suite('does not respond to re-selecting the current wallpaper', () => {
     assertEquals(pendingSelected, image);
     personalizationStore.data.wallpaper.currentSelected = {
       attribution: [],
-      description: undefined,
+      descriptionContent: '',
+      descriptionTitle: '',
       key: getImageKey(image)!,
       layout: WallpaperLayout.kCenterCropped,
       type: getImageType(image),
@@ -1166,9 +1167,11 @@ suite('daily refresh loading', () => {
       wallpaperProvider.resetResolver('getGooglePhotosDailyRefreshAlbumId');
       wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged({
         attribution: [],
+        descriptionContent: '',
+        descriptionTitle: '',
+        key: getImageKey(mockPhotos[0]!)!,
         layout: WallpaperLayout.kCenterCropped,
         type: WallpaperType.kDailyGooglePhotos,
-        key: getImageKey(mockPhotos[0]!)!,
       });
       // Wait for observer to handle the above event.
       await wallpaperProvider.whenCalled('getGooglePhotosDailyRefreshAlbumId');
@@ -1189,9 +1192,11 @@ suite('daily refresh loading', () => {
 
       personalizationStore.data.wallpaper.currentSelected = {
         attribution: [],
+        descriptionContent: '',
+        descriptionTitle: '',
+        key: mockPhotos[0]!.dedupKey!,
         layout: WallpaperLayout.kCenter,
         type: WallpaperType.kOnceGooglePhotos,
-        key: mockPhotos[0]!.dedupKey!,
       };
 
       await selectGooglePhotosAlbum(
@@ -1251,9 +1256,11 @@ suite('daily refresh loading', () => {
       wallpaperProvider.resetResolver('getDailyRefreshCollectionId');
       wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged({
         attribution: [],
+        descriptionContent: '',
+        descriptionTitle: '',
+        key: getImageKey(wallpaperProvider.images![0]!)!,
         layout: WallpaperLayout.kCenterCropped,
         type: WallpaperType.kDailyGooglePhotos,
-        key: getImageKey(wallpaperProvider.images![0]!)!,
       });
       // Wait for observer to handle the above event.
       await wallpaperProvider.whenCalled('getDailyRefreshCollectionId');
@@ -1273,6 +1280,8 @@ suite('daily refresh loading', () => {
         layout: WallpaperLayout.kCenter,
         type: WallpaperType.kOnline,
         key: getImageKey(wallpaperProvider.images![0]!)!,
+        descriptionContent: '',
+        descriptionTitle: '',
       };
 
       await setDailyRefreshCollectionId(

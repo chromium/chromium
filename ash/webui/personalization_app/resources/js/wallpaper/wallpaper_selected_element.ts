@@ -271,7 +271,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   private computeShouldShowDescriptionButton_(image: CurrentWallpaper|null) {
-    return isPersonalizationJellyEnabled() && !!image?.description;
+    // Only show the description dialog if title and content exist.
+    return isPersonalizationJellyEnabled() && image?.descriptionContent &&
+        image?.descriptionTitle;
   }
 
   private computeShowCollectionOptions_(path: string): boolean {

@@ -402,7 +402,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
           // load and the user cannot select it.
           disabled: imageCounts[collection.id] === null,
           id: collection.id,
-          info: collection.description,
+          info: collection.descriptionContent,
           name: collection.name,
           preview,
           type: TileType.IMAGE_ONLINE,

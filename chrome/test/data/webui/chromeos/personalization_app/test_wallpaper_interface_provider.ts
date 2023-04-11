@@ -45,19 +45,19 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
      */
     this.collections_ = [
       {
-        description: 'description for collection zero',
+        descriptionContent: 'description for collection zero',
         id: 'id_0',
         name: 'zero',
         previews: [{url: 'https://collections.googleusercontent.com/0'}],
       },
       {
-        description: '',
+        descriptionContent: '',
         id: 'id_1',
         name: 'one',
         previews: [{url: 'https://collections.googleusercontent.com/1'}],
       },
       {
-        description: '',
+        descriptionContent: '',
         id: 'id_2',
         name: 'dark-light',
         previews: [
@@ -66,7 +66,7 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
         ],
       },
       {
-        description: '',
+        descriptionContent: '',
         id: 'id_3',
         name: 'time-of-day',
         previews: [
@@ -140,10 +140,8 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
 
     this.currentWallpaper = {
       attribution: ['Image 0 light'],
-      description: {
-        content: 'test content',
-        title: 'test title',
-      },
+      descriptionContent: 'test content',
+      descriptionTitle: 'test title',
       key: '1',
       layout: WallpaperLayout.kCenter,
       type: WallpaperType.kOnline,
