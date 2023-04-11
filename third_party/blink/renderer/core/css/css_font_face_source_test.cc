@@ -29,7 +29,7 @@ class DummyFontFaceSource : public CSSFontFaceSource {
 
   scoped_refptr<SimpleFontData> GetFontDataForSize(float size) {
     FontDescription font_description;
-    font_description.SetSizeAdjust(size);
+    font_description.SetSizeAdjust(FontSizeAdjust(size));
     font_description.SetAdjustedSize(size);
     FontSelectionCapabilities normal_capabilities(
         {NormalWidthValue(), NormalWidthValue()},
@@ -43,7 +43,7 @@ namespace {
 
 unsigned SimulateHashCalculation(float size) {
   FontDescription font_description;
-  font_description.SetSizeAdjust(size);
+  font_description.SetSizeAdjust(FontSizeAdjust(size));
   font_description.SetAdjustedSize(size);
   bool is_unique_match = false;
   bool is_generic_family = false;

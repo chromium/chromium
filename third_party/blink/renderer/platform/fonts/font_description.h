@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_orientation.h"
 #include "third_party/blink/renderer/platform/fonts/font_palette.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
+#include "third_party/blink/renderer/platform/fonts/font_size_adjust.h"
 #include "third_party/blink/renderer/platform/fonts/font_smoothing_mode.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_alternates.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_east_asian.h"
@@ -53,7 +54,6 @@
 
 namespace blink {
 
-const float kFontSizeAdjustNone = -1;
 typedef struct { uint32_t parts[2]; } FieldsAsUnsignedType;
 
 class PLATFORM_EXPORT FontDescription {
@@ -212,8 +212,8 @@ class PLATFORM_EXPORT FontDescription {
   // them for better clarity.
 
   // For CSS font-size-adjust property
-  float SizeAdjust() const { return size_adjust_; }
-  bool HasSizeAdjust() const { return size_adjust_ != kFontSizeAdjustNone; }
+  FontSizeAdjust SizeAdjust() const { return size_adjust_; }
+  bool HasSizeAdjust() const { return !!size_adjust_; }
 
   // Return a copy with the size-adjust descriptor applied.
   // https://drafts.csswg.org/css-fonts-5/#descdef-font-face-size-adjust
@@ -350,7 +350,9 @@ class PLATFORM_EXPORT FontDescription {
   void SetComputedSize(float s) { computed_size_ = ClampTo<float>(s); }
   void SetSpecifiedSize(float s) { specified_size_ = ClampTo<float>(s); }
   void SetAdjustedSize(float s) { adjusted_size_ = ClampTo<float>(s); }
-  void SetSizeAdjust(float aspect) { size_adjust_ = ClampTo<float>(aspect); }
+  void SetSizeAdjust(const FontSizeAdjust& size_adjust) {
+    size_adjust_ = size_adjust;
+  }
 
   void SetStyle(FontSelectionValue i);
   void SetWeight(FontSelectionValue w) { font_selection_request_.weight = w; }
@@ -502,11 +504,10 @@ class PLATFORM_EXPORT FontDescription {
   // as well as a computed size is.
   float adjusted_size_;
 
-  // Given aspect value, i.e. font-size-adjust.
-  float size_adjust_;
-
   float letter_spacing_;
   float word_spacing_;
+
+  FontSizeAdjust size_adjust_;
 
   // Covers stretch, style, weight.
   FontSelectionRequest font_selection_request_;

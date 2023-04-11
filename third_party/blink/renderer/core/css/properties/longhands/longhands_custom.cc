@@ -3240,7 +3240,7 @@ const CSSValue* FontSizeAdjust::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style) const {
   if (style.HasFontSizeAdjust()) {
-    return CSSNumericLiteralValue::Create(style.FontSizeAdjust(),
+    return CSSNumericLiteralValue::Create(style.FontSizeAdjust().Value(),
                                           CSSPrimitiveValue::UnitType::kNumber);
   }
   return CSSIdentifierValue::Create(CSSValueID::kNone);

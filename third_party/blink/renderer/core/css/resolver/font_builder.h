@@ -60,7 +60,7 @@ class CORE_EXPORT FontBuilder {
   float FontSizeForKeyword(unsigned keyword, bool is_monospace) const;
 
   void SetSize(const FontDescription::Size&);
-  void SetSizeAdjust(const float aspect_value);
+  void SetSizeAdjust(const FontSizeAdjust&);
 
   void SetStretch(FontSelectionValue);
   void SetStyle(FontSelectionValue);
@@ -111,7 +111,7 @@ class CORE_EXPORT FontBuilder {
     return FontDescription::Size(FontSizeFunctions::InitialKeywordSize(), 0.0f,
                                  false);
   }
-  static float InitialSizeAdjust() { return kFontSizeAdjustNone; }
+  static FontSizeAdjust InitialSizeAdjust() { return FontSizeAdjust(); }
   static TextRenderingMode InitialTextRendering() { return kAutoTextRendering; }
   static FontDescription::FontVariantCaps InitialVariantCaps() {
     return FontDescription::kCapsNormal;

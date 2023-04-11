@@ -1319,7 +1319,6 @@ CSSValue* ComputedStyleUtils::ValueForFont(const ComputedStyle& style) {
   }
 
   FontDescription::Kerning kerning = style.GetFontDescription().GetKerning();
-  float size_adjust = style.GetFontDescription().SizeAdjust();
   FontDescription::FontVariantPosition variant_position =
       style.GetFontDescription().VariantPosition();
   OpticalSizing optical_sizing = style.GetFontDescription().FontOpticalSizing();
@@ -1327,7 +1326,7 @@ CSSValue* ComputedStyleUtils::ValueForFont(const ComputedStyle& style) {
   if (kerning != FontDescription::kAutoKerning ||
       optical_sizing != kAutoOpticalSizing ||
       (RuntimeEnabledFeatures::CSSFontSizeAdjustEnabled() &&
-       size_adjust != -1) ||
+       style.GetFontDescription().HasSizeAdjust()) ||
       (RuntimeEnabledFeatures::FontVariantPositionEnabled() &&
        variant_position != FontDescription::kNormalVariantPosition)) {
     return nullptr;

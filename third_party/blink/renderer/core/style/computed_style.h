@@ -846,7 +846,9 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // font-size-adjust
-  float FontSizeAdjust() const { return GetFontDescription().SizeAdjust(); }
+  FontSizeAdjust FontSizeAdjust() const {
+    return GetFontDescription().SizeAdjust();
+  }
   bool HasFontSizeAdjust() const {
     return GetFontDescription().HasSizeAdjust();
   }
