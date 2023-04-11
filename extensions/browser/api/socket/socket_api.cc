@@ -264,11 +264,11 @@ ExtensionFunction::ResponseAction SocketCreateFunction::Work() {
 
   Socket* socket = nullptr;
   switch (params->type) {
-    case extensions::api::socket::SOCKET_TYPE_TCP:
+    case extensions::api::socket::SocketType::kTcp:
       socket = new TCPSocket(browser_context(), GetOriginId());
       break;
 
-    case extensions::api::socket::SOCKET_TYPE_UDP: {
+    case extensions::api::socket::SocketType::kUdp: {
       mojo::PendingRemote<network::mojom::UDPSocketListener> listener_remote;
       mojo::PendingReceiver<network::mojom::UDPSocketListener>
           socket_listener_receiver =
@@ -284,7 +284,7 @@ ExtensionFunction::ResponseAction SocketCreateFunction::Work() {
                         std::move(socket_listener_receiver), GetOriginId());
       break;
     }
-    case extensions::api::socket::SOCKET_TYPE_NONE:
+    case extensions::api::socket::SocketType::kNone:
       NOTREACHED();
       return RespondNow(NoArguments());
   }
@@ -791,9 +791,9 @@ ExtensionFunction::ResponseAction SocketGetInfoFunction::Work() {
   // This represents what we know about the socket, and does not call through
   // to the system.
   if (socket->GetSocketType() == Socket::TYPE_TCP)
-    info.socket_type = extensions::api::socket::SOCKET_TYPE_TCP;
+    info.socket_type = extensions::api::socket::SocketType::kTcp;
   else
-    info.socket_type = extensions::api::socket::SOCKET_TYPE_UDP;
+    info.socket_type = extensions::api::socket::SocketType::kUdp;
   info.connected = socket->IsConnected();
 
   // Grab the peer address as known by the OS. This and the call below will
