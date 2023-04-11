@@ -178,6 +178,18 @@ void FlossAdapterClient::SdpSearch(ResponseCallback<bool> callback,
                           uuid);
 }
 
+void FlossAdapterClient::CreateSdpRecord(ResponseCallback<bool> callback,
+                                         const BtSdpRecord& record) {
+  CallAdapterMethod<bool>(std::move(callback), adapter::kCreateSdpRecord,
+                          record);
+}
+
+void FlossAdapterClient::RemoveSdpRecord(ResponseCallback<bool> callback,
+                                         const int32_t& handle) {
+  CallAdapterMethod<bool>(std::move(callback), adapter::kRemoveSdpRecord,
+                          handle);
+}
+
 void FlossAdapterClient::Init(dbus::Bus* bus,
                               const std::string& service_name,
                               const int adapter_index,
@@ -242,6 +254,12 @@ void FlossAdapterClient::Init(dbus::Bus* bus,
       base::BindRepeating(&FlossAdapterClient::OnSdpSearchComplete,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&HandleExported, adapter::kOnSdpSearchComplete));
+
+  callbacks->ExportMethod(
+      adapter::kCallbackInterface, adapter::kOnSdpRecordCreated,
+      base::BindRepeating(&FlossAdapterClient::OnSdpRecordCreated,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&HandleExported, adapter::kOnSdpRecordCreated));
 
   callbacks->ExportMethod(
       adapter::kConnectionCallbackInterface, adapter::kOnDeviceConnected,
@@ -490,6 +508,30 @@ void FlossAdapterClient::OnSdpSearchComplete(
             method_call, kErrorInvalidParameters,
             /*error_message=*/std::string()));
     return;
+  }
+
+  for (auto& observer : observers_) {
+    observer.SdpSearchComplete(device, uuid, sdp_records);
+  }
+}
+
+void FlossAdapterClient::OnSdpRecordCreated(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender) {
+  dbus::MessageReader reader(method_call);
+  BtSdpRecord sdp_record;
+  int32_t handle;
+
+  if (!ReadAllDBusParams(&reader, &sdp_record, &handle)) {
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(
+            method_call, kErrorInvalidParameters,
+            /*error_message=*/std::string()));
+    return;
+  }
+
+  for (auto& observer : observers_) {
+    observer.SdpRecordCreated(sdp_record, handle);
   }
 }
 

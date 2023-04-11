@@ -133,6 +133,16 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
 
     // Notification sent when a remote device becomes disconnected.
     virtual void AdapterDeviceDisconnected(const FlossDeviceId& device) {}
+
+    // Notification sent when requested SDP search has completed.
+    virtual void SdpSearchComplete(const FlossDeviceId device,
+                                   const device::BluetoothUUID uuid,
+                                   const std::vector<BtSdpRecord> records) {}
+
+    // Notification sent when an SDP record has finished being created and
+    // assigned a handle.
+    virtual void SdpRecordCreated(const BtSdpRecord record,
+                                  const int32_t handle) {}
   };
 
   // Error: No such adapter.
@@ -263,6 +273,15 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
                          const FlossDeviceId& device,
                          device::BluetoothUUID uuid);
 
+  // Create a new SDP record in this device's SDP server. Record handle is
+  // returned via |SdpRecordCreated|.
+  virtual void CreateSdpRecord(ResponseCallback<bool> callback,
+                               const BtSdpRecord& record);
+
+  // Remove an SDP record by its record handle.
+  virtual void RemoveSdpRecord(ResponseCallback<bool> callback,
+                               const int32_t& handle);
+
   // Get the object path for this adapter.
   const dbus::ObjectPath* GetObjectPath() const { return &adapter_path_; }
 
@@ -314,6 +333,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   void OnSdpSearchComplete(
       dbus::MethodCall* method_call,
       dbus::ExportedObject::ResponseSender response_sender);
+
+  // Handle callback |OnSdpRecordCreated| on exported object path.
+  void OnSdpRecordCreated(dbus::MethodCall* method_call,
+                          dbus::ExportedObject::ResponseSender response_sender);
 
   // Handle callback |OnDeviceConnected| on exported object path.
   void OnDeviceConnected(dbus::MethodCall* method_call,

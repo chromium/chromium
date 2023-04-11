@@ -14,6 +14,43 @@ BtSdpHeaderOverlay::~BtSdpHeaderOverlay() = default;
 constexpr char kTypeKey[] = "type";
 constexpr char kVariantValueKey[] = "0";
 
+constexpr char kSdpHeaderOverlayPropSdpType[] = "sdp_type";
+constexpr char kSdpHeaderOverlayPropUuid[] = "uuid";
+constexpr char kSdpHeaderOverlayPropServiceNameLength[] = "service_name_length";
+constexpr char kSdpHeaderOverlayPropServiceName[] = "service_name";
+constexpr char kSdpHeaderOverlayPropRfcommChannelNumber[] =
+    "rfcomm_channel_number";
+constexpr char kSdpHeaderOverlayPropL2capPsm[] = "l2cap_psm";
+constexpr char kSdpHeaderOverlayPropProfileVersion[] = "profile_version";
+constexpr char kSdpHeaderOverlayPropUser1Len[] = "user1_len";
+constexpr char kSdpHeaderOverlayPropUser1Data[] = "user1_data";
+constexpr char kSdpHeaderOverlayPropUser2Len[] = "user2_len";
+constexpr char kSdpHeaderOverlayPropUser2Data[] = "user2_data";
+
+// All record types share a "hdr" field.
+constexpr char kSdpRecordPropHdr[] = "hdr";
+
+constexpr char kSdpMasRecordPropMasInstanceId[] = "mas_instance_id";
+constexpr char kSdpMasRecordPropSupportedFeatures[] = "supported_features";
+constexpr char kSdpMasRecordPropSupportedMessageTypes[] =
+    "supported_message_types";
+
+constexpr char kSdpMnsRecordPropSupportedFeatures[] = "supported_features";
+
+constexpr char kSdpPseRecordPropSupportedFeatures[] = "supported_features";
+constexpr char kSdpPseRecordPropSupportedRepositories[] =
+    "supported_repositories";
+
+constexpr char kSdpOpsRecordPropSupportedFormatsListLen[] =
+    "supported_formats_list_len";
+
+constexpr char kSdpDipRecordPropSpecId[] = "spec_id";
+constexpr char kSdpDipRecordPropVendor[] = "vendor";
+constexpr char kSdpDipRecordPropVendorIdSource[] = "vendor_id_source";
+constexpr char kSdpDipRecordPropProduct[] = "product";
+constexpr char kSdpDipRecordPropVersion[] = "version";
+constexpr char kSdpDipRecordPropPrimaryRecord[] = "primary_record";
+
 template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     BtSdpType* sdp_type) {
@@ -27,24 +64,74 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
 }
 
 template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const BtSdpType& sdp_type) {
+  writer->AppendUint32(static_cast<uint32_t>(sdp_type));
+}
+
+template <>
+const DBusTypeInfo& GetDBusTypeInfo(const BtSdpType*) {
+  static DBusTypeInfo info{"u", "BtSdpType"};
+  return info;
+}
+
+template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     BtSdpHeaderOverlay* header_overlay) {
   static StructReader<BtSdpHeaderOverlay> struct_reader(
-      {{"sdp_type", CreateFieldReader(&BtSdpHeaderOverlay::sdp_type)},
-       {"uuid", CreateFieldReader(&BtSdpHeaderOverlay::uuid)},
-       {"service_name_length",
+      {{kSdpHeaderOverlayPropSdpType,
+        CreateFieldReader(&BtSdpHeaderOverlay::sdp_type)},
+       {kSdpHeaderOverlayPropUuid,
+        CreateFieldReader(&BtSdpHeaderOverlay::uuid)},
+       {kSdpHeaderOverlayPropServiceNameLength,
         CreateFieldReader(&BtSdpHeaderOverlay::service_name_length)},
-       {"service_name", CreateFieldReader(&BtSdpHeaderOverlay::service_name)},
-       {"rfcomm_channel_number",
+       {kSdpHeaderOverlayPropServiceName,
+        CreateFieldReader(&BtSdpHeaderOverlay::service_name)},
+       {kSdpHeaderOverlayPropRfcommChannelNumber,
         CreateFieldReader(&BtSdpHeaderOverlay::rfcomm_channel_number)},
-       {"l2cap_psm", CreateFieldReader(&BtSdpHeaderOverlay::l2cap_psm)},
-       {"profile_version",
+       {kSdpHeaderOverlayPropL2capPsm,
+        CreateFieldReader(&BtSdpHeaderOverlay::l2cap_psm)},
+       {kSdpHeaderOverlayPropProfileVersion,
         CreateFieldReader(&BtSdpHeaderOverlay::profile_version)},
-       {"user1_len", CreateFieldReader(&BtSdpHeaderOverlay::user1_len)},
-       {"user1_data", CreateFieldReader(&BtSdpHeaderOverlay::user1_data)},
-       {"user2_len", CreateFieldReader(&BtSdpHeaderOverlay::user2_len)},
-       {"user2_data", CreateFieldReader(&BtSdpHeaderOverlay::user2_data)}});
+       {kSdpHeaderOverlayPropUser1Len,
+        CreateFieldReader(&BtSdpHeaderOverlay::user1_len)},
+       {kSdpHeaderOverlayPropUser1Data,
+        CreateFieldReader(&BtSdpHeaderOverlay::user1_data)},
+       {kSdpHeaderOverlayPropUser2Len,
+        CreateFieldReader(&BtSdpHeaderOverlay::user2_len)},
+       {kSdpHeaderOverlayPropUser2Data,
+        CreateFieldReader(&BtSdpHeaderOverlay::user2_data)}});
   return struct_reader.ReadDBusParam(reader, header_overlay);
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const BtSdpHeaderOverlay& header) {
+  dbus::MessageWriter array_writer(nullptr);
+  writer->OpenArray("{sv}", &array_writer);
+
+  WriteDictEntry(&array_writer, kSdpHeaderOverlayPropSdpType, header.sdp_type);
+  WriteDictEntry(&array_writer, kSdpHeaderOverlayPropUuid, header.uuid);
+  WriteDictEntry(&array_writer, kSdpHeaderOverlayPropServiceNameLength,
+                 header.service_name_length);
+  WriteDictEntry(&array_writer, kSdpHeaderOverlayPropServiceName,
+                 header.service_name);
+  WriteDictEntry(&array_writer, kSdpHeaderOverlayPropRfcommChannelNumber,
+                 header.rfcomm_channel_number);
+  WriteDictEntry(&array_writer, kSdpHeaderOverlayPropL2capPsm,
+                 header.l2cap_psm);
+  WriteDictEntry(&array_writer, kSdpHeaderOverlayPropProfileVersion,
+                 header.profile_version);
+  WriteDictEntry(&array_writer, kSdpHeaderOverlayPropUser1Len,
+                 header.user1_len);
+  WriteDictEntry(&array_writer, kSdpHeaderOverlayPropUser1Data,
+                 header.user1_data);
+  WriteDictEntry(&array_writer, kSdpHeaderOverlayPropUser2Len,
+                 header.user2_len);
+  WriteDictEntry(&array_writer, kSdpHeaderOverlayPropUser2Data,
+                 header.user2_data);
+
+  writer->CloseContainer(&array_writer);
 }
 
 template <>
@@ -57,13 +144,31 @@ template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     BtSdpMasRecord* record) {
   static StructReader<BtSdpMasRecord> struct_reader(
-      {{"hdr", CreateFieldReader(&BtSdpMasRecord::hdr)},
-       {"mas_instance_id", CreateFieldReader(&BtSdpMasRecord::mas_instance_id)},
-       {"supported_features",
+      {{kSdpRecordPropHdr, CreateFieldReader(&BtSdpMasRecord::hdr)},
+       {kSdpMasRecordPropMasInstanceId,
+        CreateFieldReader(&BtSdpMasRecord::mas_instance_id)},
+       {kSdpMasRecordPropSupportedFeatures,
         CreateFieldReader(&BtSdpMasRecord::supported_features)},
-       {"supported_message_types",
+       {kSdpMasRecordPropSupportedMessageTypes,
         CreateFieldReader(&BtSdpMasRecord::supported_message_types)}});
   return struct_reader.ReadDBusParam(reader, record);
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const BtSdpMasRecord& record) {
+  dbus::MessageWriter array_writer(nullptr);
+  writer->OpenArray("{sv}", &array_writer);
+
+  WriteDictEntry(&array_writer, kSdpRecordPropHdr, record.hdr);
+  WriteDictEntry(&array_writer, kSdpMasRecordPropMasInstanceId,
+                 record.mas_instance_id);
+  WriteDictEntry(&array_writer, kSdpMasRecordPropSupportedFeatures,
+                 record.supported_features);
+  WriteDictEntry(&array_writer, kSdpMasRecordPropSupportedMessageTypes,
+                 record.supported_message_types);
+
+  writer->CloseContainer(&array_writer);
 }
 
 template <>
@@ -76,10 +181,23 @@ template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     BtSdpMnsRecord* record) {
   static StructReader<BtSdpMnsRecord> struct_reader(
-      {{"hdr", CreateFieldReader(&BtSdpMnsRecord::hdr)},
-       {"supported_features",
+      {{kSdpRecordPropHdr, CreateFieldReader(&BtSdpMnsRecord::hdr)},
+       {kSdpMnsRecordPropSupportedFeatures,
         CreateFieldReader(&BtSdpMnsRecord::supported_features)}});
   return struct_reader.ReadDBusParam(reader, record);
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const BtSdpMnsRecord& record) {
+  dbus::MessageWriter array_writer(nullptr);
+  writer->OpenArray("{sv}", &array_writer);
+
+  WriteDictEntry(&array_writer, kSdpRecordPropHdr, record.hdr);
+  WriteDictEntry(&array_writer, kSdpMnsRecordPropSupportedFeatures,
+                 record.supported_features);
+
+  writer->CloseContainer(&array_writer);
 }
 
 template <>
@@ -92,12 +210,27 @@ template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     BtSdpPseRecord* record) {
   static StructReader<BtSdpPseRecord> struct_reader(
-      {{"hdr", CreateFieldReader(&BtSdpPseRecord::hdr)},
-       {"supported_features",
+      {{kSdpRecordPropHdr, CreateFieldReader(&BtSdpPseRecord::hdr)},
+       {kSdpPseRecordPropSupportedFeatures,
         CreateFieldReader(&BtSdpPseRecord::supported_features)},
-       {"supported_repositories",
+       {kSdpPseRecordPropSupportedRepositories,
         CreateFieldReader(&BtSdpPseRecord::supported_repositories)}});
   return struct_reader.ReadDBusParam(reader, record);
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const BtSdpPseRecord& record) {
+  dbus::MessageWriter array_writer(nullptr);
+  writer->OpenArray("{sv}", &array_writer);
+
+  WriteDictEntry(&array_writer, kSdpRecordPropHdr, record.hdr);
+  WriteDictEntry(&array_writer, kSdpPseRecordPropSupportedFeatures,
+                 record.supported_features);
+  WriteDictEntry(&array_writer, kSdpPseRecordPropSupportedRepositories,
+                 record.supported_repositories);
+
+  writer->CloseContainer(&array_writer);
 }
 
 template <>
@@ -110,8 +243,19 @@ template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     BtSdpPceRecord* record) {
   static StructReader<BtSdpPceRecord> struct_reader(
-      {{"hdr", CreateFieldReader(&BtSdpPceRecord::hdr)}});
+      {{kSdpRecordPropHdr, CreateFieldReader(&BtSdpPceRecord::hdr)}});
   return struct_reader.ReadDBusParam(reader, record);
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const BtSdpPceRecord& record) {
+  dbus::MessageWriter array_writer(nullptr);
+  writer->OpenArray("{sv}", &array_writer);
+
+  WriteDictEntry(&array_writer, kSdpRecordPropHdr, record.hdr);
+
+  writer->CloseContainer(&array_writer);
 }
 
 template <>
@@ -124,10 +268,23 @@ template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     BtSdpOpsRecord* record) {
   static StructReader<BtSdpOpsRecord> struct_reader(
-      {{"hdr", CreateFieldReader(&BtSdpOpsRecord::hdr)},
-       {"supported_formats_list_len",
+      {{kSdpRecordPropHdr, CreateFieldReader(&BtSdpOpsRecord::hdr)},
+       {kSdpOpsRecordPropSupportedFormatsListLen,
         CreateFieldReader(&BtSdpOpsRecord::supported_formats_list_len)}});
   return struct_reader.ReadDBusParam(reader, record);
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const BtSdpOpsRecord& record) {
+  dbus::MessageWriter array_writer(nullptr);
+  writer->OpenArray("{sv}", &array_writer);
+
+  WriteDictEntry(&array_writer, kSdpRecordPropHdr, record.hdr);
+  WriteDictEntry(&array_writer, kSdpOpsRecordPropSupportedFormatsListLen,
+                 record.supported_formats_list_len);
+
+  writer->CloseContainer(&array_writer);
 }
 
 template <>
@@ -140,8 +297,19 @@ template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     BtSdpSapRecord* record) {
   static StructReader<BtSdpSapRecord> struct_reader(
-      {{"hdr", CreateFieldReader(&BtSdpSapRecord::hdr)}});
+      {{kSdpRecordPropHdr, CreateFieldReader(&BtSdpSapRecord::hdr)}});
   return struct_reader.ReadDBusParam(reader, record);
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const BtSdpSapRecord& record) {
+  dbus::MessageWriter array_writer(nullptr);
+  writer->OpenArray("{sv}", &array_writer);
+
+  WriteDictEntry(&array_writer, kSdpRecordPropHdr, record.hdr);
+
+  writer->CloseContainer(&array_writer);
 }
 
 template <>
@@ -154,15 +322,35 @@ template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     BtSdpDipRecord* record) {
   static StructReader<BtSdpDipRecord> struct_reader(
-      {{"hdr", CreateFieldReader(&BtSdpDipRecord::hdr)},
-       {"spec_id", CreateFieldReader(&BtSdpDipRecord::spec_id)},
-       {"vendor", CreateFieldReader(&BtSdpDipRecord::vendor)},
-       {"vendor_id_source",
+      {{kSdpRecordPropHdr, CreateFieldReader(&BtSdpDipRecord::hdr)},
+       {kSdpDipRecordPropSpecId, CreateFieldReader(&BtSdpDipRecord::spec_id)},
+       {kSdpDipRecordPropVendor, CreateFieldReader(&BtSdpDipRecord::vendor)},
+       {kSdpDipRecordPropVendorIdSource,
         CreateFieldReader(&BtSdpDipRecord::vendor_id_source)},
-       {"product", CreateFieldReader(&BtSdpDipRecord::product)},
-       {"version", CreateFieldReader(&BtSdpDipRecord::version)},
-       {"primary_record", CreateFieldReader(&BtSdpDipRecord::primary_record)}});
+       {kSdpDipRecordPropProduct, CreateFieldReader(&BtSdpDipRecord::product)},
+       {kSdpDipRecordPropVersion, CreateFieldReader(&BtSdpDipRecord::version)},
+       {kSdpDipRecordPropPrimaryRecord,
+        CreateFieldReader(&BtSdpDipRecord::primary_record)}});
   return struct_reader.ReadDBusParam(reader, record);
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const BtSdpDipRecord& record) {
+  dbus::MessageWriter array_writer(nullptr);
+  writer->OpenArray("{sv}", &array_writer);
+
+  WriteDictEntry(&array_writer, kSdpRecordPropHdr, record.hdr);
+  WriteDictEntry(&array_writer, kSdpDipRecordPropSpecId, record.spec_id);
+  WriteDictEntry(&array_writer, kSdpDipRecordPropVendor, record.vendor);
+  WriteDictEntry(&array_writer, kSdpDipRecordPropVendorIdSource,
+                 record.vendor_id_source);
+  WriteDictEntry(&array_writer, kSdpDipRecordPropProduct, record.product);
+  WriteDictEntry(&array_writer, kSdpDipRecordPropVersion, record.version);
+  WriteDictEntry(&array_writer, kSdpDipRecordPropPrimaryRecord,
+                 record.primary_record);
+
+  writer->CloseContainer(&array_writer);
 }
 
 template <>
@@ -295,6 +483,57 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
       return false;
   }
   return true;
+}
+
+template <>
+void FlossDBusClient::WriteDBusParam(dbus::MessageWriter* writer,
+                                     const BtSdpRecord& record) {
+  dbus::MessageWriter array_writer(nullptr);
+  writer->OpenArray("{sv}", &array_writer);
+
+  if (absl::holds_alternative<BtSdpHeaderOverlay>(record)) {
+    WriteDictEntry(&array_writer, kTypeKey,
+                   static_cast<uint32_t>(BtSdpType::kRaw));
+    WriteDictEntry(&array_writer, kVariantValueKey,
+                   absl::get<BtSdpHeaderOverlay>(record));
+  } else if (absl::holds_alternative<BtSdpMasRecord>(record)) {
+    WriteDictEntry(&array_writer, kTypeKey,
+                   static_cast<uint32_t>(BtSdpType::kMapMas));
+    WriteDictEntry(&array_writer, kVariantValueKey,
+                   absl::get<BtSdpMasRecord>(record));
+  } else if (absl::holds_alternative<BtSdpMnsRecord>(record)) {
+    WriteDictEntry(&array_writer, kTypeKey,
+                   static_cast<uint32_t>(BtSdpType::kMapMns));
+    WriteDictEntry(&array_writer, kVariantValueKey,
+                   absl::get<BtSdpMnsRecord>(record));
+  } else if (absl::holds_alternative<BtSdpPseRecord>(record)) {
+    WriteDictEntry(&array_writer, kTypeKey,
+                   static_cast<uint32_t>(BtSdpType::kPbapPse));
+    WriteDictEntry(&array_writer, kVariantValueKey,
+                   absl::get<BtSdpPseRecord>(record));
+  } else if (absl::holds_alternative<BtSdpPceRecord>(record)) {
+    WriteDictEntry(&array_writer, kTypeKey,
+                   static_cast<uint32_t>(BtSdpType::kPbapPce));
+    WriteDictEntry(&array_writer, kVariantValueKey,
+                   absl::get<BtSdpPceRecord>(record));
+  } else if (absl::holds_alternative<BtSdpOpsRecord>(record)) {
+    WriteDictEntry(&array_writer, kTypeKey,
+                   static_cast<uint32_t>(BtSdpType::kOppServer));
+    WriteDictEntry(&array_writer, kVariantValueKey,
+                   absl::get<BtSdpOpsRecord>(record));
+  } else if (absl::holds_alternative<BtSdpSapRecord>(record)) {
+    WriteDictEntry(&array_writer, kTypeKey,
+                   static_cast<uint32_t>(BtSdpType::kSapServer));
+    WriteDictEntry(&array_writer, kVariantValueKey,
+                   absl::get<BtSdpSapRecord>(record));
+  } else if (absl::holds_alternative<BtSdpDipRecord>(record)) {
+    WriteDictEntry(&array_writer, kTypeKey,
+                   static_cast<uint32_t>(BtSdpType::kDip));
+    WriteDictEntry(&array_writer, kVariantValueKey,
+                   absl::get<BtSdpDipRecord>(record));
+  }
+
+  writer->CloseContainer(&array_writer);
 }
 
 }  // namespace floss
