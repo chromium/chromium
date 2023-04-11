@@ -483,11 +483,6 @@ BASE_FEATURE(kAutofillRequireNameForProfileImport,
              "AutofillRequireNameForProfileImport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether or not overall prediction are retrieved from the cache.
-BASE_FEATURE(kAutofillRetrieveOverallPredictionsFromCache,
-             "AutofillRetrieveOverallPredictionsFromCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether UPI/VPA values will be saved and filled into payment forms.
 BASE_FEATURE(kAutofillSaveAndFillVPA,
              "AutofillSaveAndFillVPA",
