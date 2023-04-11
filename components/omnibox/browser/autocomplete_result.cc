@@ -364,12 +364,8 @@ void AutocompleteResult::SortAndCull(
                   [&](const auto& match) { return match.relevance == 0; });
   }
 
-  // If `kGroupingFrameworkForZPS` is enabled and the current input & platform
-  // are supported, delegate to the framework.
-  //
-  // - Include both Desktop ZPS and prefixed suggestions.
-  // - Include Android ZPS only (no prefixed suggestions),
-  // - IOS is currently not included.
+  // If `kGroupingFrameworkForZPS` or `kGroupingFrameworkForNonZPS` are enabled
+  // and the current input & platform are supported, delegate to the framework.
   if (use_grouping_for_zps) {
     PSections sections;
     if constexpr (is_android) {
@@ -389,14 +385,21 @@ void AutocompleteResult::SortAndCull(
             std::make_unique<AndroidWebZpsSection>(suggestion_groups_map_));
       }
     } else if constexpr (is_desktop) {
-      sections.push_back(
-          std::make_unique<DesktopZpsSection>(suggestion_groups_map_));
-
-      if (page_classification == OmniboxEventProto::NTP_REALBOX &&
-          base::FeatureList::IsEnabled(omnibox::kKeepSecondaryZeroSuggest)) {
-        // Allow secondary zero-prefix suggestions in the NTP realbox, if any.
-        sections.push_back(std::make_unique<DesktopSecondaryZpsSection>(
-            suggestion_groups_map_));
+      if (omnibox::IsNTPPage(page_classification)) {
+        sections.push_back(
+            std::make_unique<DesktopNTPZpsSection>(suggestion_groups_map_));
+        if (page_classification == OmniboxEventProto::NTP_REALBOX &&
+            base::FeatureList::IsEnabled(omnibox::kKeepSecondaryZeroSuggest)) {
+          // Allow secondary zero-prefix suggestions in the NTP realbox, if any.
+          sections.push_back(std::make_unique<DesktopSecondaryNTPZpsSection>(
+              /*max_previous_search_related=*/3U, suggestion_groups_map_));
+        }
+      } else if (omnibox::IsSearchResultsPage(page_classification)) {
+        sections.push_back(
+            std::make_unique<DesktopSRPZpsSection>(suggestion_groups_map_));
+      } else {
+        sections.push_back(
+            std::make_unique<DesktopWebZpsSection>(suggestion_groups_map_));
       }
     } else if constexpr (is_ios) {
       if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
