@@ -20,7 +20,7 @@ The tables in this file are parsed as action templates for critical user journey
 
 TODO(dmurph): Possibly this table up into markdown-header section.
 
-| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 163) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
+| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 165) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
 | --- | --- | --- | --- | --- | --- | --- |
 | # Badging |
 | check_app_badge_empty | Site |  | 2 | Not Implemented | Check that the 'badge' on the app icon is empty |  |
@@ -106,12 +106,14 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | check_window_created |  |  | 24 | Implemented | A window was created. |  |
 | check_window_not_created |  |  | 127 | Implemented | A window was not created. | P2 |
 | check_pwa_window_created | Site, Number |  | 123 | Implemented | A given number of windows were created for the given pwa. |  |
+| check_pwa_window_created_in_profile | Site, Number, ProfileName |  | 164 | Implemented | A given number of windows were created for the given pwa in the given profile. |  |
 | check_window_display_minimal |  |  | 25 | Implemented | Check that the window is a PWA window, and has minimal browser controls. |  |
 | check_window_display_tabbed |  |  | 144 | Implemented | Check that the window is a PWA window, and has tabbed display mode. |  |
 | check_window_display_standalone |  |  | 26 | Implemented | Check that the window is a PWA window, and has no browser controls. |  |
 | close_custom_toolbar |  |  | 27 | Implemented | Press the 'x' button on the custom toolbar that is towards the top of the WebApp window. |  |
 | close_pwa |  |  | 28 | Implemented | Close the WebApp window. |  |
 | maybe_close_pwa |  |  | 143 | Implemented | Close the current app window if there is one open. |  |
+| quit_app_shim | Site |  | 163 | Implemented | Closes the WebApp in all profiles by quitting the App Shim; Mac OS Only. |  |
 | open_app_settings | Site | open_app_settings_from_chrome_apps($1) & open_app_settings_from_app_menu($1) | 95 | Parameterized | Launch chrome://app-settings/<app-id> page | phillis@ |
 | open_app_settings_from_app_menu | Site |  | 97 | Implemented |  | phillis@ |
 | open_in_chrome |  |  | 71 | Implemented | Click on the 'open in chrome' link in the 3-dot menu of the app window | cliffordcheng@, P1 |

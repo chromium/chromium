@@ -1562,7 +1562,10 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
     // expected to open a new one, so only wait for a new browser to be added
     // if there wasn't an open one already.
     app_browser_ = GetBrowserForAppId(profile(), app_id);
+    base::RunLoop run_loop;
+    web_app::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
     LaunchFromAppShim(site, /*urls=*/{}, /*wait_for_complete_launch=*/true);
+    run_loop.Run();
     if (!app_browser_) {
       browser_added_waiter.Wait();
       app_browser_ = browser_added_waiter.browser_added();
@@ -1570,7 +1573,10 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
     active_app_id_ = app_id;
     EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser(), app_id));
   } else {
+    base::RunLoop run_loop;
+    web_app::SetMacShimStartupDoneCallbackForTesting(run_loop.QuitClosure());
     LaunchFromAppShim(site, /*urls=*/{}, /*wait_for_complete_launch=*/true);
+    run_loop.Run();
   }
 #else
   if (is_open_in_app_browser) {
@@ -2078,21 +2084,7 @@ void WebAppIntegrationTestDriver::SwitchActiveProfile(
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
-  const char* profile_name_str = nullptr;
-  switch (profile_name) {
-    case ProfileName::kDefault:
-      profile_name_str = "Default";
-      break;
-    case ProfileName::kProfile2:
-      profile_name_str = "Profile2";
-      break;
-  }
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath user_data_dir;
-  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-  base::FilePath profile_path = user_data_dir.AppendASCII(profile_name_str);
-  active_profile_ =
-      g_browser_process->profile_manager()->GetProfile(profile_path);
+  active_profile_ = GetOrCreateProfile(profile_name);
   // Make sure the profile has at least one browser by creating one if one
   // doesn't exist already.
   if (!chrome::FindTabbedBrowser(active_profile_,
@@ -3110,11 +3102,18 @@ void WebAppIntegrationTestDriver::CheckPwaWindowCreated(Site site,
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
+  CheckPwaWindowCreatedImpl(profile(), site, number);
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckPwaWindowCreatedImpl(Profile* profile,
+                                                            Site site,
+                                                            Number number) {
   DCHECK(before_state_change_action_state_);
   absl::optional<ProfileState> after_action_profile =
-      GetStateForProfile(after_state_change_action_state_.get(), profile());
+      GetStateForProfile(after_state_change_action_state_.get(), profile);
   absl::optional<ProfileState> before_action_profile =
-      GetStateForProfile(before_state_change_action_state_.get(), profile());
+      GetStateForProfile(before_state_change_action_state_.get(), profile);
   ASSERT_TRUE(after_action_profile.has_value());
   ASSERT_TRUE(before_action_profile.has_value());
 
@@ -3141,6 +3140,17 @@ void WebAppIntegrationTestDriver::CheckPwaWindowCreated(Site site,
       ASSERT_EQ(2, app_window_diff);
       break;
   }
+}
+
+void WebAppIntegrationTestDriver::CheckPwaWindowCreatedInProfile(
+    Site site,
+    Number number,
+    ProfileName profile_name) {
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
+  Profile* profile = GetOrCreateProfile(profile_name);
+  CheckPwaWindowCreatedImpl(profile, site, number);
   AfterStateCheckAction();
 }
 
@@ -3617,6 +3627,25 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
         profile, ProfileState(std::move(browser_state), std::move(app_state)));
   }
   return std::make_unique<StateSnapshot>(std::move(profile_state_map));
+}
+
+Profile* WebAppIntegrationTestDriver::GetOrCreateProfile(
+    ProfileName profile_name) {
+  const char* profile_name_str = nullptr;
+  switch (profile_name) {
+    case ProfileName::kDefault:
+      profile_name_str = "Default";
+      break;
+    case ProfileName::kProfile2:
+      profile_name_str = "Profile2";
+      break;
+  }
+  CHECK(profile_name_str);
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath user_data_dir;
+  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+  base::FilePath profile_path = user_data_dir.AppendASCII(profile_name_str);
+  return g_browser_process->profile_manager()->GetProfile(profile_path);
 }
 
 content::WebContents* WebAppIntegrationTestDriver::GetCurrentTab(

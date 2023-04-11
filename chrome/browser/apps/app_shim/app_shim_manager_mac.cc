@@ -577,6 +577,7 @@ void AppShimManager::LoadAndLaunchApp(
   if (LoadAndLaunchApp_TryExistingProfileStates(
           profile_path, params, profiles_with_handlers, &launch_callback)) {
     // If we used an existing profile, |launch_callback| should have been run.
+    delegate_->OnShimLaunchResolved();
     DCHECK(!launch_callback);
     return;
   }
@@ -621,6 +622,7 @@ void AppShimManager::LoadAndLaunchApp(
   base::OnceClosure callback =
       base::BindOnce(&AppShimManager::LoadAndLaunchApp_OnProfilesAndAppReady,
                      weak_factory_.GetWeakPtr(), profile_paths_to_launch,
+                     /*first_profile_is_from_bootstrap=*/!profile_path.empty(),
                      params, std::move(launch_callback));
   {
     // This will update |callback| to be a chain of callbacks that load the
@@ -708,6 +710,7 @@ bool AppShimManager::LoadAndLaunchApp_TryExistingProfileStates(
 
 void AppShimManager::LoadAndLaunchApp_OnProfilesAndAppReady(
     const std::vector<base::FilePath>& profile_paths_to_launch,
+    bool first_profile_is_from_bootstrap,
     const LoadAndLaunchAppParams& params,
     LoadAndLaunchAppCallback launch_callback) {
   // Launch all of the profiles in |profile_paths_to_launch|. Record the most
@@ -717,8 +720,9 @@ void AppShimManager::LoadAndLaunchApp_OnProfilesAndAppReady(
   auto launch_result = chrome::mojom::AppShimLaunchResult::kProfileNotFound;
   for (size_t iter = 0; iter < profile_paths_to_launch.size(); ++iter) {
     const base::FilePath& profile_path = profile_paths_to_launch[iter];
-    if (profile_path.empty())
+    if (profile_path.empty()) {
       continue;
+    }
     if (IsProfileLockedForPath(profile_path)) {
       launch_result = chrome::mojom::AppShimLaunchResult::kProfileLocked;
       continue;
@@ -736,27 +740,30 @@ void AppShimManager::LoadAndLaunchApp_OnProfilesAndAppReady(
     // Create a ProfileState for this app, if appropriate (e.g, not for
     // open-in-a-tab bookmark apps).
     ProfileState* profile_state = nullptr;
-    if (delegate_->AppCanCreateHost(profile, params.app_id))
+    if (delegate_->AppCanCreateHost(profile, params.app_id)) {
       profile_state = GetOrCreateProfileState(profile, params.app_id);
+    }
 
     // Launch the app, if appropriate.
     LoadAndLaunchApp_LaunchIfAppropriate(profile, profile_state, params);
 
     // If we successfully created a profile state, save it for |bootstrap| to
     // connect to once all launches are done.
-    if (profile_state)
+    if (profile_state) {
       launched_profile_state = profile_state;
-    else
+    } else {
       launch_result = chrome::mojom::AppShimLaunchResult::kSuccessAndDisconnect;
+    }
 
     // If files or urls were specified, only open one new window.
-    if (params.HasFilesOrURLs())
+    if (params.HasFilesOrURLs()) {
       break;
+    }
 
-    // If this was the first profile in |profile_paths_to_launch|, then this
-    // was the profile specified in the bootstrap, so stop here.
-    if (iter == 0)
+    // If this was the profile specified in the bootstrop, stop here.
+    if (first_profile_is_from_bootstrap && iter == 0) {
       break;
+    }
   }
 
   // If we launched any profile, report success.
@@ -764,6 +771,7 @@ void AppShimManager::LoadAndLaunchApp_OnProfilesAndAppReady(
     launch_result = chrome::mojom::AppShimLaunchResult::kSuccess;
 
   std::move(launch_callback).Run(launched_profile_state, launch_result);
+  delegate_->OnShimLaunchResolved();
 }
 
 void AppShimManager::OnShimProcessConnectedAndAllLaunchesDone(
