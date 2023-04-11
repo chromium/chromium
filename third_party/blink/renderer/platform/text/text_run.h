@@ -258,6 +258,7 @@ class PLATFORM_EXPORT TextRun final {
   void SetDirection(TextDirection direction) {
     direction_ = static_cast<unsigned>(direction);
   }
+  void SetDirectionFromText();
   void SetDirectionalOverride(bool override) {
     directional_override_ = override;
   }

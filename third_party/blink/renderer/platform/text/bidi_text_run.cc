@@ -59,13 +59,4 @@ TextDirection DetermineDirectionality(const String& value,
   return DirectionForRun(run, has_strong_directionality);
 }
 
-TextRun TextRunWithDirectionality(const String& value,
-                                  bool* has_strong_directionality) {
-  TextRun run(value);
-  TextDirection direction = DirectionForRun(run, has_strong_directionality);
-  if (has_strong_directionality)
-    run.SetDirection(direction);
-  return run;
-}
-
 }  // namespace blink

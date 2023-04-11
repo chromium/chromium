@@ -42,9 +42,6 @@ DirectionForRun(TextRun&, bool* has_strong_directionality = nullptr);
 PLATFORM_EXPORT TextDirection
 DetermineDirectionality(const String& value,
                         bool* has_strong_directionality = nullptr);
-PLATFORM_EXPORT TextRun
-TextRunWithDirectionality(const String& value,
-                          bool* has_strong_directionality = nullptr);
 
 }  // namespace blink
 
