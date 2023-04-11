@@ -1134,10 +1134,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Full_With_Recover_20201216",
+                    "name": "Enabled_With_Cards_and_VCN_20230324",
                     "enable_features": [
                         "AutofillKeyboardAccessory",
                         "AutofillManualFallbackAndroid",
+                        "AutofillTouchToFillForCreditCardsAndroid",
+                        "AutofillVirtualCardsOnTouchToFillAndroid",
                         "RecoverFromNeverSaveAndroid"
                     ]
                 }
