@@ -90,7 +90,7 @@
     <div id="checkupButtons" hidden="[[!showCheckButton_(status_)]]">
       <cr-icon-button id="refreshButton" class="icon-refresh"
           disabled="[[isCheckRunning_]]" hidden="[[showRetryButton_(status_)]]"
-          on-click="onPasswordCheckButtonClick_"
+          on-click="onPasswordCheckButtonClick_" title="$i18n{reload}"
           aria-label="$i18n{runCheckupAriaDescription}">
       </cr-icon-button>
       <cr-button id="retryButton" hidden="[[!showRetryButton_(status_)]]"

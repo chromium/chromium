@@ -193,6 +193,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
     {"phishedPassword", IDS_PASSWORD_MANAGER_UI_PASSWORD_PHISHED},
     {"removeBlockedAriaDescription",
      IDS_PASSWORD_MANAGER_UI_REMOVE_BLOCKED_SITE_ARIA_DESCRIPTION},
+    {"reload", IDS_RELOAD},
     {"reusedPasswordsDescription",
      IDS_PASSWORD_MANAGER_UI_REUSED_PASSWORDS_DESCRIPTION},
     {"reusedPasswordsEmpty", IDS_PASSWORD_MANAGER_UI_NO_REUSED_PASSWORDS},
