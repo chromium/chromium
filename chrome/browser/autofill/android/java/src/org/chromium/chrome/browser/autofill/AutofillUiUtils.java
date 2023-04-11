@@ -38,6 +38,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -532,19 +533,20 @@ public class AutofillUiUtils {
      * If {@code roundBitmapCorners} is true, add a corner radius to bitmap corners.
      * @param bitmap to be updated.
      * @param cornerRadius for the bitmap.
-     * @param roundBitmapCorners If true, the bitmap corners are rounded, else the input bitmap is
-     *         returned as it is.
+     * @param addCardIconEnhancements If true, the bitmap corners are rounded, and a grey border is
+     *         added. If false, the input bitmap is returned as it is.
      * @return {@link Bitmap} with the corners rounded.
      */
-    public static Bitmap getRoundedBitmap(
-            Bitmap bitmap, float cornerRadius, boolean roundBitmapCorners) {
-        if (!roundBitmapCorners) {
+    public static Bitmap getRoundedBitmapWithBorder(
+            Bitmap bitmap, float cornerRadius, boolean addCardIconEnhancements) {
+        if (!addCardIconEnhancements) {
             return bitmap;
         }
 
-        Bitmap roundedBitmap =
+        // Round the corners.
+        Bitmap roundedBitmapWithBorder =
                 Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(roundedBitmap);
+        Canvas canvas = new Canvas(roundedBitmapWithBorder);
         Paint paint = new Paint();
         paint.setAntiAlias(true);
         Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
@@ -553,6 +555,14 @@ public class AutofillUiUtils {
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, rect, rect, paint);
 
-        return roundedBitmap;
+        // Add the grey border.
+        Context context = ContextUtils.getApplicationContext();
+        int greyColor = ContextCompat.getColor(context, R.color.modern_grey_100);
+        paint.setColor(greyColor);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(context.getResources().getDimension(R.dimen.card_art_border_width));
+        canvas.drawRoundRect(rectF, cornerRadius, cornerRadius, paint);
+
+        return roundedBitmapWithBorder;
     }
 }

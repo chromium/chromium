@@ -1394,7 +1394,7 @@ public class PersonalDataManager {
             if (bitmap == null) return;
 
             mCreditCardArtImages.put(customImageUrl.getSpec(),
-                    AutofillUiUtils.getRoundedBitmap(bitmap, cornerRadius,
+                    AutofillUiUtils.getRoundedBitmapWithBorder(bitmap, cornerRadius,
                             ChromeFeatureList.isEnabled(
                                     ChromeFeatureList
                                             .AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)));
