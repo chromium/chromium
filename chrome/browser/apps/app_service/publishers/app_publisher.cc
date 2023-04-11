@@ -8,8 +8,11 @@
 #include "base/notreached.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/package_id.h"
-#include "chrome/browser/apps/app_service/promise_apps/promise_apps.h"
 #include "components/services/app_service/public/cpp/capability_access.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/apps/app_service/promise_apps/promise_apps.h"
+#endif
 
 namespace apps {
 
@@ -42,11 +45,6 @@ AppPtr AppPublisher::MakeApp(AppType app_type,
   return app;
 }
 
-// static
-PromiseAppPtr AppPublisher::MakePromiseApp(const PackageId& package_id) {
-  return std::make_unique<PromiseApp>(package_id);
-}
-
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void AppPublisher::RegisterPublisher(AppType app_type) {
   proxy_->RegisterPublisher(app_type, this);
@@ -60,15 +58,6 @@ void AppPublisher::GetCompressedIconData(const std::string& app_id,
                                          LoadIconCallback callback) {
   std::move(callback).Run(std::make_unique<IconValue>());
 }
-
-void AppPublisher::PublishPromiseApp(PromiseAppPtr delta) {
-  if (!proxy_) {
-    NOTREACHED();
-    return;
-  }
-  proxy_->OnPromiseApp(std::move(delta));
-}
-
 #endif
 
 void AppPublisher::LaunchAppWithFiles(const std::string& app_id,
@@ -138,6 +127,21 @@ void AppPublisher::SetWindowMode(const std::string& app_id,
                                  WindowMode window_mode) {
   NOTIMPLEMENTED();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// static
+PromiseAppPtr AppPublisher::MakePromiseApp(const PackageId& package_id) {
+  return std::make_unique<PromiseApp>(package_id);
+}
+
+void AppPublisher::PublishPromiseApp(PromiseAppPtr delta) {
+  if (!proxy_) {
+    NOTREACHED();
+    return;
+  }
+  proxy_->OnPromiseApp(std::move(delta));
+}
+#endif
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void AppPublisher::Publish(AppPtr app) {

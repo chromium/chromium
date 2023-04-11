@@ -24,11 +24,28 @@ class PromiseAppUpdate {
 
   const PackageId& PackageId() const;
 
+  // Indicates the app name for the package. If app name is not known or still
+  // loading, return absl::nullopt.
+  absl::optional<std::string> Name() const;
+
+  bool NameChanged() const;
+
+  // Indicates the current installation progress percentage. If the package is
+  // not actively downloading/ installing then this method returns
+  // absl::nullopt.
   absl::optional<float> Progress() const;
+
   bool ProgressChanged() const;
 
+  // Indicates the status of the installation.
   PromiseStatus Status() const;
+
   bool StatusChanged() const;
+
+  // Indicates whether the promise app should show in the Launcher/ Shelf.
+  bool ShouldShow() const;
+
+  bool ShouldShowChanged() const;
 
  private:
   raw_ptr<const PromiseApp> state_ = nullptr;
