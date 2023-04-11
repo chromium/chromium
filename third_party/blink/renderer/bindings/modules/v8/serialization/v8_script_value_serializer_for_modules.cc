@@ -125,11 +125,7 @@ bool V8ScriptValueSerializerForModules::ExtractTransferable(
     return true;
   }
 
-  if (V8MediaSourceHandle::HasInstance(object, isolate) &&
-      RuntimeEnabledFeatures::MediaSourceInWorkersEnabled(
-          CurrentExecutionContext(isolate)) &&
-      RuntimeEnabledFeatures::MediaSourceInWorkersUsingHandleEnabled(
-          CurrentExecutionContext(isolate))) {
+  if (V8MediaSourceHandle::HasInstance(object, isolate)) {
     MediaSourceHandleImpl* media_source_handle =
         V8MediaSourceHandle::ToImpl(v8::Local<v8::Object>::Cast(object));
     MediaSourceHandleTransferList* transfer_list =
@@ -325,12 +321,6 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
   }
   if (auto* media_source_handle =
           dispatcher.ToMostDerived<MediaSourceHandleImpl>()) {
-    if (!(RuntimeEnabledFeatures::MediaSourceInWorkersEnabled(
-              ExecutionContext::From(GetScriptState())) &&
-          RuntimeEnabledFeatures::MediaSourceInWorkersUsingHandleEnabled(
-              ExecutionContext::From(GetScriptState())))) {
-      return false;
-    }
     if (IsForStorage()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,

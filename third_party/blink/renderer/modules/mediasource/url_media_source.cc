@@ -56,45 +56,32 @@ String URLMediaSource::createObjectURL(ScriptState* script_state,
   // mechanism for a worker-owned MediaSource.
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   DCHECK(execution_context);
-  DCHECK(IsMainThread() || RuntimeEnabledFeatures::MediaSourceInWorkersEnabled(
-                               execution_context));
   DCHECK(source);
 
   UseCounter::Count(execution_context, WebFeature::kCreateObjectURLMediaSource);
 
   MediaSourceAttachment* attachment;
   if (execution_context->IsDedicatedWorkerGlobalScope()) {
-    // TODO(crbug.com/878133): Disallow this code path (CTMSA in object URL),
-    // instead use CTMSA via MediaSourceHandleImpl.
     DCHECK(!IsMainThread());
 
     UseCounter::Count(execution_context,
                       WebFeature::kCreateObjectURLMediaSourceFromWorker);
-    if (RuntimeEnabledFeatures::MediaSourceInWorkersUsingHandleEnabled(
-            execution_context)) {
-      // Return empty string, which if attempted to be used as media element src
-      // by the app will cause the required failure. Note that the partial
-      // interface for this method in WebIDL must have same exposure as the
-      // extended createObjectURL interface, so we cannot simply remove this
-      // partial interface from exposure on dedicated workers even once
-      // MediaSourceInWorkersUsingHandle is shipped stable.
-      return String();
-    }
 
-    // PassKey provider usage here ensures that we are allowed to call the
-    // attachment constructor.
-    attachment = new CrossThreadMediaSourceAttachment(
-        source, AttachmentCreationPassKeyProvider::GetPassKey());
-  } else {
-    // Other contexts outside of main window thread or conditionally a dedicated
-    // worker thread are not supported (like Shared Worker and Service Worker).
-    DCHECK(IsMainThread() && execution_context->IsWindow());
-
-    // PassKey provider usage here ensures that we are allowed to call the
-    // attachment constructor.
-    attachment = new SameThreadMediaSourceAttachment(
-        source, AttachmentCreationPassKeyProvider::GetPassKey());
+    // Return empty string, which if attempted to be used as media element src
+    // by the app will cause the required failure. Note that the partial
+    // interface for this method in WebIDL must have same exposure as the
+    // extended createObjectURL interface, so we cannot simply remove this.
+    return String();
   }
+
+  // Other contexts outside of main window thread or conditionally a dedicated
+  // worker thread are not supported (like Shared Worker and Service Worker).
+  DCHECK(IsMainThread() && execution_context->IsWindow());
+
+  // PassKey provider usage here ensures that we are allowed to call the
+  // attachment constructor.
+  attachment = new SameThreadMediaSourceAttachment(
+      source, AttachmentCreationPassKeyProvider::GetPassKey());
 
   // The creation of a ThreadSafeRefCounted attachment object, above, should
   // have a refcount of 1 immediately. It will be adopted into a scoped_refptr

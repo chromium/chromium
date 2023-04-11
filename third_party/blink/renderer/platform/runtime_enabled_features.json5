@@ -2200,29 +2200,8 @@
       origin_trial_feature_name: "MediaSourceExtensionsForWebCodecs",
     },
     {
-      name: "MediaSourceInWorkers",
-      status: "stable",
-      origin_trial_feature_name: "MediaSourceInWorkers",
-    },
-    {
-      // Availability of this feature depends on MediaSourceInWorkers also
-      // being enabled. MediaSourceInWorkers is an OT feature, so this cannot
-      // use the "depends_on" key.
-      name: "MediaSourceInWorkersUsingHandle",
-      status: "stable",
-    },
-    {
       name: "MediaSourceNewAbortAndDuration",
       status: "experimental",
-      base_feature: "none",
-    },
-    {
-      // This is used in cases of mixed specification of stable and
-      // experimental MediaSource features, such as in the IDL for an interface
-      // constructor where exposure of the constructor in Window vs other
-      // contexts can vary in stable vs experimental.
-      name: "MediaSourceStable",
-      status: "stable",
       base_feature: "none",
     },
     {

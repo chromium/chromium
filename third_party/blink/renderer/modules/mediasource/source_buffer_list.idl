@@ -29,7 +29,7 @@
  */
 
 [
-    Exposed(Window MediaSourceStable, DedicatedWorker MediaSourceInWorkers)
+    Exposed=(Window, DedicatedWorker)
 ] interface SourceBufferList : EventTarget {
     readonly attribute unsigned long length;
     attribute EventHandler onaddsourcebuffer;
