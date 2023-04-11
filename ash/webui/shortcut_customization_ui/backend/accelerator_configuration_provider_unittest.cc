@@ -658,26 +658,18 @@ TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
       // search + esc -> search + esc
       {/*trigger_on_press=*/true, ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN,
        SHOW_TASK_MANAGER},
-      // shift + zoom -> shift + search + F3
-      {/*trigger_on_press=*/true, ui::VKEY_F3,
+      // shift + zoom -> shift + search + VKEY_ZOOM
+      {/*trigger_on_press=*/true, ui::VKEY_ZOOM,
        ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN, TOGGLE_FULLSCREEN},
-      // zoom -> search + F3
-      {/*trigger_on_press=*/true, ui::VKEY_F3, ui::EF_COMMAND_DOWN,
-       TOGGLE_FULLSCREEN},
-      // brightness_up -> search + F6
-      {/*trigger_on_press=*/true, ui::VKEY_F6, ui::EF_COMMAND_DOWN,
-       BRIGHTNESS_UP},
-      // alt + brightness_up -> alt + search + F6
-      {/*trigger_on_press=*/true, ui::VKEY_F6,
-       ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN, KEYBOARD_BRIGHTNESS_UP},
-      // When [search] is part of the original accelerator, no remapping is
-      // done.
-      // search + alt + brightness_up -> search + alt + brightness_up
-      {/*trigger_on_press=*/true, ui::VKEY_BRIGHTNESS_UP,
-       ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN, KEYBOARD_BRIGHTNESS_UP},
-      // search + zoom -> search + zoom
+      // zoom -> search + VKEY_ZOOM
       {/*trigger_on_press=*/true, ui::VKEY_ZOOM, ui::EF_COMMAND_DOWN,
        TOGGLE_FULLSCREEN},
+      // brightness_up -> search + VKEY_BRIGHTNESS_UP
+      {/*trigger_on_press=*/true, ui::VKEY_BRIGHTNESS_UP, ui::EF_COMMAND_DOWN,
+       BRIGHTNESS_UP},
+      // alt + brightness_up -> alt + search + VKEY_BRIGHTNESS_UP
+      {/*trigger_on_press=*/true, ui::VKEY_BRIGHTNESS_UP,
+       ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN, KEYBOARD_BRIGHTNESS_UP},
   };
 
   EXPECT_EQ(3, mojo_observer.num_times_notified());
