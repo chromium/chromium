@@ -50,6 +50,8 @@ class TestCertVerifierServiceFactoryImpl
       mojo::PendingReceiver<mojom::CertVerifierService> receiver,
       mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
       mojom::CertVerifierCreationParamsPtr creation_params) override;
+  void GetServiceParamsForTesting(
+      GetServiceParamsForTestingCallback callback) override;
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   void UpdateChromeRootStore(mojom::ChromeRootStorePtr new_root_store,
@@ -75,6 +77,7 @@ class TestCertVerifierServiceFactoryImpl
         scoped_refptr<base::SequencedTaskRunner> owning_task_runner);
 
     void Init(
+        mojom::CertVerifierServiceParamsPtr params,
         mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceFactory>
             receiver);
 

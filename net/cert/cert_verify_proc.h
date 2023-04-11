@@ -17,10 +17,6 @@
 #include "net/base/net_export.h"
 #include "net/net_buildflags.h"
 
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-#include "net/cert/internal/trust_store_chrome.h"
-#endif
-
 namespace net {
 
 class CertNetFetcher;
@@ -28,6 +24,7 @@ class CertVerifyResult;
 class CRLSet;
 class NetLogWithSource;
 class X509Certificate;
+class ChromeRootStoreData;
 typedef std::vector<scoped_refptr<X509Certificate>> CertificateList;
 
 // Class to perform certificate path building and verification for various
@@ -216,35 +213,12 @@ class NET_EXPORT CertVerifyProc
 class NET_EXPORT CertVerifyProcFactory
     : public base::RefCountedThreadSafe<CertVerifyProcFactory> {
  public:
-  // The set of factory parameters that are variable over time, but are
-  // expected to be consistent between multiple verifiers that are created. For
-  // example, CertNetFetcher is not in this struct as it is expected that
-  // different verifiers will have different net fetchers. (There is no
-  // technical restriction against creating different verifiers with different
-  // ImplParams, structuring the parameters this way just makes some APIs more
-  // convenient for the common case.)
-  struct NET_EXPORT ImplParams {
-    ImplParams();
-    ~ImplParams();
-    ImplParams(const ImplParams&);
-    ImplParams& operator=(const ImplParams& other);
-    ImplParams(ImplParams&&);
-    ImplParams& operator=(ImplParams&& other);
-
-    scoped_refptr<CRLSet> crl_set;
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-    absl::optional<net::ChromeRootStoreData> root_store_data;
-#endif
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-    bool use_chrome_root_store;
-#endif
-  };
-
   // Create a new CertVerifyProc that uses the passed in CRLSet and
   // ChromeRootStoreData.
   virtual scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
-      const ImplParams& impl_params) = 0;
+      scoped_refptr<CRLSet> crl_set,
+      const ChromeRootStoreData* root_store_data) = 0;
 
  protected:
   virtual ~CertVerifyProcFactory() = default;

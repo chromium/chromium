@@ -28,6 +28,7 @@ namespace net {
 class CertVerifyProc;
 class CertNetFetcher;
 class CertVerifyProcFactory;
+class ChromeRootStoreData;
 
 // MultiThreadedCertVerifier is a CertVerifier implementation that runs
 // synchronous CertVerifier implementations on worker threads.
@@ -57,7 +58,8 @@ class NET_EXPORT_PRIVATE MultiThreadedCertVerifier
   void RemoveObserver(Observer* observer) override;
   void UpdateVerifyProcData(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
-      const net::CertVerifyProcFactory::ImplParams& impl_params) override;
+      scoped_refptr<CRLSet> crl_set,
+      const ChromeRootStoreData* root_store_data) override;
 
  private:
   class InternalRequest;

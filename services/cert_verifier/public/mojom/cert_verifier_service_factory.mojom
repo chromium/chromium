@@ -37,6 +37,15 @@ struct CertVerifierCreationParams {
   TrialComparisonCertVerifierParams? trial_comparison_cert_verifier_params;
 };
 
+// Parameters for the CertVerifierServiceFactory. As opposed to
+// CertVerifierCreationParams, which can vary for each CertVerifier created,
+// the CertVerifierServiceParams are fixed and all CertVerifiers created by the
+// factory will be created with the same service parameters.
+struct CertVerifierServiceParams {
+  [EnableIf=is_chrome_root_store_optional]
+  bool use_chrome_root_store;
+};
+
 // Serialized copy of the Chrome Root store.
 struct ChromeRootStore {
   // Serialized proto of type chrome_root_store::RootStore.
@@ -66,6 +75,9 @@ interface CertVerifierServiceFactory {
                      pending_remote<CertVerifierServiceClient> client,
                      CertVerifierCreationParams? creation_params);
 
+  // Returns the parameters that the service was configured with.
+  GetServiceParamsForTesting() => (CertVerifierServiceParams service_params);
+
   // Updates the CRLSet used in the verification of certificates. CRLSets that
   // cannot be parsed using net::CRLSet::Parse will be ignored, as will older
   // CRLSets (where older is determined by the sequence number). All
@@ -80,12 +92,6 @@ interface CertVerifierServiceFactory {
   // (regardless if it was updated successfully or the update was ignored.)
   [EnableIf=is_chrome_root_store_supported]
   UpdateChromeRootStore(ChromeRootStore new_root_store) => ();
-
-  // Sets whether verification should use the Chrome Root Store or not. All
-  // CertVerifierServices created by the CertVerifierServiceFactory, including
-  // those created after this call, will use the same setting.
-  [EnableIf=is_chrome_root_store_optional]
-  SetUseChromeRootStore(bool use_crs) => ();
 
   // Returns information about the current Chrome Root Store.
   [EnableIf=is_chrome_root_store_supported]

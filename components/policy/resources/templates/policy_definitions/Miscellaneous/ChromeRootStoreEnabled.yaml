@@ -17,7 +17,7 @@ desc: |-
   when support for using the platform supplied certificate verifier and roots was removed.
 example_value: false
 features:
-  dynamic_refresh: true
+  dynamic_refresh: false
   per_profile: false
 items:
 - caption: Use the Chrome Root Store.

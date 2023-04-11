@@ -16,14 +16,15 @@
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_net_fetcher.h"
-#include "net/cert/cert_verify_proc.h"
 #include "net/cert/x509_certificate.h"
 
 namespace net {
 
 class CertVerifyResult;
 class CertVerifierWithUpdatableProc;
+class CRLSet;
 class NetLogWithSource;
+class ChromeRootStoreData;
 
 // CertVerifier represents a service for verifying certificates.
 //
@@ -238,10 +239,11 @@ NET_EXPORT bool operator!=(const CertVerifier::Config& lhs,
 // A CertVerifier that can update its CertVerifyProc while it is running.
 class NET_EXPORT CertVerifierWithUpdatableProc : public CertVerifier {
  public:
-  // Update the CertVerifyProc with a new set of parameters.
+  // Update the CertVerifyProc with new CRLSet and ChromeRootStoreData.
   virtual void UpdateVerifyProcData(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
-      const net::CertVerifyProcFactory::ImplParams& impl_params) = 0;
+      scoped_refptr<CRLSet> crl_set,
+      const ChromeRootStoreData* root_store_data) = 0;
 };
 
 }  // namespace net

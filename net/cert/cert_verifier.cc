@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/strings/string_util.h"
-#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/cert/caching_cert_verifier.h"
@@ -28,25 +27,29 @@ class DefaultCertVerifyProcFactory : public net::CertVerifyProcFactory {
  public:
   scoped_refptr<net::CertVerifyProc> CreateCertVerifyProc(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
-      const CertVerifyProcFactory::ImplParams& impl_params) override {
+      scoped_refptr<CRLSet> crl_set,
+      const net::ChromeRootStoreData* root_store_data) override {
+    scoped_refptr<net::CertVerifyProc> verify_proc;
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-    if (impl_params.use_chrome_root_store) {
-      return CertVerifyProc::CreateBuiltinWithChromeRootStore(
-          std::move(cert_net_fetcher), impl_params.crl_set,
-          base::OptionalToPtr(impl_params.root_store_data));
+    if (!verify_proc &&
+        base::FeatureList::IsEnabled(features::kChromeRootStoreUsed)) {
+      verify_proc = CertVerifyProc::CreateBuiltinWithChromeRootStore(
+          std::move(cert_net_fetcher), std::move(crl_set), root_store_data);
     }
 #endif
+    if (!verify_proc) {
 #if BUILDFLAG(CHROME_ROOT_STORE_ONLY)
-    return CertVerifyProc::CreateBuiltinWithChromeRootStore(
-        std::move(cert_net_fetcher), impl_params.crl_set,
-        base::OptionalToPtr(impl_params.root_store_data));
+      verify_proc = CertVerifyProc::CreateBuiltinWithChromeRootStore(
+          std::move(cert_net_fetcher), std::move(crl_set), root_store_data);
 #elif BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    return CertVerifyProc::CreateBuiltinVerifyProc(std::move(cert_net_fetcher),
-                                                   impl_params.crl_set);
+      verify_proc = CertVerifyProc::CreateBuiltinVerifyProc(
+          std::move(cert_net_fetcher), std::move(crl_set));
 #else
-    return CertVerifyProc::CreateSystemVerifyProc(std::move(cert_net_fetcher),
-                                                  impl_params.crl_set);
+      verify_proc = CertVerifyProc::CreateSystemVerifyProc(
+          std::move(cert_net_fetcher), std::move(crl_set));
 #endif
+    }
+    return verify_proc;
   }
 
  private:
@@ -116,7 +119,8 @@ CertVerifier::CreateDefaultWithoutCaching(
     scoped_refptr<CertNetFetcher> cert_net_fetcher) {
   auto proc_factory = base::MakeRefCounted<DefaultCertVerifyProcFactory>();
   return std::make_unique<MultiThreadedCertVerifier>(
-      proc_factory->CreateCertVerifyProc(std::move(cert_net_fetcher), {}),
+      proc_factory->CreateCertVerifyProc(std::move(cert_net_fetcher),
+                                         net::CRLSet::BuiltinCRLSet(), nullptr),
       proc_factory);
 }
 

@@ -364,6 +364,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 #endif
   content::GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(
       content::BrowserContext* context) override;
+  cert_verifier::mojom::CertVerifierServiceParamsPtr
+  GetCertVerifierServiceParams() override;
   void AllowCertificateError(
       content::WebContents* web_contents,
       int cert_error,

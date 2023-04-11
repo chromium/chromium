@@ -63,8 +63,8 @@ class CertVerifierServiceImpl : public mojom::CertVerifierService,
           service_factory_impl);
 
   // Update the wrapped verifier with CRLSet and ChromeRootStoreData.
-  void UpdateVerifierData(
-      const net::CertVerifyProcFactory::ImplParams& impl_params);
+  void UpdateVerifierData(scoped_refptr<net::CRLSet> crl_set,
+                          const net::ChromeRootStoreData* root_store_data);
 
  private:
   ~CertVerifierServiceImpl() override;
