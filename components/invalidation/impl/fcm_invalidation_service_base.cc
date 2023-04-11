@@ -23,18 +23,6 @@ namespace {
 const char kApplicationName[] = "com.google.chrome.fcm.invalidations";
 // Sender ID coming from the Firebase console.
 const char kInvalidationGCMSenderId[] = "8181035976";
-
-// Added in M76.
-void MigratePrefs(PrefService* prefs, const std::string& sender_id) {
-  if (!prefs->HasPrefPath(prefs::kFCMInvalidationClientIDCacheDeprecated)) {
-    return;
-  }
-  ScopedDictPrefUpdate update(prefs, prefs::kInvalidationClientIDCache);
-  update->Set(sender_id,
-              prefs->GetString(prefs::kFCMInvalidationClientIDCacheDeprecated));
-  prefs->ClearPref(prefs::kFCMInvalidationClientIDCacheDeprecated);
-}
-
 }  // namespace
 
 FCMInvalidationServiceBase::FCMInvalidationServiceBase(
@@ -65,8 +53,6 @@ FCMInvalidationServiceBase::~FCMInvalidationServiceBase() {
 
 // static
 void FCMInvalidationServiceBase::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(prefs::kFCMInvalidationClientIDCacheDeprecated,
-                               /*default_value=*/std::string());
   registry->RegisterDictionaryPref(prefs::kInvalidationClientIDCache);
 }
 
@@ -215,8 +201,8 @@ void FCMInvalidationServiceBase::StartInvalidator() {
   // the startup cached messages might exists.
   invalidation_listener_ =
       std::make_unique<FCMInvalidationListener>(std::move(network));
-  auto subscription_manager = per_user_topic_subscription_manager_callback_.Run(
-      sender_id_, /*migrate_prefs=*/sender_id_ == kInvalidationGCMSenderId);
+  auto subscription_manager =
+      per_user_topic_subscription_manager_callback_.Run(sender_id_);
   invalidation_listener_->Start(this, std::move(subscription_manager));
 
   PopulateClientID();
@@ -242,10 +228,6 @@ void FCMInvalidationServiceBase::StopInvalidatorPermanently() {
 
 void FCMInvalidationServiceBase::PopulateClientID() {
   diagnostic_info_.instance_id_requested = base::Time::Now();
-
-  if (sender_id_ == kInvalidationGCMSenderId) {
-    MigratePrefs(pref_service_, sender_id_);
-  }
 
   // Retrieve any client ID (aka Instance ID) from a previous run, which was
   // cached in prefs.

@@ -288,13 +288,10 @@ constexpr const char* kSplitPreferencesKeys[] = {
 // Preferences's keys that should not be migrated to Lacros.
 constexpr const char* kAshOnlyPreferencesKeys[] = {
     "app_list.local_state",
-    "fcm.invalidation.client_id_cache",
-    "invalidation.active_registration_token",
     "invalidation.per_sender_active_registration_tokens",
     "invalidation.per_sender_client_id_cache",
     "invalidation.per_sender_registered_for_invalidation",
     "invalidation.per_sender_topics_to_handler",
-    "invalidation.registered_for_invalidation",
     "invalidation.topics_to_handler",
 };
 // Preferences's key that has to be moved to Lacros, and cleared in Ash.

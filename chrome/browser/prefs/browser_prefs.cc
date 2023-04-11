@@ -832,6 +832,13 @@ const char kNextForbiddenCheckTimePref[] = "offline_prefetch.next_gpb_check";
 const char kPrefetchCachedGCMToken[] = "offline_prefetch.gcm_token";
 #endif
 
+// Deprecated 04/2023.
+const char kTypeSubscribedForInvalidations[] =
+    "invalidation.registered_for_invalidation";
+const char kActiveRegistrationToken[] =
+    "invalidation.active_registration_token";
+const char kFCMInvalidationClientIDCache[] = "fcm.invalidation.client_id_cache";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -931,6 +938,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterDictionaryPref(kEasyUnlockHardlockState);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 04/2023.
+  registry->RegisterDictionaryPref(kTypeSubscribedForInvalidations);
+  registry->RegisterStringPref(kActiveRegistrationToken, std::string());
+  registry->RegisterStringPref(kFCMInvalidationClientIDCache, std::string());
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1139,6 +1151,11 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterTimePref(kNextForbiddenCheckTimePref, base::Time());
   registry->RegisterStringPref(kPrefetchCachedGCMToken, std::string());
 #endif
+
+  // Deprecated 04/2023.
+  registry->RegisterDictionaryPref(kTypeSubscribedForInvalidations);
+  registry->RegisterStringPref(kActiveRegistrationToken, std::string());
+  registry->RegisterStringPref(kFCMInvalidationClientIDCache, std::string());
 }
 
 }  // namespace
@@ -1914,6 +1931,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   local_state->ClearPref(kEasyUnlockHardlockState);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  // Added 04/2023.
+  local_state->ClearPref(kTypeSubscribedForInvalidations);
+  local_state->ClearPref(kActiveRegistrationToken);
+  local_state->ClearPref(kFCMInvalidationClientIDCache);
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
 
@@ -2192,6 +2214,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kNextForbiddenCheckTimePref);
   profile_prefs->ClearPref(kPrefetchCachedGCMToken);
 #endif
+
+  // Added 04/2023.
+  profile_prefs->ClearPref(kTypeSubscribedForInvalidations);
+  profile_prefs->ClearPref(kActiveRegistrationToken);
+  profile_prefs->ClearPref(kFCMInvalidationClientIDCache);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

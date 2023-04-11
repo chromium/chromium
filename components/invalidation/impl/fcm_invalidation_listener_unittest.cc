@@ -124,8 +124,7 @@ class MockSubscriptionManager : public PerUserTopicSubscriptionManager {
       : PerUserTopicSubscriptionManager(nullptr /* identity_provider */,
                                         nullptr /* pref_service */,
                                         nullptr /* loader_factory */,
-                                        "fake_sender_id",
-                                        false) {
+                                        "fake_sender_id") {
     ON_CALL(*this, LookupSubscribedPublicTopicByPrivateTopic)
         .WillByDefault(testing::ReturnArg<0>());
   }

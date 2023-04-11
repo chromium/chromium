@@ -119,9 +119,6 @@ class MockInstanceIDDriver : public InstanceIDDriver {
 class FCMInvalidationServiceTestDelegate {
  public:
   FCMInvalidationServiceTestDelegate() {
-    pref_service_.registry()->RegisterStringPref(
-        prefs::kFCMInvalidationClientIDCacheDeprecated,
-        /*default_value=*/std::string());
     pref_service_.registry()->RegisterDictionaryPref(
         prefs::kInvalidationClientIDCache);
     InvalidatorRegistrarWithMemory::RegisterProfilePrefs(

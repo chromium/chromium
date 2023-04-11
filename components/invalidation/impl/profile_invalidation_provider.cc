@@ -55,8 +55,6 @@ void ProfileInvalidationProvider::Shutdown() {
 // static
 void ProfileInvalidationProvider::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterStringPref(prefs::kFCMInvalidationClientIDCacheDeprecated,
-                               /*default_value=*/std::string());
   registry->RegisterDictionaryPref(prefs::kInvalidationClientIDCache);
 }
 

@@ -35,8 +35,7 @@ using FCMNetworkHandlerCallback =
 
 using PerUserTopicSubscriptionManagerCallback =
     base::RepeatingCallback<std::unique_ptr<PerUserTopicSubscriptionManager>(
-        const std::string& project_id,
-        bool migrate_prefs)>;
+        const std::string& project_id)>;
 
 // This InvalidationService wraps the C++ Invalidation Client (FCM) library.
 // It provides invalidations for desktop platforms (Win, Mac, Linux).
