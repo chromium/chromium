@@ -9120,7 +9120,7 @@ class AuthenticatorCableV2Test : public AuthenticatorImplTest {
 
 TEST_F(AuthenticatorCableV2Test, QRBasedWithNoPairing) {
   auto discovery = std::make_unique<device::cablev2::Discovery>(
-      device::CableRequestType::kGetAssertion, network_context_.get(),
+      device::FidoRequestType::kGetAssertion, network_context_.get(),
       qr_generator_key_, std::move(ble_advert_events_),
       /*pairings=*/std::vector<std::unique_ptr<device::cablev2::Pairing>>(),
       /*contact_device_stream=*/nullptr,
@@ -9147,7 +9147,7 @@ TEST_F(AuthenticatorCableV2Test, QRBasedWithNoPairing) {
 TEST_F(AuthenticatorCableV2Test, PairingBased) {
   // First do unpaired exchange to get pairing data.
   auto discovery = std::make_unique<device::cablev2::Discovery>(
-      device::CableRequestType::kGetAssertion, network_context_.get(),
+      device::FidoRequestType::kGetAssertion, network_context_.get(),
       qr_generator_key_, std::move(ble_advert_events_),
       /*pairings=*/std::vector<std::unique_ptr<device::cablev2::Pairing>>(),
       /*contact_device_stream=*/nullptr,
@@ -9172,11 +9172,11 @@ TEST_F(AuthenticatorCableV2Test, PairingBased) {
 
   // Now do a pairing-based exchange. Generate a random request type hint to
   // ensure that all values work.
-  device::CableRequestType request_type =
-      device::CableRequestType::kMakeCredential;
+  device::FidoRequestType request_type =
+      device::FidoRequestType::kMakeCredential;
   std::string expected_request_type_string = "mc";
   if (base::RandDouble() < 0.5) {
-    request_type = device::CableRequestType::kGetAssertion;
+    request_type = device::FidoRequestType::kGetAssertion;
     expected_request_type_string = "ga";
   }
 
@@ -9252,7 +9252,7 @@ TEST_F(AuthenticatorCableV2Test, ContactIDDisabled) {
   auto callback_and_event_stream =
       device::cablev2::Discovery::EventStream<size_t>::New();
   auto discovery = std::make_unique<device::cablev2::Discovery>(
-      device::CableRequestType::kGetAssertion, network_context.get(),
+      device::FidoRequestType::kGetAssertion, network_context.get(),
       qr_generator_key_, std::move(ble_advert_events_), std::move(pairings),
       std::move(callback_and_event_stream.second),
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
@@ -9326,7 +9326,7 @@ TEST_F(AuthenticatorCableV2Test, ServerLink) {
       server_link_1.desktop_side, server_link_2.desktop_side};
 
   auto discovery = std::make_unique<device::cablev2::Discovery>(
-      device::CableRequestType::kGetAssertion, network_context_.get(),
+      device::FidoRequestType::kGetAssertion, network_context_.get(),
       qr_generator_key_, std::move(ble_advert_events_),
       /*pairings=*/std::vector<std::unique_ptr<device::cablev2::Pairing>>(),
       /*contact_device_stream=*/nullptr, extension_values, GetPairingCallback(),
@@ -9357,7 +9357,7 @@ TEST_F(AuthenticatorCableV2Test, ServerLink) {
 
 TEST_F(AuthenticatorCableV2Test, LateLinking) {
   auto discovery = std::make_unique<device::cablev2::Discovery>(
-      device::CableRequestType::kGetAssertion, network_context_.get(),
+      device::FidoRequestType::kGetAssertion, network_context_.get(),
       qr_generator_key_, std::move(ble_advert_events_),
       /*pairings=*/std::vector<std::unique_ptr<device::cablev2::Pairing>>(),
       /*contact_device_stream=*/nullptr,
@@ -9400,7 +9400,7 @@ class AuthenticatorCableV2AuthenticatorTest
     AuthenticatorCableV2Test::SetUp();
 
     auto discovery = std::make_unique<device::cablev2::Discovery>(
-        device::CableRequestType::kGetAssertion, network_context_.get(),
+        device::FidoRequestType::kGetAssertion, network_context_.get(),
         qr_generator_key_, std::move(ble_advert_events_),
         /*pairings=*/std::vector<std::unique_ptr<device::cablev2::Pairing>>(),
         /*contact_device_stream=*/nullptr,

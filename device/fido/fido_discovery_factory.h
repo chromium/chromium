@@ -56,7 +56,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
 
   // set_cable_data configures caBLE obtained via a WebAuthn extension.
   virtual void set_cable_data(
-      CableRequestType request_type,
+      FidoRequestType request_type,
       std::vector<CableDiscoveryData> cable_data,
       const absl::optional<std::array<uint8_t, cablev2::kQRKeySize>>&
           qr_generator_key,
@@ -147,7 +147,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   raw_ptr<network::mojom::NetworkContext> network_context_ = nullptr;
   absl::optional<std::vector<CableDiscoveryData>> cable_data_;
   absl::optional<std::array<uint8_t, cablev2::kQRKeySize>> qr_generator_key_;
-  absl::optional<CableRequestType> request_type_;
+  absl::optional<FidoRequestType> request_type_;
   std::vector<std::unique_ptr<cablev2::Pairing>> v2_pairings_;
   std::unique_ptr<FidoDeviceDiscovery::EventStream<size_t>>
       contact_device_stream_;

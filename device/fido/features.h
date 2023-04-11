@@ -36,10 +36,6 @@ BASE_DECLARE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege);
 // Enable some experimental UI changes
 COMPONENT_EXPORT(DEVICE_FIDO) BASE_DECLARE_FEATURE(kWebAuthPasskeysUI);
 
-// Include an indication for non-discoverable makeCredential calls in caBLE QR
-// codes.
-BASE_DECLARE_FEATURE(kWebAuthnNonDiscoverableMakeCredentialQRFlag);
-
 // Allow WebAuthn for sites with TLS errors.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kDisableWebAuthnWithBrokenCerts);

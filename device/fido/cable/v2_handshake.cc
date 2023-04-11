@@ -25,7 +25,6 @@
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/aead.h"
 #include "device/fido/cable/v2_constants.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
@@ -439,7 +438,7 @@ absl::optional<Components> Parse(const std::string& qr_url) {
 }
 
 std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key,
-                   CableRequestType request_type) {
+                   FidoRequestType request_type) {
   cbor::Value::MapValue qr_contents;
   qr_contents.emplace(
       0, SeedToCompressedPublicKey(
@@ -456,12 +455,6 @@ std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key,
   qr_contents.emplace(4, true);  // client supports storing linking information.
 
   qr_contents.emplace(5, RequestTypeToString(request_type));
-
-  if (request_type == CableRequestType::kMakeCredential &&
-      base::FeatureList::IsEnabled(
-          device::kWebAuthnNonDiscoverableMakeCredentialQRFlag)) {
-    qr_contents.emplace(6, true);
-  }
 
   const absl::optional<std::vector<uint8_t>> qr_data =
       cbor::Writer::Write(cbor::Value(std::move(qr_contents)));
@@ -605,23 +598,22 @@ void Derive(uint8_t* out,
 
 }  // namespace internal
 
-const char* RequestTypeToString(CableRequestType request_type) {
+const char* RequestTypeToString(FidoRequestType request_type) {
   switch (request_type) {
-    case CableRequestType::kMakeCredential:
-    case CableRequestType::kDiscoverableMakeCredential:
+    case FidoRequestType::kMakeCredential:
       return "mc";
-    case CableRequestType::kGetAssertion:
+    case FidoRequestType::kGetAssertion:
       return "ga";
       // If adding a value here, also update `RequestTypeFromString`.
   }
 }
 
-CableRequestType RequestTypeFromString(const std::string& s) {
+FidoRequestType RequestTypeFromString(const std::string& s) {
   if (s == "mc") {
-    return CableRequestType::kMakeCredential;
+    return FidoRequestType::kMakeCredential;
   }
   // kGetAssertion is the default if the value is unknown too.
-  return CableRequestType::kGetAssertion;
+  return FidoRequestType::kGetAssertion;
 }
 
 bssl::UniquePtr<EC_KEY> IdentityKey(base::span<const uint8_t, 32> root_secret) {

@@ -558,7 +558,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
     }
 
     void set_cable_data(
-        device::CableRequestType request_type,
+        device::FidoRequestType request_type,
         std::vector<device::CableDiscoveryData> cable_data,
         const absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>&
             qr_generator_key,
@@ -748,15 +748,12 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
     void CableV2ExtensionSeen(
         base::span<const uint8_t> server_link_data) override {}
 
-    void ConfiguringCable(device::CableRequestType request_type) override {
+    void ConfiguringCable(device::FidoRequestType request_type) override {
       switch (request_type) {
-        case device::CableRequestType::kMakeCredential:
+        case device::FidoRequestType::kMakeCredential:
           parent_->trace() << "TYPE: mc" << std::endl;
           break;
-        case device::CableRequestType::kDiscoverableMakeCredential:
-          parent_->trace() << "TYPE: disco mc" << std::endl;
-          break;
-        case device::CableRequestType::kGetAssertion:
+        case device::FidoRequestType::kGetAssertion:
           parent_->trace() << "TYPE: ga" << std::endl;
           break;
       }
@@ -867,7 +864,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnCableSecondFactor,
       browser()->tab_strip_model()->GetActiveWebContents(),
       kMakeDiscoverableCredential, &result));
   EXPECT_EQ("webauthn: OK", result);
-  EXPECT_TRUE(trace_.str().find("TYPE: disco mc\n") != std::string::npos)
+  EXPECT_TRUE(trace_.str().find("TYPE: mc\n") != std::string::npos)
       << trace_.str();
 }
 

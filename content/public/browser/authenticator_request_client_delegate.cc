@@ -160,7 +160,7 @@ void AuthenticatorRequestClientDelegate::ShouldReturnAttestation(
 
 void AuthenticatorRequestClientDelegate::ConfigureCable(
     const url::Origin& origin,
-    device::CableRequestType request_type,
+    device::FidoRequestType request_type,
     absl::optional<device::ResidentKeyRequirement> resident_key_requirement,
     base::span<const device::CableDiscoveryData> pairings_from_extension,
     device::FidoDiscoveryFactory* fido_discovery_factory) {}
