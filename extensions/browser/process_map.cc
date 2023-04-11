@@ -27,8 +27,7 @@ struct ProcessMap::Item {
   Item(const Item&) = delete;
   Item& operator=(const Item&) = delete;
 
-  ~Item() {
-  }
+  ~Item() = default;
 
   Item(ProcessMap::Item&&) = default;
   Item& operator=(ProcessMap::Item&&) = default;
@@ -46,11 +45,9 @@ struct ProcessMap::Item {
 
 
 // ProcessMap
-ProcessMap::ProcessMap() {
-}
+ProcessMap::ProcessMap() = default;
 
-ProcessMap::~ProcessMap() {
-}
+ProcessMap::~ProcessMap() = default;
 
 // static
 ProcessMap* ProcessMap::Get(content::BrowserContext* browser_context) {
