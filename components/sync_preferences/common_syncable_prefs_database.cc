@@ -24,6 +24,7 @@
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
+#include "components/variations/service/google_groups_updater_service.h"
 
 namespace sync_preferences {
 
@@ -98,7 +99,8 @@ enum {
   kOfferTranslateEnabled = 58,
   kPrefAlwaysTranslateList = 59,
   kPrefNeverPromptSitesWithTime = 60,
-  kPrefTranslateRecentTarget = 61
+  kPrefTranslateRecentTarget = 61,
+  kPrefDogfoodGroups = 62
 };
 }  // namespace syncable_prefs_ids
 
@@ -256,6 +258,9 @@ const auto& SyncablePreferences() {
           syncer::PREFERENCES}},
         {translate::prefs::kPrefTranslateRecentTarget,
          {syncable_prefs_ids::kPrefTranslateRecentTarget, syncer::PREFERENCES}},
+        {kDogfoodGroupsSyncPrefName,
+         {syncable_prefs_ids::kPrefDogfoodGroups,
+          syncer::PRIORITY_PREFERENCES}},
         {kSyncablePrefForTesting,
          {syncable_prefs_ids::kSyncablePrefForTesting, syncer::PREFERENCES}},
   });

@@ -63,6 +63,7 @@ source_set("common_syncable_prefs_database") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/search_engines",
     "//components/translate/core/browser",
+    "//components/variations/service",
   ]
 }
 

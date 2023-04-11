@@ -29,5 +29,6 @@ specific_include_rules = {
     "+components/safe_browsing",
     "+components/search_engines",
     "+components/translate",
+    "+components/variations",
   ]
 }
