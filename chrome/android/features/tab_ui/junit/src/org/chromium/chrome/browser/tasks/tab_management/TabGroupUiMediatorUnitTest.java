@@ -28,6 +28,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -44,8 +45,8 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -162,6 +163,8 @@ public class TabGroupUiMediatorUnitTest {
     private InOrder mVisibilityControllerInOrder;
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mTabGridDialogBackPressSupplier =
+            new ObservableSupplierImpl<>();
 
     private TabImpl prepareTab(int tabId, int rootId) {
         TabImpl tab = TabUiUnitTestUtils.prepareTab(tabId, rootId);
@@ -206,9 +209,12 @@ public class TabGroupUiMediatorUnitTest {
         TabGridDialogMediator.DialogController controller =
                 TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext) ? mTabGridDialogController
                                                                           : null;
-        Supplier<TabGridDialogMediator.DialogController> controllerSupplier = () -> {
-            return controller;
-        };
+        OneshotSupplierImpl<TabGridDialogMediator.DialogController> controllerSupplier =
+                new OneshotSupplierImpl<>();
+        doReturn(mTabGridDialogBackPressSupplier)
+                .when(mTabGridDialogController)
+                .getHandleBackPressChangedSupplier();
+        controllerSupplier.set(controller);
         mTabGroupUiMediator = new TabGroupUiMediator(mContext, mVisibilityController, mResetHandler,
                 mModel, mTabModelSelector, mTabCreatorManager, mLayoutStateProviderSupplier,
                 mIncognitoStateProvider, controllerSupplier, mOmniboxFocusStateSupplier);
@@ -899,6 +905,10 @@ public class TabGroupUiMediatorUnitTest {
     public void backButtonPress_ShouldHandle() {
         initAndAssertProperties(mTab1);
         doReturn(true).when(mTabGridDialogController).handleBackPressed();
+        mTabGridDialogBackPressSupplier.set(true);
+
+        var groupUiBackPressSupplier = mTabGroupUiMediator.getHandleBackPressChangedSupplier();
+        Assert.assertEquals(Boolean.TRUE, groupUiBackPressSupplier.get());
 
         assertThat(mTabGroupUiMediator.onBackPressed(), equalTo(true));
         verify(mTabGridDialogController).handleBackPressed();
@@ -909,9 +919,44 @@ public class TabGroupUiMediatorUnitTest {
     public void backButtonPress_ShouldNotHandle() {
         initAndAssertProperties(mTab1);
         doReturn(false).when(mTabGridDialogController).handleBackPressed();
+        mTabGridDialogBackPressSupplier.set(false);
+        var groupUiBackPressSupplier = mTabGroupUiMediator.getHandleBackPressChangedSupplier();
 
+        Assert.assertNotEquals(Boolean.TRUE, groupUiBackPressSupplier.get());
         assertThat(mTabGroupUiMediator.onBackPressed(), equalTo(false));
         verify(mTabGridDialogController).handleBackPressed();
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_ANDROID)
+    public void backButtonPress_LateInitController() {
+        initAndAssertProperties(mTab1);
+        TabGridDialogMediator.DialogController controller = mTabGridDialogController;
+        var backPressSupplier = new ObservableSupplierImpl<Boolean>();
+        doReturn(backPressSupplier)
+                .when(mTabGridDialogController)
+                .getHandleBackPressChangedSupplier();
+        OneshotSupplierImpl<TabGridDialogMediator.DialogController> controllerSupplier =
+                new OneshotSupplierImpl<>();
+        mTabGroupUiMediator = new TabGroupUiMediator(mContext, mVisibilityController, mResetHandler,
+                mModel, mTabModelSelector, mTabCreatorManager, mLayoutStateProviderSupplier,
+                mIncognitoStateProvider, controllerSupplier, mOmniboxFocusStateSupplier);
+
+        var groupUiBackPressSupplier = mTabGroupUiMediator.getHandleBackPressChangedSupplier();
+
+        // Not initialized yet.
+        Assert.assertNotEquals(Boolean.TRUE, groupUiBackPressSupplier.get());
+
+        // Late init.
+        controllerSupplier.set(controller);
+        doReturn(false).when(mTabGridDialogController).handleBackPressed();
+        backPressSupplier.set(false);
+
+        Assert.assertFalse(groupUiBackPressSupplier.get());
+
+        backPressSupplier.set(true);
+        doReturn(true).when(mTabGridDialogController).handleBackPressed();
+        Assert.assertTrue(groupUiBackPressSupplier.get());
     }
 
     @Test
