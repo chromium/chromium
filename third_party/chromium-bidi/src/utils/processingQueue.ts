@@ -39,7 +39,7 @@ export class ProcessingQueue<T> {
   add(entry: Promise<T>) {
     this.#queue.push(entry);
     // No need in waiting. Just initialise processor if needed.
-    this.#processIfNeeded();
+    void this.#processIfNeeded();
   }
 
   async #processIfNeeded() {
@@ -55,8 +55,7 @@ export class ProcessingQueue<T> {
           .catch((e) => {
             this.#logger?.(LogType.system, 'Event was not processed:', e);
             this.#catch(e);
-          })
-          .finally();
+          });
       }
     }
 

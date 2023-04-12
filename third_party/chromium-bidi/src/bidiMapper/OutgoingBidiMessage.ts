@@ -33,8 +33,9 @@ export class OutgoingBidiMessage {
     messagePromise: Promise<Message.OutgoingMessage>,
     channel: string | null
   ): Promise<OutgoingBidiMessage> {
-    const message = await messagePromise;
-    return new OutgoingBidiMessage(message, channel);
+    return messagePromise.then(
+      (message) => new OutgoingBidiMessage(message, channel)
+    );
   }
 
   static createResolved(

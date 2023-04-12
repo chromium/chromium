@@ -67,7 +67,7 @@ export class BidiServer extends EventEmitter<BidiServerEvents> {
     this.#realmStorage = new RealmStorage();
     this.#messageQueue = new ProcessingQueue<OutgoingBidiMessage>(
       this.#processOutgoingMessage,
-      undefined,
+      () => Promise.resolve(),
       this.#logger
     );
     this.#transport = bidiTransport;

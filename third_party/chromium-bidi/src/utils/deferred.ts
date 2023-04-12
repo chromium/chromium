@@ -31,6 +31,9 @@ export class Deferred<T> implements Promise<T> {
       this.#resolve = resolve;
       this.#reject = reject;
     });
+    // Needed to avoid `Uncaught (in promise)`. The promises returned by `then`
+    // and `catch` will be rejected anyway.
+    this.#promise.catch(() => {});
   }
 
   then<TResult1 = T, TResult2 = never>(

@@ -21,20 +21,33 @@ import {Deferred} from './deferred.js';
 
 describe('Deferred', () => {
   describe('isFinished', () => {
-    it('resolve', () => {
+    it('resolve', async () => {
       const deferred = new Deferred<string>();
+      const deferredThen = deferred.then((v) => v);
+      deferred.catch((e) => {
+        throw e;
+      });
+
       expect(deferred.isFinished).to.be.false;
 
       deferred.resolve('done');
       expect(deferred.isFinished).to.be.true;
+
+      await expect(deferredThen).to.eventually.equal('done');
     });
 
-    it('reject', () => {
+    it('reject', async () => {
       const deferred = new Deferred<string>();
+      const deferredThen = deferred.then(() => {});
+      const deferredCatch = deferred.catch((e) => e);
+
       expect(deferred.isFinished).to.be.false;
 
-      deferred.reject(new Error('error'));
+      deferred.reject('some error');
       expect(deferred.isFinished).to.be.true;
+
+      await expect(deferredThen).to.eventually.be.rejectedWith('some error');
+      await expect(deferredCatch).to.eventually.equal('some error');
     });
   });
 });
