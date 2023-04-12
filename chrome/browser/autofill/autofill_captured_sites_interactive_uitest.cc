@@ -67,9 +67,13 @@ namespace autofill {
 
 namespace {
 
+// The timeout for actions like bringing up the Autofill popup or showing the
+// preview of suggestions.
 constexpr base::TimeDelta kAutofillWaitForActionInterval = base::Seconds(5);
-constexpr base::TimeDelta kAutofillWaitForFormToFillWithCvcInterval =
-    base::Seconds(30);
+// The timeout for autofilling a form. This is much higher than for other
+// actions because autofilling may trigger expensive JavaScript activity.
+// It may also be expensive due to CVC validation.
+constexpr base::TimeDelta kAutofillWaitForFillInterval = base::Seconds(60);
 
 base::FilePath GetReplayFilesRootDirectory() {
   base::FilePath src_dir;
@@ -215,10 +219,8 @@ class AutofillCapturedSitesInteractiveTest
       bool should_cvc_dialog_pop_up = is_credit_card_field && cvc;
 
       // Press the enter key to invoke autofill using the first suggestion.
-      test_delegate()->SetExpectations(
-          {ObservedUiEvents::kFormDataFilled},
-          should_cvc_dialog_pop_up ? kAutofillWaitForFormToFillWithCvcInterval
-                                   : kAutofillWaitForActionInterval);
+      test_delegate()->SetExpectations({ObservedUiEvents::kFormDataFilled},
+                                       kAutofillWaitForFillInterval);
       TestCardUnmaskPromptWaiter test_card_unmask_prompt_waiter(
           web_contents,
           user_prefs::UserPrefs::Get(web_contents->GetBrowserContext()));
