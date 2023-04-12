@@ -381,7 +381,12 @@ bool AXTreeSerializer<AXSourceNode>::AnyDescendantWasReparented(
   auto num_children = tree_->GetChildCount(node);
   for (size_t i = 0; i < num_children; ++i) {
     AXSourceNode child = tree_->ChildAt(node, i);
-    CHECK(child);
+    if (!child) {
+      // TODO(crbug.com/1432184, crbug.com/1432126, crbug.com/1431535,
+      // crbug.com/1418319): Once the DCHECKs in BlinkAXTreeSource::ChildAt()
+      // are resolved, turn this into a CHECK.
+      continue;
+    }
     int child_id = tree_->GetId(child);
     ClientTreeNode* client_child = ClientTreeNodeById(child_id);
     if (client_child) {
@@ -695,7 +700,12 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
   }
   for (size_t i = 0; i < num_children; ++i) {
     AXSourceNode child = tree_->ChildAt(node, i);
-    CHECK(child);
+    if (!child) {
+      // TODO(crbug.com/1432184, crbug.com/1432126, crbug.com/1431535,
+      // crbug.com/1418319): Once the DCHECKs in BlinkAXTreeSource::ChildAt()
+      // are resolved, turn this into a CHECK.
+      continue;
+    }
 
     int new_child_id = tree_->GetId(child);
     new_child_ids.insert(new_child_id);
@@ -787,7 +797,12 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
   client_node->children.reserve(num_children);
   for (size_t i = 0; i < num_children; ++i) {
     AXSourceNode child = tree_->ChildAt(node, i);
-    CHECK(child);
+    if (!child) {
+      // TODO(crbug.com/1432184, crbug.com/1432126, crbug.com/1431535,
+      // crbug.com/1418319): Once the DCHECKs in BlinkAXTreeSource::ChildAt()
+      // are resolved, turn this into a CHECK.
+      continue;
+    }
 
     int child_id = tree_->GetId(child);
 
