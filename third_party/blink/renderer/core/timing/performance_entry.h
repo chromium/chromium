@@ -98,8 +98,20 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
 
   static bool StartTimeCompareLessThan(PerformanceEntry* a,
                                        PerformanceEntry* b) {
-    if (a->startTime() == b->startTime())
-      return a->index_ < b->index_;
+    if (a->startTime() == b->startTime()) {
+      // The navigation entry is created lazily, and we want it to always be
+      // first for compatibility.
+      // TODO: create NT entry eagerly so that we don't have to do this
+      // https://bugs.chromium.org/p/chromium/issues/detail?id=1432565
+      if (a->EntryTypeEnum() == kNavigation) {
+        return true;
+      } else if (b->EntryTypeEnum() == kNavigation) {
+        return false;
+      } else {
+        return a->index_ < b->index_;
+      }
+    }
+
     return a->startTime() < b->startTime();
   }
 
@@ -119,7 +131,7 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
         HashSet<PerformanceEntryType>, valid_timeline_entry_types,
         ({kNavigation, kMark, kMeasure, kResource, kTaskAttribution, kPaint,
           kFirstInput, kBackForwardCacheRestoration, kSoftNavigation,
-          kLongAnimationFrame}));
+          kLongAnimationFrame, kVisibilityState}));
     return valid_timeline_entry_types.Contains(entry_type);
   }
 
