@@ -981,17 +981,8 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, Navigation_BackForwardKeys) {
   ASSERT_TRUE(done_listener.WaitUntilSatisfied());
 }
 
-// Trips over a DCHECK in content::MouseLockDispatcher::OnLockMouseACK; see
-// https://crbug.com/761783.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_PointerLock_PointerLockLostWithFocus \
-  PointerLock_PointerLockLostWithFocus
-#else
-#define MAYBE_PointerLock_PointerLockLostWithFocus \
-  DISABLED_PointerLock_PointerLockLostWithFocus
-#endif
 IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest,
-                       MAYBE_PointerLock_PointerLockLostWithFocus) {
+                       PointerLock_PointerLockLostWithFocus) {
   TestHelper("testPointerLockLostWithFocus", "web_view/pointerlock",
              NO_TEST_SERVER);
 }
