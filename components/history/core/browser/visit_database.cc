@@ -88,9 +88,19 @@ std::array<std::pair<std::string, std::string>, 4> GetHostSearchBounds(
   return bounds;
 }
 
+// Transition IDs are from possibly-corrupt databases or incorrect IDs due to
+// version skew. Where `transition` isn't valid we fall back on
+// PAGE_TRANSITION_LINK.
+ui::PageTransition PageTransitionFromIntWithFallback(int32_t transition) {
+  return ui::IsValidPageTransitionType(transition)
+             ? ui::PageTransitionFromInt(transition)
+             : ui::PAGE_TRANSITION_LINK;
+}
+
 // Is the transition user-visible.
 bool TransitionIsVisible(int32_t transition) {
-  ui::PageTransition page_transition = ui::PageTransitionFromInt(transition);
+  const ui ::PageTransition page_transition =
+      PageTransitionFromIntWithFallback(transition);
   return (ui::PAGE_TRANSITION_CHAIN_END & transition) != 0 &&
          ui::PageTransitionIsMainFrame(page_transition) &&
          !ui::PageTransitionCoreTypeIs(page_transition,
@@ -240,7 +250,7 @@ void VisitDatabase::FillVisitRow(sql::Statement& statement, VisitRow* visit) {
   visit->url_id = statement.ColumnInt64(1);
   visit->visit_time = statement.ColumnTime(2);
   visit->referring_visit = statement.ColumnInt64(3);
-  visit->transition = ui::PageTransitionFromInt(statement.ColumnInt(4));
+  visit->transition = PageTransitionFromIntWithFallback(statement.ColumnInt(4));
   visit->segment_id = statement.ColumnInt64(5);
   visit->visit_duration = statement.ColumnTimeDelta(6);
   visit->incremented_omnibox_typed_score = statement.ColumnBool(7);
@@ -847,7 +857,7 @@ bool VisitDatabase::GetLastVisitToHost(const std::string& host,
 
   while (statement.Step()) {
     if (ui::PageTransitionIsMainFrame(
-            ui::PageTransitionFromInt(statement.ColumnInt(1)))) {
+            PageTransitionFromIntWithFallback(statement.ColumnInt(1)))) {
       *last_visit = statement.ColumnTime(0);
       return true;
     }
@@ -1130,7 +1140,7 @@ bool VisitDatabase::MigrateVisitsWithoutIncrementedOmniboxTypedScore() {
       row.url_id = read.ColumnInt64(1);
       row.visit_time = read.ColumnTime(2);
       row.referring_visit = read.ColumnInt64(3);
-      row.transition = ui::PageTransitionFromInt(read.ColumnInt(4));
+      row.transition = PageTransitionFromIntWithFallback(read.ColumnInt(4));
       row.segment_id = read.ColumnInt64(5);
       row.visit_duration = read.ColumnTimeDelta(6);
       // Check if the visit row is in an invalid state and if it is then
