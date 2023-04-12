@@ -9,10 +9,13 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
+#include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
+#include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
 #include "third_party/blink/renderer/core/paint/scoped_svg_paint_state.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/url_metadata_utils.h"
 #include "third_party/blink/renderer/core/style/nine_piece_image.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
@@ -291,13 +294,30 @@ void NGInlineBoxFragmentPainterBase::PaintInsetBoxShadow(
 // self-painting |LayoutInline|.
 void NGInlineBoxFragmentPainter::PaintAllFragments(
     const LayoutInline& layout_inline,
-    const PaintInfo& paint_info,
-    const PhysicalOffset& paint_offset) {
+    const PaintInfo& paint_info) {
   // TODO(kojii): If the block flow is dirty, children of these fragments
   // maybe already deleted. crbug.com/963103
   const LayoutBlockFlow* block_flow = layout_inline.FragmentItemsContainer();
   if (UNLIKELY(block_flow->NeedsLayout()))
     return;
+
+  ScopedPaintState paint_state(layout_inline, paint_info);
+  PhysicalOffset paint_offset = paint_state.PaintOffset();
+  const PaintInfo& local_paint_info = paint_state.GetPaintInfo();
+
+  if (local_paint_info.phase == PaintPhase::kForeground &&
+      local_paint_info.ShouldAddUrlMetadata()) {
+    ObjectPainter(layout_inline)
+        .AddURLRectIfNeeded(local_paint_info, paint_offset);
+  }
+
+  ScopedPaintTimingDetectorBlockPaintHook
+      scoped_paint_timing_detector_block_paint_hook;
+  if (paint_info.phase == PaintPhase::kForeground) {
+    scoped_paint_timing_detector_block_paint_hook.EmplaceIfNeeded(
+        layout_inline,
+        paint_info.context.GetPaintController().CurrentPaintChunkProperties());
+  }
 
   if (paint_info.phase == PaintPhase::kForeground &&
       paint_info.ShouldAddUrlMetadata()) {

@@ -139,8 +139,7 @@ class NGInlineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
   void Paint(const PaintInfo&, const PhysicalOffset& paint_offset);
 
   static void PaintAllFragments(const LayoutInline& layout_inline,
-                                const PaintInfo&,
-                                const PhysicalOffset& paint_offset);
+                                const PaintInfo&);
 
  private:
   const NGPhysicalBoxFragment& PhysicalFragment() const {
