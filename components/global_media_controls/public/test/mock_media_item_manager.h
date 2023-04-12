@@ -37,6 +37,7 @@ class MockMediaItemManager : public MediaItemManager {
   MOCK_METHOD(bool, HasActiveItems, ());
   MOCK_METHOD(bool, HasFrozenItems, ());
   MOCK_METHOD(bool, HasOpenDialog, ());
+  MOCK_METHOD(std::list<std::string>, GetActiveItemIds, ());
 
  private:
   base::WeakPtrFactory<MediaItemManager> weak_ptr_factory_{this};

@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_MEDIA_QUICK_SETTINGS_MEDIA_VIEW_H_
 #define ASH_SYSTEM_MEDIA_QUICK_SETTINGS_MEDIA_VIEW_H_
 
+#include <list>
 #include <map>
 
 #include "ash/ash_export.h"
@@ -44,6 +45,9 @@ class ASH_EXPORT QuickSettingsMediaView : public views::View {
 
   // Removes the given media item from the media view.
   void HideItem(const std::string& id);
+
+  // Updates the media item order given the id order in the list.
+  void UpdateItemOrder(std::list<std::string> ids);
 
  private:
   raw_ptr<QuickSettingsMediaViewController> controller_ = nullptr;

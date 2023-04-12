@@ -141,6 +141,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionNotificationItem
   media_session::mojom::RemotePlaybackMetadataPtr GetRemotePlaybackMetadata()
       const;
 
+  // Returns whether the item is actively playing.
+  bool IsPlaying() const;
+
   void FlushForTesting();
 
  private:

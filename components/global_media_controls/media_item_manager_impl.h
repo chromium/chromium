@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_GLOBAL_MEDIA_CONTROLS_MEDIA_ITEM_MANAGER_IMPL_H_
 #define COMPONENTS_GLOBAL_MEDIA_CONTROLS_MEDIA_ITEM_MANAGER_IMPL_H_
 
-#include <set>
-#include <string>
-
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
@@ -50,14 +47,12 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemManagerImpl
   bool HasActiveItems() override;
   bool HasFrozenItems() override;
   bool HasOpenDialog() override;
+  std::list<std::string> GetActiveItemIds() override;
   base::WeakPtr<MediaItemManager> GetWeakPtr() override;
 
  private:
   // Called to display an item in an existing dialog.
   void ShowAndObserveItem(const std::string& id);
-
-  // Returns active controllable items gathered from all the item producers.
-  std::set<std::string> GetActiveControllableItemIds() const;
 
   // Looks up an item from any source.  Returns null if not found.
   base::WeakPtr<media_message_center::MediaNotificationItem> GetItem(
