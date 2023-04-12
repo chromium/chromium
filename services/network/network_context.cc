@@ -120,6 +120,7 @@
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/restricted_cookie_manager.h"
 #include "services/network/session_cleanup_cookie_store.h"
+#include "services/network/shared_dictionary/shared_dictionary_manager.h"
 #include "services/network/ssl_config_service_mojo.h"
 #include "services/network/throttling/network_conditions.h"
 #include "services/network/throttling/throttling_controller.h"
@@ -493,6 +494,12 @@ NetworkContext::NetworkContext(
     EnsureMounted(&*params_->http_cache_directory);
   }
 #endif  // BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)
+
+  if (params_->shared_dictionary_enabled) {
+    // TODO(crbug.com/1413922): Implement a manager which supports persistence
+    // and use if for non-incognito mode.
+    shared_dictionary_manager_ = SharedDictionaryManager::CreateInMemory();
+  }
 
   mojo::PendingRemote<mojom::URLLoaderFactory>
       url_loader_factory_for_cert_net_fetcher;

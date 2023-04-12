@@ -33,6 +33,8 @@ namespace network {
 
 class URLLoaderFactory;
 class NetworkContext;
+class SharedDictionaryStorage;
+class SharedDictionaryDataPipeWriter;
 
 namespace cors {
 
@@ -72,6 +74,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
       const mojom::ClientSecurityState* factory_client_security_state,
       const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage,
       NetworkContext* context);
 
   CorsURLLoader(const CorsURLLoader&) = delete;
@@ -151,6 +154,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   void OnMojoDisconnect();
 
+  void OnNetworkClientMojoDisconnect();
+
   void SetCorsFlagIfNeeded();
 
   // Returns true if request's origin has special access to the destination URL
@@ -199,6 +204,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   static absl::optional<std::string> GetHeaderString(
       const mojom::URLResponseHead& response,
       const std::string& header_name);
+
+  void OnSharedDictionaryWritten(bool success);
 
   mojo::Receiver<mojom::URLLoader> receiver_;
 
@@ -325,6 +332,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   net::NetLogWithSource net_log_;
 
   const raw_ptr<NetworkContext> context_;
+
+  scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage_;
+  std::unique_ptr<SharedDictionaryDataPipeWriter>
+      shared_dictionary_data_pipe_writer_;
+  absl::optional<URLLoaderCompletionStatus> deferred_completion_status_;
 
   // Used to provide weak pointers of this class for synchronously calling
   // URLLoaderClient methods. This should be reset any time

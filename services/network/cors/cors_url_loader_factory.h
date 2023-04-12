@@ -30,6 +30,7 @@ class ResourceSchedulerClient;
 class URLLoader;
 class URLLoaderFactory;
 struct ResourceRequest;
+class SharedDictionaryStorage;
 
 namespace cors {
 class CorsURLLoader;
@@ -164,6 +165,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   // Accessed by instances in `loaders_` too. Since the factory outlives them,
   // it's safe.
   const raw_ptr<const OriginAccessList> origin_access_list_;
+
+  scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage_;
 
   static bool allow_external_preflights_for_testing_;
 };

@@ -62,7 +62,8 @@ void TestURLLoaderFactory::NotifyClientOnReceiveEarlyHints(
 
 void TestURLLoaderFactory::NotifyClientOnReceiveResponse(
     int status_code,
-    const std::vector<std::pair<std::string, std::string>>& extra_headers) {
+    const std::vector<std::pair<std::string, std::string>>& extra_headers,
+    mojo::ScopedDataPipeConsumerHandle body) {
   DCHECK(client_remote_);
   auto response = mojom::URLResponseHead::New();
   response->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
@@ -72,8 +73,8 @@ void TestURLLoaderFactory::NotifyClientOnReceiveResponse(
   for (const auto& header : extra_headers)
     response->headers->SetHeader(header.first, header.second);
 
-  client_remote_->OnReceiveResponse(
-      std::move(response), mojo::ScopedDataPipeConsumerHandle(), absl::nullopt);
+  client_remote_->OnReceiveResponse(std::move(response), std::move(body),
+                                    absl::nullopt);
 }
 
 void TestURLLoaderFactory::NotifyClientOnComplete(int error_code) {
@@ -97,6 +98,10 @@ void TestURLLoaderFactory::NotifyClientOnReceiveRedirect(
     response->headers->SetHeader(header.first, header.second);
 
   client_remote_->OnReceiveRedirect(redirect_info, std::move(response));
+}
+
+void TestURLLoaderFactory::ResetClientRemote() {
+  client_remote_.reset();
 }
 
 void TestURLLoaderFactory::CreateLoaderAndStart(
@@ -140,7 +145,7 @@ CorsURLLoaderTestBase::ResetFactoryParams::~ResetFactoryParams() = default;
 // CORS URL LOADER TEST BASE
 // =========================
 
-CorsURLLoaderTestBase::CorsURLLoaderTestBase()
+CorsURLLoaderTestBase::CorsURLLoaderTestBase(bool shared_dictionary_enabled)
     : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
   net::URLRequestContextBuilder context_builder;
   context_builder.set_proxy_resolution_service(
@@ -162,6 +167,8 @@ CorsURLLoaderTestBase::CorsURLLoaderTestBase()
       net::ProxyConfigWithAnnotation::CreateDirect();
 
   context_params->cors_exempt_header_list.push_back(kTestCorsExemptHeader);
+
+  context_params->shared_dictionary_enabled = shared_dictionary_enabled;
 
   network_context_ = std::make_unique<NetworkContext>(
       network_service_.get(),
@@ -283,6 +290,8 @@ void CorsURLLoaderTestBase::ResetFactory(absl::optional<url::Origin> initiator,
   factory_params->factory_override->skip_cors_enabled_scheme_check =
       params.skip_cors_enabled_scheme_check;
   factory_params->client_security_state = params.client_security_state.Clone();
+  factory_params->isolation_info = params.isolation_info;
+
   auto resource_scheduler_client =
       base::MakeRefCounted<ResourceSchedulerClient>(
           last_issued_resource_scheduler_client_id_,
