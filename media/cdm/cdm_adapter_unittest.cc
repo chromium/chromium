@@ -140,9 +140,9 @@ class CdmAdapterTestBase : public testing::Test,
   // or generates an error.
   void InitializeWithCdmConfigAndExpect(const CdmConfig& cdm_config,
                                         ExpectedResult expected_result) {
-    std::unique_ptr<CdmAllocator> allocator(new SimpleCdmAllocator());
-    std::unique_ptr<StrictMock<MockCdmAuxiliaryHelper>> cdm_helper(
-        new StrictMock<MockCdmAuxiliaryHelper>(std::move(allocator)));
+    auto allocator = std::make_unique<SimpleCdmAllocator>();
+    auto cdm_helper = std::make_unique<StrictMock<MockCdmAuxiliaryHelper>>(
+        std::move(allocator));
     cdm_helper_ = cdm_helper.get();
     CdmAdapter::Create(
         cdm_config, GetCreateCdmFunc(), std::move(cdm_helper),
@@ -291,11 +291,11 @@ class CdmAdapterTestWithClearKeyCdm : public CdmAdapterTestBase {
       EXPECT_CALL(*this, OnReject(_, _, IsNotEmpty()));
     }
 
-    std::unique_ptr<SimpleCdmPromise> promise(new CdmCallbackPromise<>(
+    auto promise = std::make_unique<CdmCallbackPromise<>>(
         base::BindOnce(&CdmAdapterTestWithClearKeyCdm::OnResolve,
                        base::Unretained(this)),
         base::BindOnce(&CdmAdapterTestWithClearKeyCdm::OnReject,
-                       base::Unretained(this))));
+                       base::Unretained(this)));
     return promise;
   }
 
@@ -310,12 +310,11 @@ class CdmAdapterTestWithClearKeyCdm : public CdmAdapterTestBase {
       EXPECT_CALL(*this, OnReject(_, _, IsNotEmpty()));
     }
 
-    std::unique_ptr<NewSessionCdmPromise> promise(
-        new CdmCallbackPromise<std::string>(
-            base::BindOnce(&CdmAdapterTestWithClearKeyCdm::OnResolveWithSession,
-                           base::Unretained(this)),
-            base::BindOnce(&CdmAdapterTestWithClearKeyCdm::OnReject,
-                           base::Unretained(this))));
+    auto promise = std::make_unique<CdmCallbackPromise<std::string>>(
+        base::BindOnce(&CdmAdapterTestWithClearKeyCdm::OnResolveWithSession,
+                       base::Unretained(this)),
+        base::BindOnce(&CdmAdapterTestWithClearKeyCdm::OnReject,
+                       base::Unretained(this)));
     return promise;
   }
 

@@ -281,9 +281,9 @@ class AesDecryptorTest : public testing::TestWithParam<TestType> {
       CdmAdapter::CreateCdmFunc create_cdm_func =
           CdmModule::GetInstance()->GetCreateCdmFunc();
 
-      std::unique_ptr<CdmAllocator> allocator(new SimpleCdmAllocator());
-      std::unique_ptr<CdmAuxiliaryHelper> cdm_helper(
-          new MockCdmAuxiliaryHelper(std::move(allocator)));
+      auto allocator = std::make_unique<SimpleCdmAllocator>();
+      auto cdm_helper =
+          std::make_unique<MockCdmAuxiliaryHelper>(std::move(allocator));
       CdmAdapter::Create(
           helper_->CdmConfig(), create_cdm_func, std::move(cdm_helper),
           base::BindRepeating(&MockCdmClient::OnSessionMessage,
@@ -345,22 +345,21 @@ class AesDecryptorTest : public testing::TestWithParam<TestType> {
 
   std::unique_ptr<SimpleCdmPromise> CreatePromise(
       ExpectedResult expected_result) {
-    std::unique_ptr<SimpleCdmPromise> promise(new CdmCallbackPromise<>(
+    auto promise = std::make_unique<CdmCallbackPromise<>>(
         base::BindOnce(&AesDecryptorTest::OnResolve, base::Unretained(this),
                        expected_result),
         base::BindOnce(&AesDecryptorTest::OnReject, base::Unretained(this),
-                       expected_result)));
+                       expected_result));
     return promise;
   }
 
   std::unique_ptr<NewSessionCdmPromise> CreateSessionPromise(
       ExpectedResult expected_result) {
-    std::unique_ptr<NewSessionCdmPromise> promise(
-        new CdmCallbackPromise<std::string>(
-            base::BindOnce(&AesDecryptorTest::OnResolveWithSession,
-                           base::Unretained(this), expected_result),
-            base::BindOnce(&AesDecryptorTest::OnReject, base::Unretained(this),
-                           expected_result)));
+    auto promise = std::make_unique<CdmCallbackPromise<std::string>>(
+        base::BindOnce(&AesDecryptorTest::OnResolveWithSession,
+                       base::Unretained(this), expected_result),
+        base::BindOnce(&AesDecryptorTest::OnReject, base::Unretained(this),
+                       expected_result));
     return promise;
   }
 
