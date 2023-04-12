@@ -71,6 +71,10 @@ std::string SanitizeUrl(const std::string& url) {
 
 void MaybeLogDocumentMetrics(const std::string& request_data,
                              DownloadCheckResultReason reason) {
+  if (request_data.empty()) {
+    return;
+  }
+
   ClientDownloadRequest request;
   if (!request.ParseFromString(request_data))
     return;
