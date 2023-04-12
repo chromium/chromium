@@ -36,12 +36,10 @@ bool IsValidPageTransitionType(int32_t type) {
 }
 
 PageTransition PageTransitionFromInt(int32_t type) {
-  if (!IsValidPageTransitionType(type)) {
-    NOTREACHED() << "Invalid transition type " << type;
-
-    // Return a safe default so we don't have corrupt data in release mode.
-    return PAGE_TRANSITION_LINK;
-  }
+  CHECK(IsValidPageTransitionType(type))
+      << "Invalid transition type: " << type
+      << ". Untrusted data needs to be validated using "
+         "IsValidPageTransitionType().";
   return static_cast<PageTransition>(type);
 }
 
