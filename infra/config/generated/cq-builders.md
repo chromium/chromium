@@ -550,3 +550,6 @@ as required builders.
 * [mac12-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac12-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac12-arm64-rel""))
   * Experiment percentage: 100.0
 
+* [win-presubmit](https://ci.chromium.org/p/chromium/builders/try/win-presubmit) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-presubmit""))
+  * Experiment percentage: 100.0
+

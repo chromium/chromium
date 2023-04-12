@@ -42,7 +42,8 @@ def presubmit_builder(*, name, tryjob, **kwargs):
     """
     if tryjob:
         tryjob_args = {a: getattr(tryjob, a) for a in dir(tryjob)}
-        tryjob_args["disable_reuse"] = True
+        if tryjob_args.get("disable_reuse") == None:
+            tryjob_args["disable_reuse"] = True
         tryjob_args["add_default_filters"] = False
         tryjob = try_.job(**tryjob_args)
     return try_.builder(name = name, tryjob = tryjob, **kwargs)
@@ -151,7 +152,10 @@ presubmit_builder(
         },
         "repo_name": "chromium",
     },
-    tryjob = None,
+    tryjob = try_.job(
+        disable_reuse = False,
+        experiment_percentage = 100,
+    ),
 )
 
 presubmit_builder(
