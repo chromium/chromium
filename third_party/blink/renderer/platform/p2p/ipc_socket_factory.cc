@@ -67,7 +67,23 @@ bool JingleSocketOptionToP2PSocketOption(rtc::Socket::Option option,
   return true;
 }
 
-const size_t kDefaultMaximumInFlightBytes = 64 * 1024;  // 64 KB
+// 640KB, 10x max UDP packet size. This controls the maximum size we can write
+// to the IPC buffer, which is consumed by the shared network service process.
+//
+// If this buffer is too small, we'll see more MaxPendingBytesWouldBlock
+// events and text log entries from WebRTC (search for kSendErrorLogLimit).
+// As is, rate limiting in the layer in WebRTC that calls this layer, isn't very
+// sophisticated and the cost of being blocked by this limit can be quite high.
+// After being blocked, this implementation will fire an event once bytes have
+// been freed up, which is then fanned out to all potentially waiting writers.
+// That can create a storm of calls to `Send[To]` which may then cause multiple
+// blocking errors again, both wasting CPU and spamming the log.
+// The network service is single threaded and shared with other render
+// processes. So having this max value large enough to accommodate multiple
+// buffers, allows for more efficient bulk processing and less back-and-forth
+// synchronizing between the render processes and network service.
+// See also: bugs.webrtc.org/9622 and crbug/856088.
+const size_t kDefaultMaximumInFlightBytes = 10 * 64 * 1024;
 
 // IpcPacketSocket implements rtc::AsyncPacketSocket interface
 // using P2PSocketClient that works over IPC-channel. It must be used
