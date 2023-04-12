@@ -47,11 +47,13 @@ source_set("util") {
   deps = [
     "//base",
     "//base:i18n",
+    "//components/open_from_clipboard:open_from_clipboard_impl",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/image_util",
     "//ios/chrome/common:button_config",
     "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/util",

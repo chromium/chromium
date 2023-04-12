@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
@@ -1950,9 +1951,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                   if (!strongSelf) {
                     return;
                   }
-                  UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];
-                  pasteboard.string = base::SysUTF8ToNSString(urlString);
                   [strongSelf setTableViewEditing:NO];
+                  StoreTextInPasteboard(base::SysUTF8ToNSString(urlString));
                 }
                  style:UIAlertActionStyleDefault];
 }

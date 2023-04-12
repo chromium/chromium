@@ -28,6 +28,7 @@ source_set("web") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/web/image_fetch",
     "//ios/web",
     "//ui/base",

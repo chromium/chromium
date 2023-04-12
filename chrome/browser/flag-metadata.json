@@ -5761,6 +5761,11 @@
     "expiry_milestone": 118
   },
   {
+    "name": "only-access-clipboard-async",
+    "owners": ["rkgibson@google.com", "bling-flags@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "oobe-hid-detection-revamp",
     "owners": [ "gordonseto", "cros-connectivity@google.com"],
     "expiry_milestone": 117

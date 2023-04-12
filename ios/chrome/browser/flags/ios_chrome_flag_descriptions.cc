@@ -806,6 +806,11 @@ const char kOmniboxZeroSuggestPrefetchingOnWebDescription[] =
     "Enables prefetching of the zero prefix suggestions for eligible users "
     "on the Web (i.e. non-NTP and non-SRP URLs).";
 
+const char kOnlyAccessClipboardAsyncName[] =
+    "Only access the clipboard asynchronously";
+const char kOnlyAccessClipboardAsyncDescription[] =
+    "Only accesses the clipboard asnchronously.";
+
 const char kOptimizationGuideDebugLogsName[] =
     "Enable optimization guide debug logs";
 const char kOptimizationGuideDebugLogsDescription[] =

@@ -703,6 +703,11 @@ extern const char kOmniboxZeroSuggestPrefetchingOnSRPDescription[];
 extern const char kOmniboxZeroSuggestPrefetchingOnWebName[];
 extern const char kOmniboxZeroSuggestPrefetchingOnWebDescription[];
 
+// Title and description for the flag to force clipboard access to be
+// asynchronous.
+extern const char kOnlyAccessClipboardAsyncName[];
+extern const char kOnlyAccessClipboardAsyncDescription[];
+
 // Title and description for the flag to enable Optimization Guide debug logs.
 extern const char kOptimizationGuideDebugLogsName[];
 extern const char kOptimizationGuideDebugLogsDescription[];

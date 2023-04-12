@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/cells/table_view_stacked_details_item.h"
@@ -841,13 +842,13 @@ const int kMinNoteCharAmountForWarning = 901;
       }
       break;
     case ReauthenticationReasonCopy: {
-      UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
-
-      generalPasteboard.string =
+      NSString* copiedString =
           self.passwords[IsPasswordGroupingEnabled()
                              ? self.tableView.indexPathForSelectedRow.section
                              : 0]
               .password;
+      StoreTextInPasteboard(copiedString);
+
       [self showToast:l10n_util::GetNSString(
                           IDS_IOS_SETTINGS_PASSWORD_WAS_COPIED_MESSAGE)
            forSuccess:YES];
@@ -1269,7 +1270,6 @@ const int kMinNoteCharAmountForWarning = 901;
 // success/failure.
 - (void)copyPasswordDetails:(id)sender {
   [self setOrExtendAuthValidityTimer];
-  UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
   UIMenuController* menu = base::mac::ObjCCastStrict<UIMenuController>(sender);
   PasswordDetailsMenuItem* menuItem =
       base::mac::ObjCCastStrict<PasswordDetailsMenuItem>(
@@ -1298,31 +1298,36 @@ const int kMinNoteCharAmountForWarning = 901;
       for (NSUInteger index = 1U; index < websites.count; index++) {
         [websitesForPasteboard appendFormat:@" %@", websites[index]];
       }
-
-      generalPasteboard.string = websitesForPasteboard;
+      StoreTextInPasteboard(websitesForPasteboard);
       break;
     }
-    case PasswordDetailsItemTypeUsername:
-      generalPasteboard.string =
+    case PasswordDetailsItemTypeUsername: {
+      NSString* copiedString =
           self.passwords[IsPasswordGroupingEnabled()
                              ? self.tableView.indexPathForSelectedRow.section
                              : 0]
               .username;
+
+      StoreTextInPasteboard(copiedString);
       message =
           l10n_util::GetNSString(IDS_IOS_SETTINGS_USERNAME_WAS_COPIED_MESSAGE);
       break;
-    case PasswordDetailsItemTypeFederation:
-      generalPasteboard.string =
+    }
+    case PasswordDetailsItemTypeFederation: {
+      NSString* copiedString =
           self.passwords[IsPasswordGroupingEnabled()
                              ? self.tableView.indexPathForSelectedRow.section
                              : 0]
               .federation;
+      StoreTextInPasteboard(copiedString);
       [self logCopyPasswordDetailsFailure:NO];
       return;
-    case PasswordDetailsItemTypePassword:
+    }
+    case PasswordDetailsItemTypePassword: {
       [self attemptToShowPasswordFor:ReauthenticationReasonCopy];
       [self logCopyPasswordDetailsFailure:NO];
       return;
+    }
   }
 
   if (message.length) {

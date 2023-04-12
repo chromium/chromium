@@ -1543,6 +1543,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillUpstreamUseAlternateSecureDataType)},
+    {"only-access-clipboard-async",
+     flag_descriptions::kOnlyAccessClipboardAsyncName,
+     flag_descriptions::kOnlyAccessClipboardAsyncDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kOnlyAccessClipboardAsync)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

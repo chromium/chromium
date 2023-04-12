@@ -12,6 +12,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
+#import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/ui/image_util/image_util.h"
 #import "ios/chrome/browser/web/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -106,22 +107,16 @@ const int kNoActiveCopy = 0;
       [weakSelf.alertCoordinator stop];
       weakSelf.activeID = kNoActiveCopy;
 
-      // Copy image data to pasteboard. Don't copy the URL otherwise some apps
-      // will paste the text and not the image. See crbug.com/1270239.
-      NSMutableDictionary* item =
-          [NSMutableDictionary dictionaryWithCapacity:1];
-      NSString* uti = GetImageUTIFromData(data);
-      if (uti) {
-        [item setValue:data forKey:uti];
-        [weakSelf recordCopyImageUMA:ContextMenuCopyImage::kImageCopied];
-      } else {
-        [item setValue:[NSURL URLWithString:urlStr]
-                forKey:UTTypeURL.identifier];
-
-        [weakSelf recordCopyImageUMA:ContextMenuCopyImage::kURLCopied];
+      ImageCopyResult result =
+          StoreImageInPasteboard(data, [NSURL URLWithString:urlStr]);
+      switch (result) {
+        case ImageCopyResult::kImage:
+          [weakSelf recordCopyImageUMA:ContextMenuCopyImage::kImageCopied];
+          break;
+        case ImageCopyResult::kURL:
+          [weakSelf recordCopyImageUMA:ContextMenuCopyImage::kURLCopied];
+          break;
       }
-      UIPasteboard.generalPasteboard.items =
-          [NSMutableArray arrayWithObject:item];
       [weakSelf recordCopyImageUMA:ContextMenuCopyImage::kTryCopyImage];
     }
     [weakSelf recordCopyImageUMA:ContextMenuCopyImage::kImageFetched];

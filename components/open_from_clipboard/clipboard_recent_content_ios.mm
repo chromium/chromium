@@ -84,13 +84,15 @@ ClipboardContentType ClipboardContentTypeFromContentType(ContentType type) {
 
 ClipboardRecentContentIOS::ClipboardRecentContentIOS(
     const std::string& application_scheme,
-    NSUserDefaults* group_user_defaults)
+    NSUserDefaults* group_user_defaults,
+    bool only_use_clipboard_async)
     : ClipboardRecentContentIOS([[ClipboardRecentContentImplIOS alloc]
-             initWithMaxAge:MaximumAgeOfClipboard().InSecondsF()
-          authorizedSchemes:getAuthorizedSchemeList(application_scheme)
-               userDefaults:group_user_defaults
-                   delegate:[[ClipboardRecentContentDelegateImpl alloc]
-                                init]]) {}
+                 initWithMaxAge:MaximumAgeOfClipboard().InSecondsF()
+              authorizedSchemes:getAuthorizedSchemeList(application_scheme)
+                   userDefaults:group_user_defaults
+          onlyUseClipboardAsync:only_use_clipboard_async
+                       delegate:[[ClipboardRecentContentDelegateImpl alloc]
+                                    init]]) {}
 
 ClipboardRecentContentIOS::ClipboardRecentContentIOS(
     ClipboardRecentContentImplIOS* implementation) {

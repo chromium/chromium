@@ -27,6 +27,7 @@ source_set("policy") {
     "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/url:constants",
     "//ios/chrome/common",
     "//ios/web/public/webui",
