@@ -4275,7 +4275,7 @@
   {
     "name": "heavy-ad-privacy-mitigations",
     "owners": [ "johnidel", "jkarlin" ],
-    "expiry_milestone": 97
+    "expiry_milestone": 123
   },
   {
     "name": "help-app-apps-discovery",
