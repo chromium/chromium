@@ -36,6 +36,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash {
 
@@ -159,7 +160,7 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
 
 }  // namespace
 
-SetTimeUI::SetTimeUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
+SetTimeUI::SetTimeUI(content::WebUI* web_ui) : MojoWebDialogUI(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<SetTimeMessageHandler>());
 
   // Set up the chrome://set-time source.
@@ -199,5 +200,7 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
 }
 
 SetTimeUI::~SetTimeUI() = default;
+
+WEB_UI_CONTROLLER_TYPE_IMPL(SetTimeUI)
 
 }  // namespace ash
