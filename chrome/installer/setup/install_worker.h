@@ -46,6 +46,12 @@ void AddUpdateBrandCodeWorkItem(const InstallerState& installer_state,
 // brand code is returned, otherwise an empty string is returned.
 std::wstring GetUpdatedBrandCode(const std::wstring& brand_code);
 
+// Does forward and backword transformation of brand codes between the CBE w/o
+// and CBE with CBCM codes. The `to_cbcm` parameter defines which direction is
+// needed.
+std::wstring TransformCloudManagementBrandCode(const std::wstring& brand_code,
+                                               bool to_cbcm);
+
 // After a successful copying of all the files, this function is called to
 // do a few post install tasks:
 // - Handle the case of in-use-update by updating "opv" (old version) key or

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "chrome/installer/util/google_update_settings.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
@@ -107,13 +109,20 @@ TEST_F(GoogleUpdateTest, IsOrganicFirstRunBrandCodes) {
 TEST_F(GoogleUpdateTest, IsEnterpriseBrandCodes) {
   EXPECT_TRUE(google_brand::IsEnterprise("GGRV"));
   std::string gce_prefix = "GCE";
-  for (char ch = 'A'; ch <= 'Z'; ++ch)
-    EXPECT_TRUE(google_brand::IsEnterprise(gce_prefix + ch));
+  for (char ch = 'A'; ch <= 'Z'; ++ch) {
+    EXPECT_EQ(google_brand::IsEnterprise(gce_prefix + ch), ch != 'L');
+  }
+  for (const std::string prefix :
+       {"GCC", "GCF", "GCG", "GCH", "GCK", "GCL", "GCM"}) {
+    for (char ch = 'A'; ch <= 'Z'; ++ch) {
+      EXPECT_TRUE(google_brand::IsEnterprise(prefix + ch));
+    }
+  }
   EXPECT_FALSE(google_brand::IsEnterprise("ggrv"));
   EXPECT_FALSE(google_brand::IsEnterprise("gcea"));
   EXPECT_FALSE(google_brand::IsEnterprise("GGRA"));
   EXPECT_FALSE(google_brand::IsEnterprise("AGCE"));
-  EXPECT_FALSE(google_brand::IsEnterprise("GCCE"));
+  EXPECT_FALSE(google_brand::IsEnterprise("GCZE"));
   EXPECT_FALSE(google_brand::IsEnterprise("CHFO"));
   EXPECT_FALSE(google_brand::IsEnterprise("CHMA"));
   EXPECT_FALSE(google_brand::IsEnterprise("EUBA"));
