@@ -101,11 +101,22 @@ void BrowserProcessPlatformPart::ShutdownAutomaticRebootManager() {
 void BrowserProcessPlatformPart::InitializeChromeUserManager() {
   DCHECK(!chrome_user_manager_);
   chrome_user_manager_ = ash::ChromeUserManagerImpl::CreateChromeUserManager();
+  // DeviceCloudPolicyManager outlives UserManager, so on its initialization,
+  // there's no way to start observing UserManager. This is the earliest timing
+  // to do so.
+  if (auto* policy_manager =
+          browser_policy_connector_ash()->GetDeviceCloudPolicyManager()) {
+    policy_manager->OnUserManagerCreated(chrome_user_manager_.get());
+  }
   chrome_user_manager_->Initialize();
 }
 
 void BrowserProcessPlatformPart::DestroyChromeUserManager() {
   chrome_user_manager_->Destroy();
+  if (auto* policy_manager =
+          browser_policy_connector_ash()->GetDeviceCloudPolicyManager()) {
+    policy_manager->OnUserManagerWillBeDestroyed(chrome_user_manager_.get());
+  }
   chrome_user_manager_.reset();
 }
 

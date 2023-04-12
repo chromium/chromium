@@ -72,22 +72,6 @@ class ChromeUserManager : public user_manager::UserManagerBase,
   virtual bool IsFullManagementDisclosureNeeded(
       policy::DeviceLocalAccountPolicyBroker* broker) const = 0;
 
-  // Temporarily stores a record of a user being moved. This is used for
-  // reporting on managed devices. Users are cached since it is possible for
-  // them to be removed just before the user removal reporter is created
-  // when the device has its users cleared in the admin console.
-  virtual void CacheRemovedUser(const std::string& user_email,
-                                user_manager::UserRemovalReason) = 0;
-
-  // Gets the temporarily removes users stores by CacheRemovedUser.
-  virtual std::vector<std::pair<std::string, user_manager::UserRemovalReason>>
-  GetRemovedUserCache() const = 0;
-
-  // Marks that the user added/removed reporter has been initialized. This
-  // indicates that removed users no longer need to be cached and will result
-  // in the cache being cleared.
-  virtual void MarkReporterInitialized() = 0;
-
  private:
   LoginState::LoggedInUserType GetLoggedInUserType(
       const user_manager::User& active_user,
