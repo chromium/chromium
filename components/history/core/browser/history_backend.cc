@@ -898,7 +898,8 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
     last_visit_id =
         AddPageVisit(request.url, request.time, last_visit_id, t,
                      request.hidden, request.visit_source, IsTypedIncrement(t),
-                     opener_visit, request.title)
+                     opener_visit, request.consider_for_ntp_most_visited,
+                     request.title)
             .second;
 
     // Update the segment for this visit. KEYWORD_GENERATED visits should not
@@ -1023,7 +1024,8 @@ void HistoryBackend::AddPage(const HistoryAddPageArgs& request) {
           AddPageVisit(redirects[redirect_index], request.time, last_visit_id,
                        t, request.hidden, request.visit_source,
                        should_increment_typed_count,
-                       redirect_index == 0 ? opener_visit : 0, request.title)
+                       redirect_index == 0 ? opener_visit : 0,
+                       request.consider_for_ntp_most_visited, request.title)
               .second;
 
       if (t & ui::PAGE_TRANSITION_CHAIN_START) {
@@ -1221,6 +1223,7 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
     VisitSource visit_source,
     bool should_increment_typed_count,
     VisitID opener_visit,
+    bool consider_for_ntp_most_visited,
     absl::optional<std::u16string> title,
     absl::optional<base::TimeDelta> visit_duration,
     absl::optional<std::string> originator_cache_guid,
@@ -1278,8 +1281,9 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
     visit_info.originator_referring_visit = *originator_referring_visit;
   if (originator_opener_visit.has_value())
     visit_info.originator_opener_visit = *originator_opener_visit;
-  visit_info.is_known_to_sync = is_known_to_sync;
 
+  visit_info.is_known_to_sync = is_known_to_sync;
+  visit_info.consider_for_ntp_most_visited = consider_for_ntp_most_visited;
   visit_info.visit_id = db_->AddVisit(&visit_info, visit_source);
 
   if (visit_info.visit_time < first_recorded_time_)
@@ -1510,7 +1514,8 @@ bool HistoryBackend::AddVisits(const GURL& url,
       if (!AddPageVisit(url, visit.first, /*referring_visit=*/0, visit.second,
                         /*hidden=*/!ui::PageTransitionIsMainFrame(visit.second),
                         visit_source, IsTypedIncrement(visit.second),
-                        /*opener_visit=*/0)
+                        /*opener_visit=*/0,
+                        /*consider_for_ntp_most_visited=*/true)
                .first) {
         return false;
       }
@@ -1552,13 +1557,13 @@ VisitID HistoryBackend::AddSyncedVisit(
     return kInvalidVisitID;
   }
 
-  auto [url_id, visit_id] =
-      AddPageVisit(url, visit.visit_time, visit.referring_visit,
-                   visit.transition, hidden, VisitSource::SOURCE_SYNCED,
-                   IsTypedIncrement(visit.transition), visit.opener_visit,
-                   title, visit.visit_duration, visit.originator_cache_guid,
-                   visit.originator_visit_id, visit.originator_referring_visit,
-                   visit.originator_opener_visit, visit.is_known_to_sync);
+  auto [url_id, visit_id] = AddPageVisit(
+      url, visit.visit_time, visit.referring_visit, visit.transition, hidden,
+      VisitSource::SOURCE_SYNCED, IsTypedIncrement(visit.transition),
+      visit.opener_visit, visit.consider_for_ntp_most_visited, title,
+      visit.visit_duration, visit.originator_cache_guid,
+      visit.originator_visit_id, visit.originator_referring_visit,
+      visit.originator_opener_visit, visit.is_known_to_sync);
 
   if (visit_id == kInvalidVisitID) {
     // Adding the page visit failed, do not continue.

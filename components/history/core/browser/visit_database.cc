@@ -173,8 +173,15 @@ bool VisitDatabase::InitVisitTable() {
             // Set to true for visits known to Chrome Sync, which can be:
             //  1. Remote visits that have been synced to the local machine.
             //  2. Local visits that have been sent to Sync.
-            "is_known_to_sync BOOLEAN DEFAULT FALSE NOT NULL)"))
+            "is_known_to_sync BOOLEAN DEFAULT FALSE NOT NULL,"
+            // Specifies whether a navigation should contribute to the Most
+            // Visited tiles in the New Tab Page. Note that setting this to true
+            // (most common case) doesn't guarantee it's relevant for Most
+            // Visited, since other requirements exist (e.g. certain page
+            // transition types).
+            "consider_for_ntp_most_visited BOOLEAN DEFAULT FALSE NOT NULL)")) {
       return false;
+    }
   }
 
   // Visit source table contains the source information for all the visits. To
@@ -243,6 +250,7 @@ void VisitDatabase::FillVisitRow(sql::Statement& statement, VisitRow* visit) {
   visit->originator_referring_visit = statement.ColumnInt64(11);
   visit->originator_opener_visit = statement.ColumnInt64(12);
   visit->is_known_to_sync = statement.ColumnBool(13);
+  visit->consider_for_ntp_most_visited = statement.ColumnBool(14);
 }
 
 // static
@@ -304,8 +312,8 @@ VisitID VisitDatabase::AddVisit(VisitRow* visit, VisitSource source) {
       "(url, visit_time, from_visit, transition, segment_id, "
       "visit_duration, incremented_omnibox_typed_score, opener_visit,"
       "originator_cache_guid,originator_visit_id,originator_from_visit,"
-      "originator_opener_visit,is_known_to_sync) "
-      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)"));
+      "originator_opener_visit,is_known_to_sync,consider_for_ntp_most_visited) "
+      "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
   // Although some columns are NULLable, we never write NULL. We write 0 or ""
   // instead for simplicity. See the CREATE TABLE comments for details.
   statement.BindInt64(0, visit->url_id);
@@ -321,6 +329,7 @@ VisitID VisitDatabase::AddVisit(VisitRow* visit, VisitSource source) {
   statement.BindInt64(10, visit->originator_referring_visit);
   statement.BindInt64(11, visit->originator_opener_visit);
   statement.BindBool(12, visit->is_known_to_sync);
+  statement.BindBool(13, visit->consider_for_ntp_most_visited);
 
   if (!statement.Run()) {
     DVLOG(0) << "Failed to execute visit insert statement:  "
@@ -445,7 +454,8 @@ bool VisitDatabase::UpdateVisitRow(const VisitRow& visit) {
       "UPDATE visits SET "
       "url=?,visit_time=?,from_visit=?,transition=?,segment_id=?,"
       "visit_duration=?,incremented_omnibox_typed_score=?,opener_visit=?,"
-      "originator_cache_guid=?,originator_visit_id=?,is_known_to_sync=? "
+      "originator_cache_guid=?,originator_visit_id=?,is_known_to_sync=?,"
+      "consider_for_ntp_most_visited=? "
       "WHERE id=?"));
   // Although some columns are NULLable, we never write NULL. We write 0 or ""
   // instead for simplicity. See the CREATE TABLE comments for details.
@@ -460,7 +470,8 @@ bool VisitDatabase::UpdateVisitRow(const VisitRow& visit) {
   statement.BindString(8, visit.originator_cache_guid);
   statement.BindInt64(9, visit.originator_visit_id);
   statement.BindInt64(10, visit.is_known_to_sync);
-  statement.BindInt64(11, visit.visit_id);
+  statement.BindInt64(11, visit.consider_for_ntp_most_visited);
+  statement.BindInt64(12, visit.visit_id);
 
   return statement.Run();
 }
@@ -1335,6 +1346,23 @@ bool VisitDatabase::MigrateVisitsAddIsKnownToSyncColumn() {
     // This is because we don't know if the user has subsequently turned off
     // Sync, and we only want to flag this on for visits that are CURRENTLY
     // known to Sync and associated with the current user.
+  }
+
+  return true;
+}
+
+bool VisitDatabase::MigrateVisitsAddConsiderForNewTabPageMostVisitedColumn() {
+  if (!GetDB().DoesTableExist("visits")) {
+    NOTREACHED() << " Visits table should exist before migration";
+    return false;
+  }
+
+  if (!GetDB().DoesColumnExist("visits", "consider_for_ntp_most_visited")) {
+    if (!GetDB().Execute("ALTER TABLE visits "
+                         "ADD COLUMN consider_for_ntp_most_visited "
+                         "BOOLEAN DEFAULT FALSE NOT NULL")) {
+      return false;
+    }
   }
 
   return true;

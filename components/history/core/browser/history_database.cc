@@ -39,7 +39,7 @@ namespace {
 // Current version number. We write databases at the "current" version number,
 // but any previous version that can read the "compatible" one can make do with
 // our database without *too* many bad effects.
-const int kCurrentVersionNumber = 62;
+const int kCurrentVersionNumber = 63;
 const int kCompatibleVersionNumber = 16;
 
 const char kEarlyExpirationThresholdKey[] = "early_expiration_threshold";
@@ -923,6 +923,15 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
   if (cur_version == 61) {
     if (!MigrateContentAnnotationsAddHasUrlKeyedImage()) {
       return LogMigrationFailure(61);
+    }
+    cur_version++;
+    // TODO(crbug.com/1414092): Handle failure instead of ignoring it.
+    std::ignore = meta_table_.SetVersionNumber(cur_version);
+  }
+
+  if (cur_version == 62) {
+    if (!MigrateVisitsAddConsiderForNewTabPageMostVisitedColumn()) {
+      return LogMigrationFailure(62);
     }
     cur_version++;
     // TODO(crbug.com/1414092): Handle failure instead of ignoring it.

@@ -35,7 +35,8 @@ bool IsVisitInfoEqual(const VisitRow& a, const VisitRow& b) {
                                                      b.transition) &&
          a.originator_cache_guid == b.originator_cache_guid &&
          a.originator_visit_id == b.originator_visit_id &&
-         a.is_known_to_sync == b.is_known_to_sync;
+         a.is_known_to_sync == b.is_known_to_sync &&
+         a.consider_for_ntp_most_visited == b.consider_for_ntp_most_visited;
 }
 
 }  // namespace

@@ -134,6 +134,12 @@ class VisitRow {
   // same tab.
   VisitID opener_visit = kInvalidVisitID;
 
+  // Specifies whether a navigation should contribute to the Most Visited tiles
+  // in the New Tab Page. Note that setting this to true (most common case)
+  // doesn't guarantee it's relevant for Most Visited, since other requirements
+  // exist (e.g. certain page transition types).
+  bool consider_for_ntp_most_visited = true;
+
   // These are set only for synced visits originating from a different machine.
   // `originator_cache_guid` is the originator machine's unique client ID. It's
   // called a "cache" just to match Chrome Sync's terminology.
