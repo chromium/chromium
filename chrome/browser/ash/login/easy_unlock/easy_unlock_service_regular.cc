@@ -242,10 +242,6 @@ bool EasyUnlockServiceRegular::IsEnabled() const {
          multidevice_setup::mojom::FeatureState::kEnabledByUser;
 }
 
-bool EasyUnlockServiceRegular::IsChromeOSLoginEnabled() const {
-  return pref_manager_ && pref_manager_->IsChromeOSLoginEnabled();
-}
-
 void EasyUnlockServiceRegular::OnSuspendDoneInternal() {
   lock_screen_last_shown_timestamp_ = base::TimeTicks::Now();
 }

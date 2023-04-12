@@ -79,14 +79,4 @@ TEST_F(ProximityAuthProfilePrefManagerTest, PromotionShownCount) {
   EXPECT_EQ(2, pref_manager_->GetPromotionShownCount());
 }
 
-TEST_F(ProximityAuthProfilePrefManagerTest, IsChromeOSLoginEnabled) {
-  EXPECT_FALSE(pref_manager_->IsChromeOSLoginEnabled());
-
-  pref_manager_->SetIsChromeOSLoginEnabled(true);
-  EXPECT_TRUE(pref_manager_->IsChromeOSLoginEnabled());
-
-  pref_manager_->SetIsChromeOSLoginEnabled(false);
-  EXPECT_FALSE(pref_manager_->IsChromeOSLoginEnabled());
-}
-
 }  // namespace proximity_auth

@@ -77,7 +77,6 @@ class EasyUnlockServiceRegular
   void ShutdownInternal() override;
   bool IsAllowedInternal() const override;
   bool IsEnabled() const override;
-  bool IsChromeOSLoginEnabled() const override;
 
   void OnSuspendDoneInternal() override;
 
