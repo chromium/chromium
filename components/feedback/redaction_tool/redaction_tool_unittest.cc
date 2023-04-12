@@ -441,6 +441,8 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
   EXPECT_EQ("PSM: zefg0000/123xx", RedactCustomPatterns("PSM: zefg0000/123xx"));
   // No mention of PSM prior to identifier, e.g. in unrelated paths.
   EXPECT_EQ("/root/123xx", RedactCustomPatterns("/root/123xx"));
+  // PSM mention without whitespace, e.g. in base64-encoded data.
+  EXPECT_EQ("PSM+ABCZ/123xx", RedactCustomPatterns("PSM+ABCZ/123xx"));
 
   EXPECT_EQ("\"gaia_id\":\"<GAIA: 1>\"",
             RedactCustomPatterns("\"gaia_id\":\"1234567890\""));
