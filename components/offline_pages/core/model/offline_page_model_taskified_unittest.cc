@@ -593,12 +593,6 @@ TEST_F(OfflinePageModelTaskifiedTest, SavePageOfflineArchiverReturnedWrongUrl) {
       0);
 }
 
-// This test is disabled since it's lacking the ability of mocking store failure
-// in store_test_utils. https://crbug.com/781023
-// TODO(romax): reenable the test once the above issue is resolved.
-TEST_F(OfflinePageModelTaskifiedTest,
-       DISABLED_SavePageOfflineCreationStoreWriteFailure) {}
-
 TEST_F(OfflinePageModelTaskifiedTest, SavePageLocalFileFailed) {
   SavePageWithExpectedResult(GURL("file:///foo"), kTestClientId1,
                              GURL("http://other.page.com"), kEmptyRequestOrigin,
@@ -790,29 +784,6 @@ TEST_F(OfflinePageModelTaskifiedTest, GetAllPagesWhenStoreEmpty) {
   histogram_tester()->ExpectUniqueSample("OfflinePages.SavedPageCountUponQuery",
                                          0, 1);
 }
-
-// TODO(romax): remove these 'indicators for newly added tests' when migration
-// is done.
-// This test case is covered by DeletePageTaskTest::DeletePagesBy*.
-TEST_F(OfflinePageModelTaskifiedTest, DISABLED_DeletePageSuccessful) {}
-
-// This test case is covered by DeletePageTaskTest::DeletePagesByUrlPredicate.
-TEST_F(OfflinePageModelTaskifiedTest,
-       DISABLED_DeleteCachedPageByPredicateUserRequested) {}
-
-// This test case is renamed to DeletePagesByUrlPredicate.
-TEST_F(OfflinePageModelTaskifiedTest, DISABLED_DeleteCachedPageByPredicate) {}
-
-// This test case is covered by DeletePageTaskTest::DeletePagesBy*NotFound.
-TEST_F(OfflinePageModelTaskifiedTest, DISABLED_DeletePageNotFound) {}
-
-// This test case is covered by
-// DeletePageTaskTest::DeletePagesStoreFailureOnRemove.
-TEST_F(OfflinePageModelTaskifiedTest, DISABLED_DeletePageStoreFailureOnRemove) {
-}
-
-// This test case is covered by DeletePageTaskTest::DeletePagesBy*.
-TEST_F(OfflinePageModelTaskifiedTest, DISABLED_DeleteMultiplePages) {}
 
 // These newly added tests are testing the API instead of results, which
 // should be covered in DeletePagesTaskTest.
