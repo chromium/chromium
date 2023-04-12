@@ -36,6 +36,7 @@
 #include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/drag_window_resizer.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -61,6 +62,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
+#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/test_windows.h"
@@ -1488,6 +1490,52 @@ TEST_F(SplitViewControllerTest, OverviewNotStealFocusOnSwapWindows) {
   split_view_controller()->SwapWindows(
       SplitViewController::SwapWindowsSource::kDoubleTap);
   EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
+}
+
+// Tests that the floated window is not auto-snapped if it's on top of two
+// snapped windows. It should only get snapped if it's activated from overview.
+TEST_F(SplitViewControllerTest, DontAutosnapFloatedWindow) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      chromeos::wm::features::kWindowLayoutMenu);
+
+  // Create 2 normal windows and 1 floated window.
+  std::unique_ptr<aura::Window> window1(CreateAppWindow());
+  std::unique_ptr<aura::Window> window2(CreateAppWindow());
+  std::unique_ptr<aura::Window> floated_window(CreateAppWindow());
+  Shell::Get()->float_controller()->ToggleFloat(floated_window.get());
+  ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
+
+  // Snap `window1` so that Overview is open.
+  split_view_controller()->SnapWindow(
+      window1.get(), SplitViewController::SnapPosition::kPrimary);
+  auto* overview_controller = Shell::Get()->overview_controller();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  auto* overview_session = overview_controller->overview_session();
+  ASSERT_TRUE(overview_session->IsWindowInOverview(window2.get()));
+  ASSERT_TRUE(overview_session->IsWindowInOverview(floated_window.get()));
+
+  // Activate `window2` from Overview. Test that it gets snapped in splitview,
+  // and `floated_window` remains floated.
+  wm::ActivateWindow(window2.get());
+  EXPECT_TRUE(split_view_controller()->IsWindowInSplitView(window2.get()));
+  wm::ActivateWindow(floated_window.get());
+  EXPECT_FALSE(
+      split_view_controller()->IsWindowInSplitView(floated_window.get()));
+  EXPECT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
+
+  // Snap `window1` again, then activate `floated_window` from Overview. Test
+  // that it gets snapped in splitview.
+  EndSplitView();
+  EXPECT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
+  split_view_controller()->SnapWindow(
+      window1.get(), SplitViewController::SnapPosition::kPrimary);
+  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  overview_session = overview_controller->overview_session();
+  EXPECT_TRUE(overview_session->IsWindowInOverview(floated_window.get()));
+  wm::ActivateWindow(floated_window.get());
+  EXPECT_TRUE(
+      split_view_controller()->IsWindowInSplitView(floated_window.get()));
+  EXPECT_FALSE(WindowState::Get(floated_window.get())->IsFloated());
 }
 
 // Verify that you cannot start dragging the divider during its snap animation.

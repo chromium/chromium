@@ -21,6 +21,7 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/delayed_animation_observer_impl.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -432,8 +433,10 @@ class SplitViewController::AutoSnapController
       return;
 
     // Already un-minimized windows are not applicable for auto snapping.
-    if (!WindowState::Get(window) || !WindowState::Get(window)->IsMinimized())
+    if (auto* window_state = WindowState::Get(window);
+        !window_state || !window_state->IsMinimized()) {
       return;
+    }
 
     // Visibility changes while restoring windows after dragged is transient
     // hide & show operations so not applicable for auto snapping.
@@ -465,6 +468,14 @@ class SplitViewController::AutoSnapController
 
     // We perform an "auto" snapping only if split view mode is active.
     if (!split_view_controller_->InSplitViewMode()) {
+      return;
+    }
+
+    // If `window` is floated on top of 2 already snapped windows (this can
+    // happen after floating a window, starting split view, and activating
+    // an unfloated window from overview), don't snap.
+    if (WindowState::Get(window)->IsFloated() &&
+        split_view_controller_->BothSnapped()) {
       return;
     }
 
@@ -3055,6 +3066,11 @@ void SplitViewController::EndWindowDragImpl(
   // window by dropping on the new selector item, do nothing.
   if (GetOverviewSession() && GetOverviewSession()->IsWindowInOverview(window))
     return;
+
+  if (WindowState::Get(window)->IsFloated()) {
+    // If a floated window was dragged from shelf and released, don't snap.
+    return;
+  }
 
   DCHECK_EQ(root_window_, window->GetRootWindow());
 
