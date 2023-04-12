@@ -2793,11 +2793,16 @@ void Element::AttachLayoutTree(AttachContext& context) {
   bool being_rendered =
       context.parent && style && !style->IsEnsuredInDisplayNone();
 
+  bool skipped_container_descendants = SkippedContainerStyleRecalc();
+
   if (!being_rendered && !ChildNeedsReattachLayoutTree()) {
-    // We may have skipped recalc for this Element if it's a container query
-    // container. This recalc must be resumed now, since we're not going to
+    // We may have skipped recalc for this Element if it's a query container for
+    // size queries. This recalc must be resumed now, since we're not going to
     // create a LayoutObject for the Element after all.
-    style_engine.RecalcStyleForNonLayoutNGContainerDescendants(*this);
+    if (skipped_container_descendants) {
+      style_engine.UpdateStyleForNonEligibleContainer(*this);
+      skipped_container_descendants = false;
+    }
     // The above recalc may have marked some descendant for reattach, which
     // would set the child-needs flag.
     if (!ChildNeedsReattachLayoutTree()) {
@@ -2834,20 +2839,14 @@ void Element::AttachLayoutTree(AttachContext& context) {
   }
   children_context.use_previous_in_flow = true;
 
-  if ((being_rendered && !children_context.parent) ||
-      (layout_object &&
-       !IsGuaranteedToEnterNGBlockNodeLayout(*layout_object))) {
-    // If the created LayoutObject is forced into a legacy object, or if a
-    // LayoutObject was not created, even if we thought it should have been, for
-    // instance because the parent LayoutObject returns false for
-    // IsChildAllowed, we need to complete the skipped style recalc for size
-    // query containers as we would not have an NGBlockNode to resume from.
-    style_engine.RecalcStyleForNonLayoutNGContainerDescendants(*this);
+  if (skipped_container_descendants &&
+      (!layout_object || !layout_object->IsEligibleForSizeContainment())) {
+    style_engine.UpdateStyleForNonEligibleContainer(*this);
+    skipped_container_descendants = false;
   }
 
-  bool skip_container_descendants = SkippedContainerStyleRecalc();
   bool skip_lock_descendants = ChildStyleRecalcBlockedByDisplayLock();
-  if (skip_container_descendants || skip_lock_descendants) {
+  if (skipped_container_descendants || skip_lock_descendants) {
     // Since we block style recalc on descendants of this node due to display
     // locking or container queries, none of its descendants should have the
     // NeedsReattachLayoutTree bit set.
@@ -3104,12 +3103,8 @@ bool Element::SkipStyleRecalcForContainer(
     DCHECK(!child_change.TraverseChildren(*this));
     return false;
   }
-  if (child_change.ReattachLayoutTree()) {
-    if (!LayoutObjectIsNeeded(style) || style.Display() == EDisplay::kInline ||
-        style.IsDisplayTableType()) {
-      return false;
-    }
-  } else {
+
+  if (!child_change.ReattachLayoutTree()) {
     LayoutObject* layout_object = GetLayoutObject();
     if (!layout_object || !layout_object->SelfNeedsLayout() ||
         !layout_object->IsEligibleForSizeContainment() ||

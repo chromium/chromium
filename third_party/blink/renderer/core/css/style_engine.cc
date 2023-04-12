@@ -2988,31 +2988,58 @@ void StyleEngine::RecalcStyleForContainer(Element& container,
   RecalcStyle(change, StyleRecalcContext::FromAncestors(container));
 }
 
-void StyleEngine::RecalcStyleForNonLayoutNGContainerDescendants(
-    Element& container) {
+void StyleEngine::UpdateStyleForNonEligibleContainer(Element& container) {
   DCHECK(InRebuildLayoutTree());
-
-  // This method is called from AttachLayoutTree() when we are forced to use
-  // legacy layout for a query container. At the time of RecalcStyle, it is not
-  // necessarily known that some sibling tree may enforce us to have legacy
-  // layout, which means we may have skipped style recalc for the container
-  // subtree. Style recalc will not be resumed during layout for legacy layout.
-  // Instead, finish recalc for the subtree when it is discovered that the
-  // container is in legacy layout.
-  // Also, this method is called to complete a skipped style recalc where we
-  // could not predict that the LayoutObject would not be created, like if the
-  // parent LayoutObject returns false for IsChildAllowed.
+  // This method is called from AttachLayoutTree() when we skipped style recalc
+  // for descendants of a size query container but figured that the LayoutObject
+  // we created is not going to be reached for layout in ng_block_node.cc where
+  // we would otherwise resume style recalc.
+  //
+  // This may be due to legacy layout fallback, inline box, table box, etc.
+  // Also, if we could not predict that the LayoutObject would not be created,
+  // like if the parent LayoutObject returns false for IsChildAllowed.
   auto* cq_data = container.GetContainerQueryData();
   if (!cq_data) {
     return;
   }
 
-  if (cq_data->SkippedStyleRecalc()) {
-    DecrementSkippedContainerRecalc();
-    AllowMarkForReattachFromRebuildLayoutTreeScope allow_reattach(*this);
-    base::AutoReset<bool> cq_recalc(&in_container_query_style_recalc_, true);
-    RecalcStyleForContainer(container, {});
+  StyleRecalcChange change;
+  if (ContainerQueryEvaluator* evaluator =
+          cq_data->GetContainerQueryEvaluator()) {
+    ContainerQueryEvaluator::Change query_change =
+        evaluator->SizeContainerChanged(GetDocument(), container,
+                                        PhysicalSize(), kPhysicalAxisNone);
+    switch (query_change) {
+      case ContainerQueryEvaluator::Change::kNone:
+        DCHECK(cq_data->SkippedStyleRecalc());
+        break;
+      case ContainerQueryEvaluator::Change::kNearestContainer:
+        if (!IsShadowHost(container)) {
+          change = change.ForceRecalcSizeContainer();
+          break;
+        }
+        // Since the nearest container is found in shadow-including ancestors
+        // and not in flat tree ancestors, and style recalc traversal happens in
+        // flat tree order, we need to invalidate inside flat tree descendant
+        // containers if such containers are inside shadow trees.
+        //
+        // See also StyleRecalcChange::FlagsForChildren where we turn
+        // kRecalcContainer into kRecalcDescendantContainers when traversing
+        // past a shadow host.
+        [[fallthrough]];
+      case ContainerQueryEvaluator::Change::kDescendantContainers:
+        change = change.ForceRecalcDescendantSizeContainers();
+        break;
+    }
+    if (query_change != ContainerQueryEvaluator::Change::kNone) {
+      container.ComputedStyleRef().ClearCachedPseudoElementStyles();
+    }
   }
+
+  DecrementSkippedContainerRecalc();
+  AllowMarkForReattachFromRebuildLayoutTreeScope allow_reattach(*this);
+  base::AutoReset<bool> cq_recalc(&in_container_query_style_recalc_, true);
+  RecalcStyleForContainer(container, change);
 }
 
 void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
