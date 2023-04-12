@@ -1003,6 +1003,29 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, FloatWindow) {
   EXPECT_TRUE(window_state()->IsFloated());
   EXPECT_EQ(kShellWindowId_FloatContainer, window()->parent()->GetId());
 
+  // Test minimize.
+  const WMEvent minimize_event(WM_EVENT_MINIMIZE);
+  window_state()->OnWMEvent(&minimize_event);
+  EXPECT_EQ(WindowStateType::kFloated, delegate()->old_state());
+  EXPECT_EQ(WindowStateType::kMinimized, delegate()->new_state());
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  EXPECT_TRUE(window_state()->IsMinimized());
+  EXPECT_FALSE(window()->IsVisible());
+
+  // Test unminimize.
+  const WMEvent unminimize_event(WM_EVENT_RESTORE);
+  window_state()->OnWMEvent(&unminimize_event);
+  EXPECT_EQ(
+      InTabletMode()
+          ? FloatController::GetPreferredFloatWindowTabletBounds(window())
+          : FloatController::GetPreferredFloatWindowClamshellBounds(window()),
+      delegate()->requested_bounds());
+  EXPECT_EQ(WindowStateType::kMinimized, delegate()->old_state());
+  EXPECT_EQ(WindowStateType::kFloated, delegate()->new_state());
+  state()->EnterNextState(window_state(), delegate()->new_state());
+  EXPECT_TRUE(window_state()->IsFloated());
+  EXPECT_EQ(kShellWindowId_FloatContainer, window()->parent()->GetId());
+
   // Test unfloat.
   const WMEvent restore_event(WM_EVENT_RESTORE);
   window_state()->OnWMEvent(&restore_event);

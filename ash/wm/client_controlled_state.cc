@@ -267,14 +267,10 @@ bool ClientControlledState::EnterNextState(WindowState* window_state,
   window_state->NotifyPreStateTypeChange(previous_state_type);
 
   auto* const window = window_state->window();
-  // Don't update the window if the window is detached from parent.
-  // This can happen during dragging.
-  // TODO(oshima): This was added for DOCKED windows. Investigate if
-  // we still need this.
-  if (window->parent()) {
-    UpdateMinimizedState(window_state, previous_state_type);
-  }
 
+  // Calling order matters. We need to handle the floated state before handling
+  // the minimized state because FloatController may change the visibility of
+  // the window.
   auto* const float_controller = Shell::Get()->float_controller();
   if (next_state_type == WindowStateType::kFloated) {
     if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
@@ -285,6 +281,14 @@ bool ClientControlledState::EnterNextState(WindowState* window_state,
   }
   if (previous_state_type == WindowStateType::kFloated) {
     float_controller->UnfloatImpl(window);
+  }
+
+  // Don't update the window if the window is detached from parent.
+  // This can happen during dragging.
+  // TODO(oshima): This was added for DOCKED windows. Investigate if
+  // we still need this.
+  if (window->parent()) {
+    UpdateMinimizedState(window_state, previous_state_type);
   }
 
   window_state->NotifyPostStateTypeChange(previous_state_type);
