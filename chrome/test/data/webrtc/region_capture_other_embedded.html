@@ -10,7 +10,7 @@
       registerEmbeddedListeners();
 
       function reportEmbeddingSuccess() {
-        window.domAutomationController.send("embedding-done");
+        window.parent.postMessage({messageType: "embedding-done"}, "*");
       }
     </script>
   </head>
