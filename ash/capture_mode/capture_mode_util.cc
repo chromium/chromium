@@ -20,13 +20,16 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/typography.h"
 #include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/gfx/geometry/point.h"
@@ -286,9 +289,18 @@ std::unique_ptr<views::View> CreateClipboardShortcutView() {
   views::Label* shortcut_label =
       clipboard_shortcut_view->AddChildView(std::make_unique<views::Label>());
   shortcut_label->SetText(label_text);
-  shortcut_label->SetBackgroundColorId(kColorAshControlBackgroundColorActive);
-  shortcut_label->SetEnabledColorId(kColorAshTextOnBackgroundColor);
-
+  shortcut_label->SetBackgroundColorId(
+      chromeos::features::IsJellyEnabled()
+          ? cros_tokens::kCrosSysPrimary
+          : static_cast<ui::ColorId>(kColorAshControlBackgroundColorActive));
+  shortcut_label->SetEnabledColorId(
+      chromeos::features::IsJellyEnabled()
+          ? cros_tokens::kCrosSysOnPrimary
+          : static_cast<ui::ColorId>(kColorAshTextOnBackgroundColor));
+  if (chromeos::features::IsJellyEnabled()) {
+    ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
+                                               *shortcut_label);
+  }
   return clipboard_shortcut_view;
 }
 
@@ -305,19 +317,26 @@ std::unique_ptr<views::View> CreateBannerView() {
           gfx::Insets::VH(kBannerVerticalInsetDip, kBannerHorizontalInsetDip),
           kBannerIconTextSpacingDip));
 
+  const ui::ColorId background_color_id =
+      chromeos::features::IsJellyEnabled()
+          ? cros_tokens::kCrosSysPrimary
+          : static_cast<ui::ColorId>(kColorAshControlBackgroundColorActive);
   if (features::IsNotificationsRefreshEnabled()) {
     banner_view->SetBackground(views::CreateThemedRoundedRectBackground(
-        kColorAshControlBackgroundColorActive, kBannerViewTopRadius,
-        kBannerViewBottomRadius, /*for_border_thickness=*/0));
+        background_color_id, kBannerViewTopRadius, kBannerViewBottomRadius,
+        /*for_border_thickness=*/0));
   } else {
-    banner_view->SetBackground(views::CreateThemedSolidBackground(
-        kColorAshControlBackgroundColorActive));
+    banner_view->SetBackground(
+        views::CreateThemedSolidBackground(background_color_id));
   }
 
   views::ImageView* icon =
       banner_view->AddChildView(std::make_unique<views::ImageView>());
   icon->SetImage(ui::ImageModel::FromVectorIcon(
-      kCaptureModeCopiedToClipboardIcon, kColorAshIconOnBackgroundColor,
+      kCaptureModeCopiedToClipboardIcon,
+      chromeos::features::IsJellyEnabled()
+          ? cros_tokens::kCrosSysOnPrimary
+          : static_cast<ui::ColorId>(kColorAshIconOnBackgroundColor),
       kBannerIconSizeDip));
 
   views::Label* label = banner_view->AddChildView(
@@ -325,7 +344,14 @@ std::unique_ptr<views::View> CreateBannerView() {
           IDS_ASH_SCREEN_CAPTURE_SCREENSHOT_COPIED_TO_CLIPBOARD)));
   label->SetBackgroundColorId(kColorAshControlBackgroundColorActive);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetEnabledColorId(kColorAshTextOnBackgroundColor);
+  label->SetEnabledColorId(
+      chromeos::features::IsJellyEnabled()
+          ? cros_tokens::kCrosSysOnPrimary
+          : static_cast<ui::ColorId>(kColorAshTextOnBackgroundColor));
+  if (chromeos::features::IsJellyEnabled()) {
+    ash::TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosBody2,
+                                               *label);
+  }
 
   if (!Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     banner_view->AddChildView(CreateClipboardShortcutView());
