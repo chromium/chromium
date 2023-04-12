@@ -10,7 +10,7 @@ import '//resources/cr_elements/icons.html.js';
 
 import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ActionSource} from './bookmarks.mojom-webui.js';
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
@@ -73,7 +73,10 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
     this.bookmarks_ = bookmarks;
     this.priceTracked_ = priceTracked;
     this.priceTrackingEligible_ = priceTrackingEligible;
-    this.$.menu.showAt(event.target as HTMLElement);
+    const target = event.target as HTMLElement;
+    afterNextRender(this, () => {
+      this.$.menu.showAt(target);
+    });
   }
 
   showAtPosition(
