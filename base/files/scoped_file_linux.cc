@@ -4,6 +4,8 @@
 
 #include "base/files/scoped_file.h"
 
+#include <dlfcn.h>
+
 #include <algorithm>
 #include <array>
 #include <atomic>
@@ -79,14 +81,32 @@ bool IsFDOwned(int fd) {
 
 }  // namespace base
 
+using LibcCloseFuncPtr = int (*)(int);
+
+// Load the libc close symbol to forward to from the close wrapper.
+LibcCloseFuncPtr LoadCloseSymbol() {
+#if defined(THREAD_SANITIZER)
+  // If TSAN is enabled use __interceptor___close first to make sure the TSAN
+  // wrapper gets called.
+  return reinterpret_cast<LibcCloseFuncPtr>(
+      dlsym(RTLD_DEFAULT, "__interceptor___close"));
+#else
+  return reinterpret_cast<LibcCloseFuncPtr>(dlsym(RTLD_NEXT, "close"));
+#endif
+}
+
 extern "C" {
 
-int __close(int);
-
+NO_SANITIZE("cfi-icall")
 __attribute__((visibility("default"), noinline)) int close(int fd) {
+  static LibcCloseFuncPtr libc_close = LoadCloseSymbol();
   if (base::IsFDOwned(fd) && g_is_ownership_enforced)
     CrashOnFdOwnershipViolation();
-  return __close(fd);
+  if (libc_close == nullptr) {
+    RAW_LOG(ERROR, "close symbol missing\n");
+    base::ImmediateCrash();
+  }
+  return libc_close(fd);
 }
 
 }  // extern "C"
