@@ -11,6 +11,32 @@ import {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {MethodType, PromoAction, PromoType} from './companion.mojom-webui.js';
 import {CompanionProxy, CompanionProxyImpl} from './companion_proxy.js';
 
+/**
+ * Method arguments to be passed as part of the JSON message object to be sent
+ * across the postmessage boundary.
+ * Keep this file in sync with
+ * google3/java/com/google/lens/web/interfaces/standalone/companionweb/service/companion_parent_communication_service.ts
+ */
+enum ParamType {
+  // Arguments for iframe -> browser communication.
+  // Mandatory arguments.
+  METHOD_TYPE = 'type',
+
+  // Optional arguments.
+  // Arguments for MethodType.kOnExpsOptinStatusChange.
+  IS_EXPS_OPTED_IN = 'isExpsOptedIn',
+
+  // Arguments for MethodType.kOnPromoAction.
+  PROMO_ACTION = 'promoAction',
+  PROMO_TYPE = 'promoType',
+
+  // Arguments for MethodType.kOnPhAction.
+  PH_ACTION = 'phAction',
+
+  // Arguments for MethodType.kOnOpenInNewTabButtonURLChanged.
+  URL_FOR_OPEN_IN_NEW_TAB = 'urlForOpenInNewTab',
+}
+
 const companionProxy: CompanionProxy = CompanionProxyImpl.getInstance();
 
 // Validation check for incoming enums from the iframe postMessage().
@@ -44,11 +70,14 @@ function onCompanionMessageEvent(event: MessageEvent) {
   }
 
   const data = event.data;
-  if (data.type === MethodType.kOnRegionSearchClicked) {
+  const methodType = data[ParamType.METHOD_TYPE];
+  if (methodType === MethodType.kOnRegionSearchClicked) {
     companionProxy.handler.onRegionSearchClicked();
-  } else if (data.type === MethodType.kOnPromoAction) {
-    if (validatePromoArguments(data.promoType, data.promoAction)) {
-      companionProxy.handler.onPromoAction(data.promoType, data.promoAction);
+  } else if (methodType === MethodType.kOnPromoAction) {
+    const promoType = data[ParamType.PROMO_TYPE];
+    const promoAction = data[ParamType.PROMO_ACTION];
+    if (validatePromoArguments(promoType, promoAction)) {
+      companionProxy.handler.onPromoAction(promoType, promoAction);
     }
   }
 }
