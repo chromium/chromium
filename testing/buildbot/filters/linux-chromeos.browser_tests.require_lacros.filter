@@ -102,3 +102,7 @@ WebKioskAshRequiresLacrosTest*
 -SelectToSpeakMouseSelectionTest.VoiceSwitching
 # TODO(b/268056158) Flaky
 -SelectToSpeakTestWithVoiceSwitching.BreaksAtLanguageBounds
+# TODO(b/277821091) Flaky
+-ChromeVoxBackgroundTest.NavigationEscapesEdit
+-ChromeVoxBackgroundTest.NavigationIgnoresLabels
+-ChromeVoxEditingTest.NonbreakingSpaceNewLineOrSpace
