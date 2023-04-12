@@ -400,18 +400,15 @@ Each `FragmentData` receives its own `ClipPaintPropertyNode`. They
 also store a unique `PaintOffset, `PaginationOffset and
 `LocalBorderBoxProperties` object.
 
-See
-[`LayoutMultiColumnFlowThread.h`](../layout/layout_multi_column_flow_thread.h)
-for a much more detail about multicolumn/pagination.
-
 ## Paint
 
-Paint walks the LayoutObject tree in paint-order and produces a list of
-display items. This is implemented using static painter classes
-(e.g., [`BlockPainter`](block_painter.cc)) and appends display items to a
-[`PaintController`](../../platform/graphics/paint/paint_controller.h). There
-is only one `PaintController` for the entire `LocalFrameView`. During
-this treewalk, the current property tree state is maintained (see:
+Within a PaintLayer, paint walks the NGPhysicalFragment tree in paint-order and
+produces a list of display items. This is implemented using static painter
+classes (such as [`NGBoxFragmentPainter`](ng/ng_box_fragment_painter.cc)) and
+appends display items to a
+[`PaintController`](../../platform/graphics/paint/paint_controller.h). There is
+only one `PaintController` for the entire `LocalFrameView`. During this
+treewalk, the current property tree state is maintained (see:
 `PaintController::UpdateCurrentPaintChunkProperties`). The `PaintController`
 segments the display item list into
 [`PaintChunk`](../../platform/graphics/paint/paint_chunk.h)s which are
@@ -539,27 +536,3 @@ of type cc::SolidColorScrollbarLayer, cc::PaintedScrollbarLayer or
 cc::PaintedOverlayScrollbarLayer depending on the type of the scrollbar.
 
 Custom scrollbars are still painted into drawing display items directly.
-
-### PaintNG
-
-[LayoutNG](../layout/ng/README.md) is a project that will change how Layout
-generates geometry/style information for painting. Instead of modifying
-LayoutObjects, LayoutNG will generate an NGFragment tree.
-
-NGPaintFragments are:
-
-*    immutable
-*    all coordinates are physical. See
-[layout_box_model_object.h](../layout/layout_box_model_object.h).
-*    instead of Location(), NGFragment has Offset(), a physical offset from parent
-fragment.
-
-The goal is for PaintNG to eventually paint from NGFragment tree,
-and not see LayoutObjects at all. Until this goal is reached,
-LegacyPaint, and NGPaint will coexist.
-
-When a particular LayoutObject subclass fully migrates to NG, its LayoutObject
-geometry information might no longer be updated\(\*\), and its
-painter needs to be rewritten to paint NGFragments.
-For example, see how BlockPainter is being rewritten as NGBoxFragmentPainter.
-
