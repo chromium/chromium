@@ -1218,6 +1218,13 @@ component("net") {
     ]
   }
 
+  if (is_linux) {
+    sources += [
+      "base/address_map_cache_linux.cc",
+      "base/address_map_cache_linux.h",
+    ]
+  }
+
   if (is_chromeos) {
     deps += [ "//third_party/xdg_shared_mime_info" ]
   }
