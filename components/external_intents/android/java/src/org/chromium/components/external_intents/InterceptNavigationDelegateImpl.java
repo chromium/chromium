@@ -217,12 +217,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT:
                 return null;
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB:
-                if (ExternalIntentsFeatures.EXTERNAL_NAVIGATION_SUBFRAME_REDIRECTS.isEnabled()) {
-                    assert result.getTargetUrl() != null;
-                    return result.getTargetUrl();
-                } else {
-                    return null;
-                }
+                assert result.getTargetUrl() != null;
+                return result.getTargetUrl();
             case OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION:
                 // Empty GURL indicates a pending async action.
                 return GURL.emptyGURL();

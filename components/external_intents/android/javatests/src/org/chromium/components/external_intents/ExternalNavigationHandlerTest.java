@@ -75,8 +75,7 @@ import java.util.regex.Pattern;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @Features.DisableFeatures(ExternalIntentsFeatures.EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME)
-@Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_SUBFRAME_INTENT_TO_SELF_NAME,
-        ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS_NAME,
+@Features.EnableFeatures({ExternalIntentsFeatures.BLOCK_FRAME_RENAVIGATIONS_NAME,
         ExternalIntentsFeatures.DO_NOT_REQUIRE_SPECIALIZED_CCT_HANDLER_NAME,
         ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
 public class ExternalNavigationHandlerTest {
