@@ -29,7 +29,6 @@ js_type_check("closure_compile_local") {
     ":adb_sideloading",
     ":app_downloading",
     ":app_launch_splash",
-    ":arc_terms_of_service",
 
     #":assistant_optin",
     ":autolaunch",
@@ -108,29 +107,6 @@ js_library("app_launch_splash") {
   deps = [
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
-  ]
-  extra_deps = [ ":web_components" ]
-}
-
-js_library("arc_terms_of_service") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/arc_terms_of_service.js" ]
-  deps = [
-    "../../:display_manager",
-    "../../components:oobe_select",
-    "../../components:web_view_helper",
-    "../../components:web_view_loader",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_back_button",
-    "../../components/buttons:oobe_text_button",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_loading_dialog",
-    "../../components/dialogs:oobe_modal_dialog",
-  ]
-
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/webview_tag.js",
   ]
   extra_deps = [ ":web_components" ]
 }
@@ -682,7 +658,6 @@ html_to_js("web_components") {
     "cryptohome_recovery_setup.js",
     "app_downloading.js",
     "app_launch_splash.js",
-    "arc_terms_of_service.js",
     "assistant_optin.js",
     "autolaunch.js",
     "choobe.js",

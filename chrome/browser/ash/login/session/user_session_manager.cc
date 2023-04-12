@@ -68,7 +68,6 @@
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_verifier.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_verifier_factory.h"
-#include "chrome/browser/ash/login/screens/arc_terms_of_service_screen.h"
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
 #include "chrome/browser/ash/login/security_token_session_controller_factory.h"
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
@@ -2045,7 +2044,6 @@ void UserSessionManager::ShowNotificationsIfNeeded(Profile* profile) {
 }
 
 void UserSessionManager::MaybeLaunchSettings(Profile* profile) {
-  ArcTermsOfServiceScreen::MaybeLaunchArcSettings(profile);
   SyncConsentScreen::MaybeLaunchSyncConsentSettings(profile);
 }
 

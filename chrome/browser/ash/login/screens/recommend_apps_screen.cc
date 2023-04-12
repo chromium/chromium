@@ -10,6 +10,7 @@
 #include "chrome/browser/apps/app_discovery_service/app_discovery_service_factory.h"
 #include "chrome/browser/apps/app_discovery_service/play_extras.h"
 #include "chrome/browser/ash/app_list/arc/arc_fast_app_reinstall_starter.h"
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -113,9 +114,14 @@ bool RecommendAppsScreen::MaybeSkip(WizardContext& context) {
   const user_manager::UserManager* user_manager =
       user_manager::UserManager::Get();
   DCHECK(user_manager->IsUserLoggedIn());
-  bool is_managed_account = ProfileManager::GetActiveUserProfile()
-                                ->GetProfilePolicyConnector()
-                                ->IsManaged();
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!arc::IsArcPlayStoreEnabledForProfile(profile)) {
+    exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
+  }
+
+  bool is_managed_account = profile->GetProfilePolicyConnector()->IsManaged();
   bool is_child_account = user_manager->IsLoggedInAsChildUser();
   if (is_managed_account || is_child_account || skip_for_testing_) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
