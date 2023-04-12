@@ -128,6 +128,31 @@ function initialize() {
   }
 
   /**
+   * Adds a new origin with the given base score.
+   * @param originInput The text input containing the origin to add.
+   * @param scoreInput The text input containing the score to add.
+   */
+  function handleAddOrigin(
+      originInput: HTMLInputElement, scoreInput: HTMLInputElement) {
+    try {
+      // Validate the URL. If we don't validate here, IPC will kill this
+      // renderer on invalid URLs. Other checks like scheme are done on the
+      // browser side.
+      new URL(originInput.value);
+    } catch {
+      return;
+    }
+    const origin = new Url();
+    origin.url = originInput.value;
+    const score = parseFloat(scoreInput.value);
+
+    engagementDetailsProvider.setSiteEngagementBaseScoreForUrl(origin, score);
+    scoreInput.blur();
+    updateEngagementTable();
+    enableAutoupdate();
+  }
+
+  /**
    * Remove all rows from the engagement table.
    */
   function clearTable() {
@@ -191,6 +216,44 @@ function initialize() {
 
       engagementTableBody.appendChild(createRow(info));
     });
+
+    // Add another row for adding a new origin.
+    const originInput = document.createElement('input');
+    originInput.classList.add('origin-input');
+    originInput.addEventListener('focus', disableAutoupdate);
+    originInput.addEventListener('blur', enableAutoupdate);
+    originInput.value = 'http://example.com';
+
+    const originCell = document.createElement('td');
+    originCell.appendChild(originInput);
+
+    const baseScoreInput = document.createElement('input');
+    baseScoreInput.classList.add('base-score-input');
+    baseScoreInput.addEventListener('focus', disableAutoupdate);
+    baseScoreInput.addEventListener('blur', enableAutoupdate);
+    baseScoreInput.value = '0';
+
+    const baseScoreCell = document.createElement('td');
+    baseScoreCell.classList.add('base-score-cell');
+    baseScoreCell.appendChild(baseScoreInput);
+
+    const addButton = document.createElement('button');
+    addButton.textContent = 'Add';
+    addButton.classList.add('add-origin-button');
+
+    const buttonCell = document.createElement('td');
+    buttonCell.colSpan = 2;
+    buttonCell.classList.add('base-score-cell');
+    buttonCell.appendChild(addButton);
+
+    const row = document.createElement('tr');
+    row.appendChild(originCell);
+    row.appendChild(baseScoreCell);
+    row.appendChild(buttonCell);
+    addButton.addEventListener(
+        'click', () => handleAddOrigin(originInput, baseScoreInput));
+
+    engagementTableBody.appendChild(row);
   }
 
   /**

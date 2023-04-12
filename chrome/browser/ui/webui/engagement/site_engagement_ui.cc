@@ -71,7 +71,7 @@ class SiteEngagementDetailsProviderImpl
 
   void SetSiteEngagementBaseScoreForUrl(const GURL& origin,
                                         double score) override {
-    if (!origin.is_valid() || score < 0 ||
+    if (!origin.is_valid() || !origin.SchemeIsHTTPOrHTTPS() || score < 0 ||
         score > site_engagement::SiteEngagementService::GetMaxPoints() ||
         std::isnan(score)) {
       return;
