@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/ml/ml_model_loader.h"
-#include "components/ml/mojom/ml_service.mojom-blink.h"
 #include "components/ml/mojom/web_platform_model.mojom-blink.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
@@ -25,6 +23,7 @@
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/ml_model.h"
+#include "third_party/blink/renderer/modules/ml/ml_model_loader_test_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -35,110 +34,6 @@ namespace blink {
 namespace blink_mojom = ml::model_loader::mojom::blink;
 
 namespace {
-// A fake MLService that intercepts Blink's browser interface request to the
-// ml.model_loader.MLService interface.
-class FakeMLService : public blink_mojom::MLService {
- public:
-  FakeMLService() = default;
-  FakeMLService(const FakeMLService&) = delete;
-  FakeMLService(FakeMLService&&) = delete;
-  ~FakeMLService() override = default;
-
-  using CreateModelLoaderFn = base::OnceCallback<void(
-      blink_mojom::CreateModelLoaderOptionsPtr,
-      blink_mojom::MLService::CreateModelLoaderCallback)>;
-
-  void CreateModelLoader(blink_mojom::CreateModelLoaderOptionsPtr opts,
-                         CreateModelLoaderCallback callback) override {
-    std::move(create_model_loader_).Run(std::move(opts), std::move(callback));
-  }
-
-  void SetCreateModelLoader(CreateModelLoaderFn fn) {
-    create_model_loader_ = std::move(fn);
-  }
-
-  void BindFakeService(mojo::ScopedMessagePipeHandle pipe) {
-    receiver_.reset();
-    receiver_.Bind(
-        mojo::PendingReceiver<blink_mojom::MLService>(std::move(pipe)));
-  }
-
- private:
-  CreateModelLoaderFn create_model_loader_;
-  mojo::Receiver<blink_mojom::MLService> receiver_{this};
-};
-
-class ScopedSetMLServiceBinder {
- public:
-  ScopedSetMLServiceBinder(FakeMLService* ml_service,
-                           const V8TestingScope& scope)
-      : interface_broker_(
-            scope.GetExecutionContext()->GetBrowserInterfaceBroker()) {
-    interface_broker_.SetBinderForTesting(
-        blink_mojom::MLService::Name_,
-        WTF::BindRepeating(&FakeMLService::BindFakeService,
-                           // Safe to WTF::Unretained, we unregister the
-                           // binder when the test finishes.
-                           WTF::Unretained(ml_service)));
-  }
-
-  ~ScopedSetMLServiceBinder() {
-    interface_broker_.SetBinderForTesting(blink_mojom::MLService::Name_,
-                                          base::NullCallback());
-  }
-
- private:
-  const BrowserInterfaceBrokerProxy& interface_broker_;
-};
-
-// A fake MLModelLoader Mojo interface implementation that backs a Blink
-// MLModelLoader object.
-class FakeMLModelLoader : public blink_mojom::ModelLoader {
- public:
-  FakeMLModelLoader() = default;
-  FakeMLModelLoader(const FakeMLModelLoader&) = delete;
-  FakeMLModelLoader(FakeMLModelLoader&&) = delete;
-  ~FakeMLModelLoader() override = default;
-
-  using LoadFn =
-      base::OnceCallback<void(mojo_base::BigBuffer,
-                              blink_mojom::ModelLoader::LoadCallback)>;
-  void SetLoad(LoadFn fn) { load_ = std::move(fn); }
-
-  void Load(mojo_base::BigBuffer buf,
-            blink_mojom::ModelLoader::LoadCallback callback) override {
-    std::move(load_).Run(std::move(buf), std::move(callback));
-  }
-
-  FakeMLService::CreateModelLoaderFn CreateFromThis() {
-    return WTF::BindOnce(
-        &FakeMLModelLoader::OnCreateModelLoader,
-        // Safe to WTF::Unretained, method won't be called after test finishes.
-        WTF::Unretained(this));
-  }
-
-  FakeMLService::CreateModelLoaderFn CreateForUnsupportedContext() {
-    return WTF::BindOnce(
-        [](blink_mojom::CreateModelLoaderOptionsPtr,
-           blink_mojom::MLService::CreateModelLoaderCallback callback) {
-          std::move(callback).Run(
-              blink_mojom::CreateModelLoaderResult::kNotSupported,
-              mojo::NullRemote());
-        });
-  }
-
-  void OnCreateModelLoader(
-      blink_mojom::CreateModelLoaderOptionsPtr,
-      blink_mojom::MLService::CreateModelLoaderCallback callback) {
-    receiver_.reset();
-    std::move(callback).Run(blink_mojom::CreateModelLoaderResult::kOk,
-                            receiver_.BindNewPipeAndPassRemote());
-  }
-
- private:
-  LoadFn load_;
-  mojo::Receiver<blink_mojom::ModelLoader> receiver_{this};
-};
 
 // Helper struct to create faked MLTensors.
 struct TensorInfo {
