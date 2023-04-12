@@ -9,10 +9,20 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace policy {
+
+namespace {
+
+constexpr char kCacheDirectoryName[] = "managed_screensaver";
+
+}  // namespace
 
 // static
 void ScreensaverImagesPolicyHandler::RegisterPrefs(
@@ -27,9 +37,7 @@ ScreensaverImagesPolicyHandler::~ScreensaverImagesPolicyHandler() = default;
 
 void ScreensaverImagesPolicyHandler::
     OnAmbientModeManagedScreensaverImagesPrefChanged() {
-  PrefService* pref_service =
-      ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService();
-  if (!pref_service) {
+  if (!user_pref_service_) {
     return;
   }
 
@@ -64,12 +72,25 @@ void ScreensaverImagesPolicyHandler::OnActiveUserPrefServiceChanged(
     return;
   }
 
-  if (pref_change_registrar_) {
+  if (user_pref_service_) {
     return;
   }
 
+  user_pref_service_ = pref_service;
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service);
+
+  const user_manager::User* primary_user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  CHECK(primary_user);
+  Profile* user_profile =
+      ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  CHECK(user_profile);
+
+  const base::FilePath cache_root_directory =
+      user_profile->GetPath().AppendASCII(kCacheDirectoryName);
+  image_downloader_ = std::make_unique<ScreensaverImageDownloader>(
+      user_profile->GetURLLoaderFactory(), cache_root_directory);
 
   pref_change_registrar_->Add(
       ash::ambient::prefs::kAmbientModeManagedScreensaverImages,

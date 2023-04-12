@@ -13,10 +13,14 @@
 #include "ash/session/session_controller_impl.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/policy/handlers/screensaver_image_downloader.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefRegistrySimple;
+class PrefService;
+
 namespace policy {
 
 // Observes the policy that provides image sources for the managed screensaver
@@ -46,7 +50,11 @@ class ASH_EXPORT ScreensaverImagesPolicyHandler
   // Download completion handler.
   void OnScreensaverImagesDownloaded();
 
+  base::raw_ptr<PrefService> user_pref_service_ = nullptr;
+
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  std::unique_ptr<ScreensaverImageDownloader> image_downloader_;
 
   ScreensaverImagesRepeatingCallback on_images_updated_callback_;
   ash::ScopedSessionObserver scoped_session_observer_{this};
