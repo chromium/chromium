@@ -169,7 +169,6 @@ blink_core_sources_layout = [
   "layout_word_break.h",
   "line/abstract_inline_text_box.cc",
   "line/abstract_inline_text_box.h",
-  "line/glyph_overflow.h",
   "line/line_orientation_utils.cc",
   "line/line_orientation_utils.h",
   "list_marker.cc",
@@ -640,7 +639,6 @@ blink_core_sources_layout = [
   "text_run_constructor.h",
   "traced_layout_object.cc",
   "traced_layout_object.h",
-  "vertical_position_cache.h",
   "view_fragmentation_context.cc",
   "view_fragmentation_context.h",
 ]
