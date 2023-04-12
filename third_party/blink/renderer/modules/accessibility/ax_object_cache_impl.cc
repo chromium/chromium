@@ -2190,7 +2190,7 @@ void AXObjectCacheImpl::ChildrenChangedOnAncestorOf(AXObject* obj) {
   }
 
   // Clear children of ancestors in order to ensure this detached object is not
-  // cached an ancestor's list of children:
+  // cached in an ancestor's list of children:
   // Any ancestor up to the first included ancestor can contain the now-detached
   // child in it's cached children, and therefore must update children.
   AXObject* ax_ancestor = ChildrenChanged(obj->CachedParentObject());
@@ -2198,7 +2198,7 @@ void AXObjectCacheImpl::ChildrenChangedOnAncestorOf(AXObject* obj) {
     return;
   }
 
-  DCHECK(!IsFrozen())
+  SANITIZER_CHECK(!IsFrozen())
       << "Attempting to change children on an ancestor is dangerous during "
          "serialization, because the ancestor may have already been "
          "visited. Reaching this line indicates that AXObjectCacheImpl did "
