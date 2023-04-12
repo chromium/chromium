@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
@@ -25,14 +26,19 @@
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -235,6 +241,22 @@ std::u16string GetMessageForBiometricAuthenticationBeforeFillingSetting(
 
 #endif
 
+void MaybeShowProfileSwitchIPH(Profile* profile) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  Browser* launched_app = web_app::AppBrowserController::FindForWebApp(
+      *profile, web_app::kPasswordManagerAppId);
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  // Try to show promo only if there is profile menu button and there are
+  // multiple profiles.
+  if (launched_app && launched_app->app_controller() &&
+      launched_app->app_controller()->HasProfileMenuButton() &&
+      profile_manager && profile_manager->GetNumberOfProfiles() > 1) {
+    launched_app->window()->MaybeShowProfileSwitchIPH();
+  }
+#endif
+}
+
 }  // namespace
 
 namespace extensions {
@@ -276,10 +298,16 @@ PasswordsPrivateDelegateImpl::PasswordsPrivateDelegateImpl(Profile* profile)
                           weak_ptr_factory_.GetWeakPtr()));
   saved_passwords_presenter_.AddObserver(this);
   saved_passwords_presenter_.Init();
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+  install_manager_observation_.Observe(&provider->install_manager());
+#endif
 }
 
 PasswordsPrivateDelegateImpl::~PasswordsPrivateDelegateImpl() {
   saved_passwords_presenter_.RemoveObserver(this);
+  install_manager_observation_.Reset();
 }
 
 void PasswordsPrivateDelegateImpl::GetSavedPasswordsList(
@@ -901,6 +929,22 @@ void PasswordsPrivateDelegateImpl::ExecuteFunction(base::OnceClosure callback) {
 
 void PasswordsPrivateDelegateImpl::OnSavedPasswordsChanged() {
   SetCredentials(saved_passwords_presenter_.GetSavedCredentials());
+}
+
+void PasswordsPrivateDelegateImpl::OnWebAppInstalledWithOsHooks(
+    const web_app::AppId& app_id) {
+  if (app_id != web_app::kPasswordManagerAppId) {
+    return;
+  }
+  // Post task with delay because new browser window for an app isn't created
+  // yet.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(&MaybeShowProfileSwitchIPH, profile_),
+      base::Seconds(1));
+}
+
+void PasswordsPrivateDelegateImpl::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
 }
 
 void PasswordsPrivateDelegateImpl::InitializeIfNecessary() {
