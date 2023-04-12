@@ -2076,7 +2076,7 @@
     {
       // Enables long aniamtion frame logging to UKM
       name: "LongAnimationFrameUKM",
-      status: "experimental"
+      status: "stable"
     },
     {
       name: "MachineLearningCommon",
