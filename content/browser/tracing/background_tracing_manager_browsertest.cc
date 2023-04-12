@@ -661,8 +661,14 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 }
 
 // This tests that browser metadata gets included in the trace.
+// TODO(crbug.com/1413115): Re-enable this test on TSAN builds.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_TraceMetadataInTrace DISABLED_TraceMetadataInTrace
+#else
+#define MAYBE_TraceMetadataInTrace TraceMetadataInTrace
+#endif
 IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
-                       TraceMetadataInTrace) {
+                       MAYBE_TraceMetadataInTrace) {
   TestBackgroundTracingHelper background_tracing_helper;
   TestTraceReceiverHelper trace_receiver_helper;
 
