@@ -65,80 +65,80 @@ using ::testing::SaveArg;
 namespace media {
 
 #if BUILDFLAG(ENABLE_AV1_DECODER)
-const int kAV110bitMp4FileDurationMs = 2735;
-const int kAV1640WebMFileDurationMs = 2736;
+constexpr int kAV110bitMp4FileDurationMs = 2735;
+constexpr int kAV1640WebMFileDurationMs = 2736;
 #endif  // BUILDFLAG(ENABLE_AV1_DECODER)
 
 // Constants for the Media Source config change tests.
-const int kAppendTimeSec = 1;
-const int kAppendTimeMs = kAppendTimeSec * 1000;
-const int k320WebMFileDurationMs = 2736;
-const int k640WebMFileDurationMs = 2762;
-const int kVP9WebMFileDurationMs = 2736;
-const int kVP8AWebMFileDurationMs = 2734;
+constexpr int kAppendTimeSec = 1;
+constexpr int kAppendTimeMs = kAppendTimeSec * 1000;
+constexpr int k320WebMFileDurationMs = 2736;
+constexpr int k640WebMFileDurationMs = 2762;
+constexpr int kVP9WebMFileDurationMs = 2736;
+constexpr int kVP8AWebMFileDurationMs = 2734;
 
-static const char kSfxLosslessHash[] = "3.03,2.86,2.99,3.31,3.57,4.06,";
+constexpr char kSfxLosslessHash[] = "3.03,2.86,2.99,3.31,3.57,4.06,";
 
 #if defined(OPUS_FIXED_POINT)
 // NOTE: These hashes are specific to ARM devices, which use fixed-point Opus
 // implementation. x86 uses floating-point Opus, so x86 hashes won't match
-#if defined(ARCH_CPU_ARM64)
-static const char kOpusEndTrimmingHash_1[] =
-    "-4.58,-5.68,-6.53,-6.28,-4.35,-3.59,";
-static const char kOpusEndTrimmingHash_2[] =
-    "-11.92,-11.11,-8.25,-7.10,-7.84,-10.00,";
-static const char kOpusEndTrimmingHash_3[] =
-    "-13.33,-14.38,-13.68,-11.66,-10.18,-10.49,";
-static const char kOpusSmallCodecDelayHash_1[] =
+constexpr char kOpusSmallCodecDelayHash_1[] =
     "-0.48,-0.09,1.27,1.06,1.54,-0.22,";
-static const char kOpusSmallCodecDelayHash_2[] =
-    "0.29,0.15,-0.19,0.25,0.68,0.83,";
-static const char kOpusMonoOutputHash[] = "-2.39,-1.66,0.81,1.54,1.48,-0.91,";
-#else
-static const char kOpusEndTrimmingHash_1[] =
-    "-4.57,-5.66,-6.52,-6.30,-4.37,-3.61,";
-static const char kOpusEndTrimmingHash_2[] =
-    "-11.91,-11.11,-8.27,-7.13,-7.86,-10.00,";
-static const char kOpusEndTrimmingHash_3[] =
-    "-13.31,-14.38,-13.70,-11.71,-10.21,-10.49,";
-static const char kOpusSmallCodecDelayHash_1[] =
-    "-0.48,-0.09,1.27,1.06,1.54,-0.22,";
-static const char kOpusSmallCodecDelayHash_2[] =
-    "0.29,0.14,-0.20,0.24,0.68,0.83,";
-static const char kOpusMonoOutputHash[] = "-2.41,-1.66,0.79,1.53,1.46,-0.91,";
-#endif  // defined(ARCH_CPU_ARM64)
 
-#else
+#if defined(ARCH_CPU_ARM_FAMILY)
+constexpr char kOpusSmallCodecDelayHash_2[] = "0.29,0.15,-0.19,0.25,0.68,0.83,";
+constexpr char kOpusMonoOutputHash[] = "-2.39,-1.66,0.81,1.54,1.48,-0.91,";
+
+#if defined(ARCH_CPU_32BITS)
+constexpr char kOpusEndTrimmingHash_1[] =
+    "-4.58,-5.68,-6.53,-6.29,-4.35,-3.59,";
+constexpr char kOpusEndTrimmingHash_2[] =
+    "-11.93,-11.12,-8.26,-7.11,-7.85,-10.01,";
+constexpr char kOpusEndTrimmingHash_3[] =
+    "-13.33,-14.39,-13.69,-11.68,-10.19,-10.50,";
+#else   // Assume 64-bits for arm-generic configurations.
+constexpr char kOpusEndTrimmingHash_1[] =
+    "-4.58,-5.68,-6.53,-6.28,-4.35,-3.59,";
+constexpr char kOpusEndTrimmingHash_2[] =
+    "-11.92,-11.11,-8.25,-7.10,-7.84,-10.00,";
+constexpr char kOpusEndTrimmingHash_3[] =
+    "-13.33,-14.38,-13.68,-11.66,-10.18,-10.49,";
+#endif  // defined(ARCH_CPU_32BITS)
+
+#else   // Assume X86 hashes:
+constexpr char kOpusEndTrimmingHash_1[] =
+    "-4.57,-5.66,-6.52,-6.30,-4.37,-3.61,";
+constexpr char kOpusEndTrimmingHash_2[] =
+    "-11.91,-11.11,-8.27,-7.13,-7.86,-10.00,";
+constexpr char kOpusEndTrimmingHash_3[] =
+    "-13.31,-14.38,-13.70,-11.71,-10.21,-10.49,";
+constexpr char kOpusSmallCodecDelayHash_2[] = "0.29,0.14,-0.20,0.24,0.68,0.83,";
+constexpr char kOpusMonoOutputHash[] = "-2.41,-1.66,0.79,1.53,1.46,-0.91,";
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
+
+#else   // Use non-fixed point hashes:
 // Hash for a full playthrough of "opus-trimming-test.(webm|ogg)".
-static const char kOpusEndTrimmingHash_1[] =
+constexpr char kOpusEndTrimmingHash_1[] =
     "-4.57,-5.67,-6.52,-6.28,-4.34,-3.58,";
 // The above hash, plus an additional playthrough starting from T=1s.
-static const char kOpusEndTrimmingHash_2[] =
+constexpr char kOpusEndTrimmingHash_2[] =
     "-11.91,-11.10,-8.24,-7.08,-7.82,-9.99,";
 // The above hash, plus an additional playthrough starting from T=6.36s.
-static const char kOpusEndTrimmingHash_3[] =
+constexpr char kOpusEndTrimmingHash_3[] =
     "-13.31,-14.36,-13.66,-11.65,-10.16,-10.47,";
 // Hash for a full playthrough of "bear-opus.webm".
-static const char kOpusSmallCodecDelayHash_1[] =
+constexpr char kOpusSmallCodecDelayHash_1[] =
     "-0.47,-0.09,1.28,1.07,1.55,-0.22,";
 // The above hash, plus an additional playthrough starting from T=1.414s.
-static const char kOpusSmallCodecDelayHash_2[] =
-    "0.31,0.15,-0.18,0.25,0.70,0.84,";
+constexpr char kOpusSmallCodecDelayHash_2[] = "0.31,0.15,-0.18,0.25,0.70,0.84,";
 // For BasicPlaybackOpusWebmHashed_MonoOutput test case.
-static const char kOpusMonoOutputHash[] = "-2.36,-1.64,0.84,1.55,1.51,-0.90,";
+constexpr char kOpusMonoOutputHash[] = "-2.36,-1.64,0.84,1.55,1.51,-0.90,";
 #endif  // defined(OPUS_FIXED_POINT)
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-const int k640IsoCencFileDurationMs = 2769;
-const int k1280IsoFileDurationMs = 2736;
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+constexpr int k1280IsoFileDurationMs = 2736;
 
-// TODO(wolenetz): Update to 2769 once MSE endOfStream implementation no longer
-// truncates duration to the highest in intersection ranges, but compliantly to
-// the largest track buffer ranges end time across all tracks and SourceBuffers.
-// See https://crbug.com/639144.
-const int k1280IsoFileDurationMsAV = 2763;
-
-const int k1280IsoAVC3FileDurationMs = 2736;
+constexpr int k1280IsoAVC3FileDurationMs = 2736;
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 // Return a timeline offset for bear-320x240-live.webm.
@@ -677,11 +677,11 @@ const MSEPlaybackTestData kMediaSourceVideoFiles[] = {
     {"bear-av1.webm", kAppendWholeFile, kVP9WebMFileDurationMs},
 #endif  // BUILDFLAG(ENABLE_AV1_DECODER)
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
     // H264 AVC3 in MP4
     {"bear-1280x720-v_frag-avc3.mp4", kAppendWholeFile,
      k1280IsoAVC3FileDurationMs},
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+#endif
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -2181,14 +2181,6 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlaybackXHE_AAC) {
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 
-TEST_F(PipelineIntegrationTest, BasicPlaybackHi10P) {
-  ASSERT_EQ(PIPELINE_OK, Start("bear-320x180-hi10p.mp4"));
-
-  Play();
-
-  ASSERT_TRUE(WaitUntilOnEnded());
-}
-
 std::vector<std::unique_ptr<VideoDecoder>> CreateFailingVideoDecoder() {
   std::vector<std::unique_ptr<VideoDecoder>> failing_video_decoder;
   failing_video_decoder.push_back(std::make_unique<FailingVideoDecoder>());
@@ -2197,7 +2189,7 @@ std::vector<std::unique_ptr<VideoDecoder>> CreateFailingVideoDecoder() {
 
 TEST_F(PipelineIntegrationTest, BasicFallback) {
   ASSERT_EQ(PIPELINE_OK,
-            Start("bear.mp4", kNormal,
+            Start("bear.webm", kNormal,
                   base::BindRepeating(&CreateFailingVideoDecoder)));
 
   Play();
@@ -2205,6 +2197,7 @@ TEST_F(PipelineIntegrationTest, BasicFallback) {
   ASSERT_TRUE(WaitUntilOnEnded());
 }
 
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 TEST_F(PipelineIntegrationTest, MSE_ConfigChange_MP4) {
   TestMediaSource source("bear-640x360-av_frag.mp4", kAppendWholeFile);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
@@ -2225,6 +2218,13 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_MP4) {
 
   EXPECT_EQ(1u, pipeline_->GetBufferedTimeRanges().size());
   EXPECT_EQ(0, pipeline_->GetBufferedTimeRanges().start(0).InMilliseconds());
+
+  // TODO(wolenetz): Update to 2769 once MSE endOfStream implementation no
+  // longer truncates duration to the highest in intersection ranges, but
+  // compliantly to the largest track buffer ranges end time across all tracks
+  // and SourceBuffers. See https://crbug.com/639144.
+  constexpr int k1280IsoFileDurationMsAV = 2763;
+
   EXPECT_EQ(kAppendTimeMs + k1280IsoFileDurationMsAV,
             pipeline_->GetBufferedTimeRanges().end(0).InMilliseconds());
 
@@ -2336,6 +2336,7 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_EncryptedThenClear_MP4_CENC) {
   EXPECT_EQ(33, pipeline_->GetBufferedTimeRanges().start(0).InMilliseconds());
 
   // The second video was not added, so its time has not been added.
+  constexpr int k640IsoCencFileDurationMs = 2769;
   EXPECT_EQ(k640IsoCencFileDurationMs,
             pipeline_->GetBufferedTimeRanges().end(0).InMilliseconds());
 
@@ -2343,6 +2344,13 @@ TEST_F(PipelineIntegrationTest, MSE_ConfigChange_EncryptedThenClear_MP4_CENC) {
 
   EXPECT_EQ(CHUNK_DEMUXER_ERROR_APPEND_FAILED, WaitUntilEndedOrError());
   source.Shutdown();
+}
+#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+
+TEST_F(PipelineIntegrationTest, StereoAACMarkedAsMono) {
+  ASSERT_EQ(PIPELINE_OK, Start("mono_cpe.adts"));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
 }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
@@ -2438,24 +2446,9 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_VideoOnly_MP4_VP9) {
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 TEST_F(PipelineIntegrationTest, MSE_EncryptedPlayback_MP4_CENC_VideoOnly) {
   TestMediaSource source("bear-1280x720-v_frag-cenc.mp4", kAppendWholeFile);
-  FakeEncryptedMedia encrypted_media(new KeyProvidingApp());
-  EXPECT_EQ(PIPELINE_OK,
-            StartPipelineWithEncryptedMedia(&source, &encrypted_media));
-
-  source.EndOfStream();
-  ASSERT_EQ(PIPELINE_OK, pipeline_status_);
-
-  Play();
-
-  ASSERT_TRUE(WaitUntilOnEnded());
-  source.Shutdown();
-  Stop();
-}
-
-TEST_F(PipelineIntegrationTest, MSE_EncryptedPlayback_MP4_CENC_AudioOnly) {
-  TestMediaSource source("bear-1280x720-a_frag-cenc.mp4", kAppendWholeFile);
   FakeEncryptedMedia encrypted_media(new KeyProvidingApp());
   EXPECT_EQ(PIPELINE_OK,
             StartPipelineWithEncryptedMedia(&source, &encrypted_media));
@@ -2506,6 +2499,24 @@ TEST_F(PipelineIntegrationTest, MSE_Mp2ts_AAC_HE_SBR_Audio) {
 #endif
 }
 
+#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+
+TEST_F(PipelineIntegrationTest, MSE_EncryptedPlayback_MP4_CENC_AudioOnly) {
+  TestMediaSource source("bear-1280x720-a_frag-cenc.mp4", kAppendWholeFile);
+  FakeEncryptedMedia encrypted_media(new KeyProvidingApp());
+  EXPECT_EQ(PIPELINE_OK,
+            StartPipelineWithEncryptedMedia(&source, &encrypted_media));
+
+  source.EndOfStream();
+  ASSERT_EQ(PIPELINE_OK, pipeline_status_);
+
+  Play();
+
+  ASSERT_TRUE(WaitUntilOnEnded());
+  source.Shutdown();
+  Stop();
+}
+
 TEST_F(PipelineIntegrationTest, MSE_Mpeg2ts_MP3Audio_Mp4a_6B) {
   TestMediaSource source("bear-audio-mp4a.6B.ts",
                          "video/mp2t; codecs=\"mp4a.6B\"", kAppendWholeFile);
@@ -2550,6 +2561,8 @@ TEST_F(PipelineIntegrationTest,
   source.Shutdown();
   Stop();
 }
+
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 
 // Older packagers saved sample encryption auxiliary information in the
 // beginning of mdat box.
@@ -2622,23 +2635,6 @@ TEST_F(PipelineIntegrationTest,
   Stop();
 }
 
-TEST_F(PipelineIntegrationTest,
-       MSE_EncryptedPlayback_MP4_CENC_KeyRotation_Audio) {
-  TestMediaSource source("bear-1280x720-a_frag-cenc-key_rotation.mp4",
-                         kAppendWholeFile);
-  FakeEncryptedMedia encrypted_media(new RotatingKeyProvidingApp());
-  EXPECT_EQ(PIPELINE_OK,
-            StartPipelineWithEncryptedMedia(&source, &encrypted_media));
-
-  source.EndOfStream();
-
-  Play();
-
-  ASSERT_TRUE(WaitUntilOnEnded());
-  source.Shutdown();
-  Stop();
-}
-
 TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_VideoOnly_MP4_AVC3) {
   TestMediaSource source("bear-1280x720-v_frag-avc3.mp4", kAppendWholeFile);
   EXPECT_EQ(PIPELINE_OK, StartPipelineWithMediaSource(&source));
@@ -2648,6 +2644,24 @@ TEST_F(PipelineIntegrationTest, MSE_BasicPlayback_VideoOnly_MP4_AVC3) {
   EXPECT_EQ(0, pipeline_->GetBufferedTimeRanges().start(0).InMilliseconds());
   EXPECT_EQ(k1280IsoAVC3FileDurationMs,
             pipeline_->GetBufferedTimeRanges().end(0).InMilliseconds());
+
+  Play();
+
+  ASSERT_TRUE(WaitUntilOnEnded());
+  source.Shutdown();
+  Stop();
+}
+#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+
+TEST_F(PipelineIntegrationTest,
+       MSE_EncryptedPlayback_MP4_CENC_KeyRotation_Audio) {
+  TestMediaSource source("bear-1280x720-a_frag-cenc-key_rotation.mp4",
+                         kAppendWholeFile);
+  FakeEncryptedMedia encrypted_media(new RotatingKeyProvidingApp());
+  EXPECT_EQ(PIPELINE_OK,
+            StartPipelineWithEncryptedMedia(&source, &encrypted_media));
+
+  source.EndOfStream();
 
   Play();
 
@@ -2792,45 +2806,6 @@ TEST_F(PipelineIntegrationTest, SuspendWhilePlaying) {
   ASSERT_TRUE(WaitUntilOnEnded());
 }
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-TEST_F(PipelineIntegrationTest, Rotated_Metadata_0) {
-  ASSERT_EQ(PIPELINE_OK, Start("bear_rotate_0.mp4"));
-  ASSERT_EQ(VIDEO_ROTATION_0,
-            metadata_.video_decoder_config.video_transformation().rotation);
-}
-
-TEST_F(PipelineIntegrationTest, Rotated_Metadata_90) {
-  ASSERT_EQ(PIPELINE_OK, Start("bear_rotate_90.mp4"));
-  ASSERT_EQ(VIDEO_ROTATION_90,
-            metadata_.video_decoder_config.video_transformation().rotation);
-}
-
-TEST_F(PipelineIntegrationTest, Rotated_Metadata_180) {
-  ASSERT_EQ(PIPELINE_OK, Start("bear_rotate_180.mp4"));
-  ASSERT_EQ(VIDEO_ROTATION_180,
-            metadata_.video_decoder_config.video_transformation().rotation);
-}
-
-TEST_F(PipelineIntegrationTest, Rotated_Metadata_270) {
-  ASSERT_EQ(PIPELINE_OK, Start("bear_rotate_270.mp4"));
-  ASSERT_EQ(VIDEO_ROTATION_270,
-            metadata_.video_decoder_config.video_transformation().rotation);
-}
-
-TEST_F(PipelineIntegrationTest, Spherical) {
-  ASSERT_EQ(PIPELINE_OK, Start("spherical.mp4", kHashed));
-  Play();
-  ASSERT_TRUE(WaitUntilOnEnded());
-  EXPECT_HASH_EQ("1cb7f980020d99ea852e22dd6bd8d9de", GetVideoHash());
-}
-
-TEST_F(PipelineIntegrationTest, StereoAACMarkedAsMono) {
-  ASSERT_EQ(PIPELINE_OK, Start("mono_cpe.adts"));
-  Play();
-  ASSERT_TRUE(WaitUntilOnEnded());
-}
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-
 // Verify audio decoder & renderer can handle aborted demuxer reads.
 TEST_F(PipelineIntegrationTest, MSE_ChunkDemuxerAbortRead_AudioOnly) {
   ASSERT_TRUE(TestSeekDuringRead("bear-320x240-audio-only.webm", 16384,
@@ -2944,17 +2919,6 @@ TEST_F(PipelineIntegrationTest, BT709_VP9_WebM) {
                         gfx::ColorSpace::CreateREC709());
 }
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-// Verify that full-range H264 video has the right color space.
-TEST_F(PipelineIntegrationTest, Fullrange_H264) {
-  ASSERT_EQ(PIPELINE_OK, Start("blackwhite_yuvj420p.mp4"));
-  Play();
-  ASSERT_TRUE(WaitUntilOnEnded());
-  EXPECT_COLOR_SPACE_EQ(last_video_frame_color_space_,
-                        gfx::ColorSpace::CreateJpeg());
-}
-#endif
-
 TEST_F(PipelineIntegrationTest, HD_VP9_WebM) {
   ASSERT_EQ(PIPELINE_OK, Start("bear-1280x720.webm"));
   Play();
@@ -3009,6 +2973,15 @@ TEST_F(PipelineIntegrationTest, TrailingGarbage) {
   ASSERT_TRUE(WaitUntilOnEnded());
 }
 
+TEST_F(PipelineIntegrationTest, BasicPlaybackPositiveStartTime) {
+  ASSERT_EQ(PIPELINE_OK, Start("nonzero-start-time.webm"));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  ASSERT_EQ(base::Microseconds(396000), demuxer_->GetStartTime());
+}
+
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
+
 // Ensures audio-video playback with missing or negative timestamps fails
 // instead of crashing.  See http://crbug.com/396864.
 TEST_F(PipelineIntegrationTest, BasicPlaybackChainedOggVideo) {
@@ -3036,11 +3009,55 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackAudioShorterThanVideo) {
   ASSERT_TRUE(WaitUntilOnEnded());
 }
 
-TEST_F(PipelineIntegrationTest, BasicPlaybackPositiveStartTime) {
-  ASSERT_EQ(PIPELINE_OK, Start("nonzero-start-time.webm"));
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+TEST_F(PipelineIntegrationTest, Rotated_Metadata_0) {
+  ASSERT_EQ(PIPELINE_OK, Start("bear_rotate_0.mp4"));
+  ASSERT_EQ(VIDEO_ROTATION_0,
+            metadata_.video_decoder_config.video_transformation().rotation);
+}
+
+TEST_F(PipelineIntegrationTest, Rotated_Metadata_90) {
+  ASSERT_EQ(PIPELINE_OK, Start("bear_rotate_90.mp4"));
+  ASSERT_EQ(VIDEO_ROTATION_90,
+            metadata_.video_decoder_config.video_transformation().rotation);
+}
+
+TEST_F(PipelineIntegrationTest, Rotated_Metadata_180) {
+  ASSERT_EQ(PIPELINE_OK, Start("bear_rotate_180.mp4"));
+  ASSERT_EQ(VIDEO_ROTATION_180,
+            metadata_.video_decoder_config.video_transformation().rotation);
+}
+
+TEST_F(PipelineIntegrationTest, Rotated_Metadata_270) {
+  ASSERT_EQ(PIPELINE_OK, Start("bear_rotate_270.mp4"));
+  ASSERT_EQ(VIDEO_ROTATION_270,
+            metadata_.video_decoder_config.video_transformation().rotation);
+}
+
+TEST_F(PipelineIntegrationTest, Spherical) {
+  ASSERT_EQ(PIPELINE_OK, Start("spherical.mp4", kHashed));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());
-  ASSERT_EQ(base::Microseconds(396000), demuxer_->GetStartTime());
+  EXPECT_HASH_EQ("1cb7f980020d99ea852e22dd6bd8d9de", GetVideoHash());
 }
+
+TEST_F(PipelineIntegrationTest, BasicPlaybackHi10P) {
+  ASSERT_EQ(PIPELINE_OK, Start("bear-320x180-hi10p.mp4"));
+
+  Play();
+
+  ASSERT_TRUE(WaitUntilOnEnded());
+}
+
+// Verify that full-range H264 video has the right color space.
+TEST_F(PipelineIntegrationTest, Fullrange_H264) {
+  ASSERT_EQ(PIPELINE_OK, Start("blackwhite_yuvj420p.mp4"));
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  EXPECT_COLOR_SPACE_EQ(last_video_frame_color_space_,
+                        gfx::ColorSpace::CreateJpeg());
+}
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+#endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 
 }  // namespace media
