@@ -583,11 +583,6 @@ void LayoutBlock::RemovePositionedObject(LayoutBox* o) {
   }
 }
 
-bool LayoutBlock::IsAnonymousNGFieldsetContentWrapper() const {
-  NOT_DESTROYED();
-  return Parent() && Parent()->IsFieldset() && IsAnonymous();
-}
-
 void LayoutBlock::InvalidatePaint(
     const PaintInvalidatorContext& context) const {
   NOT_DESTROYED();
@@ -812,12 +807,6 @@ PositionWithAffinity LayoutBlock::PositionForPoint(
   }
 
   return LayoutBox::PositionForPoint(point);
-}
-
-void LayoutBlock::OffsetForContents(PhysicalOffset& offset) const {
-  NOT_DESTROYED();
-  if (IsScrollContainer())
-    offset += PhysicalOffset(PixelSnappedScrolledContentOffset());
 }
 
 MinMaxSizes LayoutBlock::ComputeIntrinsicLogicalWidths() const {
@@ -1089,15 +1078,6 @@ bool LayoutBlock::HasLineIfEmpty() const {
   return FirstLineStyleRef().HasLineIfEmpty();
 }
 
-LayoutUnit LayoutBlock::EmptyLineBaseline(
-    LineDirectionMode line_direction) const {
-  NOT_DESTROYED();
-  if (!HasLineIfEmpty())
-    return LayoutUnit(-1);
-  const auto baseline_offset = BaselineForEmptyLine(line_direction);
-  return baseline_offset ? *baseline_offset : LayoutUnit(-1);
-}
-
 absl::optional<LayoutUnit> LayoutBlock::BaselineForEmptyLine(
     LineDirectionMode line_direction) const {
   NOT_DESTROYED();
@@ -1129,20 +1109,6 @@ LayoutUnit LayoutBlock::LineHeight(bool first_line,
   const ComputedStyle& style = StyleRef(
       first_line && GetDocument().GetStyleEngine().UsesFirstLineRules());
   return LayoutUnit(style.ComputedLineHeight());
-}
-
-LayoutUnit LayoutBlock::MinLineHeightForReplacedObject(
-    bool is_first_line,
-    LayoutUnit replaced_height) const {
-  NOT_DESTROYED();
-  if (!GetDocument().InNoQuirksMode() && replaced_height)
-    return replaced_height;
-
-  return std::max<LayoutUnit>(
-      replaced_height,
-      LineHeight(is_first_line,
-                 IsHorizontalWritingMode() ? kHorizontalLine : kVerticalLine,
-                 kPositionOfInteriorLineBoxes));
 }
 
 bool LayoutBlock::UseLogicalBottomMarginEdgeForInlineBlockBaseline() const {

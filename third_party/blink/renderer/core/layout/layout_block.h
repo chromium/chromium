@@ -142,9 +142,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   bool UseLogicalBottomMarginEdgeForInlineBlockBaseline() const;
 
-  LayoutUnit MinLineHeightForReplacedObject(bool is_first_line,
-                                            LayoutUnit replaced_height) const;
-
   const char* GetName() const override;
 
  protected:
@@ -182,12 +179,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   void AddSvgTextDescendant(LayoutBox& svg_text);
   void RemoveSvgTextDescendant(LayoutBox& svg_text);
-
-  // Return true if this is the anonymous child wrapper of an NG fieldset
-  // container. Such a wrapper holds all the fieldset contents. Only the
-  // rendered legend is laid out on the outside, although the layout object
-  // itself for the legend is still a child of this object.
-  bool IsAnonymousNGFieldsetContentWrapper() const;
 
   LayoutUnit TextIndentOffset() const;
 
@@ -269,13 +260,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
       LineDirectionMode line_direction) const;
 
  protected:
-  virtual void AdjustInlineDirectionLineBounds(
-      unsigned /* expansion_opportunity_count */,
-      LayoutUnit& /* logical_left */,
-      LayoutUnit& /* logical_width */) const {
-    NOT_DESTROYED();
-  }
-
   MinMaxSizes ComputeIntrinsicLogicalWidths() const override;
   void ComputeChildPreferredLogicalWidths(
       LayoutObject& child,
@@ -327,11 +311,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
     return phase == HitTestPhase::kSelfBlockBackground;
   }
 
-  // Returns baseline offset of this block if is empty editable or having
-  // CSS property "--internal-empty-line-height"fabricated", otherwise
-  // returns |LayoutUnit(-1)|.
-  LayoutUnit EmptyLineBaseline(LineDirectionMode line_direction) const;
-
  private:
   LayoutObjectChildList* VirtualChildren() final {
     NOT_DESTROYED();
@@ -370,10 +349,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void RemoveFromGlobalMaps();
 
  protected:
-  // Adjust from painting offsets to the local coords of this layoutObject
-  void OffsetForContents(LayoutPoint&) const;
-  void OffsetForContents(PhysicalOffset&) const;
-
   PositionWithAffinity PositionForPointIfOutsideAtomicInlineLevel(
       const PhysicalOffset&) const;
 
