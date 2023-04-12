@@ -31,7 +31,7 @@ class PaymentRequestUpdateWithTest : public PaymentRequestBrowserTestBase {
     ASSERT_TRUE(content::ExecuteScript(
         web_contents, function_name + "('" + payment_method_name + "');"));
 
-    WaitForObservedEvent();
+    ASSERT_TRUE(WaitForObservedEvent());
   }
 };
 

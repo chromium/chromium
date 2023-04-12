@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestJourneyLoggerNoSupportedPaymentMethodTest,
   const std::string click_buy_button_js =
       "(function() { document.getElementById('buy').click(); })();";
   ASSERT_TRUE(content::ExecuteScript(web_contents, click_buy_button_js));
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   histogram_tester.ExpectBucketCount(
       "PaymentRequest.CheckoutFunnel.NoShow",
@@ -762,7 +762,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestNotShownTest, OnlyNotShownMetricsLogged) {
                          ", {supportedMethods:$2}]);",
                          a_method_name, b_method_name)));
 
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   // Navigate away to abort the Payment Request and trigger the logs.
   NavigateTo("/payment_request_email_test.html");
@@ -897,7 +897,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, CrossOriginIframe) {
       content::JsReplace("triggerPaymentRequestWithMethods([{supportedMethods:$"
                          "1}, {supportedMethods:$2}])",
                          a_method, b_method)));
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   // Simulate that the user cancels the PR.
   ClickOnCancel();

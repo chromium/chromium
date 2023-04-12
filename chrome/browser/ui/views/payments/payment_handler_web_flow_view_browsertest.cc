@@ -34,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewTest,
       content::EvalJs(
           GetActiveWebContents(),
           content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   // We always push the initial browser sheet to the stack, even if it isn't
   // shown. Since it also defines a CONTENT_VIEW, we have to explicitly test the

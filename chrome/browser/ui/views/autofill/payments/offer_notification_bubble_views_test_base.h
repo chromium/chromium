@@ -124,7 +124,9 @@ class OfferNotificationBubbleViewsTestBase
 
   AutofillOfferManager* GetOfferManager();
 
-  void WaitForObservedEvent() { event_waiter_->Wait(); }
+  [[nodiscard]] testing::AssertionResult WaitForObservedEvent() {
+    return event_waiter_->Wait();
+  }
 
   PersonalDataManager* personal_data() { return personal_data_; }
 

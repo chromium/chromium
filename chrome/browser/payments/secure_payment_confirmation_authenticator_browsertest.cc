@@ -211,13 +211,13 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorCreateTest,
   event_waiter_ =
       std::make_unique<autofill::EventWaiter<Event>>(expected_events_);
   ExecuteScriptAsync(GetActiveWebContents(), "createPaymentCredential()");
-  event_waiter_->Wait();
+  ASSERT_TRUE(event_waiter_->Wait());
 
   // Expect no crash when the web contents is destroyed during enrollment while
   // the OS enrollment prompt is showing.
   ObserveWebContentsDestroyed();
   GetActiveWebContents()->Close();
-  event_waiter_->Wait();
+  ASSERT_TRUE(event_waiter_->Wait());
 }
 
 class SecurePaymentConfirmationAuthenticatorCreateDisableDebugTest

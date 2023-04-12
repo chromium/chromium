@@ -9,6 +9,7 @@
 #include <memory>
 #include <ostream>
 
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -68,8 +69,9 @@ class BrowserAutofillManagerTestDelegateImpl
   void OnTextFieldChanged() override;
 
   void SetExpectations(std::list<ObservedUiEvents> expected_events,
-                       base::TimeDelta timeout = base::Seconds(0));
-  bool Wait();
+                       base::TimeDelta timeout = base::Seconds(0),
+                       base::Location location = FROM_HERE);
+  [[nodiscard]] testing::AssertionResult Wait();
 
  private:
   void FireEvent(ObservedUiEvents event);
@@ -94,28 +96,36 @@ class AutofillUiTest : public InProcessBrowserTest,
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
-  bool SendKeyToPageAndWait(ui::DomKey key,
-                            std::list<ObservedUiEvents> expected_events,
-                            base::TimeDelta timeout = {});
-  bool SendKeyToPageAndWait(ui::DomKey key,
-                            ui::DomCode code,
-                            ui::KeyboardCode key_code,
-                            std::list<ObservedUiEvents> expected_events,
-                            base::TimeDelta timeout = {});
+  [[nodiscard]] testing::AssertionResult SendKeyToPageAndWait(
+      ui::DomKey key,
+      std::list<ObservedUiEvents> expected_events,
+      base::TimeDelta timeout = {},
+      base::Location location = FROM_HERE);
+  [[nodiscard]] testing::AssertionResult SendKeyToPageAndWait(
+      ui::DomKey key,
+      ui::DomCode code,
+      ui::KeyboardCode key_code,
+      std::list<ObservedUiEvents> expected_events,
+      base::TimeDelta timeout = {},
+      base::Location location = FROM_HERE);
 
   void SendKeyToPopup(content::RenderFrameHost* render_frame_host,
                       const ui::DomKey key);
   // Send key to the render host view's widget if |widget| is null.
-  bool SendKeyToPopupAndWait(ui::DomKey key,
-                             std::list<ObservedUiEvents> expected_events,
-                             content::RenderWidgetHost* widget = nullptr,
-                             base::TimeDelta timeout = {});
-  bool SendKeyToPopupAndWait(ui::DomKey key,
-                             ui::DomCode code,
-                             ui::KeyboardCode key_code,
-                             std::list<ObservedUiEvents> expected_events,
-                             content::RenderWidgetHost* widget,
-                             base::TimeDelta timeout = {});
+  [[nodiscard]] testing::AssertionResult SendKeyToPopupAndWait(
+      ui::DomKey key,
+      std::list<ObservedUiEvents> expected_events,
+      content::RenderWidgetHost* widget = nullptr,
+      base::TimeDelta timeout = {},
+      base::Location location = FROM_HERE);
+  [[nodiscard]] testing::AssertionResult SendKeyToPopupAndWait(
+      ui::DomKey key,
+      ui::DomCode code,
+      ui::KeyboardCode key_code,
+      std::list<ObservedUiEvents> expected_events,
+      content::RenderWidgetHost* widget,
+      base::TimeDelta timeout = {},
+      base::Location location = FROM_HERE);
 
   void SendKeyToDataListPopup(ui::DomKey key);
   void SendKeyToDataListPopup(ui::DomKey key,
@@ -127,7 +137,8 @@ class AutofillUiTest : public InProcessBrowserTest,
   // DoNothingAndWait() violates an assertion if during the time an event
   // happens. Delayed events during DoNothingAndWait() may therefore cause
   // flakiness. DoNothingAndWaitAndIgnoreEvents() ignores any events.
-  void DoNothingAndWait(base::TimeDelta timeout);
+  void DoNothingAndWait(base::TimeDelta timeout,
+                        base::Location location = FROM_HERE);
   void DoNothingAndWaitAndIgnoreEvents(base::TimeDelta timeout);
 
   content::WebContents* GetWebContents();

@@ -79,7 +79,7 @@ class OfferNotificationBubbleViewsInteractiveUiTest
          GURL("https://www.merchantsite2.com/")});
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
     NavigateTo("https://www.merchantsite1.com/first");
-    WaitForObservedEvent();
+    ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(IsIconVisible());
     EXPECT_TRUE(GetOfferNotificationBubbleViews());
   }
@@ -92,7 +92,7 @@ class OfferNotificationBubbleViewsInteractiveUiTest
          GURL("https://www.merchantsite2.com/")});
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
     NavigateTo("https://www.merchantsite1.com/first");
-    WaitForObservedEvent();
+    ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(IsIconVisible());
     EXPECT_TRUE(GetOfferNotificationBubbleViews());
   }
@@ -105,7 +105,7 @@ class OfferNotificationBubbleViewsInteractiveUiTest
          GURL("https://www.merchantsite2.com/")});
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
     NavigateTo("https://www.merchantsite1.com/first");
-    WaitForObservedEvent();
+    ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(IsIconVisible());
     EXPECT_TRUE(GetOfferNotificationBubbleViews());
   }
@@ -125,7 +125,7 @@ class OfferNotificationBubbleViewsInteractiveUiTest
     EXPECT_TRUE(icon);
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
     chrome::ExecuteCommand(browser(), IDC_OFFERS_AND_REWARDS_FOR_PAGE);
-    WaitForObservedEvent();
+    ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(IsIconVisible());
     EXPECT_TRUE(GetOfferNotificationBubbleViews());
   }
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
 
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
     NavigateTo("https://www.merchantsite1.com/first");
-    WaitForObservedEvent();
+    ASSERT_TRUE(WaitForObservedEvent());
 
     // Bubble should be visible.
     ASSERT_TRUE(IsIconVisible());
@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   // Change to the first background tab.
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
   browser()->tab_strip_model()->ActivateTabAt(1);
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
   // Icon should always be visible, and the bubble should be visible too.
   EXPECT_TRUE(IsIconVisible());
   ASSERT_TRUE(GetOfferNotificationBubbleViews());

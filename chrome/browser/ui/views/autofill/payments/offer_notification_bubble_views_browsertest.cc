@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
 
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
   NavigateToAndWaitForForm("https://www.example.com/first/");
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   EXPECT_TRUE(IsIconVisible());
   EXPECT_TRUE(GetOfferNotificationBubbleViews());
@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
 
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
   NavigateToAndWaitForForm("https://www.example.com/first/");
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   EXPECT_TRUE(IsIconVisible());
   EXPECT_TRUE(GetOfferNotificationBubbleViews());
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsBrowserTest,
 
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
   NavigateToAndWaitForForm("https://www.example.com/first/");
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   EXPECT_TRUE(IsIconVisible());
   EXPECT_TRUE(GetOfferNotificationBubbleViews());

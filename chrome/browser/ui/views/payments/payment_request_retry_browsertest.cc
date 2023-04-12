@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestRetryTest,
                                      "    phone: 'PHONE ERROR'"
                                      "  }"
                                      "});"));
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
   EXPECT_EQ(1U, request->state()->available_apps().size());
 }
 

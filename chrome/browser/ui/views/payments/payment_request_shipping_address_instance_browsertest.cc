@@ -35,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressInstanceTest,
   ResetEventWaiterForSequence(
       {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   // Verify that the shippingAddress instance in the request and response were
   // the same object instance.

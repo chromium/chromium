@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/location.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
@@ -142,10 +143,8 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
   };
 
   bool IsRelevant(Event event) const;
-  void Increment(Event event,
-                 base::Location location = base::Location::Current());
-  void Decrement(Event event,
-                 base::Location location = base::Location::Current());
+  void Increment(Event event, base::Location location = FROM_HERE);
+  void Decrement(Event event, base::Location location = FROM_HERE);
 
   void OnAutofillManagerDestroyed(AutofillManager& manager) override;
   void OnAutofillManagerReset(AutofillManager& manager) override;

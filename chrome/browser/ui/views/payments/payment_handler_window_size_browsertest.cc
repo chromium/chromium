@@ -70,7 +70,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerWindowSizeTest, ValidateDialogSize) {
           "paymentRequestWithOptions({requestShipping: true}, $1)",
           payment_method),
       /*options=*/content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
   EXPECT_EQ(expected_payment_request_dialog_size_, DialogViewSize());
 
   gfx::Size expected_payment_handler_dialog_size;

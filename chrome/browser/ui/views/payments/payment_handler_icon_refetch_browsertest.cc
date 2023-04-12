@@ -69,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerIconRefetchTest, RefetchMissingIcon) {
       GetActiveWebContents(),
       "testPaymentMethods([{supportedMethods: 'https://kylepay.test/webpay'}], "
       "/* requestShippingContact= */ true);");
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   // App with missing icon is not preselectable.
   EXPECT_FALSE(IsPayButtonEnabled());
@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerIconRefetchTest, RefetchMissingIcon) {
       GetActiveWebContents(),
       "testPaymentMethods([{supportedMethods: 'https://kylepay.test/webpay'}], "
       "/* requestShippingContact= */ true);"));
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
   ExpectBodyContains({"kylepay.test/webpay"});
 
   // Navigate to the first merchant again and confirm that skip the sheet flow
@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerIconRefetchTest, RefetchMissingIcon) {
       GetActiveWebContents(),
       "testPaymentMethods([{supportedMethods: 'https://kylepay.test/webpay'}], "
       "/* requestShippingContact= */ true);"));
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
   ExpectBodyContains({"kylepay.test/webpay"});
 }
 }  // namespace payments

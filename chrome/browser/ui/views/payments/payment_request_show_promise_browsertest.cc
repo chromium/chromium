@@ -44,7 +44,7 @@ class PaymentRequestShowPromiseTest : public PaymentRequestBrowserTestBase {
     ASSERT_TRUE(
         content::ExecuteScript(GetActiveWebContents(),
                                content::JsReplace("buy($1)", payment_method_)));
-    WaitForObservedEvent();
+    ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(web_modal::WebContentsModalDialogManager::FromWebContents(
                     GetActiveWebContents())
                     ->IsDialogActive());
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShowPromiseTest, SkipUI) {
        DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::DIALOG_OPENED,
        DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
   ASSERT_TRUE(content::ExecuteScript(GetActiveWebContents(), "buy();"));
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   ExpectBodyContains({R"({"currency":"USD","value":"1.00"})"});
 }

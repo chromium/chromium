@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest,
       content::EvalJs(
           GetActiveWebContents(),
           content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   // We always push the initial browser sheet to the stack, even if it isn't
   // shown. Since it also defines a SHEET_TITLE, we have to explicitly test the
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, HeaderWithoutIcon) {
       content::EvalJs(
           GetActiveWebContents(),
           content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   // Select the installed payment app.
   OpenPaymentMethodScreen();
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, CloseButtonPressed) {
               "launchWithoutWaitForResponseWithMethods([{supportedMethods:$1}"
               ", {supportedMethods:$2}])",
               a_method_name, b_method_name)));
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   // Select the installed payment app.
   OpenPaymentMethodScreen();
@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest,
       content::EvalJs(
           GetActiveWebContents(),
           content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   ViewStack* view_stack = dialog_view()->view_stack_for_testing();
   int header_height_with_title =
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest,
                 content::JsReplace("launchWithoutWaitForResponse($1, "
                                    "'payment_handler_window_no_title.html')",
                                    method_name)));
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   // Expect the dialog and header height with a title to be the same as before.
   view_stack = dialog_view()->view_stack_for_testing();
@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerHeaderViewUITest, LargeIcon) {
       content::EvalJs(
           GetActiveWebContents(),
           content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
-  WaitForObservedEvent();
+  ASSERT_TRUE(WaitForObservedEvent());
 
   // We always push the initial browser sheet to the stack, even if it isn't
   // shown. Since it also defines a SHEET_TITLE, we have to explicitly test the
