@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_gesture_recognizer.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_view.h"
-#import "ios/chrome/browser/ui/page_info/page_info_constants.h"
 #import "ios/chrome/browser/ui/side_swipe/side_swipe_controller.h"
 #import "ios/chrome/browser/ui/voice/voice_search_notification_names.h"
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
@@ -304,7 +303,6 @@ NSString* const kOverscrollActionsDidEnd = @"OverscrollActionsDidStop";
     _lockNotificationsCounterparts = @{
       UIKeyboardWillHideNotification : UIKeyboardWillShowNotification,
       kVoiceSearchWillHideNotification : kVoiceSearchWillShowNotification,
-      kPageInfoWillHideNotification : kPageInfoWillShowNotification,
       kSideSwipeDidStopNotification : kSideSwipeWillStartNotification
 
     };
