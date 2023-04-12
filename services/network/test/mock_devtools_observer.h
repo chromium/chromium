@@ -17,6 +17,7 @@
 #include "services/network/public/mojom/http_raw_headers.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -179,7 +180,7 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
     absl::optional<::url::Origin> initiator_origin;
     mojom::ClientSecurityStatePtr client_security_state;
     GURL url;
-    network::CorsErrorStatus status;
+    absl::optional<network::CorsErrorStatus> status;
     bool is_warning = false;
   };
 

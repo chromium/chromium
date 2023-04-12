@@ -13,7 +13,7 @@
 
 namespace network {
 
-CorsErrorStatus::CorsErrorStatus() = default;
+CorsErrorStatus::CorsErrorStatus(mojo::DefaultConstruct::Tag) {}
 
 CorsErrorStatus::CorsErrorStatus(const CorsErrorStatus&) = default;
 CorsErrorStatus& CorsErrorStatus::operator=(const CorsErrorStatus&) = default;

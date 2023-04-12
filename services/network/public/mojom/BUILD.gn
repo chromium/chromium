@@ -664,6 +664,7 @@ mojom("url_loader_base") {
         {
           mojom = "network.mojom.CorsErrorStatus"
           cpp = "::network::CorsErrorStatus"
+          default_constructible = false
         },
       ]
       traits_headers =

@@ -579,8 +579,9 @@ TEST_F(UrlLoaderTest, DidFailWithErrorNetworkAccessDenied) {
 }
 
 TEST_F(UrlLoaderTest, DidFailWithWebSecurityViolationError) {
-  blink::WebURLError error(network::CorsErrorStatus(),
-                           blink::WebURLError::HasCopyInCache::kFalse, GURL());
+  blink::WebURLError error(
+      network::CorsErrorStatus(network::mojom::CorsError::kDisallowedByMode),
+      blink::WebURLError::HasCopyInCache::kFalse, GURL());
   ASSERT_TRUE(error.is_web_security_violation());
 
   int32_t result = DidFailWithError(error);
