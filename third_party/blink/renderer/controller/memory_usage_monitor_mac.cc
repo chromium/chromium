@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/controller/memory_usage_monitor_mac.h"
 
 #include <mach/mach.h>
-#include <mach/mach_vm.h>
 
 #include "base/mac/mac_util.h"
 #include "third_party/blink/public/platform/platform.h"
