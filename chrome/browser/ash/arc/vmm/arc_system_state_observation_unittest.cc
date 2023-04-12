@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 
 #include "chrome/browser/ash/arc/idle_manager/arc_background_service_observer.h"
+#include "chrome/browser/ash/arc/idle_manager/arc_window_observer.h"
 #include "chrome/browser/ash/arc/instance_throttle/arc_active_window_throttle_observer.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -33,6 +34,8 @@ class ArcSystemStateObservationTest : public testing::Test {
         observation_->GetObserverByName(kArcActiveWindowThrottleObserverName);
     background_service_observer_ =
         observation_->GetObserverByName(kArcBackgroundServiceObserverName);
+    arc_window_observer_ =
+        observation_->GetObserverByName(kArcWindowObserverName);
   }
 
   void TearDown() override { testing_profile_.reset(); }
@@ -46,6 +49,7 @@ class ArcSystemStateObservationTest : public testing::Test {
 
   ash::ThrottleObserver* active_window_observer_;
   ash::ThrottleObserver* background_service_observer_;
+  ash::ThrottleObserver* arc_window_observer_;
 };
 
 TEST_F(ArcSystemStateObservationTest, TestConstructDestruct) {}
