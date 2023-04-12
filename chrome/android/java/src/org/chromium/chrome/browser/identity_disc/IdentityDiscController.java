@@ -187,8 +187,11 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         }
 
         String contentDescription = getContentDescription(email);
+        // We don't want to tint the user's profile picture. Tinting should only be supported for
+        // the signed-out avatar.
+        boolean supportTinting = email == null;
         return new ButtonSpec(drawable, buttonSpec.getOnClickListener(),
-                /*onLongClickListener=*/null, contentDescription, buttonSpec.getSupportsTinting(),
+                /*onLongClickListener=*/null, contentDescription, supportTinting,
                 buttonSpec.getIPHCommandBuilder(), AdaptiveToolbarButtonVariant.UNKNOWN,
                 buttonSpec.getActionChipLabelResId());
     }
