@@ -279,6 +279,7 @@ test("display_unittests") {
       "manager/display_configurator_unittest.cc",
       "manager/display_manager_util_unittest.cc",
       "manager/display_manager_utilities_unittest.cc",
+      "manager/display_properties_parser_unittest.cc",
       "manager/json_converter_unittest.cc",
       "manager/managed_display_info_unittest.cc",
       "manager/query_content_protection_task_unittest.cc",

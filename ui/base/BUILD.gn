@@ -1013,6 +1013,7 @@ test("ui_base_unittests") {
     "scoped_visibility_tracker_unittest.cc",
     "template_expressions_unittest.cc",
     "test/page_transition_types_unittest.cc",
+    "test/run_all_unittests.cc",
     "webui/i18n_source_stream_unittest.cc",
   ]
   if (is_mac) {
@@ -1041,7 +1042,6 @@ test("ui_base_unittests") {
   data = []
   data_deps = [ "//testing/buildbot/filters:ui_base_unittests_filters" ]
   deps = [
-    ":run_all_unittests",
     ":ui_base_test_resources_grit",
     ":ui_base_unittests_bundle_data",
     "//base",

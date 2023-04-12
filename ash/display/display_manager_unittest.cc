@@ -3753,47 +3753,6 @@ TEST_F(DisplayManagerTest, DisconnectedInternalDisplayShouldUpdateDisplayInfo) {
   EXPECT_EQ(1.6f, display_info.display_modes()[0].device_scale_factor());
 }
 
-// TODO(crbug/1262970): Delete when we can read radius from command line.
-TEST_F(DisplayManagerTest, SettingDefaultRoundedCornersOnInternalDisplay) {
-  scoped_feature_list().InitAndEnableFeature(
-      display::features::kRoundedDisplay);
-
-  Shell* shell = Shell::Get();
-  display::DisplayChangeObserver observer(shell->display_manager());
-
-  const std::unique_ptr<display::DisplaySnapshot> internal_snapshot =
-      display::FakeDisplaySnapshot::Builder()
-          .SetId(123)
-          .SetName("AmazingFakeRoundedDisplay")
-          .SetNativeMode(MakeDisplayMode())
-          .SetType(
-              display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_INTERNAL)
-          .Build();
-
-  internal_snapshot->set_current_mode(internal_snapshot->native_mode());
-
-  display::DisplayConfigurator::DisplayStateList outputs;
-  outputs.push_back(internal_snapshot.get());
-
-  // Update the display manager through DisplayChangeObserver.
-  observer.OnDisplayModeChanged(outputs);
-
-  display::Display primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
-
-  WindowTreeHostManager* window_manager =
-      Shell::Get()->window_tree_host_manager();
-
-  auto* primary_display_provider =
-      window_manager->GetRoundedDisplayProvider(primary_display.id());
-
-  ash::RoundedDisplayProviderTestApi primary_display_provider_test(
-      primary_display_provider);
-
-  EXPECT_EQ(gfx::RoundedCornersF(16.0),
-            primary_display_provider_test.GetCurrentPanelRadii());
-}
-
 TEST_F(DisplayManagerTest, UpdateInternalDisplayNativeBounds) {
   constexpr int64_t external_id = 123;
   const int64_t internal_id =

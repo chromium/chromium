@@ -56,6 +56,8 @@ component("manager") {
       "display_layout_store.h",
       "display_manager.cc",
       "display_manager.h",
+      "display_properties_parser.cc",
+      "display_properties_parser.h",
       "json_converter.cc",
       "json_converter.h",
       "query_content_protection_task.cc",

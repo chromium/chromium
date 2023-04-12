@@ -5,11 +5,16 @@
 #include "ui/display/manager/display_change_observer.h"
 
 #include <cmath>
+#include <memory>
 #include <set>
 #include <string>
 #include <tuple>
 
+#include "base/command_line.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/gtest_util.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/math_util.h"
@@ -29,6 +34,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/range/range_f.h"
 
@@ -57,7 +63,28 @@ std::unique_ptr<DisplayMode> MakeDisplayMode(int width,
 
 }  // namespace
 
-class DisplayChangeObserverTest : public testing::Test,
+class DisplayChangeObserverTestBase : public testing::Test {
+ public:
+  DisplayChangeObserverTestBase() = default;
+
+  DisplayChangeObserverTestBase(const DisplayChangeObserverTestBase&) = delete;
+  DisplayChangeObserverTestBase& operator=(
+      const DisplayChangeObserverTestBase&) = delete;
+
+  ~DisplayChangeObserverTestBase() override = default;
+
+  // Pass through method to be called by individual test cases.
+  ManagedDisplayInfo CreateManagedDisplayInfo(DisplayChangeObserver* observer,
+                                              const DisplaySnapshot* snapshot,
+                                              const DisplayMode* mode_info) {
+    return observer->CreateManagedDisplayInfoInternal(snapshot, mode_info);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class DisplayChangeObserverTest : public DisplayChangeObserverTestBase,
                                   public testing::WithParamInterface<bool> {
  public:
   DisplayChangeObserverTest() = default;
@@ -68,7 +95,7 @@ class DisplayChangeObserverTest : public testing::Test,
 
   ~DisplayChangeObserverTest() override = default;
 
-  // testing::Test:
+  // DisplayChangeObserverTestBase:
   void SetUp() override {
     if (GetParam()) {
       scoped_feature_list_.InitAndEnableFeature(features::kListAllDisplayModes);
@@ -77,19 +104,94 @@ class DisplayChangeObserverTest : public testing::Test,
           features::kListAllDisplayModes);
     }
 
-    Test::SetUp();
+    DisplayChangeObserverTestBase::SetUp();
   }
-
-  // Pass through method to be called by individual test cases.
-  ManagedDisplayInfo CreateManagedDisplayInfo(DisplayChangeObserver* observer,
-                                              const DisplaySnapshot* snapshot,
-                                              const DisplayMode* mode_info) {
-    return observer->CreateManagedDisplayInfoInternal(snapshot, mode_info);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+class DisplayChangeObserverPanelRadiiTest
+    : public DisplayChangeObserverTestBase {
+ public:
+  DisplayChangeObserverPanelRadiiTest() = default;
+
+  DisplayChangeObserverPanelRadiiTest(
+      const DisplayChangeObserverPanelRadiiTest&) = delete;
+  DisplayChangeObserverPanelRadiiTest& operator=(
+      const DisplayChangeObserverPanelRadiiTest&) = delete;
+
+  ~DisplayChangeObserverPanelRadiiTest() override = default;
+
+  // testing::Test:
+  void SetUp() override {
+    display_manager_ = std::make_unique<DisplayManager>(/*screen=*/nullptr);
+    default_display_mode_ = MakeDisplayMode(1920, 1080, true, 60);
+    scoped_feature_list_.InitAndEnableFeature(features::kRoundedDisplay);
+
+    ui::DeviceDataManager::CreateInstance();
+    DisplayChangeObserverTestBase::SetUp();
+  }
+
+  void InitializeDisplayChangeObserver() {
+    display_change_observer_ =
+        std::make_unique<DisplayChangeObserver>(display_manager_.get());
+  }
+
+ protected:
+  base::test::ScopedCommandLine command_line_;
+  std::unique_ptr<DisplayManager> display_manager_;
+  std::unique_ptr<DisplayChangeObserver> display_change_observer_;
+  std::unique_ptr<DisplayMode> default_display_mode_;
+};
+
+TEST_F(DisplayChangeObserverPanelRadiiTest, RadiiSpecifiedForInternalDisplay) {
+  command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kDisplayProperties,
+      "[{\"connector-type\": 14, \"rounded-corners\": {\"bottom-left\": 15, "
+      "\"bottom-right\": 15, \"top-left\": 16, \"top-right\": 16}}]");
+
+  InitializeDisplayChangeObserver();
+
+  // Radii specified for the connection protocol.
+  std::unique_ptr<DisplaySnapshot> display_snapshot =
+      FakeDisplaySnapshot::Builder()
+          .SetId(123)
+          .SetNativeMode(MakeDisplayMode(1920, 1080, true, 60))
+          .SetType(
+              display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_INTERNAL)
+          .Build();
+
+  const ManagedDisplayInfo display_info = CreateManagedDisplayInfo(
+      display_change_observer_.get(), display_snapshot.get(),
+      default_display_mode_.get());
+
+  EXPECT_EQ(display_info.rounded_corners_radii(),
+            gfx::RoundedCornersF(16, 16, 15, 15));
+}
+
+TEST_F(DisplayChangeObserverPanelRadiiTest, RadiiNotSetForExternalDisplays) {
+  // Specifies radii for connectors that are different from the connector of
+  // the display(snapshot) under test.
+  command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kDisplayProperties,
+      "[{\"connector-type\": 14, \"rounded-corners\": {\"bottom-left\": 15, "
+      "\"bottom-right\": 15, \"top-left\": 16, \"top-right\": 16}}]");
+
+  InitializeDisplayChangeObserver();
+
+  // Radii is not specified for the connection protocol
+  // `DisplayConnectionProtocol::k9PinDin` through command line.
+  std::unique_ptr<DisplaySnapshot> display_snapshot =
+      FakeDisplaySnapshot::Builder()
+          .SetId(123)
+          .SetNativeMode(MakeDisplayMode(1920, 1080, true, 60))
+          .SetType(display::DisplayConnectionType::DISPLAY_CONNECTION_TYPE_HDMI)
+          .Build();
+
+  const ManagedDisplayInfo display_info = CreateManagedDisplayInfo(
+      display_change_observer_.get(), display_snapshot.get(),
+      default_display_mode_.get());
+
+  EXPECT_TRUE(display_info.rounded_corners_radii().IsEmpty());
+}
 
 TEST_P(DisplayChangeObserverTest, GetExternalManagedDisplayModeList) {
   std::unique_ptr<DisplaySnapshot> display_snapshot =
