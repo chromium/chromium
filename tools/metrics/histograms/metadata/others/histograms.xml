@@ -11095,30 +11095,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ResourceScheduler.ActiveSchedulerClientsCount" units="clients"
-    expires_after="2021-09-01">
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    The number of active resource scheduler clients indicates the severity of
-    system contention. A client is active when it has at least one request
-    either in the pending request queue owned by the client or in flight. This
-    is emitted when a new resource scheduler client is created.
-  </summary>
-</histogram>
-
-<histogram
-    name="ResourceScheduler.BrowserInitiatedHeavyRequest.QueuingDuration"
-    units="ms" expires_after="M82">
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    The amount of time the ResourceScheduler queued a browser initiated request
-    that was expected to be heavy (i.e., has large request/response sizes).
-    Recorded when the request is dispatched by the resource scheduler to the
-    network stack. Recorded only when the traffic annotation tag of the request
-    is present in the set of annotation tags that can be throttled.
-  </summary>
-</histogram>
-
 <histogram
     name="ResourceScheduler.DelayableRequests.WaitTimeToAvoidContentionWithNonDelayableRequest"
     units="ms" expires_after="M85">
@@ -11131,21 +11107,6 @@ chromium-metrics-reviews@google.com.
     non-delayable resource request arrived. This is the duration of time that
     the delayable request should have been queued for so as to avoid any network
     contetion with later-arriving non-delayable requests.
-  </summary>
-</histogram>
-
-<histogram name="ResourceScheduler.NonDelayableLastEndToNonDelayableStart"
-    units="ms" expires_after="M85">
-  <obsolete>
-    Obsoleted M85.
-  </obsolete>
-  <owner>tbansal@chromium.org</owner>
-  <owner>dougarnett@chromium.org</owner>
-  <summary>
-    The duration of time between the end of a non-delayable resource request to
-    the start of the next non-delayable resource request. Recorded at the start
-    of all non-delayable requests that are preceeded by at least one completed
-    non-delayable request in the same resource scheduler client.
   </summary>
 </histogram>
 
@@ -11167,32 +11128,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="ResourceScheduler.NonDelayableLastStartOrEndToNonDelayableStart"
-    units="ms" expires_after="2021-09-01">
-  <owner>tbansal@chromium.org</owner>
-  <owner>dougarnett@chromium.org</owner>
-  <summary>
-    The duration of time between the start of a non-delayable resource request
-    or end of a non-delayable request (whichever happened later) to the start of
-    the next non-delayable resource request. Recorded at the start of all
-    non-delayable requests that are preceeded by at least one started
-    non-delayable request in the same resource scheduler client.
-  </summary>
-</histogram>
-
-<histogram name="ResourceScheduler.NonDelayableLastStartToNonDelayableStart"
-    units="ms" expires_after="2021-09-01">
-  <owner>tbansal@chromium.org</owner>
-  <owner>dougarnett@chromium.org</owner>
-  <summary>
-    The duration of time between the start of a non-delayable resource request
-    to the start of the next non-delayable resource request. Recorded at the
-    start of all non-delayable requests that are preceeded by at least one
-    started non-delayable request in the same resource scheduler client.
-  </summary>
-</histogram>
-
-<histogram
     name="ResourceScheduler.NonDelayableLastStartToNonDelayableStart.NonDelayableInFlight"
     units="ms" expires_after="2021-09-01">
   <owner>tbansal@chromium.org</owner>
@@ -11203,16 +11138,6 @@ chromium-metrics-reviews@google.com.
     start of all non-delayable requests that are preceeded by at least one
     started non-delayable request in the same resource scheduler client.
     Recorded only when a delayable request is in-flight.
-  </summary>
-</histogram>
-
-<histogram
-    name="ResourceScheduler.NumDelayableRequestsInFlightAtStart.NonDelayable"
-    units="requests" expires_after="2021-09-01">
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    Records the number of delayable requests in-flight when a non-delayable
-    request is started.
   </summary>
 </histogram>
 
