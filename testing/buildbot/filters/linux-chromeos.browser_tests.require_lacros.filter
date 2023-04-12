@@ -108,3 +108,15 @@ WebKioskAshRequiresLacrosTest*
 -ChromeVoxBackgroundTest.NavigationEscapesEdit
 -ChromeVoxBackgroundTest.NavigationIgnoresLabels
 -ChromeVoxEditingTest.NonbreakingSpaceNewLineOrSpace
+-ChromeVoxEditingTest.MoveByWordSuggestions
+-ChromeVoxTutorialTest.ResourcesTest
+-ChromeVoxBackgroundTest.EarconsForControls
+-ChromeVoxBackgroundTest.NavigationIgnoresDescriptions
+-ChromeVoxBackgroundTest.NavigationEscapesEdit
+-ChromeVoxBackgroundTest.NavigationIgnoresLabels
+-ChromeVoxEditingTest.NonbreakingSpaceNewLineOrSpace
+# TODO(crbug.com/1432222): Flaky
+-DictationE2ETest.SilencesSpokenFeedbackWhenStarting
+-DictationUIE2ETest.HintsTimeoutWithChromeVox
+# TODO(b/262789941): Flaky
+-MagnifierE2ETest.IgnoresRootNodeFocus
