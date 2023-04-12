@@ -193,9 +193,9 @@ IndexedDBFactory::~IndexedDBFactory() {
 }
 
 void IndexedDBFactory::GetDatabaseInfo(
-    scoped_refptr<IndexedDBCallbacks> callbacks,
     const storage::BucketLocator& bucket_locator,
-    const base::FilePath& data_directory) {
+    const base::FilePath& data_directory,
+    blink::mojom::IDBFactory::GetDatabaseInfoCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB", "IndexedDBFactory::GetDatabaseInfo");
   IndexedDBBucketStateHandle bucket_state_handle;
@@ -209,9 +209,10 @@ void IndexedDBFactory::GetDatabaseInfo(
                              /*create_if_missing=*/false);
   if (!bucket_state_handle.IsHeld() || !bucket_state_handle.bucket_state()) {
     if (s.IsNotFound()) {
-      callbacks->OnSuccess(std::move(names_and_versions));
+      std::move(callback).Run(std::move(names_and_versions), nullptr);
     } else {
-      callbacks->OnError(error);
+      std::move(callback).Run(
+          {}, blink::mojom::IDBError::New(error.code(), error.message()));
     }
     if (s.IsCorruption()) {
       HandleBackingStoreCorruption(bucket_locator, error);
@@ -228,13 +229,15 @@ void IndexedDBFactory::GetDatabaseInfo(
     error = IndexedDBDatabaseError(blink::mojom::IDBException::kUnknownError,
                                    "Internal error opening backing store for "
                                    "indexedDB.databases().");
-    callbacks->OnError(error);
+    std::move(callback).Run(
+        {}, blink::mojom::IDBError::New(error.code(), error.message()));
     if (s.IsCorruption()) {
       HandleBackingStoreCorruption(bucket_locator, error);
     }
     return;
   }
-  callbacks->OnSuccess(std::move(names_and_versions));
+
+  std::move(callback).Run(std::move(names_and_versions), nullptr);
 }
 
 void IndexedDBFactory::Open(

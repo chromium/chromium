@@ -41,13 +41,6 @@ void MockIndexedDBCallbacks::OnSuccess() {}
 void MockIndexedDBCallbacks::OnSuccess(int64_t result) {}
 
 void MockIndexedDBCallbacks::OnSuccess(
-    std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions) {
-  info_called_ = true;
-  if (call_on_info_success_)
-    call_on_info_success_.Run();
-}
-
-void MockIndexedDBCallbacks::OnSuccess(
     std::unique_ptr<IndexedDBConnection> connection,
     const IndexedDBDatabaseMetadata& metadata) {
   if (!upgrade_called_)

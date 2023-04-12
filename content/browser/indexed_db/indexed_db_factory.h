@@ -36,6 +36,7 @@
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace base {
@@ -62,9 +63,10 @@ class CONTENT_EXPORT IndexedDBFactory : base::trace_event::MemoryDumpProvider {
 
   ~IndexedDBFactory() override;
 
-  void GetDatabaseInfo(scoped_refptr<IndexedDBCallbacks> callbacks,
-                       const storage::BucketLocator& bucket_locator,
-                       const base::FilePath& data_directory);
+  void GetDatabaseInfo(
+      const storage::BucketLocator& bucket_locator,
+      const base::FilePath& data_directory,
+      blink::mojom::IDBFactory::GetDatabaseInfoCallback callback);
   void Open(const std::u16string& name,
             std::unique_ptr<IndexedDBPendingConnection> connection,
             const storage::BucketLocator& bucket_locator,

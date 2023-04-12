@@ -237,9 +237,6 @@ struct IDBReturnValue {
 interface IDBCallbacks {
   Error(IDBException code, mojo_base.mojom.String16 message);
 
-  // Factory::GetDatabaseInfo
-  SuccessNamesAndVersionsList(array<IDBNameAndVersion> value);
-
   // Factory::Open / DeleteDatabase
   Blocked(int64 existing_version);
 
@@ -454,9 +451,8 @@ interface IDBDatabase {
 };
 
 interface IDBFactory {
-  // Gets high level info about databases that exist in the frame's
-  // origin. Posts results to |pending_callbacks|.
-  GetDatabaseInfo(pending_associated_remote<IDBCallbacks> pending_callbacks);
+  // Gets high level info about databases that exist in the frame's origin.
+  GetDatabaseInfo() => (array<IDBNameAndVersion> names_and_versions, IDBError? error);
 
   // Opens a database |name| in the frame's origin at version |version|.
   // |version_change_transaction_receiver| will have version change

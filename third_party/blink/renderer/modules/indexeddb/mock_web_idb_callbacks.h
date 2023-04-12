@@ -14,7 +14,6 @@
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database_error.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_metadata.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_name_and_version.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks.h"
 
 namespace blink {
@@ -40,9 +39,6 @@ class MockWebIDBCallbacks : public WebIDBCallbacks {
                void(const std::unique_ptr<IDBKey>& key,
                     const std::unique_ptr<IDBKey>& primaryKey,
                     const absl::optional<std::unique_ptr<IDBValue>>& value));
-
-  MOCK_METHOD1(SuccessNamesAndVersionsList,
-               void(Vector<mojom::blink::IDBNameAndVersionPtr>));
 
   void SuccessCursor(
       mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> cursor_info,

@@ -122,21 +122,6 @@ void IndexedDBCallbacks::OnError(const IndexedDBDatabaseError& error) {
   complete_ = true;
 }
 
-void IndexedDBCallbacks::OnSuccess(
-    std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!complete_);
-
-  if (!callbacks_)
-    return;
-  if (!dispatcher_host_) {
-    OnConnectionError();
-    return;
-  }
-  callbacks_->SuccessNamesAndVersionsList(std::move(names_and_versions));
-  complete_ = true;
-}
-
 void IndexedDBCallbacks::OnBlocked(int64_t existing_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!complete_);

@@ -38,7 +38,6 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_metadata.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_name_and_version.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request_queue_item.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
@@ -107,12 +106,6 @@ void WebIDBCallbacksImpl::Error(mojom::blink::IDBException code,
   Detach();
   request->HandleResponse(MakeGarbageCollected<DOMException>(
       static_cast<DOMExceptionCode>(code), message));
-}
-
-void WebIDBCallbacksImpl::SuccessNamesAndVersionsList(
-    Vector<mojom::blink::IDBNameAndVersionPtr> name_and_version_list) {
-  // Only implemented in idb_factory.cc for the promise-based databases() call.
-  NOTREACHED();
 }
 
 void WebIDBCallbacksImpl::SuccessCursor(

@@ -81,16 +81,11 @@ class MODULES_EXPORT IDBFactory final : public ScriptWrappable {
                                                       ExceptionState&);
 
   ScriptPromise GetDatabaseInfo(ScriptState*, ExceptionState&);
-  void GetDatabaseInfoImpl(ExecutionContext* context,
-                           ScriptPromiseResolver* resolver);
 
   // This method is exposed specifically for DevTools.
-  void GetDatabaseInfo(ScriptState*,
-                       std::unique_ptr<mojom::blink::IDBCallbacks> callbacks);
-
-  void GetDatabaseInfoImplHelper(
-      ExecutionContext* context,
-      std::unique_ptr<mojom::blink::IDBCallbacks> callbacks);
+  void GetDatabaseInfoForDevTools(
+      ScriptState*,
+      mojom::blink::IDBFactory::GetDatabaseInfoCallback callback);
 
   void SetFactoryForTesting(HeapMojoRemote<mojom::blink::IDBFactory> factory);
 
@@ -125,6 +120,17 @@ class MODULES_EXPORT IDBFactory final : public ScriptWrappable {
       HeapMojoRemote<mojom::blink::IDBFactory>& factory,
       const String& name,
       bool force_close);
+
+  void GetDatabaseInfoImpl(ExecutionContext* context,
+                           ScriptPromiseResolver* resolver);
+  void DidGetDatabaseInfo(
+      ScriptPromiseResolver* resolver,
+      Vector<mojom::blink::IDBNameAndVersionPtr> names_and_versions,
+      mojom::blink::IDBErrorPtr error);
+
+  void GetDatabaseInfoForDevToolsHelper(
+      ExecutionContext* context,
+      mojom::blink::IDBFactory::GetDatabaseInfoCallback callback);
 
   void AllowIndexedDB(ExecutionContext* context,
                       base::OnceCallback<void()> callback);

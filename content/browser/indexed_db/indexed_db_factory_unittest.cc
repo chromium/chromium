@@ -20,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/default_clock.h"
 #include "components/services/storage/filesystem_proxy_factory.h"
@@ -1019,27 +1020,25 @@ TEST_F(IndexedDBFactoryTest, DeleteDatabaseWithForceClose) {
 TEST_F(IndexedDBFactoryTest, GetDatabaseNames_NoFactory) {
   SetupContext();
 
-  auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>(
-      /*expect_connection=*/false);
-
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
   auto bucket_locator = storage::BucketLocator();
   bucket_locator.storage_key = storage_key;
 
-  factory()->GetDatabaseInfo(callbacks, bucket_locator,
-                             context()->GetDataPath(bucket_locator));
+  base::test::TestFuture<std::vector<blink::mojom::IDBNameAndVersionPtr>,
+                         blink::mojom::IDBErrorPtr>
+      info_future;
+  factory()->GetDatabaseInfo(bucket_locator,
+                             context()->GetDataPath(bucket_locator),
+                             info_future.GetCallback());
+  ASSERT_TRUE(info_future.Wait());
 
-  EXPECT_TRUE(callbacks->info_called());
   // Don't create a factory if one doesn't exist.
   EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator.id));
 }
 
 TEST_F(IndexedDBFactoryTest, GetDatabaseNames_ExistingFactory) {
   SetupContext();
-
-  auto callbacks = base::MakeRefCounted<MockIndexedDBCallbacks>(
-      /*expect_connection=*/false);
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
@@ -1054,10 +1053,14 @@ TEST_F(IndexedDBFactoryTest, GetDatabaseNames_ExistingFactory) {
                                         /*create_if_missing=*/true);
   EXPECT_TRUE(bucket_state_handle.IsHeld()) << s.ToString();
 
-  factory()->GetDatabaseInfo(callbacks, bucket_locator,
-                             context()->GetDataPath(bucket_locator));
+  base::test::TestFuture<std::vector<blink::mojom::IDBNameAndVersionPtr>,
+                         blink::mojom::IDBErrorPtr>
+      info_future;
+  factory()->GetDatabaseInfo(bucket_locator,
+                             context()->GetDataPath(bucket_locator),
+                             info_future.GetCallback());
+  ASSERT_TRUE(info_future.Wait());
 
-  EXPECT_TRUE(callbacks->info_called());
   EXPECT_TRUE(factory()->GetBucketFactory(bucket_locator.id));
   // GetDatabaseInfo didn't create the factory, so it shouldn't close it.
   EXPECT_FALSE(factory()->GetBucketFactory(bucket_locator.id)->IsClosing());

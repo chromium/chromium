@@ -66,8 +66,6 @@ class WebIDBCallbacksImpl final : public WebIDBCallbacks {
 
   // Pointers transfer ownership.
   void Error(mojom::blink::IDBException code, const String& message) override;
-  void SuccessNamesAndVersionsList(
-      Vector<mojom::blink::IDBNameAndVersionPtr>) override;
   void SuccessCursor(
       mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> cursor_info,
       std::unique_ptr<IDBKey> key,

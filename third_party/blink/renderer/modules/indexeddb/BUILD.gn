@@ -31,7 +31,6 @@ blink_modules_sources("indexeddb") {
     "idb_key_range.h",
     "idb_metadata.cc",
     "idb_metadata.h",
-    "idb_name_and_version.h",
     "idb_object_store.cc",
     "idb_object_store.h",
     "idb_open_db_request.cc",
@@ -75,7 +74,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "idb_factory_test.cc",
     "idb_key_path_test.cc",
     "idb_request_test.cc",
     "idb_test_helper.cc",
