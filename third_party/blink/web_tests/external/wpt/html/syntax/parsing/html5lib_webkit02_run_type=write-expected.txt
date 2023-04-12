@@ -16,5 +16,8 @@ FAIL html5lib_webkit02.html 6e33515b4dc011dd390d433a6358bf68b786b1fd assert_equa
 PASS html5lib_webkit02.html b6d2377b0dd710ca812c97b2b65cb5d2e93b0e5b
 PASS html5lib_webkit02.html 21a5b2b413c4db8ed588334b9a50dea9872bbcfa
 PASS html5lib_webkit02.html 90d3f6f2dff994f63293ca46f7cd50a75cde96a6
+PASS html5lib_webkit02.html 3e6b37a5fd0b16769f71f8e6a022ef6a972769d0
+PASS html5lib_webkit02.html 66c5e72324003827309d3590a9ba56412ba68f79
+PASS html5lib_webkit02.html 329d2522353afa12afea478bbfafdb0ff0656572
 Harness: the test ran to completion.
 
