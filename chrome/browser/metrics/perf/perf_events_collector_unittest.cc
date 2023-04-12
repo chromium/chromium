@@ -66,7 +66,7 @@ const char kPerfDTLBMissesDAPSkylake[] =
 
 const char kPerfETMCmd[] =
     "--run_inject --inject_args inject;--itrace=i512il;--strip -- record -a -e "
-    "cs_etm/autofdo/";
+    "cs_etm/autofdo/u";
 
 // Converts a protobuf to serialized format as a byte vector.
 std::vector<uint8_t> SerializeMessageToVector(
