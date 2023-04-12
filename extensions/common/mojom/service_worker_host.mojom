@@ -5,6 +5,7 @@
 module extensions.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "extensions/common/mojom/frame.mojom";
 import "url/mojom/url.mojom";
 
 // An interface for an extension service worker context. Implemented in the
@@ -70,4 +71,14 @@ interface ServiceWorkerHost {
   // browser process should already know that a request is active or not.
   DecrementServiceWorkerActivity(int64 service_worker_version_id,
                                  string request_uuid);
+
+  // A service worker thread sends this message when an extension service worker
+  // starts an API request. We use [UnlimitedSize] here because `params` may be
+  // large with some extension function (ex. Storage API).
+  [UnlimitedSize]
+  RequestWorker(RequestParams params);
+
+  // Optional Ack message sent to the browser to notify that the response to a
+  // function has been processed.
+  WorkerResponseAck(int32 request_id, int64 service_worker_version_id);
 };

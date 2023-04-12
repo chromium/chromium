@@ -81,7 +81,7 @@ class ExtensionFunctionDispatcher {
   // Message handlers.
   // Dispatches a request for service woker and the response is sent to the
   // corresponding render process in an ExtensionMsg_ResponseWorker message.
-  void DispatchForServiceWorker(const mojom::RequestParams& params,
+  void DispatchForServiceWorker(mojom::RequestParamsPtr params,
                                 int render_process_id);
 
   // Called when an ExtensionFunction is done executing, after it has sent

@@ -99,44 +99,6 @@ IPC_STRUCT_BEGIN(ExtensionHostMsg_DOMAction_Params)
   IPC_STRUCT_MEMBER(int, call_type)
 IPC_STRUCT_END()
 
-// Parameters structure for ExtensionHostMsg_RequestWorker.
-IPC_STRUCT_TRAITS_BEGIN(extensions::mojom::RequestParams)
-  // Message name.
-  IPC_STRUCT_TRAITS_MEMBER(name)
-
-  // List of message arguments.
-  IPC_STRUCT_TRAITS_MEMBER(arguments)
-
-  // Extension ID this request was sent from. This can be empty, in the case
-  // where we expose APIs to normal web pages using the extension function
-  // system.
-  IPC_STRUCT_TRAITS_MEMBER(extension_id)
-
-  // URL of the frame the request was sent from. This isn't necessarily an
-  // extension url. Extension requests can also originate from content scripts,
-  // in which case extension_id will indicate the ID of the associated
-  // extension. Or, they can originate from hosted apps or normal web pages.
-  IPC_STRUCT_TRAITS_MEMBER(source_url)
-
-  // Unique request id to match requests and responses.
-  IPC_STRUCT_TRAITS_MEMBER(request_id)
-
-  // True if request has a callback specified.
-  IPC_STRUCT_TRAITS_MEMBER(has_callback)
-
-  // True if request is executed in response to an explicit user gesture.
-  IPC_STRUCT_TRAITS_MEMBER(user_gesture)
-
-  // If this API call is for a service worker, then this is the worker thread
-  // id. Otherwise, this is kMainThreadId.
-  IPC_STRUCT_TRAITS_MEMBER(worker_thread_id)
-
-  // If this API call is for a service worker, then this is the service
-  // worker version id. Otherwise, this is set to
-  // blink::mojom::kInvalidServiceWorkerVersionId.
-  IPC_STRUCT_TRAITS_MEMBER(service_worker_version_id)
-IPC_STRUCT_TRAITS_END()
-
 // Struct containing information about the sender of connect() calls that
 // originate from a tab.
 IPC_STRUCT_BEGIN(ExtensionMsg_TabConnectionInfo)
@@ -415,11 +377,6 @@ IPC_MESSAGE_CONTROL2(ExtensionHostMsg_WakeEventPage,
 // Messages related to Extension Service Worker.
 #undef IPC_MESSAGE_START
 #define IPC_MESSAGE_START ExtensionWorkerMsgStart
-// A service worker thread sends this message when an extension service worker
-// starts an API request. The browser will always respond with a
-// ExtensionMsg_ResponseWorker.
-IPC_MESSAGE_CONTROL1(ExtensionHostMsg_RequestWorker,
-                     extensions::mojom::RequestParams)
 
 // The browser sends this message in response to all service worker extension
 // api calls.
@@ -437,12 +394,6 @@ IPC_MESSAGE_CONTROL4(ExtensionHostMsg_EventAckWorker,
                      int64_t /* service_worker_version_id */,
                      int /* worker_thread_id */,
                      int /* event_id */)
-
-// Optional Ack message sent to the browser to notify that the response to a
-// function has been processed.
-IPC_MESSAGE_CONTROL2(ExtensionHostMsg_WorkerResponseAck,
-                     int /* request_id */,
-                     int64_t /* service_worker_version_id */)
 
 IPC_STRUCT_BEGIN(ExtensionMsg_AccessibilityEventBundleParams)
   // ID of the accessibility tree that this event applies to.
