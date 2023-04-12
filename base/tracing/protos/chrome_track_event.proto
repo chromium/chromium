@@ -1031,11 +1031,25 @@ message BlinkExecutionContext {
     SERVICE_WORKER = 5;
   }
 
+  // Definition of world type.
+  enum WorldType {
+    WORLD_UNKNOWN = 0;
+    WORLD_MAIN = 1;
+    WORLD_ISOLATED = 2;
+    WORLD_INSPECTOR_ISOLATED = 3;
+    WORLD_REG_EXP = 4;
+    WORLD_FOR_V8_CONTEXT_SNAPSHOT_NON_MAIN = 5;
+    WORLD_WORKER = 6;
+    WORLD_SHADOW_REALM = 7;
+  }
+
   optional ContextType type = 1;
   // Contains url of frame or worker.
   optional string url = 2;
   // The origin of the execution context.
   optional string origin = 3;
+  // The world type of the execution context.
+  optional WorldType world_type = 4;
 }
 
 // Serializes the blink::SourceLocation object.
