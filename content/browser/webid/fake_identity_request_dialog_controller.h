@@ -34,6 +34,10 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
 
   std::string GetTitle() const override;
 
+  void ShowPopUpWindow(const GURL& url,
+                       TokenCallback on_resolve,
+                       DismissCallback dismiss_callback) override;
+
  private:
   absl::optional<std::string> selected_account_;
   std::string title_;

@@ -105,11 +105,15 @@ std::string ComputeUrlEncodedTokenPostData(
     // parameters in the FedCM spec.
     //
     // [1] https://openid.net/specs/openid-connect-core-1_0.html#ScopeClaims
-    query += "&scope=" + base::EscapeUrlEncodedData(
-                             base::JoinString(scope, " "), /*use_plus=*/true);
-    query += "&response_type=" +
-             base::EscapeUrlEncodedData(base::JoinString(responseType, " "),
-                                        /*use_plus=*/true);
+    if (!scope.empty()) {
+      query += "&scope=" + base::EscapeUrlEncodedData(
+                               base::JoinString(scope, " "), /*use_plus=*/true);
+    }
+    if (!responseType.empty()) {
+      query += "&response_type=" +
+               base::EscapeUrlEncodedData(base::JoinString(responseType, " "),
+                                          /*use_plus=*/true);
+    }
     for (const auto& pair : params) {
       // TODO(crbug.com/1429083): Should we use a prefix with these custom
       // parameters so that they don't collide with the standard ones?
@@ -1326,6 +1330,9 @@ void FederatedAuthRequestImpl::OnAccountSelected(bool auto_reauthn,
           idp_info.provider->params),
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(),
+                     idp_info.provider->Clone()),
+      base::BindOnce(&FederatedAuthRequestImpl::OnContinueOnResponseReceived,
+                     weak_ptr_factory_.GetWeakPtr(),
                      idp_info.provider->Clone()));
 }
 
@@ -1372,6 +1379,28 @@ void FederatedAuthRequestImpl::OnDialogDismissed(
                            should_embargo ? TokenStatus::kShouldEmbargo
                                           : TokenStatus::kNotSelectAccount,
                            /*should_delay_callback=*/false);
+}
+
+void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
+    IdentityProviderConfigPtr idp,
+    IdpNetworkRequestManager::FetchStatus status,
+    const GURL& continue_on) {
+  if (!IsFedCmAuthzEnabled()) {
+    CompleteRequestWithError(
+        FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
+        TokenStatus::kIdTokenInvalidResponse,
+        /*should_delay_callback=*/true);
+    return;
+  }
+
+  // TODO(crbug.com/1429083): record the appropriate metrics.
+  request_dialog_controller_->ShowPopUpWindow(
+      std::move(continue_on),
+      base::BindOnce(&FederatedAuthRequestImpl::CompleteTokenRequest,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(idp),
+                     std::move(status)),
+      base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FederatedAuthRequestImpl::OnTokenResponseReceived(

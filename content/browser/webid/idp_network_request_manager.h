@@ -141,6 +141,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
                               data_decoder::DataDecoder::ValueOrError)>;
   using TokenRequestCallback =
       base::OnceCallback<void(FetchStatus, const std::string&)>;
+  using ContinueOnCallback = base::OnceCallback<void(FetchStatus, const GURL&)>;
 
   static std::unique_ptr<IdpNetworkRequestManager> Create(
       RenderFrameHostImpl* host);
@@ -182,7 +183,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   virtual void SendTokenRequest(const GURL& token_url,
                                 const std::string& account,
                                 const std::string& url_encoded_post_data,
-                                TokenRequestCallback callback);
+                                TokenRequestCallback callback,
+                                ContinueOnCallback continue_on);
 
   // Sends metrics to metrics endpoint after a token was successfully generated.
   virtual void SendSuccessfulTokenRequestMetrics(

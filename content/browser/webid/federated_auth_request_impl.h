@@ -218,6 +218,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void OnTokenResponseReceived(blink::mojom::IdentityProviderConfigPtr idp,
                                IdpNetworkRequestManager::FetchStatus status,
                                const std::string& token);
+  void OnContinueOnResponseReceived(
+      blink::mojom::IdentityProviderConfigPtr idp,
+      IdpNetworkRequestManager::FetchStatus status,
+      const GURL& url);
   void DispatchOneLogout();
   void OnLogoutCompleted();
 

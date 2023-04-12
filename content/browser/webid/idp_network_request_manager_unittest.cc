@@ -221,9 +221,12 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
           run_loop.Quit();
         });
 
+    auto on_continue =
+        base::BindLambdaForTesting([&](FetchStatus status, const GURL& url) {});
+
     std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
     manager->SendTokenRequest(token_endpoint, account, request,
-                              std::move(callback));
+                              std::move(callback), std::move(on_continue));
     run_loop.Run();
     return {fetch_status, token};
   }
@@ -1151,6 +1154,32 @@ TEST_F(IdpNetworkRequestManagerTest, TokenWrongMimeType) {
   EXPECT_EQ("", token);
   EXPECT_EQ(ParseStatus::kInvalidResponseError, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, FetchingTokenLeadsToAContinuationUrl) {
+  net::HttpStatusCode http_status = net::HTTP_OK;
+  const std::string& mime_type = "application/json";
+
+  const char response[] =
+      R"({"continue_on": "https://idp.example/continuation"})";
+  GURL token_endpoint(kTestTokenEndpoint);
+  AddResponse(token_endpoint, http_status, mime_type, response);
+
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&](FetchStatus status, const std::string& token_response) {});
+
+  auto on_continue =
+      base::BindLambdaForTesting([&](FetchStatus status, const GURL& url) {
+        // Checks that we got a continuation url event back.
+        EXPECT_EQ("https://idp.example/continuation", url.spec());
+        run_loop.Quit();
+      });
+
+  std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+  manager->SendTokenRequest(token_endpoint, "account", "request",
+                            std::move(callback), std::move(on_continue));
+  run_loop.Run();
 }
 
 }  // namespace

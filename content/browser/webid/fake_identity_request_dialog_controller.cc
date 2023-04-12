@@ -63,4 +63,13 @@ std::string FakeIdentityRequestDialogController::GetTitle() const {
   return title_;
 }
 
+void FakeIdentityRequestDialogController::ShowPopUpWindow(
+    const GURL& url,
+    TokenCallback on_resolve,
+    DismissCallback dismiss_callback) {
+  // Pretends that the url is loaded and calls the
+  // IdentityProvider.resolve() method with the fake token below.
+  std::move(on_resolve).Run("--fake-token-from-pop-up-window--");
+}
+
 }  // namespace content

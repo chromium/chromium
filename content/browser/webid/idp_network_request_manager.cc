@@ -85,7 +85,12 @@ constexpr char kAccountApprovedClientsKey[] = "approved_clients";
 constexpr char kIdpBrandingIconUrl[] = "url";
 constexpr char kIdpBrandingIconSize[] = "size";
 
+// The id assertion endpoint contains a token result.
 constexpr char kTokenKey[] = "token";
+// The id assertion endpoint contains a URL, which indicates that
+// the serve wants to direct the user to continue on a pop-up
+// window before it provides a token result.
+constexpr char kContinueOnKey[] = "continue_on";
 
 // Body content types.
 constexpr char kUrlEncodedContentType[] = "application/x-www-form-urlencoded";
@@ -502,6 +507,7 @@ void OnAccountsRequestParsed(
 
 void OnTokenRequestParsed(
     IdpNetworkRequestManager::TokenRequestCallback callback,
+    IdpNetworkRequestManager::ContinueOnCallback continue_on_callback,
     FetchStatus fetch_status,
     data_decoder::DataDecoder::ValueOrError result) {
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
@@ -511,15 +517,30 @@ void OnTokenRequestParsed(
 
   const base::Value::Dict& response = result->GetDict();
   const std::string* token = response.FindString(kTokenKey);
+  const std::string* continue_on = response.FindString(kContinueOnKey);
 
-  if (!token) {
-    std::move(callback).Run(
-        {ParseStatus::kInvalidResponseError, fetch_status.response_code},
-        std::string());
+  if (token) {
+    std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
+                            *token);
     return;
   }
-  std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
-                          *token);
+
+  if (continue_on) {
+    GURL url(*continue_on);
+    // TODO(crbug.com/1429083): support relative urls.
+    // TODO(crbug.com/1429083): check that the continue_on url is
+    // same-origin with the idp origin.
+    if (url.is_valid()) {
+      std::move(continue_on_callback)
+          .Run({ParseStatus::kSuccess, fetch_status.response_code},
+               std::move(url));
+      return;
+    }
+  }
+
+  std::move(callback).Run(
+      {ParseStatus::kInvalidResponseError, fetch_status.response_code},
+      std::string());
 }
 
 void OnLogoutCompleted(IdpNetworkRequestManager::LogoutCallback callback,
@@ -651,13 +672,15 @@ void IdpNetworkRequestManager::SendTokenRequest(
     const GURL& token_url,
     const std::string& account,
     const std::string& url_encoded_post_data,
-    TokenRequestCallback callback) {
+    TokenRequestCallback callback,
+    ContinueOnCallback continue_on) {
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateCredentialedResourceRequest(token_url,
                                         /* send_origin= */ true);
   DownloadJsonAndParse(
       std::move(resource_request), url_encoded_post_data,
-      base::BindOnce(&OnTokenRequestParsed, std::move(callback)),
+      base::BindOnce(&OnTokenRequestParsed, std::move(callback),
+                     std::move(continue_on)),
       maxResponseSizeInKiB * 1024);
 }
 

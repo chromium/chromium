@@ -547,8 +547,8 @@ IN_PROC_BROWSER_TEST_F(WebIdMDocsBrowserTest, MDocs) {
   EXPECT_EQ("test-mdoc", EvalJs(shell(), script));
 }
 
-// Verify a standard login flow with IdP sign-in page.
-IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, PopUpWindowAuthzFlow) {
+// Verify that the Authz parameters are passed to the id assertion endpoint.
+IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_noPopUpWindow) {
   IdpTestServer::ConfigDetails config_details = BuildValidConfigDetails();
 
   // Points the id assertion endpoint to a servlet.
@@ -568,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, PopUpWindowAuthzFlow) {
             content += "disclosure_text_shown=false&";
             // Asserts that the scope, response_type and params parameters
             // were passed correctly to the id assertion endpoint.
-            content += "scope=name+email+photo+calendar.readonly&";
+            content += "scope=name+email+picture&";
             content += "response_type=id_token+code&";
             content += "%3F+gets+://=%26+escaped+!&";
             content += "foo=bar&";
@@ -579,6 +579,8 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, PopUpWindowAuthzFlow) {
             auto response = std::make_unique<BasicHttpResponse>();
             response->set_code(net::HTTP_OK);
             response->set_content_type("text/json");
+            // Standard scopes were used, so no extra permission needed.
+            // Return a token immediately.
             response->set_content(R"({"token": "[request lgtm!]"})");
             return response;
           });
@@ -597,8 +599,7 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, PopUpWindowAuthzFlow) {
                 scope: [
                   'name',
                   'email',
-                  'photo',
-                  'calendar.readonly'
+                  'picture',
                 ],
                 responseType: [
                   'id_token',
@@ -617,6 +618,63 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, PopUpWindowAuthzFlow) {
     )";
 
   EXPECT_EQ(std::string("[request lgtm!]"), EvalJs(shell(), script));
+}
+
+// Verify that the id assertion endpoint can request a pop-up window.
+IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
+  IdpTestServer::ConfigDetails config_details = BuildValidConfigDetails();
+
+  // Points the id assertion endpoint to a servlet.
+  config_details.id_assertion_endpoint_url = "/authz/id_assertion_endpoint.php";
+
+  // Add a servlet to serve a response for the id assertoin endpoint.
+  config_details.servlets["/authz/id_assertion_endpoint.php"] =
+      base::BindRepeating(
+          [](const HttpRequest& request) -> std::unique_ptr<HttpResponse> {
+            std::string content;
+            content += "client_id=client_id_1&";
+            content += "nonce=12345&";
+            content += "account_id=not_real_account&";
+            content += "disclosure_text_shown=false&";
+            content += "scope=calendar.readonly";
+
+            EXPECT_EQ(request.content, content);
+
+            auto response = std::make_unique<BasicHttpResponse>();
+            response->set_code(net::HTTP_OK);
+            response->set_content_type("text/json");
+            // scope=calendar.readonly was requested, so need to
+            // return a continuation url instead of a token.
+            response->set_content(
+                R"({"continue_on": "https://idp.example/continue.php"})");
+            return response;
+          });
+
+  idp_server()->SetConfigResponseDetails(config_details);
+
+  std::string script = R"(
+        (async () => {
+          var x = (await navigator.credentials.get({
+            identity: {
+              providers: [{
+                configURL: ')" +
+                       BaseIdpUrl() + R"(',
+                clientId: 'client_id_1',
+                nonce: '12345',
+                scope: [
+                  'calendar.readonly'
+                ],
+              }]
+            }
+          }));
+          return x.token;
+        }) ()
+    )";
+
+  // Assert that a fake token was returned from the pop-up window,
+  // as opposed to directly from the id assertion endpoint.
+  EXPECT_EQ(std::string("--fake-token-from-pop-up-window--"),
+            EvalJs(shell(), script));
 }
 
 }  // namespace content
