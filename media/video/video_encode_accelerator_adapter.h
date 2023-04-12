@@ -131,7 +131,8 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
 
   scoped_refptr<ReadOnlyRegionPool> input_pool_;
   scoped_refptr<base::UnsafeSharedMemoryPool> output_pool_;
-  std::unique_ptr<base::UnsafeSharedMemoryPool::Handle> output_handle_holder_;
+  std::vector<std::unique_ptr<base::UnsafeSharedMemoryPool::Handle>>
+      output_buffer_handles_;
   scoped_refptr<GpuMemoryBufferVideoFramePool> gmb_frame_pool_;
 
   std::unique_ptr<VideoEncodeAccelerator> accelerator_;
