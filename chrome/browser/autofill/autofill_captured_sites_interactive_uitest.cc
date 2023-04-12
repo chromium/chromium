@@ -367,6 +367,9 @@ class AutofillCapturedSitesInteractiveTest
       return testing::AssertionFailure()
              << "PlaceFocusOnElement() failed in " << FROM_HERE.ToString();
     }
+    if (test_delegate()->Wait()) {
+      return testing::AssertionSuccess();
+    }
 
     gfx::Rect rect;
     if (!captured_sites_test_utils::TestRecipeReplayer::
