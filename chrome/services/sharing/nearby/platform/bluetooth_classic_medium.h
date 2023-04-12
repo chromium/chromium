@@ -45,6 +45,12 @@ class BluetoothClassicMedium : public api::BluetoothClassicMedium,
       const std::string& service_name,
       const std::string& service_uuid) override;
   BluetoothDevice* GetRemoteDevice(const std::string& mac_address) override;
+  void AddObserver(Observer* observer) override {
+    // TODO(b/269521993): Implement.
+  }
+  void RemoveObserver(Observer* observer) override {
+    // TODO(b/269521993): Implement.
+  }
 
  private:
   // bluetooth::mojom::AdapterObserver:
