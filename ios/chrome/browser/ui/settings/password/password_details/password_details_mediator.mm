@@ -408,8 +408,13 @@ using base::SysNSStringToUTF16;
   }
 }
 
+// Returns a credential that a) is saved in the user account, and b) has the
+// same website/username as `password`, but a different password value.
 - (absl::optional<password_manager::CredentialUIEntry>)
     conflictingAccountPassword:(PasswordDetails*)password {
+  // All credentials for the same website are in `_credentials` due to password
+  // grouping. So it's enough to search that reduced list and not all saved
+  // passwords.
   auto it = base::ranges::find_if(
       _credentials,
       [password](const password_manager::CredentialUIEntry& credential) {
