@@ -1547,6 +1547,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOnlyAccessClipboardAsyncName,
      flag_descriptions::kOnlyAccessClipboardAsyncDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kOnlyAccessClipboardAsync)},
+    {"omnibox-tail-suggest", flag_descriptions::kOmniboxTailSuggestName,
+     flag_descriptions::kOmniboxTailSuggestDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kOmniboxTailSuggest)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -5701,6 +5701,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "omnibox-tail-suggest",
+    "owners": [ "christianxu", "stkhapugin", "bling-flags@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "omnibox-trending-zero-prefix-suggestions-on-ntp",
     "owners": [ "ender", "stkhapugin", "mahmadi", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120
