@@ -134,3 +134,13 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
   prefs()->SetBoolean(prefs::kPrivacySandboxTopicsConsentGiven, false);
   EXPECT_FALSE(delegate()->HasAppropriateTopicsConsent());
 }
+
+TEST_F(PrivacySandboxSettingsDelegateTest,
+       CapabilityRestrictionWhenForcedRestictedUser) {
+  feature_list()->InitAndEnableFeatureWithParameters(
+      privacy_sandbox::kPrivacySandboxSettings4,
+      {{privacy_sandbox::kPrivacySandboxSettings4ForceRestrictedUserForTesting
+            .name,
+        "true"}});
+  EXPECT_TRUE(delegate()->IsPrivacySandboxRestricted());
+}
