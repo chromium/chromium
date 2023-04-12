@@ -137,6 +137,9 @@ Verbs fall into a number of different categories:
       - ActivateSurface is not always reliable on Linux with the Wayland window
         manager; see [Handling Incompatibilities](#handling-incompatibilities)
         for how to correctly deal with this.
+    - `ScrollToVisible()` [Views, Browser]
+      - Recommended before doing anything that needs the screen coordinates of
+        a UI or DOM element that is in a scrollable container.
 - **Mouse** verbs simulate mouse input to the entire application, and are
   therefore only reliable in test fixtures that run as exclusive processes (e.g.
   interactive_browser_tests). Examples include:

@@ -267,6 +267,9 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // Find the DOM element at the given path in the reference element, which
   // should be an instrumented WebContents; see Instrument*(). Move the mouse to
   // the element's center point in screen coordinates.
+  //
+  // If the DOM element may be scrolled outside of the current viewport,
+  // consider using ScrollIntoView(web_contents, where) before this verb.
   [[nodiscard]] StepBuilder MoveMouseTo(ElementSpecifier web_contents,
                                         const DeepQuery& where);
 
@@ -274,9 +277,21 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // should be an instrumented WebContents; see Instrument*(). Perform a drag
   // from the mouse's current location to the element's center point in screen
   // coordinates, and then if `release` is true, releases the mouse button.
+  //
+  // If the DOM element may be scrolled outside of the current viewport,
+  // consider using ScrollIntoView(web_contents, where) before this verb.
   [[nodiscard]] StepBuilder DragMouseTo(ElementSpecifier web_contents,
                                         const DeepQuery& where,
                                         bool release = true);
+
+  using InteractiveViewsTestApi::ScrollIntoView;
+
+  // Scrolls the DOM element at `where` in instrumented WebContents
+  // `web_contents` into view; see Instrument*(). The scrolling happens
+  // instantaneously, without animation, and should be available on the next
+  // render frame or call into the renderer.
+  [[nodiscard]] StepBuilder ScrollIntoView(ui::ElementIdentifier web_contents,
+                                           const DeepQuery& where);
 
  protected:
   explicit InteractiveBrowserTestApi(

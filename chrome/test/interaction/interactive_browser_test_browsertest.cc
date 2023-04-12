@@ -21,6 +21,8 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
 constexpr char kDocumentWithNamedElement[] = "/select.html";
 constexpr char kDocumentWithLinks[] = "/links.html";
+constexpr char kScrollableDocument[] =
+    "/scroll/scrollable_page_with_content.html";
 }  // namespace
 
 class InteractiveBrowserTestBrowsertest : public InteractiveBrowserTest {
@@ -261,6 +263,28 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
       InAnyContext(verify_is_at_tab_index(incognito_browser, kIncognito2Id, 1)),
       InAnyContext(
           verify_is_at_tab_index(incognito_browser, kIncognito1Id, 2)));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, ScrollIntoView) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+  const GURL url = embedded_test_server()->GetURL(kScrollableDocument);
+  const DeepQuery kLink{"#link"};
+  const DeepQuery kText{"#text"};
+
+  constexpr char kElementIsInViewport[] = R"(
+    (el) => {
+      const bounds = el.getBoundingClientRect();
+      return bounds.right >= 0 && bounds.bottom >= 0 &&
+             bounds.x < window.innerWidth && bounds.y < window.innerHeight;
+    }
+  )";
+
+  RunTestSequence(InstrumentTab(kTabId), NavigateWebContents(kTabId, url),
+                  CheckJsResultAt(kTabId, kLink, kElementIsInViewport, true),
+                  CheckJsResultAt(kTabId, kText, kElementIsInViewport, false),
+                  ScrollIntoView(kTabId, kText),
+                  CheckJsResultAt(kTabId, kLink, kElementIsInViewport, false),
+                  CheckJsResultAt(kTabId, kText, kElementIsInViewport, true));
 }
 
 // Parameter for WebUI coverage tests.

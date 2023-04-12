@@ -94,6 +94,13 @@ InteractiveViewsTestApi::NameDescendantView(ElementSpecifier parent,
               base::StringPrintf("NameDescendantView( \"%s\" )", name.data())));
 }
 
+InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::ScrollIntoView(
+    ElementSpecifier view) {
+  return std::move(WithView(view, [](View* v) {
+                     v->ScrollViewToVisible();
+                   }).SetDescription("ScrollIntoView()"));
+}
+
 InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::MoveMouseTo(
     ElementSpecifier reference,
     RelativePositionSpecifier position) {

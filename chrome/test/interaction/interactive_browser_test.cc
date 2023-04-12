@@ -468,15 +468,38 @@ InteractiveBrowserTestApi::StepBuilder InteractiveBrowserTestApi::DragMouseTo(
   return DragMouseTo(web_contents, DeepQueryToRelativePosition(where), release);
 }
 
+InteractiveBrowserTestApi::StepBuilder
+InteractiveBrowserTestApi::ScrollIntoView(ui::ElementIdentifier web_contents,
+                                          const DeepQuery& where) {
+  return std::move(
+      ExecuteJsAt(web_contents, where,
+                  "(el) => { el.scrollIntoView({ behavior: 'instant' }); }")
+          .SetDescription("ScrollIntoView()"));
+}
+
 // static
 InteractiveBrowserTestApi::RelativePositionCallback
 InteractiveBrowserTestApi::DeepQueryToRelativePosition(const DeepQuery& query) {
   return base::BindOnce(
       [](DeepQuery q, ui::TrackedElement* el) {
-        return el->AsA<TrackedElementWebContents>()
-            ->owner()
-            ->GetElementBoundsInScreen(q)
-            .CenterPoint();
+        auto* const contents = el->AsA<TrackedElementWebContents>();
+        const gfx::Rect container_bounds = contents->GetScreenBounds();
+        const gfx::Rect element_bounds =
+            contents->owner()->GetElementBoundsInScreen(q);
+        CHECK(!element_bounds.IsEmpty())
+            << "Cannot target DOM element at " << q << " in "
+            << el->identifier() << " because its screen bounds are emtpy.";
+        gfx::Rect intersect_bounds = element_bounds;
+        intersect_bounds.Intersect(container_bounds);
+        CHECK(!intersect_bounds.IsEmpty())
+            << "Cannot target DOM element at " << q << " in "
+            << el->identifier() << " because its screen bounds "
+            << element_bounds.ToString()
+            << " are outside the screen bounds of the containing WebView, "
+            << container_bounds.ToString()
+            << ". Did you forget to scroll the element into view? See "
+               "ScrollToVisible().";
+        return intersect_bounds.CenterPoint();
       },
       query);
 }
