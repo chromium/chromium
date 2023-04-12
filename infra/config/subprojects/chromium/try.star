@@ -87,6 +87,14 @@ luci.bucket(
                 "infra-try-recipes-tester@chops-service-accounts.iam.gserviceaccount.com",
             ],
         ),
+        # Allow try builders to create invocations in their own builds.
+        luci.binding(
+            roles = "role/resultdb.invocationCreator",
+            groups = [
+                "project-chromium-try-task-accounts",
+                "project-chromium-tryjob-access",
+            ],
+        ),
     ],
     dynamic = True,
 )
