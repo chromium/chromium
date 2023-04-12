@@ -47,12 +47,37 @@ const kHighYStrength: number = 0.9;
 // some influence but can be easily overridden.
 const kWeakYStrength: number = 0.1;
 
+/**
+ * Helper function to return a DOM class attribute for a given tooltip object
+ * index. All rows in a tooltip that are part of the same describer object will
+ * have the same class so that they can be toggled together.
+ */
+function tooltipClassForIndex(objectIndex: number): string {
+  return `object${objectIndex}`;
+}
+
+/**
+ * Helper function to toggle the visibility of a set of rows in the tooltip
+ * table.
+ */
+function toggleTooltipRows(clickedRow: HTMLElement, objectIndex: number) {
+  // Toggle visibility of only the value rows with the same index in the same
+  // tooltip.
+  const valueClasses = `tr.value.${tooltipClassForIndex(objectIndex)}`;
+  const tooltip = d3.select(clickedRow.parentElement);
+  const isCollapsed = tooltip.select(valueClasses).classed('collapsed');
+  tooltip.selectAll(valueClasses).classed('collapsed', !isCollapsed);
+}
+
 class ToolTipRowData {
   // The contents of each cell in the row.
   contents: [string, string];
 
   // Class to apply to the <tr> element.
   rowClass: 'heading'|'value';
+
+  // Index used to group rows in the same object.
+  objectIndex: number;
 }
 
 class ToolTip {
@@ -125,37 +150,63 @@ class ToolTip {
      *          {@code object}.
      * @param flattened The flattened object being built.
      * @param path The current flattened path.
+     * @param objectIndex An index used to identify this object in expanding
+     *                    table rows.
      * @param object The nested dict to be flattened.
+     * @returns The last index used by any sub-object of this object.
      */
     function flattenObjectRec(
         visited: Set<object>, flattened: ToolTipRowData[], path: string,
-        object: {[key: string]: any}) {
+        objectIndex: number, object: {[key: string]: any}): number {
       if (typeof object !== 'object' || visited.has(object)) {
-        return;
+        return objectIndex;
       }
       visited.add(object);
+      objectIndex++;
+
+      // When entering a nested object, add a header row.
+      if (path) {
+        flattened.push({
+          contents: [path, ''],
+          rowClass: 'heading',
+          objectIndex: objectIndex,
+        });
+      }
+
+      const subObjects: Array<[string, object]> = [];
       for (const [key, value] of Object.entries(object)) {
-        const fullPath = path ? `${path}.${key}` : key;
-        // Recurse on non-null objects.
+        // Save non-null objects for recursion at bottom of list.
         if (!!value && typeof value === 'object') {
-          flattenObjectRec(visited, flattened, fullPath, value);
+          subObjects.push([key, value]);
         } else {
           // Everything else is considered a leaf value.
           let strValue = String(value);
           if (strValue.length > 50) {
             strValue = `${strValue.substring(0, 47)}...`;
           }
-          flattened.push({contents: [fullPath, strValue], rowClass: 'value'});
+          flattened.push({
+            contents: [key, strValue],
+            rowClass: 'value',
+            objectIndex: objectIndex,
+          });
         }
       }
+      // Now recurse into sub-objects.
+      for (const [key, value] of subObjects) {
+        const fullPath = path ? `${path} > ${key}` : key;
+        objectIndex =
+            flattenObjectRec(visited, flattened, fullPath, objectIndex, value);
+      }
+      return objectIndex;
     }
 
     /**
      * Recursively flattens an Object of key/value pairs. Nested objects will be
-     * flattened to paths with a . separator between each key. Each list element
-     * includes metadata that will be used to format a table row.
+     * flattened to a list with a subheader row showing the nested key. Each
+     * list element includes metadata that will be used to format a table row.
      *
-     * If there are circular dependencies, they will not be expanded.
+     * Nested objects are always sorted to the end. If there are circular
+     * dependencies, they will not be expanded.
      *
      * For example, converting:
      *
@@ -164,60 +215,72 @@ class ToolTip {
      *   'bar': 1,
      *   'baz': {
      *     'x': 43.5,
-     *     'y': 'fox'
-     *     'z': [1, 2]
+     *     'y': 'fox',
+     *     'z': [1, 2],
+     *     'a': 0,
      *   },
+     *   'monkey': 3,
      *   'self': (reference to self)
      * }
      *
      * will yield:
      *
      * [
-     *   {contents: ['describer', ''], rowClass: 'heading'},
-     *   {contents: ['foo', 'hello'], rowClass: 'value'},
-     *   {contents: ['bar', 1], rowClass: 'value'},
-     *   {contents: ['baz.x', 43.5], rowClass: 'value'},
-     *   {contents: ['baz.y', 'fox'], rowClass: 'value'},
-     *   {contents: ['baz.z.0', '1'], rowClass: 'value'},
-     *   {contents: ['baz.y.1', '2'], rowClass: 'value'},
+     *   {contents: ['describer', ''], rowClass: 'header', objectIndex: 1},
+     *   {contents: ['foo', 'hello'], rowClass: 'value', objectIndex: 1},
+     *   {contents: ['bar', '1'], rowClass: 'value', objectIndex: 1},
+     *   {contents: ['monkey', '3]', rowClass: 'value', objectIndex: 1},
+     *   {contents: ['describer > baz', ''], rowClass: 'header',
+     *    objectIndex: 2},
+     *   {contents: ['x', '43.5'], rowClass: 'value', objectIndex: 2},
+     *   {contents: ['y', 'fox'], rowClass: 'value', objectIndex: 2},
+     *   {contents: ['a', '0'], rowClass: 'value', objectIndex: 2},
+     *   {contents: ['describer > baz > z', ''], rowClass: 'header',
+     *    objectIndex: 3},
+     *   {contents: ['0', '1'], rowClass: 'value', objectIndex: 3},
+     *   {contents: ['1', '2'], rowClass: 'value', objectIndex: 3},
      * ]
      */
     function flattenObject(object: {[key: string]: any}): ToolTipRowData[] {
       const flattened: ToolTipRowData[] = [];
-      for (const [key, value] of Object.entries(object)) {
-        // Add a header for each top-level object.
-        flattened.push({contents: [key, ''], rowClass: 'heading'});
-        flattenObjectRec(new Set(), flattened, '', value);
-      }
+      flattenObjectRec(new Set(), flattened, '', 0, object);
       return flattened;
     }
 
     // The JSON is a dictionary of data describer name to their data. Assuming a
     // convention that describers emit a dictionary from string->string, this is
     // flattened to an array. Each top-level dictionary entry is flattened to a
-    // 'heading' with [`the describer's name`, null], followed by some number of
+    // 'heading' with [`the describer's name`, ''], followed by some number of
     // entries with a two-element list, each representing a key/value pair.
     this.descriptionJson_ = descriptionJson;
     const flattenedDescription: ToolTipRowData[] =
         flattenObject(JSON.parse(descriptionJson));
     if (flattenedDescription.length === 0) {
       flattenedDescription.push(
-          {contents: ['No Data', ''], rowClass: 'heading'});
+          {contents: ['No Data', ''], rowClass: 'heading', objectIndex: 0});
     }
 
+    // Attach each TooltipRowData element to a table row as data.
     let tr =
         this.div_.selectAll('tbody').selectAll('tr').data(flattenedDescription);
+
+    // Create <tr> and <td> elements for each row that's new in this update.
     tr.enter()
         .append('tr')
         .selectAll('td')
         .data((d: unknown) => (d as ToolTipRowData).contents)
         .enter()
         .append('td');
+
+    // Delete the <tr> elements for each row that's disappeared in this update.
     tr.exit().remove();
 
-    // Update the selection to include the <tr> and <td> elements that were
-    // added above.
+    // Update the selection to match the elements that were added or removed.
     tr = this.div_.selectAll('tr');
+
+    // Apply style and content to all <tr> and <td> elements. Elements that
+    // already existed in the last update will already have settings so each
+    // change must be idempotent.
 
     // Make the first cell of each header row 2 columns wide.
     tr.select('td').attr(
@@ -227,15 +290,29 @@ class ToolTip {
           return parentData.rowClass === 'heading' ? 2 : null;
         });
 
-    // Add text to cells.
+    // Set the text of each cell.
     tr.selectAll('td')
         // Assign the <tr>'s full row of data to the selection.
         .data((d: unknown) => (d as ToolTipRowData).contents)
         // Assign the elements of the row array to the <td>'s in the selection.
         .text((d: unknown) => d as string);
 
-    // Add classes to the rows.
-    tr.attr('class', (d: unknown) => (d as ToolTipRowData).rowClass);
+    // Make each row clickable.
+    tr.on('click',
+          (d: unknown, i: number, nodes: ArrayLike<unknown>) => {
+            toggleTooltipRows(
+                nodes[i] as HTMLElement, (d as ToolTipRowData).objectIndex);
+          })
+        // And add classes to them.
+        .each((d: unknown, i: number, nodes: ArrayLike<unknown>) => {
+          const el = nodes[i] as HTMLElement;
+          const rowData = d as ToolTipRowData;
+
+          // Add the row's fixed classes if they're not already present. This
+          // won't overwrite the "collapsed" class if it's there.
+          el.classList.add(
+              rowData.rowClass, tooltipClassForIndex(rowData.objectIndex));
+        });
   }
 
   private onDragStart_() {
