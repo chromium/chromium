@@ -21,14 +21,17 @@ FontFallbackMap::~FontFallbackMap() {
 
 scoped_refptr<FontFallbackList> FontFallbackMap::Get(
     const FontDescription& font_description) {
+  recordreplay::Assert("[RUN-1219-1708] FontFallbackMap::Get #0");
   AutoLockForParallelTextShaping guard(lock_);
   auto iter = fallback_list_for_description_.find(font_description);
   if (iter != fallback_list_for_description_.end()) {
     DCHECK(iter->value->IsValid());
     return iter->value;
   }
+  recordreplay::Assert("[RUN-1219-1708] FontFallbackMap::Get #1");
   auto add_result = fallback_list_for_description_.insert(
       font_description, FontFallbackList::Create(*this));
+  recordreplay::Assert("[RUN-1219-1708] FontFallbackMap::Get #2");
   return add_result.stored_value->value;
 }
 

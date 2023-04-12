@@ -172,7 +172,7 @@ void StyleCascade::AddInterpolations(const ActiveInterpolationsMap* map,
 }
 
 void StyleCascade::Apply(CascadeFilter filter) {
-  recordreplay::Assert("[RUN-1219-1694] StyleCascade::Apply");
+  recordreplay::Assert("[RUN-1219-1708] StyleCascade::Apply #0");
   AnalyzeIfNeeded();
 
   CascadeResolver resolver(filter, ++generation_);
@@ -204,6 +204,7 @@ void StyleCascade::Apply(CascadeFilter filter) {
   }
 
   ApplyHighPriority(resolver);
+  recordreplay::Assert("[RUN-1219-1708] StyleCascade::Apply #1");
 
   if (map_.NativeBitset().Has(CSSPropertyID::kLineHeight)) {
     LookupAndApply(GetCSSPropertyLineHeight(), resolver);
@@ -247,6 +248,7 @@ void StyleCascade::Apply(CascadeFilter filter) {
   //
   if (!state_.GetElement().HasTagName(html_names::kH1Tag))
     return;
+
   if (CascadePriority* priority =
           map_.Find(GetCSSPropertyFontSize().GetCSSPropertyName())) {
     if (priority->GetOrigin() != CascadeOrigin::kUserAgent)
