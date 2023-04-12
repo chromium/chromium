@@ -718,6 +718,43 @@ TEST_F(SearchControllerTest, ContinueRanksDriveAboveLocal) {
   ExpectIdOrder({"drive_a", "drive_b", "local_a", "local_b"});
 }
 
+// Tests that the desks admin templates always higher than any other type of
+// providers.
+TEST_F(SearchControllerTest, ContinueRanksAdminTemplateAboveHelpAppAndDrive) {
+  // Use the full ranking stack.
+  search_controller_->set_ranker_manager_for_test(
+      std::make_unique<RankerManager>(&profile_, search_controller_.get()));
+
+  auto desks_admin_template = std::make_unique<TestSearchProvider>(
+      Result::kDesksAdminTemplate, base::Seconds(0));
+  auto zero_state_help_app = std::make_unique<TestSearchProvider>(
+      Result::kZeroStateHelpApp, base::Seconds(0));
+  auto drive_provider = std::make_unique<TestSearchProvider>(
+      Result::kZeroStateDrive, base::Seconds(0));
+
+  desks_admin_template->SetNextResults(MakeResults(
+      {"template_a", "template_b"},
+      {DisplayType::kContinue, DisplayType::kContinue},
+      {Category::kUnknown, Category::kUnknown}, {-1, -1}, {0.2, 0.1}));
+  zero_state_help_app->SetNextResults(
+      MakeResults({"explore_a", "explore_b"},
+                  {DisplayType::kContinue, DisplayType::kContinue},
+                  {Category::kHelp, Category::kHelp}, {-1, -1}, {0.5, 0.4}));
+  drive_provider->SetNextResults(MakeResults(
+      {"drive_a", "drive_b"}, {DisplayType::kContinue, DisplayType::kContinue},
+      {Category::kFiles, Category::kFiles}, {-1, -1}, {0.5, 0.4}));
+
+  search_controller_->AddProvider(std::move(drive_provider));
+  search_controller_->AddProvider(std::move(zero_state_help_app));
+  search_controller_->AddProvider(std::move(desks_admin_template));
+
+  search_controller_->StartZeroState(base::DoNothing(), base::Seconds(1));
+
+  Wait();
+  ExpectIdOrder({"template_a", "template_b", "explore_a", "explore_b",
+                 "drive_a", "drive_b"});
+}
+
 TEST_F(SearchControllerTest, FindSearchResultByIdAndOpenIt) {
   auto results_1 = MakeListResults(
       {"a", "b", "c", "d"},
