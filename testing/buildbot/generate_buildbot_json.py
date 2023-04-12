@@ -1824,7 +1824,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       if len(node_dumped) > 60: # pragma: no cover
         node_dumped = node_dumped[:30] + '  <SNIP>  ' + node_dumped[-30:]
       raise BBGenErr(
-          'Invalid .pyl file %r. Python AST node %r on line %s expected to'
+          'Invalid .pyl file \'%s\'. Python AST node %r on line %s expected to'
           ' be %s, is %s' %
           (file_path, node_dumped, node.lineno, typ, type(node)))
 

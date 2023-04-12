@@ -8,6 +8,7 @@
 import contextlib
 import json
 import os
+import re
 import unittest
 
 import generate_buildbot_json
@@ -2173,7 +2174,7 @@ class UnitTest(TestCase):
     with self.assertRaisesRegex(
         generate_buildbot_json.BBGenErr,
         ('The following files have invalid keys: ' +
-         self.args.waterfalls_pyl_path),
+         re.escape(self.args.waterfalls_pyl_path)),
     ):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = '\n'.join(fbb.printed_lines)
@@ -2187,7 +2188,7 @@ class UnitTest(TestCase):
     with self.assertRaisesRegex(
         generate_buildbot_json.BBGenErr,
         ('The following files have invalid keys: ' +
-         self.args.waterfalls_pyl_path),
+         re.escape(self.args.waterfalls_pyl_path)),
     ):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = ' '.join(fbb.printed_lines)
@@ -2872,7 +2873,9 @@ class MixinTests(TestCase):
                     mixins=SWARMING_MIXINS_DUPLICATED)
     with self.assertRaisesRegex(
         generate_buildbot_json.BBGenErr,
-        f'The following files have invalid keys: {self.args.mixins_pyl_path}'):
+        ('The following files have invalid keys: ' +
+         re.escape(self.args.mixins_pyl_path)),
+    ):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = '\n'.join(fbb.printed_lines)
     self.assertRegex(joined_lines, '.*\- builder_mixin')
@@ -2885,7 +2888,7 @@ class MixinTests(TestCase):
     with self.assertRaisesRegex(
         generate_buildbot_json.BBGenErr,
         ('The following files have invalid keys: ' +
-         self.args.test_suites_pyl_path),
+         re.escape(self.args.test_suites_pyl_path)),
     ):
       fbb.check_input_file_consistency(verbose=True)
     joined_lines = '\n'.join(fbb.printed_lines)
@@ -2899,7 +2902,8 @@ class MixinTests(TestCase):
                     LUCI_MILO_CFG)
     with self.assertRaisesRegex(
         generate_buildbot_json.BBGenErr,
-        f'Invalid \.pyl file \'{self.args.test_suites_pyl_path}\'.*'):
+        f'Invalid \.pyl file \'{re.escape(self.args.test_suites_pyl_path)}\'.*',
+    ):
       fbb.check_input_file_consistency(verbose=True)
     self.assertEqual(fbb.printed_lines, [
         f'== {self.args.test_suites_pyl_path} ==',
