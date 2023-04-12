@@ -1,0 +1,3 @@
+include_rules = [
+  "+content/public/test/browser_task_environment.h",
+]
