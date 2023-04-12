@@ -62,6 +62,11 @@ class Time;
 - (void)purgeCacheOlderThan:(const base::Time&)date
                     keeping:(NSSet*)liveSnapshotIDs;
 
+// Renames snapshots named `oldIdentifiers` to `newIdentifiers`. It is a
+// programmatic error if the two array do not have the same length.
+- (void)renameSnapshotWithIdentifiers:(NSArray<NSString*>*)oldIdentifiers
+                        toIdentifiers:(NSArray<NSString*>*)newIdentifiers;
+
 // Hint that the snapshot for `snapshotID` will likely be saved to disk when the
 // application is backgrounded.  The snapshot is then saved in memory, so it
 // does not need to be read off disk.

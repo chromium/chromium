@@ -387,6 +387,34 @@ TEST_F(SnapshotCacheTest, Purge) {
   }
 }
 
+// Tests that migration code correctly rename the specified files and leave
+// the other files untouched.
+TEST_F(SnapshotCacheTest, RenameSnapshots) {
+  SnapshotCache* cache = GetSnapshotCache();
+
+  // This snapshot will be renamed.
+  NSString* image1_id = [[NSUUID UUID] UUIDString];
+  base::FilePath image1_path = [cache imagePathForSnapshotID:image1_id];
+  ASSERT_TRUE(base::WriteFile(image1_path, "image1"));
+
+  // This snapshot will not be renamed.
+  NSString* image2_id = [[NSUUID UUID] UUIDString];
+  base::FilePath image2_path = [cache imagePathForSnapshotID:image2_id];
+  ASSERT_TRUE(base::WriteFile(image2_path, "image2"));
+
+  NSString* new_identifier = [[NSUUID UUID] UUIDString];
+  [cache renameSnapshotWithIdentifiers:@[ image1_id ]
+                         toIdentifiers:@[ new_identifier ]];
+  FlushRunLoops();
+
+  // image1 should have been moved.
+  EXPECT_FALSE(base::PathExists(image1_path));
+  EXPECT_TRUE(base::PathExists([cache imagePathForSnapshotID:new_identifier]));
+
+  // image2 should not have moved.
+  EXPECT_TRUE(base::PathExists(image2_path));
+}
+
 // Loads the color images into the cache, and pins two of them.  Ensures that
 // only the two pinned IDs remain in memory after a memory warning.
 TEST_F(SnapshotCacheTest, HandleMemoryWarning) {

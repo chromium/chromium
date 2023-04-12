@@ -34,6 +34,18 @@ enum class PageLoadedSnapshotResult {
   kMaxValue = kSnapshotSucceeded,
 };
 
+// Generates an identifier for WebState's snapshot.
+NSString* GenerateSnapshotIdentifier(const web::WebState* web_state) {
+  DCHECK(web_state->GetUniqueIdentifier().is_valid());
+  DCHECK_GT(web_state->GetUniqueIdentifier().id(), 0);
+
+  static_assert(sizeof(SessionID::id_type) == sizeof(int32_t));
+  const uint32_t identifier =
+      static_cast<uint32_t>(web_state->GetUniqueIdentifier().id());
+
+  return [NSString stringWithFormat:@"%08u", identifier];
+}
+
 }  // namespace
 
 SnapshotTabHelper::~SnapshotTabHelper() {
@@ -105,7 +117,7 @@ SnapshotTabHelper::SnapshotTabHelper(web::WebState* web_state)
   DCHECK(web_state_);
   snapshot_generator_ = [[SnapshotGenerator alloc]
         initWithWebState:web_state_
-      snapshotIdentifier:web_state_->GetStableIdentifier()];
+      snapshotIdentifier:GenerateSnapshotIdentifier(web_state_)];
   web_state_observation_.Observe(web_state_);
 }
 

@@ -96,6 +96,27 @@ void SnapshotBrowserAgent::RemoveAllSnapshots() {
 
 void SnapshotBrowserAgent::MigrateStorageIfNecessary() {
   DCHECK(snapshot_cache_);
+
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  const int web_state_list_count = web_state_list->count();
+  if (!web_state_list_count) {
+    return;
+  }
+
+  NSMutableArray<NSString*>* old_identifiers =
+      [NSMutableArray arrayWithCapacity:web_state_list_count];
+  NSMutableArray<NSString*>* new_identifiers =
+      [NSMutableArray arrayWithCapacity:web_state_list_count];
+
+  for (int index = 0; index < web_state_list_count; ++index) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(index);
+    [old_identifiers addObject:web_state->GetStableIdentifier()];
+    [new_identifiers addObject:SnapshotTabHelper::FromWebState(web_state)
+                                   ->GetSnapshotIdentifier()];
+  }
+
+  [snapshot_cache_ renameSnapshotWithIdentifiers:old_identifiers
+                                   toIdentifiers:new_identifiers];
 }
 
 void SnapshotBrowserAgent::PurgeUnusedSnapshots() {

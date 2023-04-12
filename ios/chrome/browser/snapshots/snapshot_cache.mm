@@ -286,6 +286,38 @@ void PurgeCacheOlderThan(const base::FilePath& cache_directory,
   }
 }
 
+void RenameSnapshots(const base::FilePath& cache_directory,
+                     NSArray<NSString*>* old_identifiers,
+                     NSArray<NSString*>* new_identifiers,
+                     ImageScale snapshot_scale) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+
+  DCHECK(base::DirectoryExists(cache_directory));
+  DCHECK_EQ(old_identifiers.count, new_identifiers.count);
+
+  const NSUInteger count = old_identifiers.count;
+  for (NSUInteger index = 0; index < count; ++index) {
+    for (const ImageType image_type : kImageTypes) {
+      const base::FilePath old_image_path = ImagePath(
+          old_identifiers[index], image_type, snapshot_scale, cache_directory);
+      const base::FilePath new_image_path = ImagePath(
+          new_identifiers[index], image_type, snapshot_scale, cache_directory);
+
+      // Only migrate snapshots which are needed.
+      if (!base::PathExists(old_image_path) ||
+          base::PathExists(new_image_path)) {
+        continue;
+      }
+
+      if (!base::Move(old_image_path, new_image_path)) {
+        DLOG(ERROR) << "Error migrating file: " << old_image_path.AsUTF8Unsafe()
+                    << " to: " << new_image_path.AsUTF8Unsafe();
+      }
+    }
+  }
+}
+
 void CreateCacheDirectory(const base::FilePath& cache_directory) {
   // This is a NO-OP if the directory already exists.
   if (!base::CreateDirectory(cache_directory)) {
@@ -503,6 +535,20 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
   _taskRunner->PostTask(
       FROM_HERE, base::BindOnce(&PurgeCacheOlderThan, _cacheDirectory, date,
                                 liveSnapshotIDs, _snapshotsScale));
+}
+
+- (void)renameSnapshotWithIdentifiers:(NSArray<NSString*>*)oldIdentifiers
+                        toIdentifiers:(NSArray<NSString*>*)newIdentifiers {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (!_taskRunner) {
+    return;
+  }
+
+  DCHECK_EQ(oldIdentifiers.count, newIdentifiers.count);
+  _taskRunner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&RenameSnapshots, _cacheDirectory, oldIdentifiers,
+                     newIdentifiers, _snapshotsScale));
 }
 
 - (void)willBeSavedGreyWhenBackgrounding:(NSString*)snapshotID {
