@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -332,23 +331,12 @@ AttributionHost::TopFrameOriginForSecureContext() {
   // `is_web_secure_context` would allow opaque origins to pass through, but
   // they cannot be handled by the storage layer.
 
-  auto dump_without_crashing = [render_frame_host, &top_frame_origin]() {
-    SCOPED_CRASH_KEY_STRING1024("", "top_frame_url",
-                                render_frame_host->GetOutermostMainFrame()
-                                    ->GetLastCommittedURL()
-                                    .spec());
-    SCOPED_CRASH_KEY_STRING256("", "top_frame_origin",
-                               top_frame_origin.Serialize());
-    base::debug::DumpWithoutCrashing();
-  };
-
   absl::optional<SuitableOrigin> suitable_top_frame_origin =
       SuitableOrigin::Create(top_frame_origin);
 
   // TODO(crbug.com/1378749): Invoke mojo::ReportBadMessage here when we can be
   // sure honest renderers won't hit this path.
   if (!suitable_top_frame_origin) {
-    dump_without_crashing();
     return absl::nullopt;
   }
 
@@ -358,7 +346,6 @@ AttributionHost::TopFrameOriginForSecureContext() {
       !render_frame_host->policy_container_host()
            ->policies()
            .is_web_secure_context) {
-    dump_without_crashing();
     return absl::nullopt;
   }
 
