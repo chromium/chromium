@@ -872,9 +872,8 @@ bool VisitedLinkWriter::CreateApartURLTable(
   // The table is the size of the table followed by the entries.
   uint32_t alloc_size =
       num_entries * sizeof(Fingerprint) + sizeof(SharedHeader);
-  UMA_HISTOGRAM_CUSTOM_COUNTS(
-      "History.VisitedLinks.HashTableSizeOnTableCreation",
-      alloc_size / 1024 / 1024, 1, 10000, 100);
+  UMA_HISTOGRAM_CUSTOM_COUNTS("History.VisitedLinks.HashTableSizeOnTableCreate",
+                              alloc_size / 1024 / 1024, 1, 10000, 100);
 
   // Create the shared memory object.
   *memory = base::ReadOnlySharedMemoryRegion::Create(alloc_size);
