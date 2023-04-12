@@ -154,9 +154,6 @@ class SystemMemoryPressureEvaluator::OSSignalsMemoryPressureEvaluator {
   // memory gets high again.
   base::RepeatingTimer critical_pressure_notification_timer_;
 
-  // Beginning of the critical memory pressure session.
-  base::TimeTicks critical_pressure_session_begin_;
-
   // Ensures that this object is used from a single sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -344,17 +341,6 @@ void SystemMemoryPressureEvaluator::OSSignalsMemoryPressureEvaluator::
     OnLowMemoryNotification() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  critical_pressure_session_begin_ = base::TimeTicks::Now();
-
-  base::UmaHistogramEnumeration(
-      "Discarding.WinOSPressureSignals.PressureLevelOnLowMemoryNotification",
-      base::MemoryPressureMonitor::Get()->GetCurrentPressureLevel());
-
-  base::UmaHistogramMemoryMB(
-      "Discarding.WinOSPressureSignals."
-      "AvailableMemoryMbOnLowMemoryNotification",
-      base::SysInfo::AmountOfAvailablePhysicalMemory() / 1024 / 1024);
-
   voter_->SetVote(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL,
                   /* notify = */ true);
 
@@ -375,11 +361,6 @@ void SystemMemoryPressureEvaluator::OSSignalsMemoryPressureEvaluator::
 void SystemMemoryPressureEvaluator::OSSignalsMemoryPressureEvaluator::
     OnHighMemoryNotification() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::UmaHistogramMediumTimes(
-      "Discarding.WinOSPressureSignals.LowMemorySessionLength",
-      base::TimeTicks::Now() - critical_pressure_session_begin_);
-  critical_pressure_session_begin_ = base::TimeTicks();
 
   critical_pressure_notification_timer_.Stop();
   voter_->SetVote(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE,

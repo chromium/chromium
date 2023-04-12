@@ -159,38 +159,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Discarding.WinOSPressureSignals.AvailableMemoryMbOnLowMemoryNotification"
-    units="MB" expires_after="2021-05-02">
-  <owner>chrisha@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The amount of physical memory available when receiving a low memory
-    notification, in megabytes. Windows 8.1+ only.
-  </summary>
-</histogram>
-
-<histogram name="Discarding.WinOSPressureSignals.LowMemorySessionLength"
-    units="ms" expires_after="2021-05-02">
-  <owner>chrisha@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The time it takes to receive a high memory notification from the OS after
-    receiving a low memory notification. Windows 8.1+ only.
-  </summary>
-</histogram>
-
-<histogram
-    name="Discarding.WinOSPressureSignals.PressureLevelOnLowMemoryNotification"
-    enum="MemoryPressureLevel" expires_after="2021-05-02">
-  <owner>chrisha@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    The memory pressure level when receiving a low memory notification from the
-    OS. Windows 8.1+ only.
-  </summary>
-</histogram>
-
 <histogram name="Tab.AgeAtDeletion" units="ms" expires_after="2023-12-13">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
