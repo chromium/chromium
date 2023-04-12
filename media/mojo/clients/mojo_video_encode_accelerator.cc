@@ -54,7 +54,7 @@ class VideoEncodeAcceleratorClient
   void BitstreamBufferReady(
       int32_t bitstream_buffer_id,
       const media::BitstreamBufferMetadata& metadata) override;
-  void NotifyError(VideoEncodeAccelerator::Error error) override;
+  void NotifyErrorStatus(const EncoderStatus& status) override;
   void NotifyEncoderInfoChange(const VideoEncoderInfo& info) override;
 
  private:
@@ -90,10 +90,11 @@ void VideoEncodeAcceleratorClient::BitstreamBufferReady(
   client_->BitstreamBufferReady(bitstream_buffer_id, metadata);
 }
 
-void VideoEncodeAcceleratorClient::NotifyError(
-    VideoEncodeAccelerator::Error error) {
+void VideoEncodeAcceleratorClient::NotifyErrorStatus(
+    const EncoderStatus& status) {
   DVLOG(2) << __func__;
-  client_->NotifyError(error);
+  CHECK(!status.is_ok());
+  client_->NotifyErrorStatus(status);
 }
 
 void VideoEncodeAcceleratorClient::NotifyEncoderInfoChange(
@@ -171,11 +172,11 @@ void MojoVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
                             static_cast<int>(VideoFrame::STORAGE_MAX) + 1);
   if (frame->format() != PIXEL_FORMAT_I420 &&
       frame->format() != PIXEL_FORMAT_NV12) {
-    DLOG(ERROR) << "Unexpected pixel format: "
-                << VideoPixelFormatToString(frame->format());
     if (vea_client_) {
-      vea_client_->NotifyError(
-          VideoEncodeAccelerator::Error::kInvalidArgumentError);
+      vea_client_->NotifyErrorStatus(
+          {EncoderStatus::Codes::kUnsupportedFrameFormat,
+           "Unexpected pixel format: " +
+               VideoPixelFormatToString(frame->format())});
     }
     return;
   }
@@ -248,8 +249,9 @@ MojoVideoEncodeAccelerator::~MojoVideoEncodeAccelerator() {
 void MojoVideoEncodeAccelerator::MojoDisconnectionHandler() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (vea_client_) {
-    vea_client_->NotifyError(
-        VideoEncodeAccelerator::Error::kPlatformFailureError);
+    vea_client_->NotifyErrorStatus(
+        {EncoderStatus::Codes::kEncoderMojoConnectionError,
+         "Mojo is disconnected"});
   }
 }
 

@@ -69,7 +69,7 @@ class MockMojoVideoEncodeAcceleratorClient
                void(uint32_t, const gfx::Size&, uint32_t));
   MOCK_METHOD2(BitstreamBufferReady,
                void(int32_t, const media::BitstreamBufferMetadata&));
-  MOCK_METHOD1(NotifyError, void(VideoEncodeAccelerator::Error));
+  MOCK_METHOD1(NotifyErrorStatus, void(const EncoderStatus&));
   MOCK_METHOD1(NotifyEncoderInfoChange, void(const VideoEncoderInfo& info));
 };
 
@@ -310,8 +310,7 @@ TEST_F(MojoVideoEncodeAcceleratorServiceTest,
   const uint64_t wrong_size = fake_vea()->minimum_output_buffer_size() / 2;
   auto region = base::UnsafeSharedMemoryRegion::Create(wrong_size);
 
-  EXPECT_CALL(*mock_mojo_vea_client(),
-              NotifyError(VideoEncodeAccelerator::kInvalidArgumentError));
+  EXPECT_CALL(*mock_mojo_vea_client(), NotifyErrorStatus);
 
   mojo_vea_service()->UseOutputBitstreamBuffer(kBitstreamBufferId,
                                                std::move(region));
@@ -330,8 +329,7 @@ TEST_F(MojoVideoEncodeAcceleratorServiceTest, EncodeWithWrongSizeFails) {
                              kInputVisibleSize.height() / 2);
   const auto video_frame = VideoFrame::CreateBlackFrame(wrong_size);
 
-  EXPECT_CALL(*mock_mojo_vea_client(),
-              NotifyError(VideoEncodeAccelerator::kInvalidArgumentError));
+  EXPECT_CALL(*mock_mojo_vea_client(), NotifyErrorStatus);
 
   mojo_vea_service()->Encode(video_frame, true /* is_keyframe */,
                              base::DoNothing());

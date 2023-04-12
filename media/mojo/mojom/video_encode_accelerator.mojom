@@ -309,8 +309,9 @@ interface VideoEncodeAcceleratorClient {
 
   BitstreamBufferReady(int32 bitstream_buffer_id,
                        BitstreamBufferMetadata metadata);
-
-  NotifyError(VideoEncodeAccelerator.Error error);
+  // VideoEncodeAccelerator calls this when the error occurs and it cannot
+  // perform encoding any more. |status| represents the detail about the error.
+  NotifyErrorStatus(EncoderStatus status);
 
   // VideoEncodeAccelerator calls this when its VideoEncoderInfo is changed.
   // |info| is the updated VideoEncoderInfo.
