@@ -101,7 +101,7 @@ For example, this would reset the microphone access permission:
 
 Unfortunately there is not an authoritative list of service names for resetting,
 but the value `All` will remove all decisions. The decisions are recorded in a
-SQLite database, which can be inspected using the command below. This requies
+SQLite database, which can be inspected using the command below. This requires
 granting the **Full Disk Access** permission in System Settings to the Terminal
 or disabling System Integrity Protection.
 
