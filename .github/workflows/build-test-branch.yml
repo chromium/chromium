@@ -54,6 +54,7 @@ jobs:
         with:
           authkey: ${{ secrets.TAILSCALE_API_KEY }}
           version: 1.38.4
+          args: "--accept-dns=true"
       - uses: Bhacaz/checkout-files@v2
         with:
           files: .github
