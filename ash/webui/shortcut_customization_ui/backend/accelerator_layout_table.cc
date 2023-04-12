@@ -54,6 +54,7 @@ const base::flat_map<ui::KeyboardCode, std::u16string>& GetKeyDisplayMap() {
           {ui::KeyboardCode::VKEY_ESCAPE, u"esc"},
           {ui::KeyboardCode::VKEY_RETURN, u"enter"},
           {ui::KeyboardCode::VKEY_BACK, u"backspace"},
+          {ui::KeyboardCode::VKEY_MEDIA_PLAY, u"MediaPlay"},
       }));
   return *key_display_map;
 }
