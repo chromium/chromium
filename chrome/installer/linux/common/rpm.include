@@ -8,29 +8,25 @@ install_rpm_key() {
   # Make sure all the most recent signing subkeys are installed.
   NEED_KEYS=0
 
-  # 2017 signing subkey
-  rpm -q ${KEY_PACKAGE} --qf '%{Pubkeys:armor}\n' | \
-    gpg --with-colons - 2>/dev/null | \
-    grep -q 6494C6D6997C215E
-  if [ "$?" -ne "0" ]; then
-    NEED_KEYS=1
-  fi
+  SUB_KEY_LIST=(
+    # 2017 signing subkey
+    "6494C6D6997C215E"
+    # 2019 signing subkey
+    "78BD65473CB3BD13"
+    # 2021 signing subkey
+    "4EB27DB2A3B88B8B"
+    # 2023 signing subkey
+    "E88979FB9B30ACF2"
+  )
 
-  # 2019 signing subkey
-  rpm -q ${KEY_PACKAGE} --qf '%{Pubkeys:armor}\n' | \
-    gpg --with-colons - 2>/dev/null | \
-    grep -q 78BD65473CB3BD13
-  if [ "$?" -ne "0" ]; then
-    NEED_KEYS=1
-  fi
-
-  # 2021 signing subkey
-  rpm -q ${KEY_PACKAGE} --qf '%{Pubkeys:armor}\n' | \
-    gpg --with-colons - 2>/dev/null | \
-    grep -q 4EB27DB2A3B88B8B
-  if [ "$?" -ne "0" ]; then
-    NEED_KEYS=1
-  fi
+  for SUB_KEY in "${SUB_KEY_LIST[@]}"; do
+    rpm -q ${KEY_PACKAGE} --qf '%{Pubkeys:armor}\n' | \
+      gpg --with-colons - 2>/dev/null | \
+      grep -q "$SUB_KEY"
+    if [ "$?" -ne "0" ]; then
+      NEED_KEYS=1
+    fi
+  done
 
   if [ $NEED_KEYS -ne 1 ]; then
     return
