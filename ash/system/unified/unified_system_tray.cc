@@ -258,11 +258,9 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
             shelf, Shell::Get()->shell_delegate()->GetChannel()));
   }
 
-  // Do not show this indicator if video conference feature is enabled since
-  // privacy indicator is already shown there. We also do not show this here in
-  // the new Quick Settings UI.
+  // We do not show privacy indicators here in the new Quick Settings UI.
   if (features::IsPrivacyIndicatorsEnabled() &&
-      !features::IsVideoConferenceEnabled() && !features::IsQsRevampEnabled()) {
+      !features::IsQsRevampEnabled()) {
     privacy_indicators_view_ = AddTrayItemToContainer(
         std::make_unique<PrivacyIndicatorsTrayItemView>(shelf));
   }

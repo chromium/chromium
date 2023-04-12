@@ -135,9 +135,7 @@ void UpdatePrivacyIndicatorsView(bool is_camera_used,
                                  bool is_new_app,
                                  bool was_camera_in_use,
                                  bool was_microphone_in_use) {
-  // Privacy indicators don't exist when video conference controls are enabled.
-  if (!features::IsPrivacyIndicatorsEnabled() ||
-      features::IsVideoConferenceEnabled()) {
+  if (!features::IsPrivacyIndicatorsEnabled()) {
     return;
   }
   DCHECK(Shell::HasInstance());

@@ -4,6 +4,7 @@
 
 #include "ash/system/privacy/privacy_indicators_controller.h"
 
+#include <memory>
 #include <string>
 
 #include "ash/constants/ash_constants.h"
@@ -14,10 +15,12 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/notification_center/notification_list_view.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -382,6 +385,82 @@ TEST_F(PrivacyIndicatorsControllerTest, SourceMetricsCollection) {
       PrivacyIndicatorsSource::kLinuxVm);
   histogram_tester.ExpectBucketCount(histogram_name,
                                      PrivacyIndicatorsSource::kLinuxVm, 1);
+}
+
+// Tests enabling both `kPrivacyIndicators` and `kVideoConference`,
+// parameterized with `kQsRevamp` enabled and disabled.
+class PrivacyIndicatorsControllerVideoConferenceTest
+    : public AshTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  PrivacyIndicatorsControllerVideoConferenceTest() {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kPrivacyIndicators, features::kVideoConference};
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (IsQsRevampEnabled()) {
+      enabled_features.push_back(features::kQsRevamp);
+    } else {
+      disabled_features.push_back(features::kQsRevamp);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+  PrivacyIndicatorsControllerVideoConferenceTest(
+      const PrivacyIndicatorsControllerVideoConferenceTest&) = delete;
+  PrivacyIndicatorsControllerVideoConferenceTest& operator=(
+      const PrivacyIndicatorsControllerVideoConferenceTest&) = delete;
+  ~PrivacyIndicatorsControllerVideoConferenceTest() override = default;
+
+  bool IsQsRevampEnabled() { return GetParam(); }
+
+  // AshTestBase:
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kCameraEffectsSupportedByHardware);
+
+    // Instantiates a fake controller (the real one is created in
+    // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
+    // ash unit tests).
+    controller_ = std::make_unique<FakeVideoConferenceTrayController>();
+
+    AshTestBase::SetUp();
+  }
+
+  void TearDown() override {
+    AshTestBase::TearDown();
+    controller_.reset();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<FakeVideoConferenceTrayController> controller_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrivacyIndicatorsControllerVideoConferenceTest,
+                         testing::Bool() /* IsQsRevampEnabled() */);
+
+// Make sure that when `kPrivacyIndicators` and `kVideoConference` are both
+// enabled, the privacy indicators view and the controller is not created.
+TEST_P(PrivacyIndicatorsControllerVideoConferenceTest, ObjectsCreation) {
+  EXPECT_FALSE(PrivacyIndicatorsController::Get());
+
+  for (auto* root_window_controller :
+       Shell::Get()->GetAllRootWindowControllers()) {
+    DCHECK(root_window_controller);
+    auto* status_area_widget = root_window_controller->GetStatusAreaWidget();
+    DCHECK(status_area_widget);
+
+    auto* privacy_indicators_view =
+        features::IsQsRevampEnabled()
+            ? status_area_widget->notification_center_tray()
+                  ->privacy_indicators_view()
+            : status_area_widget->unified_system_tray()
+                  ->privacy_indicators_view();
+
+    EXPECT_FALSE(privacy_indicators_view);
+  }
 }
 
 }  // namespace ash

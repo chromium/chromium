@@ -3159,7 +3159,9 @@ bool IsPinAutosubmitFeatureEnabled() {
 }
 
 bool IsPrivacyIndicatorsEnabled() {
-  return base::FeatureList::IsEnabled(kPrivacyIndicators);
+  // Privacy indicators should not be enabled when video conference is enabled.
+  return base::FeatureList::IsEnabled(kPrivacyIndicators) &&
+         !IsVideoConferenceEnabled();
 }
 
 bool IsProductivityLauncherEnabled() {
