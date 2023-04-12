@@ -142,7 +142,6 @@ void SystemInfoProvider::SetTabletModeChanged(bool enabled) {
   if (!observer_remote_.is_bound()) {
     return;
   }
-
   PA_LOG(VERBOSE) << "OnReceivedTabletModeChanged:" << enabled;
   observer_remote_->OnReceivedTabletModeChanged(enabled);
 }
@@ -157,6 +156,10 @@ void SystemInfoProvider::SetAndroidDeviceNetworkInfoChanged(
       << "echeapi SystemInfoProvider "
          "SetAndroidDeviceNetworkInfoChanged android_device_on_cellular:"
       << android_device_on_cellular;
+
+  is_different_network_ = is_different_network;
+  android_device_on_cellular_ = android_device_on_cellular;
+
   if (!observer_remote_.is_bound()) {
     return;
   }

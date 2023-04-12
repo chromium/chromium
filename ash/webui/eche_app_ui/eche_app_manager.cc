@@ -135,6 +135,7 @@ EcheAppManager::EcheAppManager(
   if (features::IsEcheNetworkConnectionStateEnabled()) {
     phone_hub_manager_->SetEcheConnectionStatusHandler(
         eche_connection_status_handler_.get());
+    phone_hub_manager_->SetSystemInfoProvider(system_info_provider_.get());
   }
 }
 
@@ -196,6 +197,7 @@ void EcheAppManager::StreamGoBack() {
 void EcheAppManager::Shutdown() {
   if (features::IsEcheNetworkConnectionStateEnabled() && phone_hub_manager_) {
     phone_hub_manager_->SetEcheConnectionStatusHandler(nullptr);
+    phone_hub_manager_->SetSystemInfoProvider(nullptr);
   }
 
   eche_stream_orientation_observer_.reset();

@@ -44,6 +44,24 @@ static_library("eche_connection_status") {
   ]
 }
 
+static_library("system_info_provider") {
+  sources = [
+    "system_info.cc",
+    "system_info.h",
+    "system_info_provider.cc",
+    "system_info_provider.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/eche_app_ui/mojom",
+    "//base:base",
+    "//chromeos/ash/components/multidevice/logging",
+    "//chromeos/services/network_config/public/cpp",
+  ]
+}
+
 static_library("eche_app_ui") {
   sources = [
     "accessibility_tree_converter.cc",
@@ -98,8 +116,6 @@ static_library("eche_app_ui") {
     "launch_app_helper.h",
     "system_info.cc",
     "system_info.h",
-    "system_info_provider.cc",
-    "system_info_provider.h",
     "untrusted_eche_app_ui.cc",
     "untrusted_eche_app_ui.h",
     "url_constants.cc",
@@ -110,6 +126,7 @@ static_library("eche_app_ui") {
     ":eche_app_ui_pref",
     ":eche_connection_status",
     ":feature_status",
+    ":system_info_provider",
     "//ash",
     "//ash/constants",
     "//ash/public/cpp",
@@ -189,6 +206,7 @@ source_set("unit_tests") {
     ":eche_app_ui_pref",
     ":eche_connection_status",
     ":feature_status",
+    ":system_info_provider",
     ":test_support",
     "//ash:test_support",
     "//ash/public/cpp",

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_PHONE_HUB_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_PHONE_HUB_MANAGER_H_
 
+#include "ash/webui/eche_app_ui/system_info_provider.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "chromeos/ash/components/phonehub/app_stream_manager.h"
 #include "chromeos/ash/components/phonehub/fake_browser_tabs_model_provider.h"
@@ -139,6 +140,9 @@ class FakePhoneHubManager : public PhoneHubManager {
   void SetEcheConnectionStatusHandler(
       eche_app::EcheConnectionStatusHandler* eche_connection_status_handler)
       override;
+  void SetSystemInfoProvider(
+      eche_app::SystemInfoProvider* system_info_provider) override;
+  eche_app::SystemInfoProvider* GetSystemInfoProvider() override;
 
   FakeDoNotDisturbController fake_do_not_disturb_controller_;
   FakeFeatureStatusProvider fake_feature_status_provider_;
@@ -161,6 +165,7 @@ class FakePhoneHubManager : public PhoneHubManager {
   AppStreamManager app_stream_manager_;
   eche_app::EcheConnectionStatusHandler* eche_connection_status_handler_ =
       nullptr;
+  eche_app::SystemInfoProvider* system_info_provider_ = nullptr;
   absl::optional<base::Time> host_last_seen_timestamp_ = absl::nullopt;
 };
 

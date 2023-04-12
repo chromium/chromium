@@ -113,5 +113,14 @@ void FakePhoneHubManager::SetEcheConnectionStatusHandler(
   eche_connection_status_handler_ = eche_connection_status_handler;
 }
 
+void FakePhoneHubManager::SetSystemInfoProvider(
+    eche_app::SystemInfoProvider* system_info_provider) {
+  system_info_provider_ = system_info_provider;
+}
+
+eche_app::SystemInfoProvider* FakePhoneHubManager::GetSystemInfoProvider() {
+  return system_info_provider_;
+}
+
 }  // namespace phonehub
 }  // namespace ash
