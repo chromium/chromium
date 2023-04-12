@@ -31,7 +31,7 @@ class ScopedAcceleratedSkImage {
  public:
   static std::unique_ptr<ScopedAcceleratedSkImage> Create(
       viz::RasterContextProvider* provider,
-      viz::ResourceFormat format,
+      viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
@@ -61,12 +61,13 @@ class ScopedAcceleratedSkImage {
         mailbox_holder.texture_target,
         texture_id,
         viz::TextureStorageFormat(
-            format, provider->ContextCapabilities().angle_rgbx_internal_format),
+            format.resource_format(),
+            provider->ContextCapabilities().angle_rgbx_internal_format),
     };
     GrBackendTexture backend_texture(size.width(), size.height(),
                                      GrMipmapped::kNo, gl_info);
 
-    SkColorType color_type = viz::ResourceFormatToClosestSkColorType(
+    SkColorType color_type = viz::ToClosestSkColorType(
         /*gpu_compositing=*/true, format);
     sk_sp<SkImage> sk_image = SkImages::BorrowTextureFrom(
         gr_context, backend_texture, surface_origin, color_type,
@@ -114,7 +115,7 @@ class ScopedAcceleratedSkImage {
 namespace media {
 
 bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
-                                 viz::ResourceFormat src_format,
+                                 viz::SharedImageFormat src_format,
                                  const gfx::Size& src_size,
                                  const gfx::ColorSpace& src_color_space,
                                  GrSurfaceOrigin src_surface_origin,

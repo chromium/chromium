@@ -160,8 +160,9 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
   ri->BeginQueryEXT(queryTarget, query_id);
 
   const bool copy_succeeded = media::CopyRGBATextureToVideoFrame(
-      raster_context_provider, src_format, src_size, src_color_space,
-      src_surface_origin, src_mailbox_holder, dst_frame.get());
+      raster_context_provider, viz::SharedImageFormat::SinglePlane(src_format),
+      src_size, src_color_space, src_surface_origin, src_mailbox_holder,
+      dst_frame.get());
   if (!copy_succeeded) {
     ri->DeleteQueriesEXT(1, &query_id);
     return false;
