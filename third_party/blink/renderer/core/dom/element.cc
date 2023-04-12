@@ -3528,6 +3528,9 @@ StyleRecalcChange Element::RecalcOwnStyle(
     // ending up calling StyleResolver::ResolveStyle()).
     new_style = StyleForLayoutObject(new_style_recalc_context);
   }
+  bool base_is_display_none =
+      !new_style ||
+      new_style->GetBaseComputedStyleOrThis()->Display() == EDisplay::kNone;
   if (new_style && !ShouldStoreComputedStyle(*new_style)) {
     new_style = nullptr;
     if (auto* ax_cache = GetDocument().ExistingAXObjectCache()) {
@@ -3642,7 +3645,14 @@ StyleRecalcChange Element::RecalcOwnStyle(
     ElementRareDataVector* rare_data = GetElementRareData();
     if (ElementAnimations* element_animations =
             rare_data->GetElementAnimations()) {
-      element_animations->CssAnimations().Cancel();
+      // The animation should only be canceled when the base style is
+      // display:none. If new_style is otherwise set to display:none, then it
+      // means an animation set display:none, and an animation shouldn't
+      // cancel itself in this case.
+      if (base_is_display_none ||
+          !RuntimeEnabledFeatures::CSSDisplayAnimationEnabled()) {
+        element_animations->CssAnimations().Cancel();
+      }
     }
     rare_data->SetContainerQueryEvaluator(nullptr);
     rare_data->ClearPseudoElements();
