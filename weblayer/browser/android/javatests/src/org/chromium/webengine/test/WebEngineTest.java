@@ -16,7 +16,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
@@ -174,7 +173,6 @@ public class WebEngineTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1432687")
     public void closingWebEngineRemovesItFromSandbox() throws Exception {
         int numWebEngines = runOnUiThreadBlocking(() -> {
             mWebEngine.close();
@@ -196,7 +194,6 @@ public class WebEngineTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1432689")
     public void createWebEngineWithoutTag() throws Exception {
         WebEngine webEngineWithoutGivenTag =
                 runOnUiThreadBlocking(() -> mSandbox.createWebEngine()).get();
