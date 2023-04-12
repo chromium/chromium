@@ -301,6 +301,7 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
+  friend class ByteStreamTeeEngine;
   friend class ReadableByteStreamController;
   friend class ReadableStreamBYOBReader;
   friend class ReadableStreamDefaultController;
@@ -312,7 +313,6 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   class CancelAlgorithm;
   class PipeToEngine;
   class ReadHandleImpl;
-  class ByteStreamTeeEngine;
 
   // https://streams.spec.whatwg.org/#rs-constructor
   void InitInternal(ScriptState*,

@@ -74,6 +74,7 @@ class CORE_EXPORT ReadableStreamDefaultReader
   bool HasPendingActivity() const final;
 
  private:
+  friend class ByteStreamTeeEngine;
   friend class ReadableByteStreamController;
   friend class ReadableStreamController;
   friend class ReadableStreamDefaultController;

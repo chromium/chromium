@@ -5,6 +5,8 @@
 blink_core_sources_streams = [
   "byte_length_queuing_strategy.cc",
   "byte_length_queuing_strategy.h",
+  "byte_stream_tee_engine.cc",
+  "byte_stream_tee_engine.h",
   "count_queuing_strategy.cc",
   "count_queuing_strategy.h",
   "miscellaneous_operations.cc",

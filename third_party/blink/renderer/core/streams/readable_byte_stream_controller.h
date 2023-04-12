@@ -67,6 +67,7 @@ class CORE_EXPORT ReadableByteStreamController
   void Trace(Visitor*) const override;
 
  private:
+  friend class ByteStreamTeeEngine;
   friend class ReadableStream;
   friend class ReadableStreamBYOBReader;
   friend class ReadableStreamBYOBRequest;
