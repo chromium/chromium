@@ -20,6 +20,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
+#include "ash/test/view_drawn_waiter.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -272,8 +273,9 @@ TEST_P(AppListViewLauncherSearchIphTest, Basic) {
     event_generator->ClickLeftButton();
   }
 
-  // Wait re-layout for adding IPH view.
-  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(search_box_view->iph_view());
+  ViewDrawnWaiter view_drawn_waiter;
+  view_drawn_waiter.Wait(search_box_view->iph_view());
 
   UseFixedPlaceholderTextAndHideCursor(search_box_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
