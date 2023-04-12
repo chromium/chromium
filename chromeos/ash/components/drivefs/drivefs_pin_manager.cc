@@ -34,26 +34,6 @@ using std::ostream;
 using Path = PinManager::Path;
 using LookupStatus = ShortcutDetails::LookupStatus;
 
-bool InProgress(const Stage stage) {
-  switch (stage) {
-    case Stage::kGettingFreeSpace:
-    case Stage::kListingFiles:
-    case Stage::kSyncing:
-      return true;
-
-    case Stage::kStopped:
-    case Stage::kPaused:
-    case Stage::kSuccess:
-    case Stage::kCannotGetFreeSpace:
-    case Stage::kCannotListFiles:
-    case Stage::kNotEnoughSpace:
-    case Stage::kCannotEnableDocsOffline:
-      return false;
-  }
-
-  NOTREACHED_NORETURN() << "Unexpected Stage " << stage;
-}
-
 int Percentage(const int64_t a, const int64_t b) {
   DCHECK_GE(a, 0);
   DCHECK_LE(a, b);
@@ -256,6 +236,28 @@ ostream& operator<<(ostream& out, Quoter<mojom::DriveError> q) {
              << " " << Quote(e.path) << "}";
 }
 
+ostream& operator<<(ostream& out, Quoter<Stage> q) {
+  switch (q.value) {
+#define PRINT(s)    \
+  case Stage::k##s: \
+    return out << #s;
+    PRINT(Stopped)
+    PRINT(Paused)
+    PRINT(GettingFreeSpace)
+    PRINT(ListingFiles)
+    PRINT(Syncing)
+    PRINT(Success)
+    PRINT(CannotGetFreeSpace)
+    PRINT(CannotListFiles)
+    PRINT(NotEnoughSpace)
+    PRINT(CannotEnableDocsOffline)
+#undef PRINT
+  }
+
+  return out << "Stage(" << static_cast<std::underlying_type_t<Stage>>(q.value)
+             << ")";
+}
+
 // Rounds the given size to the next multiple of 4-KB.
 int64_t RoundToBlockSize(int64_t size) {
   const int64_t block_size = 4 << 10;  // 4 KB
@@ -312,28 +314,6 @@ ostream& operator<<(ostream& out, HumanReadableSize size) {
   return out << " (" << std::setprecision(4) << d << " " << *unit << ")";
 }
 
-ostream& operator<<(ostream& out, const Stage stage) {
-  switch (stage) {
-#define PRINT(s)    \
-  case Stage::k##s: \
-    return out << #s;
-    PRINT(Stopped)
-    PRINT(Paused)
-    PRINT(GettingFreeSpace)
-    PRINT(ListingFiles)
-    PRINT(Syncing)
-    PRINT(Success)
-    PRINT(CannotGetFreeSpace)
-    PRINT(CannotListFiles)
-    PRINT(NotEnoughSpace)
-    PRINT(CannotEnableDocsOffline)
-#undef PRINT
-  }
-
-  return out << "Stage(" << static_cast<std::underlying_type_t<Stage>>(stage)
-             << ")";
-}
-
 ostream& PinManager::File::PrintTo(ostream& out) const {
   return out << "{path: " << Quote(path)
              << ", transferred: " << HumanReadableSize(transferred)
@@ -375,7 +355,31 @@ bool Progress::IsError() const {
       return false;
   }
 
-  NOTREACHED_NORETURN() << "Unexpected Stage " << stage;
+  NOTREACHED_NORETURN() << "Unexpected Stage " << Quote(stage);
+}
+
+bool InProgress(const Stage stage) {
+  switch (stage) {
+    case Stage::kGettingFreeSpace:
+    case Stage::kListingFiles:
+    case Stage::kSyncing:
+      return true;
+
+    case Stage::kStopped:
+    case Stage::kPaused:
+    case Stage::kSuccess:
+    case Stage::kCannotGetFreeSpace:
+    case Stage::kCannotListFiles:
+    case Stage::kNotEnoughSpace:
+    case Stage::kCannotEnableDocsOffline:
+      return false;
+  }
+
+  NOTREACHED_NORETURN() << "Unexpected Stage " << Quote(stage);
+}
+
+std::string ToString(const Stage& stage) {
+  return (std::ostringstream() << Quote(stage)).str();
 }
 
 constexpr TimeDelta kStalledFileInterval = base::Seconds(10);
@@ -594,7 +598,8 @@ PinManager::PinManager(Path profile_path, mojom::DriveFs* const drivefs)
 
 PinManager::~PinManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!InProgress(progress_.stage)) << "Pin manager is " << progress_.stage;
+  DCHECK(!InProgress(progress_.stage))
+      << "Pin manager is " << Quote(progress_.stage);
 
   for (Observer& observer : observers_) {
     observer.OnDrop();
@@ -606,7 +611,7 @@ void PinManager::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (InProgress(progress_.stage)) {
-    LOG(ERROR) << "Pin manager is already started: " << progress_.stage;
+    LOG(ERROR) << "Pin manager is already started: " << Quote(progress_.stage);
     return;
   }
 
@@ -933,7 +938,7 @@ void PinManager::Complete(const Stage stage) {
       break;
 
     default:
-      LOG(ERROR) << "Finished with error: " << stage;
+      LOG(ERROR) << "Finished with error: " << Quote(stage);
   }
 
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -1183,7 +1188,7 @@ void PinManager::OnFileCreated(const mojom::FileChange& event) {
 
   if (!InProgress(progress_.stage)) {
     VLOG(2) << "Ignored " << Quote(event) << ": PinManager is currently "
-            << progress_.stage;
+            << Quote(progress_.stage);
     return;
   }
 
