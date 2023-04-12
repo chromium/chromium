@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
@@ -608,6 +609,8 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 }
 
 - (void)accountStorageSwitchChanged:(UISwitch*)switchView {
+  base::UmaHistogramBoolean("PasswordManager.AccountStorageOptInSwitchFlipped",
+                            switchView.on);
   [self.delegate accountStorageSwitchDidChange:switchView.on];
 }
 
