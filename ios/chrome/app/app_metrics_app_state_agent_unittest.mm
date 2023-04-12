@@ -24,8 +24,7 @@ namespace {
 class FakeProfileSessionDurationsService
     : public IOSProfileSessionDurationsService {
  public:
-  FakeProfileSessionDurationsService()
-      : IOSProfileSessionDurationsService(nullptr, nullptr) {}
+  FakeProfileSessionDurationsService() = default;
 
   FakeProfileSessionDurationsService(
       const FakeProfileSessionDurationsService&) = delete;

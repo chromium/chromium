@@ -55,8 +55,8 @@ IOSProfileSessionDurationsServiceFactory::BuildServiceInstanceFor(
       SyncServiceFactory::GetForBrowserState(browser_state);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
-  return std::make_unique<IOSProfileSessionDurationsService>(sync_service,
-                                                             identity_manager);
+  return std::make_unique<IOSProfileSessionDurationsService>(
+      sync_service, browser_state->GetPrefs(), identity_manager);
 }
 
 web::BrowserState*
