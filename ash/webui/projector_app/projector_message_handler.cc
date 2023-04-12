@@ -196,14 +196,6 @@ void ProjectorMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "sendXhr", base::BindRepeating(&ProjectorMessageHandler::SendXhr,
                                      base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      "shouldDownloadSoda",
-      base::BindRepeating(&ProjectorMessageHandler::ShouldDownloadSoda,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "installSoda", base::BindRepeating(&ProjectorMessageHandler::InstallSoda,
-                                         base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getPendingScreencasts",
       base::BindRepeating(&ProjectorMessageHandler::GetPendingScreencasts,
@@ -228,22 +220,6 @@ void ProjectorMessageHandler::OnScreencastsPendingStatusChanged(
   AllowJavascript();
   FireWebUIListener("onScreencastsStateChange",
                     ScreencastListToValue(pending_screencast));
-}
-
-void ProjectorMessageHandler::OnSodaProgress(int combined_progress) {
-  AllowJavascript();
-  FireWebUIListener("onSodaInstallProgressUpdated",
-                    base::Value(combined_progress));
-}
-
-void ProjectorMessageHandler::OnSodaError() {
-  AllowJavascript();
-  FireWebUIListener("onSodaInstallError");
-}
-
-void ProjectorMessageHandler::OnSodaInstalled() {
-  AllowJavascript();
-  FireWebUIListener("onSodaInstalled");
 }
 
 void ProjectorMessageHandler::GetAccounts(const base::Value::List& args) {
@@ -359,22 +335,6 @@ void ProjectorMessageHandler::SendXhr(const base::Value::List& args) {
       func_args[5].is_dict() ? func_args[5].GetDict().Clone()
                              : base::Value::Dict(),
       account_email);
-}
-
-void ProjectorMessageHandler::ShouldDownloadSoda(
-    const base::Value::List& args) {
-  AllowJavascript();
-
-  // The device should be eligible to download SODA and SODA should not have
-  // already been downloaded on the device.
-  ResolveJavascriptCallback(
-      args[0], base::Value(ProjectorAppClient::Get()->ShouldDownloadSoda()));
-}
-
-void ProjectorMessageHandler::InstallSoda(const base::Value::List& args) {
-  AllowJavascript();
-  ProjectorAppClient::Get()->InstallSoda();
-  ResolveJavascriptCallback(args[0], base::Value(true));
 }
 
 void ProjectorMessageHandler::OnError(const base::Value::List& args) {

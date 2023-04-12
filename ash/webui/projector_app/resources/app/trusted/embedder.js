@@ -37,24 +37,6 @@ Polymer({
 
     const client = AppTrustedCommFactory.getPostMessageAPIClient();
 
-    this.addWebUIListener('onSodaInstallProgressUpdated', (progress) => {
-      if (isNaN(progress)) {
-        console.error(
-            'Invalid argument to onSodaInstallProgressUpdated', progress);
-        return;
-      }
-
-      client.onSodaInstallProgressUpdated(progress);
-    });
-
-    this.addWebUIListener('onSodaInstalled', (args) => {
-      client.onSodaInstalled();
-    });
-
-    this.addWebUIListener('onSodaInstallError', (args) => {
-      client.onSodaInstallError();
-    });
-
     // TODO(b/204372280): Rename onScreencastsStateChange to
     // OnPendingScreencastsStateChanged.
     this.addWebUIListener('onScreencastsStateChange', (pendingScreencasts) => {

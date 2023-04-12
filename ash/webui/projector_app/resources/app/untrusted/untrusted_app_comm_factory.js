@@ -151,8 +151,7 @@ const CLIENT_DELEGATE = {
    * @return {!Promise<boolean>}
    */
   shouldDownloadSoda() {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'shouldDownloadSoda', []);
+    return browserProxy.shouldDownloadSoda();
   },
 
   /**
@@ -162,8 +161,7 @@ const CLIENT_DELEGATE = {
    * @return {!Promise<boolean>}
    */
   installSoda() {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'installSoda', []);
+    return browserProxy.installSoda();
   },
 
   /**
@@ -252,20 +250,17 @@ export class UntrustedAppRequestHandler extends RequestHandler {
                 error);
           }
         });
-
-    this.registerMethod('onSodaInstallProgressUpdated', (args) => {
-      if (args.length !== 1 || isNaN(args[0])) {
-        return;
-      }
-
-      getAppElement().onSodaInstallProgressUpdated(args[0]);
-    });
-    this.registerMethod('onSodaInstalled', (args) => {
-      getAppElement().onSodaInstalled();
-    });
-    this.registerMethod('onSodaInstallError', (args) => {
+    this.callbackRouter_.onSodaInstallProgressUpdated.addListener(
+        (progress) => {
+          getAppElement().onSodaInstallProgressUpdated(progress);
+        });
+    this.callbackRouter_.onSodaInstallError.addListener(() => {
       getAppElement().onSodaInstallError();
     });
+    this.callbackRouter_.onSodaInstalled.addListener(() => {
+      getAppElement().onSodaInstalled();
+    });
+
     this.registerMethod('onScreencastsStateChange', (pendingScreencasts) => {
       getAppElement().onScreencastsStateChange(pendingScreencasts);
     });

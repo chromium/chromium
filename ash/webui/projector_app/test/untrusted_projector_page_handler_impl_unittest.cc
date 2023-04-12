@@ -11,6 +11,7 @@
 #include "ash/webui/projector_app/test/mock_app_client.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -33,6 +34,9 @@ class MockUntrustedProjectorPageJs
   MOCK_METHOD1(
       OnNewScreencastPreconditionChanged,
       void(ash::projector::mojom::NewScreencastPreconditionPtr precondition));
+  MOCK_METHOD1(OnSodaInstallProgressUpdated, void(int32_t));
+  MOCK_METHOD0(OnSodaInstalled, void());
+  MOCK_METHOD0(OnSodaInstallError, void());
 
   void FlushReceiverForTesting() { receiver_.FlushForTesting(); }
 
@@ -77,6 +81,7 @@ class UntrustedProjectorPageHandlerImplUnitTest : public testing::Test {
   MockProjectorController& controller() { return mock_controller_; }
   MockUntrustedProjectorPageJs& page() { return *page_; }
   UntrustedProjectorPageHandlerImpl& handler() { return *handler_impl_; }
+  MockAppClient& mock_app_client() { return mock_app_client_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -95,21 +100,19 @@ TEST_F(UntrustedProjectorPageHandlerImplUnitTest, CanStartProjectorSession) {
   ON_CALL(controller(), GetNewScreencastPrecondition)
       .WillByDefault(testing::Return(precondition));
 
-  base::RunLoop runloop;
-  page().page_handler()->GetNewScreencastPrecondition(
-      base::BindLambdaForTesting(
-          [&](projector::mojom::NewScreencastPreconditionPtr precondition) {
-            EXPECT_EQ(
-                precondition->state,
-                projector::mojom::NewScreencastPreconditionState::kEnabled);
-            EXPECT_EQ(precondition->reasons.size(), 1u);
-            EXPECT_EQ(precondition->reasons[0],
-                      projector::mojom::NewScreencastPreconditionReason::
-                          kEnabledBySoda);
-            runloop.Quit();
-          }));
+  base::test::TestFuture<projector::mojom::NewScreencastPreconditionPtr>
+      new_screencast_precondition_future;
 
-  runloop.Run();
+  page().page_handler()->GetNewScreencastPrecondition(
+      new_screencast_precondition_future.GetCallback());
+
+  const projector::mojom::NewScreencastPreconditionPtr& result =
+      new_screencast_precondition_future.Get();
+  EXPECT_EQ(result->state,
+            projector::mojom::NewScreencastPreconditionState::kEnabled);
+  EXPECT_EQ(result->reasons.size(), 1u);
+  EXPECT_EQ(result->reasons[0],
+            projector::mojom::NewScreencastPreconditionReason::kEnabledBySoda);
 }
 
 TEST_F(UntrustedProjectorPageHandlerImplUnitTest,
@@ -120,6 +123,40 @@ TEST_F(UntrustedProjectorPageHandlerImplUnitTest,
       {NewScreencastPreconditionReason::kEnabledBySoda});
   handler().OnNewScreencastPreconditionChanged(precondition);
   page().FlushReceiverForTesting();
+}
+
+TEST_F(UntrustedProjectorPageHandlerImplUnitTest, OnSodaProgress) {
+  EXPECT_CALL(page(), OnSodaInstallProgressUpdated(50)).Times(1);
+  handler().OnSodaProgress(50);
+  page().FlushReceiverForTesting();
+}
+
+TEST_F(UntrustedProjectorPageHandlerImplUnitTest, OnSodaInstalled) {
+  EXPECT_CALL(page(), OnSodaInstalled()).Times(1);
+  handler().OnSodaInstalled();
+  page().FlushReceiverForTesting();
+}
+
+TEST_F(UntrustedProjectorPageHandlerImplUnitTest, OnSodaError) {
+  EXPECT_CALL(page(), OnSodaInstallError()).Times(1);
+  handler().OnSodaError();
+  page().FlushReceiverForTesting();
+}
+
+TEST_F(UntrustedProjectorPageHandlerImplUnitTest, ShouldDownloadSoda) {
+  ON_CALL(mock_app_client(), ShouldDownloadSoda())
+      .WillByDefault(testing::Return(true));
+  base::test::TestFuture<bool> should_download_soda_future;
+  page().page_handler()->ShouldDownloadSoda(
+      should_download_soda_future.GetCallback());
+  EXPECT_TRUE(should_download_soda_future.Get());
+}
+
+TEST_F(UntrustedProjectorPageHandlerImplUnitTest, InstallSoda) {
+  ON_CALL(mock_app_client(), InstallSoda()).WillByDefault(testing::Return());
+  base::test::TestFuture<bool> install_triggered_future;
+  page().page_handler()->InstallSoda(install_triggered_future.GetCallback());
+  EXPECT_TRUE(install_triggered_future.Get());
 }
 
 }  // namespace ash

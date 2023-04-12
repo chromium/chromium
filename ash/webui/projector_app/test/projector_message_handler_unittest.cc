@@ -46,13 +46,8 @@ const char kGetAccountsCallback[] = "getAccountsCallback";
 const char kStartProjectorSessionCallback[] = "startProjectorSessionCallback";
 const char kGetOAuthTokenCallback[] = "getOAuthTokenCallback";
 const char kSendXhrCallback[] = "sendXhrCallback";
-const char kOnSodaInstallProgressUpdated[] = "onSodaInstallProgressUpdated";
-const char kOnSodaInstalled[] = "onSodaInstalled";
-const char kOnSodaInstallError[] = "onSodaInstallError";
 const char kGetVideoCallback[] = "getVideoCallback";
 
-const char kShouldDownloadSodaCallback[] = "shouldDownloadSodaCallbck";
-const char kInstallSodaCallback[] = "installSodaCallback";
 const char kGetPendingScreencastsCallback[] = "getPendingScreencastsCallback";
 
 const char kOpenFeedbackDialogCallback[] = "openFeedbackDialog";
@@ -406,61 +401,6 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhrWithUnSupportedUrl) {
   // Verify error is UNSUPPORTED_URL.
   const std::string* error = arg3_dict.FindString(kXhrResponseErrorPath);
   EXPECT_EQ("UNSUPPORTED_URL", *error);
-}
-
-TEST_F(ProjectorMessageHandlerUnitTest, OnSodaProgress) {
-  static_cast<ProjectorAppClient::Observer*>(message_handler())
-      ->OnSodaProgress(50);
-  const content::TestWebUI::CallData& call_data = FetchCallData(0);
-  EXPECT_EQ(call_data.function_name(), kWebUIListenerCall);
-  EXPECT_EQ(call_data.arg1()->GetString(), kOnSodaInstallProgressUpdated);
-  EXPECT_EQ(call_data.arg2()->GetInt(), 50);
-}
-
-TEST_F(ProjectorMessageHandlerUnitTest, OnSodaInstalled) {
-  static_cast<ProjectorAppClient::Observer*>(message_handler())
-      ->OnSodaInstalled();
-  const content::TestWebUI::CallData& call_data = FetchCallData(0);
-  EXPECT_EQ(call_data.function_name(), kWebUIListenerCall);
-  EXPECT_EQ(call_data.arg1()->GetString(), kOnSodaInstalled);
-}
-
-TEST_F(ProjectorMessageHandlerUnitTest, OnSodaError) {
-  static_cast<ProjectorAppClient::Observer*>(message_handler())->OnSodaError();
-  const content::TestWebUI::CallData& call_data = FetchCallData(0);
-  EXPECT_EQ(call_data.function_name(), kWebUIListenerCall);
-  EXPECT_EQ(call_data.arg1()->GetString(), kOnSodaInstallError);
-}
-
-TEST_F(ProjectorMessageHandlerUnitTest, ShouldDownloadSoda) {
-  ON_CALL(mock_app_client(), ShouldDownloadSoda())
-      .WillByDefault(testing::Return(true));
-
-  base::Value::List list_args;
-  list_args.Append(base::Value(kShouldDownloadSodaCallback));
-
-  web_ui().HandleReceivedMessage("shouldDownloadSoda", list_args);
-
-  const content::TestWebUI::CallData& call_data = FetchCallData(0);
-  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
-  EXPECT_EQ(call_data.arg1()->GetString(), kShouldDownloadSodaCallback);
-  EXPECT_EQ(call_data.arg2()->GetBool(), true);
-  EXPECT_EQ(call_data.arg3()->GetBool(), true);
-}
-
-TEST_F(ProjectorMessageHandlerUnitTest, InstallSoda) {
-  ON_CALL(mock_app_client(), InstallSoda()).WillByDefault(testing::Return());
-
-  base::Value::List list_args;
-  list_args.Append(base::Value(kInstallSodaCallback));
-
-  web_ui().HandleReceivedMessage("installSoda", list_args);
-
-  const content::TestWebUI::CallData& call_data = FetchCallData(0);
-  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
-  EXPECT_EQ(call_data.arg1()->GetString(), kInstallSodaCallback);
-  EXPECT_EQ(call_data.arg2()->GetBool(), true);
-  EXPECT_EQ(call_data.arg3()->GetBool(), true);
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, GetPendingScreencasts) {
