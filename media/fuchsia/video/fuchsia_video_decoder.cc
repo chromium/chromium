@@ -229,9 +229,7 @@ FuchsiaVideoDecoder::FuchsiaVideoDecoder(
     bool allow_overlays)
     : raster_context_provider_(raster_context_provider),
       media_codec_provider_(media_codec_provider),
-      use_overlays_for_video_(allow_overlays &&
-                              base::CommandLine::ForCurrentProcess()->HasSwitch(
-                                  switches::kUseOverlaysForVideo)),
+      use_overlays_for_video_(allow_overlays),
       sysmem_allocator_("CrFuchsiaVideoDecoder"),
       client_native_pixmap_factory_(
           ui::CreateClientNativePixmapFactoryOzone()) {
@@ -319,6 +317,11 @@ void FuchsiaVideoDecoder::Initialize(const VideoDecoderConfig& config,
   }
   protected_output_ =
       secure_mode != media::mojom::VideoDecoderSecureMemoryMode::CLEAR;
+
+  LOG(ERROR) << "+++ SECURE MODE = " << static_cast<int>(secure_mode)
+             << " use_overlays=" << use_overlays_for_video_ << " force="
+             << base::CommandLine::ForCurrentProcess()->HasSwitch(
+                    switches::kForceProtectedVideoOutputBuffers);
 
   // Reset output buffers since we won't be able to re-use them.
   ReleaseOutputBuffers();

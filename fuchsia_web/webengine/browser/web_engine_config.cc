@@ -147,37 +147,18 @@ bool UpdateCommandLineFromConfigFile(const base::Value::Dict& config,
       command_line->HasSwitch(switches::kPlayreadyKeySystem);
   const bool widevine_enabled =
       command_line->HasSwitch(switches::kEnableWidevine);
-
-  const bool allow_protected_graphics =
-      config.FindBool("allow-protected-graphics").value_or(false);
-  const bool force_protected_graphics =
-      config.FindBool("force-protected-graphics").value_or(false);
+  const bool force_protected_video_buffers =
+      config.FindBool("force-protected-video-buffers").value_or(false);
   const bool enable_protected_graphics =
-      ((playready_enabled || widevine_enabled) && allow_protected_graphics) ||
-      force_protected_graphics;
-  const bool use_overlays_for_video =
-      config.FindBool("use-overlays-for-video").value_or(false);
+      playready_enabled || widevine_enabled || force_protected_video_buffers;
 
   if (enable_protected_graphics) {
     command_line->AppendSwitch(switches::kEnableVulkanProtectedMemory);
     command_line->AppendSwitch(switches::kEnableProtectedVideoBuffers);
-    const bool force_protected_video_buffers =
-        config.FindBool("force-protected-video-buffers").value_or(false);
-    if (force_protected_video_buffers) {
-      command_line->AppendSwitch(switches::kForceProtectedVideoOutputBuffers);
-    }
   }
 
-  if (use_overlays_for_video) {
-    // Overlays are only available if OutputPresenterFuchsia is in use.
-    AppendToSwitch(switches::kEnableFeatures,
-                   features::kUseSkiaOutputDeviceBufferQueue.name,
-                   command_line);
-    AppendToSwitch(switches::kEnableFeatures,
-                   features::kUseRealBuffersForPageFlipTest.name, command_line);
-    command_line->AppendSwitchASCII(switches::kEnableHardwareOverlays,
-                                    "underlay");
-    command_line->AppendSwitch(switches::kUseOverlaysForVideo);
+  if (force_protected_video_buffers) {
+    command_line->AppendSwitch(switches::kForceProtectedVideoOutputBuffers);
   }
 
   return true;

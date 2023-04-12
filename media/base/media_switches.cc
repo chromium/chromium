@@ -98,9 +98,6 @@ const char kForceProtectedVideoOutputBuffers[] =
 
 const char kDisableAudioInput[] = "disable-audio-input";
 
-// Present video content as overlays.
-const char kUseOverlaysForVideo[] = "use-overlays-for-video";
-
 // Minimum size for buffer size used for output video frames in
 // FuchsiaVideoDecoder. May be set to avoid re-allocating video buffers when an
 // application upgrades video resolution mid-stream.

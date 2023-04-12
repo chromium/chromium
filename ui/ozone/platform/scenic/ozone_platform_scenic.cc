@@ -206,12 +206,8 @@ class OzonePlatformScenic : public OzonePlatform,
 
   const PlatformRuntimeProperties& GetPlatformRuntimeProperties() override {
     static OzonePlatform::PlatformRuntimeProperties properties;
-
-    // This property is set when the GetPlatformRuntimeProperties is
-    // called on the gpu process side.
-    if (has_initialized_gpu())
-      properties.supports_native_pixmaps = true;
-
+    properties.supports_native_pixmaps = true;
+    properties.supports_overlays = true;
     return properties;
   }
 
