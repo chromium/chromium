@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/enum_set.h"
 #include "base/unguessable_token.h"
 
 namespace ash {
@@ -49,6 +50,10 @@ enum class AshAuthFactor {
   kLegacyPin,
   kLegacyFingerprint,
 };
+
+using AuthFactorsSet = base::EnumSet<AshAuthFactor,
+                                     AshAuthFactor::kGaiaPassword,
+                                     AshAuthFactor::kLegacyFingerprint>;
 
 enum AuthHubMode {
   kNone,         // State before initialization
