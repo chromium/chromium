@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
@@ -126,6 +127,12 @@ class DualLayerUserPrefStore : public PersistentPrefStore {
   base::Value* MaybeMerge(const std::string& pref_name,
                           base::Value& local_value,
                           base::Value& account_value);
+
+  // Unmerges `value` and returns the new local value and the account value (in
+  // that order).
+  std::pair<base::Value, base::Value> UnmergeValue(const std::string& pref_name,
+                                                   base::Value value,
+                                                   uint32_t flags) const;
 
   // The two underlying pref stores, scoped to this device/profile and to the
   // user's signed-in account, respectively.

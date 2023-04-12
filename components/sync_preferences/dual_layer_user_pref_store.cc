@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
@@ -167,7 +168,10 @@ void DualLayerUserPrefStore::SetValue(const std::string& key,
     base::AutoReset<bool> setting_prefs(&is_setting_prefs_, true);
     if (IsPrefKeySyncable(key)) {
       if (IsPrefKeyMergeable(key)) {
-        // TODO(crbug.com/1416479): Unmerge and apply.
+        auto [new_local_value, new_account_value] =
+            UnmergeValue(key, std::move(value), flags);
+        account_pref_store_->SetValue(key, std::move(new_account_value), flags);
+        local_pref_store_->SetValue(key, std::move(new_local_value), flags);
       } else {
         account_pref_store_->SetValue(key, value.Clone(), flags);
         local_pref_store_->SetValue(key, std::move(value), flags);
@@ -251,9 +255,12 @@ void DualLayerUserPrefStore::ReportValueChanged(const std::string& key,
       // Else, get the new value from whichever store has it and copy it to the
       // other one.
       if (merged_prefs_.GetValue(key, &new_value)) {
-        // TODO(crbug.com/1416479): Unmerge and apply instead.
-        account_pref_store_->SetValueSilently(key, new_value->Clone(), flags);
-        local_pref_store_->SetValueSilently(key, new_value->Clone(), flags);
+        auto [new_local_value, new_account_value] =
+            UnmergeValue(key, new_value->Clone(), flags);
+        account_pref_store_->SetValueSilently(key, std::move(new_account_value),
+                                              flags);
+        local_pref_store_->SetValueSilently(key, std::move(new_local_value),
+                                            flags);
       } else if (account_pref_store_->GetValue(key, &new_value)) {
         local_pref_store_->SetValueSilently(key, new_value->Clone(), flags);
       } else if (local_pref_store_->GetValue(key, &new_value)) {
@@ -279,7 +286,12 @@ void DualLayerUserPrefStore::SetValueSilently(const std::string& key,
                                               uint32_t flags) {
   if (IsPrefKeySyncable(key)) {
     if (IsPrefKeyMergeable(key)) {
-      // TODO(crbug.com/1416479): Unmerge and apply.
+      auto [new_local_value, new_account_value] =
+          UnmergeValue(key, std::move(value), flags);
+      account_pref_store_->SetValueSilently(key, std::move(new_account_value),
+                                            flags);
+      local_pref_store_->SetValueSilently(key, std::move(new_local_value),
+                                          flags);
     } else {
       account_pref_store_->SetValueSilently(key, value.Clone(), flags);
       local_pref_store_->SetValueSilently(key, std::move(value), flags);
@@ -445,6 +457,56 @@ base::Value* DualLayerUserPrefStore::MaybeMerge(const std::string& pref_name,
   // a non-const object.
   return const_cast<base::Value*>(
       std::as_const(*this).MaybeMerge(pref_name, local_value, account_value));
+}
+
+std::pair<base::Value, base::Value> DualLayerUserPrefStore::UnmergeValue(
+    const std::string& pref_name,
+    base::Value value,
+    uint32_t flags) const {
+  DCHECK(IsPrefKeySyncable(pref_name));
+
+  // Note: There is no "standard" unmerging logic for list or scalar prefs.
+  // TODO(crbug.com/1416479): Allow support for custom unmerge logic.
+  if (pref_model_associator_client_->IsMergeableDictionaryPreference(
+          pref_name)) {
+    // Per crbug.com/1430854, it is possible for the value to not be of dict
+    // type. However, in this case, whatever is the type of `value` it's bound
+    // to be correct, as UnmergeValue() is called by setters which in turn are
+    // only called after a type check.
+    if (value.is_dict()) {
+      base::Value::Dict local_dict;
+      if (const base::Value* local_dict_value = nullptr;
+          local_pref_store_->GetValue(pref_name, &local_dict_value)) {
+        // It is assumed that the local store cannot contain value of incorrect
+        // type.
+        local_dict = local_dict_value->GetDict().Clone();
+      }
+      base::Value::Dict account_dict;
+      if (const base::Value* account_dict_value = nullptr;
+          account_pref_store_->GetValue(pref_name, &account_dict_value)) {
+        // It is assumed that the account store cannot contain value of
+        // incorrect type.
+        account_dict = account_dict_value->GetDict().Clone();
+      }
+      auto [new_local_dict, new_account_dict] = helper::UnmergeDictionaryValues(
+          std::move(value).TakeDict(), local_dict, account_dict);
+      // Note: This would still return an empty dict even if the pref didn't
+      // exist in either of the stores. This should however be okay since no
+      // actual pref value is leaked to the other.
+      return {base::Value(std::move(new_local_dict)),
+              base::Value(std::move(new_account_dict))};
+    } else {
+      DLOG(ERROR) << pref_name
+                  << " marked as a mergeable dict pref but is of type "
+                  << value.type();
+    }
+  }
+
+  // Directly pass the new value as both the local value and the account value
+  // for prefs with no specific merge logic.
+  base::Value new_account_value(value.Clone());
+  base::Value new_local_value(std::move(value));
+  return {std::move(new_local_value), std::move(new_account_value)};
 }
 
 }  // namespace sync_preferences
