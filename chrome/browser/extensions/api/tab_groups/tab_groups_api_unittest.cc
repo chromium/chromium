@@ -192,7 +192,8 @@ TEST_F(TabGroupsApiUnitTest, TabStripModelWithNoTabGroupFails) {
                                         /* foreground */ true);
   }
 
-  // create an extension and test that tab group methods fail.
+  // Create an extension and test that the tab group query method skips the
+  // unsupported tab strip without throwing an error.
   scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
 
   const char* kTitleQueryInfo = R"([{"title": "Sample title"}])";
@@ -203,8 +204,6 @@ TEST_F(TabGroupsApiUnitTest, TabStripModelWithNoTabGroupFails) {
 
   tab_strip_model2->CloseAllTabs();
 }
-// cbld unit_tests && ./out/Default/unit_tests
-// --gtest_filter="*TabStripModelWithNoTabGroupFails*"
 
 // Test that querying groups by title returns the correct groups.
 TEST_F(TabGroupsApiUnitTest, TabGroupsQueryTitle) {
