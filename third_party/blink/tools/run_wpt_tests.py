@@ -745,6 +745,15 @@ class IsolatedScriptTestFilterAction(argparse.Action):
                 include.extend(extra_include)
                 exclude.extend(extra_exclude)
         namespace.include, namespace.exclude = include, exclude
+        # The `chromium_tests` recipe passes `--isolated-script-test-filter` to
+        # retry failed tests without the patch. Because the patch may have added
+        # the failed tests (common for imported tests),
+        #  1. `run_wpt_tests.py --isolated-script-test-filter` must tolerate
+        #     test IDs that don't exist.
+        #  2. When all tests retried don't exist without the patch, wptrunner
+        #     must run zero tests and exit successfully instead of interpreting
+        #     the lack of explicit tests as running all tests.
+        namespace.default_exclude = True
 
     def _resolve_tests(self, test_filter: str) -> Tuple[List[str], List[str]]:
         """Resolve an isolated script-style filter string into lists of tests.
