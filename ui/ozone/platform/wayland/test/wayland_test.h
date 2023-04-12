@@ -156,6 +156,7 @@ class WaylandTest : public WaylandTestBase,
 class WaylandTestSimple : public WaylandTestBase, public ::testing::Test {
  public:
   WaylandTestSimple();
+  explicit WaylandTestSimple(wl::ServerConfig);
   WaylandTestSimple(const WaylandTestSimple&) = delete;
   WaylandTestSimple& operator=(const WaylandTestSimple&) = delete;
   ~WaylandTestSimple() override;
