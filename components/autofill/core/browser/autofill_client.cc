@@ -197,4 +197,9 @@ const AutofillAblationStudy& AutofillClient::GetAblationStudy() const {
   return *ablation_study;
 }
 
+scoped_refptr<device_reauth::DeviceAuthenticator>
+AutofillClient::GetDeviceAuthenticator() const {
+  return nullptr;
+}
+
 }  // namespace autofill

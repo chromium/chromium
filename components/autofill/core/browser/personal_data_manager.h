@@ -567,6 +567,9 @@ class PersonalDataManager : public KeyedService,
   // Returns true if Sync is enabled for `model_type`.
   bool IsSyncEnabledFor(syncer::ModelType model_type) const;
 
+  // Returns true if payments mandatory re-auth is enabled.
+  bool IsAutofillPaymentMethodsMandatoryReauthEnabled();
+
   // Used to automatically import addresses without a prompt. Should only be
   // set to true in tests.
   void set_auto_accept_address_imports_for_testing(bool auto_accept) {

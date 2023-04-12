@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
@@ -42,6 +43,10 @@
 #endif
 
 class PrefService;
+
+namespace device_reauth {
+class DeviceAuthenticator;
+}
 
 namespace signin {
 class IdentityManager;
@@ -815,6 +820,11 @@ class AutofillClient : public RiskDataLoader {
   // calls in the next 20 minutes. Afterwards a new GUID is set and the pattern
   // repeated.
   virtual FormInteractionsFlowId GetCurrentFormInteractionsFlowId() = 0;
+
+  // Returns a pointer to a DeviceAuthenticator. Might be nullptr if the given
+  // platform is not supported.
+  virtual scoped_refptr<device_reauth::DeviceAuthenticator>
+  GetDeviceAuthenticator() const;
 };
 
 }  // namespace autofill

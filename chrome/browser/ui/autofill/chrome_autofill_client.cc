@@ -26,6 +26,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -1139,6 +1140,15 @@ ChromeAutofillClient::GetCurrentFormInteractionsFlowId() {
     flow_id_date_ = now;
   }
   return flow_id_;
+}
+
+scoped_refptr<device_reauth::DeviceAuthenticator>
+ChromeAutofillClient::GetDeviceAuthenticator() const {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  return ChromeDeviceAuthenticatorFactory::GetDeviceAuthenticator();
+#else
+  return nullptr;
+#endif
 }
 
 void ChromeAutofillClient::LoadRiskData(

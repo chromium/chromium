@@ -22,7 +22,7 @@ class ChromeDeviceAuthenticatorFactory {
 
   // Get or create an instance of the DeviceAuthenticator. Trying to use this
   // API on platforms that do not provide an implementation will result in a
-  // link error. So far only Android provides an implementation.
+  // link error.
   // TODO(crbug.com/1349717): Change way of obtaining DeviceAuthenticator
   // from factory.
   static scoped_refptr<device_reauth::DeviceAuthenticator>

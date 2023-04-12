@@ -260,6 +260,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
   LogManager* GetLogManager() const override;
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
+  scoped_refptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
+      const override;
 
   // RiskDataLoader:
   void LoadRiskData(

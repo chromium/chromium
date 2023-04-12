@@ -46,7 +46,11 @@ enum class DeviceAuthRequester {
   // passwords from settings page on Windows and Mac.
   kPasswordsInSettings = 7,
 
-  kMaxValue = kPasswordsInSettings,
+  // The prompt displayed when the user is trying to autofill a local card, and
+  // re-auth is triggered.
+  kLocalCardAutofill = 8,
+
+  kMaxValue = kLocalCardAutofill,
 };
 
 // This interface encapsulates operations related to biometric authentication.

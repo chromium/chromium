@@ -60,6 +60,7 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/device_reauth/mock_device_authenticator.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
@@ -615,6 +616,100 @@ TEST_F(CreditCardAccessManagerTest, ServerCardGetDeletionConfirmationText) {
   EXPECT_EQ(title, std::u16string());
   EXPECT_EQ(body, std::u16string());
 }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+// Parameters of the CreditCardAccessManagerMandatoryReauthTest:
+// - bool feature_flag_is_on: Whether the mandatory re-auth feature flag is
+// turned on or off.
+// - bool pref_is_enabled: Whether the mandatory re-auth pref is turned on or
+// off.
+// - bool mandatory_reauth_response_is_success: Whether the response from the
+// mandatory re-auth is a success or failure.
+class CreditCardAccessManagerMandatoryReauthTest
+    : public CreditCardAccessManagerTest,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+ public:
+  CreditCardAccessManagerMandatoryReauthTest() = default;
+  ~CreditCardAccessManagerMandatoryReauthTest() override = default;
+
+  void SetUp() override {
+    CreditCardAccessManagerTest::SetUp();
+    feature_list_.InitWithFeatureState(
+        features::kAutofillEnablePaymentsMandatoryReauth, FeatureFlagIsOn());
+  }
+
+  bool FeatureFlagIsOn() const { return std::get<0>(GetParam()); }
+
+  bool PrefIsEnabled() const { return std::get<1>(GetParam()); }
+
+  bool MandatoryReauthResponseIsSuccess() const {
+    return std::get<2>(GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that retrieving local cards works correctly in the context of the
+// Mandatory Re-Auth feature.
+TEST_P(CreditCardAccessManagerMandatoryReauthTest,
+       MandatoryReauth_FetchLocalCard) {
+  autofill_client_.GetPrefs()->SetBoolean(
+      prefs::kAutofillPaymentMethodsMandatoryReauth, /*value=*/PrefIsEnabled());
+  CreateLocalCard(kTestGUID, kTestNumber);
+  CreditCard* card = personal_data().GetCreditCardByGUID(kTestGUID);
+
+  credit_card_access_manager_->PrepareToFetchCreditCard();
+  WaitForCallbacks();
+
+  // We should only expect an AuthenticateWithMessage() call if the feature flag
+  // is on and the pref is enabled.
+  if (FeatureFlagIsOn() && PrefIsEnabled()) {
+    ON_CALL(*static_cast<device_reauth::MockDeviceAuthenticator*>(
+                autofill_client_.GetDeviceAuthenticator().get()),
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+            AuthenticateWithMessage)
+#elif BUILDFLAG(IS_ANDROID)
+            Authenticate)
+#endif
+        .WillByDefault(testing::WithArg<1>(
+            testing::Invoke([mandatory_reauth_response_is_success =
+                                 MandatoryReauthResponseIsSuccess()](
+                                base::OnceCallback<void(bool)> callback) {
+              std::move(callback).Run(mandatory_reauth_response_is_success);
+            })));
+  } else {
+    EXPECT_CALL(*static_cast<device_reauth::MockDeviceAuthenticator*>(
+                    autofill_client_.GetDeviceAuthenticator().get()),
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+                AuthenticateWithMessage)
+#elif BUILDFLAG(IS_ANDROID)
+                Authenticate)
+#endif
+        .Times(0);
+  }
+
+  credit_card_access_manager_->FetchCreditCard(card, accessor_->GetWeakPtr());
+
+  // The only time we should expect an error is if the feature flag is on, the
+  // pref is enabled, but the mandatory re-auth authentication was not
+  // successful.
+  if (FeatureFlagIsOn() && PrefIsEnabled() &&
+      !MandatoryReauthResponseIsSuccess()) {
+    EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
+    EXPECT_TRUE(accessor_->number().empty());
+  } else {
+    EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
+    EXPECT_EQ(kTestNumber16, accessor_->number());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         CreditCardAccessManagerMandatoryReauthTest,
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
 // Tests retrieving local cards.
 TEST_F(CreditCardAccessManagerTest, FetchLocalCardSuccess) {

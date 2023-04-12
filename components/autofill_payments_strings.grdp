@@ -454,6 +454,18 @@
       Verifying...
   </message>
 
+  <!-- DeviceAuthentication titles-->
+  <if expr="is_macosx">
+    <message name="IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup, asking the user to authenticate using biometric or device unlock before filling. Please note that on macOS the string 'Google Chrome is trying to' will always come before this string.">
+      verify it's you so it can fill in your payment info.
+    </message>
+  </if>
+  <if expr="is_win">
+    <message name="IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup, asking the user to authenticate using biometric or device unlock before filling.">
+      Google Chrome is trying to verify it's you so it can fill in your payment info.
+    </message>
+  </if>
+
   <!-- WebAuthn fingerprint opt-in dialog -->
   <!-- Desktop only -->
   <if expr="not is_ios and not is_android">

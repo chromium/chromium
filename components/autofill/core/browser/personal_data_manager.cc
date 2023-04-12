@@ -1850,6 +1850,15 @@ bool PersonalDataManager::IsSyncEnabledFor(syncer::ModelType model_type) const {
          sync_service_->GetPreferredDataTypes().Has(model_type);
 }
 
+bool PersonalDataManager::IsAutofillPaymentMethodsMandatoryReauthEnabled() {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnablePaymentsMandatoryReauth)) {
+    return false;
+  }
+
+  return prefs::IsAutofillPaymentMethodsMandatoryReauthEnabled(pref_service_);
+}
+
 AutofillProfileMigrationStrikeDatabase*
 PersonalDataManager::GetProfileMigrationStrikeDatabase() {
   return const_cast<AutofillProfileMigrationStrikeDatabase*>(
