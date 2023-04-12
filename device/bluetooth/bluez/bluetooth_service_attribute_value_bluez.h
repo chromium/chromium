@@ -45,6 +45,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothServiceAttributeValueBlueZ {
 
   Type type() const { return type_; }
   size_t size() const { return size_; }
+  bool is_sequence() const { return type_ == Type::SEQUENCE; }
   const Sequence& sequence() const { return *sequence_.get(); }
   const base::Value& value() const { return *value_; }
 

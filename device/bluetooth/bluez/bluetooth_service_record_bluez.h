@@ -44,7 +44,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothServiceRecordBlueZ {
 
   // Returns true if the given attribute ID is found in the attribute map, false
   // otherwise.
-  bool IsAttributePresented(uint16_t id);
+  bool IsAttributePresented(uint16_t id) const;
 
  private:
   std::map<uint16_t, BluetoothServiceAttributeValueBlueZ> attributes_;
