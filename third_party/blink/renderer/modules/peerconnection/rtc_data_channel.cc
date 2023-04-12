@@ -247,15 +247,10 @@ void RTCDataChannel::Observer::OnBufferedAmountChange(uint64_t sent_data_size) {
 }
 
 void RTCDataChannel::Observer::OnMessage(const webrtc::DataBuffer& buffer) {
-  // TODO(tommi): Figure out a way to transfer ownership of the buffer without
-  // having to create a copy.  See webrtc bug 3967.
-  std::unique_ptr<webrtc::DataBuffer> new_buffer(
-      new webrtc::DataBuffer(buffer));
   PostCrossThreadTask(
       *main_thread_, FROM_HERE,
       CrossThreadBindOnce(&RTCDataChannel::Observer::OnMessageImpl,
-                          scoped_refptr<Observer>(this),
-                          std::move(new_buffer)));
+                          scoped_refptr<Observer>(this), buffer));
 }
 
 bool RTCDataChannel::Observer::IsOkToCallOnTheNetworkThread() {
@@ -276,8 +271,7 @@ void RTCDataChannel::Observer::OnBufferedAmountChangeImpl(
     blink_channel_->OnBufferedAmountChange(sent_data_size);
 }
 
-void RTCDataChannel::Observer::OnMessageImpl(
-    std::unique_ptr<webrtc::DataBuffer> buffer) {
+void RTCDataChannel::Observer::OnMessageImpl(webrtc::DataBuffer buffer) {
   DCHECK(main_thread_->BelongsToCurrentThread());
   if (blink_channel_)
     blink_channel_->OnMessage(std::move(buffer));
@@ -636,26 +630,26 @@ void RTCDataChannel::OnBufferedAmountChange(unsigned sent_data_size) {
   }
 }
 
-void RTCDataChannel::OnMessage(std::unique_ptr<webrtc::DataBuffer> buffer) {
+void RTCDataChannel::OnMessage(webrtc::DataBuffer buffer) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (buffer->binary) {
+  if (buffer.binary) {
     if (binary_type_ == kBinaryTypeBlob) {
       // FIXME: Implement.
       return;
     }
     if (binary_type_ == kBinaryTypeArrayBuffer) {
       DOMArrayBuffer* dom_buffer = DOMArrayBuffer::Create(
-          buffer->data.cdata(),
-          base::checked_cast<unsigned>(buffer->data.size()));
+          buffer.data.cdata(),
+          base::checked_cast<unsigned>(buffer.data.size()));
       ScheduleDispatchEvent(MessageEvent::Create(dom_buffer));
       return;
     }
     NOTREACHED();
   } else {
     String text =
-        buffer->data.size() > 0
-            ? String::FromUTF8(buffer->data.cdata<char>(), buffer->data.size())
+        buffer.data.size() > 0
+            ? String::FromUTF8(buffer.data.cdata<char>(), buffer.data.size())
             : g_empty_string;
     if (!text) {
       LOG(ERROR) << "Failed convert received data to UTF16";
@@ -708,11 +702,25 @@ void RTCDataChannel::SendRawData(const char* data, size_t length) {
 void RTCDataChannel::SendDataBuffer(webrtc::DataBuffer data_buffer) {
   // SCTP data channels queue the packet on failure and always return true, so
   // Send can be called asynchronously for them.
-  // TODO(webrtc:11547): Use SendAsync() when that has landed in WebRTC. We need
-  // to use Send() in the meantime (instead of posting first to the signaling
-  // thread as we did before) now that the call will go directly to the
-  // network thread. This is so that we can maintain correct operational order.
-  channel()->Send(data_buffer);
+  channel()->SendAsync(std::move(data_buffer), [](webrtc::RTCError error) {
+    // TODO(orphis): Use this callback in combination with SendAsync to report
+    // completion of the send API to the JS layer.
+    // The possible failures per the spec are:
+    // - Channel not in open state. Although we check the state in each Send()
+    // implementation, it's possible to have a short race between the WebRTC
+    // state and the Chrome state, i.e. sending while a remote close event is
+    // pending. In this case, it's safe to ignore send failures.
+    // - Data longer than the transport maxMessageSize (not yet implemented in
+    // WebRTC or Blink).
+    // - Send Buffers full (buffered amount accounting in Blink layer to check
+    // for it).
+    if (!error.ok()) {
+      // TODO(orphis): Add collect UMA stats about failure.
+      // Note that when we get this callback, we're on WebRTC's network thread
+      // So the callback needs to be propagated to the main (JS) thread.
+      LOG(ERROR) << "Send failed" << webrtc::ToString(error.type());
+    }
+  });
 }
 
 void RTCDataChannel::CreateFeatureHandleForScheduler() {

@@ -158,6 +158,30 @@ class MockDataChannel : public webrtc::DataChannelInterface {
     return true;
   }
 
+  void SendAsync(
+      webrtc::DataBuffer buffer,
+      absl::AnyInvocable<void(webrtc::RTCError) &&> on_complete) override {
+    base::WaitableEvent waitable_event(
+        base::WaitableEvent::ResetPolicy::MANUAL,
+        base::WaitableEvent::InitialState::NOT_SIGNALED);
+    auto* adapter = new absl::AnyInvocable<void(webrtc::RTCError) &&>(
+        std::move(on_complete));
+
+    PostCrossThreadTask(
+        *signaling_thread_.get(), FROM_HERE,
+        CrossThreadBindOnce(
+            [](MockDataChannel* channel, uint64_t buffer_size,
+               absl::AnyInvocable<void(webrtc::RTCError) &&>* adapter) {
+              channel->SendOnSignalingThread(buffer_size);
+              if (*adapter) {
+                std::move (*adapter)(webrtc::RTCError::OK());
+              }
+              delete adapter;
+            },
+            CrossThreadUnretained(this), buffer.size(),
+            CrossThreadUnretained(adapter)));
+  }
+
   // For testing.
   void ChangeState(DataState state) {
     RunSynchronous(
@@ -329,8 +353,7 @@ TEST_F(RTCDataChannelTest, Message) {
   auto* channel = MakeGarbageCollected<RTCDataChannel>(
       execution_context_, webrtc_channel, pc.get());
 
-  std::unique_ptr<webrtc::DataBuffer> message(new webrtc::DataBuffer("A"));
-  channel->OnMessage(std::move(message));
+  channel->OnMessage(webrtc::DataBuffer("A"));
   ASSERT_EQ(1U, channel->scheduled_events_.size());
   EXPECT_EQ("message", channel->scheduled_events_.back()->type().Utf8());
 }

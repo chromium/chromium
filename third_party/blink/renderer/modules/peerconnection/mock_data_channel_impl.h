@@ -39,6 +39,9 @@ class MockDataChannel : public webrtc::DataChannelInterface {
   uint64_t buffered_amount() const override;
   void Close() override;
   bool Send(const webrtc::DataBuffer& buffer) override;
+  void SendAsync(
+      webrtc::DataBuffer buffer,
+      absl::AnyInvocable<void(webrtc::RTCError) &&> on_complete) override;
 
   // For testing.
   void changeState(DataState state);

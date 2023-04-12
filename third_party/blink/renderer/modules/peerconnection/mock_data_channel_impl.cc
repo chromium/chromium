@@ -95,4 +95,16 @@ bool MockDataChannel::Send(const webrtc::DataBuffer& buffer) {
   return state_ == webrtc::DataChannelInterface::kOpen;
 }
 
+void MockDataChannel::SendAsync(
+    webrtc::DataBuffer buffer,
+    absl::AnyInvocable<void(webrtc::RTCError) &&> on_complete) {
+  if (!on_complete) {
+    return;
+  }
+  std::move(on_complete)(
+      state_ == webrtc::DataChannelInterface::kOpen
+          ? webrtc::RTCError::OK()
+          : webrtc::RTCError(webrtc::RTCErrorType::INVALID_STATE));
+}
+
 }  // namespace blink
