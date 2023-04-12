@@ -17,6 +17,13 @@ TEST(PhysicalSizeTest, FitToAspectRatioShrink) {
   EXPECT_EQ(PhysicalSize(1000, 800),
             PhysicalSize(1000, 2000)
                 .FitToAspectRatio(aspect_ratio, kAspectRatioFitShrink));
+
+  PhysicalSize aspect_ratio2(1140, 696);
+  PhysicalSize ref_size(
+      LayoutUnit(350),
+      LayoutUnit(350).MulDiv(aspect_ratio2.height, aspect_ratio2.width));
+  EXPECT_EQ(ref_size,
+            ref_size.FitToAspectRatio(aspect_ratio2, kAspectRatioFitShrink));
 }
 
 TEST(PhysicalSizeTest, FitToAspectRatioGrow) {
@@ -27,6 +34,13 @@ TEST(PhysicalSizeTest, FitToAspectRatioGrow) {
   EXPECT_EQ(PhysicalSize(2500, 2000),
             PhysicalSize(1000, 2000)
                 .FitToAspectRatio(aspect_ratio, kAspectRatioFitGrow));
+
+  PhysicalSize aspect_ratio2(1140, 696);
+  PhysicalSize ref_size(
+      LayoutUnit(350),
+      LayoutUnit(350).MulDiv(aspect_ratio2.height, aspect_ratio2.width));
+  EXPECT_EQ(ref_size,
+            ref_size.FitToAspectRatio(aspect_ratio2, kAspectRatioFitGrow));
 }
 
 }  // namespace blink

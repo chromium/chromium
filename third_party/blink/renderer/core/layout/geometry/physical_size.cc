@@ -14,7 +14,9 @@ PhysicalSize PhysicalSize::FitToAspectRatio(const PhysicalSize& aspect_ratio,
   DCHECK_GT(aspect_ratio.height, 0);
   const LayoutUnit constrained_height =
       width.MulDiv(aspect_ratio.height, aspect_ratio.width);
-  if ((constrained_height > height) != (fit == kAspectRatioFitGrow)) {
+  const bool grow = fit == kAspectRatioFitGrow;
+  if ((grow && constrained_height < height) ||
+      (!grow && constrained_height > height)) {
     const LayoutUnit constrained_width =
         height.MulDiv(aspect_ratio.width, aspect_ratio.height);
     return {constrained_width, height};
