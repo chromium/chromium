@@ -68,9 +68,7 @@ class WebRtcInternalsPerfBrowserTest : public WebRtcTestBase {
   absl::optional<base::Value::Dict> GetWebrtcInternalsData(
       content::WebContents* webrtc_internals_tab) {
     std::string all_stats_json = ExecuteJavascript(
-        "window.domAutomationController.send("
-        "    JSON.stringify(peerConnectionDataStore));",
-        webrtc_internals_tab);
+        "JSON.stringify(peerConnectionDataStore);", webrtc_internals_tab);
 
     absl::optional<base::Value> parsed_json =
         base::JSONReader::Read(all_stats_json);

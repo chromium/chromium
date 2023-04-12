@@ -47,9 +47,9 @@ bool RunGetAllScreensMedia(content::WebContents* tab,
   EXPECT_TRUE(stream_ids.empty());
   EXPECT_TRUE(track_ids.empty());
 
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetPrimaryMainFrame(), "runGetAllScreensMedia();", &result));
+  std::string result =
+      content::EvalJs(tab->GetPrimaryMainFrame(), "runGetAllScreensMedia();")
+          .ExtractString();
 
   const std::vector<std::string> split_id_components = base::SplitString(
       result, ":", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -77,15 +77,13 @@ bool RunGetAllScreensMedia(content::WebContents* tab,
 
 bool CheckScreenDetailedExists(content::WebContents* tab,
                                const std::string& track_id) {
-  std::string result;
   const char* video_track_contains_screen_details_call =
       R"JS(videoTrackContainsScreenDetailed("%s"))JS";
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      tab->GetPrimaryMainFrame(),
-      base::StringPrintf(video_track_contains_screen_details_call,
-                         track_id.c_str()),
-      &result));
-  return result == "success-screen-detailed";
+  return content::EvalJs(
+             tab->GetPrimaryMainFrame(),
+             base::StringPrintf(video_track_contains_screen_details_call,
+                                track_id.c_str()))
+             .ExtractString() == "success-screen-detailed";
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

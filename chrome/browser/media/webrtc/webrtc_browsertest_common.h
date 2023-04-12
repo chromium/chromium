@@ -50,10 +50,9 @@ extern const char kAdviseOnGclientSolution[];
 // Returns true on success.
 bool SleepInJavascript(content::WebContents* tab_contents, int timeout_msec);
 
-// This function will execute the provided |javascript| until it causes a call
-// to window.domAutomationController.send() with |evaluates_to| as the message.
-// That is, we are NOT checking what the javascript evaluates to. Returns false
-// if we exceed the TestTimeouts::action_max_timeout().
+// This function will execute the provided |javascript| until the script's
+// completion value is |evaluates_to|. Returns false if we exceed the
+// TestTimeouts::action_max_timeout().
 // TODO(phoglund): Consider a better interaction method with the javascript
 // than polling javascript methods.
 bool PollingWaitUntil(const std::string& javascript,
