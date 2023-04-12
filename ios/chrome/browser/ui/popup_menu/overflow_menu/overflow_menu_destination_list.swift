@@ -78,11 +78,12 @@ struct OverflowMenuDestinationList: View {
           .accessibilityIdentifier(kPopupMenuToolsMenuTableViewId)
       }
     }
-    .animation(nil)
     .background(
       Color("destination_highlight_color").opacity(uiConfiguration.highlightDestinationsRow ? 1 : 0)
     )
-    .animation(.linear(duration: kMaterialDuration3))
+    .animation(
+      .linear(duration: kMaterialDuration3), value: uiConfiguration.highlightDestinationsRow
+    )
     .onPreferenceChange(ScrollViewLeadingOffset.self) { newOffset in
       // Only alert the handler if scroll tracking has started.
       if let listOffset = listOffset,
