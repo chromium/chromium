@@ -130,6 +130,7 @@ class KeyboardAccessoryModernViewBinder {
                     getCardIcon(chipView.getContext(), item.getSuggestion().getCustomIconUrl(),
                             iconId, R.dimen.keyboard_accessory_bar_item_cc_icon_width,
                             R.dimen.chip_icon_size,
+                            R.dimen.keyboard_accessory_card_art_corner_radius,
                             /* showCustomIcon= */ true),
                     /* tintWithTextColor= */ false);
             TraceEvent.end("BarItemChipViewHolder#bind");

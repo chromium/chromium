@@ -200,6 +200,7 @@ public class AutofillPopupBridge implements AutofillDelegate, DialogInterface.On
                                .setIsBoldLabel(isLabelBold)
                                .setIconDrawable(AutofillUiUtils.getCardIcon(mContext, customIconUrl,
                                        iconId, getPopupIconWidthId(), getPopupIconHeightId(),
+                                       R.dimen.card_art_corner_radius,
                                        /* showCustomIcon= */ true))
                                .build();
     }

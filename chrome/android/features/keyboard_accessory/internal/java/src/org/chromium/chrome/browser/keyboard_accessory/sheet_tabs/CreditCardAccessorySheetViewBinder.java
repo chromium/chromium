@@ -78,7 +78,8 @@ class CreditCardAccessorySheetViewBinder {
             view.setIcon(getCardIcon(view.getContext(), info.getIconUrl(),
                     getDrawableForOrigin(info.getOrigin()),
                     R.dimen.keyboard_accessory_bar_item_cc_icon_width,
-                    R.dimen.keyboard_accessory_suggestion_icon_size, /* showCustomIcon= */ true));
+                    R.dimen.keyboard_accessory_suggestion_icon_size, R.dimen.card_art_corner_radius,
+                    /* showCustomIcon= */ true));
         }
 
         private static @DrawableRes int getDrawableForOrigin(String origin) {

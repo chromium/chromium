@@ -468,12 +468,14 @@ public class AutofillUiUtils {
      *        retrieved.
      * @param widthId Resource Id for the width spec.
      * @param heightId Resource Id for the height spec.
+     * @param cornerRadiusId Resource Id for the corner radius spec.
      * @param showCustomIcon If true, custom card icon is fetched, else, default icon is fetched.
      * @return {@link Drawable} that can be set as the card icon. If neither the custom icon nor the
      *         default icon is available, returns null.
      */
     public static @Nullable Drawable getCardIcon(Context context, @Nullable GURL cardArtUrl,
-            int defaultIconId, int widthId, int heightId, boolean showCustomIcon) {
+            int defaultIconId, int widthId, int heightId, int cornerRadiusId,
+            boolean showCustomIcon) {
         Drawable defaultIcon =
                 defaultIconId == 0 ? null : AppCompatResources.getDrawable(context, defaultIconId);
         if (!showCustomIcon || cardArtUrl == null || !cardArtUrl.isValid()) {
@@ -487,11 +489,12 @@ public class AutofillUiUtils {
             return AppCompatResources.getDrawable(context, R.drawable.capitalone_metadata_card);
         }
 
-        Resources resources = context.getResources();
+        Resources res = context.getResources();
         Bitmap customIconBitmap =
                 PersonalDataManager.getInstance().getCustomImageForAutofillSuggestionIfAvailable(
-                        getCCIconURLWithParams(cardArtUrl, resources.getDimensionPixelSize(widthId),
-                                resources.getDimensionPixelSize(heightId)));
+                        getCCIconURLWithParams(cardArtUrl, res.getDimensionPixelSize(widthId),
+                                res.getDimensionPixelSize(heightId)),
+                        res.getDimension(cornerRadiusId));
         if (customIconBitmap == null) {
             return defaultIcon;
         }
@@ -500,14 +503,13 @@ public class AutofillUiUtils {
                     ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
             // The new Capital One card icon assets are stored at all scales in the
             // client code, and there's no need to scale the bitmap.
-            return new BitmapDrawable(resources, customIconBitmap);
+            return new BitmapDrawable(res, customIconBitmap);
         }
 
         // Scale the icon to the desired dimension.
         Bitmap scaledBitmap = Bitmap.createScaledBitmap(customIconBitmap,
-                resources.getDimensionPixelSize(widthId), resources.getDimensionPixelSize(heightId),
-                true);
-        return new BitmapDrawable(resources, scaledBitmap);
+                res.getDimensionPixelSize(widthId), res.getDimensionPixelSize(heightId), true);
+        return new BitmapDrawable(res, scaledBitmap);
     }
 
     public static int getSettingsPageIconWidthId() {
@@ -529,17 +531,16 @@ public class AutofillUiUtils {
     /**
      * If {@code roundBitmapCorners} is true, add a corner radius to bitmap corners.
      * @param bitmap to be updated.
+     * @param cornerRadius for the bitmap.
      * @param roundBitmapCorners If true, the bitmap corners are rounded, else the input bitmap is
      *         returned as it is.
      * @return {@link Bitmap} with the corners rounded.
      */
-    public static Bitmap getRoundedBitmap(Bitmap bitmap, boolean roundBitmapCorners) {
+    public static Bitmap getRoundedBitmap(
+            Bitmap bitmap, float cornerRadius, boolean roundBitmapCorners) {
         if (!roundBitmapCorners) {
             return bitmap;
         }
-
-        float cornerRadius = ContextUtils.getApplicationContext().getResources().getDimension(
-                R.dimen.card_art_corner_radius);
 
         Bitmap roundedBitmap =
                 Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.autofill;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.text.Editable;
@@ -189,6 +188,7 @@ public class CardUnmaskPrompt implements TextWatcher, OnClickListener,
             ChromeImageView cardIconView = (ChromeImageView) mMainView.findViewById(R.id.card_icon);
             cardIconView.setImageDrawable(AutofillUiUtils.getCardIcon(context, cardArtUrl,
                     cardIconId, getCardIconWidthId(), getCardIconHeightId(),
+                    R.dimen.card_art_corner_radius,
                     isVirtualCard
                             || ChromeFeatureList.isEnabled(
                                     ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)));
@@ -228,13 +228,12 @@ public class CardUnmaskPrompt implements TextWatcher, OnClickListener,
         cvcHintImage.setImageResource(cvcDrawableId);
         cvcHintImage.setContentDescription(cvcImageAnnouncement);
 
-        Resources resources = context.getResources();
         PropertyModel.Builder dialogModelBuilder =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, this)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mMainView)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, confirmButtonLabel)
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
+                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, context.getResources(),
                                 R.string.cancel);
         mDialogModel = dialogModelBuilder.build();
 
