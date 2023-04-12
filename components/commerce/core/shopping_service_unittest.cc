@@ -22,7 +22,6 @@
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/search/ntp_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using optimization_guide::OptimizationGuideDecision;
@@ -75,10 +74,9 @@ class ShoppingServiceTest : public ShoppingServiceTestBase {
 
 // Test that product info is processed correctly.
 TEST_F(ShoppingServiceTest, TestProductInfoResponse) {
-  // Ensure a feature that uses product info is enabled. This doesn't
-  // necessarily need to be the shopping list.
+  // Ensure a feature that uses product info is enabled.
   test_features_.InitWithFeatures(
-      {commerce::kShoppingList, commerce::kCommerceAllowServerImages}, {});
+      {kCommerceProductInfoApiEnabled, kCommerceAllowServerImages}, {});
 
   OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
       kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
@@ -119,9 +117,7 @@ TEST_F(ShoppingServiceTest, TestProductInfoResponse) {
 // if it is disabled.
 TEST_F(ShoppingServiceTest, TestProductInfoResponse_ApiDisabled) {
   // Ensure a feature that uses product info is disabled.
-  test_features_.InitWithFeatures({},
-                                  {kShoppingList, kShoppingListRegionLaunched,
-                                   ntp_features::kNtpChromeCartModule});
+  test_features_.InitAndDisableFeature(kCommerceProductInfoApiEnabled);
 
   base::RunLoop run_loop;
   shopping_service_->GetProductInfoForUrl(
@@ -140,7 +136,7 @@ TEST_F(ShoppingServiceTest, TestProductInfoResponse_CurrencyMismatch) {
   // Ensure a feature that uses product info is enabled. This doesn't
   // necessarily need to be the shopping list.
   test_features_.InitWithFeatures(
-      {commerce::kShoppingList, commerce::kCommerceAllowServerImages}, {});
+      {kCommerceProductInfoApiEnabled, kCommerceAllowServerImages}, {});
 
   OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
       kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
@@ -182,7 +178,8 @@ TEST_F(ShoppingServiceTest, TestProductInfoResponse_CurrencyMismatch) {
 // Test that no object is provided for a negative optimization guide response.
 TEST_F(ShoppingServiceTest, TestProductInfoResponse_OptGuideFalse) {
   test_features_.InitWithFeatures(
-      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
+      {kCommerceProductInfoApiEnabled, kCommerceAllowLocalImages,
+       kCommerceAllowServerImages},
       {});
 
   opt_guide_->SetResponse(GURL(kProductUrl), OptimizationType::PRICE_TRACKING,
@@ -205,7 +202,8 @@ TEST_F(ShoppingServiceTest, TestProductInfoResponse_OptGuideFalse) {
 // Test that the product info cache only keeps track of live tabs.
 TEST_F(ShoppingServiceTest, TestProductInfoCacheURLCount) {
   test_features_.InitWithFeatures(
-      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
+      {kCommerceProductInfoApiEnabled, kCommerceAllowLocalImages,
+       kCommerceAllowServerImages},
       {});
 
   std::string url = "http://example.com/foo";
@@ -254,7 +252,8 @@ TEST_F(ShoppingServiceTest, TestProductInfoCacheURLCount) {
 // necessarily querying for it.
 TEST_F(ShoppingServiceTest, TestProductInfoCacheFullLifecycle) {
   test_features_.InitWithFeatures(
-      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
+      {kCommerceProductInfoApiEnabled, kCommerceAllowLocalImages,
+       kCommerceAllowServerImages},
       {});
 
   MockWebWrapper web(GURL(kProductUrl), false);
@@ -307,7 +306,8 @@ TEST_F(ShoppingServiceTest, TestProductInfoCacheFullLifecycle) {
 // necessarily querying for it.
 TEST_F(ShoppingServiceTest, TestProductInfoCacheFullLifecycleWithFallback) {
   test_features_.InitWithFeatures(
-      {kShoppingList, kCommerceAllowLocalImages, kCommerceAllowServerImages},
+      {kCommerceProductInfoApiEnabled, kCommerceAllowLocalImages,
+       kCommerceAllowServerImages},
       {});
 
   MockWebWrapper web(GURL(kProductUrl), false);

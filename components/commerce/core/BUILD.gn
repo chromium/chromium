@@ -291,7 +291,6 @@ source_set("shopping_service_unit_tests") {
     ":shopping_service_test_support",
     "subscriptions:test_support",
     "webui:unit_tests",
-    "//components/search",
   ]
 }
 
