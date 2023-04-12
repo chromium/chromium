@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -203,6 +204,18 @@ class FamilyInfoFeedbackSourceTest
     builder.AddTestingFactory(
         ChromeSigninClientFactory::GetInstance(),
         base::BindRepeating(&signin::BuildTestSigninClient));
+
+    is_child_ = false;
+    // Check if the test is parametrized and the parameter is a CHILD role.
+    if (::testing::UnitTest::GetInstance()
+            ->current_test_info()
+            ->value_param()) {
+      is_child_ = GetParam() == FamilyInfoFetcher::FamilyMemberRole::CHILD;
+      if (is_child_) {
+        builder.SetIsSupervisedProfile();
+      }
+    }
+
     profile_ = IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment(builder);
     identity_test_env_profile_adaptor_ =
@@ -247,6 +260,10 @@ class FamilyInfoFeedbackSourceTest
     return source->weak_factory_.GetWeakPtr();
   }
 
+  Profile* profile() const { return profile_.get(); }
+
+  bool is_child() const { return is_child_; }
+
  private:
   // Creates a Java instance of FamilyInfoFeedbackSource.
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObjectForTesting() {
@@ -264,6 +281,7 @@ class FamilyInfoFeedbackSourceTest
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
   std::unique_ptr<TestingProfile> profile_;
+  bool is_child_;
 };
 
 // Tests that the family role for a user in a Family Group is recorded.
@@ -277,6 +295,15 @@ TEST_P(FamilyInfoFeedbackSourceTest, GetFamilyMembersSignedIn) {
       {FamilyInfoFetcher::FamilyMember(
           primary_account.gaia, role, "Name", kTestEmail,
           /*profile_url=*/std::string(), /*profile_image_url=*/std::string())});
+
+  if (is_child()) {
+    raw_ptr<SupervisedUserService> supervised_user_service_ =
+        SupervisedUserServiceFactory::GetForProfile(profile());
+    // Set some filtering behavior for the user, as OnGetFamilyMembersSuccess
+    // will try to obtain this along with the family role (and crush otherwise).
+    supervised_user_service_->GetURLFilter()->SetDefaultFilteringBehavior(
+        supervised_user::SupervisedUserURLFilter::FilteringBehavior::ALLOW);
+  }
 
   base::WeakPtr<FamilyInfoFeedbackSource> feedback_source =
       CreateFamilyInfoFeedbackSource();
