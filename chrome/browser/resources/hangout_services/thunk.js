@@ -141,15 +141,6 @@ chrome.runtime.onMessageExternal.addListener(function(
       chrome.webrtcLoggingPrivate.stopRtpDump(
           requestInfo, origin, incoming, outgoing, doSendResponse);
       return true;
-    } else if (method === 'logging.startAudioDebugRecordings') {
-      const seconds = message['seconds'] || 0;
-      chrome.webrtcLoggingPrivate.startAudioDebugRecordings(
-          requestInfo, origin, seconds, doSendResponse);
-      return true;
-    } else if (method === 'logging.stopAudioDebugRecordings') {
-      chrome.webrtcLoggingPrivate.stopAudioDebugRecordings(
-          requestInfo, origin, doSendResponse);
-      return true;
     } else if (method === 'logging.startEventLogging') {
       const sessionId = message['sessionId'] || '';
       const maxLogSizeBytes = message['maxLogSizeBytes'] || 0;
