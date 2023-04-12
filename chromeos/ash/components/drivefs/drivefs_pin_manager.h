@@ -406,8 +406,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // Stable IDs of items that got listed during the kListingFiles stage. The
   // mapped ID is the stable ID of the parent directory in which the given item
   // was first encountered.
-  std::unordered_map<Id, Id> listed_items_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  using ListedItems = std::unordered_map<Id, Id>;
+  ListedItems listed_items_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Stable IDs of the files to pin, and which are not already marked as pinned.
   std::unordered_set<Id> files_to_pin_ GUARDED_BY_CONTEXT(sequence_checker_);
