@@ -1139,15 +1139,14 @@ bool DrawingBuffer::CopyToVideoFrame(
   const GrSurfaceOrigin src_surface_origin = src_origin_is_top_left
                                                  ? kTopLeft_GrSurfaceOrigin
                                                  : kBottomLeft_GrSurfaceOrigin;
-  auto copy_function = [&](const gpu::MailboxHolder& src_mailbox,
-                           viz::SharedImageFormat src_format,
-                           SkAlphaType src_alpha_type,
-                           const gfx::Size& src_size,
-                           const gfx::ColorSpace& src_color_space) {
-    return frame_pool->CopyRGBATextureToVideoFrame(
-        src_format.resource_format(), src_size, src_color_space,
-        src_surface_origin, src_mailbox, dst_color_space, std::move(callback));
-  };
+  auto copy_function =
+      [&](const gpu::MailboxHolder& src_mailbox,
+          viz::SharedImageFormat src_format, SkAlphaType src_alpha_type,
+          const gfx::Size& src_size, const gfx::ColorSpace& src_color_space) {
+        return frame_pool->CopyRGBATextureToVideoFrame(
+            src_format, src_size, src_color_space, src_surface_origin,
+            src_mailbox, dst_color_space, std::move(callback));
+      };
   return CopyToPlatformInternal(raster_interface, /*dst_is_unpremul_gl=*/false,
                                 src_buffer, copy_function);
 }

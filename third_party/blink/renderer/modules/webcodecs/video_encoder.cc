@@ -840,8 +840,8 @@ bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
     // SkImage.
     auto format = (frame->format() == media::PIXEL_FORMAT_XBGR ||
                    frame->format() == media::PIXEL_FORMAT_ABGR)
-                      ? viz::ResourceFormat::RGBA_8888
-                      : viz::ResourceFormat::BGRA_8888;
+                      ? viz::SinglePlaneFormat::kRGBA_8888
+                      : viz::SinglePlaneFormat::kBGRA_8888;
 
 #if BUILDFLAG(IS_APPLE)
     // The Apple hardware encoder properly sets output color spaces, so we can

@@ -116,7 +116,7 @@ WebGraphicsContext3DVideoFramePool::GetRasterInterface() const {
 }
 
 bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
-    viz::ResourceFormat src_format,
+    viz::SharedImageFormat src_format,
     const gfx::Size& src_size,
     const gfx::ColorSpace& src_color_space,
     GrSurfaceOrigin src_surface_origin,
@@ -160,9 +160,8 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
   ri->BeginQueryEXT(queryTarget, query_id);
 
   const bool copy_succeeded = media::CopyRGBATextureToVideoFrame(
-      raster_context_provider, viz::SharedImageFormat::SinglePlane(src_format),
-      src_size, src_color_space, src_surface_origin, src_mailbox_holder,
-      dst_frame.get());
+      raster_context_provider, src_format, src_size, src_color_space,
+      src_surface_origin, src_mailbox_holder, dst_frame.get());
   if (!copy_succeeded) {
     ri->DeleteQueriesEXT(1, &query_id);
     return false;
@@ -256,19 +255,19 @@ bool WebGraphicsContext3DVideoFramePool::ConvertVideoFrame(
          format == media::PIXEL_FORMAT_ARGB)
       << "Invalid format " << format;
   DCHECK_EQ(src_video_frame->NumTextures(), std::size_t{1});
-  viz::ResourceFormat texture_format;
+  viz::SharedImageFormat texture_format;
   switch (format) {
     case media::PIXEL_FORMAT_XBGR:
-      texture_format = viz::RGBX_8888;
+      texture_format = viz::SinglePlaneFormat::kRGBX_8888;
       break;
     case media::PIXEL_FORMAT_ABGR:
-      texture_format = viz::RGBA_8888;
+      texture_format = viz::SinglePlaneFormat::kRGBA_8888;
       break;
     case media::PIXEL_FORMAT_XRGB:
-      texture_format = viz::BGRX_8888;
+      texture_format = viz::SinglePlaneFormat::kBGRX_8888;
       break;
     case media::PIXEL_FORMAT_ARGB:
-      texture_format = viz::BGRA_8888;
+      texture_format = viz::SinglePlaneFormat::kBGRA_8888;
       break;
     default:
       NOTREACHED();

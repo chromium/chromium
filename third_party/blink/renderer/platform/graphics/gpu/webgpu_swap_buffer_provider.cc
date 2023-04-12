@@ -332,7 +332,7 @@ bool WebGPUSwapBufferProvider::CopyToVideoFrame(
                                     GetTextureTarget());
 
   auto success = frame_pool->CopyRGBATextureToVideoFrame(
-      Format().resource_format(), current_swap_buffer_->size,
+      Format(), current_swap_buffer_->size,
       PredefinedColorSpaceToGfxColorSpace(color_space_),
       kTopLeft_GrSurfaceOrigin, mailbox_holder, dst_color_space,
       std::move(callback));
