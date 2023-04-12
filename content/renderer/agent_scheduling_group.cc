@@ -159,7 +159,7 @@ AgentSchedulingGroup::AgentSchedulingGroup(
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote)
     : agent_group_scheduler_(
           blink::scheduler::WebThreadScheduler::MainThreadScheduler()
-              ->CreateWebAgentGroupScheduler()),
+              .CreateWebAgentGroupScheduler()),
       render_thread_(render_thread),
       // `receiver_` will be bound by `OnAssociatedInterfaceRequest()`.
       receiver_(this) {
@@ -193,7 +193,7 @@ AgentSchedulingGroup::AgentSchedulingGroup(
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker_remote)
     : agent_group_scheduler_(
           blink::scheduler::WebThreadScheduler::MainThreadScheduler()
-              ->CreateWebAgentGroupScheduler()),
+              .CreateWebAgentGroupScheduler()),
       render_thread_(render_thread),
       receiver_(this,
                 std::move(receiver),

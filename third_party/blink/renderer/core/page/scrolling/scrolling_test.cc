@@ -2088,7 +2088,7 @@ class UnifiedScrollingSimTest : public SimTest, public PaintTestConfigurations {
   }
 
   void RunIdleTasks() {
-    auto* scheduler =
+    auto& scheduler =
         blink::scheduler::WebThreadScheduler::MainThreadScheduler();
     blink::scheduler::RunIdleTasksForTesting(scheduler,
                                              base::BindOnce([]() {}));

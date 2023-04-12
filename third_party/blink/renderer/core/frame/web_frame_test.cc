@@ -332,7 +332,7 @@ class WebFrameTest : public testing::Test {
     // throttled.
     if (kLaunchingProcessIsBackgrounded) {
       blink::scheduler::WebThreadScheduler::MainThreadScheduler()
-          ->SetRendererBackgrounded(false);
+          .SetRendererBackgrounded(false);
     }
   }
 

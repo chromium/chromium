@@ -33,7 +33,7 @@ std::unique_ptr<WebThreadScheduler> CreateWebMainThreadSchedulerForTests();
 std::unique_ptr<WebMockThreadScheduler>
 CreateMockWebMainThreadSchedulerForTests();
 
-void RunIdleTasksForTesting(WebThreadScheduler* scheduler,
+void RunIdleTasksForTesting(WebThreadScheduler& scheduler,
                             base::OnceClosure callback);
 
 // Returns a SequencedTaskRunner. This implementation is same as

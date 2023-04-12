@@ -75,7 +75,7 @@ void TextFragmentGenerationNavigationTest::SetUp() {
 }
 
 void TextFragmentGenerationNavigationTest::RunAsyncMatchingTasks() {
-  auto* scheduler = blink::scheduler::WebThreadScheduler::MainThreadScheduler();
+  auto& scheduler = blink::scheduler::WebThreadScheduler::MainThreadScheduler();
   blink::scheduler::RunIdleTasksForTesting(scheduler, WTF::BindOnce([]() {}));
   RunPendingTasks();
 }
