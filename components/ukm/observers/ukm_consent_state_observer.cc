@@ -62,7 +62,6 @@ void UkmConsentStateObserver::ProfileState::SetConsentType(
   consent_state.Put(type);
 }
 
-// static
 UkmConsentStateObserver::ProfileState UkmConsentStateObserver::GetProfileState(
     syncer::SyncService* sync_service,
     UrlKeyedDataCollectionConsentHelper* consent_helper) {
@@ -86,6 +85,13 @@ UkmConsentStateObserver::ProfileState UkmConsentStateObserver::GetProfileState(
       CanUploadUkmForType(sync_service, syncer::ModelType::APPS)) {
     state.SetConsentType(APPS);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::FeatureList::IsEnabled(kAppMetricsOnlyRelyOnAppSync) &&
+      IsDeviceInDemoMode()) {
+    state.SetConsentType(APPS);
+  }
+#endif
 
   return state;
 }
@@ -208,5 +214,15 @@ bool UkmConsentStateObserver::IsUkmAllowedForAllProfiles() {
 UkmConsentState UkmConsentStateObserver::GetUkmConsentState() {
   return ukm_consent_state_;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void UkmConsentStateObserver::SetIsDemoMode(bool is_device_in_demo_mode) {
+  is_device_in_demo_mode_ = is_device_in_demo_mode;
+}
+
+bool UkmConsentStateObserver::IsDeviceInDemoMode() {
+  return is_device_in_demo_mode_;
+}
+#endif
 
 }  // namespace ukm

@@ -11,6 +11,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -369,6 +370,10 @@ AppTypeName GetAppTypeNameFromString(const std::string& app_type_name) {
 }
 
 bool ShouldRecordUkm(Profile* profile) {
+  // Bypass AppKM App Sync check for Demo Mode devices to collect app metrics.
+  if (ash::DemoSession::IsDeviceInDemoMode()) {
+    return true;
+  }
   switch (syncer::GetUploadToGoogleState(
       SyncServiceFactory::GetForProfile(profile), syncer::ModelType::APPS)) {
     case syncer::UploadState::NOT_ACTIVE:
