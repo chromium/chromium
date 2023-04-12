@@ -92718,6 +92718,16 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="Partial Data not allowed to upload"/>
   <int value="8" label="Continuous collection start"/>
   <int value="9" label="Continuous collection success"/>
+  <int value="10" label="Collect and store inputs success"/>
+  <int value="11" label="Observation time reached"/>
+  <int value="12" label="Delayed task posted"/>
+  <int value="13" label="Immediate observation posted"/>
+  <int value="14" label="Waiting for non delayed trigger"/>
+  <int value="15" label="Histogram trigger hit"/>
+  <int value="16" label="No segment info found failure"/>
+  <int value="17" label="Disallowed for recording"/>
+  <int value="18" label="Observation disallowed for recording"/>
+  <int value="19" label="Training data missing"/>
 </enum>
 
 <enum name="SegmentationPlatformValidationResult">

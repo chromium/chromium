@@ -256,7 +256,17 @@ enum class TrainingDataCollectionEvent {
   kPartialDataNotAllowed = 7,
   kContinousCollectionStart = 8,
   kContinousCollectionSuccess = 9,
-  kMaxValue = kContinousCollectionSuccess,
+  kCollectAndStoreInputsSuccess = 10,
+  kObservationTimeReached = 11,
+  kDelayedTaskPosted = 12,
+  kImmediateObservationPosted = 13,
+  kWaitingForNonDelayedTrigger = 14,
+  kHistogramTriggerHit = 15,
+  kNoSegmentInfo = 16,
+  kDisallowedForRecording = 17,
+  kObservationDisallowed = 18,
+  kTrainingDataMissing = 19,
+  kMaxValue = kTrainingDataMissing,
 };
 
 // Records analytics for training data collection.
