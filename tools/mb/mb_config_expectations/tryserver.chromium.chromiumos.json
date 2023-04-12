@@ -7,7 +7,7 @@
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
       "use_cfi_cast": true,
-      "use_goma": true,
+      "use_remoteexec": true,
       "use_thin_lto": true
     }
   },
@@ -18,7 +18,7 @@
       "is_chromeos_device": true,
       "is_debug": true,
       "ozone_platform_headless": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "chromeos-amd64-generic-rel": {
@@ -49,7 +49,7 @@
       "is_chromeos_device": true,
       "is_debug": true,
       "ozone_platform_headless": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "chromeos-arm-generic-rel": {
@@ -85,7 +85,7 @@
       "dcheck_always_on": true,
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "gpu-fyi-try-chromeos-amd64-generic": {
@@ -240,7 +240,7 @@
       "is_debug": false,
       "symbol_level": 0,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-chromeos-annotator-rel": {
@@ -255,7 +255,7 @@
       "symbol_level": 0,
       "target_os": "chromeos",
       "use_clang_coverage": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-chromeos-compile-dbg": {
@@ -290,7 +290,7 @@
       "proprietary_codecs": true,
       "symbol_level": 0,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-chromeos-rel": {
@@ -320,7 +320,7 @@
       "symbol_level": 0,
       "target_os": "chromeos",
       "use_clang_coverage": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-lacros-dbg": {
@@ -331,7 +331,7 @@
       "is_debug": true,
       "symbol_level": 1,
       "target_os": "chromeos",
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-lacros-rel": {
@@ -357,7 +357,7 @@
       "symbol_level": 0,
       "target_os": "chromeos",
       "use_clang_coverage": true,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-lacros-rel-orchestrator": {

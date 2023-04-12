@@ -1056,15 +1056,15 @@
     'tryserver.chromium.chromiumos': {
       # TODO(crbug.com/913750): Enable DCHECKS on the two amd64-generic bots
       # and two kevin bots when the PFQ has it enabled.
-      'chromeos-amd64-generic-cfi-thin-lto-rel': 'chromeos_amd64-generic_cfi_thin_lto',
-      'chromeos-amd64-generic-dbg': 'chromeos_amd64-generic_dbg',
+      'chromeos-amd64-generic-cfi-thin-lto-rel': 'chromeos_amd64-generic_cfi_thin_lto_reclient',
+      'chromeos-amd64-generic-dbg': 'chromeos_amd64-generic_dbg_reclient',
       'chromeos-amd64-generic-rel': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks_reclient',
       'chromeos-amd64-generic-rel-rts': 'chromeos_amd64-generic_use_fake_dbus_clients',
-      'chromeos-arm-generic-dbg': 'chromeos_arm-generic_dbg',
+      'chromeos-arm-generic-dbg': 'chromeos_arm-generic_dbg_reclient',
       'chromeos-arm-generic-rel': 'chromeos_arm-generic_dcheck_always_on_reclient',
       'chromeos-arm64-generic-rel': 'chromeos_arm64-generic_dchecks_reclient',
       'chromeos-jacuzzi-rel': 'chromeos_jacuzzi_dchecks_reclient',
-      'chromeos-octopus-rel': 'chromeos_octopus_dchecks',
+      'chromeos-octopus-rel': 'chromeos_octopus_dchecks_reclient',
       'gpu-fyi-try-chromeos-amd64-generic': 'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols',
       'gpu-fyi-try-chromeos-jacuzzi-exp': 'gpu_tests_chromeos_jacuzzi_release_trybot',
       'gpu-fyi-try-chromeos-kevin': 'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols',
@@ -1077,16 +1077,16 @@
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_dchecks_reclient',
       'lacros-arm64-generic-rel': 'chromeos_arm64-generic_lacros_rel_dchecks_reclient',
       'lacros-arm64-generic-rel-skylab-fyi': 'chromeos_arm64-generic_lacros_rel_fyi',
-      'linux-cfm-rel': 'linux_cfm_release_trybot',
-      'linux-chromeos-annotator-rel': 'chromeos_with_codecs_release_trybot_code_coverage',
+      'linux-cfm-rel': 'linux_cfm_release_trybot_reclient',
+      'linux-chromeos-annotator-rel': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
       'linux-chromeos-compile-dbg': 'chromeos_with_codecs_debug_bot_reclient',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot_reclient',
-      'linux-chromeos-inverse-fieldtrials-fyi-rel': 'chromeos_with_codecs_release_trybot_invert_fieldtrials',
+      'linux-chromeos-inverse-fieldtrials-fyi-rel': 'chromeos_with_codecs_release_trybot_invert_fieldtrials_reclient',
       'linux-chromeos-rel': 'chromeos_with_codecs_release_trybot_code_coverage_reclient',
-      'linux-chromeos-rel-rts': 'chromeos_with_codecs_release_trybot_code_coverage', # should be kept in sync with linux-chromeos-rel
-      'linux-lacros-dbg': 'lacros_on_linux_debug_bot',
+      'linux-chromeos-rel-rts': 'chromeos_with_codecs_release_trybot_code_coverage_reclient', # should be kept in sync with linux-chromeos-rel
+      'linux-lacros-dbg': 'lacros_on_linux_debug_bot_reclient',
       'linux-lacros-rel': 'lacros_on_linux_release_trybot_reclient',
-      'linux-lacros-rel-code-coverage': 'lacros_on_linux_release_trybot_coverage',
+      'linux-lacros-rel-code-coverage': 'lacros_on_linux_release_trybot_coverage_reclient',
       # TODO (crbug.com/1287228): Remove when orchestrator is verified
       'linux-lacros-rel-orchestrator': 'lacros_on_linux_release_trybot',
       'linux-lacros-tester-rel-reviver': 'lacros_on_linux_release_trybot',
@@ -2029,16 +2029,8 @@
       'chromeos_amd64-generic_reclient', 'asan',
     ],
 
-    'chromeos_amd64-generic_cfi_thin_lto': [
-      'chromeos_amd64-generic', 'cfi_full', 'thin_lto',
-    ],
-
     'chromeos_amd64-generic_cfi_thin_lto_reclient': [
       'chromeos_amd64-generic_reclient', 'cfi_full', 'thin_lto',
-    ],
-
-    'chromeos_amd64-generic_dbg': [
-      'chromeos_amd64-generic', 'debug',
     ],
 
     'chromeos_amd64-generic_dbg_reclient': [
@@ -2112,10 +2104,6 @@
     ],
     'chromeos_arm-generic_cfi_thin_lto_official_reclient': [
       'chromeos_device_reclient', 'arm-generic', 'cfi_full', 'thin_lto', 'official', 'full_symbols',
-    ],
-
-    'chromeos_arm-generic_dbg': [
-      'chromeos_device', 'arm-generic', 'debug',
     ],
 
     'chromeos_arm-generic_dbg_reclient': [
@@ -2247,10 +2235,6 @@
       'chromeos', 'msan', 'release_bot_reclient',
     ],
 
-    'chromeos_octopus_dchecks': [
-      'chromeos_octopus', 'dcheck_always_on',
-    ],
-
     'chromeos_octopus_dchecks_reclient': [
       'chromeos_octopus_reclient', 'dcheck_always_on',
     ],
@@ -2294,19 +2278,13 @@
     ],
 
     # Keep in sync with chromeos_with_codecs_release_trybot.
-    'chromeos_with_codecs_release_trybot_code_coverage': [
-      'chromeos_with_codecs', 'release_trybot', 'no_symbols', 'also_build_lacros_chrome',
-      'use_clang_coverage', 'partial_code_coverage_instrumentation',
-    ],
-
     'chromeos_with_codecs_release_trybot_code_coverage_reclient': [
       'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols', 'also_build_lacros_chrome',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
-
-    'chromeos_with_codecs_release_trybot_invert_fieldtrials': [
-      'chromeos_with_codecs', 'release_trybot', 'no_symbols', 'invert_fieldtrials',
+    'chromeos_with_codecs_release_trybot_invert_fieldtrials_reclient': [
+      'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols', 'invert_fieldtrials',
     ],
 
     'chromeos_with_codecs_with_lacros_release_bot_reclient': [
@@ -3041,8 +3019,8 @@
       'lacros_on_linux', 'release_trybot', 'also_build_ash_chrome', 'no_symbols',
     ],
 
-    'lacros_on_linux_release_trybot_coverage': [
-      'lacros_on_linux', 'release_trybot', 'also_build_ash_chrome', 'no_symbols',
+    'lacros_on_linux_release_trybot_coverage_reclient': [
+      'lacros_on_linux', 'release_trybot_reclient', 'also_build_ash_chrome', 'no_symbols',
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
@@ -3180,8 +3158,8 @@
       'cfm', 'release_bot_reclient', 'chromeos',
     ],
 
-    'linux_cfm_release_trybot': [
-      'cfm', 'release_trybot', 'chromeos',
+    'linux_cfm_release_trybot_reclient': [
+      'cfm', 'release_trybot_reclient', 'chromeos',
     ],
 
     'mac_arm64_gpu_tests_debug_bot_minimal_symbols_no_nacl_reclient': [
@@ -4001,10 +3979,6 @@
 
     'chromeos_kevin_reclient': {
       'mixins': ['chromeos_device_reclient', 'kevin',]
-    },
-
-    'chromeos_octopus': {
-      'mixins': ['chromeos_device', 'octopus',]
     },
 
     'chromeos_octopus_reclient': {
