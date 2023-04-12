@@ -181,6 +181,9 @@ base::TimeDelta PostProcessor::GetTTLForPredictedResult(
     auto default_ttl = predicted_result_ttl.default_ttl();
     auto time_unit = predicted_result_ttl.time_unit();
 
+    if (ordered_labels.empty()) {
+      return default_ttl * metadata_utils::ConvertToTimeDelta(time_unit);
+    }
     const auto iter = top_label_to_ttl_map.find(ordered_labels[0]);
     int64_t ttl_to_use =
         iter == top_label_to_ttl_map.end() ? default_ttl : iter->second;

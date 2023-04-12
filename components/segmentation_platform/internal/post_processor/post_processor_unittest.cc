@@ -28,6 +28,12 @@ const char kShareUser[] = "Share";
 const char kShoppingUser[] = "Shopping";
 const char kVoiceUser[] = "Voice";
 
+// TTL for MultiClassClassifier labels.
+const int kNewTabUserTTL = 1;
+const int kShareUserTTL = 2;
+const int kShoppingUserTTL = 3;
+const int kVoiceUserTTL = 4;
+
 // Labels for BinnedClassifier.
 const char kLowUsed[] = "Low";
 const char kMediumUsed[] = "Medium";
@@ -56,8 +62,16 @@ proto::OutputConfig GetTestOutputConfigForMultiClassClassifier(
 
   std::array<const char*, 4> labels{kShareUser, kNewTabUser, kVoiceUser,
                                     kShoppingUser};
+  std::vector<std::pair<std::string, int64_t>> ttl_for_labels{
+      {kShareUser, kShareUserTTL},
+      {kNewTabUser, kNewTabUserTTL},
+      {kVoiceUser, kVoiceUserTTL},
+      {kShoppingUser, kShoppingUserTTL},
+  };
   writer.AddOutputConfigForMultiClassClassifier(labels.begin(), labels.size(),
                                                 top_k_outputs, threshold);
+  writer.AddPredictedResultTTLInOutputConfig(ttl_for_labels, kDefaultTTL,
+                                             proto::TimeUnit::DAY);
   return model_metadata.output_config();
 }
 
@@ -274,6 +288,17 @@ TEST(PostProcessorTest, GetTTLWhenLabelTTLNotPresentInMap) {
       /*model_scores=*/{0.1}, GetTestOutputConfigForBinaryClassifier(),
       /*timestamp=*/base::Time::Now());
   // NotShowShare is selected based on score.
+  EXPECT_EQ(base::Days(1) * kDefaultTTL,
+            post_processor.GetTTLForPredictedResult(pred_result));
+}
+
+TEST(PostProcessorTest, GetTTLForMultiClassWithNoLabels) {
+  PostProcessor post_processor;
+  proto::PredictionResult pred_result = metadata_utils::CreatePredictionResult(
+      /*model_scores=*/{0, 0, 0, 0},
+      GetTestOutputConfigForMultiClassClassifier(/*top_k-outputs=*/2,
+                                                 /*threshold=*/0.5),
+      /*timestamp=*/base::Time::Now());
   EXPECT_EQ(base::Days(1) * kDefaultTTL,
             post_processor.GetTTLForPredictedResult(pred_result));
 }
