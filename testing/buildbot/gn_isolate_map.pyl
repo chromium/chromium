@@ -1254,9 +1254,13 @@
     # coverage.
     "type": "additional_compile_target",
   },
-  "mojo_rust_tests": {
-    "label": "//mojo/public/rust:mojo_rust_tests",
-    "type": "generated_script",
+  "mojo_rust_integration_unittests": {
+    "label": "//mojo/public/rust:mojo_rust_integration_unittests",
+    "type": "console_test_launcher",
+  },
+  "mojo_rust_unittests": {
+    "label": "//mojo/public/rust:mojo_rust_unittests",
+    "type": "console_test_launcher",
   },
   "mojo_test_apk": {
     "label": "//mojo/public/java/system:mojo_test_apk",

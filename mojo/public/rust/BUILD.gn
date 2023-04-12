@@ -5,26 +5,32 @@
 import("//build/config/rust.gni")
 import("//build/rust/rust_bindgen.gni")
 import("//build/rust/rust_static_library.gni")
-import("//build/rust/rust_unit_test.gni")
-import("//build/rust/rust_unit_tests_group.gni")
+import("//testing/test.gni")
 
 # Meta target to build everything
 group("rust") {
   deps = [ ":mojo_rust" ]
 }
 
-# Build combined test runner, if Rust-native tests are supported.
-if (can_build_rust_unit_tests) {
-  rust_unit_tests_group("mojo_rust_tests") {
-    deps = [
-      "//mojo/public/rust/tests:mojo_rust_encoding_tests",
-      "//mojo/public/rust/tests:mojo_rust_integration_tests",
-      "//mojo/public/rust/tests:mojo_rust_system_tests",
-    ]
-  }
-} else {
-  group("mojo_rust_tests") {
-  }
+# These tests require real mojo and can't be mixed with test-only mojo. Mojo can
+# only be initialized once per process, and can't change modes.
+test("mojo_rust_integration_unittests") {
+  deps = [
+    "//base/test:run_all_unittests",
+    "//mojo/public/rust/tests:mojo_rust_integration_tests",
+    "//mojo/public/rust/tests:mojo_rust_system_tests",
+    "//testing/gtest",
+  ]
+}
+
+# These tests use stubbed out test-only mojo and can't be mixed with real mojo.
+# Mojo can only be initialized once per process, and can't change modes.
+test("mojo_rust_unittests") {
+  deps = [
+    "//base/test:run_all_unittests",
+    "//mojo/public/rust/tests:mojo_rust_encoding_tests",
+    "//testing/gtest",
+  ]
 }
 
 source_set("mojo_c_system_wrapper") {

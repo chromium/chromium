@@ -64,6 +64,13 @@ if (is_android) {
 template("mixed_test") {
   assert(defined(invoker.target_type) && invoker.target_type != "")
 
+  # The crate_root variable would transform the target into a Rust binary
+  # which is incorrect. To not use a generated crate root set:
+  # ```
+  # test_crate_root = "path/to/root.rs"
+  # ```
+  assert(!defined(invoker.crate_root))
+
   _rs_vars = [
     "sources",  # We split this list into two.
     "crate_name",  # Android test template overrides the crate name.
@@ -108,20 +115,22 @@ template("mixed_test") {
     rust_static_library(_rust_target_name) {
       forward_variables_from(invoker,
                              TESTONLY_AND_VISIBILITY + [
+                                   "allow_unsafe",
                                    "deps",
+                                   "generate_crate_root",
                                    "public_deps",
                                  ])
       configs += [ "//build/rust:test" ]
-      generate_crate_root = true
+      if (defined(invoker.test_crate_root)) {
+        crate_root = invoker.test_crate_root
+      } else {
+        generate_crate_root = true
+      }
       sources = _rs_sources
+
       if (_gtest_is_in_deps) {
         deps += [ "//testing/rust_gtest_interop" ]
       }
-
-      # Inform the build system that this library contains gtest unit tests.
-      # They must not be discarded by the linker even though there will be no
-      # edges going into them.
-      is_gtest_unittests = true
     }
   } else {
     not_needed(invoker, _rs_vars)
@@ -134,8 +143,35 @@ template("mixed_test") {
     if (!defined(deps)) {
       deps = []
     }
+    if (!defined(ldflags)) {
+      ldflags = []
+    }
+
     if (_rs_sources != []) {
       deps += [ ":${_rust_target_name}" ]
+    }
+
+    if (current_os != "aix" && !is_win) {
+      # Inform the build system that this binary contains Rust unit tests. The
+      # test-containing rlibs linked into it must not be discarded by the linker
+      # even if there will be no edges going into them.
+      #
+      # For C++ this is done by not putting them in a library at all, but Rust
+      # must be compiled into an rlib.
+      #
+      # On AIX there's no flag to avoid pruning unit tests in this library from
+      # the linking step. On Windows, there's no need for it.
+      if (_rs_sources != []) {
+        ldflags +=
+            [ "-LinkWrapper,add-whole-archive=${_rust_target_name}.rlib" ]
+      }
+
+      # Do the same for any Rust dependencies with unit tests in them. This will
+      # only match rust targets by looking for rlib extensions.
+      foreach(d, deps) {
+        _dep_target_name = get_label_info(d, "name")
+        ldflags += [ "-LinkWrapper,add-whole-archive=${_dep_target_name}.rlib" ]
+      }
     }
   }
 }

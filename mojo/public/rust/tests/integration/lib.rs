@@ -4,11 +4,11 @@
 
 //! Tests for system + encoding that use a real Mojo implementation.
 
-extern crate test_util as util;
-
 use mojo::bindings::mojom::{MojomInterface, MojomInterfaceRecv, MojomInterfaceSend};
 use mojo::system::message_pipe;
 use mojo::system::{Handle, HandleSignals};
+use rust_gtest_interop::prelude::*;
+use test_util::init;
 
 use std::thread;
 
@@ -21,9 +21,9 @@ mod mojom_validation;
 use mojom_validation::*;
 
 // Tests basic client and server interaction over a thread
-#[test]
-fn send_and_recv() {
-    util::init();
+#[gtest(MojoIntegrationTest, SendAndReceive)]
+fn test() {
+    init();
 
     let (endpt0, endpt1) = message_pipe::create().unwrap();
     // Client and server handles
@@ -43,10 +43,10 @@ fn send_and_recv() {
         client.pipe().wait(HandleSignals::READABLE);
         // Decode response
         let (req_id, options) = client.recv_response().unwrap();
-        assert_eq!(req_id, 5);
+        expect_eq!(req_id, 5);
         match options {
             IntegrationTestInterfaceResponseOption::IntegrationTestInterfaceMethod0(msg) => {
-                assert_eq!(msg.param0, vec![1, 2, 3]);
+                expect_eq!(msg.param0, vec![1, 2, 3]);
             }
         }
     });
@@ -54,10 +54,10 @@ fn send_and_recv() {
     server.pipe().wait(HandleSignals::READABLE);
     // Decode request
     let (req_id, options) = server.recv_response().unwrap();
-    assert_eq!(req_id, 5);
+    expect_eq!(req_id, 5);
     match options {
         IntegrationTestInterfaceRequestOption::IntegrationTestInterfaceMethod0(msg) => {
-            assert_eq!(msg.param0.a, -1);
+            expect_eq!(msg.param0.a, -1);
         }
     }
     // Send response

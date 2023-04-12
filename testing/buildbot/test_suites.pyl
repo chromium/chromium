@@ -4734,6 +4734,8 @@
     # Rust tests run on all targets.
     'rust_common_gtests': {
       'base_unittests': {},
+      'mojo_rust_integration_unittests': {},
+      'mojo_rust_unittests': {},
       'rust_gtest_interop_unittests': {},
       'test_cpp_including_rust_unittests': {
         'swarming': {},
@@ -4749,10 +4751,6 @@
       'build_rust_tests': {
         'swarming': {},
         'test': 'build_rust_tests',
-      },
-      'mojo_rust_tests': {
-        'swarming': {},
-        'test': 'mojo_rust_tests',
       },
     },
 

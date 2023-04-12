@@ -18,7 +18,7 @@ def wrap_with_whole_archive(command):
   # file instead of the command line.
   def extract_libname(s):
     m = re.match(r'-LinkWrapper,add-whole-archive=(.+)', s)
-    return m.group(1) + ".rlib"
+    return m.group(1)
 
   # The set of libraries we want to apply `--whole-archive`` to.
   whole_archive_libs = [

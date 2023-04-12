@@ -13,6 +13,7 @@ use mojo::bindings::encoding::{self, Context, DataHeaderValue, Encoder, Encoding
 use mojo::bindings::impl_encodable_for_pointer;
 use mojo::bindings::mojom::{MojomEncodable, MojomPointer, MojomStruct};
 use mojo::system::{self, UntypedHandle};
+use rust_gtest_interop::prelude::*;
 
 const STRUCT_A_VERSIONS: [(u32, u32); 1] = [(0, 16)];
 
@@ -59,7 +60,7 @@ impl<T: MojomEncodable> MojomStruct for StructA<T> {}
 // Fixed size arrays have complex and unsafe semantics to ensure
 // there are no memory leaks. We test this behavior here to make
 // sure memory isn't becoming corrupted.
-stubbed_mojo_test!(regression_fixed_size_array_error_propagates_safely, {
+stubbed_mojo_test!(MojoRegressionTest, RegressionFixedSizeArrayErrorPropagatesSafely, {
     let handle1 = unsafe { system::acquire(0) };
     let handle2 = unsafe { system::acquire(0) };
     let handle3 = unsafe { system::acquire(0) };
@@ -68,8 +69,8 @@ stubbed_mojo_test!(regression_fixed_size_array_error_propagates_safely, {
     handles.truncate(1);
     let new_val = <StructA<UntypedHandle>>::deserialize(&mut buffer[..], handles);
     match new_val {
-        Ok(_) => panic!("Value should not be okay!"),
-        Err(err) => assert_eq!(err, ValidationError::IllegalHandle),
+        Ok(_) => expect_true!(false, "Value should not be okay!"),
+        Err(err) => expect_eq!(err, ValidationError::IllegalHandle),
     }
 });
 
@@ -77,22 +78,16 @@ stubbed_mojo_test!(regression_fixed_size_array_error_propagates_safely, {
 // For the only handle that should drop, we make the handle some
 // random number which is potentially a valid handle. When on
 // drop() we try to close it, we should panic.
-stubbed_mojo_test!(
-    regression_fixed_size_array_verify_drop,
-    // Ignore this test, it panics while panicking
-    #[ignore]
-    #[should_panic]
-    {
-        let handle1 = unsafe { system::acquire(42) };
-        let handle2 = unsafe { system::acquire(0) };
-        let handle3 = unsafe { system::acquire(0) };
-        let val = StructA { param0: [handle1, handle2, handle3] };
-        let (mut buffer, mut handles) = val.auto_serialize();
-        handles.truncate(1);
-        let new_val = <StructA<UntypedHandle>>::deserialize(&mut buffer[..], handles);
-        match new_val {
-            Ok(_) => panic!("Value should not be okay!"),
-            Err(err) => assert_eq!(err, ValidationError::IllegalHandle),
-        }
+stubbed_mojo_test!(MojoRegressionTest, RegressionFixedSizeArrayVerifyDrop, {
+    let handle1 = unsafe { system::acquire(42) };
+    let handle2 = unsafe { system::acquire(0) };
+    let handle3 = unsafe { system::acquire(0) };
+    let val = StructA { param0: [handle1, handle2, handle3] };
+    let (mut buffer, mut handles) = val.auto_serialize();
+    handles.truncate(1);
+    let new_val = <StructA<UntypedHandle>>::deserialize(&mut buffer[..], handles);
+    match new_val {
+        Ok(_) => expect_true!(false, "Value should not be okay!"),
+        Err(err) => expect_eq!(err, ValidationError::IllegalHandle),
     }
-);
+});

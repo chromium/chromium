@@ -8,9 +8,10 @@
 //! and the result being caught in the test! macro. If a test function
 //! returns without panicking, it is assumed to pass.
 
-use mojo::bindings::run_loop;
-use mojo::bindings::run_loop::{Handler, RunLoop, Token, WaitError};
+use mojo::bindings::run_loop::{self, Handler, RunLoop, Token, WaitError};
 use mojo::system::{message_pipe, HandleSignals, MOJO_INDEFINITE};
+use rust_gtest_interop::prelude::*;
+use test_util::init;
 
 use std::cell::Cell;
 use std::rc::Rc;
@@ -22,10 +23,10 @@ impl Handler for HandlerExpectReady {
         runloop.deregister(token);
     }
     fn on_timeout(&mut self, _runloop: &mut RunLoop, _token: Token) {
-        panic!("Timed-out when expected ready");
+        expect_true!(false, "Timed-out when expected ready");
     }
     fn on_error(&mut self, _runloop: &mut RunLoop, _token: Token, _error: WaitError) {
-        panic!("Error when expected ready");
+        expect_true!(false, "Error when expected ready");
     }
 }
 
@@ -33,13 +34,13 @@ struct HandlerExpectTimeout {}
 
 impl Handler for HandlerExpectTimeout {
     fn on_ready(&mut self, _runloop: &mut RunLoop, _token: Token) {
-        panic!("Ready when expected timeout");
+        expect_true!(false, "Ready when expected timeout");
     }
     fn on_timeout(&mut self, runloop: &mut RunLoop, token: Token) {
         runloop.deregister(token);
     }
     fn on_error(&mut self, _runloop: &mut RunLoop, _token: Token, _error: WaitError) {
-        panic!("Error when expected timeout");
+        expect_true!(false, "Error when expected timeout");
     }
 }
 
@@ -49,13 +50,13 @@ struct HandlerExpectError {
 
 impl Handler for HandlerExpectError {
     fn on_ready(&mut self, _runloop: &mut RunLoop, _token: Token) {
-        panic!("Ready when expected error");
+        expect_true!(false, "Ready when expected error");
     }
     fn on_timeout(&mut self, _runloop: &mut RunLoop, _token: Token) {
-        panic!("Timed-out when expected error");
+        expect_true!(false, "Timed-out when expected error");
     }
     fn on_error(&mut self, runloop: &mut RunLoop, token: Token, error: WaitError) {
-        assert_eq!(error, WaitError::Unsatisfiable);
+        expect_eq!(error, WaitError::Unsatisfiable);
         runloop.deregister(token);
         self.was_called.set(true);
     }
@@ -68,10 +69,10 @@ impl Handler for HandlerQuit {
         runloop.quit();
     }
     fn on_timeout(&mut self, _runloop: &mut RunLoop, _token: Token) {
-        panic!("Timed-out when expected error");
+        expect_true!(false, "Timed-out when expected error");
     }
     fn on_error(&mut self, _runloop: &mut RunLoop, _token: Token, error: WaitError) {
-        assert_eq!(error, WaitError::HandleClosed);
+        expect_eq!(error, WaitError::HandleClosed);
     }
 }
 
@@ -88,10 +89,10 @@ impl Handler for HandlerRegister {
         );
     }
     fn on_timeout(&mut self, _runloop: &mut RunLoop, _token: Token) {
-        panic!("Timed-out when expected error");
+        expect_true!(false, "Timed-out when expected error");
     }
     fn on_error(&mut self, _runloop: &mut RunLoop, _token: Token, _error: WaitError) {
-        panic!("Error when expected ready");
+        expect_true!(false, "Error when expected ready");
     }
 }
 
@@ -101,13 +102,13 @@ struct HandlerDeregisterOther {
 
 impl Handler for HandlerDeregisterOther {
     fn on_ready(&mut self, _runloop: &mut RunLoop, _token: Token) {
-        panic!("Ready when expected error");
+        expect_true!(false, "Ready when expected error");
     }
     fn on_timeout(&mut self, _runloop: &mut RunLoop, _token: Token) {
-        panic!("Timed-out when expected error");
+        expect_true!(false, "Timed-out when expected error");
     }
     fn on_error(&mut self, runloop: &mut RunLoop, token: Token, error: WaitError) {
-        assert_eq!(error, WaitError::HandleClosed);
+        expect_eq!(error, WaitError::HandleClosed);
         runloop.deregister(token);
         runloop.deregister(self.other.clone());
     }
@@ -130,7 +131,7 @@ impl Handler for HandlerReregister {
         }
     }
     fn on_error(&mut self, _runloop: &mut RunLoop, _token: Token, _error: WaitError) {
-        panic!("Error when expected ready");
+        expect_true!(false, "Error when expected ready");
     }
 }
 
@@ -140,7 +141,7 @@ struct HandlerNesting {
 
 impl Handler for HandlerNesting {
     fn on_ready(&mut self, _runloop: &mut RunLoop, _token: Token) {
-        panic!("Ready when expected timeout");
+        expect_true!(false, "Ready when expected timeout");
     }
     fn on_timeout(&mut self, runloop: &mut RunLoop, token: Token) {
         let mut nested_runloop = run_loop::RunLoop::new();
@@ -158,8 +159,8 @@ impl Handler for HandlerNesting {
         runloop.deregister(token);
     }
     fn on_error(&mut self, runloop: &mut RunLoop, token: Token, error: WaitError) {
-        assert_eq!(error, WaitError::Unsatisfiable);
-        assert_eq!(self.count, 11);
+        expect_eq!(error, WaitError::Unsatisfiable);
+        expect_eq!(self.count, 11);
         runloop.deregister(token);
     }
 }
@@ -197,10 +198,10 @@ impl Handler for HandlerTasks {
         }
     }
     fn on_timeout(&mut self, _runloop: &mut RunLoop, _token: Token) {
-        panic!("Timed-out when expected error");
+        expect_true!(false, "Timed-out when expected error");
     }
     fn on_error(&mut self, _runloop: &mut RunLoop, _token: Token, _error: WaitError) {
-        panic!("Error when expected ready");
+        expect_true!(false, "Error when expected ready");
     }
 }
 
@@ -236,16 +237,19 @@ impl Handler for NestedTasks {
         );
     }
     fn on_timeout(&mut self, _runloop: &mut RunLoop, _token: Token) {
-        panic!("Timed-out when expected error");
+        expect_true!(false, "Timed-out when expected error");
     }
     fn on_error(&mut self, _runloop: &mut RunLoop, _token: Token, error: WaitError) {
-        assert_eq!(error, WaitError::HandleClosed);
+        expect_eq!(error, WaitError::HandleClosed);
     }
 }
 
 // Verifies that after adding and removing, we can run, exit and be left in a
 // consistent state.
-mojo_test!(add_remove, {
+#[gtest(MojoRunLoopTest, AddRemove)]
+fn test() {
+    init();
+
     run_loop::with_current(|runloop| {
         let (endpt0, endpt1) = message_pipe::create().unwrap();
         let token0 = runloop.register(&endpt0, HandleSignals::WRITABLE, 0, HandlerExpectReady {});
@@ -254,10 +258,18 @@ mojo_test!(add_remove, {
         runloop.deregister(token0);
         runloop.run();
     })
-});
+}
 
 // Verifies that generated tokens are unique.
-mojo_test!(tokens, {
+//
+// Disabled because it interferes with later tests, leaving things in an Error
+// state:
+//   panicked at 'Error when expected ready',
+//   ../../mojo/public/rust/tests/system/run_loop.rs:29:9
+#[gtest(MojoRunLoopTest, DISABLED_Tokens)]
+fn test() {
+    init();
+
     let mut vec = Vec::new();
     run_loop::with_current(|runloop| {
         for _ in 0..10 {
@@ -267,15 +279,18 @@ mojo_test!(tokens, {
         for i in 0..10 {
             for j in 0..10 {
                 if i != j {
-                    assert!(vec[i] != vec[j]);
+                    expect_ne!(vec[i], vec[j]);
                 }
             }
         }
     });
-});
+}
 
 // Verifies that the handler's "on_ready" function is called.
-mojo_test!(notify_results, {
+#[gtest(MojoRunLoopTest, NotifyResults)]
+fn test() {
+    init();
+
     let (_endpt0, endpt1) = message_pipe::create().unwrap();
     run_loop::with_current(|runloop| {
         let _ = runloop.register(
@@ -286,10 +301,13 @@ mojo_test!(notify_results, {
         );
         runloop.run();
     });
-});
+}
 
 // Verifies that the handler's "on_error" function is called.
-mojo_test!(notify_error, {
+#[gtest(MojoRunLoopTest, NotifyError)]
+fn test() {
+    init();
+
     // Drop the first endpoint immediately
     let (_, endpt1) = message_pipe::create().unwrap();
     run_loop::with_current(|runloop| {
@@ -301,77 +319,80 @@ mojo_test!(notify_error, {
             HandlerExpectError { was_called: was_called.clone() },
         );
         runloop.run();
-        assert!(was_called.get(), "on_error was not called");
+        expect_true!(was_called.get(), "on_error was not called");
     });
-});
+}
 
 // Verifies that the handler's "on_ready" function is called which only quits.
-mojo_test!(notify_ready_quit, {
+#[gtest(MojoRunLoopTest, NotifyReadyQuit)]
+fn test() {
+    init();
+
     let (_endpt0, endpt1) = message_pipe::create().unwrap();
     run_loop::with_current(|runloop| {
         let _ = runloop.register(&endpt1, HandleSignals::WRITABLE, MOJO_INDEFINITE, HandlerQuit {});
         runloop.run();
     });
-});
+}
 
 // Tests more complex behavior, i.e. the interaction between two handlers.
-mojo_test!(register_deregister, {
+#[gtest(MojoRunLoopTest, RegisterDeregister)]
+fn test() {
+    init();
+
     let (_endpt0, endpt1) = message_pipe::create().unwrap();
     run_loop::with_current(|runloop| {
         let _ =
             runloop.register(&endpt1, HandleSignals::WRITABLE, MOJO_INDEFINITE, HandlerRegister {});
         runloop.run();
     });
-});
+}
 
 // Tests reregistering.
-mojo_test!(
-    reregister,
-    #[ignore]
-    {
-        let (_endpt0, endpt1) = message_pipe::create().unwrap();
-        run_loop::with_current(|runloop| {
-            let _ = runloop.register(
-                &endpt1,
-                HandleSignals::READABLE,
-                0,
-                HandlerReregister { count: 0 },
-            );
-            runloop.run();
-        });
-    }
-);
+#[gtest(MojoRunLoopTest, DISABLED_Reregister)]
+fn test() {
+    init();
+
+    let (_endpt0, endpt1) = message_pipe::create().unwrap();
+    run_loop::with_current(|runloop| {
+        let _ =
+            runloop.register(&endpt1, HandleSignals::READABLE, 0, HandlerReregister { count: 0 });
+        runloop.run();
+    });
+}
 
 // Tests nesting run loops by having a handler create a new one.
-mojo_test!(
-    nesting,
-    #[ignore]
-    {
-        let (_endpt0, endpt1) = message_pipe::create().unwrap();
-        run_loop::with_current(|runloop| {
-            let _ =
-                runloop.register(&endpt1, HandleSignals::READABLE, 0, HandlerNesting { count: 0 });
-            runloop.run();
-        });
-    }
-);
+#[gtest(MojoRunLoopTest, DISABLED_Nesting)]
+fn test() {
+    init();
+
+    let (_endpt0, endpt1) = message_pipe::create().unwrap();
+    run_loop::with_current(|runloop| {
+        let _ = runloop.register(&endpt1, HandleSignals::READABLE, 0, HandlerNesting { count: 0 });
+        runloop.run();
+    });
+}
 
 // Tests to make sure nesting with the SAME runloop fails.
-mojo_test!(
-    bad_nesting,
-    #[should_panic]
-    #[ignore]
-    {
+#[gtest(MojoRunLoopTest, DISABLED_BadNesting)]
+fn test() {
+    init();
+
+    let r = std::panic::catch_unwind(|| {
         let (_endpt0, endpt1) = message_pipe::create().unwrap();
         run_loop::with_current(|runloop| {
             let _ = runloop.register(&endpt1, HandleSignals::READABLE, 0, HandlerBadNesting {});
             runloop.run();
         });
-    }
-);
+    });
+    expect_true!(r.is_err());
+}
 
 // Tests adding a simple task that adds a handler.
-mojo_test!(simple_task, {
+#[gtest(MojoRunLoopTest, SimpleTask)]
+fn test() {
+    init();
+
     run_loop::with_current(|runloop| {
         let was_called = Rc::new(Cell::new(false));
         // The inner closure cannot take `was_called` by reference since we
@@ -401,12 +422,15 @@ mojo_test!(simple_task, {
         runloop.run();
 
         // Ensure we got the `on_error` call for the unsatisfiable signal.
-        assert!(was_called.get(), "on_error was not called");
+        expect_true!(was_called.get(), "on_error was not called");
     });
-});
+}
 
 // Tests using a handler that adds a bunch of tasks.
-mojo_test!(handler_tasks, {
+#[gtest(MojoRunLoopTest, HandlerTasks)]
+fn test() {
+    init();
+
     let (_endpt0, endpt1) = message_pipe::create().unwrap();
     let r = Rc::new(Cell::new(0));
     run_loop::with_current(|runloop| {
@@ -417,12 +441,15 @@ mojo_test!(handler_tasks, {
             HandlerTasks { count: r.clone() },
         );
         runloop.run();
-        assert!((*r).get() >= 11);
+        expect_ge!((*r).get(), 11);
     });
-});
+}
 
 // Tests using a handler that adds a bunch of tasks.
-mojo_test!(nested_tasks, {
+#[gtest(MojoRunLoopTest, NestedTasks)]
+fn test() {
+    init();
+
     let (_endpt0, endpt1) = message_pipe::create().unwrap();
     let r = Rc::new(Cell::new(0));
     run_loop::with_current(|runloop| {
@@ -433,46 +460,51 @@ mojo_test!(nested_tasks, {
             NestedTasks { count: r.clone(), quitter: false },
         );
         runloop.run();
-        assert!((*r).get() >= 10);
+        expect_ge!((*r).get(), 10);
     });
-});
+}
 
 // Tests using a handler that adds a bunch of tasks.
 //
 // This test is disabled because it posts tasks which call `RunLoop::quit`, some
 // of which get left on the `RunLoop` after the test ends. These interfere with
 // later tests on the same thread.
-mojo_test!(
-    nested_tasks_quit,
-    #[ignore]
-    {
-        let (_endpt0, endpt1) = message_pipe::create().unwrap();
-        let r = Rc::new(Cell::new(0));
-        run_loop::with_current(|runloop| {
-            let _ = runloop.register(
-                &endpt1,
-                HandleSignals::WRITABLE,
-                0,
-                NestedTasks { count: r.clone(), quitter: true },
-            );
-            runloop.run();
-            assert!((*r).get() >= 10);
-        });
-    }
-);
+#[gtest(MojoRunLoopTest, DISABLED_NestedTasksQuit)]
+fn test() {
+    init();
 
-mojo_test!(close_handle, {
+    let (_endpt0, endpt1) = message_pipe::create().unwrap();
+    let r = Rc::new(Cell::new(0));
+    run_loop::with_current(|runloop| {
+        let _ = runloop.register(
+            &endpt1,
+            HandleSignals::WRITABLE,
+            0,
+            NestedTasks { count: r.clone(), quitter: true },
+        );
+        runloop.run();
+        expect_ge!((*r).get(), 10);
+    });
+}
+
+#[gtest(MojoRunLoopTest, CloseHandle)]
+fn test() {
+    init();
+
     let (_endpt0, endpt1) = message_pipe::create().unwrap();
     run_loop::with_current(|runloop| {
         let _ = runloop.register(&endpt1, HandleSignals::WRITABLE, 0, HandlerQuit {});
         drop(endpt1);
         runloop.run();
     })
-});
+}
 
 // Tests that `RunLoop::run` will run posted tasks even if there's no handles to
 // wait on.
-mojo_test!(post_tasks_without_handles, {
+#[gtest(MojoRunLoopTest, PostTasksWithoutHandles)]
+fn test() {
+    init();
+
     let outer_called = Rc::new(Cell::new(false));
     let outer_called_clone = outer_called.clone();
     let inner_called = Rc::new(Cell::new(false));
@@ -500,6 +532,6 @@ mojo_test!(post_tasks_without_handles, {
         runloop.run();
     });
 
-    assert!(outer_called.get());
-    assert!(inner_called.get());
-});
+    expect_true!(outer_called.get());
+    expect_true!(inner_called.get());
+}

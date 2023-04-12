@@ -11,19 +11,18 @@
 #![feature(assert_matches)]
 #![feature(maybe_uninit_write_slice)]
 
-#[macro_use]
-extern crate test_util as util;
-
 mod run_loop;
 
-use mojo::system::data_pipe;
-use mojo::system::message_pipe;
 use mojo::system::shared_buffer::{self, SharedBuffer};
 use mojo::system::trap::{
     ArmResult, Trap, TrapEvent, TriggerCondition, UnsafeTrap, UnsafeTrapEvent,
 };
-use mojo::system::wait_set;
-use mojo::system::{self, CastHandle, Handle, HandleSignals, MojoResult, SignalsState};
+use mojo::system::{
+    self, data_pipe, message_pipe, wait_set, CastHandle, Handle, HandleSignals, MojoResult,
+    SignalsState,
+};
+use rust_gtest_interop::prelude::*;
+use test_util::init;
 
 use std::assert_matches::assert_matches;
 use std::mem::drop;
@@ -32,20 +31,26 @@ use std::sync::{Arc, Condvar, Mutex};
 use std::thread;
 use std::vec::Vec;
 
-mojo_test!(handle, {
+#[gtest(MojoSystemTest, Handle)]
+fn test() {
+    init();
+
     let sb = SharedBuffer::new(1).unwrap();
     let handle = sb.as_untyped();
     unsafe {
-        assert_ne!(handle.get_native_handle(), 0);
-        assert!(handle.is_valid());
+        expect_ne!(handle.get_native_handle(), 0);
+        expect_true!(handle.is_valid());
         let mut h2 = system::acquire(handle.get_native_handle());
-        assert!(h2.is_valid());
+        expect_true!(h2.is_valid());
         h2.invalidate();
-        assert!(!h2.is_valid());
+        expect_true!(!h2.is_valid());
     }
-});
+}
 
-mojo_test!(shared_buffer, {
+#[gtest(MojoSystemTest, SharedBuffer)]
+fn test() {
+    init();
+
     let bufsize = 100;
 
     // Create a shared buffer and test round trip through `UntypedHandle`.
@@ -54,17 +59,17 @@ mojo_test!(shared_buffer, {
     let sb_native_handle = sb_first.get_native_handle();
 
     let sb_untyped = sb_first.as_untyped();
-    assert_eq!(sb_untyped.get_native_handle(), sb_native_handle);
+    expect_eq!(sb_untyped.get_native_handle(), sb_native_handle);
     let sb = unsafe { SharedBuffer::from_untyped(sb_untyped) };
-    assert_eq!(sb.get_native_handle(), sb_native_handle);
+    expect_eq!(sb.get_native_handle(), sb_native_handle);
 
     // Check the reported size is the same as our requested size.
     let size = sb.get_info().unwrap();
-    assert_eq!(size, bufsize);
+    expect_eq!(size, bufsize);
 
     // Map the buffer.
     let mut buf = sb.map(0, bufsize).unwrap();
-    assert_eq!(buf.len(), bufsize as usize);
+    expect_eq!(buf.len(), bufsize as usize);
     buf.write(50, 34);
 
     // Duplicate it and drop the original handle, which should maintain the
@@ -79,55 +84,61 @@ mojo_test!(shared_buffer, {
 
     // Create a new mapping and check for what we wrote.
     let buf1 = sb1.map(50, 50).unwrap();
-    assert_eq!(buf1.len(), 50);
+    expect_eq!(buf1.len(), 50);
     // verify buffer contents
-    assert_eq!(buf1.read(0), 34);
-    assert_eq!(buf1.read(1), 35);
-});
+    expect_eq!(buf1.read(0), 34);
+    expect_eq!(buf1.read(1), 35);
+}
 
-mojo_test!(message_pipe, {
+#[gtest(MojoSystemTest, MessagePipe)]
+fn test() {
+    init();
+
     let (end_a, end_b) = message_pipe::create().unwrap();
 
     // Extract original handle to check against.
     let end_a_native_handle = end_a.get_native_handle();
     // Test casting of handle types.
     let end_a_untyped = end_a.as_untyped();
-    assert_eq!(end_a_untyped.get_native_handle(), end_a_native_handle);
+    expect_eq!(end_a_untyped.get_native_handle(), end_a_native_handle);
 
     // Test after UntypedHandle round trip.
     let end_a = unsafe { message_pipe::MessageEndpoint::from_untyped(end_a_untyped) };
-    assert_eq!(end_a.get_native_handle(), end_a_native_handle);
+    expect_eq!(end_a.get_native_handle(), end_a_native_handle);
     let s: SignalsState = end_a.wait(HandleSignals::WRITABLE).satisfied().unwrap();
-    assert!(s.satisfied().is_writable());
-    assert!(s.satisfiable().is_readable());
-    assert!(s.satisfiable().is_writable());
-    assert!(s.satisfiable().is_peer_closed());
+    expect_true!(s.satisfied().is_writable());
+    expect_true!(s.satisfiable().is_readable());
+    expect_true!(s.satisfiable().is_writable());
+    expect_true!(s.satisfiable().is_peer_closed());
 
     assert_matches!(end_a.read(), Err(mojo::MojoResult::ShouldWait));
     let hello = "hello".to_string().into_bytes();
     let write_result = end_b.write(&hello, Vec::new());
-    assert_eq!(write_result, mojo::MojoResult::Okay);
+    expect_eq!(write_result, mojo::MojoResult::Okay);
     let s: SignalsState = end_a.wait(HandleSignals::READABLE).satisfied().unwrap();
-    assert!(s.satisfied().is_readable());
-    assert!(s.satisfied().is_writable());
-    assert!(s.satisfiable().is_readable());
-    assert!(s.satisfiable().is_writable());
-    assert!(s.satisfiable().is_peer_closed());
+    expect_true!(s.satisfied().is_readable());
+    expect_true!(s.satisfied().is_writable());
+    expect_true!(s.satisfiable().is_readable());
+    expect_true!(s.satisfiable().is_writable());
+    expect_true!(s.satisfiable().is_peer_closed());
 
     let (hello_data, _handles) = end_a.read().expect("failed to read from end_a");
-    assert_eq!(String::from_utf8(hello_data), Ok("hello".to_string()));
+    expect_eq!(String::from_utf8(hello_data), Ok("hello".to_string()));
 
     // Closing one endpoint should be seen by the other.
     drop(end_a);
 
     let s: SignalsState =
         end_b.wait(HandleSignals::READABLE | HandleSignals::WRITABLE).unsatisfiable().unwrap();
-    assert!(s.satisfied().is_peer_closed());
+    expect_true!(s.satisfied().is_peer_closed());
     // For some reason QuotaExceeded is also set. TOOD(collinbaker): investigate.
-    assert!(s.satisfiable().is_peer_closed());
-});
+    expect_true!(s.satisfiable().is_peer_closed());
+}
 
-mojo_test!(data_pipe, {
+#[gtest(MojoSystemTest, DataPipe)]
+fn test() {
+    init();
+
     let (consumer, producer) = data_pipe::create_default().unwrap();
     // Extract original handle to check against
     let consumer_native_handle = consumer.get_native_handle();
@@ -135,12 +146,12 @@ mojo_test!(data_pipe, {
     // Test casting of handle types
     let consumer_untyped = consumer.as_untyped();
     let producer_untyped = producer.as_untyped();
-    assert_eq!(consumer_untyped.get_native_handle(), consumer_native_handle);
-    assert_eq!(producer_untyped.get_native_handle(), producer_native_handle);
+    expect_eq!(consumer_untyped.get_native_handle(), consumer_native_handle);
+    expect_eq!(producer_untyped.get_native_handle(), producer_native_handle);
     let consumer = unsafe { data_pipe::Consumer::<u8>::from_untyped(consumer_untyped) };
     let producer = unsafe { data_pipe::Producer::<u8>::from_untyped(producer_untyped) };
-    assert_eq!(consumer.get_native_handle(), consumer_native_handle);
-    assert_eq!(producer.get_native_handle(), producer_native_handle);
+    expect_eq!(consumer.get_native_handle(), consumer_native_handle);
+    expect_eq!(producer.get_native_handle(), producer_native_handle);
 
     // Ensure the producer is writable, and check that we can wait on this
     // (which should return immediately).
@@ -149,19 +160,19 @@ mojo_test!(data_pipe, {
     // Try writing a message.
     let hello = "hello".to_string().into_bytes();
     let bytes_written = producer.write(&hello, data_pipe::WriteFlags::empty()).unwrap();
-    assert_eq!(bytes_written, hello.len());
+    expect_eq!(bytes_written, hello.len());
 
     // Try reading our message.
     consumer.wait(HandleSignals::READABLE).satisfied().unwrap();
     let data_string =
         String::from_utf8(consumer.read(data_pipe::ReadFlags::empty()).unwrap()).unwrap();
-    assert_eq!(data_string, "hello".to_string());
+    expect_eq!(data_string, "hello".to_string());
 
     // Test two-phase read/write, where we acquire a buffer to use then
     // commit the read/write when done.
     let goodbye = "goodbye".to_string().into_bytes();
     let mut write_buf = producer.begin().expect("error on write begin");
-    assert!(write_buf.len() >= goodbye.len());
+    expect_ge!(write_buf.len(), goodbye.len());
     std::mem::MaybeUninit::write_slice(&mut write_buf[0..goodbye.len()], &goodbye);
     // SAFETY: we wrote `goodbye.len()` valid elements to `write_buf`,
     // so they are initialized.
@@ -180,35 +191,41 @@ mojo_test!(data_pipe, {
     let data = read_buf.to_vec();
     read_buf.commit(data.len());
 
-    assert_eq!(data, goodbye);
-});
+    expect_eq!(data, goodbye);
+}
 
-mojo_test!(wait_set, {
+#[gtest(MojoSystemTest, WaitSet)]
+fn test() {
+    init();
+
     let mut set = wait_set::WaitSet::new().unwrap();
     let (endpt0, endpt1) = message_pipe::create().unwrap();
     let cookie1 = wait_set::WaitSetCookie(245);
     let cookie2 = wait_set::WaitSetCookie(123);
     let signals = HandleSignals::READABLE;
-    assert_eq!(set.add(&endpt0, signals, cookie1), mojo::MojoResult::Okay);
-    assert_eq!(set.add(&endpt0, signals, cookie1), mojo::MojoResult::AlreadyExists);
-    assert_eq!(set.remove(cookie1), mojo::MojoResult::Okay);
-    assert_eq!(set.remove(cookie1), mojo::MojoResult::NotFound);
-    assert_eq!(set.add(&endpt0, signals, cookie2), mojo::MojoResult::Okay);
+    expect_eq!(set.add(&endpt0, signals, cookie1), mojo::MojoResult::Okay);
+    expect_eq!(set.add(&endpt0, signals, cookie1), mojo::MojoResult::AlreadyExists);
+    expect_eq!(set.remove(cookie1), mojo::MojoResult::Okay);
+    expect_eq!(set.remove(cookie1), mojo::MojoResult::NotFound);
+    expect_eq!(set.add(&endpt0, signals, cookie2), mojo::MojoResult::Okay);
     thread::spawn(move || {
         let hello = "hello".to_string().into_bytes();
         let write_result = endpt1.write(&hello, Vec::new());
-        assert_eq!(write_result, mojo::MojoResult::Okay);
+        expect_eq!(write_result, mojo::MojoResult::Okay);
     });
     let mut output = Vec::with_capacity(2);
     let result = set.wait_on_set(&mut output);
-    assert_eq!(result, mojo::MojoResult::Okay);
-    assert_eq!(output.len(), 1);
-    assert_eq!(output[0].cookie, cookie2);
-    assert_eq!(output[0].wait_result, mojo::MojoResult::Okay);
-    assert!(output[0].signals_state.satisfied().is_readable());
-});
+    expect_eq!(result, mojo::MojoResult::Okay);
+    expect_eq!(output.len(), 1);
+    expect_eq!(output[0].cookie, cookie2);
+    expect_eq!(output[0].wait_result, mojo::MojoResult::Okay);
+    expect_true!(output[0].signals_state.satisfied().is_readable());
+}
 
-mojo_test!(trap_signals_on_readable, {
+#[gtest(MojoSystemTest, TrapSignalsOnReadable)]
+fn test() {
+    init();
+
     // These tests unfortunately need global state, so we have to ensure
     // exclusive access (generally Rust tests run on multiple threads).
     let _test_lock = TRAP_TEST_LOCK.lock().unwrap();
@@ -216,7 +233,7 @@ mojo_test!(trap_signals_on_readable, {
     let trap = UnsafeTrap::new(test_trap_event_handler).unwrap();
 
     let (cons, prod) = data_pipe::create_default().unwrap();
-    assert_eq!(
+    expect_eq!(
         MojoResult::Okay,
         trap.add_trigger(
             cons.get_native_handle(),
@@ -225,7 +242,7 @@ mojo_test!(trap_signals_on_readable, {
             1
         )
     );
-    assert_eq!(
+    expect_eq!(
         MojoResult::Okay,
         trap.add_trigger(
             prod.get_native_handle(),
@@ -240,24 +257,34 @@ mojo_test!(trap_signals_on_readable, {
     // triggered yet.
     match trap.arm(Some(&mut blocking_events_buf)) {
         ArmResult::Armed => (),
-        ArmResult::Blocked(events) => panic!("unexpected blocking events {:?}", events),
-        ArmResult::Failed(e) => panic!("unexpected mojo error {:?}", e),
+        ArmResult::Blocked(events) => {
+            expect_true!(false, "unexpected blocking events {:?}", events)
+        }
+        ArmResult::Failed(e) => expect_true!(false, "unexpected mojo error {:?}", e),
     }
 
     // Check that there are no events in the list (though of course this
     // check is uncertain if a race condition bug exists).
-    assert_eq!(TRAP_EVENT_LIST.lock().unwrap().len(), 0);
+    expect_eq!(TRAP_EVENT_LIST.lock().unwrap().len(), 0);
 
     // Write to `prod` making `cons` readable.
-    assert_eq!(prod.write(&[128u8], data_pipe::WriteFlags::empty()).unwrap(), 1);
+    expect_eq!(prod.write(&[128u8], data_pipe::WriteFlags::empty()).unwrap(), 1);
     {
         let list = wait_for_trap_events(TRAP_EVENT_LIST.lock().unwrap(), 1);
-        assert_eq!(list.len(), 1);
+        expect_eq!(list.len(), 1);
         let event = list[0];
-        assert_eq!(event.trigger_context(), 1);
-        assert_eq!(event.result(), MojoResult::Okay);
-        assert!(event.signals_state().satisfiable().is_readable(), "{:?}", event.signals_state());
-        assert!(event.signals_state().satisfied().is_readable(), "{:?}", event.signals_state());
+        expect_eq!(event.trigger_context(), 1);
+        expect_eq!(event.result(), MojoResult::Okay);
+        expect_true!(
+            event.signals_state().satisfiable().is_readable(),
+            "{:?}",
+            event.signals_state()
+        );
+        expect_true!(
+            event.signals_state().satisfied().is_readable(),
+            "{:?}",
+            event.signals_state()
+        );
     }
 
     // Once the above event has fired, `trap` is disarmed.
@@ -266,11 +293,11 @@ mojo_test!(trap_signals_on_readable, {
     match trap.arm(Some(&mut blocking_events_buf)) {
         ArmResult::Blocked(events) => {
             let event: &UnsafeTrapEvent = events.get(0).unwrap();
-            assert_eq!(event.trigger_context(), 1);
-            assert_eq!(event.result(), MojoResult::Okay);
+            expect_eq!(event.trigger_context(), 1);
+            expect_eq!(event.result(), MojoResult::Okay);
         }
-        ArmResult::Armed => panic!("expected event did not arrive"),
-        ArmResult::Failed(e) => panic!("unexpected Mojo error {:?}", e),
+        ArmResult::Armed => expect_true!(false, "expected event did not arrive"),
+        ArmResult::Failed(e) => expect_true!(false, "unexpected Mojo error {:?}", e),
     }
 
     clear_trap_events(1);
@@ -279,8 +306,10 @@ mojo_test!(trap_signals_on_readable, {
     cons.read(data_pipe::ReadFlags::DISCARD).unwrap();
     match trap.arm(Some(&mut blocking_events_buf)) {
         ArmResult::Armed => (),
-        ArmResult::Blocked(events) => panic!("unexpected blocking events {:?}", events),
-        ArmResult::Failed(e) => panic!("unexpected Mojo error {:?}", e),
+        ArmResult::Blocked(events) => {
+            expect_true!(false, "unexpected blocking events {:?}", events)
+        }
+        ArmResult::Failed(e) => expect_true!(false, "unexpected Mojo error {:?}", e),
     }
 
     // Close `prod` making `cons` permanently unreadable.
@@ -291,20 +320,20 @@ mojo_test!(trap_signals_on_readable, {
     // and removed from the trap.
     {
         let list = wait_for_trap_events(TRAP_EVENT_LIST.lock().unwrap(), 1);
-        assert_eq!(list.len(), 2);
+        expect_eq!(list.len(), 2);
         let (event1, event2) = (list[0], list[1]);
         // Sort the events since the ordering isn't deterministic.
         let (cons_event, prod_event) =
             if event1.trigger_context() == 1 { (event1, event2) } else { (event2, event1) };
 
         // 1. `cons` can no longer be readable.
-        assert_eq!(cons_event.trigger_context(), 1);
-        assert_eq!(cons_event.result(), MojoResult::FailedPrecondition);
-        assert!(!cons_event.signals_state().satisfiable().is_readable());
+        expect_eq!(cons_event.trigger_context(), 1);
+        expect_eq!(cons_event.result(), MojoResult::FailedPrecondition);
+        expect_true!(!cons_event.signals_state().satisfiable().is_readable());
 
         // 2. `prod` was closed, yielding a `Cancelled` event.
-        assert_eq!(prod_event.trigger_context(), 2);
-        assert_eq!(prod_event.result(), MojoResult::Cancelled);
+        expect_eq!(prod_event.trigger_context(), 2);
+        expect_eq!(prod_event.result(), MojoResult::Cancelled);
     };
 
     drop(trap);
@@ -313,15 +342,18 @@ mojo_test!(trap_signals_on_readable, {
     // event for `prod` corresponding to removing `prod` from `trap` (which
     // happens automatically on `Trap` closure).
     clear_trap_events(3);
-});
+}
 
-mojo_test!(trap_handle_closed_before_arm, {
+#[gtest(MojoSystemTest, TrapHandleClosedBeforeArm)]
+fn test() {
+    init();
+
     let _test_lock = TRAP_TEST_LOCK.lock().unwrap();
 
     let trap = UnsafeTrap::new(test_trap_event_handler).unwrap();
 
     let (cons, _prod) = data_pipe::create_default().unwrap();
-    assert_eq!(
+    expect_eq!(
         MojoResult::Okay,
         trap.add_trigger(
             cons.get_native_handle(),
@@ -336,17 +368,20 @@ mojo_test!(trap_handle_closed_before_arm, {
     // A cancelled event will be reported even without arming.
     {
         let events = wait_for_trap_events(TRAP_EVENT_LIST.lock().unwrap(), 1);
-        assert_eq!(events.len(), 1, "unexpected events {:?}", *events);
+        expect_eq!(events.len(), 1, "unexpected events {:?}", *events);
         let event = events[0];
-        assert_eq!(event.trigger_context(), 1);
-        assert_eq!(event.result(), MojoResult::Cancelled);
+        expect_eq!(event.trigger_context(), 1);
+        expect_eq!(event.result(), MojoResult::Cancelled);
     }
 
     drop(trap);
     clear_trap_events(1);
-});
+}
 
-mojo_test!(safe_trap, {
+#[gtest(MojoSystemTest, SafeTrap)]
+fn test() {
+    init();
+
     struct SharedContext {
         events: Mutex<Vec<TrapEvent>>,
         cond: Condvar,
@@ -376,18 +411,22 @@ mojo_test!(safe_trap, {
         context.clone(),
     );
 
-    assert_eq!(trap.arm(), MojoResult::Okay);
+    expect_eq!(trap.arm(), MojoResult::Okay);
 
     // Make `cons` readable.
-    assert_eq!(prod.write(&[128u8], data_pipe::WriteFlags::empty()), Ok(1));
+    expect_eq!(prod.write(&[128u8], data_pipe::WriteFlags::empty()), Ok(1));
     {
         let mut events =
             context.cond.wait_while(context.events.lock().unwrap(), |e| e.is_empty()).unwrap();
-        assert_eq!(events.len(), 1, "unexpected events {:?}", events);
+        expect_eq!(events.len(), 1, "unexpected events {:?}", events);
         let event = events[0];
-        assert_eq!(event.handle(), cons.get_native_handle());
-        assert_eq!(event.result(), MojoResult::Okay);
-        assert!(event.signals_state().satisfied().is_readable(), "{:?}", event.signals_state());
+        expect_eq!(event.handle(), cons.get_native_handle());
+        expect_eq!(event.result(), MojoResult::Okay);
+        expect_true!(
+            event.signals_state().satisfied().is_readable(),
+            "{:?}",
+            event.signals_state()
+        );
         events.clear();
     }
 
@@ -399,30 +438,34 @@ mojo_test!(safe_trap, {
         // We get the Cancelled event while unarmed.
         let mut events =
             context.cond.wait_while(context.events.lock().unwrap(), |e| e.is_empty()).unwrap();
-        assert_eq!(events.len(), 1, "unexpected events {:?}", events);
+        expect_eq!(events.len(), 1, "unexpected events {:?}", events);
         let event = events[0];
-        assert_eq!(event.handle(), cons_native);
-        assert_eq!(event.result(), MojoResult::Cancelled);
+        expect_eq!(event.handle(), cons_native);
+        expect_eq!(event.result(), MojoResult::Cancelled);
         events.clear();
     }
 
     // When we try to arm, we'll get the `prod` event.
-    assert_eq!(trap.arm(), MojoResult::FailedPrecondition);
+    expect_eq!(trap.arm(), MojoResult::FailedPrecondition);
     {
         let mut events =
             context.cond.wait_while(context.events.lock().unwrap(), |e| e.is_empty()).unwrap();
-        assert_eq!(events.len(), 1, "unexpected events {:?}", events);
+        expect_eq!(events.len(), 1, "unexpected events {:?}", events);
         let event = events[0];
-        assert_eq!(event.handle(), prod.get_native_handle());
-        assert_eq!(event.result(), MojoResult::Okay);
-        assert!(event.signals_state().satisfied().is_peer_closed(), "{:?}", event.signals_state());
+        expect_eq!(event.handle(), prod.get_native_handle());
+        expect_eq!(event.result(), MojoResult::Okay);
+        expect_true!(
+            event.signals_state().satisfied().is_peer_closed(),
+            "{:?}",
+            event.signals_state()
+        );
         events.clear();
     }
-});
+}
 
 fn clear_trap_events(expected_len: usize) {
     let mut list = TRAP_EVENT_LIST.lock().unwrap();
-    assert_eq!(list.len(), expected_len, "unexpected events {:?}", *list);
+    expect_eq!(list.len(), expected_len, "unexpected events {:?}", *list);
     list.clear();
 }
 
