@@ -50,9 +50,7 @@ struct UrlLoadParams;
                     inheritOpener:(BOOL)inheritOpener;
 
 // Informs the BVC that a new foreground tab is about to be opened in given
-// `targetMode`. This is intended to be called before setWebUsageSuspended:NO in
-// cases where a new tab is about to appear in order to allow the BVC to avoid
-// doing unnecessary work related to showing the previously selected tab.
+// `targetMode`.
 - (void)expectNewForegroundTabForMode:(ApplicationMode)targetMode;
 
 // TODO(crbug.com/907527): refactor to remove this and most methods above.

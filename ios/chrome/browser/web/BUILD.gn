@@ -116,14 +116,18 @@ source_set("delegate") {
 source_set("page_placeholder") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "page_placeholder_browser_agent.h",
+    "page_placeholder_browser_agent.mm",
     "page_placeholder_tab_helper.h",
     "page_placeholder_tab_helper.mm",
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/snapshots",
+    "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common/ui/util",
     "//ios/net",
     "//ios/web",

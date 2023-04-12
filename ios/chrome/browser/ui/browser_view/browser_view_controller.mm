@@ -92,6 +92,7 @@
 #import "ios/chrome/browser/url_loading/new_tab_animation_tab_helper.h"
 #import "ios/chrome/browser/url_loading/url_loading_observer_bridge.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ios/chrome/browser/web/page_placeholder_browser_agent.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -232,10 +233,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // YES if Voice Search should be started when the new tab animation is
   // finished.
   BOOL _startVoiceSearchAfterNewTabAnimation;
-  // YES if waiting for a foreground tab due to expectNewForegroundTab.
-  // TODO(crbug.com/1329109): Move this to a browser agent or web event
-  // mediator.
-  BOOL _expectingForegroundTab;
 
   // Whether or not -shutdown has been called.
   BOOL _isShutdown;
@@ -303,6 +300,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   LayoutGuideCenter* _layoutGuideCenter;
 
   ReadingListModel* _readingModel;
+
+  // Used to add or cancel a page placeholder for next navigation.
+  PagePlaceholderBrowserAgent* _pagePlaceholderBrowserAgent;
 }
 
 // Activates/deactivates the object. This will enable/disable the ability for
@@ -507,6 +507,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.secondaryToolbarContainerCoordinator =
         dependencies.secondaryToolbarContainerCoordinator;
     self.safeAreaProvider = dependencies.safeAreaProvider;
+    _pagePlaceholderBrowserAgent = dependencies.pagePlaceholderBrowserAgent;
 
     dependencies.lensCoordinator.delegate = self;
 
@@ -815,11 +816,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
 }
 
-// TODO(crbug.com/1329109): Move this to a browser agent or web event mediator.
-- (void)expectNewForegroundTab {
-  _expectingForegroundTab = YES;
-}
-
 - (void)startVoiceSearch {
   // Delay Voice Search until new tab animations have finished.
   if (self.inNewTabAnimation) {
@@ -861,12 +857,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // tab if the caller is about to create one) ends up on screen completely.
     // Force loading the view in case it was not loaded yet.
     [self loadViewIfNeeded];
-    // TODO(crbug.com/1329109): Move this to a browser agent or web event
-    // mediator.
-    if (self.currentWebState && _expectingForegroundTab) {
-      PagePlaceholderTabHelper::FromWebState(self.currentWebState)
-          ->AddPlaceholderForNextNavigation();
-    }
+    _pagePlaceholderBrowserAgent->AddPagePlaceholder();
     if (self.currentWebState)
       [self displayWebState:self.currentWebState];
   }
@@ -2981,9 +2972,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self dismissPopups];
 }
 
-- (void)webStateSelected:(web::WebState*)webState {
-  DCHECK(webState);
-
+- (void)webStateSelected {
+  if (!self.currentWebState) {
+    return;
+  }
   // Ignore changes while the tab stack view is visible (or while suspended).
   // The display will be refreshed when this view becomes active again.
   if (!self.visible || !self.webUsageEnabled) {
@@ -2992,21 +2984,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // TODO(crbug.com/1329088): Trigger this update from the mediator, or (as an
   // interm step) pass the view to be displayed instead.
-  [self displayWebState:webState];
-
-  // TODO(crbug.com/1329109): Move this to a browser agent or web event
-  // mediator.
-  if (_expectingForegroundTab && !self.inNewTabAnimation) {
-    // Now that the new tab has been displayed, return to normal. Rather than
-    // keep a reference to the previous tab, just turn off preview mode for all
-    // tabs (since doing so is a no-op for the tabs that don't have it set).
-    _expectingForegroundTab = NO;
-
-    for (int index = 0; index < self.webStateListSize; ++index) {
-      web::WebState* webStateAtIndex = self.webStateList->GetWebStateAt(index);
-      PagePlaceholderTabHelper::FromWebState(webStateAtIndex)
-          ->CancelPlaceholderForNextNavigation();
-    }
+  [self displayWebState:self.currentWebState];
+  if (!self.inNewTabAnimation) {
+    _pagePlaceholderBrowserAgent->CancelPagePlaceholder();
   }
 }
 
@@ -3151,16 +3131,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     }
 
     strongSelf.inNewTabAnimation = NO;
-    // Use the model's currentWebState here because it is possible that it can
-    // be reset to a new value before the new Tab animation finished (e.g.
-    // if another Tab shows a dialog via `dialogPresenter`). However, that
-    // webState's view hasn't been displayed yet because it was in a new tab
-    // animation.
-    web::WebState* currentWebState = strongSelf.currentWebState;
 
-    if (currentWebState) {
-      [strongSelf webStateSelected:currentWebState];
-    }
+    [strongSelf webStateSelected];
     if (completion)
       completion();
 

@@ -177,12 +177,14 @@
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
+#import "ios/chrome/browser/web/page_placeholder_browser_agent.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/print/print_tab_helper.h"
 #import "ios/chrome/browser/web/repost_form_tab_helper.h"
 #import "ios/chrome/browser/web/repost_form_tab_helper_delegate.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
+#import "ios/chrome/browser/web/web_state_update_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/view_source_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
@@ -893,6 +895,8 @@ enum class ToolbarKind {
                      type:ToolbarContainerType::kSecondary];
   _viewControllerDependencies.safeAreaProvider =
       [[SafeAreaProvider alloc] initWithBrowser:self.browser];
+  _viewControllerDependencies.pagePlaceholderBrowserAgent =
+      PagePlaceholderBrowserAgent::FromBrowser(self.browser);
 }
 
 - (void)updateViewControllerDependencies {
@@ -954,6 +958,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.voiceSearchController = nil;
   _viewControllerDependencies.secondaryToolbarContainerCoordinator = nil;
   _viewControllerDependencies.safeAreaProvider = nil;
+  _viewControllerDependencies.pagePlaceholderBrowserAgent = nil;
 
   [_bookmarksCoordinator shutdown];
   _bookmarksCoordinator = nil;

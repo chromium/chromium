@@ -33,8 +33,7 @@ class WebState;
 // Tells the consumer to make any required view changes when a `webState` is
 // selected in the WebStateList. The notification will not be sent when the
 // `webState` is already the selected WebState.
-// TODO(crbug.com/1417570): Remove webState from this call.
-- (void)webStateSelected:(web::WebState*)webState;
+- (void)webStateSelected;
 
 // Tells the consumer to make `webState` the currently visible WebState,
 // displaying its view if BVC is in an active state.

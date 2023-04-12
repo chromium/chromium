@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/upgrade/upgrade_center_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/browser/web/page_placeholder_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
 #import "ios/chrome/browser/web/web_state_update_browser_agent.h"
@@ -112,9 +113,10 @@ void AttachBrowserAgents(Browser* browser) {
   UpgradeCenterBrowserAgent::CreateForBrowser(browser,
                                               [UpgradeCenter sharedInstance]);
 
+  WebStateUpdateBrowserAgent::CreateForBrowser(browser);
+  PagePlaceholderBrowserAgent::CreateForBrowser(browser);
+
   // This needs to be called last in case any downstream browser agents need to
   // access upstream agents created earlier in this function.
   ios::provider::AttachBrowserAgents(browser);
-
-  WebStateUpdateBrowserAgent::CreateForBrowser(browser);
 }

@@ -143,8 +143,6 @@
   if (oldWebState) {
     [self.consumer prepareForNewTabAnimation];
   }
-  // NOTE: webStateSelected expects to always be called with a
-  // non-null WebState.
   if (newWebState) {
     // Activating without inserting an NTP requires starting it in two
     // scenarios: 1) After doing a batch tab restore (i.e. undo tab removals,
@@ -152,7 +150,7 @@
     // WebState is showing the NTP. BrowserCoordinator's -setActive: only starts
     // the NTP if it is the active view.
     [self startNTPIfNeededForActiveWebState:newWebState];
-    [self.consumer webStateSelected:newWebState];
+    [self.consumer webStateSelected];
   }
 }
 

@@ -51,6 +51,7 @@ class FullscreenController;
 @class NewTabPageCoordinator;
 @class LensCoordinator;
 @protocol OmniboxCommands;
+class PagePlaceholderBrowserAgent;
 @protocol PopupMenuCommands;
 @class PopupMenuCoordinator;
 // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
@@ -104,6 +105,7 @@ typedef struct {
   LayoutGuideCenter* layoutGuideCenter;
   id<OmniboxCommands> omniboxCommandsHandler;
   BOOL isOffTheRecord;
+  PagePlaceholderBrowserAgent* pagePlaceholderBrowserAgent;
   ReadingListModel* readingModel;
   UrlLoadingBrowserAgent* urlLoadingBrowserAgent;
   UrlLoadingNotifierBrowserAgent* urlLoadingNotifierBrowserAgent;
@@ -185,13 +187,6 @@ typedef struct {
 // the next time a tab is added to the Browser this object was initialized
 // with.
 - (void)appendTabAddedCompletion:(ProceduralBlock)tabAddedCompletion;
-
-// Informs the BVC that a new foreground tab is about to be opened. This is
-// intended to be called before setWebUsageSuspended:NO in cases where a new tab
-// is about to appear in order to allow the BVC to avoid doing unnecessary work
-// related to showing the previously selected tab.
-// TODO(crbug.com/1329109): Move this to a browser agent or web event mediator.
-- (void)expectNewForegroundTab;
 
 // Shows the voice search UI.
 - (void)startVoiceSearch;

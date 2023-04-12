@@ -64,6 +64,7 @@
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_adaptor.h"
 #import "ios/chrome/browser/url_loading/new_tab_animation_tab_helper.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/browser/web/page_placeholder_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_state_update_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
@@ -138,6 +139,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     TabUsageRecorderBrowserAgent::CreateForBrowser(browser_.get());
+    PagePlaceholderBrowserAgent::CreateForBrowser(browser_.get());
 
     WebUsageEnablerBrowserAgent::FromBrowser(browser_.get())
         ->SetWebUsageEnabled(true);
@@ -260,6 +262,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         TabUsageRecorderBrowserAgent::FromBrowser(browser_.get());
     web_navigation_browser_agent_ =
         WebNavigationBrowserAgent::FromBrowser(browser_.get());
+    page_placeholder_browser_agent_ =
+        PagePlaceholderBrowserAgent::FromBrowser(browser_.get());
 
     BrowserViewControllerDependencies dependencies;
     dependencies.prerenderService = fake_prerender_service_.get();
@@ -287,6 +291,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
             initWithBrowser:browser_.get()
                        type:ToolbarContainerType::kSecondary];
     dependencies.safeAreaProvider = safe_area_provider_;
+    dependencies.pagePlaceholderBrowserAgent = page_placeholder_browser_agent_;
 
     bvc_ = [[BrowserViewController alloc] initWithBrowser:browser_.get()
                            browserContainerViewController:container_
@@ -384,10 +389,11 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   TabUsageRecorderBrowserAgent* tab_usage_recorder_browser_agent_;
   WebNavigationBrowserAgent* web_navigation_browser_agent_;
   SafeAreaProvider* safe_area_provider_;
+  PagePlaceholderBrowserAgent* page_placeholder_browser_agent_;
 };
 
 TEST_F(BrowserViewControllerTest, TestWebStateSelected) {
-  [bvc_ webStateSelected:ActiveWebState()];
+  [bvc_ webStateSelected];
   EXPECT_EQ(ActiveWebState()->GetView().superview, container_.view);
   EXPECT_TRUE(ActiveWebState()->IsVisible());
 }

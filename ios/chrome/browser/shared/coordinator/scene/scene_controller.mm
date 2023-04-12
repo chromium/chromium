@@ -140,6 +140,7 @@
 #import "ios/chrome/browser/url_loading/scene_url_loading_service.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "ios/chrome/browser/web/page_placeholder_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/session_metrics.h"
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -2709,7 +2710,9 @@ void InjectNTP(Browser* browser) {
     }
   } else {
     if (!self.currentInterface.viewController.presentedViewController) {
-      [targetInterface.bvc expectNewForegroundTab];
+      PagePlaceholderBrowserAgent* pagePlaceholderBrowserAgent =
+          PagePlaceholderBrowserAgent::FromBrowser(targetInterface.browser);
+      pagePlaceholderBrowserAgent->ExpectNewForegroundTab();
     }
     [self setCurrentInterfaceForMode:targetMode];
     [self openOrReuseTabInMode:targetMode
@@ -2724,7 +2727,9 @@ void InjectNTP(Browser* browser) {
           ? self.interfaceProvider.incognitoInterface
           : self.interfaceProvider.mainInterface;
   DCHECK(interface);
-  [interface.bvc expectNewForegroundTab];
+  PagePlaceholderBrowserAgent* pagePlaceholderBrowserAgent =
+      PagePlaceholderBrowserAgent::FromBrowser(interface.browser);
+  pagePlaceholderBrowserAgent->ExpectNewForegroundTab();
 }
 
 - (void)openNewTabFromOriginPoint:(CGPoint)originPoint
