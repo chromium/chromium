@@ -521,9 +521,15 @@ class TimeColumn extends HTMLUListElement {
   setupScrollHandler_ = () => {
     let lastScrollPosition = 0;
     let upcomingSnapToCellEdge = null;
+    let suppressScrollChange = false;
     this.addEventListener('scroll', (event) => {
       const isGoingDown = (this.scrollTop > lastScrollPosition);
       lastScrollPosition = this.scrollTop;
+
+      if (suppressScrollChange) {
+        suppressScrollChange = false;
+        return;
+      }
 
       // Rotate cells down until there is one cell beyond the bottom
       // of the visible scroller area.
@@ -548,27 +554,32 @@ class TimeColumn extends HTMLUListElement {
       // CSS scroll-snap-align, but it interferes with this scroll handler
       // and causes jittery scrolling.
       window.clearTimeout(upcomingSnapToCellEdge);
-      upcomingSnapToCellEdge =
-          window.setTimeout(() => {this.snapToCellEdge_(isGoingDown)}, 1000);
+      upcomingSnapToCellEdge = window.setTimeout(() => {
+        const offset = this.calcOffsetFromCellEdge_(isGoingDown);
+        if (offset != 0) {
+          suppressScrollChange = true;
+          this.scrollTop += offset;
+        }
+      }, 1000);
     });
   };
 
   /*
-  * Scroll the column so that the top is aligned with the top edge of the
-  * nearest TimeCell in the given direction.
+  * Calculate offset form a cell top / bottom edge based on scrolling direction.
   */
-  snapToCellEdge_ = (isGoingDown) => {
+  calcOffsetFromCellEdge_ = (isGoingDown) => {
     const offsetFromCellEdge =
         (this.cellsInLayoutOrder[this.cellsInLayoutOrder.length - 1].offsetTop -
          this.scrollTop) %
         TimeColumn.CELL_HEIGHT;
     if (isGoingDown) {
-      this.scrollTop += offsetFromCellEdge;
+      return offsetFromCellEdge;
     } else {
       if (offsetFromCellEdge != 0) {
-        this.scrollTop -= TimeColumn.CELL_HEIGHT - offsetFromCellEdge;
+        return -(TimeColumn.CELL_HEIGHT - offsetFromCellEdge);
       }
     }
+    return 0;
   };
 
   // Ideally we would have truly infinite scrolling in both directions.
