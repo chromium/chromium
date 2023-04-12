@@ -18,6 +18,7 @@
 #include "content/services/shared_storage_worklet/shared_storage_worklet_global_scope.h"
 #include "content/services/worklet_utils/private_aggregation_utils.h"
 #include "gin/arguments.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
@@ -33,17 +34,17 @@ struct PrivateAggregation::OperationState {
   // Pending contributions
   std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
       private_aggregation_contributions;
+
+  mojo::Remote<blink::mojom::PrivateAggregationHost> private_aggregation_host;
 };
 
 PrivateAggregation::PrivateAggregation(
     blink::mojom::SharedStorageWorkletServiceClient& client,
     bool private_aggregation_permissions_policy_allowed,
-    blink::mojom::PrivateAggregationHost& private_aggregation_host,
     SharedStorageWorkletGlobalScope& global_scope)
     : client_(client),
       private_aggregation_permissions_policy_allowed_(
           private_aggregation_permissions_policy_allowed),
-      private_aggregation_host_(private_aggregation_host),
       global_scope_(global_scope) {}
 
 PrivateAggregation::~PrivateAggregation() {
@@ -74,9 +75,15 @@ const char* PrivateAggregation::GetTypeName() {
   return "PrivateAggregation";
 }
 
-void PrivateAggregation::OnOperationStarted(int64_t operation_id) {
+void PrivateAggregation::OnOperationStarted(
+    int64_t operation_id,
+    mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
+        private_aggregation_host) {
   CHECK(!base::Contains(operation_states_, operation_id));
-  operation_states_[operation_id];
+  CHECK(private_aggregation_host);
+
+  operation_states_[operation_id].private_aggregation_host.Bind(
+      std::move(private_aggregation_host));
 }
 
 void PrivateAggregation::OnOperationFinished(int64_t operation_id) {
@@ -84,7 +91,7 @@ void PrivateAggregation::OnOperationFinished(int64_t operation_id) {
   OperationState& operation_state = operation_states_[operation_id];
 
   if (!operation_state.private_aggregation_contributions.empty()) {
-    private_aggregation_host_->SendHistogramReport(
+    operation_state.private_aggregation_host->SendHistogramReport(
         std::move(operation_state.private_aggregation_contributions),
         // TODO(alexmt): consider allowing this to be set
         blink::mojom::AggregationServiceMode::kDefault,

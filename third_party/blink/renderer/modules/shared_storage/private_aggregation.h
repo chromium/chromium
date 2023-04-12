@@ -7,13 +7,18 @@
 
 #include <stdint.h>
 
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom-blink.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-blink.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-blink-forward.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
 
@@ -28,6 +33,9 @@ class MODULES_EXPORT PrivateAggregation final : public ScriptWrappable {
 
  public:
   struct OperationState : public GarbageCollected<OperationState> {
+    explicit OperationState(ContextLifecycleNotifier* notifier)
+        : private_aggregation_host(notifier) {}
+
     // Defaults to debug mode being disabled.
     mojom::blink::DebugModeDetails debug_mode_details;
 
@@ -35,7 +43,14 @@ class MODULES_EXPORT PrivateAggregation final : public ScriptWrappable {
     Vector<mojom::blink::AggregatableReportHistogramContributionPtr>
         private_aggregation_contributions;
 
-    void Trace(Visitor* visitor) const {}
+    // No need to be associated as message ordering (relative to shared storage
+    // operations) is unimportant.
+    HeapMojoRemote<mojom::blink::PrivateAggregationHost>
+        private_aggregation_host;
+
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(private_aggregation_host);
+    }
   };
 
   explicit PrivateAggregation(SharedStorageWorkletGlobalScope* global_scope);
@@ -53,7 +68,9 @@ class MODULES_EXPORT PrivateAggregation final : public ScriptWrappable {
                        const PrivateAggregationDebugModeOptions*,
                        ExceptionState&);
 
-  void OnOperationStarted(int64_t operation_id);
+  void OnOperationStarted(int64_t operation_id,
+                          mojo::PendingRemote<mojom::PrivateAggregationHost>
+                              private_aggregation_host);
   void OnOperationFinished(int64_t operation_id);
 
   void OnWorkletDestroyed();

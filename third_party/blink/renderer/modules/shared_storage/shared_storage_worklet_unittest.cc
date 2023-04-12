@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
@@ -19,6 +20,7 @@
 #include "gin/dictionary.h"
 #include "gin/public/isolate_holder.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -243,12 +245,14 @@ class TestClient : public blink::mojom::SharedStorageWorkletServiceClient {
 class MockMojomPrivateAggregationHost
     : public blink::mojom::blink::PrivateAggregationHost {
  public:
-  explicit MockMojomPrivateAggregationHost(
-      mojo::PendingReceiver<blink::mojom::blink::PrivateAggregationHost>
-          receiver)
-      : receiver_(this, std::move(receiver)) {}
+  MockMojomPrivateAggregationHost() = default;
 
-  void FlushForTesting() { receiver_.FlushForTesting(); }
+  void FlushForTesting() { receiver_set_.FlushForTesting(); }
+
+  mojo::ReceiverSet<blink::mojom::blink::PrivateAggregationHost>&
+  receiver_set() {
+    return receiver_set_;
+  }
 
   // blink::mojom::blink::PrivateAggregationHost:
   MOCK_METHOD(
@@ -260,7 +264,7 @@ class MockMojomPrivateAggregationHost
       (override));
 
  private:
-  mojo::Receiver<blink::mojom::blink::PrivateAggregationHost> receiver_{this};
+  mojo::ReceiverSet<blink::mojom::blink::PrivateAggregationHost> receiver_set_;
 };
 
 }  // namespace
@@ -289,7 +293,9 @@ class SharedStorageWorkletTest : public testing::Test {
 
     base::test::TestFuture<bool, const std::string&> future;
     shared_storage_worklet_service_->AddModule(
-        factory.Unbind(), GURL(kModuleScriptSource), future.GetCallback());
+        factory.Unbind(), GURL(kModuleScriptSource),
+        /*should_define_private_aggregation_object=*/
+        create_private_aggregation_host_, future.GetCallback());
 
     return {future.Get<0>(), future.Get<1>()};
   }
@@ -301,7 +307,8 @@ class SharedStorageWorkletTest : public testing::Test {
 
     base::test::TestFuture<bool, const std::string&, uint32_t> future;
     shared_storage_worklet_service_->RunURLSelectionOperation(
-        name, urls, serialized_data, future.GetCallback());
+        name, urls, serialized_data, MaybeInitNewRemotePAHost(),
+        future.GetCallback());
 
     return {future.Get<0>(), future.Get<1>(), future.Get<2>()};
   }
@@ -312,9 +319,30 @@ class SharedStorageWorkletTest : public testing::Test {
 
     base::test::TestFuture<bool, const std::string&> future;
     shared_storage_worklet_service_->RunOperation(name, serialized_data,
+                                                  MaybeInitNewRemotePAHost(),
                                                   future.GetCallback());
 
     return {future.Get<0>(), future.Get<1>()};
+  }
+
+  CrossVariantMojoRemote<mojom::blink::PrivateAggregationHostInterfaceBase>
+  MaybeInitNewRemotePAHost() {
+    mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
+        pending_pa_host_remote;
+
+    if (mock_private_aggregation_host_) {
+      mojo::PendingReceiver<mojom::blink::PrivateAggregationHost>
+          pending_pa_host_receiver =
+              pending_pa_host_remote.InitWithNewPipeAndPassReceiver();
+
+      mock_private_aggregation_host_->receiver_set().Add(
+          mock_private_aggregation_host_.get(),
+          std::move(pending_pa_host_receiver));
+    }
+
+    return CrossVariantMojoRemote<
+        mojom::blink::PrivateAggregationHostInterfaceBase>(
+        std::move(pending_pa_host_remote));
   }
 
  protected:
@@ -324,7 +352,7 @@ class SharedStorageWorkletTest : public testing::Test {
   Persistent<SharedStorageWorkletMessagingProxy> messaging_proxy_;
 
   absl::optional<std::u16string> embedder_context_;
-  bool create_private_aggregation_host_ = true;
+  bool create_private_aggregation_host_ = false;
   bool private_aggregation_permissions_policy_allowed_ = true;
 
   base::test::TestFuture<void> worklet_terminated_future_;
@@ -360,26 +388,14 @@ class SharedStorageWorkletTest : public testing::Test {
     test_client_ = std::make_unique<TestClient>(
         std::move(pending_shared_storage_service_client_receiver));
 
-    mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
-        pending_pa_host_remote;
-
     if (create_private_aggregation_host_) {
-      mojo::PendingReceiver<mojom::blink::PrivateAggregationHost>
-          pending_pa_host_receiver =
-              pending_pa_host_remote.InitWithNewPipeAndPassReceiver();
-
       mock_private_aggregation_host_ =
-          std::make_unique<MockMojomPrivateAggregationHost>(
-              std::move(pending_pa_host_receiver));
+          std::make_unique<MockMojomPrivateAggregationHost>();
     }
 
     shared_storage_worklet_service_->Initialize(
         std::move(pending_shared_storage_service_client_remote),
-        private_aggregation_permissions_policy_allowed_,
-        CrossVariantMojoRemote<
-            mojom::blink::PrivateAggregationHostInterfaceBase>(
-            std::move(pending_pa_host_remote)),
-        embedder_context_);
+        private_aggregation_permissions_policy_allowed_, embedder_context_);
 
     worklet_service_initialized_ = true;
   }
@@ -2227,6 +2243,7 @@ TEST_F(SharedStorageWorkletTest,
 class SharedStoragePrivateAggregationTest : public SharedStorageWorkletTest {
  public:
   SharedStoragePrivateAggregationTest() {
+    create_private_aggregation_host_ = true;
     private_aggregation_feature_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{blink::features::kPrivateAggregationApi,
@@ -2281,12 +2298,8 @@ class SharedStoragePrivateAggregationTest : public SharedStorageWorkletTest {
     mock_private_aggregation_host_->FlushForTesting();
   }
 
-  std::string ExecuteScriptReturningError(
-      const std::string& script_body,
-      bool expect_use_counter,
-      bool create_private_aggregation_host = true) {
-    create_private_aggregation_host_ = create_private_aggregation_host;
-
+  std::string ExecuteScriptReturningError(const std::string& script_body,
+                                          bool expect_use_counter) {
     AddModuleResult add_module_result =
         AddModule(/*script_content=*/base::StrCat(
             {"class TestClass { async run() {", script_body,
@@ -2423,18 +2436,6 @@ TEST_F(SharedStoragePrivateAggregationTest, NonIntegerValue) {
   ExecuteScriptAndValidateContribution(
       "privateAggregation.sendHistogramReport({bucket: 1n, value: 2.3});",
       /*expected_bucket=*/1, /*expected_value=*/2);
-}
-
-TEST_F(SharedStoragePrivateAggregationTest,
-       PrivateAggregationHostNotCreated_Rejected) {
-  std::string error_str = ExecuteScriptReturningError(
-      "privateAggregation.sendHistogramReport({bucket: 1n, value: 2});",
-      /*expect_use_counter=*/false,
-      /*create_private_aggregation_host=*/false);
-
-  EXPECT_THAT(error_str,
-              testing::HasSubstr(
-                  "privateAggregation cannot be accessed in this worklet"));
 }
 
 TEST_F(SharedStoragePrivateAggregationTest,
@@ -2652,7 +2653,8 @@ TEST_F(SharedStoragePrivateAggregationTest,
           }));
 
   shared_storage_worklet_service_->RunOperation(
-      "test-operation", /*serialized_data=*/{}, base::DoNothing());
+      "test-operation", /*serialized_data=*/{}, MaybeInitNewRemotePAHost(),
+      base::DoNothing());
 
   // Trigger the disconnect handler.
   shared_storage_worklet_service_.reset();
@@ -2661,6 +2663,27 @@ TEST_F(SharedStoragePrivateAggregationTest,
   EXPECT_TRUE(worklet_terminated_future_.Wait());
 
   run_loop.Run();
+}
+
+TEST_F(SharedStoragePrivateAggregationTest,
+       ShouldNotDefinePrivateAggregationObject_FailureIfAccessed) {
+  create_private_aggregation_host_ = false;
+
+  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+      class TestClass {
+        async run() {
+          privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
+        }
+      }
+
+      register("test-operation", TestClass);
+  )");
+
+  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+  EXPECT_FALSE(run_result.success);
+  EXPECT_THAT(run_result.error_message,
+              testing::HasSubstr("privateAggregation cannot be "
+                                 "accessed in an insecure context."));
 }
 
 }  // namespace blink

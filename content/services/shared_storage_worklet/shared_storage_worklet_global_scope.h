@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
@@ -48,30 +49,37 @@ class CONTENT_EXPORT SharedStorageWorkletGlobalScope {
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
       blink::mojom::SharedStorageWorkletServiceClient* client,
-      blink::mojom::PrivateAggregationHost* private_aggregation_host,
       const GURL& script_source_url,
+      bool should_define_private_aggregation_object,
       blink::mojom::SharedStorageWorkletService::AddModuleCallback callback);
 
   void OnModuleScriptDownloaded(
       blink::mojom::SharedStorageWorkletServiceClient* client,
-      blink::mojom::PrivateAggregationHost* private_aggregation_host,
       const GURL& script_source_url,
+      bool should_define_private_aggregation_object,
       blink::mojom::SharedStorageWorkletService::AddModuleCallback callback,
       std::unique_ptr<std::string> response_body,
       std::string error_message);
 
-  void RunURLSelectionOperation(const std::string& name,
-                                const std::vector<GURL>& urls,
-                                const std::vector<uint8_t>& serialized_data,
-                                blink::mojom::SharedStorageWorkletService::
-                                    RunURLSelectionOperationCallback callback);
+  void RunURLSelectionOperation(
+      const std::string& name,
+      const std::vector<GURL>& urls,
+      const std::vector<uint8_t>& serialized_data,
+      mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
+          private_aggregation_host,
+      blink::mojom::SharedStorageWorkletService::
+          RunURLSelectionOperationCallback callback);
 
   void RunOperation(
       const std::string& name,
       const std::vector<uint8_t>& serialized_data,
+      mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
+          private_aggregation_host,
       blink::mojom::SharedStorageWorkletService::RunOperationCallback callback);
 
-  base::OnceClosure StartOperationForTesting();
+  base::OnceClosure StartOperationForTesting(
+      mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
+          private_aggregation_host);
 
   // Returns the unique ID for the currently running operation.
   int64_t GetCurrentOperationId() const;
@@ -84,7 +92,9 @@ class CONTENT_EXPORT SharedStorageWorkletGlobalScope {
   // Sets continuation-preserved embedder data to allow us to identify this
   // particular operation invocation later, even after asynchronous operations.
   // Returns a closure that should be run when the operation finishes.
-  base::OnceClosure StartOperation();
+  base::OnceClosure StartOperation(
+      mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
+          private_aggregation_host);
 
   // Notifies the `private_aggregation_` that the operation with the given ID
   // has finished.

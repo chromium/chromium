@@ -18,20 +18,18 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_global_scope.h"
+#include "third_party/blink/renderer/modules/shared_storage/private_aggregation.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
-#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -94,20 +92,23 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
       mojo::PendingAssociatedRemote<mojom::SharedStorageWorkletServiceClient>
           client,
       bool private_aggregation_permissions_policy_allowed,
-      mojo::PendingRemote<mojom::PrivateAggregationHost>
-          private_aggregation_host,
       const absl::optional<std::u16string>& embedder_context) override;
   void AddModule(mojo::PendingRemote<network::mojom::URLLoaderFactory>
                      pending_url_loader_factory,
                  const GURL& script_source_url,
+                 bool should_define_private_aggregation_object,
                  AddModuleCallback callback) override;
   void RunURLSelectionOperation(
       const std::string& name,
       const std::vector<GURL>& urls,
       const std::vector<uint8_t>& serialized_data,
+      mojo::PendingRemote<mojom::PrivateAggregationHost>
+          private_aggregation_host,
       RunURLSelectionOperationCallback callback) override;
   void RunOperation(const std::string& name,
                     const std::vector<uint8_t>& serialized_data,
+                    mojo::PendingRemote<mojom::PrivateAggregationHost>
+                        private_aggregation_host,
                     RunOperationCallback callback) override;
 
   // SharedStorageWorkletGlobalScope IDL
@@ -120,11 +121,6 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   mojom::blink::SharedStorageWorkletServiceClient*
   GetSharedStorageWorkletServiceClient() {
     return client_.get();
-  }
-
-  mojom::blink::PrivateAggregationHost* GetPrivateAggregationHost() {
-    CHECK(private_aggregation_host_);
-    return private_aggregation_host_.get();
   }
 
   const absl::optional<String>& embedder_context() const {
@@ -166,13 +162,17 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   // Sets continuation-preserved embedder data to allow us to identify this
   // particular operation invocation later, even after asynchronous operations.
   // Returns a closure that should be run when the operation finishes.
-  base::OnceClosure StartOperation();
+  base::OnceClosure StartOperation(
+      mojo::PendingRemote<mojom::PrivateAggregationHost>
+          private_aggregation_host);
 
   // Notifies the `private_aggregation_` that the operation with the given ID
   // has finished.
   void FinishOperation(int64_t operation_id);
 
   PrivateAggregation* GetOrCreatePrivateAggregation();
+
+  bool IsPrivateAggregationEnabled();
 
   bool add_module_finished_ = false;
 
@@ -224,10 +224,11 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   // worklet.
   bool private_aggregation_permissions_policy_allowed_ = false;
 
-  // No need to be associated as message ordering (relative to shared storage
-  // operations) is unimportant.
-  HeapMojoRemote<mojom::blink::PrivateAggregationHost>
-      private_aggregation_host_{this};
+  // Whether the privateAggregation object should be defined. Set in
+  // `AddModule()` and can be false afterwards even if
+  // `IsPrivateAggregationEnabled()` if the worklet origin is not potentially
+  // trustworthy.
+  bool should_define_private_aggregation_object_ = false;
 
   const SharedStorageWorkletToken token_;
 };

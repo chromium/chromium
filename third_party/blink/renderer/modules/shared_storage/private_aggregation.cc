@@ -15,8 +15,10 @@
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
@@ -27,8 +29,10 @@
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/shared_storage/util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -158,10 +162,17 @@ void PrivateAggregation::enableDebugMode(
   debug_mode_details.is_enabled = true;
 }
 
-void PrivateAggregation::OnOperationStarted(int64_t operation_id) {
+void PrivateAggregation::OnOperationStarted(
+    int64_t operation_id,
+    mojo::PendingRemote<mojom::PrivateAggregationHost>
+        private_aggregation_host) {
   CHECK(!operation_states_.Contains(operation_id));
-  operation_states_.insert(operation_id,
-                           MakeGarbageCollected<OperationState>());
+  auto map_it = operation_states_.insert(
+      operation_id, MakeGarbageCollected<OperationState>(global_scope_));
+  map_it.stored_value->value->private_aggregation_host.Bind(
+      CrossVariantMojoRemote<mojom::blink::PrivateAggregationHostInterfaceBase>(
+          std::move(private_aggregation_host)),
+      global_scope_->GetTaskRunner(blink::TaskType::kMiscPlatformAPI));
 }
 
 void PrivateAggregation::OnOperationFinished(int64_t operation_id) {
@@ -169,7 +180,7 @@ void PrivateAggregation::OnOperationFinished(int64_t operation_id) {
   OperationState* operation_state = operation_states_.at(operation_id);
 
   if (!operation_state->private_aggregation_contributions.empty()) {
-    global_scope_->GetPrivateAggregationHost()->SendHistogramReport(
+    operation_state->private_aggregation_host->SendHistogramReport(
         std::move(operation_state->private_aggregation_contributions),
         // TODO(alexmt): consider allowing this to be set
         mojom::blink::AggregationServiceMode::kDefault,

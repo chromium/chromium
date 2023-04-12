@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "gin/converter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -306,7 +307,7 @@ void SharedStorageWorkletGlobalScope::OnConsoleApiMessage(
 
 void SharedStorageWorkletGlobalScope::NotifyContextDestroyed() {
   if (private_aggregation_) {
-    CHECK(private_aggregation_host_);
+    CHECK(should_define_private_aggregation_object_);
     private_aggregation_->OnWorkletDestroyed();
   }
 
@@ -336,7 +337,6 @@ void SharedStorageWorkletGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(private_aggregation_);
   visitor->Trace(operation_definition_map_);
   visitor->Trace(client_);
-  visitor->Trace(private_aggregation_host_);
   WorkletGlobalScope::Trace(visitor);
   Supplementable<SharedStorageWorkletGlobalScope>::Trace(visitor);
 }
@@ -345,7 +345,6 @@ void SharedStorageWorkletGlobalScope::Initialize(
     mojo::PendingAssociatedRemote<mojom::SharedStorageWorkletServiceClient>
         client,
     bool private_aggregation_permissions_policy_allowed,
-    mojo::PendingRemote<mojom::PrivateAggregationHost> private_aggregation_host,
     const absl::optional<std::u16string>& embedder_context) {
   client_.Bind(
       CrossVariantMojoAssociatedRemote<
@@ -354,24 +353,32 @@ void SharedStorageWorkletGlobalScope::Initialize(
       GetTaskRunner(blink::TaskType::kMiscPlatformAPI));
   private_aggregation_permissions_policy_allowed_ =
       private_aggregation_permissions_policy_allowed;
-  if (private_aggregation_host) {
-    private_aggregation_host_.Bind(
-        CrossVariantMojoRemote<
-            mojom::blink::PrivateAggregationHostInterfaceBase>(
-            std::move(private_aggregation_host)),
-        GetTaskRunner(blink::TaskType::kMiscPlatformAPI));
-  }
 
   if (embedder_context) {
     embedder_context_ = WTF::String(embedder_context->c_str());
   }
 }
 
+bool SharedStorageWorkletGlobalScope::IsPrivateAggregationEnabled() {
+  return ContextFeatureSettings::From(
+             this, ContextFeatureSettings::CreationMode::kCreateIfNotExists)
+      ->isPrivateAggregationInSharedStorageEnabled();
+}
+
 void SharedStorageWorkletGlobalScope::AddModule(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
     const GURL& script_source_url,
+    bool should_define_private_aggregation_object,
     AddModuleCallback callback) {
+  // TODO(crbug.com/1432378): Remove this boolean if/when shared storage origins
+  // are only allowed to be potentially trustworthy.
+  if (should_define_private_aggregation_object_) {
+    CHECK(IsPrivateAggregationEnabled());
+  }
+  should_define_private_aggregation_object_ =
+      should_define_private_aggregation_object;
+
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory(
       std::move(pending_url_loader_factory));
 
@@ -386,6 +393,7 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
     const std::string& name,
     const std::vector<GURL>& urls,
     const std::vector<uint8_t>& serialized_data,
+    mojo::PendingRemote<mojom::PrivateAggregationHost> private_aggregation_host,
     RunURLSelectionOperationCallback callback) {
   std::string error_message;
   SharedStorageOperationDefinition* operation_definition = nullptr;
@@ -397,7 +405,8 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
     return;
   }
 
-  base::OnceClosure operation_completion_cb = StartOperation();
+  base::OnceClosure operation_completion_cb =
+      StartOperation(std::move(private_aggregation_host));
   mojom::SharedStorageWorkletService::RunURLSelectionOperationCallback
       combined_operation_completion_cb =
           std::move(callback).Then(std::move(operation_completion_cb));
@@ -459,6 +468,7 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
 void SharedStorageWorkletGlobalScope::RunOperation(
     const std::string& name,
     const std::vector<uint8_t>& serialized_data,
+    mojo::PendingRemote<mojom::PrivateAggregationHost> private_aggregation_host,
     RunOperationCallback callback) {
   std::string error_message;
   SharedStorageOperationDefinition* operation_definition = nullptr;
@@ -469,7 +479,8 @@ void SharedStorageWorkletGlobalScope::RunOperation(
     return;
   }
 
-  base::OnceClosure operation_completion_cb = StartOperation();
+  base::OnceClosure operation_completion_cb =
+      StartOperation(std::move(private_aggregation_host));
   mojom::SharedStorageWorkletService::RunOperationCallback
       combined_operation_completion_cb =
           std::move(callback).Then(std::move(operation_completion_cb));
@@ -550,16 +561,7 @@ SharedStorage* SharedStorageWorkletGlobalScope::sharedStorage(
 PrivateAggregation* SharedStorageWorkletGlobalScope::privateAggregation(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  if (!private_aggregation_host_) {
-    CHECK(!private_aggregation_);
-
-    // This could due to the worklet origin not "potentially trustworthy".
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        "privateAggregation cannot be accessed in this worklet.");
-
-    return nullptr;
-  }
+  CHECK(IsPrivateAggregationEnabled());
 
   if (!add_module_finished_) {
     CHECK(!private_aggregation_);
@@ -567,6 +569,16 @@ PrivateAggregation* SharedStorageWorkletGlobalScope::privateAggregation(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "privateAggregation cannot be accessed during addModule().");
+
+    return nullptr;
+  }
+
+  if (!should_define_private_aggregation_object_) {
+    CHECK(!private_aggregation_);
+
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "privateAggregation cannot be accessed in an insecure context.");
 
     return nullptr;
   }
@@ -679,8 +691,12 @@ bool SharedStorageWorkletGlobalScope::PerformCommonOperationChecks(
   return true;
 }
 
-base::OnceClosure SharedStorageWorkletGlobalScope::StartOperation() {
+base::OnceClosure SharedStorageWorkletGlobalScope::StartOperation(
+    mojo::PendingRemote<mojom::PrivateAggregationHost>
+        private_aggregation_host) {
   CHECK(add_module_finished_);
+  CHECK_EQ(!!private_aggregation_host,
+           should_define_private_aggregation_object_);
 
   int64_t operation_id = operation_counter_++;
 
@@ -693,8 +709,9 @@ base::OnceClosure SharedStorageWorkletGlobalScope::StartOperation() {
   context->SetContinuationPreservedEmbedderData(
       v8::BigInt::New(context->GetIsolate(), operation_id));
 
-  if (private_aggregation_host_) {
-    GetOrCreatePrivateAggregation()->OnOperationStarted(operation_id);
+  if (should_define_private_aggregation_object_) {
+    GetOrCreatePrivateAggregation()->OnOperationStarted(
+        operation_id, std::move(private_aggregation_host));
   }
 
   return WTF::BindOnce(&SharedStorageWorkletGlobalScope::FinishOperation,
@@ -702,7 +719,7 @@ base::OnceClosure SharedStorageWorkletGlobalScope::StartOperation() {
 }
 
 void SharedStorageWorkletGlobalScope::FinishOperation(int64_t operation_id) {
-  if (private_aggregation_host_) {
+  if (should_define_private_aggregation_object_) {
     CHECK(private_aggregation_);
     private_aggregation_->OnOperationFinished(operation_id);
   }
@@ -710,7 +727,7 @@ void SharedStorageWorkletGlobalScope::FinishOperation(int64_t operation_id) {
 
 PrivateAggregation*
 SharedStorageWorkletGlobalScope::GetOrCreatePrivateAggregation() {
-  CHECK(private_aggregation_host_);
+  CHECK(should_define_private_aggregation_object_);
   CHECK(add_module_finished_);
 
   if (!private_aggregation_) {
