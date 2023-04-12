@@ -184,13 +184,14 @@ void LayoutFlowThread::AbsoluteQuadsForDescendant(const LayoutBox& descendant,
 }
 
 void LayoutFlowThread::AddOutlineRects(
-    Vector<PhysicalRect>& rects,
+    OutlineRectCollector& collector,
     OutlineInfo* info,
     const PhysicalOffset& additional_offset,
     NGOutlineType include_block_overflows) const {
   NOT_DESTROYED();
   Vector<PhysicalRect> rects_in_flowthread;
-  LayoutBlockFlow::AddOutlineRects(rects_in_flowthread, info, additional_offset,
+  UnionOutlineRectCollector flow_collector;
+  LayoutBlockFlow::AddOutlineRects(flow_collector, info, additional_offset,
                                    include_block_overflows);
   // Convert the rectangles from the flow thread coordinate space to the visual
   // space. The approach here is very simplistic; just calculate a bounding box
@@ -201,8 +202,8 @@ void LayoutFlowThread::AddOutlineRects(
   // block direction anyway. As far as the inline direction (the column
   // progression direction) is concerned, we'll just include the full height of
   // each column involved. Should be good enough.
-  rects.push_back(PhysicalRectToBeNoop(
-      FragmentsBoundingBox(UnionRect(rects_in_flowthread).ToLayoutRect())));
+  collector.AddRect(PhysicalRectToBeNoop(
+      FragmentsBoundingBox(flow_collector.Rect().ToLayoutRect())));
 }
 
 bool LayoutFlowThread::NodeAtPoint(HitTestResult& result,

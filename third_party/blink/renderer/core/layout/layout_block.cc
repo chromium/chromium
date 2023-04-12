@@ -1195,7 +1195,7 @@ LayoutRect LayoutBlock::LocalCaretRect(
   return caret_rect;
 }
 
-void LayoutBlock::AddOutlineRects(Vector<PhysicalRect>& rects,
+void LayoutBlock::AddOutlineRects(OutlineRectCollector& collector,
                                   OutlineInfo* info,
                                   const PhysicalOffset& additional_offset,
                                   NGOutlineType include_block_overflows) const {
@@ -1209,17 +1209,19 @@ void LayoutBlock::AddOutlineRects(Vector<PhysicalRect>& rects,
   }
 #endif  // DCHECK_IS_ON()
 
-  if (!IsAnonymous())  // For anonymous blocks, the children add outline rects.
-    rects.emplace_back(additional_offset, Size());
+  // For anonymous blocks, the children add outline rects.
+  if (!IsAnonymous()) {
+    collector.AddRect(PhysicalRect(additional_offset, Size()));
+  }
 
   if (ShouldIncludeBlockVisualOverflow(include_block_overflows) &&
       !HasNonVisibleOverflow() && !HasControlClip()) {
-    AddOutlineRectsForNormalChildren(rects, additional_offset,
+    AddOutlineRectsForNormalChildren(collector, additional_offset,
                                      include_block_overflows);
     if (TrackedLayoutBoxLinkedHashSet* positioned_objects =
             PositionedObjects()) {
       for (const auto& box : *positioned_objects)
-        AddOutlineRectsForDescendant(*box, rects, additional_offset,
+        AddOutlineRectsForDescendant(*box, collector, additional_offset,
                                      include_block_overflows);
     }
   }

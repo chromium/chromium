@@ -124,7 +124,7 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
                                   Vector<gfx::QuadF>&,
                                   MapCoordinatesFlags mode = 0);
 
-  void AddOutlineRects(Vector<PhysicalRect>&,
+  void AddOutlineRects(OutlineRectCollector&,
                        OutlineInfo*,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const override;

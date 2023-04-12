@@ -90,7 +90,7 @@ class LayoutSVGModelObject : public LayoutObject {
   // LayoutSVGModelObject subclasses should use GetElement() instead.
   void GetNode() const = delete;
 
-  void AddOutlineRects(Vector<PhysicalRect>&,
+  void AddOutlineRects(OutlineRectCollector&,
                        OutlineInfo*,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const final;

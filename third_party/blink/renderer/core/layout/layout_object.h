@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_type.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_style_variant.h"
+#include "third_party/blink/renderer/core/layout/outline_rect_collector.h"
 #include "third_party/blink/renderer/core/layout/subtree_layout_scope.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
 #include "third_party/blink/renderer/core/paint/fragment_data.h"
@@ -2920,7 +2921,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // the outside of, even if the object isn't styled with a outline for now.
   // The rects also cover continuations. Note that the OutlineInfo, if
   // specified, is filled in in the same space as the rects.
-  virtual void AddOutlineRects(Vector<PhysicalRect>&,
+  virtual void AddOutlineRects(OutlineRectCollector&,
                                OutlineInfo*,
                                const PhysicalOffset& additional_offset,
                                NGOutlineType) const {

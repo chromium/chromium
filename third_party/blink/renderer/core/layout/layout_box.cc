@@ -1613,12 +1613,12 @@ PhysicalRect LayoutBox::PhysicalBackgroundRect(
   return PhysicalRect();
 }
 
-void LayoutBox::AddOutlineRects(Vector<PhysicalRect>& rects,
+void LayoutBox::AddOutlineRects(OutlineRectCollector& collector,
                                 OutlineInfo* info,
                                 const PhysicalOffset& additional_offset,
                                 NGOutlineType) const {
   NOT_DESTROYED();
-  rects.emplace_back(additional_offset, Size());
+  collector.AddRect(PhysicalRect(additional_offset, Size()));
   if (info)
     *info = OutlineInfo::GetFromStyle(StyleRef());
 }

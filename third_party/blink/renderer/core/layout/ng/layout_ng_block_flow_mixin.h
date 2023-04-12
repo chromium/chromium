@@ -61,7 +61,7 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
   void AddLayoutOverflowFromChildren() final;
 #endif
 
-  void AddOutlineRects(Vector<PhysicalRect>&,
+  void AddOutlineRects(OutlineRectCollector&,
                        LayoutObject::OutlineInfo*,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const final;

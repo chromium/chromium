@@ -550,7 +550,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
   void RecalcVisualOverflow() override;
 
-  void AddOutlineRectsForNormalChildren(Vector<PhysicalRect>&,
+  void AddOutlineRectsForNormalChildren(OutlineRectCollector&,
                                         const PhysicalOffset& additional_offset,
                                         NGOutlineType) const;
 
@@ -568,7 +568,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
       const Length& logical_height) const;
 
   void AddOutlineRectsForDescendant(const LayoutObject& descendant,
-                                    Vector<PhysicalRect>&,
+                                    OutlineRectCollector&,
                                     const PhysicalOffset& additional_offset,
                                     NGOutlineType) const;
 

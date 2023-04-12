@@ -486,7 +486,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
         ClientHeight() - ComputedCSSPaddingTop() - ComputedCSSPaddingBottom());
   }
 
-  void AddOutlineRects(Vector<PhysicalRect>&,
+  void AddOutlineRects(OutlineRectCollector&,
                        OutlineInfo*,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const override;

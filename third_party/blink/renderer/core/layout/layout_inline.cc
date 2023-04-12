@@ -834,24 +834,24 @@ PhysicalRect LayoutInline::PhysicalVisualOverflowRect() const {
   LayoutUnit outline_outset(OutlinePainter::OutlineOutsetExtent(
       style, OutlineInfo::GetFromStyle(style)));
   if (outline_outset) {
-    Vector<PhysicalRect> rects;
+    UnionOutlineRectCollector collector;
     if (GetDocument().InNoQuirksMode()) {
       // We have already included outline extents of line boxes in
       // linesVisualOverflowBoundingBox(), so the following just add outline
       // rects for children and continuations.
       AddOutlineRectsForNormalChildren(
-          rects, PhysicalOffset(),
+          collector, PhysicalOffset(),
           style.OutlineRectsShouldIncludeBlockVisualOverflow());
     } else {
       // In non-standard mode, because the difference in
       // LayoutBlock::minLineHeightForReplacedObject(),
       // linesVisualOverflowBoundingBox() may not cover outline rects of lines
       // containing replaced objects.
-      AddOutlineRects(rects, nullptr, PhysicalOffset(),
+      AddOutlineRects(collector, nullptr, PhysicalOffset(),
                       style.OutlineRectsShouldIncludeBlockVisualOverflow());
     }
-    if (!rects.empty()) {
-      PhysicalRect outline_rect = UnionRect(rects);
+    if (!collector.Rect().IsEmpty()) {
+      PhysicalRect outline_rect = collector.Rect();
       outline_rect.Inflate(outline_outset);
       overflow_rect.Unite(outline_rect);
     }
@@ -993,7 +993,7 @@ void LayoutInline::ImageChanged(WrappedImagePtr, CanDeferInvalidation) {
 }
 
 void LayoutInline::AddOutlineRects(
-    Vector<PhysicalRect>& rects,
+    OutlineRectCollector& collector,
     OutlineInfo* info,
     const PhysicalOffset& additional_offset,
     NGOutlineType include_block_overflows) const {
@@ -1007,12 +1007,12 @@ void LayoutInline::AddOutlineRects(
   }
 #endif  // DCHECK_IS_ON()
 
-  CollectLineBoxRects([&rects, &additional_offset](const PhysicalRect& r) {
+  CollectLineBoxRects([&collector, &additional_offset](const PhysicalRect& r) {
     auto rect = r;
     rect.Move(additional_offset);
-    rects.push_back(rect);
+    collector.AddRect(rect);
   });
-  AddOutlineRectsForNormalChildren(rects, additional_offset,
+  AddOutlineRectsForNormalChildren(collector, additional_offset,
                                    include_block_overflows);
   if (info) {
     *info = OutlineInfo::GetFromStyle(StyleRef());
@@ -1038,9 +1038,11 @@ gfx::RectF LayoutInline::LocalBoundingBoxRectF() const {
 
 gfx::RectF LayoutInline::LocalBoundingBoxRectForAccessibility() const {
   NOT_DESTROYED();
-  Vector<PhysicalRect> rects = OutlineRects(
-      nullptr, PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
-  return gfx::RectF(FlipForWritingMode(UnionRect(rects).ToLayoutRect()));
+  UnionOutlineRectCollector collector;
+  AddOutlineRects(collector, nullptr, PhysicalOffset(),
+                  NGOutlineType::kIncludeBlockVisualOverflow);
+
+  return gfx::RectF(FlipForWritingMode(collector.Rect().ToLayoutRect()));
 }
 
 void LayoutInline::AddAnnotatedRegions(Vector<AnnotatedRegionValue>& regions) {

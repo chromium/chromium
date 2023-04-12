@@ -1290,13 +1290,13 @@ PhysicalRect NGPhysicalBoxFragment::ComputeSelfInkOverflow() const {
   ink_overflow.Expand(style.BoxDecorationOutsets());
 
   if (style.HasOutline() && IsOutlineOwner()) {
-    Vector<PhysicalRect> outline_rects;
+    UnionOutlineRectCollector collector;
     LayoutObject::OutlineInfo info;
     // The result rects are in coordinates of this object's border box.
     AddSelfOutlineRects(PhysicalOffset(),
                         style.OutlineRectsShouldIncludeBlockVisualOverflow(),
-                        &outline_rects, &info);
-    PhysicalRect rect = UnionRect(outline_rects);
+                        collector, &info);
+    PhysicalRect rect = collector.Rect();
     rect.Inflate(LayoutUnit(OutlinePainter::OutlineOutsetExtent(style, info)));
     ink_overflow.Unite(rect);
   }
@@ -1312,7 +1312,7 @@ void NGPhysicalBoxFragment::InvalidateInkOverflow() {
 void NGPhysicalBoxFragment::AddSelfOutlineRects(
     const PhysicalOffset& additional_offset,
     NGOutlineType outline_type,
-    Vector<PhysicalRect>* outline_rects,
+    OutlineRectCollector& collector,
     LayoutObject::OutlineInfo* info) const {
   if (info) {
     if (IsSvgText())
@@ -1327,27 +1327,27 @@ void NGPhysicalBoxFragment::AddSelfOutlineRects(
   }
 
   AddOutlineRects(additional_offset, outline_type,
-                  /* container_relative */ false, outline_rects);
+                  /* container_relative */ false, collector);
 }
 
 void NGPhysicalBoxFragment::AddOutlineRects(
     const PhysicalOffset& additional_offset,
     NGOutlineType outline_type,
-    Vector<PhysicalRect>* outline_rects) const {
+    OutlineRectCollector& collector) const {
   AddOutlineRects(additional_offset, outline_type,
-                  /* container_relative */ true, outline_rects);
+                  /* container_relative */ true, collector);
 }
 
 void NGPhysicalBoxFragment::AddOutlineRects(
     const PhysicalOffset& additional_offset,
     NGOutlineType outline_type,
     bool inline_container_relative,
-    Vector<PhysicalRect>* outline_rects) const {
+    OutlineRectCollector& collector) const {
   DCHECK_EQ(PostLayout(), this);
 
   if (IsInlineBox()) {
     AddOutlineRectsForInlineBox(additional_offset, outline_type,
-                                inline_container_relative, outline_rects);
+                                inline_container_relative, collector);
     return;
   }
   DCHECK(IsOutlineOwner());
@@ -1356,11 +1356,11 @@ void NGPhysicalBoxFragment::AddOutlineRects(
   if (!IsAnonymousBlock()) {
     if (IsSvgText()) {
       if (const NGFragmentItems* items = Items()) {
-        outline_rects->emplace_back(PhysicalRect::EnclosingRect(
+        collector.AddRect(PhysicalRect::EnclosingRect(
             GetLayoutObject()->ObjectBoundingBox()));
       }
     } else {
-      outline_rects->emplace_back(additional_offset, Size().ToLayoutSize());
+      collector.AddRect(PhysicalRect(additional_offset, Size().ToLayoutSize()));
     }
   }
 
@@ -1372,15 +1372,11 @@ void NGPhysicalBoxFragment::AddOutlineRects(
     // additional_offset to be an offset from containing_block.
     // Since containing_block is our layout object, offset must be 0,0.
     // https://crbug.com/968019
-    const wtf_size_t size_before = outline_rects->size();
+    OutlineRectCollector* child_collector = collector.ForDescendantCollector();
     AddOutlineRectsForNormalChildren(
-        outline_rects, PhysicalOffset(), outline_type,
+        *child_collector, PhysicalOffset(), outline_type,
         To<LayoutBoxModelObject>(GetLayoutObject()));
-    if (!additional_offset.IsZero()) {
-      for (PhysicalRect& rect :
-           base::make_span(*outline_rects).subspan(size_before))
-        rect.offset += additional_offset;
-    }
+    collector.Combine(child_collector, additional_offset);
 
     if (ShouldIncludeBlockVisualOverflowForAnchorOnly(outline_type)) {
       for (const auto& child : PostLayoutChildren()) {
@@ -1389,7 +1385,7 @@ void NGPhysicalBoxFragment::AddOutlineRects(
         }
 
         AddOutlineRectsForDescendant(
-            child, outline_rects, additional_offset, outline_type,
+            child, collector, additional_offset, outline_type,
             To<LayoutBoxModelObject>(GetLayoutObject()));
       }
     }
@@ -1402,7 +1398,7 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
     PhysicalOffset additional_offset,
     NGOutlineType outline_type,
     bool container_relative,
-    Vector<PhysicalRect>* rects) const {
+    OutlineRectCollector& collector) const {
   DCHECK_EQ(PostLayout(), this);
   DCHECK(IsInlineBox());
 
@@ -1420,7 +1416,7 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
   DCHECK(GetLayoutObject());
   DCHECK(GetLayoutObject()->IsLayoutInline());
   const auto* layout_object = To<LayoutInline>(GetLayoutObject());
-  const wtf_size_t initial_rects_size = rects->size();
+  auto* cursor_collector = collector.ForDescendantCollector();
   NGInlineCursor cursor(*container);
   cursor.MoveTo(*layout_object);
   DCHECK(cursor);
@@ -1437,34 +1433,32 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
     if (!current.Size().IsZero()) {
       const NGPhysicalBoxFragment* fragment = current.BoxFragment();
       DCHECK(fragment);
-      if (!fragment->IsOpaque() && !fragment->IsSvg())
-        rects->push_back(current.RectInContainerFragment());
+      if (!fragment->IsOpaque() && !fragment->IsSvg()) {
+        cursor_collector->AddRect(current.RectInContainerFragment());
+      }
     }
 
     // Add descendants if any, in the container-relative coordinate.
     if (!current.HasChildren())
       continue;
     NGInlineCursor descendants = cursor.CursorForDescendants();
-    AddOutlineRectsForCursor(rects, PhysicalOffset(), outline_type,
+    AddOutlineRectsForCursor(*cursor_collector, PhysicalOffset(), outline_type,
                              layout_object, &descendants);
   }
 #if DCHECK_IS_ON()
   DCHECK(has_this_fragment);
 #endif
-  DCHECK_GE(rects->size(), initial_rects_size);
-  if (rects->size() <= initial_rects_size)
+  // TODO(vmpstr): Is this correct? Should AddOutlineRectsForDescendants below
+  // be skipped?
+  if (cursor_collector->IsEmpty()) {
     return;
+  }
 
   // At this point, |rects| are in the container coordinate space.
   // Adjust the rectangles using |additional_offset| and |container_relative|.
   if (!container_relative)
     additional_offset -= this_offset_in_container;
-  if (!additional_offset.IsZero()) {
-    for (PhysicalRect& rect :
-         base::make_span(rects->begin() + initial_rects_size, rects->end())) {
-      rect.offset += additional_offset;
-    }
-  }
+  collector.Combine(cursor_collector, additional_offset);
 
   if (ShouldIncludeBlockVisualOverflowForAnchorOnly(outline_type) &&
       !HasNonVisibleOverflow() && !HasControlClip(*this)) {
@@ -1485,7 +1479,7 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
         continue;
       }
 
-      AddOutlineRectsForDescendant(child, rects, additional_offset,
+      AddOutlineRectsForDescendant(child, collector, additional_offset,
                                    outline_type,
                                    To<LayoutBoxModelObject>(layout_object));
     }
