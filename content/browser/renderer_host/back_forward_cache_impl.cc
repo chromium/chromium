@@ -1236,6 +1236,21 @@ BackForwardCacheImpl::GetEntries() {
   return entries_;
 }
 
+std::list<BackForwardCacheImpl::Entry*>
+BackForwardCacheImpl::GetEntriesForRenderViewHostImpl(
+    const RenderViewHostImpl* rvhi) const {
+  std::list<BackForwardCacheImpl::Entry*> entries_for_rvhi;
+  for (auto& entry : entries_) {
+    for (const auto& rvh : entry->render_view_hosts()) {
+      if (&*rvh == rvhi) {
+        entries_for_rvhi.push_back(entry.get());
+        break;
+      }
+    }
+  }
+  return entries_for_rvhi;
+}
+
 BackForwardCacheImpl::Entry* BackForwardCacheImpl::GetEntry(
     int navigation_entry_id) {
   auto matching_entry = base::ranges::find(

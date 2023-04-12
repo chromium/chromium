@@ -3101,6 +3101,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
                            ResetOwnerInBFCache);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTestWithBFCache,
                            ChildFramesHiddenWhileInBFCache);
+  FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTestWithBFCache,
+                           EvictionInBFCache);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplPrerenderBrowserTest,
                            KeepPrerenderRFHOwnerAfterActivation);
   class SubresourceLoaderFactoriesConfig;

@@ -356,6 +356,8 @@ class CONTENT_EXPORT BackForwardCacheImpl
   }
 
   const std::list<std::unique_ptr<Entry>>& GetEntries();
+  std::list<Entry*> GetEntriesForRenderViewHostImpl(
+      const RenderViewHostImpl* rvhi) const;
 
   // BackForwardCache overrides:
   void Flush() override;

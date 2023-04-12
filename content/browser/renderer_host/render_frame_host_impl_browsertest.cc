@@ -34,6 +34,7 @@
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/viz/common/features.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/input/timeout_monitor.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -7641,15 +7642,54 @@ class RenderFrameHostImplBrowserTestWithBFCache
         GetDefaultEnabledBackForwardCacheFeaturesForTesting(
             /*ignore_outstanding_network_request=*/false);
     enabled_features.push_back({kNavigationUpdatesChildViewsVisibility, {{}}});
+    enabled_features.push_back({features::kEvictSubtree, {{}}});
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features,
         GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
   ~RenderFrameHostImplBrowserTestWithBFCache() override = default;
 
+  viz::SurfaceId GetSurfaceId(const FrameTreeNode* frame_tree_node) const;
+  bool ContainsSurfaceIdOrNewer(const std::vector<viz::SurfaceId>& ids,
+                                viz::SurfaceId expected_id) const;
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+viz::SurfaceId RenderFrameHostImplBrowserTestWithBFCache::GetSurfaceId(
+    const FrameTreeNode* frame_tree_node) const {
+  viz::SurfaceId id;
+  auto* view = static_cast<RenderWidgetHostViewBase*>(
+      frame_tree_node->current_frame_host()->GetView());
+  if (view) {
+    id = view->GetCurrentSurfaceId();
+  }
+  return id;
+}
+
+bool RenderFrameHostImplBrowserTestWithBFCache::ContainsSurfaceIdOrNewer(
+    const std::vector<viz::SurfaceId>& ids,
+    viz::SurfaceId expected_id) const {
+  for (auto id : ids) {
+    if (id.IsSameOrNewerThan(expected_id)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void RenderFrameHostImplBrowserTestWithBFCache::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  // The full BackForwardCacheBrowserTest suite ads far more to the CommandLine.
+  // While we enable many features in the ctor, we need `--site-per-process` to
+  // ensure full testing of OOPIFs in BFCache.
+  IsolateAllSitesForTesting(command_line);
+  RenderFrameHostImplBrowserTest::SetUpCommandLine(command_line);
+}
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithBFCache,
                        ResetOwnerInBFCache) {
@@ -7764,6 +7804,60 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithBFCache,
   // Ensure that the OOPIF became visible and submitted a frame. If this times
   // out then D failed to become visible again.
   rfso_d.WaitForAnyFrameSubmission();
+}
+
+// Tests that when a RenderFrameHost is stored in BFCache, that when it is
+// evicted, that both it and its child frames have their viz::SurfaceIds
+// collected for eviction.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithBFCache,
+                       EvictionInBFCache) {
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title2.html"));
+
+  // 1) Navigate to A(B).
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  RenderFrameHostImpl* rfh_a = web_contents()->GetPrimaryMainFrame();
+  RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
+  FrameTreeNode* expected_parent_ftn = rfh_a->frame_tree_node();
+  FrameTreeNode* expected_child_ftn = rfh_b->frame_tree_node();
+
+  viz::SurfaceId id_a = GetSurfaceId(expected_parent_ftn);
+  // On slower machines the Main-thread for the child frame may not have
+  // completed blink::RemoteFrameView::UpdateViewportIntersectionsForSubtree
+  // which can advance the viz::SurfaceId. The final may be newer than this, but
+  // from the same viz::FrameSink and viz::LocalSurfaceId::embed_token, so we
+  // cache now anyways.
+  viz::SurfaceId id_b = GetSurfaceId(expected_child_ftn);
+  EXPECT_TRUE(id_a.is_valid());
+  EXPECT_TRUE(id_b.is_valid());
+  // Ensure that they are separate surfaces and that site-isolation of test
+  // setup has not regressed.
+  EXPECT_NE(id_a, id_b);
+
+  // 2) Navigate to C.
+  EXPECT_TRUE(NavigateToURL(shell(), url_c));
+  RenderFrameHostImpl* rfh_c = web_contents()->GetPrimaryMainFrame();
+
+  // 3) Ensure A(B) are cached.
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_TRUE(rfh_b->IsInBackForwardCache());
+  EXPECT_FALSE(rfh_c->IsInBackForwardCache());
+  EXPECT_NE(rfh_a, rfh_c);
+  EXPECT_EQ(nullptr, rfh_a->owner_);
+  EXPECT_EQ(expected_child_ftn, rfh_b->owner_);
+  EXPECT_EQ(expected_parent_ftn, rfh_c->owner_);
+
+  // Collect the viz::SurfaceIds to evict. We should find both `id_a` and
+  // `id_b`.
+  RenderViewHostImpl* rvh_a =
+      static_cast<RenderViewHostImpl*>(rfh_a->GetRenderViewHost());
+  std::vector<viz::SurfaceId> ids = rvh_a->CollectSurfaceIdsForEviction();
+
+  EXPECT_EQ(ids.size(), 2u);
+  EXPECT_TRUE(ContainsSurfaceIdOrNewer(ids, id_a));
+  EXPECT_TRUE(ContainsSurfaceIdOrNewer(ids, id_b));
 }
 
 class RenderFrameHostImplPrerenderBrowserTest
