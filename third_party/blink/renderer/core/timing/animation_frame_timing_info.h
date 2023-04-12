@@ -131,6 +131,14 @@ class AnimationFrameTimingInfo
     scripts_ = scripts;
   }
 
+  const base::TimeDelta& TotalBlockingDuration() const {
+    return total_blocking_duration_;
+  }
+
+  void SetTotalBlockingDuration(base::TimeDelta duration) {
+    total_blocking_duration_ = duration;
+  }
+
   void SetDidPause() { did_pause_ = true; }
   bool DidPause() const { return did_pause_; }
 
@@ -158,6 +166,9 @@ class AnimationFrameTimingInfo
 
   // The event timestamp of the first UI event that coincided with the frame.
   base::TimeTicks first_ui_event_time;
+
+  // Collecting durations of all tasks in the LoAF, not including rendering.
+  base::TimeDelta total_blocking_duration_;
 
   HeapVector<Member<ScriptTimingInfo>> scripts_;
 

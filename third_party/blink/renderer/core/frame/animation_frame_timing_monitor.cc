@@ -89,6 +89,26 @@ void AnimationFrameTimingMonitor::DidBeginMainFrame() {
       current_frame_timing_info_->SetFirstUIEventTime(
           first_ui_event_timestamp_);
     }
+
+    // Blocking duration is computed as such:
+    // - Count the render duration as part of the longest task's duration
+    // - Sum the durations of the long tasks, reducing 50ms from each.
+    base::TimeDelta render_duration =
+        current_frame_timing_info_->RenderEndTime() -
+        current_frame_timing_info_->RenderStartTime();
+
+    base::TimeDelta render_blocking_duration =
+        longest_task_duration_ + render_duration;
+
+    base::TimeDelta blocking_duration =
+        total_blocking_time_excluding_longest_task_;
+    if (render_blocking_duration > kLongAnimationFrameDuration) {
+      blocking_duration +=
+          render_blocking_duration - kLongAnimationFrameDuration;
+    }
+
+    current_frame_timing_info_->SetTotalBlockingDuration(blocking_duration);
+
     client_.ReportLongAnimationFrameTiming(current_frame_timing_info_);
     RecordLongAnimationFrameUKM(*current_frame_timing_info_);
   }
@@ -97,12 +117,31 @@ void AnimationFrameTimingMonitor::DidBeginMainFrame() {
   first_ui_event_timestamp_ = base::TimeTicks();
   current_frame_timing_info_.Clear();
   current_scripts_.clear();
+  longest_task_duration_ = total_blocking_time_excluding_longest_task_ =
+      base::TimeDelta();
   state_ = State::kIdle;
 }
 
 void AnimationFrameTimingMonitor::WillProcessTask(base::TimeTicks start_time) {
   if (state_ == State::kIdle) {
     state_ = State::kProcessingTask;
+  }
+}
+
+void AnimationFrameTimingMonitor::ApplyTaskDuration(
+    base::TimeDelta task_duration) {
+  // Instead of saving the list of task durations, we keep the sum of durations
+  // excluding the longest, and the longest separately, and replace the longest
+  // if a newer task duration is longer.
+  if (task_duration > longest_task_duration_) {
+    // New task duration is now the longest, and we apply the previous longest
+    // duration to the sum.
+    std::swap(task_duration, longest_task_duration_);
+  }
+
+  if (task_duration > kLongAnimationFrameDuration) {
+    total_blocking_time_excluding_longest_task_ +=
+        task_duration - kLongAnimationFrameDuration;
   }
 }
 
@@ -115,6 +154,14 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
 
   bool did_pause = false;
   std::swap(did_pause, did_pause_);
+
+  base::TimeDelta task_duration = end_time - start_time;
+
+  // If we already need an update and a new task is processed, count its
+  // duration towards blockingTime.
+  if (frame && state_ == State::kPendingFrame) {
+    ApplyTaskDuration(task_duration);
+  }
 
   if (state_ != State::kProcessingTask) {
     return;
@@ -138,11 +185,16 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
     current_frame_timing_info_ =
         MakeGarbageCollected<AnimationFrameTimingInfo>(start_time);
     state_ = State::kPendingFrame;
+    if (frame) {
+      ApplyTaskDuration(task_duration);
+    }
     return;
   }
 
   std::swap(scripts, current_scripts_);
   current_scripts_.clear();
+  longest_task_duration_ = total_blocking_time_excluding_longest_task_ =
+      base::TimeDelta();
 
   state_ = State::kIdle;
 
@@ -150,7 +202,7 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
     return;
   }
 
-  if (!frame || (end_time - start_time) < kLongAnimationFrameDuration) {
+  if (!frame || (task_duration < kLongAnimationFrameDuration)) {
     return;
   }
 
@@ -158,6 +210,8 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
       MakeGarbageCollected<AnimationFrameTimingInfo>(start_time);
   timing_info->SetRenderEndTime(end_time);
   timing_info->SetScripts(scripts);
+  timing_info->SetTotalBlockingDuration(task_duration -
+                                        kLongAnimationFrameDuration);
   if (did_pause) {
     timing_info->SetDidPause();
   }

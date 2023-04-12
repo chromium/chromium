@@ -124,6 +124,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   }
 
   void RecordLongAnimationFrameUKM(const AnimationFrameTimingInfo&);
+  void ApplyTaskDuration(base::TimeDelta task_duration);
 
   absl::optional<PendingScriptInfo> pending_script_info_;
   Client& client_;
@@ -148,6 +149,8 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   base::TimeTicks desired_render_start_time_;
   base::TimeTicks first_ui_event_timestamp_;
   base::TimeTicks javascript_dialog_start_;
+  base::TimeDelta total_blocking_time_excluding_longest_task_;
+  base::TimeDelta longest_task_duration_;
   bool did_pause_ = false;
 
   bool enabled_ = false;

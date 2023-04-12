@@ -6879,6 +6879,7 @@ interface PerformanceEventTiming : PerformanceEntry
     method toJSON
 interface PerformanceLongAnimationFrameTiming : PerformanceEntry
     attribute @@toStringTag
+    getter blockingDuration
     getter desiredRenderStart
     getter firstUIEventTimestamp
     getter renderStart
