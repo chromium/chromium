@@ -217,10 +217,14 @@ void SidePanelToolbarContainer::RemovePinnedEntryButtonFor(
   pinned_entry_buttons_.erase(iter);
 }
 
-bool SidePanelToolbarContainer::HasPinnedEntryButtonFor(SidePanelEntry::Id id) {
-  const auto iter = base::ranges::find(
-      pinned_entry_buttons_, id, [](auto* button) { return button->id(); });
-  return iter != pinned_entry_buttons_.end();
+bool SidePanelToolbarContainer::IsPinned(SidePanelEntry::Id id) {
+  PrefService* pref_service = browser_view_->GetProfile()->GetPrefs();
+  if (id == SidePanelEntry::Id::kSearchCompanion && pref_service) {
+    return HasPinnedEntryButtonFor(id) &&
+           pref_service->GetBoolean(
+               prefs::kSidePanelCompanionEntryPinnedToToolbar);
+  }
+  return false;
 }
 
 void SidePanelToolbarContainer::UpdateSidePanelContainerButtonsState() {
@@ -229,6 +233,12 @@ void SidePanelToolbarContainer::UpdateSidePanelContainerButtonsState() {
   GetSidePanelButton()->SetTooltipText(l10n_util::GetStringUTF16(
       side_panel_visible ? IDS_TOOLTIP_SIDE_PANEL_HIDE
                          : IDS_TOOLTIP_SIDE_PANEL_SHOW));
+}
+
+bool SidePanelToolbarContainer::HasPinnedEntryButtonFor(SidePanelEntry::Id id) {
+  const auto iter = base::ranges::find(
+      pinned_entry_buttons_, id, [](auto* button) { return button->id(); });
+  return iter != pinned_entry_buttons_.end();
 }
 
 void SidePanelToolbarContainer::ReorderViews() {
