@@ -89,6 +89,7 @@ class VectorIconGallery : public View, public TextfieldController {
                                                    icon_dir.end())));
     editable_combobox->SetPlaceholderText(
         GetStringUTF16(IDS_VECTOR_FILE_SELECT_LABEL));
+    editable_combobox->SetAccessibleName(u"Editable Combobox");
 
     auto file_container = std::make_unique<View>();
     BoxLayout* file_box =
