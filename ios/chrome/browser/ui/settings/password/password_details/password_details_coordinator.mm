@@ -279,7 +279,7 @@
                                    browser:self.browser
                                      title:title
                                    message:message
-                                      rect:anchorView.frame
+                                      rect:anchorView.bounds
                                       view:anchorView]
           : [[ActionSheetCoordinator alloc]
                 initWithBaseViewController:self.viewController
@@ -318,7 +318,7 @@
                          browser:self.browser
                            title:actionSheetTitle
                          message:actionSheetMessage
-                            rect:anchorView.frame
+                            rect:anchorView.bounds
                             view:anchorView];
 
   __weak __typeof(self) weakSelf = self;
