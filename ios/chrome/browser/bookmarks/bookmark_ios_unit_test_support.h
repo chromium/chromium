@@ -40,7 +40,8 @@ class BookmarkIOSUnitTestSupport : public PlatformTest {
   IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
-  bookmarks::BookmarkModel* bookmark_model_;
+  // Bookmark model for the profile storage.
+  bookmarks::BookmarkModel* profile_bookmark_model_;
   bookmarks::ManagedBookmarkService* managed_bookmark_service_;
 };
 

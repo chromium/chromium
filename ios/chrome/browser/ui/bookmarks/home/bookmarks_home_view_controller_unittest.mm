@@ -55,7 +55,8 @@ TEST_F(BookmarksHomeViewControllerTest,
     controller.applicationCommandsHandler = mockApplicationCommandHandler;
     controller.snackbarCommandsHandler = mockSnackbarCommandHandler;
 
-    const bookmarks::BookmarkNode* mobileNode = bookmark_model_->mobile_node();
+    const bookmarks::BookmarkNode* mobileNode =
+        profile_bookmark_model_->mobile_node();
     AddBookmark(mobileNode, @"foo");
     controller.displayedFolderNode = mobileNode;
     // sections: Bookmarks, root profile, root account, message.
@@ -113,8 +114,10 @@ TEST_F(BookmarksHomeViewControllerTest,
     controller.applicationCommandsHandler = mockApplicationCommandHandler;
     controller.snackbarCommandsHandler = mockSnackbarCommandHandler;
 
-    const bookmarks::BookmarkNode* rootNode = bookmark_model_->root_node();
-    const bookmarks::BookmarkNode* mobileNode = bookmark_model_->mobile_node();
+    const bookmarks::BookmarkNode* rootNode =
+        profile_bookmark_model_->root_node();
+    const bookmarks::BookmarkNode* mobileNode =
+        profile_bookmark_model_->mobile_node();
     AddBookmark(mobileNode, @"foo");  // Ensure there are bookmarks
     controller.displayedFolderNode = rootNode;
     // sections: Promo, Bookmarks, root profile, root account, message.
@@ -177,8 +180,10 @@ TEST_F(BookmarksHomeViewControllerTest,
     controller.applicationCommandsHandler = mockApplicationCommandHandler;
     controller.snackbarCommandsHandler = mockSnackbarCommandHandler;
 
-    const bookmarks::BookmarkNode* rootNode = bookmark_model_->root_node();
-    const bookmarks::BookmarkNode* mobileNode = bookmark_model_->mobile_node();
+    const bookmarks::BookmarkNode* rootNode =
+        profile_bookmark_model_->root_node();
+    const bookmarks::BookmarkNode* mobileNode =
+        profile_bookmark_model_->mobile_node();
     AddBookmark(mobileNode, @"foo");  // Ensure there are bookmarks
     controller.displayedFolderNode = rootNode;
     // sections: Promo, Bookmarks, root profile, root account, message.
@@ -239,7 +244,7 @@ TEST_F(BookmarksHomeViewControllerTest, Metrics) {
     controller.applicationCommandsHandler = mockApplicationCommandHandler;
     controller.snackbarCommandsHandler = mockSnackbarCommandHandler;
 
-    controller.displayedFolderNode = bookmark_model_->mobile_node();
+    controller.displayedFolderNode = profile_bookmark_model_->mobile_node();
     base::UserActionTester user_action_tester;
     std::string user_action = "MobileKeyCommandClose";
     ASSERT_EQ(user_action_tester.GetActionCount(user_action), 0);

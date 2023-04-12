@@ -57,7 +57,7 @@ class BookmarkActivityTest : public BookmarkIOSUnitTestSupport {
   BookmarkActivity* CreateActivity(const GURL& URL) {
     return [[BookmarkActivity alloc] initWithURL:URL
                                            title:kTestTitle
-                                   bookmarkModel:bookmark_model_
+                                   bookmarkModel:profile_bookmark_model_
                                          handler:mocked_handler_
                                      prefService:&testing_pref_service_];
   }
@@ -106,8 +106,8 @@ TEST_F(BookmarkActivityTest, ActivityTitle_AddBookmark) {
 TEST_F(BookmarkActivityTest, ActivityTitle_EditBookmark) {
   // Add a bookmark.
   const bookmarks::BookmarkNode* bookmark =
-      AddBookmark(bookmark_model_->mobile_node(), @"activity_test");
-  ASSERT_TRUE(bookmark_model_->IsBookmarked(bookmark->url()));
+      AddBookmark(profile_bookmark_model_->mobile_node(), @"activity_test");
+  ASSERT_TRUE(profile_bookmark_model_->IsBookmarked(bookmark->url()));
 
   BookmarkActivity* activity = CreateActivity(bookmark->url());
 
