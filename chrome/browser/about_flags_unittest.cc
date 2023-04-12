@@ -167,7 +167,8 @@ TEST(AboutFlagsTest, RecentUnexpireFlagsArePresent) {
 }
 
 // Ensures that all variation IDs specified are well-formed and unique.
-TEST(AboutFlagsTest, VariationIdsAreValid) {
+// Disabled - please see https://crbug.com/1432436.
+TEST(AboutFlagsTest, DISABLED_VariationIdsAreValid) {
   std::set<int> variation_ids;
 
   for (const std::string& variation_id : GetAllVariationIds()) {
