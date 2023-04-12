@@ -4,22 +4,6 @@
 
 import("//ios/build/chrome_build.gni")
 
-source_set("observing_scene_agent") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-
-  sources = [
-    "observing_scene_state_agent.h",
-    "observing_scene_state_agent.mm",
-  ]
-
-  frameworks = [ "UIKit.framework" ]
-
-  public_deps = [
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
-  ]
-}
-
 source_set("default_browser_scene_agent") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -27,12 +11,12 @@ source_set("default_browser_scene_agent") {
     "default_browser_scene_agent.mm",
   ]
   deps = [
-    ":observing_scene_agent",
     "//base",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/promos_manager:constants",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
@@ -61,8 +45,8 @@ source_set("layout_guide_scene_agent") {
     "layout_guide_scene_agent.mm",
   ]
   deps = [
-    ":observing_scene_agent",
     "//base",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/ui/util:util_swift",
   ]
   frameworks = [ "UIKit.framework" ]
@@ -90,10 +74,10 @@ source_set("scene") {
   ]
 
   deps = [
-    ":observing_scene_agent",
     "//base",
     "//ios/chrome/app:blocking_scene_commands",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/blocking_overlay",
   ]

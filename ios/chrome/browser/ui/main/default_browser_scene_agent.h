@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_MAIN_DEFAULT_BROWSER_SCENE_AGENT_H_
 
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
-#import "ios/chrome/browser/ui/main/observing_scene_state_agent.h"
+#import "ios/chrome/browser/shared/coordinator/scene/observing_scene_state_agent.h"
 
 @class CommandDispatcher;
 @class DefaultBrowserPromoNonModalScheduler;

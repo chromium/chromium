@@ -9,6 +9,22 @@ source_set("scene_state_observer") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("observing_scene_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  sources = [
+    "observing_scene_state_agent.h",
+    "observing_scene_state_agent.mm",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+
+  public_deps = [
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
+  ]
+}
+
 source_set("scene_state_header") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [

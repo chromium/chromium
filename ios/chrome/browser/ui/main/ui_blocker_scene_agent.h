@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_MAIN_UI_BLOCKER_SCENE_AGENT_H_
 #define IOS_CHROME_BROWSER_UI_MAIN_UI_BLOCKER_SCENE_AGENT_H_
 
-#import "ios/chrome/browser/ui/main/observing_scene_state_agent.h"
+#import "ios/chrome/browser/shared/coordinator/scene/observing_scene_state_agent.h"
 
 // A scene agent that shows a UI overlay on the scene based on modal overlay
 // show/hide events.

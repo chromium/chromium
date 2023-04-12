@@ -17,7 +17,7 @@ source_set("promo") {
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/promos_manager:features",
     "//ios/chrome/browser/promos_manager:types",
-    "//ios/chrome/browser/ui/main:observing_scene_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/ui/promos_manager:promos",
     "//ios/chrome/browser/ui/whats_new:util",
   ]
