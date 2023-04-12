@@ -68,6 +68,11 @@ interface CompanionPageHandler {
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)
 interface CompanionPage {
   // Pass the companion URL needed to request the iframe to the frontend for
-  // rendering.
-  OnURLChanged(url.mojom.Url new_url);
+  // rendering. Results in a full reload of the companion side panel.
+  LoadCompanionPage(url.mojom.Url new_url);
+
+  // Notifies the companion page about subsequent navigations on the main page.
+  // Results in a postmessage() call to the companion with the encoded protobuf
+  // representation of the update params.
+  UpdateCompanionPage(string companion_update_proto);
 };

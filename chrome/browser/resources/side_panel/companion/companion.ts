@@ -35,6 +35,9 @@ enum ParamType {
 
   // Arguments for MethodType.kOnOpenInNewTabButtonURLChanged.
   URL_FOR_OPEN_IN_NEW_TAB = 'urlForOpenInNewTab',
+
+  // Arguments for browser -> iframe communcation.
+  COMPANION_UPDATE_PARAMS = 'companion_update_params',
 }
 
 const companionProxy: CompanionProxy = CompanionProxyImpl.getInstance();
@@ -47,12 +50,28 @@ function validatePromoArguments(promoType: any, promoAction: any): boolean {
 }
 
 function initialize() {
-  // When the url is changed, we update our iframe src to pass new parameters.
-  companionProxy.callbackRouter.onURLChanged.addListener((newUrl: Url) => {
+  // For the initial navigation, we update our iframe src to pass new
+  // URL.
+  companionProxy.callbackRouter.loadCompanionPage.addListener((newUrl: Url) => {
     const frame = document.body.querySelector('iframe');
     assert(frame);
     frame.src = newUrl.url;
   });
+
+  // For subsequent navigations, we send a post message.
+  companionProxy.callbackRouter.updateCompanionPage.addListener(
+      (companionUpdateProto: string) => {
+        const companionOrigin =
+            new URL(loadTimeData.getString('companion_origin')).origin;
+        const message =
+            {[ParamType.COMPANION_UPDATE_PARAMS]: companionUpdateProto};
+
+        const frame = document.body.querySelector('iframe');
+        assert(frame);
+        if (frame.contentWindow) {
+          frame.contentWindow.postMessage(message, companionOrigin);
+        }
+      });
 
   companionProxy.handler.showUI();
 }

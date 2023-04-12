@@ -52,7 +52,7 @@ void CompanionPageHandler::PrimaryPageChanged(content::Page& page) {
   if (!IsUserPermittedToSharePageInfoWithCompanion(GetProfile()->GetPrefs())) {
     return;
   }
-  NotifyURLChanged();
+  NotifyURLChanged(/*is_full_reload=*/false);
 }
 
 void CompanionPageHandler::ShowUI() {
@@ -70,7 +70,7 @@ void CompanionPageHandler::ShowUI() {
     helper->SetCompanionPageHandler(weak_ptr_factory_.GetWeakPtr());
     std::string initial_text_query = helper->GetTextQuery();
     if (initial_text_query.empty()) {
-      NotifyURLChanged();
+      NotifyURLChanged(/*is_full_reload=*/true);
     } else {
       OnSearchTextQuery(initial_text_query);
     }
@@ -86,13 +86,19 @@ void CompanionPageHandler::OnSearchTextQuery(const std::string& query) {
   }
 
   GURL companion_url = url_builder_->BuildCompanionURL(page_url, query);
-  page_->OnURLChanged(companion_url);
+  page_->LoadCompanionPage(companion_url);
 }
 
-void CompanionPageHandler::NotifyURLChanged() {
-  GURL companion_url =
-      url_builder_->BuildCompanionURL(web_contents()->GetVisibleURL());
-  page_->OnURLChanged(companion_url);
+void CompanionPageHandler::NotifyURLChanged(bool is_full_reload) {
+  if (is_full_reload) {
+    GURL companion_url =
+        url_builder_->BuildCompanionURL(web_contents()->GetVisibleURL());
+    page_->LoadCompanionPage(companion_url);
+  } else {
+    auto companion_update_proto = url_builder_->BuildCompanionUrlParamProto(
+        web_contents()->GetVisibleURL());
+    page_->UpdateCompanionPage(companion_update_proto);
+  }
 }
 
 void CompanionPageHandler::OnPromoAction(

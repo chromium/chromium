@@ -58,9 +58,12 @@ class CompanionPageHandler : public side_panel::mojom::CompanionPageHandler,
   // MsbbDelegate overrides.
   void EnableMsbb(bool enable_msbb) override;
 
-  // Notifies the companion page of the visible URL when the active tab has
-  // changed or when the primary page has changed on the active tab.
-  void NotifyURLChanged();
+  // Notifies the companion side panel about the URL of the main frame. Based on
+  // the call site, either does a full reload of the side panel or does a
+  // postmessage() update. Reload is done during initial load of the side panel,
+  // and context menu initiated navigations, while postmessage() is used for
+  // subsequent navigations on the main frame.
+  void NotifyURLChanged(bool is_full_reload);
 
   // Get the current browser associated with the WebUI.
   Browser* GetBrowser();

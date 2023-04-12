@@ -70,6 +70,36 @@ GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url) {
 
 GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url,
                                             const std::string& text_query) {
+  GURL url_with_query_params = GetHomepageURLForCompanion();
+
+  // Fill the protobuf with the required query params.
+  std::string base64_encoded_proto = BuildCompanionUrlParamProto(page_url);
+  url_with_query_params = net::AppendOrReplaceQueryParameter(
+      url_with_query_params, kCompanionRequestQueryParameterKey,
+      base64_encoded_proto);
+
+  // Add origin as a param allowing the page to be iframed.
+  url_with_query_params = net::AppendOrReplaceQueryParameter(
+      url_with_query_params, kOriginQueryParameterKey,
+      kOriginQueryParameterValue);
+
+  // TODO(b/274714162): Remove URL param.
+  bool is_msbb_enabled =
+      IsUserPermittedToSharePageInfoWithCompanion(pref_service_);
+  if (is_msbb_enabled && IsValidPageURLForCompanion(page_url)) {
+    url_with_query_params = net::AppendOrReplaceQueryParameter(
+        url_with_query_params, kUrlQueryParameterKey, page_url.spec());
+  }
+
+  if (!text_query.empty()) {
+    url_with_query_params = net::AppendOrReplaceQueryParameter(
+        url_with_query_params, kTextQueryParameterKey, text_query);
+  }
+
+  return url_with_query_params;
+}
+
+std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(GURL page_url) {
   // Fill the protobuf with the required query params.
   companion::proto::CompanionUrlParams url_params;
   bool is_msbb_enabled =
@@ -89,30 +119,9 @@ GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url,
   promo_state->set_exps_promo_denial_count(
       pref_service_->GetInteger(kExpsPromoDeclinedCountPref));
 
-  GURL url_with_query_params = GetHomepageURLForCompanion();
   std::string base64_encoded_proto;
   base::Base64Encode(url_params.SerializeAsString(), &base64_encoded_proto);
-  url_with_query_params = net::AppendOrReplaceQueryParameter(
-      url_with_query_params, kCompanionRequestQueryParameterKey,
-      base64_encoded_proto);
-
-  // Add origin as a param allowing the page to be iframed.
-  url_with_query_params = net::AppendOrReplaceQueryParameter(
-      url_with_query_params, kOriginQueryParameterKey,
-      kOriginQueryParameterValue);
-
-  // TODO(b/274714162): Remove URL param.
-  if (is_msbb_enabled && IsValidPageURLForCompanion(page_url)) {
-    url_with_query_params = net::AppendOrReplaceQueryParameter(
-        url_with_query_params, kUrlQueryParameterKey, page_url.spec());
-  }
-
-  if (!text_query.empty()) {
-    url_with_query_params = net::AppendOrReplaceQueryParameter(
-        url_with_query_params, kTextQueryParameterKey, text_query);
-  }
-
-  return url_with_query_params;
+  return base64_encoded_proto;
 }
 
 GURL CompanionUrlBuilder::GetHomepageURLForCompanion() {
