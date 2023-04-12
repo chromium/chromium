@@ -790,7 +790,7 @@ def _load_entry_point(tools_root: str):
     if tools_root not in sys.path:
         sys.path.insert(0, tools_root)
     # Remove current cached modules to force a reload.
-    module_pattern = re.compile(r'\bwpt(runner|serve)?\b')
+    module_pattern = re.compile(r'^(tools|wpt(runner|serve)?)\b')
     for name in list(sys.modules):
         if module_pattern.search(name):
             del sys.modules[name]
