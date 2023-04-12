@@ -20,6 +20,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "device/udev_linux/scoped_udev.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/ash/keyboard_layout_util.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
@@ -738,7 +739,8 @@ const KeyboardCapability::KeyboardInfo* KeyboardCapability::GetKeyboardInfo(
   // Enable only when flag is enabled to avoid crashing while problem is
   // addressed. This issue exists the `EventDeviceInfo` objects are only allowed
   // to be created on a thread that allows blocking. See b/272960076
-  if (ash::features::IsInputDeviceSettingsSplitEnabled()) {
+  if (ash::features::IsInputDeviceSettingsSplitEnabled() ||
+      features::IsShortcutCustomizationAppEnabled()) {
     keyboard_info.event_device_info =
         CreateEventDeviceInfoFromInputDevice(keyboard);
   }
@@ -845,7 +847,7 @@ bool KeyboardCapability::HasKeyEvent(const KeyboardCode& key_code,
   // Handle assistant key.
   if (key_code == KeyboardCode::VKEY_ASSISTANT) {
     const KeyboardInfo* keyboard_info = GetKeyboardInfo(keyboard);
-    return keyboard_info &&
+    return keyboard_info && keyboard_info->event_device_info &&
            keyboard_info->event_device_info->HasKeyEvent(KEY_ASSISTANT);
   }
 
