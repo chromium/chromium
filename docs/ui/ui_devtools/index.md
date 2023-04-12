@@ -19,7 +19,7 @@ There are two ways to enable UI DevTools:
     * If you want to use a different port, add the port number in the flag
     `--enable-ui-devtools=<port>`.
 
-2. Enable `ui-debug-tools` feature flag from `chrome://flags`
+2. Enable `enable-ui-devtools` feature flag from `chrome://flags`
 
 Once enabled, go to `chrome://inspect#native-ui` and click the `Inspect Native UI`
 button to launch the DevTools front-end in a separate tab.
