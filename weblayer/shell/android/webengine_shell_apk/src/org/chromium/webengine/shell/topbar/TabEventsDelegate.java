@@ -24,11 +24,6 @@ public class TabEventsDelegate implements TabObserver, NavigationObserver, TabLi
 
     public TabEventsDelegate(TabManager tabManager) {
         mTabManager = tabManager;
-    }
-
-    // Registers only one TabEventsObserver.
-    public void registerObserver(TabEventsObserver tabEventsObserver) {
-        mTabEventsObserver = tabEventsObserver;
         mTabManager.registerTabListObserver(this);
         for (Tab t : mTabManager.getAllTabs()) {
             t.getNavigationController().registerNavigationObserver(this);
@@ -36,13 +31,12 @@ public class TabEventsDelegate implements TabObserver, NavigationObserver, TabLi
         }
     }
 
-    public void unregisterObservers() {
+    public void registerObserver(TabEventsObserver tabEventsObserver) {
+        mTabEventsObserver = tabEventsObserver;
+    }
+
+    public void unregisterObserver() {
         mTabEventsObserver = null;
-        mTabManager.unregisterTabListObserver(this);
-        for (Tab t : mTabManager.getAllTabs()) {
-            t.getNavigationController().unregisterNavigationObserver(this);
-            t.unregisterTabObserver(this);
-        }
     }
 
     // TabObserver implementation.
