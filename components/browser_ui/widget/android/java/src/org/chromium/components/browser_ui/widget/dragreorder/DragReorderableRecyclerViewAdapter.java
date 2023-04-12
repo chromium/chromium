@@ -6,7 +6,6 @@ package org.chromium.components.browser_ui.widget.dragreorder;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.View;
@@ -14,7 +13,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.ColorUtils;
-import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -38,8 +36,6 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
  *    but it keeps track of the view to make it available to drag over later.
  */
 public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
-    private static final int ANIMATION_DELAY_MS = 100;
-
     /**
      * Responsible for binding draggable views to the items adapter. The viewHolder should add a
      * listener to the correct view (e.g. a drag handle) which informs the ItemTouchHandler that
@@ -153,19 +149,13 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
 
         /**
          * Update the visual state of this row.
-         *
          * @param dragged    Whether this row is currently being dragged.
          * @param viewHolder The DraggableRowViewHolder that is holding this row's content.
          */
         private void updateVisualState(boolean dragged, RecyclerView.ViewHolder viewHolder) {
-            // Animate background colors and elevations
-            ViewCompat.animate(viewHolder.itemView)
-                    .translationZ(dragged ? mDraggedElevation : 0)
-                    .withEndAction(
-                            ()
-                                    -> viewHolder.itemView.setBackgroundColor(
-                                            dragged ? mDraggedBackgroundColor : Color.TRANSPARENT))
-                    .setDuration(ANIMATION_DELAY_MS)
+            DragUtils
+                    .createViewDragAnimation(dragged, viewHolder.itemView, mDraggedBackgroundColor,
+                            mDraggedElevation)
                     .start();
         }
     }

@@ -6,12 +6,10 @@ package org.chromium.components.browser_ui.widget.dragreorder;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.ColorUtils;
-import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
@@ -29,8 +27,6 @@ import java.util.List;
  * @param <T> The type of item that inhabits this adapter's list
  */
 public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter<ViewHolder> {
-    private static final int ANIMATION_DELAY_MS = 100;
-
     protected final Context mContext;
 
     // keep track of the list and list managers
@@ -136,14 +132,9 @@ public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter
          * @param viewHolder The DraggableRowViewHolder that is holding this row's content.
          */
         private void updateVisualState(boolean dragged, ViewHolder viewHolder) {
-            // Animate background colors and elevations
-            ViewCompat.animate(viewHolder.itemView)
-                    .translationZ(dragged ? mDraggedElevation : 0)
-                    .withEndAction(
-                            ()
-                                    -> viewHolder.itemView.setBackgroundColor(
-                                            dragged ? mDraggedBackgroundColor : Color.TRANSPARENT))
-                    .setDuration(ANIMATION_DELAY_MS)
+            DragUtils
+                    .createViewDragAnimation(dragged, viewHolder.itemView, mDraggedBackgroundColor,
+                            mDraggedElevation)
                     .start();
         }
     }
