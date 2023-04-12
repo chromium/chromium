@@ -4302,6 +4302,12 @@ const char kUseToastManagerName[] = "Use Toast manager";
 const char kUseToastManagerDescription[] =
     "Use Toast manager for queueing and managing Android Toast UI.";
 
+const char kWebAuthnAndroidCredManName[] =
+    "Android Credential Management for passkeys";
+const char kWebAuthnAndroidCredManDescription[] =
+    "Use Credential Management API for passkeys. Requires Android 14 or "
+    "higher.";
+
 const char kWebFeedName[] = "Web Feed";
 const char kWebFeedDescription[] =
     "Allows users to keep up with and consume web content.";

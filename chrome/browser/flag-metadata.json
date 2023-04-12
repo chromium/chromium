@@ -7618,6 +7618,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "web-authentication-android-credential-management",
+    "owners": ["kenrb", "agl"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "web-authentication-permit-enterprise-attestation",
     "owners": [ "chrome-webauthn@google.com" ],
     // This flag lets end users enroll security keys with an enterprise that

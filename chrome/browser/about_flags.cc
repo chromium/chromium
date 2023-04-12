@@ -10003,6 +10003,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(arc::kArcOnDemandFeature)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"web-authentication-android-credential-management",
+     flag_descriptions::kWebAuthnAndroidCredManName,
+     flag_descriptions::kWebAuthnAndroidCredManDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(device::kWebAuthnAndroidCredMan)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

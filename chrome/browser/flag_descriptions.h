@@ -2042,6 +2042,15 @@ extern const char kAccessibilityFormControlsModeDescription[];
 extern const char kAccessibilityPageZoomName[];
 extern const char kAccessibilityPageZoomDescription[];
 
+extern const char kAdaptiveButtonInTopToolbarName[];
+extern const char kAdaptiveButtonInTopToolbarDescription[];
+extern const char kAdaptiveButtonInTopToolbarTranslateName[];
+extern const char kAdaptiveButtonInTopToolbarTranslateDescription[];
+extern const char kAdaptiveButtonInTopToolbarAddToBookmarksName[];
+extern const char kAdaptiveButtonInTopToolbarAddToBookmarksDescription[];
+extern const char kAdaptiveButtonInTopToolbarCustomizationName[];
+extern const char kAdaptiveButtonInTopToolbarCustomizationDescription[];
+
 extern const char kAddToHomescreenIPHName[];
 extern const char kAddToHomescreenIPHDescription[];
 
@@ -2141,11 +2150,17 @@ extern const char kContextualSearchForceCaptionDescription[];
 extern const char kContextualSearchSuppressShortViewName[];
 extern const char kContextualSearchSuppressShortViewDescription[];
 
+extern const char kCormorantName[];
+extern const char kCormorantDescription[];
+
 extern const char kDefaultViewportIsDeviceWidthName[];
 extern const char kDefaultViewportIsDeviceWidthDescription[];
 
 extern const char kAutofillManualFallbackAndroidName[];
 extern const char kAutofillManualFallbackAndroidDescription[];
+
+extern const char kEnableAndroidGamepadVibrationName[];
+extern const char kEnableAndroidGamepadVibrationDescription[];
 
 extern const char kEnableCommandLineOnNonRootedName[];
 extern const char kEnableCommandLineOnNoRootedDescription[];
@@ -2192,6 +2207,9 @@ extern const char kFeedVideoInlinePlaybackDescription[];
 
 extern const char kFeedDiscoFeedEndpointName[];
 extern const char kFeedDiscoFeedEndpointDescription[];
+
+extern const char kForceOffTextAutosizingName[];
+extern const char kForceOffTextAutosizingDescription[];
 
 extern const char kHighlightManagedPrefDisclaimerAndroidName[];
 extern const char kHighlightManagedPrefDisclaimerAndroidDescription[];
@@ -2253,11 +2271,19 @@ extern const char kNotificationPermissionRationaleBottomSheetDescription[];
 extern const char kOfflinePagesLivePageSharingName[];
 extern const char kOfflinePagesLivePageSharingDescription[];
 
+extern const char kOmahaMinSdkVersionAndroidName[];
+extern const char kOmahaMinSdkVersionAndroidDescription[];
+extern const char kOmahaMinSdkVersionAndroidMinSdk1Description[];
+extern const char kOmahaMinSdkVersionAndroidMinSdk1000Description[];
+
 extern const char kPageInfoHistoryName[];
 extern const char kPageInfoHistoryDescription[];
 
 extern const char kPageInfoAboutThisSiteImprovedBottomSheetName[];
 extern const char kPageInfoAboutThisSiteImprovedBottomSheetDescription[];
+
+extern const char kPasswordEditDialogWithDetailsName[];
+extern const char kPasswordEditDialogWithDetailsDescription[];
 
 extern const char kPasswordGenerationBottomSheetName[];
 extern const char kPasswordGenerationBottomSheetDescription[];
@@ -2342,9 +2368,6 @@ extern const char kRequestDesktopSitePerSiteIphDescription[];
 
 extern const char kRequestDesktopSiteZoomName[];
 extern const char kRequestDesktopSiteZoomDescription[];
-
-extern const char kForceOffTextAutosizingName[];
-extern const char kForceOffTextAutosizingDescription[];
 
 extern const char kRevokeNotificationsPermissionIfDisabledOnAppLevelName[];
 extern const char
@@ -2437,30 +2460,19 @@ extern const char kUpdateMenuTypeNone[];
 extern const char kUpdateMenuTypeUpdateAvailable[];
 extern const char kUpdateMenuTypeUnsupportedOSVersion[];
 
-extern const char kOmahaMinSdkVersionAndroidName[];
-extern const char kOmahaMinSdkVersionAndroidDescription[];
-extern const char kOmahaMinSdkVersionAndroidMinSdk1Description[];
-extern const char kOmahaMinSdkVersionAndroidMinSdk1000Description[];
-
 extern const char kUseRealColorSpaceForAndroidVideoName[];
 extern const char kUseRealColorSpaceForAndroidVideoDescription[];
+
+extern const char kUseToastManagerName[];
+extern const char kUseToastManagerDescription[];
 
 extern const char kVideoTutorialsName[];
 extern const char kVideoTutorialsDescription[];
 extern const char kVideoTutorialsInstantFetchName[];
 extern const char kVideoTutorialsInstantFetchDescription[];
 
-extern const char kAdaptiveButtonInTopToolbarName[];
-extern const char kAdaptiveButtonInTopToolbarDescription[];
-extern const char kAdaptiveButtonInTopToolbarTranslateName[];
-extern const char kAdaptiveButtonInTopToolbarTranslateDescription[];
-extern const char kAdaptiveButtonInTopToolbarAddToBookmarksName[];
-extern const char kAdaptiveButtonInTopToolbarAddToBookmarksDescription[];
-extern const char kAdaptiveButtonInTopToolbarCustomizationName[];
-extern const char kAdaptiveButtonInTopToolbarCustomizationDescription[];
-
-extern const char kUseToastManagerName[];
-extern const char kUseToastManagerDescription[];
+extern const char kWebAuthnAndroidCredManName[];
+extern const char kWebAuthnAndroidCredManDescription[];
 
 extern const char kWebFeedName[];
 extern const char kWebFeedDescription[];
@@ -2479,15 +2491,6 @@ extern const char kWebXrSharedBuffersDescription[];
 
 extern const char kXsurfaceMetricsReportingName[];
 extern const char kXsurfaceMetricsReportingDescription[];
-
-extern const char kPasswordEditDialogWithDetailsName[];
-extern const char kPasswordEditDialogWithDetailsDescription[];
-
-extern const char kEnableAndroidGamepadVibrationName[];
-extern const char kEnableAndroidGamepadVibrationDescription[];
-
-extern const char kCormorantName[];
-extern const char kCormorantDescription[];
 
 // Non-Android ----------------------------------------------------------------
 
