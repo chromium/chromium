@@ -25,14 +25,6 @@ class Value;
 class Version;
 }  // namespace base
 
-namespace net {
-namespace test_server {
-
-struct HttpRequest;
-
-}  // namespace test_server
-}  // namespace net
-
 namespace updater {
 enum class UpdaterScope;
 }  // namespace updater
@@ -200,17 +192,6 @@ void RegisterApp(UpdaterScope scope, const std::string& app_id);
 
 [[nodiscard]] bool WaitForUpdaterExit(UpdaterScope scope);
 
-// Returns a predicate which returns true if the `expected_path_regex` fully
-// matches the request path.
-[[nodiscard]] ScopedServer::RequestMatcherPredicate GetRequestPathPredicate(
-    const std::string& expected_path_regex);
-
-// Returns a predicate which returns true if the `expected_header_regex` fully
-// matches the specified header in request.
-[[nodiscard]] ScopedServer::RequestMatcherPredicate GetRequestHeaderPredicate(
-    const std::string& header_name,
-    const std::string& expected_header_regex);
-
 #if BUILDFLAG(IS_WIN)
 void ExpectInterfacesRegistered(UpdaterScope scope);
 void ExpectMarshalInterfaceSucceeds(UpdaterScope scope);
@@ -242,11 +223,6 @@ void RunHandoff(UpdaterScope scope, const std::string& app_id);
 // Returns the number of files in the directory, not including directories,
 // links, or dot dot.
 int CountDirectoryFiles(const base::FilePath& dir);
-
-// Returns true if the `request_body_regex` partially matches the request
-// content.
-[[nodiscard]] bool RequestMatcherRegex(const std::string& request_body_regex,
-                                       const net::test_server::HttpRequest&);
 
 void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server);
 
