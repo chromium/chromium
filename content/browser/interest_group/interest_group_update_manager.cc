@@ -44,9 +44,9 @@ namespace content {
 
 namespace {
 
-// 10 kb update size limit. We are potentially fetching many interest group
+// 1 MB update size limit. We are potentially fetching many interest group
 // updates, so don't let this get too large.
-constexpr size_t kMaxUpdateSize = 10 * 1024;
+constexpr size_t kMaxUpdateSize = 1 * 1024 * 1024;
 
 // The maximum amount of time that the update process can run before it gets
 // cancelled for taking too long.

@@ -426,6 +426,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInterestGroupStorage);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kInterestGroupStorageMaxOwners;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kInterestGroupStorageMaxStoragePerOwner;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kInterestGroupStorageMaxGroupsPerOwner;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kInterestGroupStorageMaxOpsBeforeMaintenance;
