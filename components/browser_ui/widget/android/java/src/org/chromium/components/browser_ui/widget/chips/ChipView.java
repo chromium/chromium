@@ -239,6 +239,11 @@ public class ChipView extends LinearLayout {
      * @param drawable Drawable to display.
      */
     public void setIcon(Drawable drawable, boolean tintWithTextColor) {
+        if (drawable == null) {
+            mStartIcon.setVisibility(ViewGroup.GONE);
+            return;
+        }
+
         mStartIcon.setVisibility(ViewGroup.VISIBLE);
         mStartIcon.setImageDrawable(drawable);
         setTint(tintWithTextColor);

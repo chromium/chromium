@@ -153,8 +153,10 @@ public class AutofillPaymentMethodsFragment
             }
 
             // Set card icon. It can be either a custom card art or a network icon.
-            card_pref.setIcon(getCardIcon(getStyledContext(), card, getSettingsPageIconWidthId(),
-                    getSettingsPageIconHeightId()));
+            card_pref.setIcon(getCardIcon(getStyledContext(), card.getCardArtUrl(),
+                    card.getIssuerIconDrawableId(), getSettingsPageIconWidthId(),
+                    getSettingsPageIconHeightId(),
+                    ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)));
 
             if (card.getIsLocal()) {
                 card_pref.setFragment(AutofillLocalCardEditor.class.getName());
