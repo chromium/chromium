@@ -1417,6 +1417,13 @@ TEST_F(TabletWindowFloatTest, MaximizeWhileDragging) {
   PressAndReleaseKey(ui::VKEY_OEM_PLUS, ui::EF_ALT_DOWN);
 
   EXPECT_TRUE(WindowState::Get(window.get())->IsMaximized());
+
+  // Press the accelerator to minimize before releasing touch.
+  event_generator->PressTouch(header_view->GetBoundsInScreen().CenterPoint());
+  event_generator->MoveTouch(gfx::Point(100, 100));
+  PressAndReleaseKey(ui::VKEY_OEM_MINUS, ui::EF_ALT_DOWN);
+
+  EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
 }
 
 // Tests that on drag release, the window sticks to one of the four corners of

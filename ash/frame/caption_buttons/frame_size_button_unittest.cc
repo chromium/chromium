@@ -977,4 +977,20 @@ TEST_F(MultitaskMenuTest, MoveMouseOutsideMenu) {
   EXPECT_TRUE(GetMultitaskMenu());
 }
 
+// Tests that window accelerators, e.g. minimize, still work when the multitask
+// menu is open.
+TEST_F(MultitaskMenuTest, MinimizeWhenMenuShown) {
+  ShowMultitaskMenu();
+
+  PressAndReleaseKey(ui::VKEY_OEM_MINUS, ui::EF_ALT_DOWN);
+  ASSERT_TRUE(window_state()->IsMinimized());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(GetMultitaskMenu());
+
+  PressAndReleaseKey(ui::VKEY_OEM_MINUS, ui::EF_ALT_DOWN);
+  ASSERT_FALSE(window_state()->IsMinimized());
+  EXPECT_TRUE(GetWidget()->GetNativeWindow()->IsVisible());
+  EXPECT_FALSE(GetMultitaskMenu());
+}
+
 }  // namespace ash
