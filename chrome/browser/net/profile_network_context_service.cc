@@ -668,11 +668,6 @@ ProfileNetworkContextService::CreateClientCertStore() {
     }
   }
 
-  // `ClientCertStoreAsh` internally depends on NSS initialization that happens
-  // when the `ResourceContext` is created. Call `GetResourceContext()` so the
-  // dependency is explicit. See https://crbug.com/1018972.
-  profile_->GetResourceContext();
-
   return std::make_unique<ash::ClientCertStoreAsh>(
       std::move(certificate_provider), use_system_key_slot, username_hash,
       base::BindRepeating(&CreateCryptoModuleBlockingPasswordDelegate,
