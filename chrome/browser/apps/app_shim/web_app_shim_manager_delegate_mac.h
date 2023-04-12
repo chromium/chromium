@@ -59,7 +59,6 @@ class WebAppShimManagerDelegate : public apps::AppShimManager::Delegate {
   bool HasNonBookmarkAppWindowsOpen() override;
   std::vector<chrome::mojom::ApplicationDockMenuItemPtr>
   GetAppShortcutsMenuItemInfos(Profile* profile, const AppId& app_id) override;
-  void OnShimLaunchResolved() override;
 
  private:
   // Return true if |fallback_delegate_| should be used instead of |this|.

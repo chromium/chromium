@@ -119,10 +119,6 @@ class AppShimManager : public AppShimHostBootstrap::Client,
     virtual std::vector<chrome::mojom::ApplicationDockMenuItemPtr>
     GetAppShortcutsMenuItemInfos(Profile* profile,
                                  const web_app::AppId& app_id) = 0;
-
-    // Called when all launches for a given shim launch have been kicked off.
-    // This is used to signal to tests that a launch has completed.
-    virtual void OnShimLaunchResolved() {}
   };
 
   // Helper function to get the instance on the browser process. This will be
@@ -340,7 +336,6 @@ class AppShimManager : public AppShimHostBootstrap::Client,
       LoadAndLaunchAppCallback* launch_callback);
   void LoadAndLaunchApp_OnProfilesAndAppReady(
       const std::vector<base::FilePath>& profile_paths_to_launch,
-      bool first_profile_is_from_bootstrap,
       const LoadAndLaunchAppParams& params,
       LoadAndLaunchAppCallback launch_callback);
   void LoadAndLaunchApp_LaunchIfAppropriate(

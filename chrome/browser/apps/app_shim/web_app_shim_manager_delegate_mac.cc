@@ -438,8 +438,4 @@ WebAppShimManagerDelegate::GetAppShortcutsMenuItemInfos(Profile* profile,
   return dock_menu_items;
 }
 
-void WebAppShimManagerDelegate::OnShimLaunchResolved() {
-  web_app::OnShimLaunchResolved();
-}
-
 }  // namespace web_app

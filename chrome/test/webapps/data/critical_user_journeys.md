@@ -134,16 +134,6 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | M | install_or_shortcut_by_user_windowed(NotPromotable) | launch_from_platform_shortcut(NotPromotable) | check_window_not_created |
 | M | install_policy_app(NotPromotable, ShortcutOptions::All, Windowed, WebApp) | launch_from_platform_shortcut(NotPromotable) | check_window_created |
 
-## Multi profile launches on Mac
-| #Platforms | Test -> | | | | | | | | | | | | | | | | |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| M | install_or_shortcut_by_user_windowed | switch_active_profile(Profile2) | install_or_shortcut_by_user_windowed | quit_app_shim | launch_from_platform_shortcut | check_pwa_window_created_in_profile(Standalone, One, Default) | check_pwa_window_created_in_profile(Standalone, One, Profile2) |
-| M | install_or_shortcut_by_user_windowed | switch_active_profile(Profile2) | install_or_shortcut_by_user_windowed | close_pwa | quit_app_shim | launch_from_platform_shortcut | check_pwa_window_created_in_profile(Standalone, One, Default) |
-| M | install_or_shortcut_by_user_windowed | close_pwa | switch_active_profile(Profile2) | install_or_shortcut_by_user_windowed | quit_app_shim | launch_from_platform_shortcut | check_pwa_window_created_in_profile(Standalone, One, Profile2) |
-| M | install_or_shortcut_by_user_windowed | switch_active_profile(Profile2) | install_policy_app(Standalone, ShortcutOptions::All, Windowed, WebApp) | quit_app_shim | launch_from_platform_shortcut | check_pwa_window_created_in_profile(Standalone, One, Default) |
-| M | install_or_shortcut_by_user_windowed | switch_active_profile(Profile2) | install_or_shortcut_by_user_tabbed | quit_app_shim | launch_from_platform_shortcut | check_pwa_window_created_in_profile(Standalone, One, Default) |
-| M | install_or_shortcut_by_user_tabbed | switch_active_profile(Profile2) | install_or_shortcut_by_user_windowed | quit_app_shim | launch_from_platform_shortcut | check_pwa_window_created_in_profile(Standalone, One, Profile2) |
-
 # Misc UX Flows
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
