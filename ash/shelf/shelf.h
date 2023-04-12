@@ -100,6 +100,31 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
     Shelf* shelf_;
   };
 
+  // Used to disable auto-hide shelf behavior while in scope. Note that
+  // disabling auto-hide behavior is of lower precedence than auto-hide behavior
+  // based on locks and session state, so it is not guaranteed to show the shelf
+  // in all cases.
+  class ScopedDisableAutoHide {
+   public:
+    explicit ScopedDisableAutoHide(Shelf* shelf) : shelf_(shelf) {
+      ++shelf_->disable_auto_hide_;
+      if (shelf_->disable_auto_hide_ == 1) {
+        shelf_->UpdateVisibilityState();
+      }
+    }
+
+    ~ScopedDisableAutoHide() {
+      --shelf_->disable_auto_hide_;
+      CHECK_GE(shelf_->disable_auto_hide_, 0);
+      if (shelf_->disable_auto_hide_ == 0) {
+        shelf_->UpdateVisibilityState();
+      }
+    }
+
+   private:
+    Shelf* const shelf_;
+  };
+
   Shelf();
 
   Shelf(const Shelf&) = delete;
@@ -266,6 +291,7 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
     return is_tablet_mode_animation_running_;
   }
   int auto_hide_lock() const { return auto_hide_lock_; }
+  int disable_auto_hide() const { return disable_auto_hide_; }
 
   ShelfTooltipManager* tooltip() { return tooltip_.get(); }
 
@@ -361,6 +387,9 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   // Used by ScopedAutoHideLock to maintain the state of the lock for auto-hide
   // shelf.
   int auto_hide_lock_ = 0;
+
+  // Used by `ScopedDisableAutoHide` to disable auto-hide shelf behavior.
+  int disable_auto_hide_ = 0;
 
   std::unique_ptr<ShelfTooltipManager> tooltip_;
 };
