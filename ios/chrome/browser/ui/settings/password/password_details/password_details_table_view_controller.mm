@@ -93,6 +93,28 @@ const int kMinNoteCharAmountForWarning = 901;
 
 }  // namespace
 
+#pragma mark - TableViewTextItemWithConfigureHandler
+
+// TableViewTextItem supporting a handler for when a cell is configured for
+// display.
+@interface TableViewTextItemWithConfigureHandler : TableViewTextItem
+
+@property(nonatomic, copy) void (^configureCellHandler)();
+
+@end
+
+@implementation TableViewTextItemWithConfigureHandler
+
+- (void)configureCell:(TableViewCell*)tableCell
+           withStyler:(ChromeTableViewStyler*)styler {
+  [super configureCell:tableCell withStyler:styler];
+  self.configureCellHandler();
+}
+
+@end
+
+#pragma mark - PasswordDetailsInfoItem
+
 // Contains the website, username and password text items.
 @interface PasswordDetailsInfoItem : NSObject
 
@@ -114,6 +136,8 @@ const int kMinNoteCharAmountForWarning = 901;
 @end
 @implementation PasswordDetailsInfoItem
 @end
+
+#pragma mark - PasswordDetailsTableViewController
 
 @interface PasswordDetailsTableViewController () <
     TableViewTextEditItemDelegate,
@@ -162,6 +186,11 @@ const int kMinNoteCharAmountForWarning = 901;
 // navigates to the password list view.
 @property(nonatomic, strong) NSTimer* authValidityTimer;
 
+// Used to avoid recording the "move to account offered" histogram twice for
+// the same credential.
+@property(nonatomic, strong)
+    NSMutableSet<NSString*>* usernamesWithMoveToAccountOfferRecorded;
+
 @end
 
 @implementation PasswordDetailsTableViewController
@@ -181,6 +210,7 @@ const int kMinNoteCharAmountForWarning = 901;
         [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
     _titleLabel.adjustsFontForContentSizeCategory = YES;
     self.navigationItem.titleView = _titleLabel;
+    self.usernamesWithMoveToAccountOfferRecorded = [[NSMutableSet alloc] init];
   }
   return self;
 }
@@ -398,15 +428,46 @@ const int kMinNoteCharAmountForWarning = 901;
   return item;
 }
 
-- (TableViewTextItem*)moveToAccountButtonItem {
-  TableViewTextItem* item = [[TableViewTextItem alloc]
-      initWithType:PasswordDetailsItemTypeMoveToAccountButton];
+- (TableViewTextItemWithConfigureHandler*)moveToAccountButtonItem:
+    (NSString*)usernameForMetrics {
+  TableViewTextItemWithConfigureHandler* item =
+      [[TableViewTextItemWithConfigureHandler alloc]
+          initWithType:PasswordDetailsItemTypeMoveToAccountButton];
   item.text = l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORD_TO_ACCOUNT_STORE);
   item.textColor = self.tableView.editing
                        ? [UIColor colorNamed:kTextSecondaryColor]
                        : [UIColor colorNamed:kBlueColor];
   item.enabled = !self.tableView.editing;
   item.accessibilityIdentifier = kMovePasswordToAccountButtonId;
+
+  // Register a handler to record the "move to account offered" metric.
+  // 1) The metric mustn't be recorded for credentials that are not visible in
+  // the scroll view yet, so do it when the button cell is really being
+  // configured for display (note: the button, not the text that comes before).
+  // Recording during cell construction instead wouldn't work, cells can be
+  // reused. Anyway, scrolling isn't a big concern in practice because the
+  // number of credentials in this page is usually small.
+  // 2) The metric mustn't be recorded for the same credential again upon model
+  // changes, e.g. credential removed or moved to account. Those events
+  // (re)configure cells and trigger the handler, so check if this username was
+  // already seen before recording. The username is the closest thing to a
+  // stable identifier of the credential. It can be edited, leading to a second
+  // recording, but that shouldn't happen often. This approach is good enough.
+  __weak __typeof(self) weakSelf = self;
+  item.configureCellHandler = ^{
+    if (!weakSelf || [weakSelf.usernamesWithMoveToAccountOfferRecorded
+                         containsObject:usernameForMetrics]) {
+      return;
+    }
+
+    [weakSelf.usernamesWithMoveToAccountOfferRecorded
+        addObject:usernameForMetrics];
+    // TODO(crbug.com/1392747): Use a common function for recording sites.
+    base::UmaHistogramEnumeration(
+        "PasswordManager.AccountStorage.MoveToAccountStoreFlowOffered",
+        password_manager::metrics_util::MoveToAccountStoreTrigger::
+            kExplicitlyTriggeredInSettings);
+  };
   return item;
 }
 
@@ -1147,7 +1208,7 @@ const int kMinNoteCharAmountForWarning = 901;
   if (passwordDetails.shouldOfferToMoveToAccount) {
     [model addItem:[self moveToAccountRecommendationItem]
         toSectionWithIdentifier:sectionForMoveCredential];
-    [model addItem:[self moveToAccountButtonItem]
+    [model addItem:[self moveToAccountButtonItem:passwordDetails.username]
         toSectionWithIdentifier:sectionForMoveCredential];
   }
 
