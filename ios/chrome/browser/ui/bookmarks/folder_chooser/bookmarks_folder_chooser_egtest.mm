@@ -842,7 +842,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Verify the snackbar title.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
-                                          @"Bookmarked to Sticky Folder")]
+                                          @"Bookmarked to \"Sticky Folder\"")]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Verify that the newly-created bookmark is in the BookmarkModel.

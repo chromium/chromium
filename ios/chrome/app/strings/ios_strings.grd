@@ -541,8 +541,8 @@ locale.  The strings in this file are specific to iOS.
       </message>
       <message name="IDS_IOS_BOOKMARK_PAGE_SAVED_FOLDER" desc="Presented in a snackbar when  bookmark are created. Specifies in which folder the bookmark was added. [Length: 30em.]">
           {count, plural,
-          =1 {Bookmarked to {title}}
-          other {Bookmarked to {title}}}
+          =1 {Bookmarked to "{title}"}
+          other {Bookmarked to "{title}"}}
       </message>
       <message name="IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT" desc="Presented in a snackbar when bookmarks are created in an account. Specifies in which folder the bookmark was added. ">
           {count, plural,
@@ -551,8 +551,8 @@ locale.  The strings in this file are specific to iOS.
       </message>
       <message name="IDS_IOS_BOOKMARK_PAGE_SAVED_INTO_ACCOUNT_FOLDER" desc="Presented in a snackbar when bookmarks are created in the folder named `TITLE` in an account with `EMAIL`.">
          {count, plural,
-         =1 {Bookmark saved to {title} in your account, {email}}
-         other {Bookmarks saved to {title} in your account, {email}}}
+         =1 {Bookmark saved to "{title}" in your account, {email}}
+         other {Bookmarks saved to "{title}" in your account, {email}}}
       </message>
       <message name="IDS_IOS_BOOKMARK_URL_FIELD_HEADER" desc="Title shown above URL field on Edit Bookmark screen. [Length: 20em]">
         URL
