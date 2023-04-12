@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/authenticated_connection.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/incoming_connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
@@ -82,7 +83,7 @@ void TargetDeviceBootstrapController::StartAdvertising() {
 
   status_.step = Step::ADVERTISING;
   connection_broker_->StartAdvertising(
-      this, /*use_pin_authentication=*/false,
+      this,
       base::BindOnce(&TargetDeviceBootstrapController::OnStartAdvertisingResult,
                      weak_ptr_factory_.GetWeakPtr()));
   NotifyObservers();
@@ -115,25 +116,19 @@ void TargetDeviceBootstrapController::PrepareForUpdate() {
   prepare_for_update_on_connection_closed_ = true;
 }
 
-void TargetDeviceBootstrapController::OnPinVerificationRequested(
-    const std::string& pin) {
+void TargetDeviceBootstrapController::OnIncomingConnectionInitiated(
+    const std::string& source_device_id,
+    base::WeakPtr<IncomingConnection> connection) {
   constexpr Step kPossibleSteps[] = {Step::ADVERTISING,
                                      Step::QR_CODE_VERIFICATION};
-  CHECK(base::Contains(kPossibleSteps, status_.step));
-
-  pin_ = pin;
-  // TODO: display pin
-  status_.step = Step::PIN_VERIFICATION;
-  status_.payload.emplace<absl::monostate>();
-  NotifyObservers();
-}
-
-void TargetDeviceBootstrapController::OnQRCodeVerificationRequested(
-    const std::vector<uint8_t>& qr_code_data) {
-  constexpr Step kPossibleSteps[] = {Step::ADVERTISING};
-  CHECK(base::Contains(kPossibleSteps, status_.step));
-
-  auto qr_code = GenerateQRCode(qr_code_data);
+  DCHECK(base::Contains(kPossibleSteps, status_.step));
+  if (status_.step == Step::QR_CODE_VERIFICATION) {
+    // New connection came. It should be a different device.
+    DCHECK_NE(source_device_id_, source_device_id);
+  }
+  source_device_id_ = source_device_id;
+  incoming_connection_ = std::move(connection);
+  auto qr_code = GenerateQRCode(incoming_connection_->GetQrCodeData());
   status_.step = Step::QR_CODE_VERIFICATION;
   status_.payload.emplace<QRCodePixelData>(std::move(qr_code));
   NotifyObservers();
@@ -142,8 +137,10 @@ void TargetDeviceBootstrapController::OnQRCodeVerificationRequested(
 void TargetDeviceBootstrapController::OnConnectionAuthenticated(
     const std::string& source_device_id,
     base::WeakPtr<AuthenticatedConnection> connection) {
+  DCHECK_EQ(source_device_id_, source_device_id);
   constexpr Step kPossibleSteps[] = {Step::QR_CODE_VERIFICATION};
-  CHECK(base::Contains(kPossibleSteps, status_.step));
+  DCHECK(base::Contains(kPossibleSteps, status_.step));
+  DCHECK(incoming_connection_.WasInvalidated());
 
   status_.step = Step::CONNECTED;
   status_.payload.emplace<absl::monostate>();
@@ -152,6 +149,7 @@ void TargetDeviceBootstrapController::OnConnectionAuthenticated(
 
 void TargetDeviceBootstrapController::OnConnectionRejected(
     const std::string& source_device_id) {
+  DCHECK_EQ(source_device_id_, source_device_id);
   status_.step = Step::ERROR;
   status_.payload = ErrorCode::CONNECTION_REJECTED;
   NotifyObservers();
@@ -159,6 +157,7 @@ void TargetDeviceBootstrapController::OnConnectionRejected(
 
 void TargetDeviceBootstrapController::OnConnectionClosed(
     const std::string& source_device_id) {
+  DCHECK_EQ(source_device_id_, source_device_id);
   status_.step = Step::ERROR;
   status_.payload = ErrorCode::CONNECTION_CLOSED;
   NotifyObservers();

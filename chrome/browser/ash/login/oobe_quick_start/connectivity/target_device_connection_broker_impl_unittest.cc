@@ -28,9 +28,7 @@ namespace ash::quick_start {
 namespace {
 
 constexpr size_t kMaxEndpointInfoDisplayNameLength = 18;
-// Default verification style 5 = "OUT_OF_BAND", which tells the phone to scan
-// for the QR code.
-constexpr uint8_t kEndpointInfoVerificationStyle = 5u;
+constexpr uint8_t kEndpointInfoVerificationStyle = 6u;
 constexpr uint8_t kEndpointInfoDeviceType = 8u;
 
 constexpr size_t kEndpointInfoRandomSessionIdLength = 10;
@@ -39,33 +37,6 @@ constexpr size_t kEndpointInfoRandomSessionIdLength = 10;
 // code is (0x135e % 1000) = 958.
 constexpr std::array<uint8_t, 6> kRandomSessionId = {0x13, 0x5e, 0xfb,
                                                      0x0f, 0x3a, 0x20};
-
-// Base qr code url ("https://signin.google/qs/") represented in a 25 byte
-// array.
-constexpr std::array<uint8_t, 25> kBaseUrl = {
-    0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f, 0x2f, 0x73,
-    0x69, 0x67, 0x6e, 0x69, 0x6e, 0x2e, 0x67, 0x6f, 0x6f,
-    0x67, 0x6c, 0x65, 0x2f, 0x71, 0x73, 0x2f};
-
-// Qr code key param ("?key=") represented in a 5 byte array.
-constexpr std::array<uint8_t, 5> kUrlKeyParam = {0x3f, 0x6b, 0x65, 0x79, 0x3d};
-
-// 32 random bytes to use as the shared secret when generating QR Code.
-constexpr std::array<uint8_t, 32> kSharedSecret = {
-    0x54, 0xbd, 0x40, 0xcf, 0x8a, 0x7c, 0x2f, 0x6a, 0xca, 0x15, 0x59,
-    0xcf, 0xf3, 0xeb, 0x31, 0x08, 0x90, 0x73, 0xef, 0xda, 0x87, 0xd4,
-    0x23, 0xc0, 0x55, 0xd5, 0x83, 0x5b, 0x04, 0x28, 0x49, 0xf2};
-
-// Base64 representation of kSharedSecret.
-constexpr char kSharedSecretBase64[] =
-    "VL1Az4p8L2rKFVnP8-sxCJBz79qH1CPAVdWDWwQoSfI";
-
-// Arbitrary string to use as the connection's authentication token when
-// deriving PIN.
-constexpr char kAuthenticationToken[] = "auth_token";
-
-// Expected PIN corresponding to |kAuthenticationToken|.
-constexpr char kAuthenticationTokenPin[] = "6229";
 
 // Perform base64 decoding with the kForgiving option to allow for missing
 // padding.
@@ -311,19 +282,6 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
         ->random_session_id_;
   }
 
-  const std::vector<uint8_t> GetQrCodeData() {
-    const RandomSessionId& session_id = GetRandomSessionId();
-    return static_cast<TargetDeviceConnectionBrokerImpl*>(
-               connection_broker_.get())
-        ->GetQrCodeData(session_id, kSharedSecret);
-  }
-
-  std::string DerivePin() {
-    return static_cast<TargetDeviceConnectionBrokerImpl*>(
-               connection_broker_.get())
-        ->DerivePin(kAuthenticationToken);
-  }
-
  protected:
   bool is_bluetooth_powered_ = true;
   bool is_bluetooth_present_ = true;
@@ -372,7 +330,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest, StartFastPairAdvertising) {
   EXPECT_EQ(0u, fast_pair_advertiser_factory_->StartAdvertisingCount());
 
   connection_broker_->StartAdvertising(
-      nullptr, /* use_pin_authentication= */ false,
+      nullptr,
       base::BindOnce(
           &TargetDeviceConnectionBrokerImplTest::StartAdvertisingResultCallback,
           weak_ptr_factory_.GetWeakPtr()));
@@ -386,7 +344,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   EXPECT_EQ(0u, fast_pair_advertiser_factory_->StartAdvertisingCount());
 
   connection_broker_->StartAdvertising(
-      nullptr, /* use_pin_authentication= */ false,
+      nullptr,
       base::BindOnce(
           &TargetDeviceConnectionBrokerImplTest::StartAdvertisingResultCallback,
           weak_ptr_factory_.GetWeakPtr()));
@@ -406,7 +364,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   EXPECT_EQ(0u, fast_pair_advertiser_factory_->StartAdvertisingCount());
 
   connection_broker_->StartAdvertising(
-      nullptr, /* use_pin_authentication= */ false,
+      nullptr,
       base::BindOnce(
           &TargetDeviceConnectionBrokerImplTest::StartAdvertisingResultCallback,
           weak_ptr_factory_.GetWeakPtr()));
@@ -422,7 +380,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   EXPECT_EQ(0u, fast_pair_advertiser_factory_->StartAdvertisingCount());
 
   connection_broker_->StartAdvertising(
-      nullptr, /* use_pin_authentication= */ false,
+      nullptr,
       base::BindOnce(
           &TargetDeviceConnectionBrokerImplTest::StartAdvertisingResultCallback,
           weak_ptr_factory_.GetWeakPtr()));
@@ -438,7 +396,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   EXPECT_EQ(0u, fast_pair_advertiser_factory_->StartAdvertisingCount());
 
   connection_broker_->StartAdvertising(
-      nullptr, /* use_pin_authentication= */ false,
+      nullptr,
       base::BindOnce(
           &TargetDeviceConnectionBrokerImplTest::StartAdvertisingResultCallback,
           weak_ptr_factory_.GetWeakPtr()));
@@ -464,7 +422,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
 TEST_F(TargetDeviceConnectionBrokerImplTest,
        StopFastPairAdvertising_BeforeBTAdapterInitialized) {
   connection_broker_->StartAdvertising(
-      nullptr, /* use_pin_authentication= */ false,
+      nullptr,
       base::BindOnce(
           &TargetDeviceConnectionBrokerImplTest::StartAdvertisingResultCallback,
           weak_ptr_factory_.GetWeakPtr()));
@@ -484,7 +442,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest, StopFastPairAdvertising) {
   FinishFetchingBluetoothAdapter();
 
   connection_broker_->StartAdvertising(
-      nullptr, /* use_pin_authentication= */ false,
+      nullptr,
       base::BindOnce(
           &TargetDeviceConnectionBrokerImplTest::StartAdvertisingResultCallback,
           weak_ptr_factory_.GetWeakPtr()));
@@ -584,7 +542,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   EXPECT_FALSE(fake_nearby_connections_manager_.IsAdvertising());
 
   connection_broker_->StartAdvertising(
-      nullptr, /* use_pin_authentication= */ false,
+      nullptr,
       base::BindOnce(
           &TargetDeviceConnectionBrokerImplTest::StartAdvertisingResultCallback,
           weak_ptr_factory_.GetWeakPtr()));
@@ -603,7 +561,7 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   EXPECT_FALSE(fake_nearby_connections_manager_.IsAdvertising());
 
   connection_broker_->StartAdvertising(
-      nullptr, /* use_pin_authentication= */ false,
+      nullptr,
       base::BindOnce(
           &TargetDeviceConnectionBrokerImplTest::StartAdvertisingResultCallback,
           weak_ptr_factory_.GetWeakPtr()));
@@ -613,26 +571,6 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   std::move(callback).Run(NearbyConnectionsManager::ConnectionsStatus::kError);
   EXPECT_TRUE(start_advertising_callback_called_);
   EXPECT_FALSE(start_advertising_callback_success_);
-}
-
-TEST_F(TargetDeviceConnectionBrokerImplTest, GetQRCodeData) {
-  std::string random_session_id = GetRandomSessionId().ToString();
-  std::string encoded_shared_secret(kSharedSecretBase64);
-
-  std::vector<uint8_t> expected_data(std::begin(kBaseUrl), std::end(kBaseUrl));
-  expected_data.insert(expected_data.end(), random_session_id.begin(),
-                       random_session_id.end());
-  expected_data.insert(expected_data.end(), std::begin(kUrlKeyParam),
-                       std::end(kUrlKeyParam));
-  expected_data.insert(expected_data.end(), encoded_shared_secret.begin(),
-                       encoded_shared_secret.end());
-
-  std::vector<uint8_t> actual_data = GetQrCodeData();
-  EXPECT_EQ(expected_data, actual_data);
-}
-
-TEST_F(TargetDeviceConnectionBrokerImplTest, DerivePin) {
-  EXPECT_EQ(kAuthenticationTokenPin, DerivePin());
 }
 
 }  // namespace ash::quick_start
