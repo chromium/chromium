@@ -50,7 +50,7 @@ namespace content {
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS)
-absl::optional<bool> g_always_open_firewall_hole_for_testing;
+bool g_always_open_firewall_hole_for_testing = false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 constexpr net::NetworkTrafficAnnotationTag kDirectSocketsTrafficAnnotation =
@@ -136,8 +136,8 @@ bool ValidateAddressAndPort(RenderFrameHost& rfh,
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool ShouldOpenFirewallHole(const net::IPAddress& address) {
-  if (g_always_open_firewall_hole_for_testing.has_value()) {
-    return *g_always_open_firewall_hole_for_testing;
+  if (g_always_open_firewall_hole_for_testing) {
+    return true;
   }
   return !address.IsLoopback();
 }
@@ -434,9 +434,8 @@ void DirectSocketsServiceImpl::SetNetworkContextForTesting(
 
 #if BUILDFLAG(IS_CHROMEOS)
 // static
-void DirectSocketsServiceImpl::SetAlwaysOpenFirewallHoleForTesting(
-    absl::optional<bool> value) {
-  g_always_open_firewall_hole_for_testing = value;
+void DirectSocketsServiceImpl::SetAlwaysOpenFirewallHoleForTesting() {
+  g_always_open_firewall_hole_for_testing = true;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
