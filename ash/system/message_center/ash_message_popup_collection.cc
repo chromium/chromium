@@ -5,7 +5,6 @@
 #include "ash/system/message_center/ash_message_popup_collection.h"
 
 #include "ash/constants/ash_constants.h"
-#include "ash/constants/ash_features.h"
 #include "ash/focus_cycler.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -50,10 +49,6 @@ const char AshMessagePopupCollection::kMessagePopupWidgetName[] =
 
 AshMessagePopupCollection::AshMessagePopupCollection(Shelf* shelf)
     : screen_(nullptr), shelf_(shelf), tray_bubble_height_(0) {
-  // The order for notifications will be reversed when
-  // IsNotificationsRefreshEnabled.
-  if (!features::IsNotificationsRefreshEnabled())
-    set_inverse();
   shelf_->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
 }
