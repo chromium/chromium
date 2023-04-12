@@ -2,6 +2,7 @@
 # Copyright 2023 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+"""Siso configuration main entry."""
 
 load("@builtin//encoding.star", "json")
 load("@builtin//runtime.star", "runtime")
@@ -19,7 +20,11 @@ def init(ctx):
         "linux": chromium_linux,
         # add mac, windows
     }[runtime.os]
-    step_config = {}
+    step_config = {
+        "platforms": {},
+        "input_deps": {},
+        "rules": [],
+    }
     step_config = host.step_config(ctx, step_config)
     step_config = simple.step_config(ctx, step_config)
 

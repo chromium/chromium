@@ -2,7 +2,7 @@
 # Copyright 2023 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
+"""Siso configuration for simple steps."""
 load("@builtin//struct.star", "module")
 
 def __copy(ctx, cmd):
@@ -25,12 +25,12 @@ def __step_config(ctx, step_config):
     step_config["rules"].extend([
         {
             "name": "simple/copy",
-            "action": "copy",
+            "action": "(.*_)?copy",
             "handler": "copy",
         },
         {
             "name": "simple/stamp",
-            "action": ".*stamp",
+            "action": "(.*_)?stamp",
             "handler": "stamp",
             "replace": True,
         },
