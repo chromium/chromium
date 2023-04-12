@@ -337,6 +337,7 @@ crbug.com/1426593 [ debug passthrough ] conformance/uniforms/no-over-optimizatio
 crbug.com/1426593 [ passthrough web-engine-shell ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
 
 # Seems to do enough JavaScript work that heartbeats are not reliably sent.
+crbug.com/1432580 [ android android-Pixel-2 ] conformance2/misc/uninitialized-test-2.html [ Slow ]
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/misc/uninitialized-test-2.html [ Slow ]
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/oes-texture-half-float-linear.html [ Slow ]
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Slow ]
