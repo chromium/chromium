@@ -16,17 +16,6 @@
   await dumpLocations("css", sourceText.lineCount(), source);
   await dumpLocations("script", sourceText.lineCount(), source);
 
-  TestRunner.addResult("\n\nFormatting source now...\n\n");
-
-  const formatData = await Formatter.SourceFormatter.instance().format(source);
-  const formattedSource = formatData.formattedSourceCode;
-  var formattedContent = (await formatData.formattedSourceCode.requestContent()).content;
-  TestRunner.addResult(`Formatted Content:\n${formattedContent}`);
-  const formattedSourceText = new TextUtils.Text(formattedContent);
-  await dumpLocations("css", formattedSourceText.lineCount(), formattedSource);
-  await dumpLocations("script", formattedSourceText.lineCount(), formattedSource);
-
-
   async function dumpLocations(type, lineCount, source) {
     TestRunner.addResult(`Scanning ${lineCount} lines for ${type} locations. Note that location line/column numbers are zero-based.`);
     for (let line = 0; line < lineCount; ++line) {
