@@ -13,7 +13,7 @@
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_interactive_uitest_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
@@ -29,19 +29,22 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/accelerators/accelerator.h"
 
-class FirstRunFlowControllerDiceBrowserTest : public ProfilePickerTestBase {
+#if !BUILDFLAG(ENABLE_DICE_SUPPORT)
+#error "Unsupported platform"
+#endif
+
+class FirstRunInteractiveUiTest : public ProfilePickerInteractiveUiTestBase {
  public:
-  FirstRunFlowControllerDiceBrowserTest() = default;
-  ~FirstRunFlowControllerDiceBrowserTest() override = default;
+  FirstRunInteractiveUiTest() = default;
+  ~FirstRunInteractiveUiTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
     ProfilePickerTestBase::SetUpInProcessBrowserTestFixture();
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&FirstRunFlowControllerDiceBrowserTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &FirstRunInteractiveUiTest::OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
   }
 
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
@@ -64,7 +67,7 @@ class FirstRunFlowControllerDiceBrowserTest : public ProfilePickerTestBase {
   base::test::ScopedFeatureList scoped_feature_list_{kForYouFre};
 };
 
-IN_PROC_BROWSER_TEST_F(FirstRunFlowControllerDiceBrowserTest, CloseView) {
+IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, CloseWindow) {
   base::HistogramTester histogram_tester;
   base::MockCallback<ProfilePicker::FirstRunExitedCallback>
       first_run_exited_callback;
@@ -76,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunFlowControllerDiceBrowserTest, CloseView) {
 
   EXPECT_CALL(first_run_exited_callback,
               Run(ProfilePicker::FirstRunExitStatus::kQuitAtEnd));
-  ProfilePicker::Hide();
+  SendCloseWindowKeyboardCommand();
   WaitForPickerClosed();
 
   histogram_tester.ExpectUniqueSample(
@@ -85,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunFlowControllerDiceBrowserTest, CloseView) {
   histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(FirstRunFlowControllerDiceBrowserTest, SignInAndSync) {
+IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, SignInAndSync) {
   base::HistogramTester histogram_tester;
   base::MockCallback<ProfilePicker::FirstRunExitedCallback>
       first_run_exited_callback;
@@ -100,6 +103,8 @@ IN_PROC_BROWSER_TEST_F(FirstRunFlowControllerDiceBrowserTest, SignInAndSync) {
       "Signin.SignIn.Offered",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
 
+  // TODO(crbug.com/1431517): Use a way of activating the button more relevant
+  // for an interactive test.
   web_contents()->GetWebUI()->ProcessWebUIMessage(
       web_contents()->GetURL(), "continueWithAccount", base::Value::List());
 
@@ -137,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunFlowControllerDiceBrowserTest, SignInAndSync) {
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(FirstRunFlowControllerDiceBrowserTest,
+IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest,
                        ButtonsAreDisabledOnClickAndEnabledOnNavigateBack) {
   const char kAreButtonsDisabledJSString[] =
       "(() => {"
@@ -174,17 +179,33 @@ IN_PROC_BROWSER_TEST_F(FirstRunFlowControllerDiceBrowserTest,
   EXPECT_EQ(true, content::EvalJs(view()->GetPickerContents(),
                                   kAreButtonsDisabledJSString));
 
-  // Navigate back from the sign in step.
-  // Use "Command [" for Mac and "Alt Left" for the other operating systems.
-#if BUILDFLAG(IS_MAC)
-  view()->AcceleratorPressed(
-      ui::Accelerator(ui::VKEY_OEM_4, ui::EF_COMMAND_DOWN));
-#else
-  view()->AcceleratorPressed(ui::Accelerator(ui::VKEY_LEFT, ui::EF_ALT_DOWN));
-#endif
+  SendBackKeyboardCommand();
 
-  EXPECT_EQ(false, content::EvalJs(view()->GetPickerContents(),
-                                   kAreButtonsDisabledJSString));
+  // There is no event easily observable from the native side indicating that
+  // we switched to the previous web contents and that the button status
+  // changed. We instead just observe the change from the JS side since Polymer
+  // can fire a relevant event.
+  const char kEnsureButtonDisabledScript[] =
+      "(() => {"
+      "  const introApp = document.querySelector('intro-app');"
+      "  const promo = introApp.shadowRoot.querySelector('sign-in-promo');"
+      "  const btn = promo.shadowRoot.querySelector('#acceptSignInButton');"
+      ""
+      "  if (btn.disabled === false) {"
+      "    return true;"
+      "  }"
+      ""
+      "  var promiseResolve;"
+      "  const promise = new Promise(function(resolve, _){"
+      "    promiseResolve = resolve;"
+      "  });"
+      "  btn._createPropertyObserver('disabled', promiseResolve);"
+      "  return promise.then((newDisabledValue) => {"
+      "    return newDisabledValue === false;"
+      "  });"
+      "})()";
+  EXPECT_EQ(true, content::EvalJs(view()->GetPickerContents(),
+                                  kEnsureButtonDisabledScript));
 
   web_contents()->GetWebUI()->ProcessWebUIMessage(
       web_contents()->GetURL(), "continueWithoutAccount", base::Value::List());
