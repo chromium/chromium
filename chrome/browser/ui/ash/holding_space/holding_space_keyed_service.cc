@@ -223,11 +223,6 @@ std::vector<GURL> HoldingSpaceKeyedService::GetPinnedFiles() const {
   return pinned_files;
 }
 
-void HoldingSpaceKeyedService::AddNearbyShare(
-    const base::FilePath& nearby_share_path) {
-  AddItemOfType(HoldingSpaceItem::Type::kNearbyShare, nearby_share_path);
-}
-
 const std::string& HoldingSpaceKeyedService::AddPhoneHubCameraRollItem(
     const base::FilePath& item_path,
     const HoldingSpaceProgress& progress) {

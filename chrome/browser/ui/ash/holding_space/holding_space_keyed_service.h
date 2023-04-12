@@ -91,10 +91,6 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   std::vector<GURL> GetPinnedFiles() const;
 
   // TODO(http://b/274477308): Remove one-off API.
-  // Adds a nearby share item backed by the provided absolute file path.
-  void AddNearbyShare(const base::FilePath& nearby_share_path);
-
-  // TODO(http://b/274477308): Remove one-off API.
   // Adds a photo or video downloaded from a connected Android phone via
   // PhoneHub. Returns the id of the added holding space item or an empty string
   // if the item was not added due to de-duplication checks.

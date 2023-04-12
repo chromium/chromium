@@ -2600,15 +2600,13 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
       case HoldingSpaceItem::Type::kCameraAppVideoGif:
       case HoldingSpaceItem::Type::kCameraAppVideoMp4:
       case HoldingSpaceItem::Type::kDiagnosticsLog:
+      case HoldingSpaceItem::Type::kNearbyShare:
         holding_space_service->AddItemOfType(type, file_path);
         break;
       case HoldingSpaceItem::Type::kDriveSuggestion:
       case HoldingSpaceItem::Type::kLocalSuggestion:
         holding_space_service->SetSuggestions(
             /*suggestions=*/{{type, file_path}});
-        break;
-      case HoldingSpaceItem::Type::kNearbyShare:
-        holding_space_service->AddNearbyShare(file_path);
         break;
       case HoldingSpaceItem::Type::kPinnedFile:
         holding_space_service->AddPinnedFiles(
@@ -2833,7 +2831,8 @@ TEST_F(HoldingSpaceKeyedServiceNearbySharingTest, AddNearbyShareItem) {
       downloads_mount->CreateFile(item_1_virtual_path, "red");
   ASSERT_FALSE(item_1_full_path.empty());
 
-  holding_space_service->AddNearbyShare(item_1_full_path);
+  holding_space_service->AddItemOfType(HoldingSpaceItem::Type::kNearbyShare,
+                                       item_1_full_path);
 
   const base::FilePath item_2_virtual_path = base::FilePath("Alt/File 2.png");
   // Create a fake nearby shared file on the local file system - later parts of
@@ -2842,7 +2841,8 @@ TEST_F(HoldingSpaceKeyedServiceNearbySharingTest, AddNearbyShareItem) {
   const base::FilePath item_2_full_path =
       downloads_mount->CreateFile(item_2_virtual_path, "blue");
   ASSERT_FALSE(item_2_full_path.empty());
-  holding_space_service->AddNearbyShare(item_2_full_path);
+  holding_space_service->AddItemOfType(HoldingSpaceItem::Type::kNearbyShare,
+                                       item_2_full_path);
 
   EXPECT_EQ(initial_model, HoldingSpaceController::Get()->model());
   EXPECT_EQ(HoldingSpaceController::Get()->model(),

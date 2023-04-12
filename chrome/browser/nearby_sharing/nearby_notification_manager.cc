@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
@@ -1104,7 +1105,9 @@ void NearbyNotificationManager::ShowIncomingSuccess(
   if (holding_space_keyed_service) {
     for (const auto& file : share_target.file_attachments) {
       if (file.file_path().has_value())
-        holding_space_keyed_service->AddNearbyShare(file.file_path().value());
+        holding_space_keyed_service->AddItemOfType(
+            ash::HoldingSpaceItem::Type::kNearbyShare,
+            file.file_path().value());
     }
   }
 }
