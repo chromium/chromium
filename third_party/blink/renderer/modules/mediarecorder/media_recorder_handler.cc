@@ -214,8 +214,6 @@ bool MediaRecorderHandler::Initialize(
     MediaStreamDescriptor* media_stream,
     const String& type,
     const String& codecs,
-    uint32_t audio_bits_per_second,
-    uint32_t video_bits_per_second,
     AudioTrackRecorder::BitrateMode audio_bitrate_mode) {
   DCHECK(IsMainThread());
   // Save histogram data so we can see how much MediaStream Recorder is used.
@@ -252,8 +250,6 @@ bool MediaRecorderHandler::Initialize(
   DCHECK(recorder);
   recorder_ = recorder;
 
-  audio_bits_per_second_ = audio_bits_per_second;
-  video_bits_per_second_ = video_bits_per_second;
   audio_bitrate_mode_ = audio_bitrate_mode;
   return true;
 }
@@ -262,7 +258,9 @@ AudioTrackRecorder::BitrateMode MediaRecorderHandler::AudioBitrateMode() {
   return audio_bitrate_mode_;
 }
 
-bool MediaRecorderHandler::Start(int timeslice) {
+bool MediaRecorderHandler::Start(int timeslice,
+                                 uint32_t audio_bits_per_second,
+                                 uint32_t video_bits_per_second) {
   DCHECK(IsMainThread());
   DCHECK(!recording_);
   DCHECK(media_stream_);
@@ -277,6 +275,9 @@ bool MediaRecorderHandler::Start(int timeslice) {
 
   timeslice_ = base::Milliseconds(timeslice);
   slice_origin_timestamp_ = base::TimeTicks::Now();
+
+  audio_bits_per_second_ = audio_bits_per_second;
+  video_bits_per_second_ = video_bits_per_second;
 
   video_tracks_ = media_stream_->VideoComponents();
   audio_tracks_ = media_stream_->AudioComponents();

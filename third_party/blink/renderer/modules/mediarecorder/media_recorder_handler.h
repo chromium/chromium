@@ -65,13 +65,13 @@ class MODULES_EXPORT MediaRecorderHandler final
                   MediaStreamDescriptor* media_stream,
                   const String& type,
                   const String& codecs,
-                  uint32_t audio_bits_per_second,
-                  uint32_t video_bits_per_second,
                   AudioTrackRecorder::BitrateMode audio_bitrate_mode);
 
   AudioTrackRecorder::BitrateMode AudioBitrateMode();
 
-  bool Start(int timeslice);
+  bool Start(int timeslice,
+             uint32_t audio_bits_per_second,
+             uint32_t video_bits_per_second);
   void Stop();
   void Pause();
   void Resume();

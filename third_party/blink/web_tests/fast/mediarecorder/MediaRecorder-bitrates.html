@@ -45,8 +45,10 @@ makeExpectedBitrateAsyncTest({ videoBitsPerSecond : kOkVideoBps },
                              { video : kOkVideoBps, audio : kDefaultAudioBitRate });
 
 const kOkAudioBps = 10000;
-const kMinAudioBps = 5000;  // https://www.opus-codec.org/
-const kMaxAudioBps = 128000;
+// Boundaries of Opus SILK bitrate from https://www.opus-codec.org/.
+const kMinAudioBps = 5000;
+const kMaxAudioBps = 510000;
+
 // Note that unspecified video bitrates are not clamped to a minimum.
 makeExpectedBitrateAsyncTest({ audioBitsPerSecond : kOkAudioBps },
                              'Audio bitrate OK',
