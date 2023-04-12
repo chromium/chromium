@@ -7807,6 +7807,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSearchResultInlineIconDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(app_list_features::kSearchResultInlineIcon)},
 
+    {"smds-support", flag_descriptions::kSmdsSupportName,
+     flag_descriptions::kSmdsSupportDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kSmdsSupport)},
+
     {"smds-dbus-migration", flag_descriptions::kSmdsDbusMigrationName,
      flag_descriptions::kSmdsDbusMigrationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSmdsDbusMigration)},

@@ -6436,6 +6436,12 @@ const char kMacAddressRandomizationDescription[] =
     "Feature to allow MAC address randomization to be enabled for WiFi "
     "networks.";
 
+const char kSmdsSupportName[] = "SM-DS Support";
+const char kSmdsSupportDescription[] =
+    "Feature to enable the consumer and enterprise support for provisioning "
+    "eSIM profiles using Subscription Manager Discovery Service (SM-DS). This "
+    "flag is a no-op unless the smds-dbus-migration flag is enabled";
+
 const char kSmdsDbusMigrationName[] = "SM-DS DBus Migration";
 const char kSmdsDbusMigrationDescription[] =
     "Feature to enable the usage of DBus APIs that improve the stability"

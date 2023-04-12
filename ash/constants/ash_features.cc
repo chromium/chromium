@@ -2015,6 +2015,8 @@ BASE_FEATURE(kSmartLockUIRevamp,
              "SmartLockUIRevamp",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSmdsSupport, "SmdsSupport", base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSmdsDbusMigration,
              "SmdsDbusMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3302,6 +3304,11 @@ bool IsShimlessRMADarkModeDisabled() {
 
 bool IsShimlessRMADiagnosticPageEnabled() {
   return base::FeatureList::IsEnabled(kShimlessRMADiagnosticPage);
+}
+
+bool IsSmdsSupportEnabled() {
+  return base::FeatureList::IsEnabled(kSmdsDbusMigration) &&
+         base::FeatureList::IsEnabled(kSmdsSupport);
 }
 
 bool IsSmdsDbusMigrationEnabled() {

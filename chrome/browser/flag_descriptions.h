@@ -3704,6 +3704,9 @@ extern const char kLauncherOmniboxPublishLogicLogDescription[];
 extern const char kMacAddressRandomizationName[];
 extern const char kMacAddressRandomizationDescription[];
 
+extern const char kSmdsSupportName[];
+extern const char kSmdsSupportDescription[];
+
 extern const char kSmdsDbusMigrationName[];
 extern const char kSmdsDbusMigrationDescription[];
 
