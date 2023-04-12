@@ -11,9 +11,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace quick_answers {
-namespace {
-
-}  // namespace
 
 SpellChecker::SpellChecker(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)

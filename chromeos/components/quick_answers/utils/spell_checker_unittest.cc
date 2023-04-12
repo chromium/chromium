@@ -7,11 +7,17 @@
 #include <memory>
 #include <string>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
+#include "chrome/common/chrome_paths.h"
 #include "chromeos/components/quick_answers/test/quick_answers_test_base.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "content/public/test/test_utils.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,6 +40,12 @@ class SpellCheckerTest : public QuickAnswersTestBase {
             &test_url_loader_factory_);
     spell_checker_ =
         std::make_unique<SpellChecker>(test_shared_loader_factory_);
+
+    // Set up a temporary directory which will be used as the fake dictionary
+    // dir.
+    ASSERT_TRUE(fake_dict_dir_.CreateUniqueTempDir());
+    path_override_ = std::make_unique<base::ScopedPathOverride>(
+        chrome::DIR_APP_DICTIONARIES, fake_dict_dir_.GetPath());
   }
 
   void TearDown() override {
@@ -49,6 +61,9 @@ class SpellCheckerTest : public QuickAnswersTestBase {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<SpellChecker> spell_checker_;
+
+  base::ScopedTempDir fake_dict_dir_;
+  std::unique_ptr<base::ScopedPathOverride> path_override_;
 };
 
 TEST_F(SpellCheckerTest, ShouldNotSetupBeforePrefsInitialized) {
@@ -207,6 +222,29 @@ TEST_F(SpellCheckerTest, ShouldFilterUnsupportedPreferredLanguages) {
             "en");
   EXPECT_EQ(spell_checker()->GetSpellcheckLanguagesForTesting()[1]->language(),
             "es");
+}
+
+TEST_F(SpellCheckerTest, ShouldUseQuickAnswersDictionaryDirectory) {
+  EXPECT_FALSE(fake_quick_answers_state()->prefs_initialized());
+  EXPECT_FALSE(spell_checker()->GetSpellcheckLanguagesForTesting().size());
+
+  base::FilePath quick_answers_dict_dir;
+  ASSERT_TRUE(base::PathService::Get(chrome::DIR_APP_DICTIONARIES,
+                                     &quick_answers_dict_dir));
+  quick_answers_dict_dir = quick_answers_dict_dir.AppendASCII("quick_answers");
+
+  EXPECT_FALSE(base::PathExists(quick_answers_dict_dir));
+
+  fake_quick_answers_state()->OnPrefsInitialized();
+  fake_quick_answers_state()->SetSettingsEnabled(true);
+  fake_quick_answers_state()->SetConsentStatus(prefs::ConsentStatus::kAccepted);
+  fake_quick_answers_state()->SetApplicationLocale("en");
+  fake_quick_answers_state()->SetPreferredLanguages("en,es,it");
+
+  // Wait for the dictionary directory to be created.
+  content::RunAllTasksUntilIdle();
+
+  EXPECT_TRUE(base::PathExists(quick_answers_dict_dir));
 }
 
 }  // namespace quick_answers

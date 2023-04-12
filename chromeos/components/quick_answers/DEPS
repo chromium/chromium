@@ -5,6 +5,7 @@ include_rules = [
   "+components/spellcheck/common",
   "+components/translate/core/browser",
   "+content/public/browser",
+  "+content/public/test",
   "+google_apis",
   "+services/data_decoder/public",
   "+third_party/hunspell",

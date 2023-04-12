@@ -54,10 +54,14 @@ class SpellCheckLanguage : public QuickAnswersStateObserver {
 
   void OnSimpleURLLoaderComplete(base::FilePath response_path);
 
+  void OnDictionaryDirectoryExistsComplete(bool directory_exists);
+
   void OnDictionaryCreated(
       mojo::PendingRemote<mojom::SpellCheckDictionary> dictionary);
 
   void MaybeRetryInitialize();
+
+  void OnFileRemovedForRetry(bool file_removed);
 
   // The reply points for PostTaskAndReplyWithResult.
   void OnPathExistsComplete(bool path_exists);
