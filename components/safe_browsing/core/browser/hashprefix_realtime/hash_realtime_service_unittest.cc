@@ -22,6 +22,7 @@
 #include "components/safe_browsing/core/common/proto/safebrowsingv5_alpha1.pb.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/google_api_keys.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_context.h"
@@ -71,6 +72,8 @@ class OhttpTestNetworkContext : public network::TestNetworkContext {
     } else {
       auto response = network::mojom::ObliviousHttpResponse::New();
       response->response_body = std::move(responses_[resource_url].body);
+      response->headers =
+          net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n");
       if (responses_[resource_url].inner_response_code.has_value()) {
         response->response_code =
             responses_[resource_url].inner_response_code.value();
@@ -134,8 +137,18 @@ class TestOhttpKeyService : public OhttpKeyService {
     ohttp_key_ = ohttp_key;
   }
 
+  void NotifyLookupResponse(
+      const std::string& key,
+      int response_code,
+      scoped_refptr<net::HttpResponseHeaders> headers) override {
+    lookup_response_notified_ = true;
+  }
+
+  bool lookup_response_notified() { return lookup_response_notified_; }
+
  private:
   absl::optional<std::string> ohttp_key_;
+  bool lookup_response_notified_ = false;
 };
 
 }  // namespace
@@ -421,6 +434,7 @@ class HashRealTimeServiceTest : public PlatformTest {
     ResetMetrics();
 
     EXPECT_EQ(network_context_.total_requests(), num_requests + 1u);
+    EXPECT_TRUE(ohttp_key_service_->lookup_response_notified());
   }
   // Starts a lookup on |url| that is expected to fail. The simulated server
   // response body can be specified either by |response_full_hashes| or by
@@ -436,7 +450,8 @@ class HashRealTimeServiceTest : public PlatformTest {
       absl::optional<int> inner_response_code,
       int expected_prefix_count,
       int expected_network_result,
-      HashRealTimeService::OperationResult expected_operation_result) {
+      HashRealTimeService::OperationResult expected_operation_result,
+      bool expected_lookup_response_called) {
     auto num_requests = network_context_.total_requests();
 
     // Set up request and response.
@@ -478,6 +493,8 @@ class HashRealTimeServiceTest : public PlatformTest {
     ResetMetrics();
 
     EXPECT_EQ(network_context_.total_requests(), num_requests + 1u);
+    EXPECT_EQ(ohttp_key_service_->lookup_response_notified(),
+              expected_lookup_response_called);
   }
   // Starts a lookup on |url| that should already be found entirely in the cache
   // and therefore not require a request to be sent. Confirms that the lookup's
@@ -973,7 +990,8 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetError) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::ERR_FAILED,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kNetworkError);
+      HashRealTimeService::OperationResult::kNetworkError,
+      /*expected_lookup_response_called=*/false);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetErrorHttpCodeFailure) {
   GURL url = GURL("https://example.test");
@@ -986,7 +1004,8 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetErrorHttpCodeFailure) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/0,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kHttpError);
+      HashRealTimeService::OperationResult::kHttpError,
+      /*expected_lookup_response_called=*/false);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_OuterResponseCodeError) {
   GURL url = GURL("https://example.test");
@@ -999,7 +1018,8 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_OuterResponseCodeError) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_NOT_FOUND,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kHttpError);
+      HashRealTimeService::OperationResult::kHttpError,
+      /*expected_lookup_response_called=*/false);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_InnerResponseCodeError) {
   GURL url = GURL("https://example.test");
@@ -1011,7 +1031,8 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_InnerResponseCodeError) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_UNAUTHORIZED,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kHttpError);
+      HashRealTimeService::OperationResult::kHttpError,
+      /*expected_lookup_response_called=*/true);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_ParseResponse) {
   GURL url = GURL("https://example.test");
@@ -1022,7 +1043,8 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_ParseResponse) {
       /*inner_response_code=*/absl::nullopt, /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_OK,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kParseError);
+      HashRealTimeService::OperationResult::kParseError,
+      /*expected_lookup_response_called=*/true);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_IncorrectFullHashLength) {
   GURL url = GURL("https://example.test");
@@ -1036,7 +1058,8 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_IncorrectFullHashLength) {
       /*inner_response_code=*/absl::nullopt, /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_OK,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kIncorrectFullHashLengthError);
+      HashRealTimeService::OperationResult::kIncorrectFullHashLengthError,
+      /*expected_lookup_response_called=*/true);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_MissingCacheDuration) {
   GURL url = GURL("https://example.test");
@@ -1052,7 +1075,8 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_MissingCacheDuration) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_OK,
       /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kNoCacheDurationError);
+      HashRealTimeService::OperationResult::kNoCacheDurationError,
+      /*expected_lookup_response_called=*/true);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_MissingOhttpKey) {
   GURL url = GURL("https://example.test");

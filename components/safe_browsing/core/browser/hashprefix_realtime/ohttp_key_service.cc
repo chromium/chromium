@@ -4,9 +4,11 @@
 
 #include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 
+#include "base/rand_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -27,6 +29,20 @@ constexpr base::TimeDelta kKeyCloseToExpirationThreshold = base::Days(1);
 
 // The interval that async workflow checks the status of the key.
 constexpr base::TimeDelta kAsyncFetchCheckInterval = base::Hours(1);
+
+// The error code represents that the server cannot successfully decrypt the
+// request. Defined in
+// https://www.ietf.org/archive/id/draft-ietf-ohai-ohttp-02.html#name-server-responsibilities
+constexpr net::HttpStatusCode kKeyRelatedHttpErrorCode =
+    net::HTTP_UNPROCESSABLE_CONTENT;
+
+// The header that the server sets if the server is able to decrypt the request,
+// but the key is outdated.
+constexpr char kKeyRotatedHeader[] = "X-OhttpPublickey-Rotated";
+
+// The maximum delayed time to fetch a new key if the key fetch is triggered
+// by the server.
+constexpr int kServerTriggeredFetchMaxDelayTimeSec = 60;
 
 constexpr net::NetworkTrafficAnnotationTag kOhttpKeyTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("safe_browsing_ohttp_key_fetch",
@@ -140,8 +156,54 @@ void OhttpKeyService::GetOhttpKey(Callback callback) {
   StartFetch(std::move(callback));
 }
 
+void OhttpKeyService::NotifyLookupResponse(
+    const std::string& key,
+    int response_code,
+    scoped_refptr<net::HttpResponseHeaders> headers) {
+  // Skip server triggered fetch if:
+  //   * The service is disabled. OR
+  //   * The fetch is already scheduled. OR
+  //   * |ohttp_key_| is already cleared up (this can happen if multiple
+  //   requests are kicked off around the same time). OR
+  //   * |ohttp_key_| and |key| are different, which means the notification is
+  //   stale, since the key has changed since the lookup started.
+  if (!enabled_ || server_triggered_fetch_scheduled_ || !ohttp_key_ ||
+      ohttp_key_->key != key) {
+    return;
+  }
+
+  if (response_code == kKeyRelatedHttpErrorCode) {
+    // The failure is caused by unrecognized key. This is a hard failure, so
+    // clear the key immediately.
+    ohttp_key_ = absl::nullopt;
+    server_triggered_fetch_scheduled_ = true;
+    // Introduce an artificial delay so the server cannot correlate the key
+    // fetch request with the original lookup request.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&OhttpKeyService::MaybeStartServerTriggeredFetch,
+                       weak_factory_.GetWeakPtr(), key),
+        base::Seconds(base::RandInt(0, kServerTriggeredFetchMaxDelayTimeSec)));
+    return;
+  }
+
+  if (response_code == net::HTTP_OK && headers->HasHeader(kKeyRotatedHeader)) {
+    server_triggered_fetch_scheduled_ = true;
+    // The key is still valid, but it is close to expiration. It is a soft
+    // failure, so do not clear the key immediately.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&OhttpKeyService::MaybeStartServerTriggeredFetch,
+                       weak_factory_.GetWeakPtr(), key),
+        base::Seconds(base::RandInt(0, kServerTriggeredFetchMaxDelayTimeSec)));
+    return;
+  }
+}
+
 void OhttpKeyService::StartFetch(Callback callback) {
-  pending_callbacks_.AddUnsafe(std::move(callback));
+  if (callback) {
+    pending_callbacks_.AddUnsafe(std::move(callback));
+  }
   // If url_loader_ is not null, that means a request is already in progress.
   // Will notify the callback when it is completed.
   if (url_loader_) {
@@ -209,6 +271,16 @@ void OhttpKeyService::OnAsyncFetchCompleted(
 bool OhttpKeyService::ShouldStartAsyncFetch() {
   return !ohttp_key_ || ohttp_key_->expiration <=
                             base::Time::Now() + kKeyCloseToExpirationThreshold;
+}
+
+void OhttpKeyService::MaybeStartServerTriggeredFetch(std::string previous_key) {
+  server_triggered_fetch_scheduled_ = false;
+  if (ohttp_key_ && ohttp_key_->key != previous_key) {
+    // The key has already been updated, no action needed.
+    return;
+  }
+
+  StartFetch(base::NullCallback());
 }
 
 void OhttpKeyService::PopulateKeyFromPref() {

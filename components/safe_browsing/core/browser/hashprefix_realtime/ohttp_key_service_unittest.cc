@@ -24,8 +24,21 @@ namespace safe_browsing {
 
 namespace {
 constexpr char kTestOhttpKey[] = "TestOhttpKey";
+constexpr char kTestOldOhttpKey[] = "OldOhttpKey";
+constexpr char kTestNewOhttpKey[] = "NewOhttpKey";
 constexpr char kExpectedKeyFetchServerUrl[] =
     "https://safebrowsingohttpgateway.googleapis.com/key";
+
+scoped_refptr<net::HttpResponseHeaders> CreateSuccessHeaders() {
+  return net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\r\n");
+}
+
+scoped_refptr<net::HttpResponseHeaders> CreateKeyRotatedHeaders() {
+  return net::HttpResponseHeaders::TryToCreate(
+      "HTTP/1.1 200 OK\r\n"
+      "X-OhttpPublickey-Rotated: yes\r\n");
+}
+
 }  // namespace
 
 class OhttpKeyServiceTest : public ::testing::Test {
@@ -53,6 +66,26 @@ class OhttpKeyServiceTest : public ::testing::Test {
         }));
     test_url_loader_factory_->AddResponse(kExpectedKeyFetchServerUrl,
                                           kTestOhttpKey);
+  }
+
+  // Set the current old key in memory, and a pending new key in url_loader. So
+  // the next time the key is fetched, a new key will be returned.
+  void SetupOldKeyAndPendingNewKey() {
+    // Set the expiration time a little longer so the async workflow doesn't
+    // update the key.
+    ohttp_key_service_->set_ohttp_key_for_testing(
+        {kTestOldOhttpKey, base::Time::Now() + base::Days(6)});
+    test_url_loader_factory_->AddResponse(kExpectedKeyFetchServerUrl,
+                                          kTestNewOhttpKey);
+  }
+
+  void FastForwardAndVerifyKeyValue(const std::string& expected_key_value) {
+    // Key fetch triggered by server has a random delay up to 1 minute.
+    // Wait for 1 minute to make sure the key fetch is completed.
+    task_environment_.FastForwardBy(base::Minutes(1));
+    task_environment_.RunUntilIdle();
+    EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->key,
+              expected_key_value);
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -125,11 +158,11 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_MultipleRequests) {
 TEST_F(OhttpKeyServiceTest, GetOhttpKey_WithValidCache) {
   SetupSuccessResponse();
   ohttp_key_service_->set_ohttp_key_for_testing(
-      {"OldOhttpKey", base::Time::Now() + base::Hours(1)});
+      {kTestOldOhttpKey, base::Time::Now() + base::Hours(1)});
 
   base::MockCallback<OhttpKeyService::Callback> response_callback;
   // Should return the old key because it has not expired.
-  EXPECT_CALL(response_callback, Run(Optional(std::string("OldOhttpKey"))))
+  EXPECT_CALL(response_callback, Run(Optional(std::string(kTestOldOhttpKey))))
       .Times(1);
   ohttp_key_service_->GetOhttpKey(response_callback.Get());
   task_environment_.RunUntilIdle();
@@ -138,7 +171,7 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_WithValidCache) {
 TEST_F(OhttpKeyServiceTest, GetOhttpKey_WithExpiredCache) {
   SetupSuccessResponse();
   ohttp_key_service_->set_ohttp_key_for_testing(
-      {"OldOhttpKey", base::Time::Now() - base::Hours(1)});
+      {kTestOldOhttpKey, base::Time::Now() - base::Hours(1)});
 
   base::MockCallback<OhttpKeyService::Callback> response_callback1;
   // The new key should be fetched because the old key has expired.
@@ -148,7 +181,7 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_WithExpiredCache) {
   task_environment_.RunUntilIdle();
 
   test_url_loader_factory_->AddResponse(kExpectedKeyFetchServerUrl,
-                                        "NewOhttpKey");
+                                        kTestNewOhttpKey);
   task_environment_.FastForwardBy(base::Days(5));
   base::MockCallback<OhttpKeyService::Callback> response_callback2;
   // The new key should not be fetched because the old key has not expired.
@@ -250,6 +283,54 @@ TEST_F(OhttpKeyServiceTest, AsyncFetch_PrefChanges) {
   // The service is re-enabled, so the expiration date is updated.
   EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
             base::Time::Now() + base::Days(7));
+}
+
+TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_SuccessFetch) {
+  SetupOldKeyAndPendingNewKey();
+  ohttp_key_service_->NotifyLookupResponse(kTestOldOhttpKey, net::HTTP_OK,
+                                           CreateSuccessHeaders());
+  FastForwardAndVerifyKeyValue(kTestOldOhttpKey);
+}
+
+TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_HeaderHint) {
+  SetupOldKeyAndPendingNewKey();
+  ohttp_key_service_->NotifyLookupResponse(kTestOldOhttpKey, net::HTTP_OK,
+                                           CreateKeyRotatedHeaders());
+  // Header hint is soft failure, the key is not immediately cleared.
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->key,
+            kTestOldOhttpKey);
+
+  FastForwardAndVerifyKeyValue(kTestNewOhttpKey);
+}
+
+TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_HeaderHintOnDifferentKey) {
+  SetupOldKeyAndPendingNewKey();
+  ohttp_key_service_->NotifyLookupResponse(kTestOhttpKey, net::HTTP_OK,
+                                           CreateKeyRotatedHeaders());
+
+  // The key is not updated because the server hint is on a different key.
+  FastForwardAndVerifyKeyValue(kTestOldOhttpKey);
+}
+
+TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_HeaderHintWithError) {
+  SetupOldKeyAndPendingNewKey();
+
+  ohttp_key_service_->NotifyLookupResponse(
+      kTestOldOhttpKey, net::HTTP_FORBIDDEN, CreateKeyRotatedHeaders());
+  // Header hint should only take effect when the response code is 200.
+  FastForwardAndVerifyKeyValue(kTestOldOhttpKey);
+}
+
+TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_KeyRelatedHttpFailure) {
+  SetupOldKeyAndPendingNewKey();
+
+  ohttp_key_service_->NotifyLookupResponse(kTestOldOhttpKey,
+                                           net::HTTP_UNPROCESSABLE_CONTENT,
+                                           CreateSuccessHeaders());
+  // HTTP status error is a hard failure, the key should be cleared immediately.
+  EXPECT_FALSE(ohttp_key_service_->get_ohttp_key_for_testing().has_value());
+
+  FastForwardAndVerifyKeyValue(kTestNewOhttpKey);
 }
 
 TEST_F(OhttpKeyServiceTest, Shutdown) {

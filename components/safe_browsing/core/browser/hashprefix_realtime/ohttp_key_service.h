@@ -16,6 +16,10 @@
 
 class PrefService;
 
+namespace net {
+class HttpResponseHeaders;
+}  // namespace net
+
 namespace network {
 class SharedURLLoaderFactory;
 class SimpleURLLoader;
@@ -55,6 +59,15 @@ class OhttpKeyService : public KeyedService {
   // overridden in tests.
   virtual void GetOhttpKey(Callback callback);
 
+  // Notifies the key service with the response from the lookup request. |key|
+  // is used for the lookup request, |response_code| and |headers| are returned
+  // from the lookup server. It may trigger a key fetch if the response contains
+  // key related error or header. This function is overridden in tests.
+  virtual void NotifyLookupResponse(
+      const std::string& key,
+      int response_code,
+      scoped_refptr<net::HttpResponseHeaders> headers);
+
   // KeyedService:
   // Called before the actual deletion of the object.
   void Shutdown() override;
@@ -91,6 +104,11 @@ class OhttpKeyService : public KeyedService {
   // |ohttp_key_| is unpopulated, is expired, or will soon expire.
   bool ShouldStartAsyncFetch();
 
+  // Server triggered workflow:
+  // Starts a key fetch if the |previous_key| is different from |ohttp_key_| or
+  // the |ohttp_key_| is empty.
+  void MaybeStartServerTriggeredFetch(std::string previous_key);
+
   // Pref functions:
   // Gets the key and expiration time from pref. If there is an unexpired key,
   // populate it into |ohttp_key_|.
@@ -125,6 +143,10 @@ class OhttpKeyService : public KeyedService {
 
   // Used to schedule async key fetch.
   base::OneShotTimer async_fetch_timer_;
+
+  // Set to true when a server-triggered fetch is scheduled. Set to false on
+  // |StartServerTriggeredFetch| called.
+  bool server_triggered_fetch_scheduled_ = false;
 
   base::WeakPtrFactory<OhttpKeyService> weak_factory_{this};
 };

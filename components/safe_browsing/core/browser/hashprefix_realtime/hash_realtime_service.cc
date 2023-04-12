@@ -21,6 +21,7 @@
 #include "components/safe_browsing/core/common/utils.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -73,7 +74,10 @@ SBThreatType MapThreatTypeToSbThreatType(const V5::ThreatType& threat_type) {
 class ObliviousHttpClient : public network::mojom::ObliviousHttpClient {
  public:
   using OnCompletedCallback =
-      base::OnceCallback<void(const absl::optional<std::string>&, int, int)>;
+      base::OnceCallback<void(const absl::optional<std::string>&,
+                              int,
+                              int,
+                              scoped_refptr<net::HttpResponseHeaders>)>;
 
   explicit ObliviousHttpClient(OnCompletedCallback callback)
       : callback_(std::move(callback)) {}
@@ -81,7 +85,7 @@ class ObliviousHttpClient : public network::mojom::ObliviousHttpClient {
   ~ObliviousHttpClient() override {
     if (!called_) {
       std::move(callback_).Run(absl::nullopt, net::ERR_FAILED,
-                               /*response_code=*/0);
+                               /*response_code=*/0, /*headers=*/nullptr);
     }
   }
 
@@ -94,20 +98,22 @@ class ObliviousHttpClient : public network::mojom::ObliviousHttpClient {
     called_ = true;
     if (status->is_net_error()) {
       std::move(callback_).Run(absl::nullopt, status->get_net_error(),
-                               /*response_code=*/0);
+                               /*response_code=*/0, /*headers=*/nullptr);
     } else if (status->is_outer_response_error_code()) {
-      std::move(callback_).Run(absl::nullopt,
-                               net::ERR_HTTP_RESPONSE_CODE_FAILURE,
-                               status->get_outer_response_error_code());
+      std::move(callback_).Run(
+          absl::nullopt, net::ERR_HTTP_RESPONSE_CODE_FAILURE,
+          status->get_outer_response_error_code(), /*headers=*/nullptr);
     } else {
       DCHECK(status->is_inner_response());
       if (status->get_inner_response()->response_code != net::HTTP_OK) {
-        std::move(callback_).Run(absl::nullopt,
-                                 net::ERR_HTTP_RESPONSE_CODE_FAILURE,
-                                 status->get_inner_response()->response_code);
+        std::move(callback_).Run(
+            absl::nullopt, net::ERR_HTTP_RESPONSE_CODE_FAILURE,
+            status->get_inner_response()->response_code,
+            std::move(status->get_inner_response()->headers));
       } else {
-        std::move(callback_).Run(status->get_inner_response()->response_body,
-                                 net::OK, net::HTTP_OK);
+        std::move(callback_).Run(
+            status->get_inner_response()->response_body, net::OK, net::HTTP_OK,
+            std::move(status->get_inner_response()->headers));
       }
     }
   }
@@ -388,7 +394,8 @@ void HashRealTimeService::OnGetOhttpKey(
           url, std::move(hash_prefixes_in_request),
           std::move(result_full_hashes), request_start_time,
           std::move(response_callback_task_runner),
-          std::move(response_callback), locally_cached_results_threat_type)),
+          std::move(response_callback), locally_cached_results_threat_type,
+          key.value())),
       std::move(pending_receiver));
 }
 
@@ -400,11 +407,15 @@ void HashRealTimeService::OnOhttpComplete(
     scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
     HPRTLookupResponseCallback response_callback,
     SBThreatType locally_cached_results_threat_type,
+    std::string ohttp_key,
     const absl::optional<std::string>& response_body,
     int net_error,
-    int response_code) {
-  // TODO(crbug.com/1407283): Notify ohttp_key_service_ if the error is key
-  // related.
+    int response_code,
+    scoped_refptr<net::HttpResponseHeaders> headers) {
+  if (headers) {
+    ohttp_key_service_->NotifyLookupResponse(ohttp_key, response_code, headers);
+  }
+
   auto response_body_ptr =
       std::make_unique<std::string>(response_body.value_or(""));
   OnURLLoaderComplete(
