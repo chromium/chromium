@@ -678,16 +678,26 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 #pragma mark - Action sheet callbacks
 
-// Opens the folder move editor for the given node.
-- (void)moveNodes:(const std::set<const BookmarkNode*>&)nodes {
+// Opens the folder move editor for the given node IDs.
+- (void)moveBookmarkNodeWithIDs:(std::set<int64_t>)nodeIDs
+                     userAction:(const char*)userAction {
   DCHECK(!_folderChooserCoordinator);
-  DCHECK(nodes.size() > 0);
-  const BookmarkNode* editedNode = *(nodes.begin());
+  DCHECK(nodeIDs.size() > 0);
+  absl::optional<std::set<const BookmarkNode*>> nodesFromIDs =
+      bookmark_utils_ios::FindNodesByIds(self.profileBookmarkModel, nodeIDs);
+  if (!nodesFromIDs) {
+    // While the contextual menu was opened, the nodes might have been removed.
+    // If the nodes don't exist anymore, there nothing to do.
+    return;
+  }
+  DCHECK(nodesFromIDs->size() > 0);
+  base::RecordAction(base::UserMetricsAction(userAction));
+  const BookmarkNode* editedNode = *(nodesFromIDs->begin());
   const BookmarkNode* selectedFolder = editedNode->parent();
   _folderChooserCoordinator = [[BookmarksFolderChooserCoordinator alloc]
       initWithBaseViewController:self.navigationController
                          browser:_browser
-                     hiddenNodes:nodes];
+                     hiddenNodes:*nodesFromIDs];
   [_folderChooserCoordinator setSelectedFolder:selectedFolder];
   _folderChooserCoordinator.delegate = self;
   [_folderChooserCoordinator start];
@@ -1903,18 +1913,10 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       addItemWithTitle:titleString
                 action:^{
                   BookmarksHomeViewController* strongSelf = weakSelf;
-                  if (!strongSelf) {
-                    return;
-                  }
-
-                  absl::optional<std::set<const BookmarkNode*>> nodesFromIds =
-                      bookmark_utils_ios::FindNodesByIds(
-                          strongSelf.profileBookmarkModel, nodeIds);
-                  if (nodesFromIds) {
-                    base::RecordAction(base::UserMetricsAction(
-                        "MobileBookmarkManagerMoveToFolderBulk"));
-                    [strongSelf moveNodes:*nodesFromIds];
-                  }
+                  [strongSelf
+                      moveBookmarkNodeWithIDs:nodeIds
+                                   userAction:
+                                       "MobileBookmarkManagerMoveToFolderBulk"];
                 }
                  style:UIAlertActionStyleDefault];
 }
@@ -2029,24 +2031,18 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                         enabled:editEnabled];
 
   titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE);
-  [coordinator addItemWithTitle:titleString
-                         action:^{
-                           BookmarksHomeViewController* strongSelf = weakSelf;
-                           if (!strongSelf) {
-                             return;
-                           }
-                           const bookmarks::BookmarkNode* nodeFromId =
-                               bookmark_utils_ios::FindNodeById(
-                                   strongSelf.profileBookmarkModel, nodeId);
-                           if (nodeFromId) {
-                             base::RecordAction(base::UserMetricsAction(
-                                 "MobileBookmarkManagerMoveToFolder"));
-                             std::set<const BookmarkNode*> nodes{nodeFromId};
-                             [strongSelf moveNodes:nodes];
-                           }
-                         }
-                          style:UIAlertActionStyleDefault
-                        enabled:editEnabled];
+  [coordinator
+      addItemWithTitle:titleString
+                action:^{
+                  BookmarksHomeViewController* strongSelf = weakSelf;
+                  std::set<int64_t> nodeIDs{nodeId};
+                  [strongSelf
+                      moveBookmarkNodeWithIDs:nodeIDs
+                                   userAction:
+                                       "MobileBookmarkManagerMoveToFolder"];
+                }
+                 style:UIAlertActionStyleDefault
+               enabled:editEnabled];
 }
 
 - (void)configureCoordinator:(AlertCoordinator*)coordinator
@@ -2066,17 +2062,10 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       addItemWithTitle:titleString
                 action:^{
                   BookmarksHomeViewController* strongSelf = weakSelf;
-                  if (!strongSelf) {
-                    return;
-                  }
-                  absl::optional<std::set<const bookmarks::BookmarkNode*>>
-                      nodesFromIds = bookmark_utils_ios::FindNodesByIds(
-                          strongSelf.profileBookmarkModel, nodeIds);
-                  if (nodesFromIds) {
-                    base::RecordAction(base::UserMetricsAction(
-                        "MobileBookmarkManagerMoveToFolderBulk"));
-                    [strongSelf moveNodes:*nodesFromIds];
-                  }
+                  [strongSelf
+                      moveBookmarkNodeWithIDs:nodeIds
+                                   userAction:
+                                       "MobileBookmarkManagerMoveToFolderBulk"];
                 }
                  style:UIAlertActionStyleDefault];
 }
@@ -2538,18 +2527,10 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       }];
       UIAction* moveAction = [actionFactory actionToMoveFolderWithBlock:^{
         BookmarksHomeViewController* innerStrongSelf = weakSelf;
-        if (!innerStrongSelf) {
-          return;
-        }
-        const bookmarks::BookmarkNode* nodeFromId =
-            bookmark_utils_ios::FindNodeById(
-                innerStrongSelf.profileBookmarkModel, nodeId);
-        if (nodeFromId) {
-          base::RecordAction(
-              base::UserMetricsAction("MobileBookmarkManagerMoveToFolder"));
-          std::set<const BookmarkNode*> nodes{nodeFromId};
-          [innerStrongSelf moveNodes:nodes];
-        }
+        std::set<int64_t> nodeIDs{nodeId};
+        [innerStrongSelf
+            moveBookmarkNodeWithIDs:nodeIDs
+                         userAction:"MobileBookmarkManagerMoveToFolder"];
       }];
 
       if (!canEditNode) {
