@@ -48,6 +48,11 @@ constexpr char kLayoutProperty[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
 constexpr char kCustomTopRowLayoutAttribute[] = "function_row_physmap";
 constexpr char kCustomTopRowLayoutProperty[] = "FUNCTION_ROW_PHYSMAP";
 
+constexpr KeyboardCode kFunctionKeys[] = {
+    VKEY_F1,  VKEY_F2,  VKEY_F3,  VKEY_F4,  VKEY_F5,
+    VKEY_F6,  VKEY_F7,  VKEY_F8,  VKEY_F9,  VKEY_F10,
+    VKEY_F11, VKEY_F12, VKEY_F13, VKEY_F14, VKEY_F15,
+};
 constexpr KeyboardCode kMaxCustomTopRowLayoutFKeyCode = VKEY_F15;
 constexpr size_t kNumCustomTopRowFKeys =
     (kMaxCustomTopRowLayoutFKeyCode - VKEY_F1) + 1;
@@ -431,6 +436,38 @@ KeyboardCapability::CreateEventDeviceInfoFromInputDevice(
   return event_device_info;
 }
 
+// static
+absl::optional<TopRowActionKey> KeyboardCapability::ConvertToTopRowActionKey(
+    ui::KeyboardCode key_code) {
+  static constexpr auto kVKeyToTopRowActionKeyMap =
+      base::MakeFixedFlatMap<ui::KeyboardCode, TopRowActionKey>({
+          {VKEY_BROWSER_BACK, TopRowActionKey::kBack},
+          {VKEY_BROWSER_FORWARD, TopRowActionKey::kForward},
+          {VKEY_BROWSER_REFRESH, TopRowActionKey::kRefresh},
+          {VKEY_ZOOM, TopRowActionKey::kFullscreen},
+          {VKEY_MEDIA_LAUNCH_APP1, TopRowActionKey::kOverview},
+          {VKEY_SNAPSHOT, TopRowActionKey::kScreenshot},
+          {VKEY_BRIGHTNESS_DOWN, TopRowActionKey::kScreenBrightnessDown},
+          {VKEY_BRIGHTNESS_UP, TopRowActionKey::kScreenBrightnessUp},
+          {VKEY_MICROPHONE_MUTE_TOGGLE, TopRowActionKey::kMicrophoneMute},
+          {VKEY_VOLUME_MUTE, TopRowActionKey::kVolumeMute},
+          {VKEY_VOLUME_DOWN, TopRowActionKey::kVolumeDown},
+          {VKEY_VOLUME_UP, TopRowActionKey::kVolumeUp},
+          {VKEY_KBD_BACKLIGHT_TOGGLE,
+           TopRowActionKey::kKeyboardBacklightToggle},
+          {VKEY_KBD_BRIGHTNESS_DOWN, TopRowActionKey::kKeyboardBacklightDown},
+          {VKEY_KBD_BRIGHTNESS_UP, TopRowActionKey::kKeyboardBacklightUp},
+          {VKEY_MEDIA_NEXT_TRACK, TopRowActionKey::kNextTrack},
+          {VKEY_MEDIA_PREV_TRACK, TopRowActionKey::kPreviousTrack},
+          {VKEY_MEDIA_PLAY_PAUSE, TopRowActionKey::kPlayPause},
+          {VKEY_ALL_APPLICATIONS, TopRowActionKey::kLauncher},
+      });
+  const auto* action_key = kVKeyToTopRowActionKeyMap.find(key_code);
+  return (action_key != kVKeyToTopRowActionKeyMap.end())
+             ? absl::make_optional<TopRowActionKey>(action_key->second)
+             : absl::nullopt;
+}
+
 void KeyboardCapability::AddObserver(Observer* observer) {
   delegate_->AddObserver(observer);
 }
@@ -489,6 +526,24 @@ absl::optional<KeyboardCode> KeyboardCapability::GetMappedFKeyIfExists(
   }
 
   return absl::nullopt;
+}
+
+absl::optional<KeyboardCode> KeyboardCapability::GetCorrespondingFunctionKey(
+    const InputDevice& keyboard,
+    TopRowActionKey action_key) const {
+  auto* keyboard_info = GetKeyboardInfo(keyboard);
+  if (!keyboard_info) {
+    return absl::nullopt;
+  }
+
+  auto iter =
+      base::ranges::find(keyboard_info->top_row_action_keys, action_key);
+  if (iter == keyboard_info->top_row_action_keys.end()) {
+    return absl::nullopt;
+  }
+
+  return kFunctionKeys[std::distance(keyboard_info->top_row_action_keys.begin(),
+                                     iter)];
 }
 
 bool KeyboardCapability::HasLauncherButton(
