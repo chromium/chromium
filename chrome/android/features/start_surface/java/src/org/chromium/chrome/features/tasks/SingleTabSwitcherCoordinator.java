@@ -183,8 +183,17 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher {
     public void setVisibility(boolean isVisible) {
         if (!mIsTablet) return;
 
-        mContainer.setVisibility(isVisible ? View.VISIBLE : View.GONE);
-        mMediatorOnTablet.setVisibility(isVisible);
+        boolean visible = mMediatorOnTablet.setVisibility(isVisible);
+        mContainer.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    /**
+     * Update the most recent tab to track in the single tab card.
+     * @param tabToTrack The tab to track as the most recent tab.
+     */
+    public void updateTrackingTab(Tab tabToTrack) {
+        assert mIsTablet;
+        mMediatorOnTablet.setTab(tabToTrack);
     }
 
     @VisibleForTesting

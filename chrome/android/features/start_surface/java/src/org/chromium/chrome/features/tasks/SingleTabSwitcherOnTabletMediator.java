@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -38,24 +39,22 @@ public class SingleTabSwitcherOnTabletMediator {
         mTabListFaviconProvider = tabListFaviconProvider;
         mMostRecentTab = mostRecentTab;
 
-        if (mMostRecentTab != null) {
-            mPropertyModel.set(CLICK_LISTENER, v -> {
-                TabModel currentTabModel = tabModelSelector.getModel(false);
-                TabModelUtils.setIndex(currentTabModel,
-                        TabModelUtils.getTabIndexById(currentTabModel, mMostRecentTab.getId()),
-                        false);
-            });
-        }
+        mPropertyModel.set(CLICK_LISTENER, v -> {
+            TabModel currentTabModel = tabModelSelector.getModel(false);
+            TabModelUtils.setIndex(currentTabModel,
+                    TabModelUtils.getTabIndexById(currentTabModel, mMostRecentTab.getId()), false);
+        });
     }
 
     /**
      * Set the visibility of the single tab card of the {@link NewTabPageLayout} on tablet.
      * @param isVisible Whether the single tab card is visible.
+     * @return Whether the single tab card has been set visible.
      */
-    void setVisibility(boolean isVisible) {
+    boolean setVisibility(boolean isVisible) {
         if (!isVisible || mMostRecentTab == null) {
             mPropertyModel.set(IS_VISIBLE, false);
-            return;
+            return false;
         }
         if (!mInitialized) {
             mInitialized = true;
@@ -63,10 +62,33 @@ public class SingleTabSwitcherOnTabletMediator {
             updateFavicon();
         }
         mPropertyModel.set(IS_VISIBLE, true);
+        return true;
     }
 
     boolean isVisible() {
         return mPropertyModel.get(IS_VISIBLE);
+    }
+
+    /**
+     * Update the most recent tab to track in the single tab card.
+     * @param tabToTrack The tab to track as the most recent tab.
+     */
+    void setTab(Tab tabToTrack) {
+        if (UrlUtilities.isNTPUrl(tabToTrack.getUrl())) {
+            tabToTrack = null;
+        }
+
+        if (mMostRecentTab == tabToTrack) return;
+
+        if (tabToTrack == null) {
+            mMostRecentTab = null;
+            mPropertyModel.set(TITLE, "");
+            mPropertyModel.set(FAVICON, mTabListFaviconProvider.getDefaultFaviconDrawable(false));
+        } else {
+            mMostRecentTab = tabToTrack;
+            updateTitle();
+            updateFavicon();
+        }
     }
 
     /**
