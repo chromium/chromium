@@ -362,9 +362,6 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
       CGFloat spaceBefore = [stackView customSpacingAfterView:previousView];
       [stackView setCustomSpacing:kTextfieldStackInsetTop + spaceBefore
                         afterView:previousView];
-    } else {
-      // There should always be a title or message.
-      NOTREACHED() << "Presenting alert without a title or message.";
     }
     [stackView addArrangedSubview:self.textFieldStackHolder];
     NSDirectionalEdgeInsets stackHolderContentInsets =

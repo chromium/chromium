@@ -418,6 +418,25 @@ TEST_F(JavaScriptDialogPresenterTest, Prompt) {
   EXPECT_NSEQ(@"No", dialog->default_prompt_text);
 }
 
+// Tests that window.prompt dialog is shown even when the given message and
+// default value are empty.
+TEST_F(JavaScriptDialogPresenterTest, PromptEmpty) {
+  ASSERT_FALSE(JSDialogPresenterHasDialogs());
+
+  js_dialog_presenter()->set_callback_user_input_argument(@"Maybe");
+
+  EXPECT_NSEQ(@"Maybe", ExecuteJavaScript(@"prompt('', '')"));
+
+  ASSERT_TRUE(requested_alert_dialogs().empty());
+  ASSERT_TRUE(requested_confirm_dialogs().empty());
+  ASSERT_EQ(1U, requested_prompt_dialogs().size());
+  auto& dialog = requested_prompt_dialogs().front();
+  EXPECT_EQ(web_state(), dialog->web_state);
+  EXPECT_EQ(page_url(), dialog->origin_url);
+  EXPECT_NSEQ(@"", dialog->message_text);
+  EXPECT_NSEQ(@"", dialog->default_prompt_text);
+}
+
 // Tests that window.alert, window.confirm and window.prompt dialogs are not
 // shown if URL of presenting main frame is different from visible URL.
 TEST_F(JavaScriptDialogPresenterTest, DifferentVisibleUrl) {
