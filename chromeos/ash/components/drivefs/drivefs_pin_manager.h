@@ -26,6 +26,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/drivefs/drivefs_host_observer.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "chromeos/ash/components/drivefs/mojom/pin_manager_types.mojom.h"
 #include "components/drive/file_errors.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -43,33 +44,9 @@ enum HumanReadableSize : int64_t;
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
 std::ostream& operator<<(std::ostream& out, HumanReadableSize size);
 
-// The PinManager first undergoes a setup phase, where it audits the current
-// disk space, pins all available files (disk space willing) then moves to
-// monitoring. This enum represents the various stages the setup goes through.
-enum class Stage {
-  // Initial stage.
-  kStopped,
-
-  // Paused because of unfavorable network conditions.
-  kPaused,
-
-  // In-progress stages.
-  kGettingFreeSpace,
-  kListingFiles,
-  kSyncing,
-
-  // Final success stage.
-  kSuccess,
-
-  // Final error stages.
-  kCannotGetFreeSpace,
-  kCannotListFiles,
-  kNotEnoughSpace,
-  kCannotEnableDocsOffline,
-};
-
+using pin_manager_types::mojom::Stage;
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
-std::ostream& operator<<(std::ostream& out, Stage stage);
+std::string ToString(Stage stage);
 
 // When the manager is setting up, this struct maintains all the information
 // gathered.

@@ -5882,6 +5882,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/disks:test_support",
     "//chromeos/ash/components/drivefs/mojom",
     "//chromeos/ash/components/drivefs/mojom:mojom_shared",
+    "//chromeos/ash/components/drivefs/mojom:pin_manager_types",
     "//chromeos/ash/components/feature_usage",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/install_attributes:test_support",

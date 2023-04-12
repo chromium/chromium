@@ -717,7 +717,6 @@ class DriveIntegrationService::DriveFsHolder
 // Updates the bulk pinning preference when the `PinManager` stops or errors.
 using drivefs::pinning::PinManager;
 using drivefs::pinning::Progress;
-using drivefs::pinning::Stage;
 class DriveIntegrationService::BulkPinningPrefUpdater
     : public PinManager::Observer {
  public:

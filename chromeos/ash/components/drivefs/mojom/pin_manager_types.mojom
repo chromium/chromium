@@ -1,0 +1,32 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module drivefs.pin_manager_types.mojom;
+
+// The PinManager first undergoes a setup phase, where it audits the current
+// disk space, pins all available files (disk space willing) then moves to
+// monitoring. This enum represents the various stages the setup goes through.
+// This enum is currently shared between the PinManager as well as the OS
+// Settings.
+enum Stage {
+  // Initial stage.
+  kStopped = 0,
+
+  // Paused because of unfavorable network conditions.
+  kPaused = 1,
+
+  // In-progress stages.
+  kGettingFreeSpace = 2,
+  kListingFiles = 3,
+  kSyncing = 4,
+
+  // Final success stage.
+  kSuccess = 5,
+
+  // Final error stages.
+  kCannotGetFreeSpace = 6,
+  kCannotListFiles = 7,
+  kNotEnoughSpace = 8,
+  kCannotEnableDocsOffline = 9,
+};
