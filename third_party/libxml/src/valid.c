@@ -5999,11 +5999,12 @@ xmlValidatePopElement(xmlValidCtxtPtr ctxt, xmlDocPtr doc ATTRIBUTE_UNUSED,
 	    if (elemDecl->etype == XML_ELEMENT_TYPE_ELEMENT) {
 		if (state->exec != NULL) {
 		    ret = xmlRegExecPushString(state->exec, NULL, NULL);
-		    if (ret == 0) {
+		    if (ret <= 0) {
 			xmlErrValidNode(ctxt, state->node,
 			                XML_DTD_CONTENT_MODEL,
-	   "Element %s content does not follow the DTD, Expecting more child\n",
+	   "Element %s content does not follow the DTD, Expecting more children\n",
 			       state->node->name, NULL,NULL);
+			ret = 0;
 		    } else {
 			/*
 			 * previous validation errors should not generate

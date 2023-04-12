@@ -321,6 +321,9 @@ xmlParserGrow(xmlParserCtxtPtr ctxt) {
 
     if (buf == NULL)
         return(0);
+    /* Don't grow push parser buffer. */
+    if (ctxt->progressive)
+        return(0);
     /* Don't grow memory buffers. */
     if ((buf->encoder == NULL) && (buf->readcallback == NULL))
         return(0);
@@ -1234,9 +1237,11 @@ xmlSwitchInputEncoding(xmlParserCtxtPtr ctxt, xmlParserInputPtr input,
         nbchars = xmlCharEncInput(in, 0);
         xmlBufResetInput(in->buffer, input);
         if (nbchars < 0) {
+            /* TODO: This could be an out of memory or an encoding error. */
             xmlErrInternal(ctxt,
                            "switching encoding: encoder error\n",
                            NULL);
+            xmlHaltParser(ctxt);
             return (-1);
         }
         consumed = use - xmlBufUse(in->raw);
