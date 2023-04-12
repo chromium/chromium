@@ -38,21 +38,27 @@ export class OfficePwaInstallPageElement extends BaseSetupPageElement {
     actionButton.classList.replace('install', 'installing');
     actionButton.disabled = true;
 
-    // Keep the installing state shown for at least 2 seconds to give the
+    const testTime = 30;
+    // Keep the installing state shown for a minimum time to give the
     // impression that the web app is being installed.
+    const installingTime = 3000;
     const [{installed: install_result}] = await Promise.all([
       proxy.handler.installOfficeWebApp(),
-      new Promise(resolve => setTimeout(resolve, proxy.isTest() ? 20 : 2000)),
+      new Promise(
+          resolve =>
+              setTimeout(resolve, proxy.isTest() ? testTime : installingTime)),
     ]);
 
     if (install_result) {
       actionButton.innerText = 'Installed';
       actionButton.classList.replace('installing', 'installed');
 
-      // Keep the installed state shown for a second before changing pages to
-      // give the user feedback that the web app has been installed.
+      // Keep the installed state shown for a minimum time before changing
+      // pages to give the user feedback that the web app has been installed.
+      const installedTime = 2000;
       await new Promise(
-          resolve => setTimeout(resolve, proxy.isTest() ? 10 : 1000));
+          resolve =>
+              setTimeout(resolve, proxy.isTest() ? testTime : installedTime));
 
       this.dispatchEvent(
           new CustomEvent(NEXT_PAGE_EVENT, {bubbles: true, composed: true}));
