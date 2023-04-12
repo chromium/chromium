@@ -10,6 +10,8 @@
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/http/http_status_code.h"
+#include "net/log/test_net_log.h"
+#include "net/log/test_net_log_util.h"
 #include "net/third_party/quiche/src/quiche/binary_http/binary_http_message.h"
 #include "net/third_party/quiche/src/quiche/common/quiche_data_writer.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
@@ -281,6 +283,49 @@ class TestObliviousHttpRequestHandler : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+  void VerifyNetLog(const net::RecordingNetLogObserver& net_log_observer,
+                    bool expected_has_response_data_and_headers,
+                    int expected_net_error,
+                    absl::optional<int> expected_outer_response_error_code,
+                    absl::optional<int> expected_inner_response_code) {
+    auto entries = net_log_observer.GetEntries();
+    size_t pos = net::ExpectLogContainsSomewhereAfter(
+        entries, /*start_offset=*/0,
+        net::NetLogEventType::OBLIVIOUS_HTTP_REQUEST,
+        net::NetLogEventPhase::BEGIN);
+    pos = net::ExpectLogContainsSomewhere(
+        entries, /*start_offset=*/pos + 1,
+        net::NetLogEventType::OBLIVIOUS_HTTP_REQUEST_DATA,
+        net::NetLogEventPhase::NONE);
+    EXPECT_TRUE(
+        net::GetOptionalIntegerValueFromParams(entries[pos], "byte_count"));
+    if (expected_has_response_data_and_headers) {
+      pos = net::ExpectLogContainsSomewhereAfter(
+          entries, /*start_offset=*/pos + 1,
+          net::NetLogEventType::OBLIVIOUS_HTTP_RESPONSE_DATA,
+          net::NetLogEventPhase::NONE);
+      EXPECT_TRUE(
+          net::GetOptionalIntegerValueFromParams(entries[pos], "byte_count"));
+      pos = net::ExpectLogContainsSomewhereAfter(
+          entries, /*start_offset=*/pos + 1,
+          net::NetLogEventType::OBLIVIOUS_HTTP_RESPONSE_HEADERS,
+          net::NetLogEventPhase::NONE);
+      EXPECT_TRUE(entries[pos].params.FindList("headers"));
+    }
+    pos = net::ExpectLogContainsSomewhereAfter(
+        entries, /*start_offset=*/pos + 1,
+        net::NetLogEventType::OBLIVIOUS_HTTP_REQUEST,
+        net::NetLogEventPhase::END);
+    EXPECT_EQ(expected_net_error,
+              net::GetOptionalNetErrorCodeFromParams(entries[pos]));
+    EXPECT_EQ(expected_outer_response_error_code,
+              net::GetOptionalIntegerValueFromParams(
+                  entries[pos], "outer_response_error_code"));
+    EXPECT_EQ(expected_inner_response_code,
+              net::GetOptionalIntegerValueFromParams(entries[pos],
+                                                     "inner_response_code"));
+  }
+
  private:
   absl::optional<quiche::ObliviousHttpGateway> ohttp_gateway_;
   base::test::TaskEnvironment task_environment_;
@@ -413,6 +458,7 @@ TEST_F(TestObliviousHttpRequestHandler, TestRequestFormat) {
   std::unique_ptr<network::ObliviousHttpRequestHandler> handler =
       CreateHandler();
   {
+    net::RecordingNetLogObserver net_log_observer;
     TestOhttpClient client;
     client.SetExpectedInnerResponse(
         /*expected_inner_response_code=*/net::HTTP_OK,
@@ -462,6 +508,12 @@ TEST_F(TestObliviousHttpRequestHandler, TestRequestFormat) {
         "response body",
         {{"cache-control", "s-maxage=3600"}, {"content-type", "text/html"}});
     client.WaitForCall();
+
+    VerifyNetLog(net_log_observer,
+                 /*expected_has_response_data_and_headers=*/true,
+                 /*expected_net_error=*/net::OK,
+                 /*expected_outer_response_error_code=*/absl::nullopt,
+                 /*expected_inner_response_code=*/net::HTTP_OK);
   }
 }
 
@@ -470,6 +522,7 @@ TEST_F(TestObliviousHttpRequestHandler, TestTimeout) {
       CreateHandler();
   // Default timeout.
   {
+    net::RecordingNetLogObserver net_log_observer;
     TestOhttpClient client;
     client.SetExpectedNetError(net::ERR_TIMED_OUT);
 
@@ -479,6 +532,12 @@ TEST_F(TestObliviousHttpRequestHandler, TestTimeout) {
     EXPECT_FALSE(client.IsOnCompletedCalled());
     FastForward(base::Seconds(1));
     EXPECT_TRUE(client.IsOnCompletedCalled());
+
+    VerifyNetLog(net_log_observer,
+                 /*expected_has_response_data_and_headers=*/false,
+                 /*expected_net_error=*/net::ERR_TIMED_OUT,
+                 /*expected_outer_response_error_code=*/absl::nullopt,
+                 /*expected_inner_response_code=*/absl::nullopt);
   }
   // Configured timeout.
   {
@@ -501,14 +560,22 @@ TEST_F(TestObliviousHttpRequestHandler, HandlesOuterHttpError) {
   std::unique_ptr<network::ObliviousHttpRequestHandler> handler =
       CreateHandler();
   {
+    net::RecordingNetLogObserver net_log_observer;
     loader_factory()->AddResponse(kRelayURL, "", net::HTTP_NOT_FOUND);
     TestOhttpClient client;
     client.SetExpectedOuterResponseErrorCode(net::HTTP_NOT_FOUND);
 
     handler->StartRequest(CreateRequest(), client.CreatePendingRemote());
     client.WaitForCall();
+
+    VerifyNetLog(net_log_observer,
+                 /*expected_has_response_data_and_headers=*/false,
+                 /*expected_net_error=*/net::ERR_HTTP_RESPONSE_CODE_FAILURE,
+                 /*expected_outer_response_error_code=*/net::HTTP_NOT_FOUND,
+                 /*expected_inner_response_code=*/absl::nullopt);
   }
   {
+    net::RecordingNetLogObserver net_log_observer;
     loader_factory()->AddResponse(
         GURL(kRelayURL), network::CreateURLResponseHead(net::HTTP_OK), "",
         network::URLLoaderCompletionStatus(net::ERR_CONNECTION_RESET),
@@ -522,6 +589,12 @@ TEST_F(TestObliviousHttpRequestHandler, HandlesOuterHttpError) {
 
     handler->StartRequest(CreateRequest(), client.CreatePendingRemote());
     client.WaitForCall();
+
+    VerifyNetLog(net_log_observer,
+                 /*expected_has_response_data_and_headers=*/false,
+                 /*expected_net_error=*/net::ERR_CONNECTION_RESET,
+                 /*expected_outer_response_error_code=*/absl::nullopt,
+                 /*expected_inner_response_code=*/absl::nullopt);
   }
 }
 
@@ -529,6 +602,7 @@ TEST_F(TestObliviousHttpRequestHandler, HandlesInnerHttpError) {
   std::unique_ptr<network::ObliviousHttpRequestHandler> handler =
       CreateHandler();
   {
+    net::RecordingNetLogObserver net_log_observer;
     TestOhttpClient client;
     client.SetExpectedInnerResponse(
         /*expected_inner_response_code=*/net::HTTP_NOT_FOUND,
@@ -540,8 +614,15 @@ TEST_F(TestObliviousHttpRequestHandler, HandlesInnerHttpError) {
     RespondToPendingRequest("", {{"cache-control", "s-maxage=60"}},
                             GURL(kRelayURL), net::HTTP_NOT_FOUND);
     client.WaitForCall();
+
+    VerifyNetLog(net_log_observer,
+                 /*expected_has_response_data_and_headers=*/true,
+                 /*expected_net_error=*/net::OK,
+                 /*expected_outer_response_error_code=*/absl::nullopt,
+                 /*expected_inner_response_code=*/net::HTTP_NOT_FOUND);
   }
   {
+    net::RecordingNetLogObserver net_log_observer;
     TestOhttpClient client;
     client.SetExpectedNetError(net::ERR_INVALID_RESPONSE);
 
@@ -553,6 +634,12 @@ TEST_F(TestObliviousHttpRequestHandler, HandlesInnerHttpError) {
         /*response_head=*/network::CreateURLResponseHead(net::HTTP_OK),
         /*content=*/"malformed inner response"));
     client.WaitForCall();
+
+    VerifyNetLog(net_log_observer,
+                 /*expected_has_response_data_and_headers=*/false,
+                 /*expected_net_error=*/net::ERR_INVALID_RESPONSE,
+                 /*expected_outer_response_error_code=*/absl::nullopt,
+                 /*expected_inner_response_code=*/absl::nullopt);
   }
 }
 
