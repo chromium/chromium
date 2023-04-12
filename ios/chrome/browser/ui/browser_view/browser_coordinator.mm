@@ -475,6 +475,15 @@ enum class ToolbarKind {
   [self createViewController];
 
   [self updateViewControllerDependencies];
+
+  // Force the view load at a specific time.
+  // TODO(crbug.com/1431971): This should ideally go in createViewController,
+  // but part of creating the view controller involves setting up a dispatch to
+  // a command that isn't handled until updateViewControllerDependencies
+  // (OmniboxCommands).
+  BOOL created = [self ensureViewIsCreated];
+  CHECK(created);
+
   // Independent mediators should start before coordinators so model state is
   // accurate for any UI that starts up.
   [self startIndependentMediators];
@@ -673,6 +682,13 @@ enum class ToolbarKind {
   [self.dispatcher stopDispatchingToTarget:self.viewController];
   [self.viewController shutdown];
   _viewController = nil;
+}
+
+// Ensure BrowserViewController's view is created
+- (BOOL)ensureViewIsCreated {
+  // Call `-view` for the side effect of creating the view.
+  UIView* view = self.viewController.view;
+  return view != nil;
 }
 
 // Creates the browser view controller dependencies.
