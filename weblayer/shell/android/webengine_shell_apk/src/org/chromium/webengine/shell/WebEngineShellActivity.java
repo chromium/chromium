@@ -37,6 +37,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.chromium.base.Log;
 import org.chromium.webengine.CookieManager;
 import org.chromium.webengine.FullscreenCallback;
+import org.chromium.webengine.FullscreenClient;
 import org.chromium.webengine.Navigation;
 import org.chromium.webengine.NavigationObserver;
 import org.chromium.webengine.Tab;
@@ -400,7 +401,7 @@ public class WebEngineShellActivity
     }
 
     @Override
-    public void onEnterFullscreen(WebEngine webEngine, Tab tab) {
+    public void onEnterFullscreen(WebEngine webEngine, Tab tab, FullscreenClient fullscreenClient) {
         final WindowManager.LayoutParams attrs = getWindow().getAttributes();
         attrs.flags |= WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
         getWindow().setAttributes(attrs);
