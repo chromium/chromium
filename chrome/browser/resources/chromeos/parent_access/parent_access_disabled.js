@@ -8,8 +8,8 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {ExtensionApprovalsDisabled} from './flows/extension_approvals_disabled.js';
 import {ParentAccessScreenInterface} from './parent_access_screen.js';
-import {ParentAccessParams_FlowType} from './parent_access_ui.mojom-webui.js';
-import {getParentAccessParams} from './parent_access_ui_handler.js';
+import {ParentAccessParams_FlowType, ParentAccessResult} from './parent_access_ui.mojom-webui.js';
+import {getParentAccessParams, getParentAccessUIHandler} from './parent_access_ui_handler.js';
 
 /** @implements {ParentAccessScreenInterface} */
 class ParentAccessDisabled extends PolymerElement {
@@ -42,8 +42,7 @@ class ParentAccessDisabled extends PolymerElement {
 
   /** @private */
   onDisabledScreenClosed_() {
-    // TODO(b/266830608): Implement a Mojo interface for handling the disabled
-    // state.
+    getParentAccessUIHandler().onParentAccessDone(ParentAccessResult.kDisabled);
   }
 }
 

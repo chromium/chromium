@@ -251,6 +251,30 @@ TEST_F(ParentAccessExtensionApprovalsManagerTest,
 }
 
 TEST_F(ParentAccessExtensionApprovalsManagerTest,
+       GetParentAccessApproval_Disabled) {
+  SetSupervisedUserMayRequestPermissionsPref(true);
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder(kTestExtensionName).Build();
+  base::RunLoop run_loop;
+  approvals_manager_->ShowParentAccessDialog(
+      *extension, profile_, extensions::util::GetDefaultExtensionIcon(),
+      base::BindOnce(
+          [](base::OnceClosure quit_closure,
+             extensions::SupervisedUserExtensionsDelegate::
+                 ExtensionApprovalResult result) {
+            EXPECT_EQ(result, extensions::SupervisedUserExtensionsDelegate::
+                                  ExtensionApprovalResult::kBlocked);
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure()));
+
+  auto dialog_result = std::make_unique<ash::ParentAccessDialog::Result>();
+  dialog_result->status = ash::ParentAccessDialog::Result::Status::kDisabled;
+  dialog_provider_->TriggerCallbackWithResult(std::move(dialog_result));
+  run_loop.Run();
+}
+
+TEST_F(ParentAccessExtensionApprovalsManagerTest,
        GetParentAccessApproval_Error) {
   SetSupervisedUserMayRequestPermissionsPref(true);
   scoped_refptr<const extensions::Extension> extension =

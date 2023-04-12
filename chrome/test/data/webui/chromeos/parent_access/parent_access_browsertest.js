@@ -98,6 +98,24 @@ TEST_F(
                             .ParentAccessCallbackReceivedFnCalled);
     });
 
+var ParentAccessDisabledTest = class extends testing.Test {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://parent-access/test_loader.html?module=' +
+        'chromeos/parent_access/parent_access_disabled_test.js&host=test';
+  }
+
+  /** @param {string} testName The name of the test to run. */
+  runMochaTest(testName) {
+    runMochaTest(parent_access_disabled_tests.suiteName, testName);
+  }
+}
+
+TEST_F('ParentAccessDisabledTest', 'TestOkButton', function() {
+  this.runMochaTest(parent_access_disabled_tests.TestNames.TestOkButton);
+});
+
+
 var ParentAccessUITest = class extends PolymerTest {
   /** @override */
   get browsePreload() {

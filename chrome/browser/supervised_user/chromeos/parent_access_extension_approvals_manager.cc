@@ -127,6 +127,11 @@ void ParentAccessExtensionApprovalsManager::OnParentAccessDialogClosed(
           .Run(SupervisedUserExtensionsDelegate::ExtensionApprovalResult::
                    kFailed);
       break;
+    case ash::ParentAccessDialog::Result::Status::kDisabled:
+      std::move(done_callback_)
+          .Run(SupervisedUserExtensionsDelegate::ExtensionApprovalResult::
+                   kBlocked);
+      break;
   }
 }
 

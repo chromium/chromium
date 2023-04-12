@@ -188,6 +188,9 @@ void ParentAccessUIHandlerImpl::OnParentAccessDone(
       }
       delegate_->SetError();
       break;
+    case parent_access_ui::mojom::ParentAccessResult::kDisabled:
+      delegate_->SetDisabled();
+      break;
   }
 
   std::move(callback).Run();

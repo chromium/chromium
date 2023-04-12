@@ -39,6 +39,11 @@ crosapi::mojom::ParentAccessResultPtr DialogResultToParentAccessResult(
           crosapi::mojom::ParentAccessErrorResult::New(
               crosapi::mojom::ParentAccessErrorResult::Type::kUnknown));
       break;
+    case ash::ParentAccessDialog::Result::Status::kDisabled:
+      // TODO(b/262450337): Implement disabled case when extension approvals is
+      // implemented. Disabled state is not possible for the current callers of
+      // ParentAccessAsh.
+      NOTREACHED_NORETURN();
   }
 
   return parent_access_result;

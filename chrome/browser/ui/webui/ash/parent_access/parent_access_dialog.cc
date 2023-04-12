@@ -124,6 +124,12 @@ void ParentAccessDialog::SetCanceled() {
   CloseWithResult(std::move(result));
 }
 
+void ParentAccessDialog::SetDisabled() {
+  auto result = std::make_unique<ParentAccessDialog::Result>();
+  result->status = ParentAccessDialog::Result::Status::kDisabled;
+  CloseWithResult(std::move(result));
+}
+
 void ParentAccessDialog::SetError() {
   auto result = std::make_unique<ParentAccessDialog::Result>();
   result->status = ParentAccessDialog::Result::Status::kError;
