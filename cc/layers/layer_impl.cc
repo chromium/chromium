@@ -657,8 +657,8 @@ void LayerImpl::GetAllPrioritizedTilesForTracing(
 void LayerImpl::AsValueInto(base::trace_event::TracedValue* state) const {
   // The output is consumed at least by
   // 1. DevTools for showing layer tree information for frame snapshots in
-  //    performance timeline (third_party/devtools_frontend/src/front_end/
-  //    timeline_model/TracingLayerTree.js),
+  //    performance timeline (third_party/devtools-frontend/src/front_end/
+  //    models/timeline_model/TracingLayerTree.ts),
   // 2. trace_viewer
   //    (third_party/catapult/tracing/tracing/extras/chrome/cc/layer_impl.html)
   //    Note that trace_viewer uses "namingStyle" style instead of

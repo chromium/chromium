@@ -1,17 +1,19 @@
 Tests layer compositing reasons in Layers Panel
-Compositing reason ids for div#transform3d: transform3D
-Compositing reason ids for div#scale3d: scale3D
-Compositing reason ids for div#rotate3d: rotate3D
-Compositing reason ids for div#translate3d: translate3D
-Compositing reason ids for div#backface-visibility: backfaceVisibilityHidden
-Compositing reason ids for div#animation: activeTransformAnimation
-Compositing reason ids for div#animation-scale: activeScaleAnimation
-Compositing reason ids for div#animation-rotate: activeRotateAnimation
-Compositing reason ids for div#animation-translate: activeTranslateAnimation
-Compositing reason ids for div#transformWithCompositedDescendants: overlap
-Compositing reason ids for div#transformWithCompositedDescendants-individual: overlap
-Compositing reason ids for div#opacityWithCompositedDescendants: overflowScrolling,rootScroller
-Compositing reason ids for div#reflectionWithCompositedDescendants: filterWithCompositedDescendants
-Compositing reason ids for div#perspective: perspectiveWith3DDescendants
-Compositing reason ids for div#preserve3d: preserve3DWith3DDescendants
+Compositing reason ids for div#transform3d: 3DTransform
+Compositing reason ids for div#scale3d: 3DScale
+Compositing reason ids for div#rotate3d: 3DRotate
+Compositing reason ids for div#translate3d: 3DTranslate
+Compositing reason ids for div#backface-visibility: BackfaceVisibilityHidden
+Compositing reason ids for div#animation: ActiveTransformAnimation
+Compositing reason ids for div#animation-scale: ActiveScaleAnimation
+Compositing reason ids for div#animation-rotate: ActiveRotateAnimation
+Compositing reason ids for div#animation-translate: ActiveTranslateAnimation
+Compositing reason ids for div#transformWithCompositedDescendants: Overlap
+Compositing reason ids for div#transformWithCompositedDescendants-individual: Overlap
+Compositing reason ids for div#opacityWithCompositedDescendants: OverflowScrolling,RootScroller
+Compositing reason ids for div#reflectionWithCompositedDescendants: OverflowScrolling,RootScroller
+Compositing reason ids for div#perspective: PerspectiveWith3DDescendants
+Compositing reason ids for div#preserve3d: Preserve3DWith3DDescendants
+Compositing reason ids for div#scrollOpaque: OverflowScrolling
+Compositing reason ids for div#scrollForced: OverflowScrolling
 

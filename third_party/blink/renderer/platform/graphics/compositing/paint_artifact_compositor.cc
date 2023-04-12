@@ -163,6 +163,9 @@ PaintArtifactCompositor::NearestScrollTranslationForLayer(
 
 bool PaintArtifactCompositor::NeedsCompositedScrolling(
     const TransformPaintPropertyNode& scroll_translation) const {
+  // This function needs scroll_translation_nodes_ which is only available
+  // during full update.
+  DCHECK(needs_update_);
   DCHECK(scroll_translation.ScrollNode());
   if (scroll_translation.HasDirectCompositingReasons()) {
     return true;
@@ -945,10 +948,10 @@ void PaintArtifactCompositor::Update(
   host->property_trees()->set_needs_rebuild(false);
   host->property_trees()->ResetCachedData();
   previous_update_for_testing_ = PreviousUpdateType::kFull;
-  needs_update_ = false;
-  scroll_translation_nodes_.clear();
 
   UpdateDebugInfo();
+  scroll_translation_nodes_.clear();
+  needs_update_ = false;
 
   g_s_property_tree_sequence_number++;
 
@@ -1108,105 +1111,151 @@ void PaintArtifactCompositor::SetLayerDebugInfoEnabled(bool enabled) {
   }
 }
 
-static void UpdateLayerDebugInfo(
-    cc::Layer& layer,
-    const PendingLayer& pending_layer,
-    CompositingReasons compositing_reasons,
-    RasterInvalidationTracking* raster_invalidation_tracking) {
-  cc::LayerDebugInfo& debug_info = layer.EnsureDebugInfo();
-  debug_info.name = pending_layer.DebugName().Utf8();
-  debug_info.compositing_reasons =
-      CompositingReason::Descriptions(compositing_reasons);
-  debug_info.compositing_reason_ids =
-      CompositingReason::ShortNames(compositing_reasons);
-  debug_info.owner_node_id = pending_layer.OwnerNodeId();
-
-  if (RasterInvalidationTracking::IsTracingRasterInvalidations() &&
-      raster_invalidation_tracking) {
-    raster_invalidation_tracking->AddToLayerDebugInfo(debug_info);
-    raster_invalidation_tracking->ClearInvalidations();
-  }
-}
-
 void PaintArtifactCompositor::UpdateDebugInfo() const {
   if (!layer_debug_info_enabled_)
     return;
 
-  const PendingLayer* previous_pending_layer = nullptr;
+  PropertyTreeState previous_layer_state = PropertyTreeState::Root();
   for (const auto& pending_layer : pending_layers_) {
     cc::Layer& layer = pending_layer.CcLayer();
     RasterInvalidationTracking* tracking = nullptr;
-    if (auto* client = pending_layer.GetContentLayerClient())
+    if (auto* client = pending_layer.GetContentLayerClient()) {
       tracking = client->GetRasterInvalidator().GetTracking();
-    UpdateLayerDebugInfo(
-        layer, pending_layer,
-        GetCompositingReasons(pending_layer, previous_pending_layer), tracking);
-    previous_pending_layer = &pending_layer;
+    }
+    cc::LayerDebugInfo& debug_info = layer.EnsureDebugInfo();
+    debug_info.name = pending_layer.DebugName().Utf8();
+    // GetCompositingReasons calls NeedsCompositedScrolling which is only
+    // available during full update. In repaint-only update, the original
+    // compositing reasons in debug_info will be kept.
+    if (needs_update_) {
+      auto compositing_reasons =
+          GetCompositingReasons(pending_layer, previous_layer_state);
+      debug_info.compositing_reasons =
+          CompositingReason::Descriptions(compositing_reasons);
+      debug_info.compositing_reason_ids =
+          CompositingReason::ShortNames(compositing_reasons);
+    }
+    debug_info.owner_node_id = pending_layer.OwnerNodeId();
+
+    if (RasterInvalidationTracking::IsTracingRasterInvalidations() &&
+        tracking) {
+      tracking->AddToLayerDebugInfo(debug_info);
+      tracking->ClearInvalidations();
+    }
+    previous_layer_state = pending_layer.GetPropertyTreeState();
   }
 }
 
+// The returned compositing reasons are informative for tracing/debugging.
+// Some are based on heuristics so are not fully accurate.
 CompositingReasons PaintArtifactCompositor::GetCompositingReasons(
     const PendingLayer& layer,
-    const PendingLayer* previous_layer) const {
+    const PropertyTreeState& previous_layer_state) const {
   DCHECK(layer_debug_info_enabled_);
+  DCHECK(needs_update_);
 
-  if (layer.ChunkRequiresOwnLayer()) {
-    if (layer.GetCompositingType() == PendingLayer::kScrollHitTestLayer)
-      return CompositingReason::kOverflowScrolling;
+  if (layer.GetCompositingType() == PendingLayer::kScrollHitTestLayer) {
+    return CompositingReason::kOverflowScrolling;
+  }
+  if (layer.Chunks().size() == 1 && layer.FirstPaintChunk().size() == 1) {
     switch (layer.FirstDisplayItem().GetType()) {
+      case DisplayItem::kCaret:
+        return CompositingReason::kCaret;
+      case DisplayItem::kScrollbarHorizontal:
+      case DisplayItem::kScrollbarVertical:
+        return CompositingReason::kScrollbar;
       case DisplayItem::kForeignLayerCanvas:
         return CompositingReason::kCanvas;
+      case DisplayItem::kForeignLayerDevToolsOverlay:
+        return CompositingReason::kDevToolsOverlay;
       case DisplayItem::kForeignLayerPlugin:
         return CompositingReason::kPlugin;
       case DisplayItem::kForeignLayerVideo:
         return CompositingReason::kVideo;
-      case DisplayItem::kScrollbarHorizontal:
-        return CompositingReason::kLayerForHorizontalScrollbar;
-      case DisplayItem::kScrollbarVertical:
-        return CompositingReason::kLayerForVerticalScrollbar;
+      case DisplayItem::kForeignLayerRemoteFrame:
+        return CompositingReason::kIFrame;
+      case DisplayItem::kForeignLayerLinkHighlight:
+        return CompositingReason::kLinkHighlight;
+      case DisplayItem::kForeignLayerViewportScroll:
+        return CompositingReason::kViewport;
+      case DisplayItem::kForeignLayerViewportScrollbar:
+        return CompositingReason::kScrollbar;
+      case DisplayItem::kForeignLayerViewTransitionContent:
+        return CompositingReason::kViewTransitionContent;
       default:
-        return CompositingReason::kLayerForOther;
+        // Will determine compositing reasons based on paint properties.
+        break;
     }
   }
 
   CompositingReasons reasons = CompositingReason::kNone;
-  if (layer.GetPropertyTreeState().Transform().IsBackfaceHidden() &&
-      (!previous_layer || !previous_layer->GetPropertyTreeState()
-                               .Transform()
-                               .IsBackfaceHidden())) {
+  const auto& transform = layer.GetPropertyTreeState().Transform();
+  if (transform.IsBackfaceHidden() &&
+      !previous_layer_state.Transform().IsBackfaceHidden()) {
     reasons = CompositingReason::kBackfaceVisibilityHidden;
-  } else if (layer.GetCompositingType() == PendingLayer::kOverlap) {
-    return CompositingReason::kOverlap;
+  }
+  if (layer.GetCompositingType() == PendingLayer::kOverlap) {
+    return reasons == CompositingReason::kNone ? CompositingReason::kOverlap
+                                               : reasons;
   }
 
-  if (!previous_layer ||
-      &layer.GetPropertyTreeState().Transform() !=
-          &previous_layer->GetPropertyTreeState().Transform()) {
-    reasons |= layer.GetPropertyTreeState()
-                   .Transform()
-                   .DirectCompositingReasonsForDebugging();
-    if (!layer.GetPropertyTreeState()
-             .Transform()
-             .BackfaceVisibilitySameAsParent())
-      reasons |= CompositingReason::kBackfaceVisibilityHidden;
-  }
-
-  if (!previous_layer || &layer.GetPropertyTreeState().Effect() !=
-                             &previous_layer->GetPropertyTreeState().Effect()) {
-    const auto& effect = layer.GetPropertyTreeState().Effect();
-    if (effect.HasDirectCompositingReasons())
-      reasons |= effect.DirectCompositingReasonsForDebugging();
-    if (reasons == CompositingReason::kNone &&
-        layer.GetCompositingType() == PendingLayer::kOther) {
-      if (effect.Opacity() != 1.0f)
-        reasons |= CompositingReason::kOpacityWithCompositedDescendants;
-      if (!effect.Filter().IsEmpty())
-        reasons |= CompositingReason::kFilterWithCompositedDescendants;
-      if (effect.BlendMode() == SkBlendMode::kDstIn)
-        reasons |= CompositingReason::kMaskWithCompositedDescendants;
-      else if (effect.BlendMode() != SkBlendMode::kSrcOver)
-        reasons |= CompositingReason::kBlendingWithCompositedDescendants;
+  auto composited_ancestor = [this](const TransformPaintPropertyNode& transform)
+      -> const TransformPaintPropertyNode* {
+    const auto* ancestor = transform.NearestDirectlyCompositedAncestor();
+    if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
+      const auto& scroll_translation = transform.NearestScrollTranslationNode();
+      if (NeedsCompositedScrolling(scroll_translation) &&
+          (!ancestor || ancestor->IsAncestorOf(scroll_translation))) {
+        return &scroll_translation;
+      }
     }
+    return ancestor;
+  };
+
+  auto transform_compositing_reasons =
+      [composited_ancestor](
+          const TransformPaintPropertyNode& transform,
+          const TransformPaintPropertyNode& previous) -> CompositingReasons {
+    CompositingReasons reasons = CompositingReason::kNone;
+    const auto* ancestor = composited_ancestor(transform);
+    if (ancestor && ancestor != composited_ancestor(previous)) {
+      reasons = ancestor->DirectCompositingReasonsForDebugging();
+      if (ancestor->ScrollNode()) {
+        reasons |= CompositingReason::kOverflowScrolling;
+      }
+    }
+    return reasons;
+  };
+
+  auto clip_compositing_reasons =
+      [transform_compositing_reasons](
+          const ClipPaintPropertyNode& clip,
+          const ClipPaintPropertyNode& previous) -> CompositingReasons {
+    return transform_compositing_reasons(
+        clip.LocalTransformSpace().Unalias(),
+        previous.LocalTransformSpace().Unalias());
+  };
+
+  reasons |= transform_compositing_reasons(transform,
+                                           previous_layer_state.Transform());
+  const auto& effect = layer.GetPropertyTreeState().Effect();
+  if (&effect != &previous_layer_state.Effect()) {
+    reasons |= effect.DirectCompositingReasonsForDebugging();
+    if (reasons == CompositingReason::kNone) {
+      reasons = transform_compositing_reasons(
+          effect.LocalTransformSpace().Unalias(),
+          previous_layer_state.Effect().LocalTransformSpace().Unalias());
+      if (reasons == CompositingReason::kNone && effect.OutputClip() &&
+          previous_layer_state.Effect().OutputClip()) {
+        reasons = clip_compositing_reasons(
+            effect.OutputClip()->Unalias(),
+            previous_layer_state.Effect().OutputClip()->Unalias());
+      }
+    }
+  }
+  if (reasons == CompositingReason::kNone) {
+    reasons = clip_compositing_reasons(layer.GetPropertyTreeState().Clip(),
+                                       previous_layer_state.Clip());
   }
 
   return reasons;

@@ -26,6 +26,12 @@ div {
     min-height: 20px;
     background: blue;
 }
+.clip {
+    /* limits transform animation expansion to avoid unnecessary overlaps. */
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+}
 </style>
 <script type="application/x-javascript">
   if (window.internals)
@@ -36,10 +42,18 @@ div {
 <div id="rotate3d" style="rotate: 0 1 0 45deg;">3d rotate</div>
 <div id="translate3d" style="translate: 0px 0px 100px;">3d translate</div>
 <div id="backface-visibility" style="backface-visibility: hidden">backface hidden</div>
-<div id="animation" style="width: 50px; height: 50px; -webkit-animation-name: rotate; -webkit-animation-iteration-count: infinite; -webkit-animation-duration: 5s;">animated</div>
-<div id="animation-scale" style="width: 50px; height: 50px; animation-name: scale-individual; animation-iteration-count: infinite; animation-duration: 5s;">animated individual</div>
-<div id="animation-rotate" style="width: 50px; height: 50px; animation-name: rotate-individual; animation-iteration-count: infinite; animation-duration: 5s;">animated individual</div>
-<div id="animation-translate" style="width: 50px; height: 50px; animation-name: translate-individual; animation-iteration-count: infinite; animation-duration: 5s;">animated individual</div>
+<div class="clip">
+    <div id="animation" style="width: 50px; height: 50px; animation: rotate infinite 5s">animated</div>
+</div>
+<div class="clip">
+    <div id="animation-scale" style="width: 50px; height: 50px; animation: scale-individual infinite 5s">animated individual</div>
+</div>
+<div class="clip">
+    <div id="animation-rotate" style="width: 50px; height: 50px; animation: rotate-individual infinite 5s">animated individual</div>
+</div>
+<div class="clip">
+    <div id="animation-translate" style="width: 50px; height: 50px; animation: translate-individual infinite 5s">animated individual</div>
+</div>
 <div id="transformWithCompositedDescendants" style="transform: rotate(10deg)">
     <div style="transform: scale3d(2, 3, 4);">
     </div>
@@ -63,4 +77,9 @@ div {
     <div style="transform: translateZ(100px);">preserve3d
     </div>
 </div>
-
+<div id="scrollOpaque" style="width: 100px; height: 100px; overflow: scroll; background: blue">
+    <div style="width: 1000px; height: 1000px"></div>
+</div>
+<div id="scrollForced" style="width: 100px; height: 100px; overflow: scroll; will-change: scroll-position">
+    <div style="width: 1000px; height: 1000px"></div>
+</div>

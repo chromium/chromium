@@ -2499,7 +2499,8 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrollingInternal(
 
   non_composited_main_thread_scrolling_reasons_ = 0;
 
-  if (CompositingReasonFinder::RequiresCompositingForRootScroller(*layer_)) {
+  const auto* box = GetLayoutBox();
+  if (CompositingReasonFinder::RequiresCompositingForRootScroller(*box)) {
     return true;
   }
   if (!ScrollsOverflow()) {
@@ -2515,7 +2516,6 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrollingInternal(
     return false;
   }
 
-  const auto* box = GetLayoutBox();
   bool needs_composited_scrolling = true;
   if (box->GetDocument().GetSettings()->GetLCDTextPreference() ==
       LCDTextPreference::kStronglyPreferred) {

@@ -142,7 +142,8 @@
               "scrollbars",
               "external/wpt/css/css-scroll-snap",
               "external/wpt/scroll-animations",
-              "external/wpt/css/css-overflow"],
+              "external/wpt/css/css-overflow",
+              "http/tests/devtools/layers"],
     "args": ["--enable-features=CompositeScrollAfterPaint"],
     "expires": "Sep 1, 2023"
   },
