@@ -143,7 +143,7 @@ TEST_F(CompanionUrlBuilderTest, MsbbOn) {
   EXPECT_TRUE(proto.has_promo_state());
   EXPECT_EQ(1, proto.promo_state().signin_promo_denial_count());
   EXPECT_EQ(0, proto.promo_state().msbb_promo_denial_count());
-  EXPECT_EQ(0, proto.promo_state().labs_promo_denial_count());
+  EXPECT_EQ(0, proto.promo_state().exps_promo_denial_count());
 }
 
 TEST_F(CompanionUrlBuilderTest, NonProtobufParams) {

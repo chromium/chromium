@@ -86,8 +86,8 @@ GURL CompanionUrlBuilder::BuildCompanionURL(GURL page_url,
       pref_service_->GetInteger(kSigninPromoDeclinedCountPref));
   promo_state->set_msbb_promo_denial_count(
       pref_service_->GetInteger(kMsbbPromoDeclinedCountPref));
-  promo_state->set_labs_promo_denial_count(
-      pref_service_->GetInteger(kLabsPromoDeclinedCountPref));
+  promo_state->set_exps_promo_denial_count(
+      pref_service_->GetInteger(kExpsPromoDeclinedCountPref));
 
   GURL url_with_query_params = GetHomepageURLForCompanion();
   std::string base64_encoded_proto;

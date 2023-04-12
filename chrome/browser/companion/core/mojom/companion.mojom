@@ -27,8 +27,8 @@ enum PromoType {
   // Promo to turn on make searches and browsing better.
   kMsbb = 2,
 
-  // Promo to opt into labs api.
-  kLabs = 3,
+  // Promo to opt into experience api.
+  kExps = 3,
 };
 
 // User actions taken on a promo.

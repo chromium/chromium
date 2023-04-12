@@ -64,11 +64,11 @@ TEST_F(PromoHandlerTest, SigninPromo) {
   promo_handler_->OnPromoAction(PromoType::kSignin, PromoAction::kAccepted);
 }
 
-TEST_F(PromoHandlerTest, LabsPromo) {
-  promo_handler_->OnPromoAction(PromoType::kLabs, PromoAction::kRejected);
-  EXPECT_EQ(1, pref_service_.GetInteger(kLabsPromoDeclinedCountPref));
+TEST_F(PromoHandlerTest, ExpsPromo) {
+  promo_handler_->OnPromoAction(PromoType::kExps, PromoAction::kRejected);
+  EXPECT_EQ(1, pref_service_.GetInteger(kExpsPromoDeclinedCountPref));
 
-  promo_handler_->OnPromoAction(PromoType::kLabs, PromoAction::kAccepted);
+  promo_handler_->OnPromoAction(PromoType::kExps, PromoAction::kAccepted);
   // TODO(b/272954072): Add test.
 }
 

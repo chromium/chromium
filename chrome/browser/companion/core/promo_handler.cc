@@ -26,7 +26,7 @@ PromoHandler::~PromoHandler() = default;
 void PromoHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kMsbbPromoDeclinedCountPref, 0);
   registry->RegisterIntegerPref(kSigninPromoDeclinedCountPref, 0);
-  registry->RegisterIntegerPref(kLabsPromoDeclinedCountPref, 0);
+  registry->RegisterIntegerPref(kExpsPromoDeclinedCountPref, 0);
 }
 
 void PromoHandler::OnPromoAction(PromoType promo_type,
@@ -35,8 +35,8 @@ void PromoHandler::OnPromoAction(PromoType promo_type,
     OnSigninPromo(promo_action);
   } else if (promo_type == PromoType::kMsbb) {
     OnMsbbPromo(promo_action);
-  } else if (promo_type == PromoType::kLabs) {
-    OnLabsPromo(promo_action);
+  } else if (promo_type == PromoType::kExps) {
+    OnExpsPromo(promo_action);
   }
 }
 
@@ -61,9 +61,9 @@ void PromoHandler::OnMsbbPromo(PromoAction promo_action) {
   }
 }
 
-void PromoHandler::OnLabsPromo(PromoAction promo_action) {
+void PromoHandler::OnExpsPromo(PromoAction promo_action) {
   if (promo_action == PromoAction::kRejected) {
-    IncrementPref(kLabsPromoDeclinedCountPref);
+    IncrementPref(kExpsPromoDeclinedCountPref);
   } else if (promo_action == PromoAction::kAccepted) {
     // TODO(b/272954072): Nothing to do. Just collect metrics.
   }

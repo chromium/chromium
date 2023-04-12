@@ -17,7 +17,7 @@ message PromoState {
   // Number of times the user has denied various promo requests in past.
   int32 signin_promo_denial_count = 1;
   int32 msbb_promo_denial_count = 2;
-  int32 labs_promo_denial_count = 3;
+  int32 exps_promo_denial_count = 3;
 }
 
 // This proto file is shared between Chrome and Server side and used to pack the
