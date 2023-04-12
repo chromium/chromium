@@ -21,6 +21,11 @@ const char kExportUmaLogsToFile[] = "export-uma-logs-to-file";
 // will send data to servers.
 const char kForceEnableMetricsReporting[] = "force-enable-metrics-reporting";
 
+// Forces MSBB setting to be on for UKM recording. Should only be used in
+// automated testing browser sessions in which it is infeasible or impractical
+// to toggle the setting manually.
+const char kForceMsbbSettingOnForUkm[] = "force-msbb-setting-on-for-ukm";
+
 // Enables the recording of metrics reports but disables reporting. In contrast
 // to kForceEnableMetricsReporting, this executes all the code that a normal
 // client would use for reporting, except the report is dropped rather than sent
@@ -60,6 +65,11 @@ bool IsMetricsRecordingOnlyEnabled() {
 bool IsMetricsReportingForceEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kForceEnableMetricsReporting);
+}
+
+bool IsMsbbSettingForcedOnForUkm() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kForceMsbbSettingOnForUkm);
 }
 
 void EnableMetricsRecordingOnlyForTesting(base::CommandLine* command_line) {

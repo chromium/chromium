@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/metrics/metrics_switches.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_utils.h"
@@ -69,7 +70,8 @@ UkmConsentStateObserver::ProfileState UkmConsentStateObserver::GetProfileState(
   DCHECK(consent_helper);
   ProfileState state;
 
-  const bool msbb_consent = consent_helper->IsEnabled();
+  const bool msbb_consent =
+      consent_helper->IsEnabled() || metrics::IsMsbbSettingForcedOnForUkm();
 
   if (msbb_consent)
     state.SetConsentType(MSBB);

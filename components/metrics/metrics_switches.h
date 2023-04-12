@@ -32,6 +32,10 @@ bool IsMetricsRecordingOnlyEnabled();
 // current process.
 bool IsMetricsReportingForceEnabled();
 
+// Returns true if kForceMsbbSettingOnForUkm is on the command line for the
+// current process.
+bool IsMsbbSettingForcedOnForUkm();
+
 // Adds kMetricsRecordingOnly to |command_line| if not already present.
 void EnableMetricsRecordingOnlyForTesting(
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess());
