@@ -10,6 +10,7 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_utils.h"
 #import "components/bookmarks/browser/titled_url_match.h"
+#import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/bookmarks/managed/managed_bookmark_service.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -24,6 +25,8 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
@@ -73,6 +76,7 @@ const int kMaxBookmarksSearchResults = 50;
   base::WeakPtr<Browser> _browser;
   // The sync setup service for this mediator.
   SyncSetupService* _syncSetupService;
+  AuthenticationService* _authenticationService;
   // Base view controller to present sign-in UI.
   UIViewController* _baseViewController;
 }
@@ -132,6 +136,8 @@ const int kMaxBookmarksSearchResults = 50;
 
   _syncService = SyncServiceFactory::GetForBrowserState(browserState);
   _syncSetupService = SyncSetupServiceFactory::GetForBrowserState(browserState);
+  _authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browserState);
 
   [self computePromoTableViewData];
   [self computeBookmarkTableViewData];
@@ -143,6 +149,8 @@ const int kMaxBookmarksSearchResults = 50;
   _bookmarkPromoController = nil;
   _modelBridge = nullptr;
   _syncSetupService = nullptr;
+  _syncService = nullptr;
+  _authenticationService = nullptr;
   _syncedBookmarksObserver = nullptr;
   _browser = nullptr;
   self.consumer = nil;
@@ -202,12 +210,16 @@ const int kMaxBookmarksSearchResults = 50;
   if (![self hasBookmarksOrFolders]) {
     return;
   }
-  [self generateNodesForProfileRootNode];
-  if (!self.sharedState.accountBookmarkModel) {
+  [self
+      generateTableViewDataForModel:self.sharedState.profileBookmarkModel
+                          inSection:BookmarksHomeSectionIdentifierRootProfile];
+  if (![self accountBookmarkModelAvailable]) {
     return;
   }
   [self updateHeaderForProfileRootNode];
-  [self generateNodesForAccountRootNode];
+  [self
+      generateTableViewDataForModel:self.sharedState.accountBookmarkModel
+                          inSection:BookmarksHomeSectionIdentifierRootAccount];
   [self updateHeaderForAccountRootNode];
 }
 
@@ -587,17 +599,6 @@ const int kMaxBookmarksSearchResults = 50;
       forSectionWithIdentifier:BookmarksHomeSectionIdentifierRootAccount];
 }
 
-- (void)generateNodesForProfileRootNode {
-  [self
-      generateTableViewDataForModel:self.sharedState.profileBookmarkModel
-                          inSection:BookmarksHomeSectionIdentifierRootProfile];
-}
-- (void)generateNodesForAccountRootNode {
-  [self
-      generateTableViewDataForModel:self.sharedState.accountBookmarkModel
-                          inSection:BookmarksHomeSectionIdentifierRootAccount];
-}
-
 // The original chrome browser state used for services that don't exist in
 // incognito mode. E.g., `_syncSetupService`, `_syncService` and
 // `ManagedBookmarkService`.
@@ -660,4 +661,19 @@ const int kMaxBookmarksSearchResults = 50;
       IsManagedSyncDataType(prefService, SyncSetupService::kSyncBookmarks);
   return syncDisabledPolicy || syncTypesDisabledPolicy;
 }
+
+// Returns YES if the account storage should be visible.
+- (BOOL)accountBookmarkModelAvailable {
+  if (!base::FeatureList::IsEnabled(
+          bookmarks::kEnableBookmarksAccountStorage)) {
+    return NO;
+  }
+  // TODO (crbug.com/1430453): Needs to use better signal to know if
+  // the account is enabled or not.
+  return _authenticationService->HasPrimaryIdentity(
+             signin::ConsentLevel::kSignin) &&
+         !_authenticationService->HasPrimaryIdentity(
+             signin::ConsentLevel::kSync);
+}
+
 @end

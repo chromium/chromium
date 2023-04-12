@@ -203,7 +203,8 @@ TEST_F(BookmarksHomeViewControllerTest,
                          [controller.tableViewModel
                              sectionForSectionIdentifier:
                                  BookmarksHomeSectionIdentifierRootProfile]]);
-    EXPECT_EQ(1, [controller tableView:controller.tableView
+    // The user is signed out, account storage section should not be visible.
+    EXPECT_EQ(0, [controller tableView:controller.tableView
                      numberOfRowsInSection:
                          [controller.tableViewModel
                              sectionForSectionIdentifier:
