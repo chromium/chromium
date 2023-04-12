@@ -570,7 +570,7 @@ class DexFile:
       if bytecode[0] in (0x1a, 0x1b):
         # 1a 21c  const-string vAA, string@BBBB
         # 1b 31c  const-string/jumbo vAA, string@BBBBBBBB
-        fmt = '<H' if bytecode[0] == 0x1a else '<Q'
+        fmt = '<H' if bytecode[0] == 0x1a else '<L'
         yield struct.unpack_from(fmt, bytecode, 2)[0]
 
   @staticmethod
@@ -631,7 +631,8 @@ class _DumpStrings(_DumpCommand):
     for (i, string_data_item) in enumerate(self._dexfile.string_data_item_list):
       # Some strings are likely to be non-ascii (vs. methods/classes).
       s = string_data_item.data
-      rep_str = repr(s) if s.isprintable() else s.encode('utf-8')
+      rep_str = (repr(s) if s.isprintable() else s.encode(
+          'utf-8', errors='surrogatepass'))
       print('string(%08X): %s' % (i, rep_str))
 
 

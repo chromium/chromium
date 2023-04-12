@@ -359,7 +359,7 @@ def _SaveSizeInfoToFile(size_info,
 
   w.WriteNumberList(x[0] for x in symbols_with_disassembly)
   for _, disassembly in symbols_with_disassembly:
-    disassembly_bytes = disassembly.encode('utf-8')
+    disassembly_bytes = disassembly.encode('utf-8', errors='surrogatepass')
     w.WriteBytes(b'%d\n' % len(disassembly_bytes))
     w.WriteBytes(disassembly_bytes)
 

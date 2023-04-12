@@ -78,7 +78,7 @@ def RunApkAnalyzerAsync(apk_path, mapping_path):
   return parallel.CallOnThread(subprocess.run,
                                args,
                                env=env,
-                               encoding='utf8',
+                               encoding='utf-8',
                                capture_output=True,
                                check=True)
 
@@ -452,7 +452,7 @@ def _StringSymbolsFromDexFile(apk_path, dexfile, source_map,
       outer_class, _ = lambda_normalizer.ExtractOuterClassAndDesugarLambda(
           class_name)
       full_name = string_extract.GetNameOfStringLiteralBytes(
-          decoded_string.encode('utf-8'))
+          decoded_string.encode('utf-8', errors='surrogatepass'))
       source_path = (source_map.get(outer_class, '')
                      or _MakeFakeSourcePath(class_name))
       sym = models.Symbol(models.SECTION_DEX,
@@ -511,7 +511,6 @@ def _StringSymbolsFromDexFile(apk_path, dexfile, source_map,
                                                     proto_string_idx_set)
 
   return dex_string_symbols, dex_string_data_size
-
 
 def _ParseMainDexfileInApk(apk_path):
   with zipfile.ZipFile(apk_path) as src_zip:
