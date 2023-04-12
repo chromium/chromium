@@ -47,6 +47,14 @@ const kHighYStrength: number = 0.9;
 // some influence but can be easily overridden.
 const kWeakYStrength: number = 0.1;
 
+class ToolTipRowData {
+  // The contents of each cell in the row.
+  contents: [string, string];
+
+  // Class to apply to the <tr> element.
+  rowClass: 'heading'|'value';
+}
+
 class ToolTip {
   floating: boolean = true;
   x: number;
@@ -120,7 +128,7 @@ class ToolTip {
      * @param object The nested dict to be flattened.
      */
     function flattenObjectRec(
-        visited: Set<object>, flattened: {[key: string]: any}, path: string,
+        visited: Set<object>, flattened: ToolTipRowData[], path: string,
         object: {[key: string]: any}) {
       if (typeof object !== 'object' || visited.has(object)) {
         return;
@@ -130,24 +138,28 @@ class ToolTip {
         const fullPath = path ? `${path}.${key}` : key;
         // Recurse on non-null objects.
         if (!!value && typeof value === 'object') {
-          flattenObjectRec(
-              visited, flattened, fullPath,
-              /** @type {!Object<?,?>} */ (value));
+          flattenObjectRec(visited, flattened, fullPath, value);
         } else {
           // Everything else is considered a leaf value.
-          flattened[fullPath] = value;
+          let strValue = String(value);
+          if (strValue.length > 50) {
+            strValue = `${strValue.substring(0, 47)}...`;
+          }
+          flattened.push({contents: [fullPath, strValue], rowClass: 'value'});
         }
       }
     }
 
     /**
      * Recursively flattens an Object of key/value pairs. Nested objects will be
-     * flattened to paths with a . separator between each key. If there are
-     * circular dependencies, they will not be expanded.
+     * flattened to paths with a . separator between each key. Each list element
+     * includes metadata that will be used to format a table row.
+     *
+     * If there are circular dependencies, they will not be expanded.
      *
      * For example, converting:
      *
-     * {
+     * 'describer': {
      *   'foo': 'hello',
      *   'bar': 1,
      *   'baz': {
@@ -160,18 +172,23 @@ class ToolTip {
      *
      * will yield:
      *
-     * {
-     *   'foo': 'hello',
-     *   'bar': 1,
-     *   'baz.x': 43.5,
-     *   'baz.y': 'fox',
-     *   'baz.z.0': '1',
-     *   'baz.y.1': '2'
-     * }
+     * [
+     *   {contents: ['describer', ''], rowClass: 'heading'},
+     *   {contents: ['foo', 'hello'], rowClass: 'value'},
+     *   {contents: ['bar', 1], rowClass: 'value'},
+     *   {contents: ['baz.x', 43.5], rowClass: 'value'},
+     *   {contents: ['baz.y', 'fox'], rowClass: 'value'},
+     *   {contents: ['baz.z.0', '1'], rowClass: 'value'},
+     *   {contents: ['baz.y.1', '2'], rowClass: 'value'},
+     * ]
      */
-    function flattenObject(object: {[key: string]: any}): {[key: string]: any} {
-      const flattened = {};
-      flattenObjectRec(new Set(), flattened, '', object);
+    function flattenObject(object: {[key: string]: any}): ToolTipRowData[] {
+      const flattened: ToolTipRowData[] = [];
+      for (const [key, value] of Object.entries(object)) {
+        // Add a header for each top-level object.
+        flattened.push({contents: [key, ''], rowClass: 'heading'});
+        flattenObjectRec(new Set(), flattened, '', value);
+      }
       return flattened;
     }
 
@@ -181,41 +198,44 @@ class ToolTip {
     // 'heading' with [`the describer's name`, null], followed by some number of
     // entries with a two-element list, each representing a key/value pair.
     this.descriptionJson_ = descriptionJson;
-    const description = JSON.parse(descriptionJson);
-    const flattenedDescription = [];
-    for (const [title, value] of Object.entries(description)) {
-      flattenedDescription.push([title, null]);
-      const flattenedValue = flattenObject(value as {[key: string]: any});
-      for (const [propName, propValue] of Object.entries(flattenedValue)) {
-        let strValue = String(propValue);
-        if (strValue.length > 50) {
-          strValue = `${strValue.substring(0, 47)}...`;
-        }
-        flattenedDescription.push([propName, strValue]);
-      }
-    }
+    const flattenedDescription: ToolTipRowData[] =
+        flattenObject(JSON.parse(descriptionJson));
     if (flattenedDescription.length === 0) {
-      flattenedDescription.push(['No Data', null]);
+      flattenedDescription.push(
+          {contents: ['No Data', ''], rowClass: 'heading'});
     }
 
     let tr =
         this.div_.selectAll('tbody').selectAll('tr').data(flattenedDescription);
-    tr.enter().append('tr').selectAll('td').data(d => d).enter().append('td');
+    tr.enter()
+        .append('tr')
+        .selectAll('td')
+        .data((d: unknown) => (d as ToolTipRowData).contents)
+        .enter()
+        .append('td');
     tr.exit().remove();
 
+    // Update the selection to include the <tr> and <td> elements that were
+    // added above.
     tr = this.div_.selectAll('tr');
-    tr.select('td').attr('colspan', function(_d: any) {
-      return ((d3.select((this as HTMLElement).parentElement!).datum() as
-               any[])[1] === null) ?
-          2 :
-          null;
-    });
-    tr = tr.attr(
-        'class',
-        (d: unknown) =>
-            (d as Array<string|null>)[1] === null ? 'heading' : 'value');
-    tr.selectAll('td').data(d => d).text(
-        (d: unknown) => d === null ? '' : d as string);
+
+    // Make the first cell of each header row 2 columns wide.
+    tr.select('td').attr(
+        'colspan', (_d: unknown, i: number, nodes: ArrayLike<unknown>) => {
+          const parent = d3.select((nodes[i] as HTMLElement).parentElement);
+          const parentData = parent.datum() as ToolTipRowData;
+          return parentData.rowClass === 'heading' ? 2 : null;
+        });
+
+    // Add text to cells.
+    tr.selectAll('td')
+        // Assign the <tr>'s full row of data to the selection.
+        .data((d: unknown) => (d as ToolTipRowData).contents)
+        // Assign the elements of the row array to the <td>'s in the selection.
+        .text((d: unknown) => d as string);
+
+    // Add classes to the rows.
+    tr.attr('class', (d: unknown) => (d as ToolTipRowData).rowClass);
   }
 
   private onDragStart_() {
