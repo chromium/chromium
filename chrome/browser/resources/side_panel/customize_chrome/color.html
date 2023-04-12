@@ -46,12 +46,25 @@
     fill: var(--customize-chrome-color-foreground-color);
   }
 
+  #base {
+    display: none;
+    fill: yellow;
+  }
+
   /* Set styles for high contrast mode in Windows. */
   @media (forced-colors: active) {
     :host(:focus):host-context(.focus-outline-visible) {
       /* Set outline to hcm (high contrast mode) value. */
       outline: var(--cr-focus-outline-hcm) !important;
     }
+  }
+
+  :host([basic-color]):host-context([chrome-refresh-2023]) svg {
+    border: none;
+  }
+
+  :host([basic-color]):host(:not([background-color-hidden])):host-context([chrome-refresh-2023]) #base {
+    display: block;
   }
 </style>
 <customize-chrome-check-mark-wrapper checked="[[checked]]">
@@ -60,6 +73,8 @@
     <rect id="foreground" x="0" y="0" width="50" height="50">
     </rect>
     <rect id="background" x="0" y="25" width="50" height="25">
+    </rect>
+    <rect id="base" x="25" y="25" width="25" height="25">
     </rect>
   </svg>
 </customize-chrome-check-mark-wrapper>
