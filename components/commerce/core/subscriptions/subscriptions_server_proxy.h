@@ -105,7 +105,7 @@ class SubscriptionsServerProxy {
   GetSubscriptionsFromParsedJson(
       const data_decoder::DataDecoder::ValueOrError& result);
 
-  base::Value Serialize(const CommerceSubscription& subscription);
+  base::Value::Dict Serialize(const CommerceSubscription& subscription);
 
   absl::optional<CommerceSubscription> Deserialize(const base::Value& value);
 
