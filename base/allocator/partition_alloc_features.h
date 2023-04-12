@@ -110,7 +110,6 @@ enum class BackupRefPtrMode {
 
 enum class AlternateBucketDistributionMode : uint8_t {
   kDefault,
-  kCoarser,
   kDenser,
 };
 

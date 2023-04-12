@@ -240,9 +240,6 @@ void SetDistributionForPartitionRoot(ThreadSafePartitionRoot* root,
                                      BucketDistribution distribution) {
   switch (distribution) {
     case BucketDistribution::kDefault:
-      root->SwitchToDefaultBucketDistribution();
-      break;
-    case BucketDistribution::kCoarser:
       root->ResetBucketDistributionForTesting();
       break;
     case BucketDistribution::kDenser:
@@ -298,12 +295,10 @@ struct PartitionAllocTestParam {
 const std::vector<PartitionAllocTestParam> GetPartitionAllocTestParams() {
   std::vector<PartitionAllocTestParam> params;
   params.emplace_back(BucketDistribution::kDefault, false);
-  params.emplace_back(BucketDistribution::kCoarser, false);
   params.emplace_back(BucketDistribution::kDenser, false);
 #if BUILDFLAG(ENABLE_PKEYS)
   if (CPUHasPkeySupport()) {
     params.emplace_back(BucketDistribution::kDefault, true);
-    params.emplace_back(BucketDistribution::kCoarser, true);
     params.emplace_back(BucketDistribution::kDenser, true);
   }
 #endif

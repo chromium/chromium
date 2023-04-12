@@ -568,11 +568,7 @@ void ConfigurePartitions(
   if (!split_main_partition) {
     switch (use_alternate_bucket_distribution) {
       case AlternateBucketDistribution::kDefault:
-        current_root->SwitchToDefaultBucketDistribution();
-        current_aligned_root->SwitchToDefaultBucketDistribution();
-        break;
-      case AlternateBucketDistribution::kCoarser:
-        // We are already using the coarse distribution when we create a root.
+        // We start in the 'default' case.
         break;
       case AlternateBucketDistribution::kDenser:
         current_root->SwitchToDenserBucketDistribution();
@@ -664,11 +660,7 @@ void ConfigurePartitions(
 
   switch (use_alternate_bucket_distribution) {
     case AlternateBucketDistribution::kDefault:
-      g_root.Get()->SwitchToDefaultBucketDistribution();
-      g_aligned_root.Get()->SwitchToDefaultBucketDistribution();
-      break;
-    case AlternateBucketDistribution::kCoarser:
-      // We are already using the coarse distribution when we create a root.
+      // We start in the 'default' case.
       break;
     case AlternateBucketDistribution::kDenser:
       g_root.Get()->SwitchToDenserBucketDistribution();

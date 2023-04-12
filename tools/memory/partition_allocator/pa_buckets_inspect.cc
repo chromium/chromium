@@ -60,9 +60,10 @@ void DisplayPerBucketData(
   size_t total_memory = 0;
   for (const auto& pair : live_allocs) {
     total_memory += pair.second;
-    // We use the "denser" (i.e. default) bucket distribution here so we can see
-    // how allocations currently happen in chrome.
-    const auto index = BucketIndexLookup::GetIndexForDenserBuckets(pair.second);
+    // We use the "default" bucket distribution here so we can see how
+    // allocations currently happen in chrome.
+    const auto index =
+        BucketIndexLookup::GetIndexForDefaultBuckets(pair.second);
     alloc_size[index] += pair.second;
     alloc_nums[index]++;
   }

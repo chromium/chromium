@@ -168,7 +168,6 @@ BASE_FEATURE(kPartitionAllocUseAlternateDistribution,
 const base::FeatureParam<AlternateBucketDistributionMode>::Option
     kPartitionAllocAlternateDistributionOption[] = {
         {AlternateBucketDistributionMode::kDefault, "default"},
-        {AlternateBucketDistributionMode::kCoarser, "coarser"},
         {AlternateBucketDistributionMode::kDenser, "denser"},
 };
 const base::FeatureParam<AlternateBucketDistributionMode>
