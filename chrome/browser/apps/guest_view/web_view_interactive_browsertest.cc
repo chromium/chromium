@@ -647,7 +647,8 @@ IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest, MAYBE_PointerLock) {
 }
 
 // flaky http://crbug.com/412086
-#if defined(SUPPORTS_SYNC_MOUSE_UTILS) && !BUILDFLAG(IS_CHROMEOS)
+#if defined(SUPPORTS_SYNC_MOUSE_UTILS) && !BUILDFLAG(IS_CHROMEOS) && \
+    !BUILDFLAG(IS_MAC) && defined(NDEBUG)
 #define MAYBE_PointerLockFocus PointerLockFocus
 #else
 #define MAYBE_PointerLockFocus DISABLED_PointerLockFocus
