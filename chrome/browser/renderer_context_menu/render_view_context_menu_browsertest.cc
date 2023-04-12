@@ -255,7 +255,7 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
     return menu;
   }
 
-  // Does not work on ChromeOS.
+  // Does not work on ChromeOS Ash where there's only one profile.
   Profile* CreateSecondaryProfile(int profile_num) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -1664,9 +1664,15 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_OpenLinkInProfile) {
                                   profiles_signin_required.end(), i)) {
       entry->LockForceSigninProfile(true);
     } else {
+      // In order for the profile to be counted as active, it needs to have a
+      // created browser window. The profile isn't marked active until the
+      // browser is actually open, which we need.
+      ui_test_utils::BrowserChangeObserver observer(
+          nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
       profiles::FindOrCreateNewWindowForProfile(
           profile, chrome::startup::IsProcessStartup::kNo,
           chrome::startup::IsFirstRun::kNo, false);
+      observer.Wait();
       profiles_in_menu.push_back(profile);
     }
   }

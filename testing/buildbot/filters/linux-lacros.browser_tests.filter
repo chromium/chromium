@@ -9,7 +9,6 @@
 -BrowserTest.RestorePinnedTabs
 -BrowserViewTest.GetAccessibleTabModalDialogTitle
 -BrowsingDataRemoverBrowserTest.StorageRemovedFromDisk
--ContextMenuBrowserTest.OpenLinkInProfile
 -DeclarativeContentApiTest.RulesPersistence
 -ExternalProtocolDialogBrowserTest.TestFocus
 -FolderUploadConfirmationViewTest.InitiallyFocusesCancel
