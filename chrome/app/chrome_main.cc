@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -37,13 +36,9 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/allocator/buildflags.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/handle_hooks_win.h"
 #include "base/win/current_module.h"
-#if BUILDFLAG(USE_ALLOCATOR_SHIM)
-#include "base/allocator/partition_allocator/shim/allocator_shim.h"
-#endif
 
 #include <timeapi.h>
 
@@ -85,12 +80,6 @@ int ChromeMain(int argc, const char** argv) {
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#if BUILDFLAG(USE_ALLOCATOR_SHIM) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  // Call this early on in order to configure heap workarounds. This must be
-  // called from chrome.dll. This may be a NOP on some platforms.
-  allocator_shim::ConfigurePartitionAlloc();
-#endif
-
   install_static::InitializeFromPrimaryModule();
 #if !defined(COMPONENT_BUILD) && DCHECK_IS_ON()
   // Patch the main EXE on non-component builds when DCHECKs are enabled.
