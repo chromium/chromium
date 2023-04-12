@@ -9388,7 +9388,6 @@
       },
       {
         "args": [
-          "--gtest_filter=-*WebSocket*",
           "--platform",
           "iPad Pro (12.9-inch) (3rd generation)",
           "--version",
@@ -9440,7 +9439,6 @@
       },
       {
         "args": [
-          "--gtest_filter=-*WebSocket*",
           "--platform",
           "iPhone X",
           "--version",

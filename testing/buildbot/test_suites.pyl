@@ -3804,11 +3804,7 @@
       'media_unittests': {},
       'midi_unittests': {},
       'mojo_unittests': {},
-      'net_unittests': {
-        'args': [
-          '--gtest_filter=-*WebSocket*',
-        ],
-      },
+      'net_unittests': {},
       'perfetto_unittests': {},
       'services_unittests': {},
       'shell_dialogs_unittests': {},
