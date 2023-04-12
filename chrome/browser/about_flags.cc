@@ -1597,17 +1597,17 @@ constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith10Mixed[] = {
 
 constexpr FeatureEntry::FeatureVariation kOmniboxInspireMeVariants[] = {
     {"5 Trends", kOmniboxInspireMeWith5Trends,
-     std::size(kOmniboxInspireMeWith5Trends), nullptr},
+     std::size(kOmniboxInspireMeWith5Trends), "t3363415"},
     {"5 Related", kOmniboxInspireMeWith5Related,
-     std::size(kOmniboxInspireMeWith5Related), nullptr},
+     std::size(kOmniboxInspireMeWith5Related), "t3363415"},
     {"3 Related + 2 Trends", kOmniboxInspireMeWith5Mixed,
-     std::size(kOmniboxInspireMeWith5Mixed), nullptr},
+     std::size(kOmniboxInspireMeWith5Mixed), "t3363415"},
     {"10 Trends", kOmniboxInspireMeWith10Trends,
-     std::size(kOmniboxInspireMeWith10Trends), nullptr},
+     std::size(kOmniboxInspireMeWith10Trends), "t3363415"},
     {"10 Related", kOmniboxInspireMeWith10Related,
-     std::size(kOmniboxInspireMeWith10Related), nullptr},
+     std::size(kOmniboxInspireMeWith10Related), "t3363415"},
     {"5 Related + 5 Trends", kOmniboxInspireMeWith10Mixed,
-     std::size(kOmniboxInspireMeWith10Mixed), nullptr}};
+     std::size(kOmniboxInspireMeWith10Mixed), "t3363415"}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kOmniboxSquareSuggestionIconFavicons[] = {
