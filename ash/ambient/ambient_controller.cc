@@ -807,10 +807,6 @@ void AmbientController::OnEnabledPrefChanged() {
       return;
     }
     DVLOG(1) << "Ambient mode enabled";
-    // TODO(b/274165045): Remove this temporary way of circulating the video
-    // theme throughout the system once the hub supports the video theme. This
-    // is just for experimentation purposes until then.
-    SetUiSettingsForExperimentation();
 
     AddAmbientModeUserSettingsPolicyPrefObservers();
 
@@ -1147,15 +1143,6 @@ void AmbientController::MaybeStartScreenSaver() {
 AmbientUiSettings AmbientController::GetCurrentUiSettings() const {
   CHECK(GetPrimaryUserPrefService());
   return AmbientUiSettings::ReadFromPrefService(*GetPrimaryUserPrefService());
-}
-
-void AmbientController::SetUiSettingsForExperimentation() {
-  if (features::IsTimeOfDayScreenSaverEnabled()) {
-    CHECK(GetPrimaryUserPrefService());
-    AmbientUiSettings(AmbientTheme::kVideo,
-                      features::kTimeOfDayScreenSaverVideo.Get())
-        .WriteToPrefService(*GetPrimaryUserPrefService());
-  }
 }
 
 void AmbientController::MaybeDismissUIOnMouseMove() {

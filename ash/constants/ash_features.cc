@@ -2111,17 +2111,6 @@ BASE_FEATURE(kTimeOfDayScreenSaver,
              "FeatureManagementTimeOfDayScreenSaver",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<AmbientVideo>::Option
-    kTimeOfDayScreenSaverVideoOptions[] = {
-        {AmbientVideo::kNewMexico, "new_mexico"},
-        {AmbientVideo::kClouds, "clouds"}};
-
-// When |kTimeOfDayScreenSaver| is enabled, specifies which video theme to load.
-// If |kTimeOfDayScreenSaver| is disabled, this is unused.
-const base::FeatureParam<AmbientVideo> kTimeOfDayScreenSaverVideo{
-    &kTimeOfDayScreenSaver, "FeatureManagementTimeOfDayScreenSaverVideo",
-    AmbientVideo::kNewMexico, &kTimeOfDayScreenSaverVideoOptions};
-
 // Enables time of day wallpaper.
 BASE_FEATURE(kTimeOfDayWallpaper,
              "FeatureManagementTimeOfDayWallpaper",

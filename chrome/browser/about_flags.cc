@@ -1054,16 +1054,6 @@ const FeatureEntry::Choice kLacrosDataBackwardMigrationModePolicyChoices[] = {
      crosapi::browser_util::kLacrosDataBackwardMigrationModePolicyKeepAll},
 };
 
-const FeatureEntry::FeatureParam kTimeOfDayScreenSaverNewMexico = {
-    "FeatureManagementTimeOfDayScreenSaverVideo", "new_mexico"};
-
-const FeatureEntry::FeatureParam kTimeOfDayScreenSaverClouds = {
-    "FeatureManagementTimeOfDayScreenSaverVideo", "clouds"};
-
-const FeatureEntry::FeatureVariation kTimeOfDayScreenSaverVideoVariations[] = {
-    {"New Mexico", &kTimeOfDayScreenSaverNewMexico, 1, nullptr},
-    {"Clouds", &kTimeOfDayScreenSaverClouds, 1, nullptr}};
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const FeatureEntry::Choice kForceUIDirectionChoices[] = {
@@ -4026,9 +4016,7 @@ const FeatureEntry kFeatureEntries[] = {
     {kTimeOfDayScreenSaverInternalName,
      flag_descriptions::kTimeOfDayScreenSaverName,
      flag_descriptions::kTimeOfDayScreenSaverDescription, kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kTimeOfDayScreenSaver,
-                                    kTimeOfDayScreenSaverVideoVariations,
-                                    "FeatureManagementTimeOfDayScreenSaver")},
+     FEATURE_VALUE_TYPE(ash::features::kTimeOfDayScreenSaver)},
     {kTimeOfDayWallpaperInternalName,
      flag_descriptions::kTimeOfDayWallpaperName,
      flag_descriptions::kTimeOfDayWallpaperDescription, kOsCrOS,
