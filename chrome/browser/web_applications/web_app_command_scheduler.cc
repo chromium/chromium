@@ -247,6 +247,7 @@ void WebAppCommandScheduler::PersistFileHandlersUserChoice(
 void WebAppCommandScheduler::ScheduleManifestUpdateCheck(
     const GURL& url,
     const AppId& app_id,
+    base::Time check_time,
     base::WeakPtr<content::WebContents> contents,
     ManifestUpdateCheckCommand::CompletedCallback callback,
     const base::Location& location) {
@@ -260,7 +261,7 @@ void WebAppCommandScheduler::ScheduleManifestUpdateCheck(
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<ManifestUpdateCheckCommand>(
-          url, app_id, contents, std::move(callback),
+          url, app_id, check_time, contents, std::move(callback),
           std::make_unique<WebAppDataRetriever>()),
       location);
 }

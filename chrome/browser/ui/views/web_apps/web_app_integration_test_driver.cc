@@ -3744,7 +3744,8 @@ void WebAppIntegrationTestDriver::ForceUpdateManifestContents(
   active_app_id_ = app_id;
   // Manifest updates must occur as the first navigation after a webapp is
   // installed, otherwise the throttle is tripped.
-  ASSERT_FALSE(provider()->manifest_update_manager().IsUpdateConsumed(app_id));
+  ASSERT_FALSE(provider()->manifest_update_manager().IsUpdateConsumed(
+      app_id, base::Time::Now()));
   ASSERT_FALSE(
       provider()->manifest_update_manager().IsUpdateCommandPending(app_id));
   NavigateTabbedBrowserToSite(app_url_with_manifest_param,

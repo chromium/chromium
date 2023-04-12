@@ -362,7 +362,7 @@ class ManifestUpdateCheckCommandTest : public WebAppTest {
     RunResult output_result;
     provider().command_manager().ScheduleCommand(
         std::make_unique<ManifestUpdateCheckCommand>(
-            url, app_id, web_contents()->GetWeakPtr(),
+            url, app_id, base::Time::Now(), web_contents()->GetWeakPtr(),
             base::BindLambdaForTesting(
                 [&](ManifestUpdateCheckResult check_result,
                     absl::optional<WebAppInstallInfo> new_install_info) {

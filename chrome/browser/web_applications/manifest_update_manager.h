@@ -96,7 +96,7 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   void MaybeUpdate(const GURL& url,
                    const absl::optional<AppId>& app_id,
                    content::WebContents* web_contents);
-  bool IsUpdateConsumed(const AppId& app_id);
+  bool IsUpdateConsumed(const AppId& app_id, base::Time check_time);
   bool IsUpdateCommandPending(const AppId& app_id);
 
   // WebAppInstallManagerObserver:
@@ -156,6 +156,7 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
 
   void StartManifestCheckAfterPageLoad(
       const AppId& app_id,
+      base::Time check_time,
       base::WeakPtr<content::WebContents> web_contents);
 
   void OnManifestCheckAwaitAppWindowClose(
@@ -172,7 +173,9 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       WebAppInstallInfo install_info);
 
-  bool MaybeConsumeUpdateCheck(const GURL& origin, const AppId& app_id);
+  bool MaybeConsumeUpdateCheck(const GURL& origin,
+                               const AppId& app_id,
+                               base::Time check_time);
   absl::optional<base::Time> GetLastUpdateCheckTime(const AppId& app_id) const;
   void SetLastUpdateCheckTime(const GURL& origin,
                               const AppId& app_id,
