@@ -310,7 +310,8 @@ AXObject* BlinkAXTreeSource::ChildAt(AXObject* node, size_t index) const {
   auto* child = node->ChildAtIncludingIgnored(static_cast<int>(index));
 
   // The child may be invalid due to issues in blink accessibility code.
-  if (!child || child->IsDetached()) {
+  CHECK(child);
+  if (child->IsDetached()) {
     DCHECK(false) << "Should not try to serialize an invalid child:"
                   << "\nParent: " << node->ToString(true).Utf8()
                   << "\nChild: " << child->ToString(true).Utf8();
