@@ -38,6 +38,8 @@ def main():
 
     command += ' --dump-inputs'
     print('Running:', command)
+    # Ninja commands are meant to be run from within the build directory.
+    os.chdir(build_dir)
     sys.exit(os.system(command))
 
 
