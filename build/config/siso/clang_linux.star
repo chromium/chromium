@@ -27,6 +27,7 @@ def __step_config(ctx, step_config):
                 "third_party/llvm-build/Release+Asserts/bin/clang++",
             ],
             "remote": True,
+            "canonicalize_dir": True,
         },
         {
             "name": "clang/cc",
@@ -36,6 +37,7 @@ def __step_config(ctx, step_config):
                 "third_party/llvm-build/Release+Asserts/bin/clang",
             ],
             "remote": True,
+            "canonicalize_dir": True,
         },
     ])
     return step_config
