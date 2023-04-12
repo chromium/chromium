@@ -472,8 +472,15 @@ void ExtensionsMenuView::OnToolbarModelInitialized() {
 }
 
 void ExtensionsMenuView::OnToolbarPinnedActionsChanged() {
-  for (auto* menu_item : extensions_menu_items_)
-    menu_item->UpdatePinButton();
+  for (auto* menu_item : extensions_menu_items_) {
+    extensions::ExtensionId extension_id =
+        GetAsMenuItemView(menu_item)->view_controller()->GetId();
+    bool is_force_pinned =
+        toolbar_model_ && toolbar_model_->IsActionForcePinned(extension_id);
+    bool is_pinned =
+        toolbar_model_ && toolbar_model_->IsActionPinned(extension_id);
+    menu_item->UpdatePinButton(is_force_pinned, is_pinned);
+  }
 }
 
 // static
