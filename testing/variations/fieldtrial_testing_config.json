@@ -10671,30 +10671,6 @@
             ]
         }
     ],
-    "RasterTilePriorityQueue": [
-        {
-            "platforms": [
-                "android_weblayer",
-                "android_webview",
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RasterTilePriorityQueue"
-                    ]
-                }
-            ]
-        }
-    ],
     "RawDrawAndDrDc": [
         {
             "platforms": [
