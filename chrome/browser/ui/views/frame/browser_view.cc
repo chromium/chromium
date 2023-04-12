@@ -926,12 +926,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 #endif
 
   // High Efficiency mode is default off but is available to turn on
-  if (!performance_manager::features::kHighEfficiencyModeDefaultState.Get() &&
-      base::FeatureList::IsEnabled(
-          performance_manager::features::kHighEfficiencyModeAvailable)) {
-    high_efficiency_opt_in_iph_controller_ =
-        std::make_unique<HighEfficiencyOptInIPHController>(browser_.get());
-  }
+  high_efficiency_opt_in_iph_controller_ =
+      std::make_unique<HighEfficiencyOptInIPHController>(browser_.get());
 }
 
 BrowserView::~BrowserView() {

@@ -99,11 +99,7 @@ void BrowserCommandHandler::CanExecuteCommand(
       can_execute = true;
       break;
     case Command::kOpenPerformanceSettings:
-      can_execute =
-          base::FeatureList::IsEnabled(
-              performance_manager::features::kBatterySaverModeAvailable) ||
-          base::FeatureList::IsEnabled(
-              performance_manager::features::kHighEfficiencyModeAvailable);
+      can_execute = true;
       break;
     case Command::kOpenNTPAndStartCustomizeChromeTutorial:
       can_execute =

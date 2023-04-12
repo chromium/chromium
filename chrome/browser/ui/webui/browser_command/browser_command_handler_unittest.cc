@@ -521,45 +521,20 @@ TEST_F(BrowserCommandHandlerTest, OpenPasswordManagerCommand) {
 
 TEST_F(BrowserCommandHandlerTest, OpenPerformanceSettings) {
   {
-    // Cannot open performance settings if the features enabling the page are
-    // not enabled.
-    base::test::ScopedFeatureList disabled;
-    disabled.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            {performance_manager::features::kBatterySaverModeAvailable},
-            {performance_manager::features::kHighEfficiencyModeAvailable}});
-    EXPECT_FALSE(CanExecuteCommand(Command::kOpenPerformanceSettings));
-  }
-  {
-    // Can open the performance settings if at least one feature is enabled.
-    base::test::ScopedFeatureList battery_saver;
-    battery_saver.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{performance_manager::features::
-                                   kBatterySaverModeAvailable,
-                               {}}},
-        /*disabled_features=*/{
-            {performance_manager::features::kHighEfficiencyModeAvailable}});
-    EXPECT_TRUE(CanExecuteCommand(Command::kOpenPerformanceSettings));
-  }
-  {
-    // Can open the performance settings if at least one feature is enabled.
+    // Can open the performance settings if battery saver is unavailable.
     base::test::ScopedFeatureList high_efficiency;
     high_efficiency.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{{performance_manager::features::
-                                   kHighEfficiencyModeAvailable,
-                               {}}},
+        /*enabled_features=*/{},
         /*disabled_features=*/{
             {performance_manager::features::kBatterySaverModeAvailable}});
     EXPECT_TRUE(CanExecuteCommand(Command::kOpenPerformanceSettings));
   }
   {
-    // Can open with both features enabled.
+    // Can open if battery saver is available.
     base::test::ScopedFeatureList enabled;
     enabled.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{performance_manager::features::kBatterySaverModeAvailable, {}},
-         {performance_manager::features::kHighEfficiencyModeAvailable, {}}},
+        {{performance_manager::features::kBatterySaverModeAvailable, {}}},
         /*disabled_features=*/{});
     EXPECT_TRUE(CanExecuteCommand(Command::kOpenPerformanceSettings));
 

@@ -127,7 +127,8 @@ void HighEfficiencyChipView::UpdateImpl() {
       ResetSlideAnimation(false);
     }
 
-    if (performance_manager::features::kHighEfficiencyModeDefaultState.Get()) {
+    if (base::FeatureList::IsEnabled(
+            feature_engagement::kIPHHighEfficiencyInfoModeFeature)) {
       // Delay the IPH to ensure the chip is not animating when it appears.
       timer_.Start(FROM_HERE, kIPHDelayDuration,
                    base::BindOnce(&HighEfficiencyChipView::MaybeShowIPH,

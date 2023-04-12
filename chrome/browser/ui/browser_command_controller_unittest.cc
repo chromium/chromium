@@ -38,10 +38,6 @@
 class BrowserCommandControllerTest : public BrowserWithTestWindowTest {
  public:
   BrowserCommandControllerTest() = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      performance_manager::features::kHighEfficiencyModeAvailable};
 };
 
 TEST_F(BrowserCommandControllerTest, IsReservedCommandOrKey) {

@@ -32,10 +32,7 @@ class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{performance_manager::features::kHighEfficiencyModeAvailable,
-          {{"default_state", "true"}, {"time_before_discard", "30s"}}},
-         {performance_manager::features::kBatterySaverModeAvailable, {}}},
-        {});
+        {{performance_manager::features::kBatterySaverModeAvailable, {}}}, {});
 
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     SetUpFakeBatterySampler();
@@ -44,6 +41,9 @@ class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
 
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
+    performance_manager::user_tuning::UserPerformanceTuningManager::
+        GetInstance()
+            ->SetHighEfficiencyModeEnabled(true);
     embedded_test_server()->StartAcceptingConnections();
   }
 

@@ -62,7 +62,6 @@ class PerformanceLogSourceTest : public BrowserWithTestWindowTest {
     feature_list_.InitWithFeaturesAndParameters(
         {
             {performance_manager::features::kBatterySaverModeAvailable, {}},
-            {performance_manager::features::kHighEfficiencyModeAvailable, {}},
         },
         {});
     environment_.SetUp(local_state_);

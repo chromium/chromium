@@ -94,7 +94,6 @@ class UserPerformanceTuningManagerTest : public testing::Test {
   void StartManager(
       std::vector<base::test::FeatureRefAndParams> features_and_params = {
           {performance_manager::features::kBatterySaverModeAvailable, {}},
-          {performance_manager::features::kHighEfficiencyModeAvailable, {}},
       }) {
     auto test_sampling_event_source =
         std::make_unique<base::test::TestSamplingEventSource>();
@@ -252,26 +251,6 @@ TEST_F(UserPerformanceTuningManagerTest, InvalidPrefInStore) {
           1);
   EXPECT_FALSE(manager()->IsBatterySaverActive());
   EXPECT_FALSE(throttling_enabled());
-}
-
-TEST_F(UserPerformanceTuningManagerTest, HEMFinchDisabledByDefault) {
-  StartManager({
-      {performance_manager::features::kHighEfficiencyModeAvailable,
-       {{"default_state", "false"}}},
-  });
-
-  EXPECT_FALSE(local_state_.GetBoolean(
-      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled));
-}
-
-TEST_F(UserPerformanceTuningManagerTest, HEMFinchEnabledByDefault) {
-  StartManager({
-      {performance_manager::features::kHighEfficiencyModeAvailable,
-       {{"default_state", "true"}}},
-  });
-
-  EXPECT_TRUE(local_state_.GetBoolean(
-      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled));
 }
 
 TEST_F(UserPerformanceTuningManagerTest, EnabledOnBatteryPower) {

@@ -42,12 +42,6 @@ suite('SettingsMenu', function() {
     settingsMenu.$.people.click();
     assertEquals('', Router.getInstance().getQueryParameters().toString());
   });
-
-  test('performanceFeatureNotAvailableTest', function() {
-    assertFalse(
-        !!settingsMenu.shadowRoot!.querySelector<HTMLElement>('#performance'),
-        'performance menu item should not exist when features are unavailable');
-  });
 });
 
 suite('SettingsMenuReset', function() {

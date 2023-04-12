@@ -471,7 +471,6 @@ var CrSettingsPerformanceMenuTest = class extends CrSettingsBrowserTest {
   get featureListInternal() {
     return {
       enabled: [
-        'performance_manager::features::kHighEfficiencyModeAvailable',
         'performance_manager::features::kBatterySaverModeAvailable',
       ],
     };
@@ -486,15 +485,6 @@ var CrSettingsPerformancePageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/performance_page_test.js';
-  }
-
-  /** @override */
-  get featureListInternal() {
-    return {
-      enabled: [
-        'performance_manager::features::kHighEfficiencyModeAvailable',
-      ],
-    };
   }
 };
 
@@ -889,16 +879,6 @@ var CrSettingsMenuTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/settings_menu_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      disabled: [
-        'performance_manager::features::kHighEfficiencyModeAvailable',
-        'performance_manager::features::kBatterySaverModeAvailable',
-      ],
-    };
   }
 };
 

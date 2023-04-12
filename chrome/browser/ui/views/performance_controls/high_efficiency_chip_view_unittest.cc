@@ -57,8 +57,6 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
   HighEfficiencyChipViewTest() = default;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        performance_manager::features::kHighEfficiencyModeAvailable);
     TestWithBrowserView::SetUp();
 
     AddNewTab(kMemorySavingsKilobytes,

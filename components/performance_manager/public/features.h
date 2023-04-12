@@ -38,29 +38,10 @@ BASE_DECLARE_FEATURE(kRunOnDedicatedThreadPoolThread);
 // directly from Performance Manager rather than via TabLoader.
 BASE_DECLARE_FEATURE(kBackgroundTabLoadingFromPerformanceManager);
 
-// Make the High-Efficiency or Battery Saver Modes available to users. If this
-// is enabled, it doesn't mean the specific Mode is enabled, just that the user
-// has the option of toggling it.
-BASE_DECLARE_FEATURE(kHighEfficiencyModeAvailable);
+// Make the Battery Saver Modes available to users. If this is enabled, it
+// doesn't mean the mode is enabled, just that the user has the option of
+// toggling it.
 BASE_DECLARE_FEATURE(kBatterySaverModeAvailable);
-
-// Defines the time in seconds before a background tab is discarded for
-// High-Efficiency Mode.
-extern const base::FeatureParam<base::TimeDelta>
-    kHighEfficiencyModeTimeBeforeDiscard;
-
-// The default state of the high-efficiency mode pref
-extern const base::FeatureParam<bool> kHighEfficiencyModeDefaultState;
-
-// The number of tabs at which the user may be prompted to enable high
-// efficiency mode.
-extern const base::FeatureParam<int> kHighEfficiencyModePromoTabCountThreshold;
-
-// The percentage of used memory at which the user may be prompted to enable
-// high efficiency mode. For instance, if this parameter is set to 70, the promo
-// would be triggered when memory use exceeds 70% of available memory.
-extern const base::FeatureParam<int>
-    kHighEfficiencyModePromoMemoryPercentThreshold;
 
 // Flag to control a baseline HaTS survey for Chrome performance.
 BASE_DECLARE_FEATURE(kPerformanceControlsPerformanceSurvey);

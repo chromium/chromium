@@ -63,9 +63,7 @@ class PerformanceManagerMetricsProviderTest : public testing::Test {
  private:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        {performance_manager::features::kHighEfficiencyModeAvailable,
-         performance_manager::features::kBatterySaverModeAvailable},
-        {});
+        {performance_manager::features::kBatterySaverModeAvailable}, {});
 
     performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(
         local_state_.registry());

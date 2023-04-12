@@ -45,9 +45,6 @@ class AppMenuModelInteractiveTest : public InteractiveBrowserTest {
   void SetUp() override {
     set_open_about_blank_on_browser_launch(true);
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
-        performance_manager::features::kHighEfficiencyModeAvailable);
     InteractiveBrowserTest::SetUp();
   }
 

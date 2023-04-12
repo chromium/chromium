@@ -138,7 +138,6 @@ class PerformanceControlsHatsServiceHighEfficiencyOptOutTest
         {performance_manager::features::
              kPerformanceControlsHighEfficiencyOptOutSurvey,
          {}},
-        {performance_manager::features::kHighEfficiencyModeAvailable, {}},
     };
   }
 };

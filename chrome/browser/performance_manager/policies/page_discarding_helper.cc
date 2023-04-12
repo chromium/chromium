@@ -467,14 +467,6 @@ PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
 bool PageDiscardingHelper::IsPageOptedOutOfDiscarding(
     const std::string& browser_context_id,
     const GURL& url) const {
-  if (!base::FeatureList::IsEnabled(features::kHighEfficiencyModeAvailable) &&
-      !base::FeatureList::IsEnabled(features::kBatterySaverModeAvailable)) {
-    // This list takes effect regardless of which mode the user is operating
-    // under, but its launch is gated on these finch experiments for launch
-    // considerations.
-    return false;
-  }
-
   auto it = profiles_no_discard_patterns_.find(browser_context_id);
   // TODO(crbug.com/1308741): Change the CHECK to a DCHECK in Sept 2022, after
   // verifying that there are no crash reports.

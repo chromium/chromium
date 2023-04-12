@@ -78,17 +78,12 @@ class HighEfficiencyInteractiveTest : public InteractiveBrowserTest {
     test_clock_.Advance(kShortDelay);
   }
 
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{performance_manager::features::kHighEfficiencyModeAvailable,
-          {{"default_state", "true"}, {"time_before_discard", "1h"}}}},
-        {});
-
-    InteractiveBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
+    performance_manager::user_tuning::UserPerformanceTuningManager::
+        GetInstance()
+            ->SetHighEfficiencyModeEnabled(true);
+
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -143,7 +138,6 @@ class HighEfficiencyInteractiveTest : public InteractiveBrowserTest {
   base::SimpleTestTickClock test_clock_;
   resource_coordinator::ScopedSetTickClockForTesting
       scoped_set_tick_clock_for_testing_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests Discarding on pages with various types of content
@@ -563,92 +557,4 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
                            memory_estimate * 1024)) != std::string::npos;
               },
               browser())));
-}
-
-// Tests the functionality of the High Efficiency IPH
-class HighEfficiencyInfoIPHInteractiveTest
-    : public HighEfficiencyInteractiveTest {
- public:
-  HighEfficiencyInfoIPHInteractiveTest() = default;
-  ~HighEfficiencyInfoIPHInteractiveTest() override = default;
-
-  void SetUp() override {
-    iph_features_.InitAndEnableFeaturesWithParameters(
-        {{feature_engagement::kIPHHighEfficiencyInfoModeFeature, {}},
-         {performance_manager::features::kHighEfficiencyModeAvailable,
-          {{"default_state", "true"}, {"time_before_discard", "1h"}}}});
-    InteractiveBrowserTest::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    HighEfficiencyInteractiveTest::SetUpOnMainThread();
-    EXPECT_TRUE(user_education::test::WaitForFeatureEngagementReady(
-        GetFeaturePromoController()));
-  }
-
-  BrowserFeaturePromoController* GetFeaturePromoController() {
-    auto* promo_controller = static_cast<BrowserFeaturePromoController*>(
-        browser()->window()->GetFeaturePromoController());
-    return promo_controller;
-  }
-
- private:
-  feature_engagement::test::ScopedIphFeatureList iph_features_;
-};
-
-// High Efficiency info IPH should close after clicking the "Got It"
-// default button
-IN_PROC_BROWSER_TEST_F(HighEfficiencyInfoIPHInteractiveTest,
-                       ClosesIPHOnButtonClick) {
-  RunTestSequence(
-      InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      DiscardAndSelectTab(0, kFirstTabContents),
-      WaitForShow(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      PressButton(user_education::HelpBubbleView::kDefaultButtonIdForTesting),
-      WaitForHide(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
-}
-
-// High Efficiency info IPH should close and navigates to the Performance
-// settings page in a new tab after clicking on the settings non-default button
-IN_PROC_BROWSER_TEST_F(HighEfficiencyInfoIPHInteractiveTest,
-                       NavigatesToSettingsPage) {
-  RunTestSequence(
-      InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
-      AddInstrumentedTab(kSecondTabContents, GetURL("/title1.html")),
-      DiscardAndSelectTab(0, kFirstTabContents),
-      WaitForShow(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      FlushEvents(),
-      // This needs to be done on a fresh message loop so that the IPH closes
-      PressButton(
-          user_education::HelpBubbleView::kFirstNonDefaultButtonIdForTesting),
-      WaitForHide(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      Check(base::BindLambdaForTesting(
-          [=]() { return browser()->tab_strip_model()->GetTabCount() == 3; })),
-      InstrumentTab(kPerformanceSettingsTab),
-      WaitForWebContentsReady(kPerformanceSettingsTab,
-                              GURL(chrome::kChromeUIPerformanceSettingsURL)));
-}
-
-// High Efficiency IPH should close when navigating to another tab
-IN_PROC_BROWSER_TEST_F(HighEfficiencyInfoIPHInteractiveTest,
-                       ClosesIPHOnTabSwitch) {
-  RunTestSequence(
-      InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      DiscardAndSelectTab(0, kFirstTabContents),
-      WaitForShow(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
-      FlushEvents(),
-      // This needs to be done on a fresh message loop so that the IPH closes
-      SelectTab(kTabStripElementId, 1),
-      WaitForHide(
-          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
