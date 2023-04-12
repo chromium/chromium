@@ -1059,6 +1059,10 @@ class HistoryService : public KeyedService,
   // HistoryClient::GetCanAddURLCallback().
   bool CanAddURL(const GURL& url);
 
+  // A helper function that records UMA metrics on the PageTransition type of
+  // each visit added to the VisitedLinks hashtable.
+  void LogTransitionMetricsForVisit(ui::PageTransition transition);
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The TaskRunner to which HistoryBackend tasks are posted. Nullptr once

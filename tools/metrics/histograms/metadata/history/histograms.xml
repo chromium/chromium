@@ -2554,6 +2554,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.VisitedLinks.VisitLoggedFromMainFrame" units="boolean"
+    expires_after="2024-04-11">
+  <owner>kyraseevers@chromium.org</owner>
+  <owner>brgoldstein@google.com</owner>
+  <summary>
+    For each visit being logged in the VisitedLinks hashtable by the
+    HistoryService, record whether its ui::PageTransition type came from the
+    main frame.
+  </summary>
+</histogram>
+
+<histogram name="History.VisitedLinks.VisitLoggedFromTransition"
+    enum="PageTransitionForVisitedLinks" expires_after="2024-04-11">
+  <owner>kyraseevers@chromium.org</owner>
+  <owner>brgoldstein@google.com</owner>
+  <summary>
+    For each visit being logged in the VisitedLinks hashtable by the
+    HistoryService, record its PageTransitionForVisitedLinks type. This enum
+    represents our ui::PageTransition types of interest (link vs. typed vs.
+    subframe) and a catch-all other bucket.
+  </summary>
+</histogram>
+
 <histogram name="History.VisitTableCount" units="visits"
     expires_after="2023-08-20">
   <owner>mpearson@chromium.org</owner>

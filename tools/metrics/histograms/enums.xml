@@ -78453,6 +78453,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="Discarded"/>
 </enum>
 
+<enum name="PageTransitionForVisitedLinks">
+  <int value="0" label="Other"/>
+  <int value="1" label="Link"/>
+  <int value="2" label="Typed"/>
+  <int value="3" label="ManualSubframe"/>
+</enum>
+
 <enum name="PageUsed">
   <int value="0" label="Discarded"/>
   <int value="1" label="Used"/>
