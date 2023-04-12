@@ -738,14 +738,21 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   }
 }
 
-// Opens the editor on the given URL node.
-- (void)editNodeURL:(const BookmarkNode*)node {
-  DCHECK(node);
-  DCHECK_EQ(node->type(), BookmarkNode::URL);
+// Opens the editor for `nodeID` node, if it still exists. The node has to be
+// a bookmark node.
+- (void)editBookmarkNodeWithID:(int64_t)nodeID {
+  const bookmarks::BookmarkNode* bookmarkNodeFromID =
+      bookmark_utils_ios::FindNodeById(self.profileBookmarkModel, nodeID);
+  if (!bookmarkNodeFromID) {
+    // While the contextual menu was opened, the node might has been removed.
+    // If the node doesn't exist anymore, there nothing to do.
+    return;
+  }
+  DCHECK_EQ(bookmarkNodeFromID->type(), BookmarkNode::URL);
   base::RecordAction(
       base::UserMetricsAction("MobileBookmarkManagerEditBookmark"));
   [self ensureBookmarksCoordinator];
-  [self.bookmarksCoordinator presentEditorForURLNode:node];
+  [self.bookmarksCoordinator presentEditorForURLNode:bookmarkNodeFromID];
 }
 
 // Opens the editor for `nodeID` node, if it still exists. The node has to be
@@ -1938,15 +1945,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [coordinator addItemWithTitle:titleString
                          action:^{
                            BookmarksHomeViewController* strongSelf = weakSelf;
-                           if (!strongSelf) {
-                             return;
-                           }
-                           const bookmarks::BookmarkNode* nodeFromId =
-                               bookmark_utils_ios::FindNodeById(
-                                   strongSelf.profileBookmarkModel, nodeId);
-                           if (nodeFromId) {
-                             [strongSelf editNodeURL:nodeFromId];
-                           }
+                           [strongSelf editBookmarkNodeWithID:nodeId];
                          }
                           style:UIAlertActionStyleDefault
                         enabled:editEnabled];
@@ -2470,15 +2469,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
       UIAction* editAction = [actionFactory actionToEditWithBlock:^{
         BookmarksHomeViewController* innerStrongSelf = weakSelf;
-        if (!innerStrongSelf) {
-          return;
-        }
-        const bookmarks::BookmarkNode* nodeFromId =
-            bookmark_utils_ios::FindNodeById(
-                innerStrongSelf.profileBookmarkModel, nodeId);
-        if (nodeFromId) {
-          [innerStrongSelf editNodeURL:nodeFromId];
-        }
+        [innerStrongSelf editBookmarkNodeWithID:nodeId];
       }];
       [menuElements addObject:editAction];
 
