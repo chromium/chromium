@@ -10,6 +10,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/templates/saved_desk_controller.h"
+#include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,10 +27,13 @@ constexpr char kAdminTemplateResultPrefix[] = "admin-template://";
 
 DesksAdminTemplateResult::DesksAdminTemplateResult(
     Profile* profile,
+    AppListControllerDelegate* list_controller,
     const base ::GUID& template_uuid,
     const std::u16string& title,
     const gfx::ImageSkia& icon)
-    : profile_(profile), template_uuid_(template_uuid) {
+    : profile_(profile),
+      list_controller_(list_controller),
+      template_uuid_(template_uuid) {
   DCHECK(profile_);
   set_id(kAdminTemplateResultPrefix + template_uuid.AsLowercaseString());
   SetCategory(Category::kUnknown);
@@ -44,11 +48,14 @@ DesksAdminTemplateResult::DesksAdminTemplateResult(
 DesksAdminTemplateResult::~DesksAdminTemplateResult() = default;
 
 void DesksAdminTemplateResult::Open(int event_flags) {
-  ash::SavedDeskController::Get()->LaunchAdminTemplate(template_uuid_);
+  ash::SavedDeskController::Get()->LaunchAdminTemplate(
+      template_uuid_, list_controller_->GetAppListDisplayId());
 }
 
-DesksAdminTemplateProvider::DesksAdminTemplateProvider(Profile* profile)
-    : profile_(profile) {
+DesksAdminTemplateProvider::DesksAdminTemplateProvider(
+    Profile* profile,
+    AppListControllerDelegate* list_controller)
+    : profile_(profile), list_controller_(list_controller) {
   DCHECK(profile_);
 }
 
@@ -74,7 +81,7 @@ void DesksAdminTemplateProvider::StartZeroState() {
     // With productivity launcher enabled, release notes are shown in continue
     // section.
     search_results.emplace_back(std::make_unique<DesksAdminTemplateResult>(
-        profile_, metadata.uuid, metadata.name, icon));
+        profile_, list_controller_, metadata.uuid, metadata.name, icon));
   }
 
   SwapResults(&search_results);

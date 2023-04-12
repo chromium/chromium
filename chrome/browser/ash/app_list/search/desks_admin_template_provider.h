@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 
+class AppListControllerDelegate;
 class Profile;
 
 namespace gfx {
@@ -25,6 +26,7 @@ namespace app_list {
 class DesksAdminTemplateResult : public ChromeSearchResult {
  public:
   DesksAdminTemplateResult(Profile* profile,
+                           AppListControllerDelegate* list_controller,
                            const base::GUID& template_uuid,
                            const std::u16string& title,
                            const gfx::ImageSkia& icon);
@@ -39,6 +41,7 @@ class DesksAdminTemplateResult : public ChromeSearchResult {
 
  private:
   Profile* const profile_;
+  AppListControllerDelegate* const list_controller_;
   base::GUID template_uuid_;
 };
 
@@ -47,7 +50,8 @@ class DesksAdminTemplateResult : public ChromeSearchResult {
 // admin templates will appear in the continue section view.
 class DesksAdminTemplateProvider : public SearchProvider {
  public:
-  explicit DesksAdminTemplateProvider(Profile* profile);
+  DesksAdminTemplateProvider(Profile* profile,
+                             AppListControllerDelegate* list_controller);
   ~DesksAdminTemplateProvider() override;
 
   DesksAdminTemplateProvider(const DesksAdminTemplateProvider&) = delete;
@@ -60,6 +64,7 @@ class DesksAdminTemplateProvider : public SearchProvider {
 
  private:
   Profile* const profile_;
+  AppListControllerDelegate* const list_controller_;
 };
 
 }  // namespace app_list

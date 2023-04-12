@@ -3464,7 +3464,8 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, LaunchAdminTemplate) {
   ash::SavedDeskControllerTestApi(saved_desk_controller)
       .SetAdminTemplate(std::move(admin_template));
 
-  saved_desk_controller->LaunchAdminTemplate(template_uuid);
+  saved_desk_controller->LaunchAdminTemplate(
+      template_uuid, display::Screen::GetScreen()->GetPrimaryDisplay().id());
 
   // Verify that there are two browsers (one from the suite and one from the
   // test), and verify that our launched browser is stacked on top.

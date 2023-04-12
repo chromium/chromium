@@ -38,8 +38,10 @@ class ASH_EXPORT SavedDeskController {
   virtual std::vector<AdminTemplateMetadata> GetAdminTemplateMetadata() const;
 
   // Launch the template identified by `template_uuid`. Returns false if the
-  // template doesn't exist.
-  virtual bool LaunchAdminTemplate(const base::GUID& template_uuid);
+  // template doesn't exist. By default, windows will open on the display
+  // identified by `default_display_id`.
+  virtual bool LaunchAdminTemplate(const base::GUID& template_uuid,
+                                   int64_t default_display_id);
 
  private:
   friend class SavedDeskControllerTestApi;

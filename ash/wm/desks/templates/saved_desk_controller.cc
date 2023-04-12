@@ -105,7 +105,8 @@ SavedDeskController::GetAdminTemplateMetadata() const {
       .name = base::UTF8ToUTF16(base::StringPiece(kPlaceholderName))}};
 }
 
-bool SavedDeskController::LaunchAdminTemplate(const base::GUID& template_uuid) {
+bool SavedDeskController::LaunchAdminTemplate(const base::GUID& template_uuid,
+                                              int64_t default_display_id) {
   auto admin_template = GetAdminTemplate(template_uuid);
   if (!admin_template) {
     return false;

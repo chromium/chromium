@@ -7,6 +7,7 @@
 
 #include "ash/wm/desks/templates/saved_desk_controller.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
+#include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -36,7 +37,7 @@ class MockSavedDeskController : public ash::SavedDeskController {
               (const, override));
   MOCK_METHOD(bool,
               LaunchAdminTemplate,
-              (const base::GUID& template_uuid),
+              (const base::GUID& template_uuid, int64_t default_display_id),
               (override));
 };
 
@@ -54,7 +55,8 @@ class DesksAdminTemplateProviderTest : public testing::Test {
     ASSERT_TRUE(profile_manager_->SetUp());
     profile_ = profile_manager_->CreateTestingProfile("name");
 
-    auto provider = std::make_unique<DesksAdminTemplateProvider>(profile_);
+    auto provider = std::make_unique<DesksAdminTemplateProvider>(
+        profile_, &list_controller_);
     provider_ = provider.get();
     search_controller_->AddProvider(std::move(provider));
 
@@ -84,6 +86,7 @@ class DesksAdminTemplateProviderTest : public testing::Test {
  private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
   TestingProfile* profile_;
+  ::test::TestAppListControllerDelegate list_controller_;
   DesksAdminTemplateProvider* provider_ = nullptr;
 };
 
@@ -110,7 +113,7 @@ TEST_F(DesksAdminTemplateProviderTest, Basic) {
       .uuid = base::GUID::GenerateRandomV4(), .name = u"test admin template"}};
 
   EXPECT_CALL(mock, GetAdminTemplateMetadata()).WillOnce(Return(results));
-  EXPECT_CALL(mock, LaunchAdminTemplate(results[0].uuid))
+  EXPECT_CALL(mock, LaunchAdminTemplate(results[0].uuid, _))
       .WillOnce(Return(true));
 
   StartZeroStateSearch();
