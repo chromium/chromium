@@ -846,7 +846,7 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // font-size-adjust
-  FontSizeAdjust FontSizeAdjust() const {
+  blink::FontSizeAdjust FontSizeAdjust() const {
     return GetFontDescription().SizeAdjust();
   }
   bool HasFontSizeAdjust() const {
