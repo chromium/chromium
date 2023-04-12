@@ -6,6 +6,7 @@
 
 #include <iomanip>
 #include <locale>
+#include <sstream>
 #include <type_traits>
 
 #include "base/files/file_path.h"
@@ -14,6 +15,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
@@ -76,6 +78,22 @@ Quoter<T> Quote(const T& value) {
   return {value};
 }
 
+template <typename T>
+  requires std::is_enum_v<T>
+ostream& operator<<(ostream& out, Quoter<T> q) {
+  // Convert enum value to string.
+  const std::string s = (std::ostringstream() << q.value).str();
+
+  // Does the string start with 'k'?
+  if (!s.empty() && s.front() == 'k') {
+    // Skip the 'k' prefix.
+    return out << base::StringPiece(s).substr(1);
+  }
+
+  // No 'k' prefix. Print between parentheses.
+  return out << '(' << s << ')';
+}
+
 ostream& operator<<(ostream& out, Quoter<TimeDelta> q) {
   const int64_t ms = q.value.InMilliseconds();
   if (ms < 1000) {
@@ -113,72 +131,6 @@ ostream& operator<<(ostream& out, Quoter<absl::optional<T>> q) {
   return out << Quote(*q.value);
 }
 
-ostream& operator<<(ostream& out, Quoter<FileMetadata::Type> q) {
-  using Type = FileMetadata::Type;
-  switch (q.value) {
-#define PRINT(s)   \
-  case Type::k##s: \
-    return out << #s;
-    PRINT(File)
-    PRINT(Hosted)
-    PRINT(Directory)
-#undef PRINT
-  }
-
-  return out << "FileMetadata::Type("
-             << static_cast<std::underlying_type_t<Type>>(q.value) << ")";
-}
-
-ostream& operator<<(ostream& out, Quoter<mojom::ItemEvent::State> q) {
-  using State = mojom::ItemEvent::State;
-  switch (q.value) {
-#define PRINT(s)    \
-  case State::k##s: \
-    return out << #s;
-    PRINT(Queued)
-    PRINT(InProgress)
-    PRINT(Completed)
-    PRINT(Failed)
-#undef PRINT
-  }
-
-  return out << "ItemEvent::State("
-             << static_cast<std::underlying_type_t<State>>(q.value) << ")";
-}
-
-ostream& operator<<(ostream& out, Quoter<mojom::FileChange::Type> q) {
-  using Type = mojom::FileChange::Type;
-  switch (q.value) {
-#define PRINT(s)   \
-  case Type::k##s: \
-    return out << #s;
-    PRINT(Create)
-    PRINT(Delete)
-    PRINT(Modify)
-#undef PRINT
-  }
-
-  return out << "FileChange::Type("
-             << static_cast<std::underlying_type_t<Type>>(q.value) << ")";
-}
-
-ostream& operator<<(ostream& out, Quoter<LookupStatus> q) {
-  switch (q.value) {
-#define PRINT(s)           \
-  case LookupStatus::k##s: \
-    return out << #s;
-    PRINT(Ok)
-    PRINT(NotFound)
-    PRINT(PermissionDenied)
-    PRINT(Unknown)
-#undef PRINT
-  }
-
-  return out << "LookupStatus("
-             << static_cast<std::underlying_type_t<LookupStatus>>(q.value)
-             << ")";
-}
-
 ostream& operator<<(ostream& out, Quoter<ShortcutDetails> q) {
   return out << "{id: " << PinManager::Id(q.value.target_stable_id)
              << ", status: " << Quote(q.value.target_lookup_status) << "}";
@@ -213,49 +165,10 @@ ostream& operator<<(ostream& out, Quoter<mojom::FileChange> q) {
              << "}";
 }
 
-ostream& operator<<(ostream& out, Quoter<mojom::DriveError::Type> q) {
-  using Type = mojom::DriveError::Type;
-  switch (q.value) {
-#define PRINT(s)   \
-  case Type::k##s: \
-    return out << #s;
-    PRINT(CantUploadStorageFull)
-    PRINT(PinningFailedDiskFull)
-    PRINT(CantUploadStorageFullOrganization)
-    PRINT(CantUploadSharedDriveStorageFull)
-#undef PRINT
-  }
-
-  return out << "DriveError::Type("
-             << static_cast<std::underlying_type_t<Type>>(q.value) << ")";
-}
-
 ostream& operator<<(ostream& out, Quoter<mojom::DriveError> q) {
   const mojom::DriveError& e = q.value;
   return out << "{" << Quote(e.type) << " " << PinManager::Id(e.stable_id)
              << " " << Quote(e.path) << "}";
-}
-
-ostream& operator<<(ostream& out, Quoter<Stage> q) {
-  switch (q.value) {
-#define PRINT(s)    \
-  case Stage::k##s: \
-    return out << #s;
-    PRINT(Stopped)
-    PRINT(Paused)
-    PRINT(GettingFreeSpace)
-    PRINT(ListingFiles)
-    PRINT(Syncing)
-    PRINT(Success)
-    PRINT(CannotGetFreeSpace)
-    PRINT(CannotListFiles)
-    PRINT(NotEnoughSpace)
-    PRINT(CannotEnableDocsOffline)
-#undef PRINT
-  }
-
-  return out << "Stage(" << static_cast<std::underlying_type_t<Stage>>(q.value)
-             << ")";
 }
 
 // Rounds the given size to the next multiple of 4-KB.
