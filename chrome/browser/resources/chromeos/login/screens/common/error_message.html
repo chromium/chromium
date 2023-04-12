@@ -38,10 +38,10 @@
 <oobe-adaptive-dialog role="dialog" id="dialog">
   <iron-icon slot="icon" icon="oobe-32:wifi">
   </iron-icon>
-  <h1 slot="title" aria-live="assertive">
+  <h1 id="error-title" slot="title" aria-live="assertive">
     [[getDialogTitle_(locale, errorState_, uiState_)]]
   </h1>
-  <div slot="subtitle">
+  <div id="error-subtitle" slot="subtitle">
     <div hidden="[[!isOneOf_(errorState_, 'kiosk-online')]]">
       [[i18nDynamic(locale, 'kioskOnlineMessageBody')]]
     </div>
