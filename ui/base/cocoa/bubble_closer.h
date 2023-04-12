@@ -5,7 +5,7 @@
 #ifndef UI_BASE_COCOA_BUBBLE_CLOSER_H_
 #define UI_BASE_COCOA_BUBBLE_CLOSER_H_
 
-#include <objc/objc.h>
+#include <memory>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
@@ -31,8 +31,11 @@ class COMPONENT_EXPORT(UI_BASE) BubbleCloser {
  private:
   void OnClickOutside();
 
-  id event_tap_ = nil;  // Weak. Owned by AppKit.
   base::RepeatingClosure on_click_outside_;
+
+  struct ObjCStorage;
+  std::unique_ptr<ObjCStorage> objc_storage_;
+
   base::WeakPtrFactory<BubbleCloser> factory_{this};
 };
 

@@ -6,6 +6,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
@@ -34,10 +36,14 @@ std::unique_ptr<EventMonitor> EventMonitor::CreateWindowMonitor(
                                            types);
 }
 
+struct EventMonitorMac::ObjCStorage {
+  id monitor_ = nil;
+};
+
 EventMonitorMac::EventMonitorMac(ui::EventObserver* event_observer,
                                  gfx::NativeWindow target_native_window,
                                  const std::set<ui::EventType>& types)
-    : types_(types) {
+    : types_(types), objc_storage_(std::make_unique<ObjCStorage>()) {
   DCHECK(event_observer);
   NSWindow* target_window = target_native_window.GetNativeNSWindow();
 
@@ -59,12 +65,13 @@ EventMonitorMac::EventMonitorMac(ui::EventObserver* event_observer,
     return event;
   };
 
-  monitor_ = [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskAny
-                                                   handler:block];
+  objc_storage_->monitor_ =
+      [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskAny
+                                            handler:block];
 }
 
 EventMonitorMac::~EventMonitorMac() {
-  [NSEvent removeMonitor:monitor_];
+  [NSEvent removeMonitor:objc_storage_->monitor_];
 }
 
 gfx::Point EventMonitorMac::GetLastMouseLocation() {

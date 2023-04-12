@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_IMAGE_EDITOR_EVENT_CAPTURE_MAC_H_
 #define CHROME_BROWSER_IMAGE_EDITOR_EVENT_CAPTURE_MAC_H_
 
+#include <memory>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -46,11 +48,11 @@ class EventCaptureMac : public remote_cocoa::CocoaMouseCaptureDelegate {
                                  gfx::NativeWindow target_native_window);
 
   base::OnceClosure capture_lost_callback_;
-  NSView* web_contents_view_;
-  NSWindow* window_;
   raw_ptr<ui::EventHandler> event_handler_;
   std::unique_ptr<remote_cocoa::CocoaMouseCapture> mouse_capture_;
-  id local_keyboard_monitor_ = nil;
+
+  struct ObjCStorage;
+  std::unique_ptr<ObjCStorage> objc_storage_;
 
   base::WeakPtrFactory<EventCaptureMac> factory_{this};
 };

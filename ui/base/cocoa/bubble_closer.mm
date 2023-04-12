@@ -6,13 +6,20 @@
 
 #import <AppKit/AppKit.h>
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 
 namespace ui {
 
+struct BubbleCloser::ObjCStorage {
+  id event_tap_ = nil;  // Weak. Owned by AppKit.
+};
+
 BubbleCloser::BubbleCloser(NSWindow* window,
                            base::RepeatingClosure on_click_outside)
-    : on_click_outside_(std::move(on_click_outside)) {
+    : on_click_outside_(std::move(on_click_outside)),
+      objc_storage_(std::make_unique<ObjCStorage>()) {
   // Capture a WeakPtr. This allows the block to detect another event monitor
   // for the same event deleting |this|.
   base::WeakPtr<BubbleCloser> weak_ptr = factory_.GetWeakPtr();
@@ -45,14 +52,14 @@ BubbleCloser::BubbleCloser(NSWindow* window,
 
     return event;
   };
-  event_tap_ =
+  objc_storage_->event_tap_ =
       [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskLeftMouseDown |
                                                     NSEventMaskRightMouseDown
                                             handler:block];
 }
 
 BubbleCloser::~BubbleCloser() {
-  [NSEvent removeMonitor:event_tap_];
+  [NSEvent removeMonitor:objc_storage_->event_tap_];
 }
 
 void BubbleCloser::OnClickOutside() {
