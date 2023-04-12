@@ -1209,6 +1209,12 @@
       base_feature: "none",
     },
     {
+      name: "DelayOutOfViewportLazyImages",
+      depends_on: ["LazyImageLoading"],
+      public: true,
+      status: "experimental",
+    },
+    {
       name: "DelegatedInkTrails",
       status: "stable",
       base_feature: "none",

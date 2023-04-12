@@ -147,7 +147,11 @@ void RecordVisibleLoadTimeForImage(
 
 }  // namespace
 
-LazyLoadImageObserver::LazyLoadImageObserver(const Document& document) {}
+LazyLoadImageObserver::LazyLoadImageObserver(const Document& root_document) {
+  use_viewport_distance_threshold_ =
+      !RuntimeEnabledFeatures::DelayOutOfViewportLazyImagesEnabled() ||
+      root_document.LoadEventFinished();
+}
 
 void LazyLoadImageObserver::StartMonitoringNearViewport(
     Document* root_document,
@@ -156,13 +160,7 @@ void LazyLoadImageObserver::StartMonitoringNearViewport(
   DCHECK(RuntimeEnabledFeatures::LazyImageLoadingEnabled());
 
   if (!lazy_load_intersection_observer_) {
-    lazy_load_intersection_observer_ = IntersectionObserver::Create(
-        {Length::Fixed(
-            GetLazyImageLoadingViewportDistanceThresholdPx(*root_document))},
-        {std::numeric_limits<float>::min()}, root_document,
-        WTF::BindRepeating(&LazyLoadImageObserver::LoadIfNearViewport,
-                           WrapWeakPersistent(this)),
-        LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
+    CreateLazyLoadIntersectionObserver(root_document);
   }
   lazy_load_intersection_observer_->observe(element);
 
@@ -323,6 +321,49 @@ void LazyLoadImageObserver::OnVisibilityChanged(
     }
 
     visibility_metrics_observer_->unobserve(image_element);
+  }
+}
+
+void LazyLoadImageObserver::DocumentOnLoadFinished(Document* root_document) {
+  if (!RuntimeEnabledFeatures::DelayOutOfViewportLazyImagesEnabled()) {
+    return;
+  }
+  if (use_viewport_distance_threshold_) {
+    return;
+  }
+
+  use_viewport_distance_threshold_ = true;
+
+  if (lazy_load_intersection_observer_) {
+    // Intersection observer doesn't support dynamic margin changes so we just
+    // create a new one.
+    CreateLazyLoadIntersectionObserver(root_document);
+  }
+}
+
+void LazyLoadImageObserver::CreateLazyLoadIntersectionObserver(
+    Document* root_document) {
+  HeapVector<Member<Element>> existing_targets;
+  if (lazy_load_intersection_observer_) {
+    for (const IntersectionObservation* observation :
+         lazy_load_intersection_observer_->Observations()) {
+      existing_targets.push_back(observation->Target());
+    }
+  }
+
+  int viewport_threshold =
+      use_viewport_distance_threshold_
+          ? GetLazyImageLoadingViewportDistanceThresholdPx(*root_document)
+          : 0;
+  lazy_load_intersection_observer_ = IntersectionObserver::Create(
+      {Length::Fixed(viewport_threshold)}, {std::numeric_limits<float>::min()},
+      root_document,
+      WTF::BindRepeating(&LazyLoadImageObserver::LoadIfNearViewport,
+                         WrapWeakPersistent(this)),
+      LocalFrameUkmAggregator::kLazyLoadIntersectionObserver);
+
+  for (Element* element : existing_targets) {
+    lazy_load_intersection_observer_->observe(element);
   }
 }
 
