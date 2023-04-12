@@ -115,6 +115,7 @@ ci/linux-lacros-asan-lsan-rel
 ci/linux-lacros-builder-rel
 ci/linux-lacros-dbg
 ci/linux-lacros-tester-rel
+ci/linux-presubmit
 ci/linux-ubsan-vptr
 ci/mac-archive-dbg
 ci/mac-archive-rel

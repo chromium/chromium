@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the presubmit.linux builder group."""
 
-load("//lib/builders.star", "os")
+load("//lib/builders.star", "os", "sheriff_rotations")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
@@ -22,6 +22,7 @@ ci.builder(
     builderless = True,
     cores = 32,
     os = os.LINUX_DEFAULT,
+    sheriff_rotations = sheriff_rotations.CHROMIUM,
     console_view_entry = consoles.console_view_entry(
         console_view = "checks",
         category = "presubmit",
