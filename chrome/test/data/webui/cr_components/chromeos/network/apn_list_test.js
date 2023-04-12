@@ -141,17 +141,44 @@ suite('ApnListTest', function() {
     assertEquals(
         apnList.i18n('apnSettingsZeroStateDescription'),
         getZeroStateText().querySelector('div').innerText);
+    const getErrorMessage = () =>
+        apnList.shadowRoot.querySelector('#errorMessage');
+    assertFalse(!!getErrorMessage());
 
     // Set as non-APN-related error.
     apnList.errorState = 'connect-failed';
     await flushTasks();
     assertTrue(!!getZeroStateText());
+    assertFalse(!!getErrorMessage());
 
-    // Set as APN-related error. TODO(b/162365553): Assert error UI when
-    // implemented.
+    // Set as APN-related error.
     apnList.errorState = 'invalid-apn';
     await flushTasks();
     assertFalse(!!getZeroStateText());
+    assertTrue(!!getErrorMessage());
+    const getErrorMessageText = () =>
+        getErrorMessage().querySelector('localized-link').localizedString;
+    assertEquals('Can\'t connect to network.', getErrorMessageText());
+
+    // Add an enabled custom APN.
+    apnList.managedCellularProperties = {
+      customApnList: [customApnDefaultEnabled],
+    };
+    await flushTasks();
+    assertFalse(!!getZeroStateText());
+    assertTrue(!!getErrorMessage());
+    assertEquals(
+        apnList.i18n('apnSettingsCustomApnsErrorMessage'),
+        getErrorMessageText());
+
+    // Disable the custom APN.
+    apnList.managedCellularProperties = {
+      customApnList: [customApnDefaultDisabled],
+    };
+    await flushTasks();
+    assertFalse(!!getZeroStateText());
+    assertTrue(!!getErrorMessage());
+    assertEquals('Can\'t connect to network.', getErrorMessageText());
   });
 
   test('There is no Connected APN and no custom APNs', async function() {

@@ -26,6 +26,19 @@
     padding: 0 20px 0 0;
   }
 
+  #errorMessage {
+    display: flex;
+    margin: 30px;
+    margin-inline-end: 80px;
+  }
+
+  iron-icon[icon='cr20:warning'] {
+    --iron-icon-width: 1rem;
+    --iron-icon-height: 1rem;
+    --iron-icon-fill-color: var(--cros-text-color-warning);
+    margin-inline-end: 18px;
+  }
+
   #zeroStateText {
     border-top: var(--cr-separator-line);
     display: flex;
@@ -50,6 +63,17 @@
   <template is="dom-if" if="[[shouldOmitLinks]]" restamp>
     <div id="descriptionNoLink" aria-live="polite">
       [[i18n('apnSettingsDescriptionNoLink')]]
+    </div>
+  </template>
+  <template is="dom-if"
+      if="[[shouldShowErrorMessage_(managedCellularProperties,
+          errorState)]]" restamp>
+    <div id="errorMessage">
+      <span><iron-icon icon="cr20:warning"></iron-icon></span>
+      <localized-link
+          localized-string="[[getErrorMessage_(managedCellularProperties,
+              errorState)]]">
+      </localized-link>
     </div>
   </template>
 </div>

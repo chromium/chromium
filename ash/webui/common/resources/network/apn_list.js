@@ -106,6 +106,33 @@ export class ApnList extends ApnListBase {
   }
 
   /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowErrorMessage_() {
+    return this.errorState === SHILL_INVALID_APN_ERROR;
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getErrorMessage_() {
+    if (!this.managedCellularProperties || !this.errorState) {
+      return '';
+    }
+
+    const customApnList = this.managedCellularProperties.customApnList;
+    if (customApnList &&
+        customApnList.some(apn => apn.state === ApnState.kEnabled)) {
+      return this.i18n('apnSettingsCustomApnsErrorMessage');
+    }
+
+    // TODO(b/162365553): Use real string when finalized.
+    return 'Can\'t connect to network.';
+  }
+
+  /**
    * Returns an array with all the APN properties that need to be displayed.
    * TODO(b/162365553): Handle managedCellularProperties.apnList.policyValue
    * when policies are included.
