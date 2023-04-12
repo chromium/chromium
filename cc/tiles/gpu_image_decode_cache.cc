@@ -26,6 +26,7 @@
 #include "base/numerics/safe_math.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -1119,7 +1120,7 @@ ImageDecodeCache::TaskResult GpuImageDecodeCache::GetTaskForImageAndRefInternal(
                       false /* can_do_hardware_accelerated_decode */);
   }
 
-  base::AutoLock lock(lock_);
+  base::AutoLock locker(lock_);
   const InUseCacheKey cache_key = InUseCacheKeyFromDrawImage(draw_image);
   ImageData* image_data = GetImageDataForDrawImage(draw_image, cache_key);
   scoped_refptr<ImageData> new_data;
@@ -1452,8 +1453,6 @@ void GpuImageDecodeCache::RecordStats() {
 
 void GpuImageDecodeCache::AddToPersistentCache(const DrawImage& draw_image,
                                                scoped_refptr<ImageData> data) {
-  lock_.AssertAcquired();
-
   if (base::FeatureList::IsEnabled(kLimitImageDecodeCacheSize)) {
     // Make sure we're not over capacity. If we are, this will purge older cache
     // entries until we're not.
@@ -1469,8 +1468,6 @@ void GpuImageDecodeCache::AddToPersistentCache(const DrawImage& draw_image,
 
 template <typename Iterator>
 Iterator GpuImageDecodeCache::RemoveFromPersistentCache(Iterator it) {
-  lock_.AssertAcquired();
-
   if (it->second->decode.ref_count != 0 || it->second->upload.ref_count != 0) {
     // Orphan the image and erase it from the |persisent_cache_|. This ensures
     // that the image will be deleted once all refs are removed.
@@ -1521,6 +1518,7 @@ void GpuImageDecodeCache::MaybePurgeOldCacheEntries() {
 }
 
 size_t GpuImageDecodeCache::GetMaximumMemoryLimitBytes() const {
+  base::AutoLock locker(lock_);
   return max_working_set_bytes_;
 }
 
@@ -1593,6 +1591,8 @@ bool GpuImageDecodeCache::OnMemoryDump(
 
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::OnMemoryDump");
+
+  base::AutoLock locker(lock_);
 
   std::string dump_name = base::StringPrintf(
       "cc/image_memory/cache_0x%" PRIXPTR, reinterpret_cast<uintptr_t>(this));
@@ -1804,8 +1804,6 @@ scoped_refptr<TileTask> GpuImageDecodeCache::GetImageDecodeTaskAndRef(
     DecodeTaskType task_type) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::GetImageDecodeTaskAndRef");
-  lock_.AssertAcquired();
-
   auto cache_key = InUseCacheKeyFromDrawImage(draw_image);
 
   // This ref is kept alive while an upload task may need this decode. We
@@ -1849,7 +1847,6 @@ void GpuImageDecodeCache::RefImageDecode(const DrawImage& draw_image,
                                          const InUseCacheKey& cache_key) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::RefImageDecode");
-  lock_.AssertAcquired();
   auto found = in_use_cache_.find(cache_key);
   DCHECK(found != in_use_cache_.end());
   ++found->second.ref_count;
@@ -1861,7 +1858,6 @@ void GpuImageDecodeCache::UnrefImageDecode(const DrawImage& draw_image,
                                            const InUseCacheKey& cache_key) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::UnrefImageDecode");
-  lock_.AssertAcquired();
   auto found = in_use_cache_.find(cache_key);
   DCHECK(found != in_use_cache_.end());
   DCHECK_GT(found->second.image_data->decode.ref_count, 0u);
@@ -1878,7 +1874,6 @@ void GpuImageDecodeCache::RefImage(const DrawImage& draw_image,
                                    const InUseCacheKey& cache_key) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::RefImage");
-  lock_.AssertAcquired();
   auto found = in_use_cache_.find(cache_key);
 
   // If no secondary cache entry was found for the given |draw_image|, then
@@ -1902,7 +1897,6 @@ void GpuImageDecodeCache::RefImage(const DrawImage& draw_image,
 
 void GpuImageDecodeCache::UnrefImageInternal(const DrawImage& draw_image,
                                              const InUseCacheKey& cache_key) {
-  lock_.AssertAcquired();
   auto found = in_use_cache_.find(cache_key);
   DCHECK(found != in_use_cache_.end());
   DCHECK_GT(found->second.image_data->upload.ref_count, 0u);
@@ -1919,8 +1913,6 @@ void GpuImageDecodeCache::UnrefImageInternal(const DrawImage& draw_image,
 // necessary memory budget book-keeping and cleanup.
 void GpuImageDecodeCache::OwnershipChanged(const DrawImage& draw_image,
                                            ImageData* image_data) {
-  lock_.AssertAcquired();
-
   bool has_any_refs =
       image_data->upload.ref_count > 0 || image_data->decode.ref_count > 0;
   // If we have no image refs on an image, we should unbudget it.
@@ -2017,8 +2009,6 @@ void GpuImageDecodeCache::OwnershipChanged(const DrawImage& draw_image,
 bool GpuImageDecodeCache::EnsureCapacity(size_t required_size) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::EnsureCapacity");
-  lock_.AssertAcquired();
-
   // While we are over preferred item capacity, we iterate through our set of
   // cached image data in LRU order, removing unreferenced images.
   for (auto it = persistent_cache_.rbegin();
@@ -2050,8 +2040,6 @@ bool GpuImageDecodeCache::CanFitInWorkingSet(size_t size) const {
 }
 
 bool GpuImageDecodeCache::ExceedsCacheLimits() const {
-  lock_.AssertAcquired();
-
   size_t items_limit;
   if (aggressively_freeing_resources_) {
     items_limit = kSuspendedMaxItemsInCacheForGpu;
@@ -2115,8 +2103,6 @@ void GpuImageDecodeCache::DecodeImageAndGenerateDarkModeFilterIfNecessary(
     const DrawImage& draw_image,
     ImageData* image_data,
     TaskType task_type) {
-  lock_.AssertAcquired();
-
   // Check if image needs dark mode to be applied, based on this image may be
   // decoded again if decoded data is not available.
   bool needs_dark_mode_filter = NeedsDarkModeFilter(draw_image, image_data);
@@ -2131,8 +2117,6 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
     ImageData* image_data,
     TaskType task_type,
     bool needs_decode_for_dark_mode) {
-  lock_.AssertAcquired();
-
   DCHECK_GT(image_data->decode.ref_count, 0u);
 
   if (image_data->decode.do_hardware_accelerated_decode()) {
@@ -2281,8 +2265,6 @@ void GpuImageDecodeCache::GenerateDarkModeFilter(const DrawImage& draw_image,
 void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
                                                  ImageData* image_data) {
   CheckContextLockAcquiredIfNecessary();
-  lock_.AssertAcquired();
-
   // We are about to upload a new image and are holding the context lock.
   // Ensure that any images which have been marked for deletion are actually
   // cleaned up so we don't exceed our memory limit during this upload.
@@ -2619,7 +2601,6 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
                                      bool allow_hardware_decode) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::CreateImageData");
-  lock_.AssertAcquired();
 
   const auto [image_info, upload_scale_mip_level] =
       CreateImageInfoForDrawImage(draw_image, AuxImage::kDefault);
@@ -2837,7 +2818,6 @@ void GpuImageDecodeCache::UnlockImage(ImageData* image_data) {
 void GpuImageDecodeCache::FlushYUVImages(
     std::vector<sk_sp<SkImage>>* yuv_images) {
   CheckContextLockAcquiredIfNecessary();
-  lock_.AssertAcquired();
   GrDirectContext* ctx = context_->GrContext();
   for (auto& image : *yuv_images) {
     ctx->flushAndSubmit(image);
@@ -2866,7 +2846,6 @@ void GpuImageDecodeCache::FlushYUVImages(
 // lock and its textures have been deleted.
 void GpuImageDecodeCache::RunPendingContextThreadOperations() {
   CheckContextLockAcquiredIfNecessary();
-  lock_.AssertAcquired();
 
   for (auto* image : images_pending_complete_lock_) {
     context_->ContextSupport()->CompleteLockDiscardableTexureOnContextThread(
@@ -3028,7 +3007,6 @@ GpuImageDecodeCache::ImageData* GpuImageDecodeCache::GetImageDataForDrawImage(
     const InUseCacheKey& key) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::GetImageDataForDrawImage");
-  lock_.AssertAcquired();
   DCHECK(UseCacheForDrawImage(draw_image));
 
   auto found_in_use = in_use_cache_.find(key);
@@ -3106,12 +3084,14 @@ bool GpuImageDecodeCache::DiscardableIsLockedForTesting(
 
 bool GpuImageDecodeCache::IsInInUseCacheForTesting(
     const DrawImage& image) const {
+  base::AutoLock locker(lock_);
   auto found = in_use_cache_.find(InUseCacheKeyFromDrawImage(image));
   return found != in_use_cache_.end();
 }
 
 bool GpuImageDecodeCache::IsInPersistentCacheForTesting(
     const DrawImage& image) const {
+  base::AutoLock locker(lock_);
   auto found = persistent_cache_.Peek(image.frame_key());
   return found != persistent_cache_.end();
 }
