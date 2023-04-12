@@ -54,18 +54,6 @@ void ExclusiveAccessControllerBase::OnTabClosing(WebContents* web_contents) {
   NotifyTabExclusiveAccessLost();
 }
 
-void ExclusiveAccessControllerBase::RecordBubbleReshownUMA() {
-  ++bubble_reshow_count_;
-}
-
-void ExclusiveAccessControllerBase::RecordExitingUMA() {
-  // Record the number of bubble reshows during this session. Only if simplified
-  // fullscreen is enabled.
-  RecordBubbleReshowsHistogram(bubble_reshow_count_);
-
-  bubble_reshow_count_ = 0;
-}
-
 void ExclusiveAccessControllerBase::SetTabWithExclusiveAccess(
     WebContents* tab) {
   // Tab should never be replaced with another tab.

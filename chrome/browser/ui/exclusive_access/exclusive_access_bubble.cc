@@ -67,8 +67,6 @@ void ExclusiveAccessBubble::OnUserInput() {
 
   // If the notification suppression timer has elapsed, re-show it.
   if (!suppress_notify_timeout_.IsRunning()) {
-    manager_->RecordBubbleReshownUMA(bubble_type_);
-
     ShowAndStartTimers();
     return;
   }

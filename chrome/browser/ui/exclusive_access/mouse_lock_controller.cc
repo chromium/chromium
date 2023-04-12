@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/exclusive_access/mouse_lock_controller.h"
 
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
@@ -21,9 +20,6 @@ using content::RenderViewHost;
 using content::WebContents;
 
 namespace {
-
-const char kMouseLockBubbleReshowsHistogramName[] =
-    "ExclusiveAccess.BubbleReshowsPerSession.MouseLock";
 
 // The amount of time to disallow repeated pointer lock calls after the user
 // successfully escapes from one lock request.
@@ -120,12 +116,6 @@ void MouseLockController::NotifyTabExclusiveAccessLost() {
   }
 }
 
-void MouseLockController::RecordBubbleReshowsHistogram(
-    int bubble_reshow_count) {
-  UMA_HISTOGRAM_COUNTS_100(kMouseLockBubbleReshowsHistogramName,
-                           bubble_reshow_count);
-}
-
 bool MouseLockController::HandleUserPressedEscape() {
   if (IsMouseLocked()) {
     ExitExclusiveAccessIfNecessary();
@@ -144,7 +134,6 @@ void MouseLockController::LostMouseLock() {
   if (lock_state_callback_for_test_)
     std::move(lock_state_callback_for_test_).Run();
 
-  RecordExitingUMA();
   mouse_lock_state_ = MOUSELOCK_UNLOCKED;
   SetTabWithExclusiveAccess(nullptr);
 

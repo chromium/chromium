@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -23,12 +22,6 @@ using base::TimeTicks;
 using content::WebContents;
 
 namespace {
-
-const char kBubbleReshowsHistogramName[] =
-    "ExclusiveAccess.BubbleReshowsPerSession.KeyboardLock";
-
-const char kForcedBubbleReshowsHistogramName[] =
-    "ExclusiveAccess.BubbleReshowsPerSession.KeyboardLockForced";
 
 // Amount of time the user must hold ESC to exit full screen.
 constexpr base::TimeDelta kHoldEscapeTime = base::Milliseconds(1500);
@@ -67,16 +60,6 @@ void KeyboardLockController::ExitExclusiveAccessIfNecessary() {
 
 void KeyboardLockController::NotifyTabExclusiveAccessLost() {
   UnlockKeyboard();
-}
-
-void KeyboardLockController::RecordBubbleReshowsHistogram(int reshow_count) {
-  UMA_HISTOGRAM_COUNTS_100(kBubbleReshowsHistogramName, reshow_count);
-}
-
-void KeyboardLockController::RecordForcedBubbleReshowsHistogram() {
-  UMA_HISTOGRAM_COUNTS_100(kForcedBubbleReshowsHistogramName,
-                           forced_reshow_count_);
-  forced_reshow_count_ = 0;
 }
 
 bool KeyboardLockController::IsKeyboardLockActive() const {
@@ -173,8 +156,6 @@ void KeyboardLockController::UnlockKeyboard() {
   if (!exclusive_access_tab())
     return;
 
-  RecordExitingUMA();
-  RecordForcedBubbleReshowsHistogram();
   keyboard_lock_state_ = KeyboardLockState::kUnlocked;
 
   exclusive_access_tab()->GotResponseToKeyboardLockRequest(false);
@@ -203,7 +184,6 @@ void KeyboardLockController::ReShowExitBubbleIfNeeded() {
   if (esc_keypress_tracker_.size() >= kEscRepeatCountToTriggerUiReshow) {
     exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
         ExclusiveAccessBubbleHideCallback(), /*force_update=*/true);
-    forced_reshow_count_++;
     esc_keypress_tracker_.clear();
 
     if (esc_repeat_triggered_for_test_)

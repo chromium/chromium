@@ -183,8 +183,6 @@ class FullscreenController : public ExclusiveAccessControllerBase {
   // necessary.
   void NotifyTabExclusiveAccessLost() override;
 
-  void RecordBubbleReshowsHistogram(int bubble_reshow_count) override;
-
   void ToggleFullscreenModeInternal(FullscreenInternalOption option,
                                     content::RenderFrameHost* requesting_frame,
                                     const int64_t display_id);
