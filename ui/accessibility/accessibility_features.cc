@@ -204,7 +204,7 @@ bool IsAccessibilityAcceleratorNotificationsTimeoutEnabled() {
 
 BASE_FEATURE(kAccessibilityDeprecateChromeVoxTabs,
              "AccessibilityDeprecateChromeVoxTabs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAccessibilityDeprecateChromeVoxTabsEnabled() {
   return base::FeatureList::IsEnabled(
