@@ -9370,14 +9370,9 @@ void NavigationRequest::CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host) {
   }
 
   web_ui_ = std::make_unique<WebUIImpl>(this);
-
   std::unique_ptr<WebUIController> controller(
       WebUIControllerFactoryRegistry::GetInstance()
           ->CreateWebUIControllerForURL(web_ui_.get(), GetURL()));
-  if (!controller) {
-    // TODO(https://crbug.com/1220337): Make this a CHECK instead.
-    return;
-  }
 
   // If we have assigned (zero or more) bindings to the NavigationEntry in
   // the past, make sure we're not granting it different bindings than it
