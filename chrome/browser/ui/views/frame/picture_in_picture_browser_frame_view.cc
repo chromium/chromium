@@ -447,8 +447,10 @@ void PictureInPictureBrowserFrameView::UpdateWindowIcon() {
   window_title_->SetText(location_bar_model_->GetURLForDisplay());
 }
 
+// Minimum size refers to the minimum size for the window inner bounds.
 gfx::Size PictureInPictureBrowserFrameView::GetMinimumSize() const {
-  return PictureInPictureWindowManager::GetMinimumWindowSize();
+  return PictureInPictureWindowManager::GetMinimumInnerWindowSize() +
+         GetNonClientViewAreaSize();
 }
 
 gfx::Size PictureInPictureBrowserFrameView::GetMaximumSize() const {
@@ -868,6 +870,15 @@ gfx::Insets PictureInPictureBrowserFrameView::ResizeBorderInsets() const {
 
 int PictureInPictureBrowserFrameView::GetTopAreaHeight() const {
   return FrameBorderInsets().top() + kTopControlsHeight;
+}
+
+gfx::Size PictureInPictureBrowserFrameView::GetNonClientViewAreaSize() const {
+  return frame()->non_client_view()->bounds().size() -
+         frame()
+             ->non_client_view()
+             ->frame_view()
+             ->GetBoundsForClientView()
+             .size();
 }
 
 #if BUILDFLAG(IS_LINUX)

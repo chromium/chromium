@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -59,7 +60,9 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
+#include "ui/display/display.h"
 #include "ui/display/display_switches.h"
+#include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/views/controls/button/image_button.h"
@@ -127,7 +130,9 @@ class DocumentPictureInPictureWindowControllerBrowserTest
     return nullptr;
   }
 
-  void LoadTabAndEnterPictureInPicture(Browser* browser) {
+  void LoadTabAndEnterPictureInPicture(
+      Browser* browser,
+      const gfx::Size& window_size = gfx::Size(500, 500)) {
     GURL test_page_url = ui_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(kPictureInPictureDocumentPipPage));
@@ -139,7 +144,11 @@ class DocumentPictureInPictureWindowControllerBrowserTest
 
     SetUpWindowController(active_web_contents);
 
-    ASSERT_EQ(true, EvalJs(active_web_contents, "createDocumentPipWindow()"));
+    const std::string script = base::StrCat(
+        {"createDocumentPipWindow({width:",
+         base::NumberToString(window_size.width()),
+         ",height:", base::NumberToString(window_size.height()), "})"});
+    ASSERT_EQ(true, EvalJs(active_web_contents, script));
     ASSERT_TRUE(window_controller() != nullptr);
     ASSERT_TRUE(GetRenderWidgetHostView()->IsShowing());
   }
@@ -403,4 +412,55 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   static_cast<content::WebContentsDelegate*>(browser_view->browser())
       ->SetContentsBounds(pip_web_contents, different_bounds);
   EXPECT_EQ(bounds, browser_view->GetBounds());
+}
+
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)) && defined(NDEBUG)
+// TODO(crbug.com/1432292) Investigate why test fails for Windows and ChromeOS
+// release builds.
+#define MAYBE_MinimumWindowInnerBounds DISABLED_MinimumWindowInnerBounds
+#else
+#define MAYBE_MinimumWindowInnerBounds MinimumWindowInnerBounds
+#endif
+// Make sure that inner bounds of document PiP windows are not smaller than the
+// allowed minimum size.
+IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+                       MAYBE_MinimumWindowInnerBounds) {
+  LoadTabAndEnterPictureInPicture(browser(), gfx::Size(100, 200));
+
+  auto* pip_web_contents = window_controller()->GetChildWebContents();
+  ASSERT_NE(nullptr, pip_web_contents);
+
+  auto* browser_view = static_cast<BrowserView*>(
+      BrowserWindow::FindBrowserWindowWithWebContents(pip_web_contents));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(PictureInPictureWindowManager::GetMinimumInnerWindowSize(),
+            browser_view->GetContentsSize());
+}
+
+// Make sure that outer bounds of document PiP windows do not exceed the allowed
+// maximum size.
+IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+                       MaximumWindowOuterBounds) {
+  const BrowserWindow* const browser_window = browser()->window();
+  const gfx::NativeWindow native_window = browser_window->GetNativeWindow();
+  const display::Screen* const screen = display::Screen::GetScreen();
+  const display::Display display =
+      screen->GetDisplayNearestWindow(native_window);
+  const gfx::Size maximum_window_size =
+      PictureInPictureWindowManager::GetMaximumWindowSize(display);
+
+  // Attempt to create a Document PiP window with size greater than the maximum
+  // window size.
+  LoadTabAndEnterPictureInPicture(browser(),
+                                  maximum_window_size + gfx::Size(1000, 2000));
+
+  // Confirm that the size of the outer window bounds are equal to the maximum
+  // window size.
+  auto* pip_web_contents = window_controller()->GetChildWebContents();
+  ASSERT_NE(nullptr, pip_web_contents);
+
+  auto* browser_view = static_cast<BrowserView*>(
+      BrowserWindow::FindBrowserWindowWithWebContents(pip_web_contents));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(maximum_window_size, browser_view->GetBounds().size());
 }

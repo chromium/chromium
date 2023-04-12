@@ -88,7 +88,11 @@ class PictureInPictureWindowManager {
       const display::Display& display);
 
   // Used for Document picture-in-picture windows only.
-  static gfx::Size GetMinimumWindowSize();
+  // Note that this is meant to represent the inner window bounds. When the pip
+  // window is drawn, outer bounds may be greater than kMinWindowSize to
+  // accommodate window decorations and ensure the inner bound minimum size
+  // respects kMinWindowSize.
+  static gfx::Size GetMinimumInnerWindowSize();
 
   // Used for Document picture-in-picture windows only.
   static gfx::Size GetMaximumWindowSize(const display::Display& display);
