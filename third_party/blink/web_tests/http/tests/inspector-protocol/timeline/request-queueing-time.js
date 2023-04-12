@@ -22,7 +22,7 @@
         // Timestamp from the network domain arrives in seconds.
         // We convert it to microseconds to compare it against
         // data coming from the tracing domain.
-        timestamp: Math.round(event.params.timestamp * 1000 * 1000)
+        timestamp: event.params.timestamp * 1000 * 1000
       });
   });
 
@@ -65,7 +65,9 @@
 
   for (const [requestId, request] of sortedEvents) {
     const networkEvent = requestsFromNetorkDomain.get(requestId);
-    testRunner.log(`Queueing times for URL ${networkEvent.url} match: ${networkEvent.timestamp === request.timestamp}`);
+    // Compare at tenths-of-milliseconds resolution.
+    const diff = Math.floor(networkEvent.timestamp / 100) - Math.floor(request.timestamp / 100);
+    testRunner.log(`Queueing time difference of ${diff} for URL ${new URL(networkEvent.url).pathname}`);
   }
 
   testRunner.completeTest();
