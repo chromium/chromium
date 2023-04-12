@@ -229,13 +229,14 @@ public class AccessibilityState {
     }
 
     @VisibleForTesting
-    public static void setFeedbackTypeMaskForTesting(int value) {
+    public static void setAccessibilityEnabledForTesting(boolean enabled) {
         if (!sInitialized) updateAccessibilityServices();
 
-        sFeedbackTypeMask = value;
+        State newState = new State(sState.isScreenReaderEnabled, sState.isTouchExplorationEnabled,
+                enabled, sState.isAccessibilityToolPresent, sState.isSpokenFeedbackServicePresent,
+                sState.isTextShowPasswordEnabled, sState.isOnlyPasswordManagersEnabled);
 
-        // Inform all listeners of this change.
-        updateAndNotifyStateChange(sState);
+        updateAndNotifyStateChange(newState);
     }
 
     @VisibleForTesting
@@ -244,35 +245,33 @@ public class AccessibilityState {
 
         // Explicitly set mask so events can be (ir)relevant to currently enabled service.
         sEventTypeMask = mask;
-        // Explicitly set accessibility enabled
-        State newState = new State(sState.isScreenReaderEnabled, sState.isTouchExplorationEnabled,
-                true, sState.isAccessibilityToolPresent, sState.isSpokenFeedbackServicePresent,
-                sState.isTextShowPasswordEnabled, sState.isOnlyPasswordManagersEnabled);
+    }
+
+    @VisibleForTesting
+    public static void setScreenReaderEnabledForTesting(boolean enabled) {
+        if (!sInitialized) updateAccessibilityServices();
+
+        // Explicitly set screen reader enabled to given state since a real screen reader is not run
+        // during tests.
+        State newState = new State(enabled, sState.isTouchExplorationEnabled,
+                sState.isAnyAccessibilityServiceEnabled, sState.isAccessibilityToolPresent,
+                sState.isSpokenFeedbackServicePresent, sState.isTextShowPasswordEnabled,
+                sState.isOnlyPasswordManagersEnabled);
 
         // Inform all listeners of this change.
         updateAndNotifyStateChange(newState);
     }
 
     @VisibleForTesting
-    public static void setScreenReaderModeForTesting(boolean enabled) {
+    public static void setOnlyPasswordManagersEnabledForTesting(boolean enabled) {
         if (!sInitialized) updateAccessibilityServices();
 
-        // Explicitly set screen reader mode since a real screen reader isn't run during tests.
-        // Explicitly set accessibility enabled
-        State newState = new State(enabled, sState.isTouchExplorationEnabled, true,
-                sState.isAccessibilityToolPresent, sState.isSpokenFeedbackServicePresent,
-                sState.isTextShowPasswordEnabled, sState.isOnlyPasswordManagersEnabled);
-        // Inform all listeners of this change.
-        updateAndNotifyStateChange(newState);
-    }
-
-    @VisibleForTesting
-    public static void setHasSpokenFeedbackServiceForTesting(boolean present) {
-        if (!sInitialized) updateAccessibilityServices();
-
+        // Explicitly set state for only password managers enabled to given state since a real
+        // password manager is not run during tests.
         State newState = new State(sState.isScreenReaderEnabled, sState.isTouchExplorationEnabled,
-                sState.isAnyAccessibilityServiceEnabled, sState.isAccessibilityToolPresent, present,
-                sState.isTextShowPasswordEnabled, sState.isOnlyPasswordManagersEnabled);
+                sState.isAnyAccessibilityServiceEnabled, sState.isAccessibilityToolPresent,
+                sState.isSpokenFeedbackServicePresent, sState.isTextShowPasswordEnabled, enabled);
+
         // Inform all listeners of this change.
         updateAndNotifyStateChange(newState);
     }

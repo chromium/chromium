@@ -247,21 +247,12 @@ bool IsAblateSendPendingAccessibilityEventsEnabled() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kComputeAXMode,
-             "ComputeAXMode",
+BASE_FEATURE(kAccessibilityAXModes,
+             "AccessibilityAXModes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsComputeAXModeEnabled() {
-  return base::FeatureList::IsEnabled(::features::kComputeAXMode);
-}
-
-BASE_FEATURE(kAccessibilityFormControlsMode,
-             "AccessibilityFormControlsAXMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsAccessibilityFormControlsAXModeEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityFormControlsMode);
+bool IsAccessibilityAXModesEnabled() {
+  return base::FeatureList::IsEnabled(::features::kAccessibilityAXModes);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

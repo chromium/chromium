@@ -59180,7 +59180,6 @@ from previous Chrome versions.
   <int value="-1503745396" label="UnifiedPasswordManagerReenrollment:disabled"/>
   <int value="-1500811568" label="MuteNotificationSnoozeAction:disabled"/>
   <int value="-1499989506" label="FedCmWithoutThirdPartyCookies:disabled"/>
-  <int value="-1498981749" label="AccessibilityFormControlsAXMode:disabled"/>
   <int value="-1498681588" label="AndroidWebContentsDarkMode:enabled"/>
   <int value="-1498582719"
       label="ColorProviderRedirectionForThemeProvider:enabled"/>
@@ -59646,6 +59645,7 @@ from previous Chrome versions.
   <int value="-1268836676" label="disable-out-of-process-pdf"/>
   <int value="-1268452697" label="CastStreamingAv1:disabled"/>
   <int value="-1267958145" label="disable-pdf-material-ui"/>
+  <int value="-1266934701" label="AccessibilityAXModes:enabled"/>
   <int value="-1265627803" label="WebAppEnableManifestId:enabled"/>
   <int value="-1262730949" label="EnableDspHotword:enabled"/>
   <int value="-1262303946" label="SubresourceRedirectPreviews:disabled"/>
@@ -61848,6 +61848,7 @@ from previous Chrome versions.
   <int value="-64839201" label="SyncUSSAutofillWalletData:disabled"/>
   <int value="-64824628" label="VizHitTestSurfaceLayer:disabled"/>
   <int value="-64747770" label="IncognitoDownloadsWarning:disabled"/>
+  <int value="-64293934" label="AccessibilityAXModes:disabled"/>
   <int value="-63207112" label="NtpSingleRowShortcuts:disabled"/>
   <int value="-59530055" label="ChromeVoxArcSupport:enabled"/>
   <int value="-59401847" label="ContentSuggestionsLargeThumbnail:disabled"/>
@@ -62530,7 +62531,6 @@ from previous Chrome versions.
   <int value="307543404" label="disable-team-drives"/>
   <int value="307670929"
       label="enable-ambient-authentication-in-guest-session"/>
-  <int value="308972768" label="AccessibilityFormControlsAXMode:enabled"/>
   <int value="309795366" label="ScrollUnification:disabled"/>
   <int value="309861115"
       label="AutofillEnableNewCardArtAndNetworkImages:enabled"/>

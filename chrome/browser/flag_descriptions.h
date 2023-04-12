@@ -2036,8 +2036,8 @@ extern const char kEnableVariationsGoogleGroupFilteringDescription[];
 
 #if BUILDFLAG(IS_ANDROID)
 
-extern const char kAccessibilityFormControlsModeName[];
-extern const char kAccessibilityFormControlsModeDescription[];
+extern const char kAccessibilityAXModesName[];
+extern const char kAccessibilityAXModesDescription[];
 
 extern const char kAccessibilityPageZoomName[];
 extern const char kAccessibilityPageZoomDescription[];

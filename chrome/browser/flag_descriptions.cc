@@ -3536,11 +3536,11 @@ const char kEnableVariationsGoogleGroupFilteringDescription[] =
 
 #if BUILDFLAG(IS_ANDROID)
 
-const char kAccessibilityFormControlsModeName[] =
-    "Experimental Accessibility Mode for Form Controls only";
-const char kAccessibilityFormControlsModeDescription[] =
-    "Enable experimental accessibility mode to support password managers and "
-    "form fillers when full assistive technology is not running.";
+const char kAccessibilityAXModesName[] = "Experimental Accessibility Modes";
+const char kAccessibilityAXModesDescription[] =
+    "Enable experimental accessibility modes to support different levels of the"
+    " accessibility engine depending on what accessibility services and"
+    " assistive technologies are running.";
 
 const char kAccessibilityPageZoomName[] = "Accessibility Page Zoom";
 const char kAccessibilityPageZoomDescription[] =

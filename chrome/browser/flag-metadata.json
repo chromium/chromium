@@ -1772,13 +1772,13 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-accessibility-chromevox-page-migration",
-    "owners": [ "josiahk", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 130
+    "name": "enable-accessibility-ax-modes",
+    "owners": [ "mschillaci", "aldietz", "//ui/accessibility/OWNERS"],
+    "expiry_milestone": 140
   },
   {
-    "name": "enable-accessibility-form-controls-mode",
-    "owners": [ "mschillaci", "aldietz", "//ui/accessibility/OWNERS"],
+    "name": "enable-accessibility-chromevox-page-migration",
+    "owners": [ "josiahk", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 130
   },
   {
