@@ -1,7 +1,7 @@
 EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-layer at (0,0) size 800x600
+layer at (0,0)
   LayoutNGView at (0,0) size 800x600
-layer at (0,0) size 800x600
+layer at (0,0)
   LayoutNGBlockFlow {HTML} at (0,0) size 800x600
     LayoutNGBlockFlow {BODY} at (8,8) size 784x584
       LayoutNGBlockFlow {P} at (0,0) size 784x40
@@ -21,7 +21,7 @@ layer at (0,0) size 800x600
         LayoutImage (floating) {IMG} at (708,0) size 76x103
         LayoutText {#text} at (0,0) size 170x19
           text run at (0,0) width 170: "This text should be selected."
-layer at (8,64) size 784x2 clip at (0,0) size 0x0
+layer at (8,64)
   LayoutNGBlockFlow {HR} at (0,56) size 784x2 [border: (1px inset #EEEEEE)]
 selection start: position 0 of child 1 {#text} of child 6 {DIV} of body
 selection end:   position 29 of child 1 {#text} of child 6 {DIV} of body

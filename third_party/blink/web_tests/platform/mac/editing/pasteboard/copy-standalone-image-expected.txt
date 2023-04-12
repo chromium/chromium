@@ -1,9 +1,9 @@
 EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
 EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
 EDITING DELEGATE: webViewDidChange:WebViewDidChangeNotification
-layer at (0,0) size 800x600
+layer at (0,0)
   LayoutNGView at (0,0) size 800x600
-layer at (0,0) size 800x600
+layer at (0,0)
   LayoutNGBlockFlow {HTML} at (0,0) size 800x600
     LayoutNGBlockFlow {BODY} at (8,8) size 784x584
       LayoutNGBlockFlow {P} at (0,0) size 784x18
@@ -18,11 +18,11 @@ layer at (0,0) size 800x600
       LayoutNGBlockFlow {DIV} at (0,240) size 784x131 [border: (2px solid #FF0000)]
         LayoutImage {IMG} at (14,14) size 76x103
         LayoutText {#text} at (0,0) size 0x0
-layer at (8,94) size 304x154 clip at (10,96) size 300x150
+layer at (8,94)
   LayoutIFrame {IFRAME} at (0,0) size 304x154 [border: (2px solid #0000FF)]
-    layer at (0,0) size 300x150
+    layer at (0,0)
       LayoutNGView at (0,0) size 300x150
-    layer at (0,0) size 300x150
+    layer at (0,0)
       LayoutNGBlockFlow {HTML} at (0,0) size 300x150
         LayoutNGBlockFlow {BODY} at (0,0) size 300x150
           LayoutImage {IMG} at (0,0) size 76x103

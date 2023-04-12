@@ -1,9 +1,9 @@
 EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
 EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
 EDITING DELEGATE: webViewDidChange:WebViewDidChangeNotification
-layer at (0,0) size 800x600
+layer at (0,0)
   LayoutNGView at (0,0) size 800x600
-layer at (0,0) size 800x600
+layer at (0,0)
   LayoutNGBlockFlow {HTML} at (0,0) size 800x600
     LayoutNGBlockFlow {BODY} at (0,0) size 800x584
       LayoutNGBlockFlow (anonymous) at (0,0) size 800x213
@@ -18,11 +18,11 @@ layer at (0,0) size 800x600
               text run at (0,0) width 7: "\x{2022} "
           LayoutText {#text} at (0,0) size 288x19
             text run at (0,0) width 288: "Abe should be outside the frame and inside it."
-layer at (0,0) size 208x208 clip at (4,4) size 200x200
+layer at (0,0)
   LayoutIFrame {IFRAME} at (0,0) size 208x208 [border: (4px solid #000000)]
-    layer at (0,0) size 200x200
+    layer at (0,0)
       LayoutNGView at (0,0) size 200x200
-    layer at (0,0) size 200x200
+    layer at (0,0)
       LayoutNGBlockFlow {HTML} at (0,0) size 200x200
         LayoutNGBlockFlow {BODY} at (8,8) size 184x184 [bgcolor=#FFFFE0]
           LayoutImage {IMG} at (0,0) size 76x103

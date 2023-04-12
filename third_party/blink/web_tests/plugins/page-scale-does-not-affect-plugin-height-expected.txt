@@ -3,4 +3,4 @@ This test checks that page scale does not affect a plugin object's height when i
 EXPECTED:
 layer at (0,0) size 800x600 LayoutEmbeddedObject {EMBED} at (0,0) size 800x600
 ACTUAL:
-layer at (0,0) size 800x600 LayoutEmbeddedObject {EMBED} at (0,0) size 800x600
+layer at (0,0) LayoutEmbeddedObject {EMBED} at (0,0) size 800x600

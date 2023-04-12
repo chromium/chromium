@@ -123,11 +123,6 @@ WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::Size& s) {
   return ts << "width=" << s.width() << " height=" << s.height();
 }
 
-WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::Rect& r) {
-  return ts << "at " << r.origin() << " size " << r.width() << "x"
-            << r.height();
-}
-
 WTF::TextStream& operator<<(WTF::TextStream& ts, const gfx::SizeF& s) {
   ts << "width=" << WTF::TextStream::FormatNumberRespectingIntegers(s.width());
   ts << " height="
@@ -475,17 +470,12 @@ enum LayerPaintPhase {
 
 static void Write(WTF::TextStream& ts,
                   PaintLayer& layer,
-                  const PhysicalRect& layer_bounds,
-                  const PhysicalRect& background_clip_rect,
-                  const PhysicalRect& clip_rect,
+                  const PhysicalOffset& layer_offset,
                   LayerPaintPhase paint_phase = kLayerPaintPhaseAll,
                   int indent = 0,
                   LayoutAsTextBehavior behavior = kLayoutAsTextBehaviorNormal,
                   const PaintLayer* marked_layer = nullptr) {
-  gfx::Rect adjusted_layout_bounds = ToPixelSnappedRect(layer_bounds);
-  gfx::Rect adjusted_background_clip_rect =
-      ToPixelSnappedRect(background_clip_rect);
-  gfx::Rect adjusted_clip_rect = ToPixelSnappedRect(clip_rect);
+  gfx::Point adjusted_layer_offset = ToRoundedPoint(layer_offset);
 
   if (marked_layer)
     ts << (marked_layer == &layer ? "*" : " ");
@@ -500,14 +490,8 @@ static void Write(WTF::TextStream& ts,
   if (behavior & kLayoutAsTextShowAddresses)
     ts << static_cast<const void*>(&layer) << " ";
 
-  ts << adjusted_layout_bounds;
+  ts << "at " << adjusted_layer_offset;
 
-  if (!adjusted_layout_bounds.IsEmpty()) {
-    if (!adjusted_background_clip_rect.Contains(adjusted_layout_bounds))
-      ts << " backgroundClip " << adjusted_background_clip_rect;
-    if (!adjusted_clip_rect.Contains(adjusted_layout_bounds))
-      ts << " clip " << adjusted_clip_rect;
-  }
   if (layer.Transform())
     ts << " hasTransform";
   if (layer.IsTransparent())
@@ -604,12 +588,10 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
       !layer->GetLayoutObject().ChildLayoutBlockedByDisplayLock();
 
   const auto& neg_list = ChildLayers(layer, kNegativeZOrderChildren);
-  PhysicalRect layer_bounds(layer_offset, layer->Size());
   bool paints_background_separately = !neg_list.empty();
   if (should_dump && paints_background_separately) {
-    Write(ts, *layer, layer_bounds, background_rect.Rect(),
-          foreground_rect.Rect(), kLayerPaintPhaseBackground, indent, behavior,
-          marked_layer);
+    Write(ts, *layer, layer_offset, kLayerPaintPhaseBackground, indent,
+          behavior, marked_layer);
   }
 
   if (should_dump_children && !neg_list.empty()) {
@@ -626,8 +608,7 @@ void LayoutTreeAsText::WriteLayers(WTF::TextStream& ts,
   }
 
   if (should_dump) {
-    Write(ts, *layer, layer_bounds, background_rect.Rect(),
-          foreground_rect.Rect(),
+    Write(ts, *layer, layer_offset,
           paints_background_separately ? kLayerPaintPhaseForeground
                                        : kLayerPaintPhaseAll,
           indent, behavior, marked_layer);

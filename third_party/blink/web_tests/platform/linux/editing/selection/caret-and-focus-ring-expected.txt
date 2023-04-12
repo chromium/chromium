@@ -1,14 +1,14 @@
 EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
-layer at (0,0) size 800x600
-  LayoutView at (0,0) size 800x600
-layer at (0,0) size 800x600
-  LayoutBlockFlow {HTML} at (0,0) size 800x600
-    LayoutBlockFlow {BODY} at (8,8) size 784x584
-      LayoutBlockFlow {P} at (0,0) size 784x40
+layer at (0,0)
+  LayoutNGView at (0,0) size 800x600
+layer at (0,0)
+  LayoutNGBlockFlow {HTML} at (0,0) size 800x600
+    LayoutNGBlockFlow {BODY} at (8,8) size 784x584
+      LayoutNGBlockFlow {P} at (0,0) size 784x40
         LayoutText {#text} at (0,0) size 772x39
           text run at (0,0) width 772: "This tests that the caret and the focus halo are not displayed when the WebView is not focused (using the pixel output from"
           text run at (0,20) width 123: "DumpRenderTree)."
-      LayoutBlockFlow {DIV} at (0,56) size 784x20
+      LayoutNGBlockFlow {DIV} at (0,56) size 784x20
         LayoutText {#text} at (0,0) size 65x19
           text run at (0,0) width 65: "This is an "
         LayoutInline {SPAN} at (65,0) size 49x19
