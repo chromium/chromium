@@ -26,6 +26,7 @@ chromium-metrics-reviews@google.com.
   <variant name="AboutThisSite"/>
   <variant name="Assistant"/>
   <variant name="Bookmarks"/>
+  <variant name="Companion"/>
   <variant name="CustomizeChrome"/>
   <variant name="Extension"/>
   <variant name="Feed"/>

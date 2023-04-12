@@ -60,7 +60,7 @@ class SidePanelToolbarContainer : public ToolbarIconContainerView {
     SidePanelEntry::Id id() { return id_; }
 
     void ButtonPressed();
-    void Unpin(int event_flags);
+    void UnpinForContextMenu(int event_flags);
 
    private:
     std::unique_ptr<ui::MenuModel> CreateMenuModel();

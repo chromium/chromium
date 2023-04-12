@@ -30407,6 +30407,41 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SidePanel.Companion.Pinned.BySidePanelHeaderButton">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the companion side panel entry is pinned via the pin button in
+    the side panel header.
+  </description>
+</action>
+
+<action name="SidePanel.Companion.Shown">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the companion side panel entry is shown.
+  </description>
+</action>
+
+<action name="SidePanel.Companion.Unpinned.ByPinnedButtonContextMenu">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the companion side panel entry is unpinned via the context
+    menu from the pinned companion button.
+  </description>
+</action>
+
+<action name="SidePanel.Companion.Unpinned.BySidePanelHeaderButton">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the companion side panel entry is unpinned via the pin button
+    in the side panel header.
+  </description>
+</action>
+
 <action name="SidePanel.Feed.Shown">
   <owner>jianli@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>

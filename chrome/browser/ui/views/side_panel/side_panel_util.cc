@@ -41,7 +41,9 @@ namespace {
 std::string GetHistogramNameForId(SidePanelEntry::Id id) {
   static constexpr auto id_to_histogram_name_map =
       // Note: once provided the histogram name should not be changed since it
-      // is persisted to logs.
+      // is persisted to logs. When adding a new Id please add actions to
+      // tools/metrics/actions/actions.xml for "SidePanel.[new id name].Shown"
+      // since we cannot autogenerate this in actions.xml.
       base::MakeFixedFlatMap<SidePanelEntry::Id, const char*>(
           {{SidePanelEntry::Id::kReadingList, "ReadingList"},
            {SidePanelEntry::Id::kBookmarks, "Bookmarks"},
@@ -55,7 +57,7 @@ std::string GetHistogramNameForId(SidePanelEntry::Id id) {
            {SidePanelEntry::Id::kAboutThisSite, "AboutThisSite"},
            {SidePanelEntry::Id::kCustomizeChrome, "CustomizeChrome"},
            {SidePanelEntry::Id::kWebView, "WebView"},
-           {SidePanelEntry::Id::kSearchCompanion, "SearchCompanion"},
+           {SidePanelEntry::Id::kSearchCompanion, "Companion"},
            {SidePanelEntry::Id::kExtension, "Extension"}});
   auto* i = id_to_histogram_name_map.find(id);
   DCHECK(i != id_to_histogram_name_map.cend());

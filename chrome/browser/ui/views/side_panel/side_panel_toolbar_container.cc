@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/user_metrics.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -66,12 +67,14 @@ void SidePanelToolbarContainer::PinnedSidePanelToolbarButton::ButtonPressed() {
   }
 }
 
-void SidePanelToolbarContainer::PinnedSidePanelToolbarButton::Unpin(
-    int event_flags) {
+void SidePanelToolbarContainer::PinnedSidePanelToolbarButton::
+    UnpinForContextMenu(int event_flags) {
   PrefService* pref_service = browser_view_->GetProfile()->GetPrefs();
   if (pref_service) {
     pref_service->SetBoolean(prefs::kSidePanelCompanionEntryPinnedToToolbar,
                              false);
+    base::RecordAction(base::UserMetricsAction(
+        "SidePanel.Companion.Unpinned.ByPinnedButtonContextMenu"));
   }
 }
 
@@ -81,7 +84,7 @@ SidePanelToolbarContainer::PinnedSidePanelToolbarButton::CreateMenuModel() {
   dialog_model.AddMenuItem(
       ui::ImageModel(),
       l10n_util::GetStringUTF16(IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN),
-      base::BindRepeating(&PinnedSidePanelToolbarButton::Unpin,
+      base::BindRepeating(&PinnedSidePanelToolbarButton::UnpinForContextMenu,
                           base::Unretained(this)));
   return std::make_unique<ui::DialogModelMenuModelAdapter>(
       dialog_model.Build());
