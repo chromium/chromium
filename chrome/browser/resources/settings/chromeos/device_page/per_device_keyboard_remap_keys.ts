@@ -12,6 +12,7 @@ import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '../../icons.html.js';
 import '../../settings_shared.css.js';
 import '../../controls/settings_dropdown_menu.js';
+import './input_device_settings_shared.css.js';
 import './keyboard_remap_modifier_key_row.js';
 
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';

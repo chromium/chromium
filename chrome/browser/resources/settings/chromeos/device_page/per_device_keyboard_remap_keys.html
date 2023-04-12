@@ -1,11 +1,23 @@
-<style include="settings-shared">
+<style include="settings-shared input-device-settings-shared">
   #header {
     display: flex;
+    height: 24px;
+    padding: 12px 0;
   }
 
   #restoreDefaultsButton {
     margin-inline-end: 6px;
     margin-inline-start: auto;
+  }
+
+  .subsection {
+    margin-bottom: 0;
+    margin-top: 8px;
+  }
+
+  #description {
+    color: var(--cr-secondary-text-color);
+    margin-inline-start: 20px;
   }
 </style>
 <div id="header">
@@ -15,7 +27,7 @@
     $i18n{keyboardRemapRestoreDefaultsLabel}
   </cr-button>
 </div>
-<div id="container">
+<div class="subsection">
   <keyboard-remap-modifier-key-row
       default-remappings="[[defaultRemappings]]"
       key="[[modifierKey.kMeta]]" id="metaKey"
