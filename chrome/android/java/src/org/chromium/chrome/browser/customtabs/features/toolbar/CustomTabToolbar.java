@@ -128,6 +128,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     private @Nullable CustomTabCaptureStateToken mLastCustomTabCaptureStateToken;
 
+    // Whether the maximization button should be shown when it can. Set to {@code true}
+    // while the side sheet is running with the maximize button option on.
+    private boolean mMaximizeButtonEnabled;
+
     /**
      * Whether to use the toolbar as handle to resize the Window height.
      */
@@ -278,11 +282,13 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
         // The visibility will get updated after the location bar completes its layout.
         maximizeButton.setVisibility(View.GONE);
+        mMaximizeButtonEnabled = true;
         setMaximizeButtonDrawable(maximizedOnInit);
         maximizeButton.setOnClickListener((v) -> setMaximizeButtonDrawable(callback.onClick()));
     }
 
     private void setMaximizeButtonVisibility() {
+        if (!mMaximizeButtonEnabled) return;
         var maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
         if (maximizeButton == null) return;
 
@@ -324,6 +330,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         var maximizeButton = (ImageButton) findViewById(R.id.custom_tabs_sidepanel_maximize);
         maximizeButton.setOnClickListener(null);
         maximizeButton.setVisibility(View.GONE);
+        mMaximizeButtonEnabled = false;
     }
 
     private void updateCustomActionButtonVisuals(
@@ -1345,5 +1352,10 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         void setTitleUrlContainerForTesting(View titleUrlContainer) {
             mTitleUrlContainer = titleUrlContainer;
         }
+    }
+
+    @VisibleForTesting
+    boolean isMaximizeButtonEnabledForTesting() {
+        return mMaximizeButtonEnabled;
     }
 }

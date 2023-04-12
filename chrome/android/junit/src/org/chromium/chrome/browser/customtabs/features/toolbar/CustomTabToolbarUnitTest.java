@@ -376,7 +376,9 @@ public class CustomTabToolbarUnitTest {
     @Test
     @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_SIDE_SHEET})
     public void testMaximizeButton() {
+        assertFalse(mToolbar.isMaximizeButtonEnabledForTesting());
         mToolbar.initSideSheetMaximizeButton(/*maximizedOnInit=*/false, () -> true);
+        assertTrue(mToolbar.isMaximizeButtonEnabledForTesting());
         var maximizeButton =
                 (ImageButton) mToolbar.findViewById(R.id.custom_tabs_sidepanel_maximize);
         assertEquals("Maximize button should be invisible upon start", View.GONE,
@@ -405,6 +407,9 @@ public class CustomTabToolbarUnitTest {
 
         mToolbar.removeSideSheetMaximizeButton();
         assertEquals("Maximize button should be hidden", View.GONE, maximizeButton.getVisibility());
+
+        mToolbar.removeSideSheetMaximizeButton();
+        assertFalse(mToolbar.isMaximizeButtonEnabledForTesting());
     }
 
     private void assertUrlAndTitleVisible(boolean titleVisible, boolean urlVisible) {
