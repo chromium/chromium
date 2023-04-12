@@ -1569,17 +1569,20 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
   // If `@position-fallback` exists, let |TryCalculateOffset| check if the
   // result fits the available space.
   Element* element = DynamicTo<Element>(node_info.node.GetDOMNode());
+  absl::optional<wtf_size_t> fallback_index;
   const ComputedStyle* next_fallback_style = nullptr;
   const LayoutObject* implicit_anchor = nullptr;
-  AnchorScrollData* anchor_scroll_data = nullptr;
   gfx::Vector2dF anchor_scroll_offset;
   if (element) {
     if (UNLIKELY(style->PositionFallback())) {
       DCHECK(RuntimeEnabledFeatures::CSSAnchorPositioningEnabled());
       next_fallback_style = element->StyleForPositionFallback(0);
-      anchor_scroll_data = element->GetAnchorScrollData();
-      if (anchor_scroll_data) {
-        anchor_scroll_offset = anchor_scroll_data->AccumulatedScrollOffset();
+      if (next_fallback_style) {
+        fallback_index = 0;
+      }
+      if (element->GetAnchorScrollData()) {
+        anchor_scroll_offset =
+            element->GetAnchorScrollData()->AccumulatedScrollOffset();
       }
     }
     if (element->ImplicitAnchorElement())
@@ -1588,13 +1591,13 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
 
   // See anchor_scroll_data.h for documentation of non-overflowing ranges.
   Vector<PhysicalScrollRange> non_overflowing_ranges;
-  wtf_size_t fallback_index = 0;
   absl::optional<OffsetInfo> offset_info;
   while (!offset_info) {
     if (next_fallback_style) {
       DCHECK(element);
       style = next_fallback_style;
-      next_fallback_style = element->StyleForPositionFallback(++fallback_index);
+      next_fallback_style =
+          element->StyleForPositionFallback(*fallback_index + 1);
     }
 
     const bool try_fit_available_space = next_fallback_style;
@@ -1610,13 +1613,20 @@ NGOutOfFlowLayoutPart::OffsetInfo NGOutOfFlowLayoutPart::CalculateOffset(
         offset_info = absl::nullopt;
       }
     }
+
+    if (!offset_info) {
+      ++*fallback_index;
+    }
   }
-  if (anchor_scroll_data) {
-    // TODO(crbug.com/1418725): This should be stored on LayoutResult. Keeping
-    // layout results outside LayoutResult can cause issues.
-    anchor_scroll_data->SetNonOverflowingScrollRanges(
-        std::move(non_overflowing_ranges));
+
+  if (fallback_index) {
+    offset_info->fallback_index = fallback_index;
+    offset_info->non_overflowing_ranges = std::move(non_overflowing_ranges);
+  } else {
+    DCHECK(!offset_info->fallback_index);
+    DCHECK(offset_info->non_overflowing_ranges.empty());
   }
+
   return *offset_info;
 }
 
@@ -1834,6 +1844,11 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::Layout(
     node_info.node.GetLayoutBox()->SetMargin(
         offset_info.node_dimensions.margins.ConvertToPhysical(
             node_info.node.Style().GetWritingDirection()));
+  }
+
+  if (offset_info.fallback_index) {
+    layout_result->GetMutableForOutOfFlow().SetPositionFallbackResult(
+        *offset_info.fallback_index, offset_info.non_overflowing_ranges);
   }
 
   layout_result->GetMutableForOutOfFlow().SetOutOfFlowPositionedOffset(

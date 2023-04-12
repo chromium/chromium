@@ -92,6 +92,20 @@ const PaintLayer* ContainingScrollContainerLayerForAnchorPositionedBox(
   return is_fixed_to_view ? nullptr : scroller_layer;
 }
 
+const Vector<PhysicalScrollRange>* GetNonOverflowingScrollRanges(
+    const LayoutObject* layout_object) {
+  if (!layout_object || !layout_object->IsOutOfFlowPositioned()) {
+    return nullptr;
+  }
+  DCHECK(layout_object->IsBox());
+  const auto& layout_results = To<LayoutBox>(layout_object)->GetLayoutResults();
+  if (layout_results.empty()) {
+    return nullptr;
+  }
+  // TODO(crbug.com/1309178): Make sure it works when the box is fragmented.
+  return layout_results.front()->PositionFallbackNonOverflowingRanges();
+}
+
 }  // namespace
 
 AnchorScrollData::AnchorScrollData(Element* element)
@@ -156,11 +170,14 @@ AnchorScrollData::SnapshotDiff AnchorScrollData::TakeAndCompareSnapshot(
 
 bool AnchorScrollData::IsFallbackPositionValid(
     const gfx::Vector2dF& new_accumulated_scroll_offset) const {
-  if (!non_overflowing_scroll_ranges_.size()) {
+  const Vector<PhysicalScrollRange>* non_overflowing_scroll_ranges =
+      GetNonOverflowingScrollRanges(owner_->GetLayoutObject());
+  if (!non_overflowing_scroll_ranges ||
+      non_overflowing_scroll_ranges->empty()) {
     return true;
   }
 
-  for (const PhysicalScrollRange& range : non_overflowing_scroll_ranges_) {
+  for (const PhysicalScrollRange& range : *non_overflowing_scroll_ranges) {
     if (range.Contains(accumulated_scroll_offset_) !=
         range.Contains(new_accumulated_scroll_offset)) {
       return false;

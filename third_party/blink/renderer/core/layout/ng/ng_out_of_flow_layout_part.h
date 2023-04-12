@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
+#include "third_party/blink/renderer/core/layout/geometry/scroll_offset_range.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_static_position.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/inline_containing_block_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_absolute_utils.h"
@@ -33,7 +34,6 @@ struct NGLink;
 struct NGLogicalOutOfFlowPositionedNode;
 template <typename OffsetType>
 struct NGMulticolWithPendingOOFs;
-struct PhysicalScrollRange;
 
 // Helper class for positioning of out-of-flow blocks.
 // It should be used together with NGBoxFragmentBuilder.
@@ -240,6 +240,11 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     // The offset from the OOF to the top of the fragmentation context root.
     // This should only be used when laying out a fragmentainer descendant.
     LogicalOffset original_offset;
+
+    // These two fields are set only if this |OffsetInfo| is calculated from a
+    // @try rule of a @position-fallback rule.
+    absl::optional<wtf_size_t> fallback_index;
+    Vector<PhysicalScrollRange> non_overflowing_ranges;
 
     void Trace(Visitor* visitor) const;
   };

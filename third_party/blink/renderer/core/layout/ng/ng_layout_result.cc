@@ -299,6 +299,7 @@ NGExclusionSpace NGLayoutResult::MergeExclusionSpaces(
 
 NGLayoutResult::RareData* NGLayoutResult::EnsureRareData() {
   if (!HasRareData()) {
+    DCHECK(!bitfields_.has_oof_positioned_offset);
     absl::optional<LayoutUnit> bfc_block_offset;
     if (!bitfields_.is_bfc_block_offset_nullopt)
       bfc_block_offset = bfc_offset_.block_offset;
