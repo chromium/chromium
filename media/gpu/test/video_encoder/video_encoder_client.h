@@ -159,7 +159,7 @@ class VideoEncoderClient : public VideoEncodeAccelerator::Client {
                                size_t output_buffer_size) override;
   void BitstreamBufferReady(int32_t bitstream_buffer_id,
                             const BitstreamBufferMetadata& metadata) override;
-  void NotifyError(VideoEncodeAccelerator::Error error) override;
+  void NotifyErrorStatus(const EncoderStatus& status) override;
   void NotifyEncoderInfoChange(const VideoEncoderInfo& info) override;
 
  private:

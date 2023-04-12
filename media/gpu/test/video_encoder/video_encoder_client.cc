@@ -468,8 +468,11 @@ void VideoEncoderClient::BitstreamBufferProcessed(int32_t bitstream_buffer_id) {
   encoder_->UseOutputBitstreamBuffer(std::move(bitstream_buffer));
 }
 
-void VideoEncoderClient::NotifyError(VideoEncodeAccelerator::Error error) {
-  LOG(ERROR) << "NotifyError() is called: " << static_cast<int>(error);
+void VideoEncoderClient::NotifyErrorStatus(const EncoderStatus& status) {
+  ASSERT_FALSE(status.is_ok());
+  LOG(ERROR) << "NotifyErrorStatus() is called, code="
+             << static_cast<int>(status.code())
+             << ", message=" << status.message();
   FireEvent(VideoEncoder::EncoderEvent::kError);
 }
 
