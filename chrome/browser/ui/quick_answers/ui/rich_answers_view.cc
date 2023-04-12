@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
+#include "chrome/browser/ui/quick_answers/ui/rich_answers_definition_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_pre_target_handler.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_translation_view.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
@@ -152,12 +153,15 @@ void RichAnswersView::InitLayout(const quick_answers::QuickAnswer& result) {
   AddFrameButtons();
 
   switch (result.result_type) {
+    case quick_answers::ResultType::kDefinitionResult:
+      content_view_ = base_view_->AddChildView(
+          std::make_unique<RichAnswersDefinitionView>(result));
+      return;
     case quick_answers::ResultType::kTranslationResult: {
       content_view_ = base_view_->AddChildView(
           std::make_unique<RichAnswersTranslationView>(result));
       return;
     }
-    case quick_answers::ResultType::kDefinitionResult:
     case quick_answers::ResultType::kUnitConversionResult:
     default: {
       // TODO(b/259440976): Add child views for each result type.
