@@ -197,7 +197,7 @@ void OnIntentPickerClosedChromeOs(
   }
 
   IntentHandlingMetrics::RecordIntentPickerMetrics(entry_type, close_reason,
-                                                   should_persist, show_state);
+                                                   should_persist);
 }
 
 void LaunchAppFromIntentPickerChromeOs(content::WebContents* web_contents,

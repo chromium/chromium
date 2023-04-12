@@ -18,8 +18,6 @@ class BrowserContext;
 
 namespace apps {
 
-enum class PickerShowState;
-
 class IntentHandlingMetrics {
  public:
   // The type of app the link came from, used for intent handling metrics.
@@ -130,8 +128,7 @@ class IntentHandlingMetrics {
   // whether the persistence checkbox was checked.
   static void RecordIntentPickerMetrics(PickerEntryType entry_type,
                                         IntentPickerCloseReason close_reason,
-                                        bool should_persist,
-                                        PickerShowState show_state);
+                                        bool should_persist);
 
   // Records metrics for when a link is clicked which can handle a preferred
   // app, as the result of a user previously setting a preference for that app.
