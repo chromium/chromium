@@ -100,8 +100,7 @@ TEST_F(WebUIAllowlistProviderTest, RegisterChromeUntrusted) {
                              ContentSettingsType::BLUETOOTH_GUARD));
 }
 
-// TODO(crbug.com/1432104): This test is timing out on the Linux debug bot.
-#if DCHECK_IS_ON() && !BUILDFLAG(IS_LINUX)
+#if DCHECK_IS_ON()
 #define MAYBE_UnsupportedSchemes UnsupportedSchemes
 #else
 #define MAYBE_UnsupportedSchemes DISABLED_UnsupportedSchemes
@@ -123,8 +122,7 @@ TEST_F(WebUIAllowlistProviderTest, MAYBE_UnsupportedSchemes) {
   }
 }
 
-// TODO(crbug.com/1432104): This test is timing out on the Linux debug bot.
-#if DCHECK_IS_ON() && !BUILDFLAG(IS_LINUX)
+#if DCHECK_IS_ON()
 #define MAYBE_UnsupportedThirdPartyCookiesSettings \
   UnsupportedThirdPartyCookiesSettings
 #else
