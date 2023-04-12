@@ -232,6 +232,35 @@ BrowserContext* BrowserContextFromFrameTreeNodeId(int frame_tree_node_id) {
   return web_content->GetBrowserContext();
 }
 
+void RecordRedirectResult(PrefetchRedirectResult result) {
+  UMA_HISTOGRAM_ENUMERATION("PrefetchProxy.Redirect.Result", result);
+}
+
+void RecordRedirectNetworkContextTransition(
+    bool prefetch_requires_isolated_network_context,
+    bool redirect_requires_isolated_network_context) {
+  PrefetchRedirectNetworkContextTransition transition;
+  if (!prefetch_requires_isolated_network_context &&
+      !redirect_requires_isolated_network_context) {
+    transition = PrefetchRedirectNetworkContextTransition::kDefaultToDefault;
+  }
+  if (!prefetch_requires_isolated_network_context &&
+      redirect_requires_isolated_network_context) {
+    transition = PrefetchRedirectNetworkContextTransition::kDefaultToIsolated;
+  }
+  if (prefetch_requires_isolated_network_context &&
+      !redirect_requires_isolated_network_context) {
+    transition = PrefetchRedirectNetworkContextTransition::kIsolatedToDefault;
+  }
+  if (prefetch_requires_isolated_network_context &&
+      redirect_requires_isolated_network_context) {
+    transition = PrefetchRedirectNetworkContextTransition::kIsolatedToIsolated;
+  }
+
+  UMA_HISTOGRAM_ENUMERATION(
+      "PrefetchProxy.Redirect.NetworkContextStateTransition", transition);
+}
+
 }  // namespace
 
 // static
@@ -640,6 +669,10 @@ void PrefetchService::OnGotEligibilityResultForRedirect(
     return;
   }
 
+  RecordRedirectResult(eligible
+                           ? PrefetchRedirectResult::kSuccessRedirectFollowed
+                           : PrefetchRedirectResult::kFailedIneligible);
+
   // If the redirect is ineligible, the prefetch may change into a decoy.
   bool is_decoy = false;
   if (!eligible) {
@@ -953,6 +986,7 @@ PrefetchStreamingURLLoaderStatus PrefetchService::OnPrefetchRedirect(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!prefetch_container) {
+    RecordRedirectResult(PrefetchRedirectResult::kFailedNullPrefetch);
     return PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect;
   }
 
@@ -973,6 +1007,15 @@ PrefetchStreamingURLLoaderStatus PrefetchService::OnPrefetchRedirect(
 
     Prefetch();
 
+    if (!base::FeatureList::IsEnabled(features::kPrefetchRedirects)) {
+      RecordRedirectResult(PrefetchRedirectResult::kFailedRedirectsDisabled);
+    } else if (redirect_info.new_method != "GET") {
+      RecordRedirectResult(PrefetchRedirectResult::kFailedInvalidMethod);
+    } else if (response_head.headers->response_code() < 300 ||
+               response_head.headers->response_code() >= 400) {
+      RecordRedirectResult(PrefetchRedirectResult::kFailedInvalidResponseCode);
+    }
+
     return PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect;
   }
 
@@ -983,6 +1026,9 @@ PrefetchStreamingURLLoaderStatus PrefetchService::OnPrefetchRedirect(
   bool is_isolated_network_context_required =
       !url::Origin::Create(prefetch_container->GetReferrer().url)
            .IsSameOriginWith(redirect_info.new_url);
+  RecordRedirectNetworkContextTransition(
+      prefetch_container->GetPrefetchType().IsIsolatedNetworkContextRequired(),
+      is_isolated_network_context_required);
   if (is_isolated_network_context_required !=
       prefetch_container->GetPrefetchType()
           .IsIsolatedNetworkContextRequired()) {
@@ -995,6 +1041,9 @@ PrefetchStreamingURLLoaderStatus PrefetchService::OnPrefetchRedirect(
     prefetch_container->ResetStreamingLoader();
 
     Prefetch();
+
+    RecordRedirectResult(
+        PrefetchRedirectResult::kFailedInvalidChangeInNetworkContext);
 
     return PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect;
   }

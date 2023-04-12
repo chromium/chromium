@@ -445,6 +445,14 @@ void PrefetchContainer::SetOnEligibilityCheckCompleteCallback(
       std::move(on_eligibility_check_complete_callback);
 }
 
+bool PrefetchContainer::IsOnEligibilityCheckCompleteCallbackRegistered(
+    const GURL& url) const {
+  SinglePrefetch* this_prefetch = GetSinglePrefetch(url);
+  DCHECK(this_prefetch);
+
+  return !this_prefetch->on_eligibility_check_complete_callback_.is_null();
+}
+
 void PrefetchContainer::RegisterCookieListener(
     const GURL& url,
     network::mojom::CookieManager* cookie_manager) {
@@ -611,6 +619,9 @@ void PrefetchContainer::OnPrefetchedResponseHeadReceived() {
 }
 
 void PrefetchContainer::OnPrefetchComplete() {
+  UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.Prefetch.RedirectChainSize",
+                           redirect_chain_.size());
+
   if (!streaming_loader_) {
     return;
   }
@@ -745,6 +756,8 @@ void PrefetchContainer::OnGetPrefetchToServe(bool blocked_until_head) {
 
 void PrefetchContainer::OnReturnPrefetchToServe(bool served) {
   if (served) {
+    UMA_HISTOGRAM_COUNTS_100("PrefetchProxy.AfterClick.RedirectChainSize",
+                             redirect_chain_.size());
     navigated_to_ = true;
   }
 

@@ -83029,6 +83029,23 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
       label="Prefetch request was redirected to Signed Exchange handler"/>
 </enum>
 
+<enum name="PrefetchRedirectNetworkContextTransition">
+  <int value="0" label="Stayed in Default network context"/>
+  <int value="1" label="Switched from Default to Isolated network context"/>
+  <int value="2" label="Switched from Isolated to Default network context"/>
+  <int value="3" label="Stayed in Isolated network context"/>
+</enum>
+
+<enum name="PrefetchRedirectResult">
+  <int value="0" label="Success, Redirect followed"/>
+  <int value="1" label="Failed, Null prefetch"/>
+  <int value="2" label="Failed, Redirects disabled"/>
+  <int value="3" label="Failed, Invalid HTTP method"/>
+  <int value="4" label="Failed, Invalid HTTP response code"/>
+  <int value="5" label="Failed, Invalid change in network context"/>
+  <int value="6" label="Failed, Redirect was ineligible"/>
+</enum>
+
 <enum name="PrefetchReuseState">
   <int value="0" label="0">
     Reused fresh cache: outside time window and already reused

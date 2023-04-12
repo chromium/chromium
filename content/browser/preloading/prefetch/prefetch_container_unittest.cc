@@ -784,4 +784,22 @@ TEST_F(PrefetchContainerTest, BlockUntilHeadHistograms) {
       base::Milliseconds(40), 1);
 }
 
+TEST_F(PrefetchContainerTest, RecordRedirectChainSize) {
+  base::HistogramTester histogram_tester;
+
+  PrefetchContainer prefetch_container(
+      GlobalRenderFrameHostId(1234, 5678), GURL("https://test.com"),
+      PrefetchType(/*use_isolated_network_context=*/true,
+                   /*use_prefetch_proxy=*/true,
+                   blink::mojom::SpeculationEagerness::kEager),
+      blink::mojom::Referrer(), absl::nullopt, nullptr);
+
+  prefetch_container.AddRedirectHop(GURL("https://redirect1.com"));
+  prefetch_container.AddRedirectHop(GURL("https://redirect2.com"));
+  prefetch_container.OnPrefetchComplete();
+
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.RedirectChainSize", 3, 1);
+}
+
 }  // namespace content
