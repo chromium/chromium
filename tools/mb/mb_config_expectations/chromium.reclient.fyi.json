@@ -47,6 +47,16 @@
       }
     }
   },
+  "Linux Builder (canonical wd) (reclient compare)": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": true,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "use_remoteexec": true
+    }
+  },
   "Linux Builder reclient staging": {
     "gn_args": {
       "dcheck_always_on": false,

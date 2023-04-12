@@ -497,3 +497,36 @@ ci.builder(
     reclient_rewrapper_env = {"RBE_compare": "true"},
     service_account = "chromium-cq-staging-builder@chops-service-accounts.iam.gserviceaccount.com",
 )
+
+# TODO(b/276727069) Remove once developer rollout is done
+ci.builder(
+    name = "Linux Builder (canonical wd) (reclient compare)",
+    description_html = "verify artifacts with canonicalize_working_dir enabled. should be removed after developer rollout. b/276727069",
+    builder_spec = builder_config.copy_from(
+        "ci/Linux Builder",
+        lambda spec: structs.evolve(
+            spec,
+            gclient_config = structs.extend(
+                spec.gclient_config,
+                apply_configs = ["reclient_test"],
+            ),
+            build_gs_bucket = None,
+        ),
+    ),
+    cores = 32,
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "linux",
+        short_name = "compwd",
+    ),
+    execution_timeout = 14 * time.hour,
+    reclient_ensure_verified = True,
+    reclient_instance = reclient.instance.TEST_TRUSTED,
+    reclient_jobs = None,
+    reclient_rewrapper_env = {
+        "RBE_compare": "true",
+        "RBE_compression_threshold": "4000000",
+        "RBE_canonicalize_working_dir": "true",
+        "RBE_cache_silo": "Linux Builder (canonical wd) (reclient compare)",
+    },
+)

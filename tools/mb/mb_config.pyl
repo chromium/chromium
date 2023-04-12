@@ -725,6 +725,7 @@
         'build1': 'gpu_tests_release_bot_reclient',
         'build2': 'gpu_tests_release_bot_remote_links_small_reclient',
       },
+      'Linux Builder (canonical wd) (reclient compare)': 'gpu_tests_debug_bot_reclient',
       'Linux Builder reclient staging': 'gpu_tests_release_bot_reclient',
       'Linux Builder reclient staging untrusted': 'gpu_tests_release_bot_reclient',
       'Linux Builder reclient test': 'gpu_tests_release_bot_reclient',
