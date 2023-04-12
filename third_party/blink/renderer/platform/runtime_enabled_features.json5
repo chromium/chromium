@@ -787,6 +787,7 @@
     {
       // crbug.com/995106
       name: "CSSDisplayMultipleValues",
+      status: "test",
     },
     // Exists so that we can run a reverse-Finch experiment to assess its performance.
     {
