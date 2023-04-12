@@ -1,0 +1,9 @@
+include_rules = [
+  "-chrome/browser/ui/android/edge_to_edge/internal",
+  "+base/android",
+  "+base/test/android",
+  "+chrome/browser/android/lifecycle",
+  "+chrome/browser/flags",
+  "+chrome/test/android",
+  ]
+

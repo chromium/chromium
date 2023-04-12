@@ -1,0 +1,7 @@
+monorail {
+  component: "UI>Browser>Mobile>EdgeToEdge"
+}
+team_email: "edge-to-edge@chromium.org"
+os: ANDROID
+
+

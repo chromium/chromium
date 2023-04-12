@@ -2156,6 +2156,9 @@ extern const char kCormorantDescription[];
 extern const char kDefaultViewportIsDeviceWidthName[];
 extern const char kDefaultViewportIsDeviceWidthDescription[];
 
+extern const char kDrawEdgeToEdgeName[];
+extern const char kDrawEdgeToEdgeDescription[];
+
 extern const char kAutofillManualFallbackAndroidName[];
 extern const char kAutofillManualFallbackAndroidDescription[];
 

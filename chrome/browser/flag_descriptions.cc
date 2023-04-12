@@ -3747,6 +3747,10 @@ const char kDefaultViewportIsDeviceWidthDescription[] =
     "Sets the default viewport layout width to be equivalent to "
     "width=device-width";
 
+const char kDrawEdgeToEdgeName[] = "DrawEdgeToEdge";
+const char kDrawEdgeToEdgeDescription[] =
+    "Enables the Android feature Edge-to-Edge to draw below the Nav Bar.";
+
 const char kAutofillManualFallbackAndroidName[] =
     "Enable Autofill manual fallback for Addresses and Payments (Android)";
 const char kAutofillManualFallbackAndroidDescription[] =

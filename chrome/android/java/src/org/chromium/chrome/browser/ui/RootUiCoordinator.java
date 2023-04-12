@@ -134,6 +134,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinatorFactory;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
@@ -767,6 +768,7 @@ public class RootUiCoordinator
 
         initMerchantTrustSignals();
         initScrollCapture();
+        initializeEdgeToEdgeController();
 
         new OneShotCallback<>(mProfileSupplier, this::initHistoryClustersCoordinator);
 
@@ -1438,6 +1440,13 @@ public class RootUiCoordinator
                 mBackPressManager.addHandler(
                         mBottomSheetBackPressHandler, BackPressHandler.Type.BOTTOM_SHEET);
             }
+        }
+    }
+
+    /** Setup drawing using Android Edge-to-Edge. */
+    private void initializeEdgeToEdgeController() {
+        if (EdgeToEdgeControllerFactory.isEnabled()) {
+            EdgeToEdgeControllerFactory.create(mActivity).drawUnderSystemBars();
         }
     }
 

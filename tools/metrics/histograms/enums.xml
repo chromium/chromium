@@ -60968,6 +60968,7 @@ from previous Chrome versions.
   <int value="-555341956" label="AutofillSaveAndFillVPA:enabled"/>
   <int value="-552425893" label="ProjectorAnnotator:disabled"/>
   <int value="-552407626" label="ContextualSearchNewSettings:disabled"/>
+  <int value="-551664909" label="DrawEdgeToEdge:enabled"/>
   <int value="-551434067"
       label="QuickActionSearchWidgetAndroidDinoVariant:enabled"/>
   <int value="-551334994" label="NotificationPermissionVariant:enabled"/>
@@ -64166,6 +64167,7 @@ from previous Chrome versions.
   <int value="1214219155" label="gamepad-polling-interval"/>
   <int value="1214246730" label="TerminalAlternativeRenderer:enabled"/>
   <int value="1214455758" label="VideoRotateToFullscreen:disabled"/>
+  <int value="1215512170" label="DrawEdgeToEdge:disabled"/>
   <int value="1215531732" label="OmniboxUIExperiments:disabled"/>
   <int value="1215768255" label="AutofillCreditCardLocalCardMigration:enabled"/>
   <int value="1216286283" label="tint-composited-content"/>
