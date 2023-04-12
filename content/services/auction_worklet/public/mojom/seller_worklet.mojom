@@ -65,6 +65,7 @@ enum RejectReason {
   kBlockedByPublisher = 5,
   kLanguageExclusions = 6,
   kCategoryExclusions = 7,
+  kBelowKAnonThreshold = 8,
 };
 
 // Interface for returning ScoreAd results. The advantage of having an interface

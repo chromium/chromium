@@ -320,6 +320,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>
             update_priority_signals_overrides,
         PrivateAggregationRequests pa_requests,
+        PrivateAggregationRequests non_kanon_pa_requests,
         base::TimeDelta bidding_latency,
         std::vector<std::string> error_msgs)>;
     using ReportWinCallbackInternal =
@@ -364,6 +365,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>
           update_priority_signals_overrides;
       PrivateAggregationRequests pa_requests;
+      PrivateAggregationRequests non_kanon_pa_requests;
       std::vector<std::string> error_msgs;
     };
 
@@ -465,6 +467,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     void PostErrorBidCallbackToUserThread(
         GenerateBidCallbackInternal callback,
         base::TimeDelta bidding_latency,
+        PrivateAggregationRequests non_kanon_pa_requests =
+            PrivateAggregationRequests(),
         std::vector<std::string> error_msgs = std::vector<std::string>());
 
     static void PostResumeToUserThread(
@@ -574,6 +578,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
       base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>
           update_priority_signals_overrides,
       PrivateAggregationRequests pa_requests,
+      PrivateAggregationRequests non_kanon_pa_requests,
       base::TimeDelta bidding_latency,
       std::vector<std::string> error_msgs);
 

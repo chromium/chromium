@@ -116,6 +116,26 @@ bool CreateAdVector(AuctionV8Helper* v8_helper,
   return true;
 }
 
+bool HasKAnonFailureComponent(
+    const auction_worklet::mojom::PrivateAggregationRequestPtr& request) {
+  if (request->contribution->is_histogram_contribution()) {
+    return false;
+  }
+  const auction_worklet::mojom::AggregatableReportForEventContributionPtr&
+      event_contribution = request->contribution->get_for_event_contribution();
+  if (event_contribution->bucket->is_signal_bucket() &&
+      event_contribution->bucket->get_signal_bucket()->base_value ==
+          auction_worklet::mojom::BaseValue::kBidRejectReason) {
+    return true;
+  }
+  if (event_contribution->value->is_signal_value() &&
+      event_contribution->value->get_signal_value()->base_value ==
+          auction_worklet::mojom::BaseValue::kBidRejectReason) {
+    return true;
+  }
+  return false;
+}
+
 }  // namespace
 
 BidderWorklet::BidderWorklet(
@@ -744,15 +764,24 @@ void BidderWorklet::V8State::GenerateBid(
       }
 
       if (kanon_mode == mojom::KAnonymityBidMode::kEnforce) {
+        PrivateAggregationRequests non_kanon_pa_requests =
+            std::move(result->pa_requests);
+        base::EraseIf(
+            non_kanon_pa_requests,
+            [](const auction_worklet::mojom::PrivateAggregationRequestPtr&
+                   request) { return !HasKAnonFailureComponent(request); });
+
         // We are enforcing the k-anonymity, so the restricted result is the one
         // to use for reporting, etc., and needs to succeed.
         if (!restricted_result.has_value()) {
           PostErrorBidCallbackToUserThread(
               std::move(callback),
-              /*bidding_latency=*/base::TimeTicks::Now() - bidding_start);
+              /*bidding_latency=*/base::TimeTicks::Now() - bidding_start,
+              std::move(non_kanon_pa_requests));
           return;
         }
         result = std::move(restricted_result);
+        result->non_kanon_pa_requests = std::move(non_kanon_pa_requests);
       } else {
         DCHECK_EQ(kanon_mode, mojom::KAnonymityBidMode::kSimulate);
         // Here, `result` is already what we want for reporting, etc., so
@@ -770,6 +799,7 @@ void BidderWorklet::V8State::GenerateBid(
                      std::move(result->set_priority),
                      std::move(result->update_priority_signals_overrides),
                      std::move(result->pa_requests),
+                     std::move(result->non_kanon_pa_requests),
                      /*bidding_latency=*/base::TimeTicks::Now() - bidding_start,
                      std::move(result->error_msgs)));
 }
@@ -1221,6 +1251,7 @@ void BidderWorklet::V8State::PostReportWinCallbackToUserThread(
 void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
     GenerateBidCallbackInternal callback,
     base::TimeDelta bidding_latency,
+    PrivateAggregationRequests non_kanon_pa_requests,
     std::vector<std::string> error_msgs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   user_thread_->PostTask(
@@ -1235,8 +1266,8 @@ void BidderWorklet::V8State::PostErrorBidCallbackToUserThread(
           /*update_priority_signals_overrides=*/
           base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>(),
           /*pa_requests=*/
-          PrivateAggregationRequests(), bidding_latency,
-          std::move(error_msgs)));
+          PrivateAggregationRequests(), std::move(non_kanon_pa_requests),
+          bidding_latency, std::move(error_msgs)));
 }
 
 void BidderWorklet::ResumeIfPaused() {
@@ -1676,6 +1707,7 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
     base::flat_map<std::string, mojom::PrioritySignalsDoublePtr>
         update_priority_signals_overrides,
     PrivateAggregationRequests pa_requests,
+    PrivateAggregationRequests non_kanon_pa_requests,
     base::TimeDelta bidding_latency,
     std::vector<std::string> error_msgs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
@@ -1692,7 +1724,7 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
       bidding_signals_data_version.has_value(), debug_loss_report_url,
       debug_win_report_url, set_priority.value_or(0), set_priority.has_value(),
       std::move(update_priority_signals_overrides), std::move(pa_requests),
-      bidding_latency, error_msgs);
+      std::move(non_kanon_pa_requests), bidding_latency, error_msgs);
   CleanUpBidTaskOnUserThread(task);
 }
 

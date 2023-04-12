@@ -223,6 +223,7 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
         base::flat_map<std::string,
                        auction_worklet::mojom::PrioritySignalsDoublePtr>(),
         /*pa_requests=*/std::move(pa_requests),
+        /*non_kanon_pa_requests=*/{},
         /*bidding_latency=*/bidding_latency_,
         /*errors=*/std::vector<std::string>());
     return;
@@ -243,6 +244,7 @@ void MockBidderWorklet::InvokeGenerateBidCallback(
       base::flat_map<std::string,
                      auction_worklet::mojom::PrioritySignalsDoublePtr>(),
       /*pa_requests=*/std::move(pa_requests),
+      /*non_kanon_pa_requests=*/{},
       /*bidding_latency=*/bidding_latency_,
       /*errors=*/std::vector<std::string>());
 }

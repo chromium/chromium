@@ -241,6 +241,10 @@ class CONTENT_EXPORT InterestGroupAuction
     std::map<url::Origin, PrivateAggregationRequests>
         private_aggregation_requests;
 
+    // Requests made to Private aggregation API in generateBid() for the
+    // non-k-anonymous enforced bid when k-anonymity enforcement is active.
+    PrivateAggregationRequests non_kanon_private_aggregation_requests;
+
     // The reason this bid was rejected by the auction (i.e., reason why score
     // was non-positive).
     auction_worklet::mojom::RejectReason reject_reason =
