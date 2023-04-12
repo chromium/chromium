@@ -335,9 +335,9 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
                 withIntermediateDirectories:YES
                                  attributes:nil
                                       error:&error]) {
-      NOTREACHED() << "Error creating destination directory: "
-                   << base::SysNSStringToUTF8(directory) << ": "
-                   << base::SysNSStringToUTF8([error description]);
+      DLOG(WARNING) << "Error creating destination directory: "
+                    << base::SysNSStringToUTF8(directory) << ": "
+                    << base::SysNSStringToUTF8([error description]);
       return;
     }
   }
@@ -355,9 +355,9 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 
   base::TimeTicks start_time = base::TimeTicks::Now();
   if (![sessionData writeToFile:sessionPath options:options error:&error]) {
-    NOTREACHED() << "Error writing session file: "
-                 << base::SysNSStringToUTF8(sessionPath) << ": "
-                 << base::SysNSStringToUTF8([error description]);
+    DLOG(WARNING) << "Error writing session file: "
+                  << base::SysNSStringToUTF8(sessionPath) << ": "
+                  << base::SysNSStringToUTF8([error description]);
     return;
   }
   UmaHistogramTimes("Session.WebStates.WriteToFileTime",

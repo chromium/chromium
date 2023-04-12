@@ -67,9 +67,9 @@ void WriteSessionData(NSData* sessionData,
   NSString* filePathString = base::SysUTF8ToNSString(filePath.AsUTF8Unsafe());
   NSError* error = nil;
   if (![sessionData writeToFile:filePathString options:options error:&error]) {
-    NOTREACHED() << "Error writing session data: "
-                 << base::SysNSStringToUTF8(filePathString) << ": "
-                 << base::SysNSStringToUTF8([error description]);
+    DLOG(WARNING) << "Error writing session data: "
+                  << base::SysNSStringToUTF8(filePathString) << ": "
+                  << base::SysNSStringToUTF8([error description]);
     // If -writeToFile failed, this webState's session data is now stale.
     // Delete it and revert to legacy session restore.
     base::DeleteFile(filePath);
