@@ -447,6 +447,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
       break;
   }
 
+  const bool isOUTPUTQueueNew = !OUTPUT_queue_;
   if (!OUTPUT_queue_) {
     CreateOUTPUTQueue(kDriverCodecFourcc);
   }
@@ -486,7 +487,16 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame(std::vector<uint8_t>& y_plane,
                                    .ptr = &v4l2_compressed_hdr_probs};
   }
 
-  v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls);
+  // Before the CAPTURE queue is set up the first frame must be parsed by the
+  // driver. This is done so that when VIDIOC_G_FMT is called the frame
+  // dimensions and format will be ready. Specifying V4L2_CTRL_WHICH_CUR_VAL
+  // when VIDIOC_S_EXT_CTRLS processes the request immediately so that the frame
+  // is parsed by the driver and the state is readied.
+  if (isOUTPUTQueueNew) {
+    v4l2_ioctl_->SetExtCtrlsImmediate(OUTPUT_queue_, &ext_ctrls);
+  } else {
+    v4l2_ioctl_->SetExtCtrls(OUTPUT_queue_, &ext_ctrls);
+  }
 
   v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_);
 
