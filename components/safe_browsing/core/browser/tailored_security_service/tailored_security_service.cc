@@ -441,11 +441,9 @@ void TailoredSecurityService::
   bool is_enabled = is_tailored_security_enabled_;
   base::Time previous_update = last_updated_;
   if (success) {
-    base::Value response_value = ReadResponse(request);
-    is_enabled = response_value.is_none()
-                     ? false
-                     : response_value.FindBoolKey("history_recording_enabled")
-                           .value_or(false);
+    base::Value::Dict response_value = ReadResponse(request);
+    is_enabled =
+        response_value.FindBool("history_recording_enabled").value_or(false);
   }
 
   std::move(callback).Run(is_enabled, previous_update);
@@ -478,13 +476,13 @@ void TailoredSecurityService::SetTailoredSecurityBitForTesting(
 }
 
 // static
-base::Value TailoredSecurityService::ReadResponse(Request* request) {
-  base::Value result = base::Value();
+base::Value::Dict TailoredSecurityService::ReadResponse(Request* request) {
+  base::Value::Dict result;
   if (request->GetResponseCode() == net::HTTP_OK) {
     absl::optional<base::Value> json_value =
         base::JSONReader::Read(request->GetResponseBody());
     if (json_value && json_value.value().is_dict())
-      result = std::move(*json_value);
+      result = std::move(json_value->GetDict());
     else
       DLOG(WARNING) << "Non-JSON response received from server.";
   }
