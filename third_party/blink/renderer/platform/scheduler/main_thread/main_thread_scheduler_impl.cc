@@ -532,9 +532,6 @@ MainThreadSchedulerImpl::AnyThread::AnyThread(
           YesNoStateToString) {}
 
 MainThreadSchedulerImpl::SchedulingSettings::SchedulingSettings() {
-  prioritize_compositing_after_input =
-      base::FeatureList::IsEnabled(kPrioritizeCompositingAfterInput);
-
   mbi_override_task_runner_handle =
       base::FeatureList::IsEnabled(kMbiOverrideTaskRunnerHandle);
 
@@ -2621,8 +2618,7 @@ void MainThreadSchedulerImpl::
     main_thread_only().should_prioritize_compositor_task_queue_after_delay =
         false;
     main_thread_only().prioritize_compositing_after_input = false;
-  } else if (scheduling_settings().prioritize_compositing_after_input &&
-             queue &&
+  } else if (queue &&
              queue->queue_type() == MainThreadTaskQueue::QueueType::kInput &&
              main_thread_only().did_handle_discrete_input_event) {
     // Assume this input will result in a frame, which we want to show ASAP.
