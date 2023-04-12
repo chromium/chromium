@@ -19,7 +19,7 @@ api::os_events::AudioJackEventInfo UncheckedConvertPtr(
 
 }  // namespace unchecked
 
-api::os_events::AudioJackEventState Convert(
+api::os_events::AudioJackEvent Convert(
     crosapi::mojom::TelemetryAudioJackEventInfo::State state);
 
 template <class OutputT, class InputT>

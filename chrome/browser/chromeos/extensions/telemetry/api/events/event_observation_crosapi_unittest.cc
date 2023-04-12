@@ -97,8 +97,8 @@ TEST_F(TelemetryExtensionEventObservationCrosapiTest, CanObserveEvent) {
   auto result = GetEventDelegate()->WaitAndGetData();
 
   EXPECT_EQ(std::get<0>(result), extension()->id());
-  EXPECT_EQ(std::get<1>(result).event_state,
-            api::os_events::AudioJackEventState::kAdd);
+  EXPECT_EQ(std::get<1>(result).event,
+            api::os_events::AudioJackEvent::kConnected);
 }
 
 }  // namespace chromeos

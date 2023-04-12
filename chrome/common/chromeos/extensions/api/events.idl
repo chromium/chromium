@@ -5,31 +5,31 @@
 // Use the <code>chrome.os.events</code> API to subscribe to real time events.
 [implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/events/events_api.h", modernised_enums]
 namespace os.events {
-    enum EventCategoryEnum {
+    enum EventCategory {
         audio_jack
     };
 
-    enum EventSupportStatusEnum {
+    enum EventSupportStatus {
         supported,
         unsupported
     };
 
-    dictionary EventSupportStatus {
-        EventSupportStatusEnum? status;
+    dictionary EventSupportStatusInfo {
+        EventSupportStatus? status;
     };
 
-    callback EventSupportStatusCallback = void(
-        EventSupportStatus status);
+    callback EventSupportStatusInfoCallback = void(
+        EventSupportStatusInfo info);
 
-    enum AudioJackEventState {
-        // Audio jack added.
-        add,
-        // Audio jack removed.
-        remove
+    enum AudioJackEvent {
+        // The audio jack was connected.
+        connected,
+        // The audio jack was disconnected.
+        disconnected
     };
 
     dictionary AudioJackEventInfo {
-        AudioJackEventState? event_state;
+        AudioJackEvent? event;
     };
 
     callback VoidCallback = void();
@@ -38,21 +38,21 @@ namespace os.events {
         // Checks whether an event is supported. The information returned by
         // this method is valid across reboots of the device.
         [supportsPromises] static void isEventSupported(
-            EventCategoryEnum category, EventSupportStatusCallback callback);
+            EventCategory category, EventSupportStatusInfoCallback callback);
 
-        // Starts capturing events for `EventCategoryEnum`. After calling this
+        // Starts capturing events for `EventCategory`. After calling this
         // method, an extension can expect to be updated about events through
         // invocations of `on<EventCategory>Event`, until either the PWA is
         // closed or `stopCapturingEvents` is called. Note that an extension
         // is only able to subscribe to events if the PWA is currently open.
         [supportsPromises] static void startCapturingEvents(
-            EventCategoryEnum category, VoidCallback callback);
+            EventCategory category, VoidCallback callback);
 
-        // Stops capturing `EventCategoryEnum` events. This means
+        // Stops capturing `EventCategory` events. This means
         // `on<EventCategory>Event` won't be invoked until
         // `startCapturingEvents` is succesfully called.
         [supportsPromises] static void stopCapturingEvents(
-            EventCategoryEnum category, VoidCallback callback);
+            EventCategory category, VoidCallback callback);
     };
 
     interface Events {
