@@ -148,6 +148,8 @@ def _get_orchestrators_and_compilators(ctx):
     compilator_by_name = {}
 
     for bucket in cfg.buckets:
+        if not proto.has(bucket, "swarming"):
+            continue
         bucket_name = bucket.name
         for builder in bucket.swarming.builders:
             compilator = _get_compilator(bucket_name, builder)

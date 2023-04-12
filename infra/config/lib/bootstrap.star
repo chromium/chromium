@@ -122,6 +122,8 @@ def _bootstrap_properties(ctx):
         fail("There is no buildbucket configuration file to reformat properties")
 
     for bucket in cfg.buckets:
+        if not proto.has(bucket, "swarming"):
+            continue
         bucket_name = bucket.name
         for builder in bucket.swarming.builders:
             builder_name = builder.name
