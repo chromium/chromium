@@ -3679,7 +3679,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Wifi.Synced.Connection.FailureReason"
     enum="ConnectionFailureReason" expires_after="2023-08-20">
   <owner>jonmann@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the failure reason for all connection attempts,
     manual or automatic, to Wi-Fi networks which were added from Chrome Sync.
@@ -3689,7 +3690,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Wifi.Synced.Connection.Result" enum="BooleanSuccess"
     expires_after="2023-08-20">
   <owner>jonmann@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the result of all connection attempts, manual or
     automatic, to Wi-Fi networks which were added from Chrome Sync.
@@ -3712,7 +3714,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Wifi.Synced.ManualConnection.FailureReason"
     enum="ConnectionFailureReason" expires_after="2023-06-18">
   <owner>jonmann@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the failure reason for manual connection
     attempts to Wi-Fi networks which were added from Chrome Sync.
@@ -3722,7 +3725,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Wifi.Synced.ManualConnection.Result"
     enum="BooleanSuccess" expires_after="2023-06-18">
   <owner>jonmann@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the result of manual connection attempts to
     Wi-Fi networks which were added from Chrome Sync.
@@ -3732,7 +3736,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Wifi.Synced.TotalCount" units="units"
     expires_after="2023-08-20">
   <owner>jonmann@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the total number of Wi-Fi networks which are
     stored in Chrome Sync for the active user.
@@ -3742,7 +3747,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Wifi.Synced.UpdateOperation.FailureReason"
     enum="ConnectionFailureReason" expires_after="2023-06-18">
   <owner>jonmann@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the failure reason for update attempts to synced
     Wi-Fi networks. This includes create/modify/remove operations. Each retry is
@@ -3754,6 +3760,7 @@ chromium-metrics-reviews@google.com.
     name="Network.Wifi.Synced.UpdateOperation.GenerateLocalNetworkConfig.Result"
     enum="BooleanSuccess" expires_after="2023-06-18">
   <owner>jonmann@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the success or failure to generate a local
@@ -3764,7 +3771,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Wifi.Synced.UpdateOperation.Result"
     enum="BooleanSuccess" expires_after="2023-06-18">
   <owner>jonmann@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric that tracks the result of update attempts to synced Wi-Fi
     networks. This includes create/modify/remove operations. failures are only
@@ -3775,7 +3783,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Wifi.Synced.ZeroNetworksEligibleForSync.Reason"
     enum="NetworkEligibilityStatus" expires_after="2023-06-18">
   <owner>jonmann@chromium.org</owner>
-  <owner>better-together-dev@google.com</owner>
+  <owner>crisrael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     ChromeOS metric logged for users who have the feature enabled but have zero
     networks eligible for sync. Tracks the reasons why none of the networks are
