@@ -5,10 +5,9 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_FUCHSIA_SEMANTIC_PROVIDER_H_
 #define UI_ACCESSIBILITY_PLATFORM_FUCHSIA_SEMANTIC_PROVIDER_H_
 
-#include <fidl/fuchsia.accessibility.semantics/cpp/fidl.h>
+#include <fuchsia/accessibility/semantics/cpp/fidl.h>
 
 #include "base/component_export.h"
-#include "base/functional/callback_forward.h"
 
 namespace ui {
 
@@ -30,9 +29,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXFuchsiaSemanticProvider {
     Delegate();
     virtual ~Delegate();
 
-    using HitTestCallback = base::OnceCallback<void(
-        const fidl::Response<
-            fuchsia_accessibility_semantics::SemanticListener::HitTest>&)>;
+    using HitTestCallback =
+        fuchsia::accessibility::semantics::SemanticListener::HitTestCallback;
+
     // Called when the FIDL channel to the Semantics Manager is closed. If this
     // callback returns true, an attempt to reconnect will be made.
     virtual bool OnSemanticsManagerConnectionClosed(zx_status_t status) = 0;
@@ -42,14 +41,14 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXFuchsiaSemanticProvider {
     // method returns true, this means that the action will be handled.
     virtual bool OnAccessibilityAction(
         uint32_t node_id,
-        fuchsia_accessibility_semantics::Action action) = 0;
+        fuchsia::accessibility::semantics::Action action) = 0;
 
     // Processes an incoming hit test request from Fuchsia. It
     // receives a point in Scenic View pixel coordinates and a callback to
     // return the result when the hit test is done. Please see
     // |fuchsia.accessibility.semantics.SemanticListener| for documentation on
     // hit tests.
-    virtual void OnHitTest(fuchsia_math::PointF point,
+    virtual void OnHitTest(fuchsia::math::PointF point,
                            HitTestCallback callback) = 0;
 
     // Called whenever Fuchsia enables / disables semantic updates.
@@ -61,7 +60,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXFuchsiaSemanticProvider {
 
   // Adds a semantic node to be updated. It is mandatory that the node has at
   // least an unique ID.
-  virtual bool Update(fuchsia_accessibility_semantics::Node node) = 0;
+  virtual bool Update(fuchsia::accessibility::semantics::Node node) = 0;
 
   // Marks a semantic node to be deleted. Returns false if the node is not
   // present in the list of semantic nodes known by this provider.
@@ -74,7 +73,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXFuchsiaSemanticProvider {
   // https://cs.opensource.google/fuchsia/fuchsia/+/main:sdk/fidl/fuchsia.accessibility.semantics/semantics_manager.fidl
   // for documentation on events.
   virtual void SendEvent(
-      fuchsia_accessibility_semantics::SemanticEvent event) = 0;
+      fuchsia::accessibility::semantics::SemanticEvent event) = 0;
 
   // Returns true if there are pending updates or deletions to be made.
   virtual bool HasPendingUpdates() const = 0;

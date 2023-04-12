@@ -4,7 +4,7 @@
 
 #include "content/browser/accessibility/browser_accessibility_fuchsia.h"
 
-#include <lib/ui/scenic/cpp/commands.h>
+#include <fidl/fuchsia.accessibility.semantics/cpp/hlcpp_conversion.h>
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "content/browser/accessibility/browser_accessibility_manager_fuchsia.h"
@@ -403,7 +403,8 @@ void BrowserAccessibilityFuchsia::UpdateNode() {
   if (!GetAccessibilityBridge())
     return;
 
-  GetAccessibilityBridge()->UpdateNode(ToFuchsiaNodeData());
+  GetAccessibilityBridge()->UpdateNode(
+      fidl::NaturalToHLCPP(ToFuchsiaNodeData()));
 }
 
 void BrowserAccessibilityFuchsia::DeleteNode() {
