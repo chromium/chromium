@@ -5132,6 +5132,17 @@ hooks = [
                '--hook',
                ],
   },
+  # Configure Siso
+  {
+    'name': 'configure_siso',
+    'pattern': '.',
+    'condition': 'checkout_siso',
+    'action': ['python3',
+               'src/build/config/siso/configure_siso.py',
+               '--rbe_instance',
+               Var('rbe_instance'),
+               ],
+  },
 ]
 
 # Add any corresponding DEPS files from this list to chromium.exclusions in
