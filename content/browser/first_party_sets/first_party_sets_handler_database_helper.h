@@ -50,7 +50,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
   // FPSs info by comparing the combined `old_sets` and `old_config` with the
   // combined `current_sets` and `current_config`. Returns the set of sites
   // that: 1) were in old FPSs but are no longer in current FPSs i.e. leave the
-  // FPSs; or, 2) mapped to a different owner site.
+  // FPSs; or, 2) mapped to a different primary site.
   //
   // This method assumes that the sites were normalized properly when the maps
   // were created. Made public only for testing,

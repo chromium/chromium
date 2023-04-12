@@ -168,8 +168,8 @@ class NET_EXPORT GlobalFirstPartySets {
           addition_sets) const;
 
   // Returns whether `site` is same-party with `party_context`, and
-  // `top_frame_site` (if it is not nullptr). That is, is `site`'s owner the
-  // same as the owners of every member of `party_context` and of
+  // `top_frame_site` (if it is not nullptr). That is, is `site`'s primary the
+  // same as the primaries of every member of `party_context` and of
   // `top_frame_site`? Note: if `site` is not a member of a First-Party Set,
   // then this returns false. If `top_frame_site` is nullptr, then it is
   // ignored.
