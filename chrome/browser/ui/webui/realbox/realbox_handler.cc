@@ -259,7 +259,7 @@ std::vector<omnibox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
             omnibox::GroupConfig_RenderType_HORIZONTAL,
             suggestion_groups_map) &&
         (match.type != AutocompleteMatchType::SEARCH_SUGGEST_ENTITY ||
-         match.image_url.is_valid())) {
+         !match.image_url.is_valid())) {
       continue;
     }
 
