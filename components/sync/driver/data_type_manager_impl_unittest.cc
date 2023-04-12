@@ -459,11 +459,16 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureOneThenBoth) {
   Configure(ModelTypeSet(BOOKMARKS));
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
   EXPECT_EQ(ModelTypeSet(BOOKMARKS), configurer_.connected_types());
+  EXPECT_EQ(ModelTypeSet(BOOKMARKS),
+            dtm_->GetTypesWithPendingDownloadForInitialSync());
 
   // Step 2.
-  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
+  FinishDownload(ModelTypeSet(NIGORI), ModelTypeSet());  // control types
+  EXPECT_EQ(ModelTypeSet(BOOKMARKS),
+            dtm_->GetTypesWithPendingDownloadForInitialSync());
   FinishDownload(ModelTypeSet(BOOKMARKS), ModelTypeSet());
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+  EXPECT_EQ(ModelTypeSet(), dtm_->GetTypesWithPendingDownloadForInitialSync());
 
   observer_.ResetExpectations();
   SetConfigureStartExpectation();
@@ -474,12 +479,17 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureOneThenBoth) {
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
   EXPECT_EQ(ModelTypeSet(BOOKMARKS, PREFERENCES),
             configurer_.connected_types());
+  EXPECT_EQ(ModelTypeSet(PREFERENCES),
+            dtm_->GetTypesWithPendingDownloadForInitialSync());
   EXPECT_EQ(0, GetController(BOOKMARKS)->model()->clear_metadata_call_count());
 
   // Step 4.
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
+  EXPECT_EQ(ModelTypeSet(PREFERENCES),
+            dtm_->GetTypesWithPendingDownloadForInitialSync());
   FinishDownload(ModelTypeSet(BOOKMARKS, PREFERENCES), ModelTypeSet());
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+  EXPECT_EQ(ModelTypeSet(), dtm_->GetTypesWithPendingDownloadForInitialSync());
 
   // Step 5.
   dtm_->Stop(SyncStopMetadataFate::KEEP_METADATA);
@@ -1316,9 +1326,9 @@ TEST_F(SyncDataTypeManagerImplTest, AllTypesReady) {
   Configure(ModelTypeSet(PRIORITY_PREFERENCES, BOOKMARKS));
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
 
-  // TODO(crbug.com/1429600): Ideally the test should verify that
-  // GetTypesWithPendingDownloadForInitialSync() returns an empty set here,
-  // but it isn't possible today because of implementation details.
+  // Both types were downloaded already, so they aren't downloading initial
+  // data even during the CONFIGURING state.
+  EXPECT_TRUE(dtm_->GetTypesWithPendingDownloadForInitialSync().Empty());
 
   // This started the configuration of control types, which aren't tracked by
   // DataTypeManagerImpl, so always considered already downloaded.

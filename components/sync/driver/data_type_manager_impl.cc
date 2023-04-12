@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/configure_context.h"
@@ -223,14 +224,26 @@ void DataTypeManagerImpl::ConfigureImpl(ModelTypeSet preferred_types,
   last_requested_context_ = context;
 
   // Only proceed if we're in a steady state or retrying.
-  if (state_ != STOPPED && state_ != CONFIGURED && state_ != RETRYING) {
-    DVLOG(1) << "Received configure request while configuration in flight. "
-             << "Postponing until current configuration complete.";
-    needs_reconfigure_ = true;
-    return;
-  }
+  switch (state_) {
+    case STOPPING:
+      // Handled earlier in this function.
+      NOTREACHED_NORETURN();
 
-  Restart();
+    case STOPPED:
+    case CONFIGURED:
+    case RETRYING:
+      // Proceed with the configuration now.
+      Restart();
+      break;
+
+    case CONFIGURING:
+      // A configuration is ongoing and can't be interrupted, so let's just
+      // postpone the logic until the in-flight configuration is completed.
+      DVLOG(1) << "Received configure request while configuration in flight. "
+               << "Postponing until current configuration complete.";
+      needs_reconfigure_ = true;
+      break;
+  }
 }
 
 void DataTypeManagerImpl::ConnectDataTypes() {
@@ -491,9 +504,11 @@ void DataTypeManagerImpl::ProcessReconfigure() {
 void DataTypeManagerImpl::ConfigurationCompleted(
     ModelTypeSet succeeded_configuration_types,
     ModelTypeSet failed_configuration_types) {
-  // |succeeded_configuration_types| are the types that were actually downloaded
-  // just now.
   DCHECK_EQ(CONFIGURING, state_);
+
+  // |succeeded_configuration_types| are the types that were actually downloaded
+  // just now (i.e. initial sync was just completed for them).
+  downloaded_types_.PutAll(succeeded_configuration_types);
 
   if (!failed_configuration_types.Empty()) {
     DataTypeStatusTable::TypeErrorMap errors;
@@ -530,17 +545,6 @@ void DataTypeManagerImpl::StartNextConfiguration() {
   if (configuration_types_queue_.empty())
     return;
 
-  // The engine's state was initially derived from the types detected to have
-  // been downloaded in the database. Afterwards it is modified only by this
-  // function. We expect |downloaded_types_| to remain consistent because
-  // configuration requests are never aborted; they are retried until they
-  // succeed or the engine is shut down.
-  //
-  // Only one configure is allowed at a time. This is guaranteed by our callers.
-  // The sync engine requests one configure as it is initializing and waits for
-  // it to complete. After engine initialization, all configurations pass
-  // through the DataTypeManager, and we are careful to never send a new
-  // configure request until the current request succeeds.
   configurer_->ConfigureDataTypes(PrepareConfigureParams());
 }
 
@@ -584,9 +588,6 @@ DataTypeManagerImpl::PrepareConfigureParams() {
   // |DataTypeActivationResponse::skip_engine_connection|).
   DCHECK(ProtocolTypes().HasAll(types_to_download));
 
-  // Already (optimistically) update the |downloaded_types_|, so that the next
-  // time we get here, it has the correct value.
-  downloaded_types_.PutAll(active_types);
   // Assume that disabled types are not downloaded anymore - if they get
   // re-enabled, we'll want to re-download them as well.
   downloaded_types_.RemoveAll(disabled_types);
@@ -594,15 +595,15 @@ DataTypeManagerImpl::PrepareConfigureParams() {
 
   // TODO(crbug.com/1142771): "Purging" logic is only implemented for NIGORI -
   // verify whether it is actually needed at all.
-  ModelTypeSet types_to_purge =
-      Difference(ModelTypeSet::All(), downloaded_types_);
+  ModelTypeSet types_to_purge = ModelTypeSet::All();
+  types_to_purge.RemoveAll(downloaded_types_);
+  types_to_purge.RemoveAll(active_types);
   types_to_purge.RemoveAll(inactive_types);
   types_to_purge.RemoveAll(unready_types);
+
   DCHECK(Intersection(active_types, types_to_purge).Empty());
 
   DCHECK(Intersection(downloaded_types_, crypto_types).Empty());
-  // |downloaded_types_| was already updated to include all enabled types.
-  DCHECK(downloaded_types_.HasAll(types_to_download));
 
   DVLOG(1) << "Types " << ModelTypeSetToDebugString(types_to_download)
            << " added; calling ConfigureDataTypes";
@@ -721,13 +722,8 @@ ModelTypeSet DataTypeManagerImpl::GetTypesWithPendingDownloadForInitialSync()
   if (state_ != CONFIGURING) {
     return ModelTypeSet();
   }
-  // The fact that the current state is CONFIGURING doesn't mean all datatypes
-  // are in the middle of the initial download, but it is a simple
-  // approximation that works well in most cases.
-  // TODO(crbug.com/1429600): Find a more reliable solution, for example by
-  // leaning more on DataTypeController state or via an improved version of
-  // |downloaded_types_|.
-  return GetEnabledTypes();
+
+  return Difference(GetEnabledTypes(), downloaded_types_);
 }
 
 ModelTypeSet DataTypeManagerImpl::GetPurgedDataTypes() const {

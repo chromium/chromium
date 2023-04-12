@@ -387,6 +387,10 @@ void SyncEngineBackend::DoFinishConfigureDataTypes(
       Difference(types_to_download, sync_manager_->InitialSyncEndedTypes());
   const ModelTypeSet succeeded_types =
       Difference(types_to_download, failed_types);
+  CHECK_EQ(
+      succeeded_types,
+      Intersection(types_to_download, sync_manager_->InitialSyncEndedTypes()));
+
   host_.Call(
       FROM_HERE, &SyncEngineImpl::FinishConfigureDataTypesOnFrontendLoop,
       enabled_types,
