@@ -49,6 +49,23 @@ class NodeDataDescriber {
       const SystemNode* node) const = 0;
   virtual base::Value::Dict DescribeWorkerNodeData(
       const WorkerNode* node) const = 0;
+
+  // Polymorphic accessors.
+  base::Value::Dict DescribeNodeData(const FrameNode* node) const {
+    return DescribeFrameNodeData(node);
+  }
+  base::Value::Dict DescribeNodeData(const PageNode* node) const {
+    return DescribePageNodeData(node);
+  }
+  base::Value::Dict DescribeNodeData(const ProcessNode* node) const {
+    return DescribeProcessNodeData(node);
+  }
+  base::Value::Dict DescribeNodeData(const SystemNode* node) const {
+    return DescribeSystemNodeData(node);
+  }
+  base::Value::Dict DescribeNodeData(const WorkerNode* node) const {
+    return DescribeWorkerNodeData(node);
+  }
 };
 
 // A convenience do-nothing implementation of the interface above. Returns

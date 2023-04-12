@@ -57,6 +57,29 @@ void RemoveObserverImpl(std::vector<NodeObserverType*>* observers,
   DCHECK(!base::Contains(*observers, observer));
 }
 
+base::Value::Dict DescribeNodeWithDescriber(const NodeDataDescriber& describer,
+                                            const Node* node) {
+  const NodeBase* node_base = NodeBase::FromNode(node);
+  switch (node_base->type()) {
+    case NodeTypeEnum::kFrame:
+      return describer.DescribeNodeData(FrameNodeImpl::FromNodeBase(node_base));
+    case NodeTypeEnum::kPage:
+      return describer.DescribeNodeData(PageNodeImpl::FromNodeBase(node_base));
+    case NodeTypeEnum::kProcess:
+      return describer.DescribeNodeData(
+          ProcessNodeImpl::FromNodeBase(node_base));
+    case NodeTypeEnum::kSystem:
+      return describer.DescribeNodeData(
+          SystemNodeImpl::FromNodeBase(node_base));
+    case NodeTypeEnum::kWorker:
+      return describer.DescribeNodeData(
+          WorkerNodeImpl::FromNodeBase(node_base));
+    case NodeTypeEnum::kInvalidType:
+      NOTREACHED_NORETURN();
+  }
+  NOTREACHED_NORETURN();
+}
+
 class NodeDataDescriberRegistryImpl : public NodeDataDescriberRegistry {
  public:
   ~NodeDataDescriberRegistryImpl() override;
@@ -73,32 +96,10 @@ class NodeDataDescriberRegistryImpl : public NodeDataDescriberRegistry {
   }
 
  private:
-  template <typename NodeType, typename NodeImplType>
-  base::Value::Dict DescribeNodeImpl(
-      base::Value::Dict (NodeDataDescriber::*DescribeFn)(const NodeType*) const,
-      const NodeImplType* node) const VALID_CONTEXT_REQUIRED(sequence_checker_);
-
   base::flat_map<const NodeDataDescriber*, std::string> describers_
       GUARDED_BY_CONTEXT(sequence_checker_);
   SEQUENCE_CHECKER(sequence_checker_);
 };
-
-template <typename NodeType, typename NodeImplType>
-base::Value::Dict NodeDataDescriberRegistryImpl::DescribeNodeImpl(
-    base::Value::Dict (NodeDataDescriber::*Describe)(const NodeType*) const,
-    const NodeImplType* node) const {
-  base::Value::Dict result;
-
-  for (const auto& name_and_describer : describers_) {
-    base::Value::Dict description = (name_and_describer.first->*Describe)(node);
-    if (!description.empty()) {
-      DCHECK_EQ(nullptr, result.FindDict(name_and_describer.second));
-      result.Set(name_and_describer.second, std::move(description));
-    }
-  }
-
-  return result;
-}
 
 NodeDataDescriberRegistryImpl::~NodeDataDescriberRegistryImpl() {
   // All describers should have unregistered before the graph is destroyed.
@@ -129,27 +130,15 @@ void NodeDataDescriberRegistryImpl::UnregisterDescriber(
 base::Value::Dict NodeDataDescriberRegistryImpl::DescribeNodeData(
     const Node* node) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const NodeBase* node_base = NodeBase::FromNode(node);
-  switch (node_base->type()) {
-    case NodeTypeEnum::kInvalidType:
-      NOTREACHED();
-      return base::Value::Dict();
-    case NodeTypeEnum::kFrame:
-      return DescribeNodeImpl(&NodeDataDescriber::DescribeFrameNodeData,
-                              FrameNodeImpl::FromNodeBase(node_base));
-    case NodeTypeEnum::kPage:
-      return DescribeNodeImpl(&NodeDataDescriber::DescribePageNodeData,
-                              PageNodeImpl::FromNodeBase(node_base));
-    case NodeTypeEnum::kProcess:
-      return DescribeNodeImpl(&NodeDataDescriber::DescribeProcessNodeData,
-                              ProcessNodeImpl::FromNodeBase(node_base));
-    case NodeTypeEnum::kSystem:
-      return DescribeNodeImpl(&NodeDataDescriber::DescribeSystemNodeData,
-                              SystemNodeImpl::FromNodeBase(node_base));
-    case NodeTypeEnum::kWorker:
-      return DescribeNodeImpl(&NodeDataDescriber::DescribeWorkerNodeData,
-                              WorkerNodeImpl::FromNodeBase(node_base));
+  base::Value::Dict result;
+  for (const auto& [describer, describer_name] : describers_) {
+    base::Value::Dict description = DescribeNodeWithDescriber(*describer, node);
+    if (!description.empty()) {
+      DCHECK_EQ(nullptr, result.FindDict(describer_name));
+      result.Set(describer_name, std::move(description));
+    }
   }
+  return result;
 }
 
 }  // namespace
