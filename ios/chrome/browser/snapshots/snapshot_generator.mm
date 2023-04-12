@@ -226,21 +226,33 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
                         -frameInBaseView.origin.y);
   BOOL snapshotSuccess = YES;
 
-  // `drawViewHierarchyInRect:` has undefined behavior when the view is not
-  // in the visible view hierarchy. In practice, when this method is called
-  // on a view that is part of view controller containment and not in the view
-  // hierarchy, an UIViewControllerHierarchyInconsistency exception will be
-  // thrown.
   if (baseView.window && ViewHierarchyContainsWKWebView(baseView)) {
+    // `-renderInContext:` is the preferred way to render a snapshot, but it's
+    // buggy for WKWebView, which is used for some WebUI pages such as
+    // "No internet" or "Site can't be reached". If a WKWebView-containing
+    // hierarchy must be snapshotted, the UIView `-drawViewHierarchyInRect:`
+    // method is used instead.
+    // `drawViewHierarchyInRect:` has undefined behavior when the view is not
+    // in the visible view hierarchy. In practice, when this method is called
+    // on a view that is part of view controller containment and not in the view
+    // hierarchy, an UIViewControllerHierarchyInconsistency exception will be
+    // thrown.
     // TODO(crbug.com/636188): `-drawViewHierarchyInRect:afterScreenUpdates:` is
     // buggy causing GPU glitches, screen redraws during animations, broken
     // pinch to dismiss on tablet, etc.
     snapshotSuccess = [baseView drawViewHierarchyInRect:baseView.bounds
                                      afterScreenUpdates:YES];
   } else {
-    // `-renderInContext:` is buggy for WKWebView, which is used for some
-    // Chromium pages such as "No internet" or "Site can't be reached".
-    [[baseView layer] renderInContext:context];
+    // Render the view's layer via `-renderInContext:`.
+    // To mitigate against crashes like crbug.com/1429512, ensure that
+    // the layer's position is valid. If not, mark the snapshotting as failed.
+    CALayer* layer = baseView.layer;
+    CGPoint pos = layer.position;
+    if (isnan(pos.x) || isnan(pos.y)) {
+      snapshotSuccess = NO;
+    } else {
+      [layer renderInContext:context];
+    }
   }
   UIImage* image = nil;
   if (snapshotSuccess)
