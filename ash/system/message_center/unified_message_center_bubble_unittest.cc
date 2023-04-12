@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -19,7 +18,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/message_center/message_center.h"
@@ -27,13 +25,9 @@
 using message_center::MessageCenter;
 using message_center::Notification;
 
-#include <iostream>
-
 namespace ash {
 
-class UnifiedMessageCenterBubbleTest
-    : public AshTestBase,
-      public testing::WithParamInterface<bool> {
+class UnifiedMessageCenterBubbleTest : public AshTestBase {
  public:
   UnifiedMessageCenterBubbleTest() = default;
 
@@ -43,17 +37,6 @@ class UnifiedMessageCenterBubbleTest
       const UnifiedMessageCenterBubbleTest&) = delete;
 
   ~UnifiedMessageCenterBubbleTest() override = default;
-
-  // AshTestBase:
-  void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatureState(features::kNotificationsRefresh,
-                                               IsNotificationsRefreshEnabled());
-
-    AshTestBase::SetUp();
-  }
-
-  bool IsNotificationsRefreshEnabled() const { return GetParam(); }
 
  protected:
   std::string AddWebNotification() {
@@ -166,14 +149,9 @@ class UnifiedMessageCenterBubbleTest
 
  private:
   int id_ = 0;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         UnifiedMessageCenterBubbleTest,
-                         testing::Bool() /* IsNotificationsRefreshEnabled() */);
-
-TEST_P(UnifiedMessageCenterBubbleTest, PositionedAboveSystemTray) {
+TEST_F(UnifiedMessageCenterBubbleTest, PositionedAboveSystemTray) {
   const int total_notifications = 5;
   GetPrimaryUnifiedSystemTray()->ShowBubble();
   AddNotification();
@@ -202,7 +180,7 @@ TEST_P(UnifiedMessageCenterBubbleTest, PositionedAboveSystemTray) {
   }
 }
 
-TEST_P(UnifiedMessageCenterBubbleTest, FocusCycle) {
+TEST_F(UnifiedMessageCenterBubbleTest, FocusCycle) {
   GetPrimaryUnifiedSystemTray()->ShowBubble();
   AddNotification();
   AddNotification();
@@ -250,7 +228,7 @@ TEST_P(UnifiedMessageCenterBubbleTest, FocusCycle) {
             GetFirstQuickSettingsFocusable());
 }
 
-TEST_P(UnifiedMessageCenterBubbleTest, CollapseState) {
+TEST_F(UnifiedMessageCenterBubbleTest, CollapseState) {
   AddNotification();
   AddNotification();
 
@@ -301,7 +279,7 @@ TEST_P(UnifiedMessageCenterBubbleTest, CollapseState) {
   EXPECT_FALSE(IsMessageCenterCollapsed());
 }
 
-TEST_P(UnifiedMessageCenterBubbleTest, FocusCycleWithNoNotifications) {
+TEST_F(UnifiedMessageCenterBubbleTest, FocusCycleWithNoNotifications) {
   GetPrimaryUnifiedSystemTray()->ShowBubble();
 
   views::Widget* quick_settings_widget =
@@ -332,7 +310,7 @@ TEST_P(UnifiedMessageCenterBubbleTest, FocusCycleWithNoNotifications) {
             GetFirstQuickSettingsFocusable());
 }
 
-TEST_P(UnifiedMessageCenterBubbleTest, BubbleBounds) {
+TEST_F(UnifiedMessageCenterBubbleTest, BubbleBounds) {
   std::vector<std::string> displays = {"0+0-1200x800", "0+0-1280x1080",
                                        "0+0-1600x1440"};
 
@@ -381,7 +359,7 @@ TEST_P(UnifiedMessageCenterBubbleTest, BubbleBounds) {
   }
 }
 
-TEST_P(UnifiedMessageCenterBubbleTest, HandleAccelerators) {
+TEST_F(UnifiedMessageCenterBubbleTest, HandleAccelerators) {
   auto id = AddWebNotification();
   WaitForAnimation();
 

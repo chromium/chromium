@@ -321,14 +321,9 @@ std::unique_ptr<views::View> CreateBannerView() {
       chromeos::features::IsJellyEnabled()
           ? cros_tokens::kCrosSysPrimary
           : static_cast<ui::ColorId>(kColorAshControlBackgroundColorActive);
-  if (features::IsNotificationsRefreshEnabled()) {
-    banner_view->SetBackground(views::CreateThemedRoundedRectBackground(
-        background_color_id, kBannerViewTopRadius, kBannerViewBottomRadius,
-        /*for_border_thickness=*/0));
-  } else {
-    banner_view->SetBackground(
-        views::CreateThemedSolidBackground(background_color_id));
-  }
+  banner_view->SetBackground(views::CreateThemedRoundedRectBackground(
+      background_color_id, kBannerViewTopRadius, kBannerViewBottomRadius,
+      /*for_border_thickness=*/0));
 
   views::ImageView* icon =
       banner_view->AddChildView(std::make_unique<views::ImageView>());

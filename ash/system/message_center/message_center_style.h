@@ -35,8 +35,6 @@ constexpr int kScrollShadowBlur = 2;
 
 // Layout parameters for swipe control of notifications in message center.
 constexpr int kSwipeControlButtonHorizontalMargin = 8;
-constexpr SkColor kSwipeControlBackgroundColor =
-    SkColorSetRGB(0xee, 0xee, 0xee);
 
 constexpr int kMaxGroupedNotificationsInCollapsedState = 3;
 constexpr auto kGroupedCollapsedCountViewInsets =

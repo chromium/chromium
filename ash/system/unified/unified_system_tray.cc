@@ -124,15 +124,12 @@ UnifiedSystemTray::UiDelegate::UiDelegate(UnifiedSystemTray* owner)
     : ui_controller_(std::make_unique<MessageCenterUiController>(this)),
       message_popup_collection_(
           std::make_unique<AshMessagePopupCollection>(owner->shelf())),
-      owner_(owner) {
-  if (features::IsNotificationsRefreshEnabled()) {
-    grouping_controller_ = std::make_unique<NotificationGroupingController>(
-        /*unified_system_tray=*/owner,
-        /*notification_center_tray=*/owner->shelf()
-            ->status_area_widget()
-            ->notification_center_tray());
-  }
-
+      owner_(owner),
+      grouping_controller_(std::make_unique<NotificationGroupingController>(
+          /*unified_system_tray=*/owner,
+          /*notification_center_tray=*/owner->shelf()
+              ->status_area_widget()
+              ->notification_center_tray())) {
   ui_controller_->set_hide_on_last_notification(false);
 
   display::Screen* screen = display::Screen::GetScreen();
