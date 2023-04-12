@@ -22,6 +22,7 @@ class HotspotNotifier;
 class PowerNotificationController;
 class PowerSoundsController;
 class PrivacyHubNotificationController;
+class PrivacyIndicatorsController;
 class ScreenSecurityController;
 class SessionLimitNotificationController;
 class TracingNotificationController;
@@ -68,6 +69,7 @@ class SystemNotificationController {
   const std::unique_ptr<PowerNotificationController> power_;
   const std::unique_ptr<PowerSoundsController> power_sounds_;
   std::unique_ptr<PrivacyHubNotificationController> privacy_hub_;
+  std::unique_ptr<PrivacyIndicatorsController> privacy_indicators_controller_;
   const std::unique_ptr<ScreenSecurityController> screen_security_controller_;
   const std::unique_ptr<SessionLimitNotificationController> session_limit_;
   const std::unique_ptr<TracingNotificationController> tracing_;

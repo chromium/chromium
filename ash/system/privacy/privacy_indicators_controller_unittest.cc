@@ -136,6 +136,14 @@ class PrivacyIndicatorsControllerTest : public AshTestBase {
     generator.ClickLeftButton();
   }
 
+  PrivacyIndicatorsTrayItemView* GetPrimaryDisplayPrivacyIndicatorsView()
+      const {
+    return Shell::GetPrimaryRootWindowController()
+        ->GetStatusAreaWidget()
+        ->unified_system_tray()
+        ->privacy_indicators_view();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -145,9 +153,9 @@ TEST_F(PrivacyIndicatorsControllerTest, NotificationMetadata) {
   std::u16string app_name = u"test_app_name";
   std::string notification_id = GetPrivacyIndicatorsNotificationId(app_id);
   scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>();
-  UpdatePrivacyIndicators(app_id, app_name, /*is_camera_used=*/true,
-                          /*is_microphone_used=*/true, delegate,
-                          PrivacyIndicatorsSource::kApps);
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+      app_id, app_name, /*is_camera_used=*/true,
+      /*is_microphone_used=*/true, delegate, PrivacyIndicatorsSource::kApps);
 
   auto* notification =
       message_center::MessageCenter::Get()->FindNotificationById(
@@ -167,10 +175,10 @@ TEST_F(PrivacyIndicatorsControllerTest, NotificationWithNoButton) {
   scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>(
       /*has_launch_app_callback=*/false,
       /*has_launch_settings_callback=*/false);
-  UpdatePrivacyIndicators(app_id, u"test_app_name",
-                          /*is_camera_used=*/true,
-                          /*is_microphone_used=*/true, delegate,
-                          PrivacyIndicatorsSource::kApps);
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+      app_id, u"test_app_name",
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/true, delegate, PrivacyIndicatorsSource::kApps);
 
   auto* notification =
       message_center::MessageCenter::Get()->FindNotificationById(
@@ -186,10 +194,10 @@ TEST_F(PrivacyIndicatorsControllerTest, NotificationClickWithLaunchAppButton) {
   std::string notification_id = GetPrivacyIndicatorsNotificationId(app_id);
   scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>(
       /*has_launch_app_callback=*/true, /*has_launch_settings_callback=*/false);
-  UpdatePrivacyIndicators(app_id, u"test_app_name",
-                          /*is_camera_used=*/true,
-                          /*is_microphone_used=*/true, delegate,
-                          PrivacyIndicatorsSource::kApps);
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+      app_id, u"test_app_name",
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/true, delegate, PrivacyIndicatorsSource::kApps);
 
   auto* notification =
       message_center::MessageCenter::Get()->FindNotificationById(
@@ -218,10 +226,10 @@ TEST_F(PrivacyIndicatorsControllerTest,
   std::string notification_id = GetPrivacyIndicatorsNotificationId(app_id);
   scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>(
       /*has_launch_app_callback=*/false, /*has_launch_settings_callback=*/true);
-  UpdatePrivacyIndicators(app_id, u"test_app_name",
-                          /*is_camera_used=*/true,
-                          /*is_microphone_used=*/true, delegate,
-                          PrivacyIndicatorsSource::kApps);
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+      app_id, u"test_app_name",
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/true, delegate, PrivacyIndicatorsSource::kApps);
 
   auto* notification =
       message_center::MessageCenter::Get()->FindNotificationById(
@@ -248,10 +256,10 @@ TEST_F(PrivacyIndicatorsControllerTest, NotificationClickWithTwoButtons) {
   std::string app_id = "test_app_id";
   std::string notification_id = GetPrivacyIndicatorsNotificationId(app_id);
   scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>();
-  UpdatePrivacyIndicators(app_id, u"test_app_name",
-                          /*is_camera_used=*/true,
-                          /*is_microphone_used=*/true, delegate,
-                          PrivacyIndicatorsSource::kApps);
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+      app_id, u"test_app_name",
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/true, delegate, PrivacyIndicatorsSource::kApps);
 
   auto* notification =
       message_center::MessageCenter::Get()->FindNotificationById(
@@ -295,10 +303,10 @@ TEST_F(PrivacyIndicatorsControllerTest,
   std::string app_id = "test_app_id";
   std::string notification_id = GetPrivacyIndicatorsNotificationId(app_id);
   scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>();
-  UpdatePrivacyIndicators(app_id, u"test_app_name",
-                          /*is_camera_used=*/true,
-                          /*is_microphone_used=*/true, delegate,
-                          PrivacyIndicatorsSource::kApps);
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+      app_id, u"test_app_name",
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/true, delegate, PrivacyIndicatorsSource::kApps);
 
   // The notification should not exist.
   EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
@@ -317,59 +325,61 @@ TEST_F(PrivacyIndicatorsControllerTest, PrivacyIndicatorsTrayItemView) {
 
   scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>();
 
-  UpdatePrivacyIndicators("test_id", u"test_app_name",
-                          /*is_camera_used=*/true,
-                          /*is_microphone_used=*/false, delegate,
-                          PrivacyIndicatorsSource::kApps);
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+      "test_id", u"test_app_name",
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/false, delegate, PrivacyIndicatorsSource::kApps);
   ExpectPrivacyIndicatorsTrayItemVisible(
       /*visible=*/true, /*camera_visible=*/true, /*microphone_visible=*/false);
 
-  UpdatePrivacyIndicators("test_id", u"test_app_name",
-                          /*is_camera_used=*/true,
-                          /*is_microphone_used=*/true, delegate,
-                          PrivacyIndicatorsSource::kApps);
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+      "test_id", u"test_app_name",
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/true, delegate, PrivacyIndicatorsSource::kApps);
   ExpectPrivacyIndicatorsTrayItemVisible(
       /*visible=*/true, /*camera_visible=*/true, /*microphone_visible=*/true);
 
-  UpdatePrivacyIndicators("test_id", u"test_app_name",
-                          /*is_camera_used=*/false,
-                          /*is_microphone_used=*/false, delegate,
-                          PrivacyIndicatorsSource::kApps);
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+      "test_id", u"test_app_name",
+      /*is_camera_used=*/false,
+      /*is_microphone_used=*/false, delegate, PrivacyIndicatorsSource::kApps);
   ExpectPrivacyIndicatorsTrayItemVisible(
       /*visible=*/false, /*camera_visible=*/false,
       /*microphone_visible=*/false);
 
-  UpdatePrivacyIndicators("test_id", u"test_app_name",
-                          /*is_camera_used=*/false,
-                          /*is_microphone_used=*/true, delegate,
-                          PrivacyIndicatorsSource::kApps);
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+      "test_id", u"test_app_name",
+      /*is_camera_used=*/false,
+      /*is_microphone_used=*/true, delegate, PrivacyIndicatorsSource::kApps);
   ExpectPrivacyIndicatorsTrayItemVisible(
       /*visible=*/true, /*camera_visible=*/false, /*microphone_visible=*/true);
 }
 
-TEST_F(PrivacyIndicatorsControllerTest, MetricsCollection) {
+TEST_F(PrivacyIndicatorsControllerTest, SourceMetricsCollection) {
   base::HistogramTester histogram_tester;
   scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>();
   const std::string histogram_name = "Ash.PrivacyIndicators.Source";
 
-  UpdatePrivacyIndicators("test_id", u"test_app_name",
-                          /*is_camera_used=*/true,
-                          /*is_microphone_used=*/false, delegate,
-                          PrivacyIndicatorsSource::kApps);
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+      "test_id", u"test_app_name",
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/false, delegate, PrivacyIndicatorsSource::kApps);
   histogram_tester.ExpectBucketCount(histogram_name,
                                      PrivacyIndicatorsSource::kApps, 1);
 
-  UpdatePrivacyIndicators("test_id", u"test_app_name",
-                          /*is_camera_used=*/true,
-                          /*is_microphone_used=*/false, delegate,
-                          PrivacyIndicatorsSource::kScreenCapture);
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+      "test_id", u"test_app_name",
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/false, delegate,
+      PrivacyIndicatorsSource::kScreenCapture);
   histogram_tester.ExpectBucketCount(
       histogram_name, PrivacyIndicatorsSource::kScreenCapture, 1);
 
-  UpdatePrivacyIndicators("test_id", u"test_app_name",
-                          /*is_camera_used=*/true,
-                          /*is_microphone_used=*/false, delegate,
-                          PrivacyIndicatorsSource::kLinuxVm);
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+      "test_id", u"test_app_name",
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/false, delegate,
+      PrivacyIndicatorsSource::kLinuxVm);
   histogram_tester.ExpectBucketCount(histogram_name,
                                      PrivacyIndicatorsSource::kLinuxVm, 1);
 }

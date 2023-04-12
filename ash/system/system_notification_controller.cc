@@ -4,6 +4,8 @@
 
 #include "ash/system/system_notification_controller.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/system/caps_lock_notification_controller.h"
 #include "ash/system/cast/cast_notification_controller.h"
@@ -17,6 +19,7 @@
 #include "ash/system/network/wifi_toggle_notification_controller.h"
 #include "ash/system/power/power_notification_controller.h"
 #include "ash/system/power/power_sounds_controller.h"
+#include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/system/privacy/screen_security_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 #include "ash/system/session/session_limit_notification_controller.h"
@@ -62,6 +65,10 @@ SystemNotificationController::SystemNotificationController()
   managed_sim_lock_notifier_ = std::make_unique<ash::ManagedSimLockNotifier>();
   if (features::IsHotspotEnabled()) {
     hotspot_notifier_ = std::make_unique<ash::HotspotNotifier>();
+  }
+  if (features::IsPrivacyIndicatorsEnabled()) {
+    privacy_indicators_controller_ =
+        std::make_unique<PrivacyIndicatorsController>();
   }
 }
 

@@ -503,7 +503,7 @@ void MaybeUpdateCaptureModePrivacyIndicators() {
       !!controller->camera_controller()->camera_preview_widget();
   const bool is_microphone_used = controller->IsAudioRecordingInProgress();
 
-  UpdatePrivacyIndicators(
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
       /*app_id=*/kCaptureModePrivacyIndicatorsId,
       /*app_name=*/
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAPTURE_MODE_BUTTON_LABEL),

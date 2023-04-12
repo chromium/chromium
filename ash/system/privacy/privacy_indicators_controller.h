@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -79,23 +80,60 @@ enum class PrivacyIndicatorsSource {
   kMaxValue = kScreenCapture
 };
 
-// Updates privacy indicators, including:
-// * Updates camera and microphone access indicators for
-//   `PrivacyIndicatorsTrayItemView`(s) across all status area widgets.
-// * Adds, updates, or removes the privacy notification associated with the
-//   given `app_id`. The given scoped_refptr for `delegate` will be passed as a
-//   parameter for the function creating the privacy indicators notification.
-void ASH_EXPORT UpdatePrivacyIndicators(
-    const std::string& app_id,
-    absl::optional<std::u16string> app_name,
-    bool is_camera_used,
-    bool is_microphone_used,
-    scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate,
-    PrivacyIndicatorsSource source);
-
 // Get the id of the privacy indicators notification associated with `app_id`.
 std::string ASH_EXPORT
 GetPrivacyIndicatorsNotificationId(const std::string& app_id);
+
+// A controller that manages the logic of modifying the tray item privacy
+// indicator dot and the privacy indicators notification when camera/microphone
+// access state changes.
+class ASH_EXPORT PrivacyIndicatorsController {
+ public:
+  PrivacyIndicatorsController();
+
+  PrivacyIndicatorsController(const PrivacyIndicatorsController&) = delete;
+  PrivacyIndicatorsController& operator=(const PrivacyIndicatorsController&) =
+      delete;
+
+  ~PrivacyIndicatorsController();
+
+  // Returns the singleton instance.
+  static PrivacyIndicatorsController* Get();
+
+  // Updates privacy indicators, including:
+  // * Updates camera and microphone access indicators for
+  //   `PrivacyIndicatorsTrayItemView`(s) across all status area widgets.
+  // * Adds, updates, or removes the privacy notification associated with the
+  //   given `app_id`. The given scoped_refptr for `delegate` will be passed as
+  //   a parameter for the function creating the privacy indicators
+  //   notification.
+  // Note that if camera/microphone are muted, privacy indicators will not
+  // indicate its usage via the tray item indicator dot and the notification.
+  void UpdatePrivacyIndicators(
+      const std::string& app_id,
+      absl::optional<std::u16string> app_name,
+      bool is_camera_used,
+      bool is_microphone_used,
+      scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate,
+      PrivacyIndicatorsSource source);
+
+  // Specifies whether camera/microphone is in use by at least one app.
+  bool IsCameraUsed() const;
+  bool IsMicrophoneUsed() const;
+
+  base::flat_set<std::string> apps_using_camera() const {
+    return apps_using_camera_;
+  }
+
+  base::flat_set<std::string> apps_using_microphone() const {
+    return apps_using_microphone_;
+  }
+
+ private:
+  // Stores the app_id(s) that are currently accessing camera/microphone.
+  base::flat_set<std::string> apps_using_camera_;
+  base::flat_set<std::string> apps_using_microphone_;
+};
 
 // Update `PrivacyIndicatorsTrayItemView` screen share status across all status
 // area widgets.

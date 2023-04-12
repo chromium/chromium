@@ -216,7 +216,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
 
     if (notifications_.active != kNoNotification) {
       if (features::IsPrivacyIndicatorsEnabled()) {
-        UpdatePrivacyIndicators(
+        PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
             /*app_id=*/GetNotificationId(vm_type_, notifications_.active),
             app_name, /*is_camera_used=*/false, /*is_microphone_used=*/false,
             delegate, PrivacyIndicatorsSource::kLinuxVm);
@@ -227,7 +227,7 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
 
     if (new_notification != kNoNotification) {
       if (features::IsPrivacyIndicatorsEnabled()) {
-        UpdatePrivacyIndicators(
+        PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
             /*app_id=*/GetNotificationId(vm_type_, new_notification), app_name,
             /*is_camera_used=*/
             new_notification[static_cast<size_t>(DeviceType::kCamera)],

@@ -11,6 +11,7 @@
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
+#include "ash/system/privacy/privacy_indicators_controller.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -268,31 +269,6 @@ TEST_F(NotificationCenterTrayTest, NoPrivacyIndicatorsWhenVcEnabled) {
   EXPECT_FALSE(notification_tray->privacy_indicators_view());
 }
 
-TEST_F(NotificationCenterTrayTest, PrivacyIndicatorsVisibility) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kPrivacyIndicators},
-      /*disabled_features=*/{features::kVideoConference});
-
-  // Privacy indicators should be created and show/hide when updated.
-  auto notification_tray =
-      std::make_unique<NotificationCenterTray>(GetPrimaryShelf());
-  auto* privacy_indicators_view = notification_tray->privacy_indicators_view();
-  EXPECT_TRUE(privacy_indicators_view);
-
-  privacy_indicators_view->Update(
-      /*app_id=*/"app_id",
-      /*is_camera_used=*/true,
-      /*is_microphone_used=*/false);
-  EXPECT_TRUE(privacy_indicators_view->GetVisible());
-
-  privacy_indicators_view->Update(
-      /*app_id=*/"app_id",
-      /*is_camera_used=*/false,
-      /*is_microphone_used=*/false);
-  EXPECT_FALSE(privacy_indicators_view->GetVisible());
-}
-
 // Tests that the focus ring is visible and has proper size when the
 // notification center tray is focused.
 TEST_F(NotificationCenterTrayTest, FocusRing) {
@@ -311,6 +287,58 @@ TEST_F(NotificationCenterTrayTest, FocusRing) {
   EXPECT_TRUE(test_api()->GetFocusRing()->GetVisible());
   EXPECT_EQ(test_api()->GetFocusRing()->size(),
             test_api()->GetTray()->size() + kTrayBackgroundFocusPadding.size());
+}
+
+// Test suite for the notification center when `kPrivacyIndicators` is enabled.
+class NotificationCenterTrayPrivacyIndicatorsTest : public AshTestBase {
+ public:
+  NotificationCenterTrayPrivacyIndicatorsTest() = default;
+  NotificationCenterTrayPrivacyIndicatorsTest(
+      const NotificationCenterTrayPrivacyIndicatorsTest&) = delete;
+  NotificationCenterTrayPrivacyIndicatorsTest& operator=(
+      const NotificationCenterTrayPrivacyIndicatorsTest&) = delete;
+  ~NotificationCenterTrayPrivacyIndicatorsTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kQsRevamp, features::kPrivacyIndicators}, {});
+
+    AshTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that the privacy indicators view is created and show/hide accordingly
+// when updated.
+TEST_F(NotificationCenterTrayPrivacyIndicatorsTest,
+       PrivacyIndicatorsVisibility) {
+  auto* notification_tray = StatusAreaWidgetTestHelper::GetStatusAreaWidget()
+                                ->notification_center_tray();
+  auto* privacy_indicators_view = notification_tray->privacy_indicators_view();
+  EXPECT_TRUE(privacy_indicators_view);
+
+  EXPECT_FALSE(privacy_indicators_view->GetVisible());
+
+  scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate =
+      base::MakeRefCounted<PrivacyIndicatorsNotificationDelegate>();
+
+  // Updates the controller to simulate camera access, the privacy indicators
+  // should become visible.
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+      /*app_id=*/"app_id", /*app_name=*/u"App Name",
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/false, delegate, PrivacyIndicatorsSource::kApps);
+  EXPECT_TRUE(privacy_indicators_view->GetVisible());
+
+  // Updates the controller to simulate that camera and microphone are not
+  // accessed, the privacy indicators should be hidden.
+  PrivacyIndicatorsController::Get()->UpdatePrivacyIndicators(
+      /*app_id=*/"app_id", /*app_name=*/u"App Name",
+      /*is_camera_used=*/false,
+      /*is_microphone_used=*/false, delegate, PrivacyIndicatorsSource::kApps);
+  EXPECT_FALSE(privacy_indicators_view->GetVisible());
 }
 
 // TODO(b/252875025):

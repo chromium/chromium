@@ -29,6 +29,8 @@ namespace ash {
 
 namespace {
 
+PrivacyIndicatorsController* g_controller_instance = nullptr;
+
 // Create a notification with the customized metadata for privacy indicators.
 std::unique_ptr<message_center::Notification>
 CreatePrivacyIndicatorsNotification(
@@ -128,9 +130,11 @@ void ModifyPrivacyIndicatorsNotification(
 }
 
 // Updates the `PrivacyIndicatorsTrayItemView` across all status area widgets.
-void UpdatePrivacyIndicatorsView(const std::string& app_id,
-                                 bool is_camera_used,
-                                 bool is_microphone_used) {
+void UpdatePrivacyIndicatorsView(bool is_camera_used,
+                                 bool is_microphone_used,
+                                 bool is_new_app,
+                                 bool was_camera_in_use,
+                                 bool was_microphone_in_use) {
   // Privacy indicators don't exist when video conference controls are enabled.
   if (!features::IsPrivacyIndicatorsEnabled() ||
       features::IsVideoConferenceEnabled()) {
@@ -151,8 +155,24 @@ void UpdatePrivacyIndicatorsView(const std::string& app_id,
                   ->privacy_indicators_view();
 
     DCHECK(privacy_indicators_view);
+    privacy_indicators_view->OnCameraAndMicrophoneAccessStateChanged(
+        is_camera_used, is_microphone_used, is_new_app, was_camera_in_use,
+        was_microphone_in_use);
+  }
+}
 
-    privacy_indicators_view->Update(app_id, is_camera_used, is_microphone_used);
+// Updates the access status of `app_id` for the given `access_set`.
+void UpdateAccessStatus(const std::string& app_id,
+                        bool is_accessed,
+                        base::flat_set<std::string>& access_set) {
+  if (access_set.contains(app_id) == is_accessed) {
+    return;
+  }
+
+  if (is_accessed) {
+    access_set.insert(app_id);
+  } else {
+    access_set.erase(app_id);
   }
 }
 
@@ -212,22 +232,57 @@ void PrivacyIndicatorsNotificationDelegate::UpdateButtonIndices() {
   }
 }
 
-void ASH_EXPORT UpdatePrivacyIndicators(
+std::string GetPrivacyIndicatorsNotificationId(const std::string& app_id) {
+  return kPrivacyIndicatorsNotificationIdPrefix + app_id;
+}
+
+PrivacyIndicatorsController::PrivacyIndicatorsController() {
+  DCHECK(!g_controller_instance);
+  g_controller_instance = this;
+}
+
+PrivacyIndicatorsController::~PrivacyIndicatorsController() {
+  DCHECK_EQ(this, g_controller_instance);
+  g_controller_instance = nullptr;
+}
+
+// static
+PrivacyIndicatorsController* PrivacyIndicatorsController::Get() {
+  return g_controller_instance;
+}
+
+void PrivacyIndicatorsController::UpdatePrivacyIndicators(
     const std::string& app_id,
     absl::optional<std::u16string> app_name,
     bool is_camera_used,
     bool is_microphone_used,
     scoped_refptr<PrivacyIndicatorsNotificationDelegate> delegate,
     PrivacyIndicatorsSource source) {
+  const bool is_new_app = !apps_using_camera_.contains(app_id) &&
+                          !apps_using_microphone_.contains(app_id);
+  const bool was_camera_in_use = IsCameraUsed();
+  const bool was_microphone_in_use = IsMicrophoneUsed();
+
+  UpdateAccessStatus(app_id, /*is_accessed=*/is_camera_used,
+                     /*access_set=*/apps_using_camera_);
+  UpdateAccessStatus(app_id,
+                     /*is_accessed=*/is_microphone_used,
+                     /*access_set=*/apps_using_microphone_);
+
   ModifyPrivacyIndicatorsNotification(app_id, app_name, is_camera_used,
                                       is_microphone_used, delegate);
-  UpdatePrivacyIndicatorsView(app_id, is_camera_used, is_microphone_used);
+  UpdatePrivacyIndicatorsView(is_camera_used, is_microphone_used, is_new_app,
+                              was_camera_in_use, was_microphone_in_use);
 
   base::UmaHistogramEnumeration("Ash.PrivacyIndicators.Source", source);
 }
 
-std::string GetPrivacyIndicatorsNotificationId(const std::string& app_id) {
-  return kPrivacyIndicatorsNotificationIdPrefix + app_id;
+bool PrivacyIndicatorsController::IsCameraUsed() const {
+  return !apps_using_camera_.empty();
+}
+
+bool PrivacyIndicatorsController::IsMicrophoneUsed() const {
+  return !apps_using_microphone_.empty();
 }
 
 void UpdatePrivacyIndicatorsScreenShareStatus(bool is_screen_sharing) {
