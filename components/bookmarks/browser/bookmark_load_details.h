@@ -88,9 +88,9 @@ class BookmarkLoadDetails {
   void set_ids_reassigned(bool value) { ids_reassigned_ = value; }
   bool ids_reassigned() const { return ids_reassigned_; }
 
-  // Whether new GUIDs were assigned to Bookmarks that lacked them.
-  void set_guids_reassigned(bool value) { guids_reassigned_ = value; }
-  bool guids_reassigned() const { return guids_reassigned_; }
+  // Whether new UUIDs were assigned to Bookmarks that lacked them.
+  void set_uuids_reassigned(bool value) { uuids_reassigned_ = value; }
+  bool uuids_reassigned() const { return uuids_reassigned_; }
 
   // Returns the string blob representing the sync metadata in the json file.
   // The string blob is set during decode time upon the call to Bookmark::Load.
@@ -120,7 +120,7 @@ class BookmarkLoadDetails {
   std::string computed_checksum_;
   std::string stored_checksum_;
   bool ids_reassigned_ = false;
-  bool guids_reassigned_ = false;
+  bool uuids_reassigned_ = false;
   scoped_refptr<UrlIndex> url_index_;
   // A string blob represetning the sync metadata stored in the json file.
   std::string sync_metadata_str_;

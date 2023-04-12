@@ -183,9 +183,9 @@ bool IsBookmarkedByUser(BookmarkModel* model, const GURL& url);
 // Returns the node with |id|, or NULL if there is no node with |id|.
 const BookmarkNode* GetBookmarkNodeByID(const BookmarkModel* model, int64_t id);
 
-// Returns the node with |guid|, or NULL if there is no node with |guid|.
-const BookmarkNode* GetBookmarkNodeByGUID(const BookmarkModel* model,
-                                          const base::Uuid& guid);
+// Returns the node with |uuid|, or NULL if there is no node with |uuid|.
+const BookmarkNode* GetBookmarkNodeByUuid(const BookmarkModel* model,
+                                          const base::Uuid& uuid);
 
 // Returns true if |node| is a descendant of |root|.
 bool IsDescendantOf(const BookmarkNode* node, const BookmarkNode* root);

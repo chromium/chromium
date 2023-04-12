@@ -57,7 +57,7 @@ using bookmarks::BookmarkNode;
   }
 
   if ((self = [super init])) {
-    _bookmarkGUID = bookmarkNode->guid();
+    _bookmarkGUID = bookmarkNode->uuid();
     self.uniqueID = [NSString
         stringWithFormat:@"%s", _bookmarkGUID.AsLowercaseString().c_str()];
   }
@@ -75,13 +75,13 @@ using bookmarks::BookmarkNode;
 
 - (void)didCreateBookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode {
   CHECK(bookmarkNode);
-  CHECK_EQ(bookmarkNode->guid(), _bookmarkGUID);
+  CHECK_EQ(bookmarkNode->uuid(), _bookmarkGUID);
 
   self.title = self.tempTitle;
 }
 
 - (const bookmarks::BookmarkNode*)bookmarkNode {
-  return bookmarks::GetBookmarkNodeByGUID(self.bookmarkModel, _bookmarkGUID);
+  return bookmarks::GetBookmarkNodeByUuid(self.bookmarkModel, _bookmarkGUID);
 }
 
 - (NSString*)title {

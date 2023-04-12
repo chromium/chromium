@@ -48,13 +48,13 @@ using bookmarks::BookmarkNode;
   if ((identifier < 0) || (identifier >= 2))
     return base::GUID();
   DCHECK(_nodes[identifier]);
-  return _nodes[identifier]->guid();
+  return _nodes[identifier]->uuid();
 }
 
 - (void)openURLForGUID:(base::GUID)guid {
   base::span<const BookmarkNode*> nodes = base::make_span(_nodes);
   auto it = base::ranges::find_if(nodes, [&guid](const BookmarkNode* node) {
-    return node->guid() == guid;
+    return node->uuid() == guid;
   });
   ASSERT_NE(it, nodes.end());
 

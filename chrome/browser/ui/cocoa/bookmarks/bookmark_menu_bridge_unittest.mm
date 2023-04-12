@@ -397,14 +397,14 @@ TEST_F(BookmarkMenuBridgeTest, BuildMenuRecursivelyBeforeProfileDestruction) {
   //            + Item 2
   const BookmarkNode* item1 =
       model->AddURL(root, 0, u"Item 1", GURL("http://item-1/"));
-  base::GUID item1_guid = item1->guid();
+  base::GUID item1_guid = item1->uuid();
   const BookmarkNode* folder1 = model->AddFolder(root, 1, u"Folder 1");
-  base::GUID folder1_guid = folder1->guid();
+  base::GUID folder1_guid = folder1->uuid();
   const BookmarkNode* folder2 = model->AddFolder(folder1, 0, u"Folder 2");
-  base::GUID folder2_guid = folder2->guid();
+  base::GUID folder2_guid = folder2->uuid();
   const BookmarkNode* item2 =
       model->AddURL(folder2, 0, u"Item 2", GURL("http://item-2/"));
-  base::GUID item2_guid = item2->guid();
+  base::GUID item2_guid = item2->uuid();
 
   // We didn't show the menu or any submenus, so it shouldn't contain these
   // items.

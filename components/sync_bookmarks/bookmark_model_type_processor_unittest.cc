@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -19,6 +18,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
@@ -69,10 +69,10 @@ struct BookmarkInfo {
   std::string server_tag;
 };
 
-MATCHER_P(CommitRequestDataMatchesGuid, guid, "") {
+MATCHER_P(CommitRequestDataMatchesGuid, uuid, "") {
   const syncer::CommitRequestData* data = arg.get();
   return data != nullptr && data->entity != nullptr &&
-         data->entity->specifics.bookmark().guid() == guid.AsLowercaseString();
+         data->entity->specifics.bookmark().guid() == uuid.AsLowercaseString();
 }
 
 MATCHER_P(TrackedEntityCorrespondsToBookmarkNode, bookmark_node, "") {
@@ -84,16 +84,16 @@ syncer::UpdateResponseData CreateUpdateResponseData(
     const BookmarkInfo& bookmark_info,
     const syncer::UniquePosition& unique_position,
     int response_version,
-    const base::GUID& guid) {
+    const base::Uuid& uuid) {
   syncer::EntityData data;
   data.id = bookmark_info.server_id;
   data.legacy_parent_id = bookmark_info.parent_id;
   data.server_defined_unique_tag = bookmark_info.server_tag;
-  data.originator_client_item_id = guid.AsLowercaseString();
+  data.originator_client_item_id = uuid.AsLowercaseString();
 
   sync_pb::BookmarkSpecifics* bookmark_specifics =
       data.specifics.mutable_bookmark();
-  bookmark_specifics->set_guid(guid.AsLowercaseString());
+  bookmark_specifics->set_guid(uuid.AsLowercaseString());
   bookmark_specifics->set_legacy_canonicalized_title(bookmark_info.title);
   bookmark_specifics->set_full_title(bookmark_info.title);
   *bookmark_specifics->mutable_unique_position() = unique_position.ToProto();
@@ -117,7 +117,7 @@ syncer::UpdateResponseData CreateUpdateResponseData(
     int response_version) {
   return CreateUpdateResponseData(bookmark_info, unique_position,
                                   response_version,
-                                  base::GUID::GenerateRandomV4());
+                                  base::Uuid::GenerateRandomV4());
 }
 
 sync_pb::ModelTypeState CreateDummyModelTypeState() {
@@ -140,7 +140,7 @@ sync_pb::BookmarkMetadata CreateNodeMetadata(
   bookmark_metadata.mutable_metadata()->set_server_id(server_id);
   bookmark_metadata.mutable_metadata()->set_client_tag_hash(
       syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS,
-                                          node->guid().AsLowercaseString())
+                                          node->uuid().AsLowercaseString())
           .value());
   *bookmark_metadata.mutable_metadata()->mutable_unique_position() =
       unique_position.ToProto();
@@ -276,7 +276,7 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
       }
 
       *model_metadata.add_bookmarks_metadata() = CreateNodeMetadata(
-          node, /*server_id=*/"id_" + node->guid().AsLowercaseString(),
+          node, /*server_id=*/"id_" + node->uuid().AsLowercaseString(),
           next_unique_position);
       next_unique_position = syncer::UniquePosition::After(
           next_unique_position, syncer::UniquePosition::RandomSuffix());
@@ -442,7 +442,7 @@ TEST_F(BookmarkModelTypeProcessorTest, ShouldUpdateModelAfterRemoteUpdate) {
   updates.push_back(CreateUpdateResponseData(
       {entity->metadata().server_id(), kNewTitle, kNewUrl, kBookmarkBarId,
        /*server_tag=*/std::string()},
-      kRandomPosition, /*response_version=*/1, bookmark_node->guid()));
+      kRandomPosition, /*response_version=*/1, bookmark_node->uuid()));
 
   base::HistogramTester histogram_tester;
   processor()->OnUpdateReceived(CreateDummyModelTypeState(), std::move(updates),
@@ -484,7 +484,7 @@ TEST_F(
   updates.push_back(CreateUpdateResponseData(
       {entity->metadata().server_id(), kTitle, kUrl.spec(), kBookmarkBarId,
        /*server_tag=*/std::string()},
-      kRandomPosition, /*response_version=*/1, bookmark_node->guid()));
+      kRandomPosition, /*response_version=*/1, bookmark_node->uuid()));
   updates[0].response_version++;
 
   EXPECT_CALL(*schedule_save_closure(), Run());
@@ -787,7 +787,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
                                            gfx::Image());
   ASSERT_TRUE(node->is_favicon_loaded());
   EXPECT_THAT(GetLocalChangesFromProcessor(/*max_entries=*/10),
-              ElementsAre(CommitRequestDataMatchesGuid(node->guid())));
+              ElementsAre(CommitRequestDataMatchesGuid(node->uuid())));
 }
 
 TEST_F(BookmarkModelTypeProcessorTest,
@@ -846,7 +846,7 @@ TEST_F(BookmarkModelTypeProcessorTest,
 
   EXPECT_THAT(GetLocalChangesFromProcessor(/*max_entries=*/1),
               ElementsAre(CommitRequestDataMatchesGuid(
-                  unsynced_entities[1]->bookmark_node()->guid())));
+                  unsynced_entities[1]->bookmark_node()->uuid())));
 
   // |unsynced_entities[0]| has been excluded from the result above because the
   // favicon isn't loaded, but the loading process should have started now (see
