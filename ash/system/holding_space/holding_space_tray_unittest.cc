@@ -23,6 +23,7 @@
 #include "ash/public/cpp/holding_space/mock_holding_space_client.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
@@ -642,6 +643,40 @@ class HoldingSpaceTrayTest : public HoldingSpaceTrayTestBase {
 };
 
 // Tests -----------------------------------------------------------------------
+
+TEST_F(HoldingSpaceTrayTest, ShowTrayButtonWhenForced) {
+  // Case: Force show in shelf prior to session start.
+  auto force_show_in_shelf =
+      std::make_unique<HoldingSpaceController::ScopedForceShowInShelf>();
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
+
+  // Case: Force show in shelf after session start with empty model.
+  StartSession(/*pre_mark_time_of_first_add=*/false);
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  // Case: Force show in shelf with blocked user session.
+  auto* session_ctrlr = ash_test_helper()->test_session_controller_client();
+  session_ctrlr->SetSessionState(session_manager::SessionState::LOCKED);
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
+
+  // Case: Force show in shelf with unblocked user session.
+  session_ctrlr->UnlockScreen();
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  // Case: Force show in shelf with detached model.
+  auto account_id = Shell::Get()->session_controller()->GetActiveAccountId();
+  auto* controller = HoldingSpaceController::Get();
+  controller->RegisterClientAndModelForUser(account_id, client(), nullptr);
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
+
+  // Case: Force show in shelf with attached model.
+  controller->RegisterClientAndModelForUser(account_id, client(), model());
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  // Case: Stop forcing show in shelf with empty model.
+  force_show_in_shelf.reset();
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
+}
 
 TEST_F(HoldingSpaceTrayTest, ShowTrayButtonOnFirstUse) {
   StartSession(/*pre_mark_time_of_first_add=*/false);

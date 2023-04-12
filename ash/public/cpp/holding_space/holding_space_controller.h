@@ -26,10 +26,21 @@ class HoldingSpaceModel;
 // using HoldingSpaceController::Get().
 class ASH_PUBLIC_EXPORT HoldingSpaceController : public SessionObserver {
  public:
+  // Used to force holding space to show in the shelf while in scope, regardless
+  // of whether the holding space model is empty. Note that even while in scope,
+  // holding space will not show in the shelf unless the holding space model is
+  // attached and the user session is unblocked.
+  class ScopedForceShowInShelf {
+   public:
+    ScopedForceShowInShelf();
+    ScopedForceShowInShelf(const ScopedForceShowInShelf&) = delete;
+    ScopedForceShowInShelf& operator=(const ScopedForceShowInShelf&) = delete;
+    ~ScopedForceShowInShelf();
+  };
+
   HoldingSpaceController();
-  HoldingSpaceController(const HoldingSpaceController& other) = delete;
-  HoldingSpaceController& operator=(const HoldingSpaceController& other) =
-      delete;
+  HoldingSpaceController(const HoldingSpaceController&) = delete;
+  HoldingSpaceController& operator=(const HoldingSpaceController&) = delete;
   ~HoldingSpaceController() override;
 
   // Returns the global HoldingSpaceController instance. It's set in the
@@ -46,8 +57,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceController : public SessionObserver {
                                      HoldingSpaceModel* model);
 
   HoldingSpaceClient* client() { return client_; }
-
   HoldingSpaceModel* model() { return model_; }
+
+  // Indicates whether to force holding space to show in the shelf.
+  bool force_show_in_shelf() const { return force_show_in_shelf_count_ > 0; }
 
  private:
   // SessionObserver:
@@ -64,6 +77,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceController : public SessionObserver {
 
   // The currently active user account id.
   AccountId active_user_account_id_;
+
+  // Number of clients currently forcing holding space to show in the shelf.
+  int force_show_in_shelf_count_ = 0;
 
   using ClientAndModel = std::pair<HoldingSpaceClient*, HoldingSpaceModel*>;
   std::map<const AccountId, ClientAndModel> clients_and_models_by_account_id_;

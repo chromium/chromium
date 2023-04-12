@@ -506,9 +506,18 @@ void HoldingSpaceTray::OnThemeChanged() {
 void HoldingSpaceTray::UpdateVisibility() {
   // The holding space tray should not be visible if the `model` is not attached
   // or if the user session is blocked.
-  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+  HoldingSpaceController* const controller = HoldingSpaceController::Get();
+  HoldingSpaceModel* const model = controller->model();
   if (!model || Shell::Get()->session_controller()->IsUserSessionBlocked()) {
     SetVisiblePreferred(false);
+    return;
+  }
+
+  // Always show the holding space tray if there are clients forcing it to show
+  // in shelf. Note that this is intentionally respected only while the holding
+  // space model is attached and the user session is unblocked.
+  if (controller->force_show_in_shelf()) {
+    SetVisiblePreferred(true);
     return;
   }
 
@@ -597,6 +606,16 @@ void HoldingSpaceTray::OnHoldingSpaceModelAttached(HoldingSpaceModel* model) {
 
 void HoldingSpaceTray::OnHoldingSpaceModelDetached(HoldingSpaceModel* model) {
   model_observer_.Reset();
+  UpdateVisibility();
+  UpdatePreviewsState();
+}
+
+void HoldingSpaceTray::OnHoldingSpaceForceShowInShelfChanged() {
+  // Animations are distracting when forcibly toggling holding space visibility
+  // in the shelf. Disable them temporarily. Note that animations will be
+  // re-enabled when items are added/removed from the holding space model.
+  SetShouldAnimate(false);
+
   UpdateVisibility();
   UpdatePreviewsState();
 }

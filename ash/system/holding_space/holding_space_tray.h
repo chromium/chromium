@@ -119,6 +119,7 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   // HoldingSpaceControllerObserver:
   void OnHoldingSpaceModelAttached(HoldingSpaceModel* model) override;
   void OnHoldingSpaceModelDetached(HoldingSpaceModel* model) override;
+  void OnHoldingSpaceForceShowInShelfChanged() override;
 
   // HoldingSpaceModelObserver:
   void OnHoldingSpaceItemsAdded(

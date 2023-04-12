@@ -20,6 +20,11 @@ class ASH_PUBLIC_EXPORT HoldingSpaceControllerObserver
 
   // Called when a model gets detached from the HoldingSpaceController.
   virtual void OnHoldingSpaceModelDetached(HoldingSpaceModel* model) = 0;
+
+  // Called when holding space:
+  // * (a) should be forced to show in the shelf, or
+  // * (b) should no longer be forced to show in the shelf.
+  virtual void OnHoldingSpaceForceShowInShelfChanged() {}
 };
 
 }  // namespace ash
