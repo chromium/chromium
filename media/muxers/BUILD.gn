@@ -17,6 +17,8 @@ source_set("muxers") {
     "live_webm_muxer_delegate.h",
     "muxer.cc",
     "muxer.h",
+    "output_position_tracker.cc",
+    "output_position_tracker.h",
     "webm_muxer.cc",
     "webm_muxer.h",
   ]
@@ -34,7 +36,10 @@ source_set("muxers") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "webm_muxer_unittest.cc" ]
+  sources = [
+    "output_position_tracker_unittest.cc",
+    "webm_muxer_unittest.cc",
+  ]
 
   deps = [
     "//base/test:test_support",

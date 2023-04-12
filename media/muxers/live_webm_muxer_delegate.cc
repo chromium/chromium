@@ -8,7 +8,8 @@
 
 namespace media {
 
-LiveWebmMuxerDelegate::LiveWebmMuxerDelegate(WriteDataCB write_data_callback)
+LiveWebmMuxerDelegate::LiveWebmMuxerDelegate(
+    Muxer::WriteDataCB write_data_callback)
     : write_data_callback_(std::move(write_data_callback)) {
   DCHECK(!write_data_callback_.is_null());
 }
