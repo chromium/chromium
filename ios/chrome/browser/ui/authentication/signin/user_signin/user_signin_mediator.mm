@@ -138,7 +138,6 @@
                                         completion:(ProceduralBlock)completion {
   [self.authenticationFlow cancelAndDismissAnimated:animated];
 
-  self.syncService->GetUserSettings()->SetSyncRequested(false);
   DCHECK(self.delegate);
   switch (self.delegate.signinStateOnStart) {
     case IdentitySigninStateSignedOut: {
@@ -172,10 +171,13 @@
     }
     case IdentitySigninStateSignedInWithSyncEnabled: {
       // Switching accounts is not possible without sign-out.
-      NOTREACHED();
-      break;
+      NOTREACHED_NORETURN();
     }
   }
+
+  // All codepaths above clear the sync-requested bit, either because the user
+  // is signed out or because SyncService::StopAndClear() does the job.
+  CHECK(!self.syncService->GetUserSettings()->IsSyncRequested());
 }
 
 - (void)signinWithIdentityOnStartAfterSignout {
