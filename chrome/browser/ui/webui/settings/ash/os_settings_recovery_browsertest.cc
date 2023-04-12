@@ -3,10 +3,21 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_lock_screen_browser_test_base.h"
 #include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom-test-utils.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_types.h"
 #include "content/public/test/browser_test.h"
+
+namespace {
+
+const char kRecoveryFactorBehaviorPolicy[] = "RecoveryFactorBehavior";
+
+}
 
 namespace ash::settings {
 
@@ -130,6 +141,83 @@ IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature, DestroyedSession) {
   EXPECT_FALSE(cryptohome_.HasRecoveryFactor(GetAccountId()));
   lock_screen_settings.Authenticate(kPassword);
   lock_screen_settings.EnableRecoveryConfiguration();
+  EXPECT_TRUE(cryptohome_.HasRecoveryFactor(GetAccountId()));
+}
+
+struct CryptohomeRecoveryPolicySetting {
+  bool value;
+  bool is_recommendation;
+};
+
+class OSSettingsRecoveryTestWithPolicy
+    : public OSSettingsRecoveryTestWithFeature {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    OSSettingsRecoveryTestWithFeature::SetUpInProcessBrowserTestFixture();
+
+    // Override and policy provider for testing. The `ON_CALL` lines here are
+    // necessary because something inside the policy stack expects those return
+    // values.
+    ON_CALL(provider_, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
+  }
+
+  void SetCryptohomeRecoveryPolicy(policy::PolicyLevel level, bool value) {
+    policy::PolicyMap policies;
+    policies.Set(kRecoveryFactorBehaviorPolicy, level,
+                 policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+                 base::Value(value),
+                 /*external_data_fetcher=*/nullptr);
+    provider_.UpdateChromePolicy(policies);
+  }
+
+ private:
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+};
+
+// Check that the recovery toggle cannot be flipped to "on" if a policy
+// mandates that cryptohome recovery is disabled.
+IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithPolicy, DisabledMandatory) {
+  SetCryptohomeRecoveryPolicy(policy::POLICY_LEVEL_MANDATORY, false);
+
+  mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
+      OpenLockScreenSettingsAndAuthenticate();
+  lock_screen_settings.TryEnableRecoveryConfiguration();
+
+  // This will repeateadly check that the recovery toggle is set to "off" for
+  // some time, so we would catch if the toggle flips asynchronously after some
+  // time.
+  lock_screen_settings.AssertRecoveryConfigured(false);
+  EXPECT_FALSE(cryptohome_.HasRecoveryFactor(GetAccountId()));
+}
+
+// Check that the recovery toggle can be flipped if a policy mandates that
+// recovery is enabled but recovery is currently not enabled.
+IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithPolicy,
+                       EnabledMandatoryButDisabled) {
+  SetCryptohomeRecoveryPolicy(policy::POLICY_LEVEL_MANDATORY, true);
+  EXPECT_FALSE(cryptohome_.HasRecoveryFactor(GetAccountId()));
+
+  mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
+      OpenLockScreenSettingsAndAuthenticate();
+  lock_screen_settings.AssertRecoveryConfigured(false);
+
+  lock_screen_settings.EnableRecoveryConfiguration();
+
+  lock_screen_settings.AssertRecoveryConfigured(true);
+  EXPECT_TRUE(cryptohome_.HasRecoveryFactor(GetAccountId()));
+
+  // Try to disable again -- this should have no effect, because the policy
+  // mandates that recovery must be configured.
+  lock_screen_settings.TryDisableRecoveryConfiguration();
+
+  // This will repeateadly check that the recovery toggle is set to "on" for
+  // some time, so we would catch if the toggle flips asynchronously after some
+  // time.
+  lock_screen_settings.AssertRecoveryConfigured(true);
   EXPECT_TRUE(cryptohome_.HasRecoveryFactor(GetAccountId()));
 }
 

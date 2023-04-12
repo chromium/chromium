@@ -363,6 +363,12 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
     toggle.click();
   }
 
+  async tryDisableRecoveryConfiguration(): Promise<void> {
+    const toggle = await retryUntilSome(() => this.recoveryToggle());
+    assertTrue(toggle.checked);
+    toggle.click();
+  }
+
   async disableRecoveryConfiguration(dialogAction: RecoveryDialogAction):
       Promise<void> {
     assertTrue(this.recoveryDisableDialog() === null);

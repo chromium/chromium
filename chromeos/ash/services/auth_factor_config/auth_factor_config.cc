@@ -152,14 +152,48 @@ void AuthFactorConfig::IsEditable(const std::string& auth_token,
       DCHECK(features::IsCryptohomeRecoveryEnabled());
       const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
       CHECK(user);
+
+      // TODO(272474463): remove the child user check.
+      if (user->IsChild()) {
+        std::move(callback).Run(false);
+        return;
+      }
+
       const PrefService* prefs = quick_unlock_storage_->GetPrefService(*user);
       CHECK(prefs);
-      // TODO(272474463): remove the child user check.
-      bool editable =
-          prefs->IsUserModifiablePreference(prefs::kRecoveryFactorBehavior) &&
-          !user->IsChild();
 
-      std::move(callback).Run(editable);
+      if (prefs->IsUserModifiablePreference(prefs::kRecoveryFactorBehavior)) {
+        std::move(callback).Run(true);
+        return;
+      }
+
+      // TODO(b:270693613): At this point, we know that the user should not be
+      // able to modify recovery authentication. However, we allow turning
+      // recovery on/off in case the currently configured value does not agree
+      // with the mandated value, e.g. due to a policy change after enrollment.
+      // For example, users should be able to turn on recovery if it is
+      // enforced to be enabled by a policy but is not actually configured for
+      // some reason.
+      // Once the feature in the linked bug is implemented (automatically
+      // enabling/disabling recovery based on policy values), we might consider
+      // removing this check.
+      auto* user_context =
+          quick_unlock_storage_->GetUserContext(user, auth_token);
+      if (!user_context) {
+        LOG(ERROR) << "Invalid auth token";
+        std::move(callback).Run(false);
+        return;
+      }
+      const auto& config = user_context->GetAuthFactorsConfiguration();
+      const bool is_configured =
+          config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery);
+
+      if (is_configured != prefs->GetBoolean(prefs::kRecoveryFactorBehavior)) {
+        std::move(callback).Run(true);
+        return;
+      }
+
+      std::move(callback).Run(false);
       return;
     }
     case mojom::AuthFactor::kPin: {
