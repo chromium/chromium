@@ -21,6 +21,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
+#include "third_party/skia/include/gpu/GrBackendSurfaceMutableState.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/scoped_egl_image.h"
@@ -262,14 +263,7 @@ bool AngleVulkanImageBacking::Initialize(
       return false;
     }
 
-    GrVkImageInfo vk_info = CreateGrVkImageInfo(vulkan_image.get());
-
-    auto& vk_texture = vk_textures_.emplace_back();
-    vk_texture.vulkan_image = std::move(vulkan_image);
-    vk_texture.backend_texture =
-        GrBackendTexture(plane_size.width(), plane_size.height(), vk_info);
-    vk_texture.promise_texture =
-        SkPromiseImageTexture::Make(vk_texture.backend_texture);
+    vk_textures_.emplace_back(std::move(vulkan_image));
   }
 
   if (!data.empty()) {
@@ -302,14 +296,7 @@ bool AngleVulkanImageBacking::InitializeWihGMB(
     return false;
   }
 
-  GrVkImageInfo vk_info = CreateGrVkImageInfo(vulkan_image.get());
-
-  auto& vk_texture = vk_textures_.emplace_back();
-  vk_texture.vulkan_image = std::move(vulkan_image);
-  vk_texture.backend_texture =
-      GrBackendTexture(size().width(), size().height(), vk_info);
-  vk_texture.promise_texture =
-      SkPromiseImageTexture::Make(vk_texture.backend_texture);
+  vk_textures_.emplace_back(std::move(vulkan_image));
 
   SetCleared();
 
@@ -517,9 +504,7 @@ void AngleVulkanImageBacking::SyncImageLayoutFromBackendTexture() {
   DCHECK_GE(kMaxTextures, vk_textures_.size());
 
   for (size_t i = 0; i < vk_textures_.size(); ++i) {
-    GrVkImageInfo info;
-    bool result = vk_textures_[i].backend_texture.getVkImageInfo(&info);
-    DCHECK(result);
+    GrVkImageInfo info = vk_textures_[i].GetGrVkImageInfo();
     gl_layouts_[i] = VkImageLayoutToGLImageLayout(info.fImageLayout);
   }
 }
@@ -652,14 +637,6 @@ bool AngleVulkanImageBacking::InitializePassthroughTexture() {
 
   return true;
 }
-
-AngleVulkanImageBacking::TextureHolderVk::TextureHolderVk() = default;
-AngleVulkanImageBacking::TextureHolderVk::TextureHolderVk(
-    TextureHolderVk&& other) = default;
-AngleVulkanImageBacking::TextureHolderVk&
-AngleVulkanImageBacking::TextureHolderVk::operator=(TextureHolderVk&& other) =
-    default;
-AngleVulkanImageBacking::TextureHolderVk::~TextureHolderVk() = default;
 
 AngleVulkanImageBacking::TextureHolderGL::TextureHolderGL() = default;
 AngleVulkanImageBacking::TextureHolderGL::TextureHolderGL(

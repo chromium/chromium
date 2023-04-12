@@ -1251,24 +1251,4 @@ void ExternalVkImageBacking::EndAccessInternal(
   }
 }
 
-TextureHolderVk::TextureHolderVk(std::unique_ptr<VulkanImage> image)
-    : vulkan_image(std::move(image)) {
-  gfx::Size size = vulkan_image->size();
-  GrVkImageInfo vk_image_info = CreateGrVkImageInfo(vulkan_image.get());
-  backend_texture =
-      GrBackendTexture(size.width(), size.height(), vk_image_info);
-  promise_texture = SkPromiseImageTexture::Make(backend_texture);
-}
-
-TextureHolderVk::TextureHolderVk(TextureHolderVk&& other) = default;
-TextureHolderVk& TextureHolderVk::operator=(TextureHolderVk&& other) = default;
-TextureHolderVk::~TextureHolderVk() = default;
-
-GrVkImageInfo TextureHolderVk::GetGrVkImageInfo() const {
-  GrVkImageInfo info;
-  bool result = backend_texture.getVkImageInfo(&info);
-  DCHECK(result);
-  return info;
-}
-
 }  // namespace gpu

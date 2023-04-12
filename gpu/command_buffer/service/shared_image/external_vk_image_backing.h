@@ -18,6 +18,7 @@
 #include "gpu/command_buffer/service/external_semaphore_pool.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/texture_holder_vk.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
@@ -29,21 +30,6 @@ namespace gpu {
 class GLTextureHolder;
 class VulkanCommandPool;
 class VulkanImage;
-
-// Holds VulkanImage + skia representations of it.
-// TODO(kylechar): Put this somewhere common and use in AngleVulkanImageBacking.
-struct TextureHolderVk {
-  explicit TextureHolderVk(std::unique_ptr<VulkanImage> image);
-  TextureHolderVk(TextureHolderVk&& other);
-  TextureHolderVk& operator=(TextureHolderVk&& other);
-  ~TextureHolderVk();
-
-  GrVkImageInfo GetGrVkImageInfo() const;
-
-  std::unique_ptr<VulkanImage> vulkan_image;
-  GrBackendTexture backend_texture;
-  sk_sp<SkPromiseImageTexture> promise_texture;
-};
 
 class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
  public:
