@@ -37,13 +37,10 @@
   BookmarksFolderEditorViewController* _viewController;
   // Coordinator to show the folder chooser UI.
   BookmarksFolderChooserCoordinator* _folderChooserCoordinator;
-  // `_parentFolderNode` is only used when a new folder is added. The new
-  // folder should be added in `_parentFolderNode`. If `_parentFolderNode` is
-  // `nullptr`, then the new folder needs to be added in the default folder.
+  // Parent folder to `_folderNode`. Should never be `nullptr`.
   const bookmarks::BookmarkNode* _parentFolderNode;
-  // If `_folderNode` is set, the user is editing an existing folder and
-  // `_parentFolderNode` should be `nullptr`. If `_folderNode` is not set, the
-  // user is adding a new folder.
+  // If `_folderNode` is `nullptr`, the user is adding a new folder. Otherwise
+  // the user is editing an existing folder.
   const bookmarks::BookmarkNode* _folderNode;
 }
 
@@ -74,9 +71,11 @@
                                 folderNode:
                                     (const bookmarks::BookmarkNode*)folder {
   DCHECK(folder);
+  DCHECK(folder->parent());
   self = [super initWithBaseViewController:baseViewController browser:browser];
   if (self) {
     _folderNode = folder;
+    _parentFolderNode = folder->parent();
   }
   return self;
 }
@@ -104,13 +103,9 @@
       self.browser->GetCommandDispatcher(), SnackbarCommands);
 
   if (_baseNavigationController) {
-    DCHECK(_parentFolderNode);
-    DCHECK(!_folderNode);
     [_baseNavigationController pushViewController:_viewController animated:YES];
   } else {
     DCHECK(!_navigationController);
-    DCHECK(!_parentFolderNode);
-    DCHECK(_folderNode);
     _navigationController = [[BookmarkNavigationController alloc]
         initWithRootViewController:_viewController];
     _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
@@ -184,7 +179,6 @@
   // Deleting the folder is only allowed when the user is editing an existing
   // folder.
   DCHECK(_folderNode);
-  DCHECK(!_parentFolderNode);
   [_delegate bookmarksFolderEditorCoordinatorShouldStop:self];
 }
 

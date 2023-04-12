@@ -70,7 +70,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // The browser for this view controller.
   base::WeakPtr<Browser> _browser;
   ChromeBrowserState* _browserState;
+  // Parent folder to `_folder`. Should never be `nullptr`.
   const BookmarkNode* _parentFolder;
+  // If `_folderNode` is `nullptr`, the user is adding a new folder. Otherwise
+  // the user is editing an existing folder.
   const BookmarkNode* _folder;
 
   BOOL _edited;
@@ -95,9 +98,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                               browser:(Browser*)browser {
   DCHECK(bookmarkModel);
   DCHECK(bookmarkModel->loaded());
-  // Both of these can't be `nullptr`.
-  DCHECK(parentFolder || folder)
-      << "parentFolder: " << parentFolder << ", folder: " << folder;
+  DCHECK(parentFolder);
   if (folder) {
     DCHECK(!bookmarkModel->is_permanent_node(folder));
   }
@@ -108,7 +109,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (self) {
     _bookmarkModel = bookmarkModel;
     _folder = folder;
-    _parentFolder = parentFolder ? parentFolder : _folder->parent();
+    _parentFolder = parentFolder;
     _editingExistingFolder = _folder != nullptr;
     _browser = browser->AsWeakPtr();
     _browserState = browser->GetBrowserState()->GetOriginalChromeBrowserState();

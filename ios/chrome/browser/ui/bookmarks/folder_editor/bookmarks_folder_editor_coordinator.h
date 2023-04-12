@@ -33,7 +33,8 @@ class BookmarkNode;
     NS_DESIGNATED_INITIALIZER;
 // Initializes BookmarksFolderEditorCoordinator. The view will edit the bookmark
 // folder node.
-// `folderNode` cannot be `nullptr` and must be editable.
+// `folderNode` cannot be `nullptr` and must be editable (`folderNode` can't be
+// the root node or any of the permanent nodes).
 - (instancetype)
     initWithBaseViewController:(UIViewController*)navigationController
                        browser:(Browser*)browser
