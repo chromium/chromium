@@ -16,6 +16,7 @@
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/preloading.h"
+#include "content/browser/preloading/preloading_config.h"
 #include "content/browser/preloading/preloading_data_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/frame_accept_header.h"
@@ -220,6 +221,7 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
         ->GetCookieManager(cookie_manager_.BindNewPipeAndPassReceiver());
 
     InitScopedFeatureList();
+    PreloadingConfig::GetInstance().ParseConfig();
 
     PrefetchService::SetURLLoaderFactoryForTesting(
         test_shared_url_loader_factory_.get());
@@ -249,6 +251,8 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     PrefetchService::SetServiceWorkerContextForTesting(nullptr);
     PrefetchService::SetURLLoaderFactoryForTesting(nullptr);
     test_content_browser_client_.reset();
+    scoped_feature_list_.Reset();
+    PreloadingConfig::GetInstance().ParseConfig();
     RenderViewHostTestHarness::TearDown();
   }
 
