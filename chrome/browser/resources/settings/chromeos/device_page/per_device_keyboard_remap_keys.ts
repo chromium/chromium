@@ -305,10 +305,10 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     this.set('fakeMetaPref.value', this.defaultRemappings[ModifierKey.kMeta]);
   }
 
-  private restoreDefaults(): void {
-    // When defaults are restored, set isInitialized to false while the prefs
-    // are being updated. Then, once prefs are all done being updated back to
-    // defaults, make sure onSettingsUpdated is called.
+  restoreDefaults(): void {
+    // When defaults are restored, set isInitialized to false while the
+    // prefs are being updated. Then, once prefs are all done being updated
+    // back to defaults, make sure onSettingsUpdated is called.
     this.isInitialized = false;
     this.defaultInitializePrefs();
     this.isInitialized = true;

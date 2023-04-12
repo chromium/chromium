@@ -1,4 +1,15 @@
-<style include="settings-shared"></style>
+<style include="settings-shared">
+  .restore-defaults-button {
+    border-radius: 16px;
+    height: 32px;
+    margin-inline: 16px;
+  }
+
+  .restore-defaults-icon {
+    --iron-icon-fill-color: currentColor;
+    margin-inline-end: 8px;
+  }
+</style>
 <os-settings-animated-pages id="pages" section="device"
     focus-config="[[focusConfig_]]">
   <div id="main" route-path="default">
@@ -162,7 +173,15 @@
       route-path="/per-device-keyboard/remap-keys">
     <os-settings-subpage id="perDeviceKeyboardRemapKeysRow"
         page-title="$i18n{remapKeyboardKeysRowLabel}">
-      <settings-per-device-keyboard-remap-keys keyboards="[[keyboards]]">
+        <cr-button id="restoreDefaultsButton" slot="subpage-title-extra"
+            on-click="restoreDefaults"
+            class="restore-defaults-button">
+        <iron-icon icon="os-settings:restore" class="restore-defaults-icon">
+        </iron-icon>
+        <span>$i18n{keyboardRemapRestoreDefaultsLabel}</span>
+    </cr-button>
+      <settings-per-device-keyboard-remap-keys keyboards="[[keyboards]]"
+          id="remap-keys">
       </settings-per-device-keyboard-remap-keys>
     </os-settings-subpage>
   </template>

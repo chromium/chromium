@@ -7,7 +7,10 @@
  * peripheral settings.
  */
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './audio.js';
 import './display.js';
 import './keyboard.js';
@@ -42,6 +45,7 @@ import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_
 import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
 import {InputDeviceSettingsProviderInterface, Keyboard, Mouse, PointingStick, Touchpad} from './input_device_settings_types.js';
+import {SettingsPerDeviceKeyboardRemapKeysElement} from './per_device_keyboard_remap_keys.js';
 
 interface SettingsDevicePageElement {
   $: {
@@ -503,6 +507,11 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
     return this.hasPointingStick_ && this.isDeviceSettingsSplitEnabled_;
   }
 
+  protected restoreDefaults(): void {
+    const remapKeysPage = this.shadowRoot!.querySelector('#remap-keys') as
+        SettingsPerDeviceKeyboardRemapKeysElement;
+    remapKeysPage.restoreDefaults();
+  }
   /**
    * Leaves the pointer subpage if all pointing devices are detached.
    */
