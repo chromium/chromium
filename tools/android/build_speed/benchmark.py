@@ -128,15 +128,16 @@ class Benchmark:
 _BENCHMARKS = [
     Benchmark(
         name='chrome_java_nosig',
-        from_string='sInstance = instance;',
-        to_string='sInstance = instance;String test = "Test";',
+        from_string='sInstanceForTesting = instance;',
+        to_string='sInstanceForTesting = instance;String test = "Test";',
         change_file=
         'chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java',
     ),
     Benchmark(
         name='chrome_java_sig',
-        from_string='AppHooksImpl sInstance;',
-        to_string='AppHooksImpl sInstance;public void NewInterfaceMethod(){}',
+        from_string='AppHooksImpl sInstanceForTesting;',
+        to_string=
+        'AppHooksImpl sInstanceForTesting;public void NewInterfaceMethod(){}',
         change_file=
         'chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java',
     ),
