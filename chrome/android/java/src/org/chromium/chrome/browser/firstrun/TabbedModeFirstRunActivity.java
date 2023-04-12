@@ -36,6 +36,7 @@ public class TabbedModeFirstRunActivity extends FirstRunActivity {
         contentLayout.addView(contentView);
 
         contentLayout.setBackgroundResource(R.drawable.bg_white_dialog);
+        contentLayout.setClipToOutline(true);
 
         // We need an outer layout for two things:
         //   * centering the content
