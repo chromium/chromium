@@ -133,4 +133,17 @@ public class LogoCoordinator {
     public void onTemplateURLServiceChangedForTesting() {
         mMediator.onTemplateURLServiceChanged();
     }
+
+    /** @see LogoMediator#onLogoClicked */
+    public void onLogoClickedForTesting(boolean isAnimatedLogoShowing) {
+        mMediator.onLogoClicked(isAnimatedLogoShowing);
+    }
+
+    public void setLogoBridgeForTesting(LogoBridge logoBridge) {
+        mMediator.setLogoBridgeForTesting(logoBridge);
+    }
+
+    public void setOnLogoClickUrlForTesting(String onLogoClickUrl) {
+        mMediator.setOnLogoClickUrlForTesting(onLogoClickUrl);
+    }
 }

@@ -50,6 +50,9 @@ import org.chromium.chrome.browser.suggestions.tile.TileGroup;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.chrome.browser.util.BrowserUiUtils;
+import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
+import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNTP;
 import org.chromium.chrome.browser.video_tutorials.FeatureType;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialServiceFactory;
 import org.chromium.chrome.browser.video_tutorials.iph.VideoTutorialTryNowTracker;
@@ -298,9 +301,12 @@ public class NewTabPageLayout extends LinearLayout {
 
     private void initializeLogoCoordinator(
             boolean searchProviderHasLogo, boolean searchProviderIsGoogle) {
-        Callback<LoadUrlParams> logoClickedCallback = mCallbackController.makeCancelable(
-                (urlParams)
-                        -> mManager.getNativePageHost().loadUrl(urlParams, /*isIncognito=*/false));
+        Callback<LoadUrlParams> logoClickedCallback =
+                mCallbackController.makeCancelable((urlParams) -> {
+                    mManager.getNativePageHost().loadUrl(urlParams, /*isIncognito=*/false);
+                    BrowserUiUtils.recordModuleClickHistogram(
+                            HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNTP.DOODLE);
+                });
         Callback<Logo> onLogoAvailableCallback = mCallbackController.makeCancelable((logo) -> {
             mSnapshotTileGridChanged = true;
             mShowingNonStandardLogo = logo != null;
