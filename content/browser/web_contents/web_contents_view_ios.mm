@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/mac/scoped_nsobject.h"
+#include "content/browser/renderer_host/popup_menu_helper_ios.h"
 #include "content/browser/renderer_host/render_widget_host_view_ios.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents_view_delegate.h"
@@ -127,7 +128,17 @@ void WebContentsViewIOS::ShowPopupMenu(
     int selected_item,
     std::vector<blink::mojom::MenuItemPtr> menu_items,
     bool right_aligned,
-    bool allow_multiple_selection) {}
+    bool allow_multiple_selection) {
+  popup_menu_helper_ = std::make_unique<PopupMenuHelper>(
+      this, render_frame_host, std::move(popup_client));
+  popup_menu_helper_->ShowPopupMenu(bounds, item_height, item_font_size,
+                                    selected_item, std::move(menu_items),
+                                    right_aligned, allow_multiple_selection);
+}
+
+void WebContentsViewIOS::OnMenuClosed() {
+  popup_menu_helper_.reset();
+}
 
 void WebContentsViewIOS::CreateView(gfx::NativeView context) {}
 

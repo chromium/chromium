@@ -2611,6 +2611,8 @@ source_set("browser") {
       "renderer_host/browser_compositor_ios.mm",
       "renderer_host/delegated_frame_host_client_ios.cc",
       "renderer_host/delegated_frame_host_client_ios.h",
+      "renderer_host/popup_menu_helper_ios.h",
+      "renderer_host/popup_menu_helper_ios.mm",
       "renderer_host/render_widget_host_view_ios.h",
       "renderer_host/render_widget_host_view_ios.mm",
       "web_contents/web_contents_view_ios.h",
