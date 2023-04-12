@@ -307,8 +307,8 @@ void MousePrefHandlerImpl::InitializeLoginScreenMouseSettings(
 
   const auto* settings_dict = GetLoginScreenSettingsDict(
       local_state, account_id,
-      mouse->is_external ? prefs::kKeyboardLoginScreenExternalSettingsPref
-                         : prefs::kKeyboardLoginScreenInternalSettingsPref);
+      mouse->is_external ? prefs::kMouseLoginScreenExternalSettingsPref
+                         : prefs::kMouseLoginScreenInternalSettingsPref);
   if (settings_dict) {
     mouse->settings =
         RetrieveMouseSettings(mouse_policies, *mouse, *settings_dict);
