@@ -44,6 +44,7 @@
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_sources.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -221,19 +222,32 @@ std::vector<SquareSizePx> GetSquareSizePxs(
 }
 
 std::vector<IconSizes> GetDownloadedShortcutsMenuIconsSizes(
+    const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_items,
     const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps) {
+  // Due to the bitmaps possibly being not populated (see
+  // https://crbug.com/1427444), we create empty bitmaps in that case. We
+  // continue to check to make sure that there aren't MORE bitmaps than
+  // items.
+  CHECK_LE(shortcuts_menu_icon_bitmaps.size(), shortcuts_menu_items.size());
   std::vector<IconSizes> shortcuts_menu_icons_sizes;
-  shortcuts_menu_icons_sizes.reserve(shortcuts_menu_icon_bitmaps.size());
-  for (const auto& shortcut_icon_bitmaps : shortcuts_menu_icon_bitmaps) {
+  shortcuts_menu_icons_sizes.reserve(shortcuts_menu_items.size());
+  IconBitmaps empty_icon_bitmaps;
+  for (size_t i = 0; i < shortcuts_menu_items.size(); ++i) {
+    const IconBitmaps* shortcut_icon_bitmaps;
+    if (i < shortcuts_menu_icon_bitmaps.size()) {
+      shortcut_icon_bitmaps = &shortcuts_menu_icon_bitmaps[i];
+    } else {
+      shortcut_icon_bitmaps = &empty_icon_bitmaps;
+    }
     IconSizes icon_sizes;
     icon_sizes.SetSizesForPurpose(IconPurpose::ANY,
-                                  GetSquareSizePxs(shortcut_icon_bitmaps.any));
+                                  GetSquareSizePxs(shortcut_icon_bitmaps->any));
     icon_sizes.SetSizesForPurpose(
         IconPurpose::MASKABLE,
-        GetSquareSizePxs(shortcut_icon_bitmaps.maskable));
+        GetSquareSizePxs(shortcut_icon_bitmaps->maskable));
     icon_sizes.SetSizesForPurpose(
         IconPurpose::MONOCHROME,
-        GetSquareSizePxs(shortcut_icon_bitmaps.monochrome));
+        GetSquareSizePxs(shortcut_icon_bitmaps->monochrome));
     shortcuts_menu_icons_sizes.push_back(std::move(icon_sizes));
   }
   return shortcuts_menu_icons_sizes;
@@ -362,6 +376,8 @@ void PopulateShortcutItemIcons(WebAppInstallInfo* web_app_info,
     web_app_info->shortcuts_menu_icon_bitmaps.emplace_back(
         std::move(shortcut_icon_bitmaps));
   }
+  CHECK_EQ(web_app_info->shortcuts_menu_icon_bitmaps.size(),
+           web_app_info->shortcuts_menu_item_infos.size());
 }
 
 // Reconcile the file handling icons that were specified in the manifest with
@@ -1180,6 +1196,7 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
     web_app.SetShortcutsMenuItemInfos(web_app_info.shortcuts_menu_item_infos);
     web_app.SetDownloadedShortcutsMenuIconsSizes(
         GetDownloadedShortcutsMenuIconsSizes(
+            web_app_info.shortcuts_menu_item_infos,
             web_app_info.shortcuts_menu_icon_bitmaps));
   }
 

@@ -288,6 +288,8 @@ struct WebAppInstallInfo {
   // Vector of shortcut icon bitmaps keyed by their square size. The index of a
   // given |IconBitmaps| matches that of the shortcut in
   // |shortcuts_menu_item_infos| whose bitmaps it contains.
+  // Notes: It is not guaranteed that these are populated if the menu items are.
+  // See https://crbug.com/1427444.
   ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps;
 
   // The URL protocols/schemes that the app can handle.

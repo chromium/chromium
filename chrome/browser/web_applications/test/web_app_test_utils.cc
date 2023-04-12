@@ -261,10 +261,11 @@ std::vector<ScopeExtensionInfo> CreateRandomScopeExtensions(
 
 std::vector<WebAppShortcutsMenuItemInfo> CreateRandomShortcutsMenuItemInfos(
     const GURL& scope,
+    int num,
     RandomHelper& random) {
   const uint32_t suffix = random.next_uint();
   std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos;
-  for (int i = random.next_uint(4) + 1; i >= 0; --i) {
+  for (int i = num - 1; i >= 0; --i) {
     std::string suffix_str =
         base::NumberToString(suffix) + base::NumberToString(i);
     WebAppShortcutsMenuItemInfo shortcut_info;
@@ -308,14 +309,15 @@ std::vector<WebAppShortcutsMenuItemInfo> CreateRandomShortcutsMenuItemInfos(
 }
 
 std::vector<IconSizes> CreateRandomDownloadedShortcutsMenuIconsSizes(
+    int num,
     RandomHelper& random) {
   std::vector<IconSizes> results;
-  for (unsigned int i = 0; i < 3; ++i) {
+  for (int i = 0; i < num; ++i) {
     IconSizes result;
     std::vector<SquareSizePx> shortcuts_menu_icon_sizes_any;
     std::vector<SquareSizePx> shortcuts_menu_icon_sizes_maskable;
     std::vector<SquareSizePx> shortcuts_menu_icon_sizes_monochrome;
-    for (unsigned int j = 0; j < i; ++j) {
+    for (int j = 0; j < i; ++j) {
       shortcuts_menu_icon_sizes_any.push_back(random.next_uint(256) + 1);
       shortcuts_menu_icon_sizes_maskable.push_back(random.next_uint(256) + 1);
       shortcuts_menu_icon_sizes_monochrome.push_back(random.next_uint(256) + 1);
@@ -693,10 +695,14 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   }
   app->SetAdditionalSearchTerms(std::move(additional_search_terms));
 
+  int num_shortcut_menus = static_cast<int>(random.next_uint(4)) + 1;
   app->SetShortcutsMenuItemInfos(
-      CreateRandomShortcutsMenuItemInfos(scope, random));
+      CreateRandomShortcutsMenuItemInfos(scope, num_shortcut_menus, random));
   app->SetDownloadedShortcutsMenuIconsSizes(
-      CreateRandomDownloadedShortcutsMenuIconsSizes(random));
+      CreateRandomDownloadedShortcutsMenuIconsSizes(num_shortcut_menus,
+                                                    random));
+  CHECK_EQ(app->shortcuts_menu_item_infos().size(),
+           app->downloaded_shortcuts_menu_icons_sizes().size());
   app->SetManifestUrl(base_url.Resolve("/manifest" + seed_str + ".json"));
 
   const int num_allowed_launch_protocols = random.next_uint(8);
