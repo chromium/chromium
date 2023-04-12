@@ -21,7 +21,7 @@ import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {IronPagesElement} from '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {DomIf, FlattenedNodesObserver, microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FocusConfig} from '../../focus_config.js';
+import {FocusConfig} from '../focus_config.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 import {getSettingIdParameter} from '../setting_id_param_util.js';
