@@ -261,7 +261,6 @@ web_component_files = [
   "controls/settings_toggle_button.ts",
   "privacy_page/secure_dns.ts",
   "privacy_page/secure_dns_input.ts",
-  "site_favicon.ts",
 ]
 
 # HTML files that are passed as input to html_to_wrapper().
