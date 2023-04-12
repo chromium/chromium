@@ -268,7 +268,7 @@
           'linux-bionic',
         ],
         'test_suites': {
-          'isolated_scripts': 'chrome_isolated_script_tests',
+          'isolated_scripts': 'chrome_linux_isolated_script_tests',
 
           # TODO(crbug.com/1233603): This is a fake finch smoke test for
           # prototyping purpose, remove and switch to use the real one once the

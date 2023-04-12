@@ -515,6 +515,10 @@
       },
     },
 
+    'chrome_private_code_test_isolated_scripts': {
+      'chrome_private_code_test': {},
+    },
+
     'chrome_public_tests': {
       'chrome_public_test_apk': {
         'swarming': {
@@ -5839,6 +5843,11 @@
     'bfcache_linux_gtests': [
       'bfcache_generic_gtests',
       'bfcache_linux_specific_gtests',
+    ],
+
+    'chrome_linux_isolated_script_tests': [
+      'chrome_isolated_script_tests',
+      'chrome_private_code_test_isolated_scripts',
     ],
 
     'chromeos_device_gtests': [

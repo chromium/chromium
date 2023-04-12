@@ -2110,6 +2110,24 @@
     ],
     "isolated_scripts": [
       {
+        "isolate_name": "chrome_private_code_test",
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "chrome_private_code_test",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-18.04",
+              "pool": "chrome.tests"
+            }
+          ],
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome:chrome_private_code_test/"
+      },
+      {
         "isolate_name": "chrome_sizes",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
