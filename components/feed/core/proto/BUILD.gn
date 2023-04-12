@@ -66,6 +66,7 @@ proto_library("proto_v2") {
     "v2/wire/xsurface_content.proto",
     "v2/xsurface.proto",
   ]
+  proto_deps = [ ":proto_ios_shared_v2" ]
 }
 
 proto_library("proto_ios_shared_v2") {
