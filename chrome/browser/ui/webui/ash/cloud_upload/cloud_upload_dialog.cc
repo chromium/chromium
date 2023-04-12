@@ -638,10 +638,9 @@ void CloudOpenTask::SetTaskArgs(
     for (const file_manager::file_tasks::FullTaskDescriptor& task :
          resulting_tasks->tasks) {
       // Ignore Google Docs and MS Office tasks as they are already
-      // set up to show in the dialog. And ignore QuickOffice.
+      // set up to show in the dialog.
       if (IsWebDriveOfficeTask(task.task_descriptor) ||
-          file_manager::file_tasks::IsOpenInOfficeTask(task.task_descriptor) ||
-          extension_misc::IsQuickOfficeExtension(task.task_descriptor.app_id)) {
+          file_manager::file_tasks::IsOpenInOfficeTask(task.task_descriptor)) {
         continue;
       }
       mojom::DialogTaskPtr dialog_task = mojom::DialogTask::New();
