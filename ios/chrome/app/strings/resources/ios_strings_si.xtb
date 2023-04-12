@@ -1024,6 +1024,7 @@
 <translation id="7781011649027948662">පිටුව පරිවර්තන කරන්නද?</translation>
 <translation id="7781069478569868053">නව පටිති පිටුව</translation>
 <translation id="7781829728241885113">ඊයේ</translation>
+<translation id="7786246662347093005">{COUNT,plural, =1{1 දිනකට පසු}one{දින {COUNT}කට පසු}other{දින {COUNT}කට පසු}}</translation>
 <translation id="778855399387580014">නව Chrome පටිත්තක් තුළ සෙවීම ආරම්භ කරන්න.</translation>
 <translation id="7791543448312431591">එක් කරන්න</translation>
 <translation id="7807060072011926525">Google විසින් සපයනු ලැබේ</translation>

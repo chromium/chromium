@@ -7830,11 +7830,6 @@ Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền 
       Xem thêm về dịch vụ Duyệt web an toàn (https://developers.google.com/safe-browsing).</translation>
 <translation id="8199823751103472868">Nếu bạn đặt chính sách này thì hệ thống sẽ bật bố cục Hindi Inscript trên <ph name="PRODUCT_OS_NAME" />. Nếu bạn đặt chính sách này thành sai hoặc không đặt thì bố cục này sẽ không được áp dụng.</translation>
 <translation id="8202834945144737726">Bật quy trình chứng thực <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> cho một danh sách URL trên màn hình đăng nhập</translation>
-<translation id="8212900161626657849">Nếu bạn không định cấu hình chính sách này hoặc đặt chính sách này thành bật, thì <ph name="PRODUCT_NAME" /> sẽ tuân theo quy trình phát hành mặc định dành cho CECPQ2 (đây là một thuật toán của thỏa thuận về khóa hậu lượng tử trong TLS).
-
-      CECPQ2 sẽ tạo ra các thông báo TLS (Bảo mật tầng truyền tải) ở phạm vi lớn hơn. Trong một số ít trường hợp, thuật toán này có thể gây ra lỗi cho phần cứng kết nối mạng nào đó. Bạn có thể đặt chính sách này thành tắt để vô hiệu hóa thuật toán CECPQ2 trong lúc khắc phục các sự cố kết nối mạng.
-
-      Chính sách này chỉ là biện pháp tạm thời và sẽ bị xóa trong phiên bản <ph name="PRODUCT_NAME" /> trong tương lai.</translation>
 <translation id="8213770777756919897">Lưu ý rằng chúng tôi không dùng chính sách này nữa và sẽ xóa khỏi <ph name="PRODUCT_OS_NAME" /> phiên bản 85. Thay vào đó, vui lòng sử dụng <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Khi bạn đặt, chính sách này sẽ chỉ định hành động mà <ph name="PRODUCT_OS_NAME" /> thực hiện khi người dùng tạm vắng trong khoảng thời gian cho trước theo thời gian chờ khi tạm vắng. Bạn có thể định cấu hình riêng biệt khoảng thời gian này.

@@ -46,6 +46,7 @@
 <translation id="1038462104119736705">За Linux е препоръчително да разполагате с поне <ph name="INSTALL_SIZE" /> свободно място. За да увеличите свободното място, изтрийте файлове от устройството.</translation>
 <translation id="1038643060055067718">Редове:</translation>
 <translation id="1039337018183941703">Невалиден или повреден файл</translation>
+<translation id="1040761927998636252">Отметка без име за <ph name="URL" /></translation>
 <translation id="1041175011127912238">Страницата не реагира</translation>
 <translation id="1041263367839475438">Налични устройства</translation>
 <translation id="1042174272890264476">Компютърът ви също се предлага с библиотеката RLZ на <ph name="SHORT_PRODUCT_NAME" />, която е вградена. Тя задава неуникален и непозволяващ лично идентифициране маркер за измерване на търсенията и използването на <ph name="SHORT_PRODUCT_NAME" />, стимулирани от определена промоционална кампания. Тези етикети понякога се показват в заявките за търсене с Google в <ph name="PRODUCT_NAME" />.</translation>
@@ -4964,6 +4965,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5338503421962489998">Локално хранилище</translation>
 <translation id="5339031667684712858">Премахнати от вас сайтове</translation>
 <translation id="5340638867532133571">Разрешаване на сайтовете да инсталират приложения за обработване на плащания (препоръчително)</translation>
+<translation id="5340787663756381836">&amp;Намиране и редактиране</translation>
 <translation id="5341793073192892252">Следните „бисквитки“ бяха блокирани („бисквитките“ на трети страни се блокират без изключение)</translation>
 <translation id="5342091991439452114">ПИН кодът трябва да съдържа поне <ph name="MINIMUM" /> цифри</translation>
 <translation id="5344036115151554031">Linux се възстановява</translation>
@@ -9357,6 +9359,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="939401694733344652">Понастоящем тези профили не се използват с приложения за Android. Ако изберете профил, който да се ползва с това приложение за Android, той ще може да се използва и с други такива приложения. Имате възможност да промените достъпа до дадено приложение за Android от <ph name="LINK_BEGIN" />Настройки &gt; Профили<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Въведете пропуск</translation>
 <translation id="939736085109172342">Нова папка</translation>
+<translation id="940212040923880623">&amp;Намиране и редактиране</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> споделя раздел в Chrome и звук.</translation>
 <translation id="944799160843436808">При настройването на Steam на Chromebook възникна проблем</translation>
 <translation id="945522503751344254">Изпращане на отзиви</translation>

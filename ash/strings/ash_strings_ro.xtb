@@ -148,6 +148,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1651914502370159744">Deschide pagina Istoric</translation>
 <translation id="1654477262762802994">Începe o interogare vocală</translation>
 <translation id="1668469839109562275">Rețea VPN încorporată</translation>
+<translation id="1675844249244994876">Actualizează fereastra corectă</translation>
 <translation id="1677472565718498478">Timp rămas: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Opțiunea <ph name="FEATURE_NAME" /> nu s-a conectat.</translation>
 <translation id="1677582821739292812">Cineva se uită la ecranul tău</translation>
@@ -848,6 +849,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="493076006037866439">Micșorează ecranul</translation>
 <translation id="4936329710968938986">Toți, dezactivat</translation>
 <translation id="4938176435186993759">Ascunde toate sugestiile</translation>
+<translation id="4943007472417128747">Hotspotul a fost dezactivat pentru a folosi conexiunea Wi-Fi. Pentru a folosi hotspotul, dezactivează conexiunea Wi-Fi.</translation>
 <translation id="4945196315133970626">Dezactivează notificările</translation>
 <translation id="4946376291507881335">Capturează</translation>
 <translation id="495046168593986294">Derulează în sus</translation>
@@ -1392,6 +1394,7 @@ Instalare nouă</translation>
 Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivului din nou.</translation>
 <translation id="7526573455193969409">Este posibil ca rețeaua să fie monitorizată</translation>
 <translation id="7536035074519304529">Adresă IP: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Actualizează fereastra din stânga</translation>
 <translation id="7543399541175347147">Aplicațiile Linux și ferestrele incognito nu sunt acceptate. Alte aplicații se vor salva.</translation>
 <translation id="7544300628205093162">Retroiluminarea tastaturii este activată</translation>
 <translation id="7548434653388805669">Este timpul pentru culcare</translation>
@@ -1472,6 +1475,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7893503627044934815">Nu doresc să se afișeze acest fișier</translation>
 <translation id="7895348134893321514">Manager de clipboard</translation>
 <translation id="7897375687985782769">Ai apăsat comanda rapidă de la tastatură pentru rotirea ecranului. Vrei să rotești ecranul?</translation>
+<translation id="7901190436359881020">Schimbă ferestrele</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Atinge senzorul de amprentă</translation>
 <translation id="7904094684485781019">Administratorul acestui cont a dezactivat conectarea multiplă.</translation>

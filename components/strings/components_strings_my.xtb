@@ -120,7 +120,6 @@
 <translation id="1257286744552378071">သင့်အဖွဲ့အစည်းက စီမံခန့်ခွဲခြင်းမရှိသည့် ဝဘ်ဆိုက်တွင် သင်၏ စကားဝှက်ကို ထည့်ထားပါသည်။ သင့်အကောင့်ကို ကာကွယ်ရန် အခြားအက်ပ်နှင့် ဝဘ်ဆိုက်များတွင် သင့်စကားဝှက်ကို ပြန်မသုံးပါနှင့်။</translation>
 <translation id="1257553931232494454">ဇူးမ်အဆင့်များ</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome ဆက်တင်များ စီမံရန် ‘တဘ်ခလုတ်’ ပြီးနောက် Enter နှိပ်ပါ</translation>
-<translation id="1263231323834454256">ဖတ်ရန် စာရင်း</translation>
 <translation id="1264309058268477500">အရန်</translation>
 <translation id="1264974993859112054">အားကစား</translation>
 <translation id="1266469291454105242">စက်လော့ခ်ဖွင့်ခြင်း</translation>
@@ -251,7 +250,6 @@
 <translation id="1529789484829130889">ဗန်း ၈</translation>
 <translation id="1530707389502320859">သင်ဝင်ကြည့်လိုသော ဝဘ်ဆိုက်က အတုဖြစ်ပုံရသည်။ URL တွင် သေးငယ်ပြီး မြင်ရန်ခက်ခဲသော အပြောင်းအလဲများ ပြုလုပ်ခြင်းဖြင့် တိုက်ခိုက်သူများက တစ်ခါတစ်ရံ ဝဘ်ဆိုက်များကို ပုံတူပြုလုပ်ပါသည်။</translation>
 <translation id="1532118530259321453">ဤစာမျက်နှာက ဆိုထားသည်မှာ</translation>
-<translation id="153384715582417236">ယခုအတွက်တော့ ဒီလောက်ပါပဲ</translation>
 <translation id="1536390784834419204">စာမျက်နှာကို ဘာသာပြန်ရန်</translation>
 <translation id="1539840569003678498">အစီရင်ခံစာ ပို့ပြီးပြီ-</translation>
 <translation id="1549470594296187301">ဤလုပ်ဆောင်ချက်အား ပြုလုပ်နိုင်ရန် JavaScript အား ဖွင့်ထားရမည်ဖြစ်၏။</translation>
@@ -348,7 +346,6 @@
 <translation id="1745880797583122200">သင်၏ဘရောင်ဇာကို စီမံခန့်ခွဲထားသည်</translation>
 <translation id="1746113442205726301">ပုံဒေါင်လိုက် အရွှေ့</translation>
 <translation id="1746531169546376413">၀ ဒီဂရီ</translation>
-<translation id="17513872634828108">တဲဘ်များ ဖွင့်ရန်</translation>
 <translation id="1752021286346845558">စာတိုက်ပုံး ၈</translation>
 <translation id="1753068535428855445">ချိန်းတွေ့ခြင်းနှင့် ပုဂ္ဂိုလ်ရေးရာများ</translation>
 <translation id="1753706481035618306">စာမျက်နှာ နံပါတ်</translation>
@@ -361,7 +358,6 @@
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />ဝင်းဒိုးကွန်ရက်ပြဿနာရှာဖွေမှုကို ပြုလုပ်ကြည့်ပါ<ph name="END_LINK" />။</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium ရှိ ရုပ်ဖျက်မုဒ်အကြောင်း ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1787142507584202372">သင်ဖွင့်ထားသည့်တဘ်များ ဤနေရာတွင် ပေါ်ပါမည်</translation>
 <translation id="1791429645902722292">Google ကစမတ်သော့ခတ်</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ သင်၏ Google Account တွင် သင့်အချက်အလက်၊ ပုဂ္ဂိုလ်ရေးနှင့် လုံခြုံရေးဆိုင်ရာများကို စီမံရန် ‘တဘ်’ နှိပ်ပြီးနောက် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ လုပ်ဆောင်ချက် အများအပြား ရရှိနိုင်သည်၊ ၎င်းတို့ကိုပတ်ကြည့်ရန် Tab နှိပ်ပါ</translation>
@@ -369,6 +365,7 @@
 <translation id="1801812870656502108">ပကတိအသွင်ကတ် အသေးစိတ်</translation>
 <translation id="1803020234906945288">ကျန်းမာသော စားသောက်မှုပုံစံ</translation>
 <translation id="1803351196216024260">သင့်မိုက်ခရိုဖုန်းသုံးရန် ခွင့်တောင်းနိုင်သည်</translation>
+<translation id="1806174020048213474">ဤအက်ပ်က Wi-Fi အထောက်အထားများ ထည့်သွင်းရန် ခွင့်ပြုချက်တောင်းဆိုနေသည်။ စနစ်ထည့်သွင်းပြီးနောက် သင်၏ <ph name="DEVICE_TYPE" /> သည် ပါဝင်သည့် Wi-Fi ကွန်ရက်များကို အလိုအလျောက်ချိတ်ဆက်မည်။ ဤအထောက်အထားများဖယ်ရှားရန် အက်ပ်ကို ဖယ်ရှားပါ။</translation>
 <translation id="1807246157184219062">အလင်း</translation>
 <translation id="1807528111851433570">အစ စာမျက်နှာ</translation>
 <translation id="180991881384371158">သင့်ကတ်၏ နောက်ခြမ်းတွင် CVC ရှိသည်။ ၎င်းသည် လက်မှတ်အကွက်၏ ညာဘက်ထိပ်ရှိ ဂဏန်း ၃ လုံးပါကုဒ် ဖြစ်သည်။</translation>
@@ -671,7 +668,6 @@
 <translation id="257674075312929031">အုပ်စု</translation>
 <translation id="2576880857912732701">လုံခြုံရေးဆက်တင်များ စီမံရန် ခလုတ်၊ Chrome ဆက်တင်များတွင် သင်၏ ‘လုံခြုံစွာဖွင့်ကြည့်ခြင်း’ နှင့် အခြားအရာများကို စီမံရန် Enter နှိပ်ပါ</translation>
 <translation id="2586657967955657006">ကလစ်ဘုတ်</translation>
-<translation id="2587730715158995865"><ph name="ARTICLE_PUBLISHER" /> မှ။ ၎င်းနှင့် အခြားသတင်း <ph name="OTHER_ARTICLE_COUNT" /> ပုဒ်ကို ဖတ်ပါ။</translation>
 <translation id="2587841377698384444">လမ်းညွှန် API ID-</translation>
 <translation id="2594318783181750337">အမြန် ဝဘ်မြင်ကွင်း-</translation>
 <translation id="2595719060046994702">ဤကိရိယာနှင့် အကောင့်ကို ကုမ္ပဏီ သို့မဟုတ် အခြားအဖွဲ့အစည်းက စီမံခန့်ခွဲထားခြင်း မရှိပါ။</translation>
@@ -1342,6 +1338,7 @@
 <translation id="4270541775497538019">စီထည့်သည့်ပုံး ၆</translation>
 <translation id="4274173425554582601">ကွန်ပျူတာနှင့် အီလက်ထရောနစ်ပစ္စည်းများ</translation>
 <translation id="4275830172053184480">သင့်စက်ပစ္စည်းကို ပြန်လည် အစပြုပါ</translation>
+<translation id="4276974990916607331">မလိုပါ</translation>
 <translation id="4277028893293644418">စကားဝှက် ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="4277937682389409325">ဒေသတွင်းလိပ်စာ</translation>
 <translation id="4278390842282768270">ခွင့်ပြုထား</translation>
@@ -1665,7 +1662,6 @@
 <translation id="5045550434625856497">စကားဝှက် မမှန်ပါ</translation>
 <translation id="5051305769747448211">တိုက်ရိုက်လွှင့် ဟာသ</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{‘အနီးတစ်ဝိုက် မျှဝေခြင်း’ သုံးပြီး ဤဖိုင်ကိုပို့ရန် သင်၏စက်တွင် နေရာလွတ် (<ph name="DISK_SPACE_SIZE" />) ပြုလုပ်ပါ}other{‘အနီးတစ်ဝိုက် မျှဝေခြင်း’ သုံးပြီး ဤဖိုင်များကိုပို့ရန် သင်၏စက်တွင် နေရာလွတ် (<ph name="DISK_SPACE_SIZE" />) ပြုလုပ်ပါ}}</translation>
-<translation id="5056549851600133418">သင့်အတွက်ဆောင်းပါးများ</translation>
 <translation id="5060483733937416656"><ph name="PROVIDER_ORIGIN" /> သုံးသည့် ဝဘ်ဆိုက်များတွင် Windows Hello ဖြင့် အတည်ပြုရန် သင်ရွေးထားသည်။ သင့်ငွေပေးချေနည်းလမ်း အချက်အလက်တွေကို ဤပံ့ပိုးသူက သိမ်းထားနိုင်ပြီး ၎င်းတို့ကို <ph name="LINK_TEXT" />နိုင်ပါသည်။</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> ကို ဆိုလိုခြင်းဖြစ်ပါသလား။</translation>
 <translation id="5066056036849835175">ပုံနှိပ်ထုတ်ယူမှု မှတ်တမ်း</translation>
@@ -1703,6 +1699,7 @@
 <translation id="5129534298163637277">အတည်ပြုခြင်း ဒိုင်ယာလော့</translation>
 <translation id="5135404736266831032">လိပ်စာများကို စီမံရန်...</translation>
 <translation id="5136841603454277753">မှန်ကန်သောကုဒ် ထည့်ပါ</translation>
+<translation id="5137761395480718572">ဤအက်ပ်က Wi-Fi အထောက်အထားများ ထည့်သွင်းရန် ခွင့်ပြုချက်တောင်းဆိုနေသည်။ စနစ်ထည့်သွင်းပြီးနောက် သင်၏ <ph name="DEVICE_TYPE" /> သည် ပါဝင်သည့် Wi-Fi ကွန်ရက်များကို အလိုအလျောက်ချိတ်ဆက်မည်။ ဤအထောက်အထားများဖယ်ရှားရန် အက်ပ်ကို ဖယ်ရှားပါ။<ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">ပကတိအသွင်ကတ်ကို ယခု မရနိုင်ပါ။ သင်၏ဘဏ်ကို ဆက်သွယ်ပါ</translation>
 <translation id="5138227688689900538">လျှော့ပြရန်</translation>
 <translation id="5145883236150621069">ပေါ်လစီတုံ့ပြန်မှုတွင် အမှားကုဒ်ရှိသည်။</translation>
@@ -1759,6 +1756,7 @@
 <translation id="5273881944177595304">ဝဘ်အက်ပ်နှင့် အွန်လိုင်းတူးလ်များ</translation>
 <translation id="5274025349362408263">စာအုပ် စာပေ</translation>
 <translation id="5279286380302340275">ဒေါင်းလုဒ်များစီမံရန်</translation>
+<translation id="5279453600310613955">မလိုပါ</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">မှတ်တမ်း သတ်မှတ်ချက်များ</translation>
 <translation id="528468243742722775">အဆုံး</translation>
@@ -1862,7 +1860,6 @@
 <translation id="5541086400771735334">စာတိုက်ပုံး ၇</translation>
 <translation id="5541546772353173584">အီးမေးလ် ထည့်ပါ</translation>
 <translation id="5543722831081909240">၁၈၀ ဒီဂရီ</translation>
-<translation id="5545756402275714221">သင့်အတွက် သတင်းဆောင်းပါးများ</translation>
 <translation id="5551890439174915351">၁၀၀ x ၂၀၀ မီလီမီတာ</translation>
 <translation id="5552137475244467770">သင်၏စကားဝှက်များကို အွန်လိုင်းတွင်ထုတ်ဝေထားသော စာရင်းများနှင့်တိုက်၍ Chrome က အခါအားလျော်စွာ စစ်ဆေးပါသည်။ ဤသို့စစ်ဆေးသည့်အခါ သင်၏စကားဝှက်နှင့် အသုံးပြုသူအမည်များကို အသွင်ဝှက်ထားသောကြောင့် Google အပါအဝင် မည်သူမျှ ၎င်းတို့ကို ဖတ်၍မရပါ။</translation>
 <translation id="5556459405103347317">ပြန်တင်ရန်</translation>
@@ -2143,14 +2140,12 @@
 <translation id="6266934640124581640">စိမ်းပြာဖျော့</translation>
 <translation id="6272088941196661550">သင်၏ Chrome မှတ်တမ်းရှိ သက်ဆိုင်ရာလုပ်ဆောင်ချက်ကို ကြည့်ရန် သင့်ခရီးစဉ်ကို ဆက်လုပ်ပါ</translation>
 <translation id="6272383483618007430">Google Update</translation>
-<translation id="6276112860590028508">ဖတ်ရန်စာရင်းမှ စာမျက်နှာများကို ဤနေရာတွင် တွေ့ရပါမည်</translation>
 <translation id="627746635834430766">နောင်တွင် မြန်ဆန်စွာပေးချေနိုင်ရန် သင်၏ကတ်နှင့် ငွေတောင်းခံလွှာပို့သော လိပ်စာကို သင့် Google အကောင့်တွင် သိမ်းပါ။</translation>
 <translation id="6279183038361895380">သင်၏ ညွှန်းမြားကို ပြပေးရန် |<ph name="ACCELERATOR" />ကို နှိပ်ပါ</translation>
 <translation id="6280223929691119688">ဤလိပ်စာသို့ ပို့၍မရပါ။ အခြားလိပ်စာတစ်ခုကို ရွေးပါ။</translation>
 <translation id="6284292079994426700">၂၆ x ၃၈ လက်မ</translation>
 <translation id="6285507000506177184">Chrome တွင် ဒေါင်းလုဒ်များ စီမံရန်ခလုတ်၊ Chrome တွင် ဒေါင်းလုဒ်လုပ်ခဲ့သည့်ဖိုင်များကို စီမံရန် Enter နှိပ်ပါ</translation>
 <translation id="6289939620939689042">စာမျက်နှာ အရောင်</translation>
-<translation id="6290238015253830360">သင်အကြံပြုထားသည့် ဆောင်းပါးများ ဤနေရာတွင် ပေါ်ပါမည်</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC-</translation>
 <translation id="6295855836753816081">သိမ်းဆည်းနေသည်...</translation>
@@ -2253,6 +2248,7 @@
 <translation id="6529173248185917884">ခုနှစ်ခုမြောက်အလိပ်</translation>
 <translation id="6529602333819889595">&amp;ဖျက်ရန်ကို ပြန်လုပ်ရန်</translation>
 <translation id="6535751101619004418">ငွေကြေးနှင့် နိုင်ငံခြားငွေလဲလှယ်ခြင်း</translation>
+<translation id="6536221421038631327">သင်၏ <ph name="DEVICE_TYPE" /> မှ ‘ဖြတ်သန်းခွင့်ပြုမှတ်’ စာရင်းသွင်းမှုကို ဖယ်ရှားခြင်းဖြင့် ဆက်စပ်ကွန်ရက်များကို ဖယ်ရှားပါမည်။ သင်၏စာရင်းသွင်းမှုအစီအစဉ်ကို အပြောင်းအလဲပြုလုပ်ရန် “<ph name="FRIENDLY_NAME" />” ထံသို့ ဆက်သွယ်ပါ။ <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">ဝိုင်းဝန်း ရင်းနှီးမြှုပ်နှံငွေ</translation>
 <translation id="6545864417968258051">ဘလူးတုသ် ရှာဖွေခြင်း</translation>
 <translation id="6547208576736763147">ဘယ်ဘက်တွင် နှစ်ချက်ဖောက်ရန်</translation>
@@ -2751,7 +2747,6 @@
 <translation id="7696089921647603491">ဂန္ထဝင်ရော့ခ်နှင့် သီချင်းဟောင်းများ</translation>
 <translation id="769721561045429135">လက်ရှိတွင် ဤစက်ပစ္စည်းပေါ်၌ အသုံးပြုနိုင်သည့် ကတ်များသာရှိပါသည်။ ကတ်များ ပြန်စစ်ဆေးရန် 'ရှေ့ဆက်ရန်' ကိုနှိပ်ပါ။</translation>
 <translation id="7698864304447945242">AR အတွက် Google Play ဝန်ဆောင်မှုများကို အပ်ဒိတ်လုပ်မလား။</translation>
-<translation id="7699293099605015246">သတင်းဆောင်းပါးများကို လောလောဆယ် မရနိုင်သေးပါ</translation>
 <translation id="7701040980221191251">မရှိ</translation>
 <translation id="7701544340847569275">အပ်ဒိတ်ပြီးသွားပြီး အမှားများပါဝင်သည်</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /><ph name="SITE" /> သို့ ဆက်လုပ်ရန် (မလုံခြုံ)<ph name="END_LINK" /></translation>
@@ -3351,6 +3346,7 @@
 <translation id="9219103736887031265">ပုံများ</translation>
 <translation id="922152298093051471">Chrome ကို စိတ်ကြိုက်ပြင်ရန်</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385"><ph name="APP_NAME" /> အက်ပ်ကို Wi-Fi ကွန်ရက်များ စနစ်ထည့်သွင်းခွင့်ပြုမလား။</translation>
 <translation id="936602727769022409">သင်၏ Google အကောင့်ကို အသုံးပြုခွင့် ဆုံးရှုံးနိုင်သည်။ သင့်စကားဝှက်ကို ယခုပင်ပြောင်းရန် Chromium က အကြံပြုပါသည်။ သင့်အား လက်မှတ်ထိုးဝင်ခိုင်းပါမည်။</translation>
 <translation id="937457230470581909">တိရစ္ဆာန်ရုံ၊ ငါးပြတိုက်နှင့် ထိန်းသိမ်းထားရှိမှုများ</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />အသုံးပြုသည့် ဒေတာ-<ph name="END_BOLD" /> သင်၏ ကြော်ငြာအကြောင်းအရာများကို မကြာသေးမီက ကြည့်ရှုမှုမှတ်တမ်းအပေါ် အခြေခံထားသည်။ ၎င်းသည် ဤစက်တွင် Chrome ဖြင့် သင်ဝင်ကြည့်သည့်ဝဘ်ဆိုက်များ၏ စာရင်းဖြစ်သည်။</translation>

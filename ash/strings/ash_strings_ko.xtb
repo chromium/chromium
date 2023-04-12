@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C 기기(전면 포트)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> 화면이 <ph name="RESOLUTION" />(<ph name="REFRESH_RATE" />Hz) 해상도로 변경되었습니다. 변경사항을 적용하려면 확인을 클릭하세요. <ph name="TIMEOUT_SECONDS" /> 후 이전 설정으로 복원됩니다.</translation>
 <translation id="1013923882670373915">블루투스 기기 '<ph name="DEVICE_NAME" />'에서 페어링 허가를 요청합니다. 기기에서 다음 PIN 코드를 입력하세요. <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">이를 통해 위치 정보 액세스 권한이 있고 ChromeOS를 지원하는 <ph name="APP_NAME" /> 및 모든 앱과 웹사이트에서 Wi-Fi 및 모바일 네트워크 위치를 사용할 수 있습니다.</translation>
 <translation id="1017556409696559990">Chrome에 뒤로 기록이 없는 경우 상단 창 최소화</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> 저장</translation>
 <translation id="1032891413405719768">스타일러스 배터리 부족</translation>
@@ -147,6 +148,7 @@
 <translation id="1651914502370159744">방문 기록 페이지 열기</translation>
 <translation id="1654477262762802994">음성 검색 시작</translation>
 <translation id="1668469839109562275">기본 제공 VPN</translation>
+<translation id="1675844249244994876">오른쪽 창 업데이트</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> 남음</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" />이 연결되어 있지 않습니다.</translation>
 <translation id="1677582821739292812">누가 내 화면을 보고 있습니다.</translation>
@@ -191,6 +193,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">이더넷: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">위치 액세스 사용 설정</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> 고정 취소됨</translation>
 <translation id="1838895407229022812">야간 조명이 꺼졌습니다.</translation>
 <translation id="1854180393107901205">전송 중지</translation>
@@ -468,6 +471,7 @@
 <translation id="3255483164551725916">무엇을 할 수 있어?</translation>
 <translation id="3256109297135787951">실행기에 있는 항목에서 강조표시를 삭제합니다.</translation>
 <translation id="3260969790895726815">음성이 로컬에서 처리되고 음성기록이 오프라인으로 작동하지만 일부 음성 명령은 작동하지 않습니다.</translation>
+<translation id="3265032511221679826">정확한 위치 액세스를 사용 설정하시겠습니까?</translation>
 <translation id="3269597722229482060">마우스 오른쪽 버튼 클릭</translation>
 <translation id="3289364673986435196">전원 메뉴</translation>
 <translation id="3289544412142055976">Linux 앱은 현재 지원되지 않습니다.</translation>
@@ -578,6 +582,7 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> 관리 사용자</translation>
 <translation id="3666266999138159418">스와이프하여 플로팅 창 숨기기</translation>
 <translation id="367531336287639526">주소 표시줄 왼쪽에 있는 첫 번째 아이콘 선택</translation>
+<translation id="3677931086890821290">이를 통해 위치 정보 액세스 권한이 있고 ChromeOS를 지원하는 모든 앱과 웹사이트에서 Wi-Fi 및 모바일 네트워크 위치를 사용할 수 있습니다.</translation>
 <translation id="3679827876008292680">창의 마지막 탭으로 이동</translation>
 <translation id="36813544980941320">Wi-Fi 네트워크가 휴대전화와 <ph name="DEVICE_NAME" /> 간에 공유됩니다.</translation>
 <translation id="3694122362646626770">웹사이트</translation>
@@ -844,6 +849,7 @@
 <translation id="493076006037866439">화면 축소</translation>
 <translation id="4936329710968938986">모든 사용자, 사용 안 함</translation>
 <translation id="4938176435186993759">모든 추천 숨기기</translation>
+<translation id="4943007472417128747">Wi-Fi를 사용하기 위해 핫스팟이 사용 중지되었습니다. 핫스팟을 사용하려면 Wi-Fi를 사용 중지하세요.</translation>
 <translation id="4945196315133970626">알림 사용 중지</translation>
 <translation id="4946376291507881335">캡처</translation>
 <translation id="495046168593986294">위로 스크롤</translation>
@@ -1388,6 +1394,7 @@
 기기를 종료하려면 기기의 전원 버튼을 다시 길게 누르세요.</translation>
 <translation id="7526573455193969409">네트워크가 모니터링될 수 있음</translation>
 <translation id="7536035074519304529">IP 주소: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">왼쪽 창 업데이트</translation>
 <translation id="7543399541175347147">Linux 앱 및 시크릿 창은 현재 지원되지 않습니다. 다른 앱은 저장됩니다.</translation>
 <translation id="7544300628205093162">키보드 백라이트 켜짐</translation>
 <translation id="7548434653388805669">취침 시간</translation>
@@ -1468,6 +1475,7 @@
 <translation id="7893503627044934815">파일을 표시하지 않음</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">화면 회전 단축키를 누르셨습니다. 화면을 회전하시겠습니까?</translation>
+<translation id="7901190436359881020">창 교체</translation>
 <translation id="7901405293566323524">휴대전화 허브</translation>
 <translation id="7902625623987030061">지문 센서를 터치하세요.</translation>
 <translation id="7904094684485781019">이 계정의 관리자가 멀티 로그인을 허용하지 않습니다.</translation>
@@ -1743,6 +1751,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" />의 해상도가 <ph name="RESOLUTION" />(으)로 변경되었습니다. 변경사항을 유지하려면 확인을 클릭하세요. <ph name="TIMEOUT_SECONDS" /> 후 이전 설정으로 복원됩니다.</translation>
 <translation id="9201044636667689546"><ph name="NAME" /> 기기를 Chromebook에 연결합니다.</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, 관리자가 관리함</translation>
+<translation id="9207682216934703221">이를 통해 위치 정보 액세스 권한이 있고 ChromeOS를 지원하는 <ph name="APP_NAME" />, <ph name="APP2_NAME" />, 모든 앱과 웹사이트에서 Wi-Fi 및 모바일 네트워크 위치를 사용할 수 있습니다.</translation>
 <translation id="9210037371811586452">통합 바탕화면 모드 종료 중</translation>
 <translation id="9211490828691860325">모든 데스크</translation>
 <translation id="9211681782751733685">배터리 충전이 완료될 때까지 남은 시간은 <ph name="TIME_REMAINING" />입니다.</translation>

@@ -4947,6 +4947,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5338503421962489998">Lokaler Speicher</translation>
 <translation id="5339031667684712858">Entfernte Websites</translation>
 <translation id="5340638867532133571">Installation von Zahlungs-Handlern auf Websites zulassen (empfohlen)</translation>
+<translation id="5340787663756381836">&amp;Suchen und bearbeiten</translation>
 <translation id="5341793073192892252">Die folgenden Cookies wurden blockiert (Cookies von Drittanbietern werden ausnahmslos blockiert)</translation>
 <translation id="5342091991439452114">PIN muss mindestens <ph name="MINIMUM" /> Ziffern umfassen</translation>
 <translation id="5344036115151554031">Linux wird wiederhergestellt</translation>
@@ -9336,6 +9337,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="939401694733344652">Diese Konten werden momentan nicht mit Android-Apps verwendet. Wenn du ein Konto für die Verwendung mit dieser Android-App auswählst, kann es auch mit anderen Android-Apps verwendet werden. Du kannst den Zugriff auf Android-Apps unter <ph name="LINK_BEGIN" />„Einstellungen“ &gt; „Konten“<ph name="LINK_END" /> anpassen.</translation>
 <translation id="939598580284253335">Passphrase eingeben</translation>
 <translation id="939736085109172342">Neuer Ordner</translation>
+<translation id="940212040923880623">&amp;Suchen und bearbeiten</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> hat einen Chrome-Tab und Audio freigegeben.</translation>
 <translation id="944799160843436808">Beim Einrichten von Steam auf Chromebook ist ein Problem aufgetreten</translation>
 <translation id="945522503751344254">Feedback geben</translation>

@@ -4967,6 +4967,7 @@
 <translation id="5338503421962489998">स्थानीय मेमोरी</translation>
 <translation id="5339031667684712858">हटाई गई साइटें</translation>
 <translation id="5340638867532133571">साइटों को भुगतान हैंडलर इंस्टॉल करने की अनुमति दें (सुझाव दिया जाता है)</translation>
+<translation id="5340787663756381836">&amp;ढूंढें और बदलाव करें</translation>
 <translation id="5341793073192892252">इन कुकी को ब्लॉक कर दिया गया था (तृतीय पक्ष की कुकी बिना किसी अपवाद के ब्लॉक की जा रही हैं)</translation>
 <translation id="5342091991439452114">पिन कम से कम <ph name="MINIMUM" /> अंकों का होना चाहिए</translation>
 <translation id="5344036115151554031">Linux को पहले जैसा किया जा रहा है</translation>
@@ -9360,6 +9361,7 @@
 <translation id="939401694733344652">फ़िलहाल, इन खातों का इस्तेमाल Android ऐप्लिकेशन के साथ नहीं किया जा रहा है. अगर किसी खाते को इस Android ऐप्लिकेशन के साथ इस्तेमाल करने के लिए चुना जाता है, तो उस खाते का इस्तेमाल दूसरे Android ऐप्लिकेशन के साथ भी किया जा सकता है. <ph name="LINK_BEGIN" />सेटिंग &gt; खाते<ph name="LINK_END" /> में जाकर तय किया जा सकता है कि Android ऐप्लिकेशन किसी खाते का इस्तेमाल करे या नहीं.</translation>
 <translation id="939598580284253335">'पासफ़्रेज़' दर्ज करें</translation>
 <translation id="939736085109172342">नया फ़ोल्डर</translation>
+<translation id="940212040923880623">&amp;ढूंढें और बदलाव करें</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> एक Chrome टैब और ऑडियो शेयर कर रहा है.</translation>
 <translation id="944799160843436808">Chromebook पर Steam को सेट अप करते समय कोई गड़बड़ी हुई</translation>
 <translation id="945522503751344254">फ़ीडबैक भेजें</translation>

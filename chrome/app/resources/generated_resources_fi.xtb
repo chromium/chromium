@@ -4105,6 +4105,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4545759655004063573">Ei voi tallentaa, sillä käyttöluvat eivät riitä. Tallenna muuhun sijaintiin.</translation>
 <translation id="4546308221697447294">Selaa nopeasti Google Chromella.</translation>
 <translation id="4546345569117159016">Kakkospainike</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> haluaa käyttää tätä laajennusta:</translation>
 <translation id="4546692474302123343">Google Assistantin äänisyöte</translation>
 <translation id="4547659257713117923">Ei välilehtiä muista laitteista</translation>
 <translation id="4547672827276975204">Aseta automaattisesti</translation>
@@ -4962,6 +4963,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5338503421962489998">Paikallinen tallennustila</translation>
 <translation id="5339031667684712858">Poistamasi sivustot</translation>
 <translation id="5340638867532133571">Salli sivustojen asentaa maksujen käsittelijöitä (suositus)</translation>
+<translation id="5340787663756381836">&amp;Etsi ja muokkaa</translation>
 <translation id="5341793073192892252">Seuraavat evästeet estettiin (kolmannen osapuolen evästeet estetään poikkeuksetta)</translation>
 <translation id="5342091991439452114">PIN-koodissa on oltava vähintään <ph name="MINIMUM" /> numeroa.</translation>
 <translation id="5344036115151554031">Palautetaan Linuxia</translation>
@@ -9353,6 +9355,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="939401694733344652">Näitä tilejä ei käytetä Android-sovellusten kanssa tällä hetkellä. Jos valitset Android-sovelluksen kanssa käytettävän tilin, sitä voidaan käyttää myös muilla Android-sovelluksilla. Voit muokata Android-sovelluksen pääsyä valitsemalla <ph name="LINK_BEGIN" />Asetukset &gt; Tilit<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Anna tunnuslause</translation>
 <translation id="939736085109172342">Uusi kansio</translation>
+<translation id="940212040923880623">&amp;Etsi ja muokkaa</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> jakaa Chrome-välilehden ja ääntä.</translation>
 <translation id="944799160843436808">Steamin käyttöönotto Chromebookilla ei onnistunut</translation>
 <translation id="945522503751344254">Lähetä palautetta</translation>

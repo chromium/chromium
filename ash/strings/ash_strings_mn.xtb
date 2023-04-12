@@ -147,6 +147,7 @@
 <translation id="1651914502370159744">Түүхийн хуудсыг нээх</translation>
 <translation id="1654477262762802994">Дуут асуулга эхлүүлэх</translation>
 <translation id="1668469839109562275">Бүрэлдэхүүн VPN</translation>
+<translation id="1675844249244994876">Баруун талын цонхыг шинэчлэх</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> үлдсэн</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> холбогдоогүй.</translation>
 <translation id="1677582821739292812">Хэн нэгэн дэлгэц рүү тань харж байна</translation>
@@ -845,6 +846,7 @@
 <translation id="493076006037866439">Дэлгэцийг жижгэрүүлэх</translation>
 <translation id="4936329710968938986">Бүгд, унтраалттай</translation>
 <translation id="4938176435186993759">Бүх зөвлөмжийг нуух</translation>
+<translation id="4943007472417128747">Wi-Fi-г ашиглахын тулд сүлжээний цэгийг унтраасан. Сүлжээний цэгийг ашиглахын тулд Wi-Fi-г унтраана уу.</translation>
 <translation id="4945196315133970626">Мэдэгдлийг унтраах</translation>
 <translation id="4946376291507881335">Зураг авах</translation>
 <translation id="495046168593986294">Дээш гүйлгэх</translation>
@@ -1389,6 +1391,7 @@
 Төхөөрөмжийг унтраахын тулд төхөөрөмжийн асаах/унтраах товчийг дахин удаан дарна уу.</translation>
 <translation id="7526573455193969409">Сүлжээг хянаж байж болзошгүй</translation>
 <translation id="7536035074519304529">IP хаяг: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Зүүн талын цонхыг шинэчлэх</translation>
 <translation id="7543399541175347147">Linux аппууд болон Нууцлалтай цонхнуудыг одоогоор дэмждэггүй. Бусад аппыг хадгална.</translation>
 <translation id="7544300628205093162">Гарын арын гэрэл асаалттай байна</translation>
 <translation id="7548434653388805669">Унтах цаг</translation>
@@ -1469,6 +1472,7 @@
 <translation id="7893503627044934815">Энэ файлыг харахыг хүсэхгүй байна</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Та дэлгэц эргүүлэх товчлуурын шууд холбоосыг дарсан байна. Дэлгэцийг эргүүлэх үү?</translation>
+<translation id="7901190436359881020">Цонхнуудыг солих</translation>
 <translation id="7901405293566323524">Утасны Hub</translation>
 <translation id="7902625623987030061">Хурууны хээ мэдрэгчид хүрнэ үү</translation>
 <translation id="7904094684485781019">Энэ бүртгэлийн админ нь олон тооны нэвтрэлтийг хэрэгсэхгүй болгосон байна.</translation>

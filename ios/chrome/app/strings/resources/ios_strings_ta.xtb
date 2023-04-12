@@ -1025,6 +1025,7 @@
 <translation id="7781011649027948662">பக்கத்தை மொழிபெயர்க்கவா?</translation>
 <translation id="7781069478569868053">புதிய தாவல் பக்கம்</translation>
 <translation id="7781829728241885113">நேற்று</translation>
+<translation id="7786246662347093005">{COUNT,plural, =1{1 நாளுக்குப் பிறகு}other{{COUNT} நாட்களுக்குப் பிறகு}}</translation>
 <translation id="778855399387580014">புதிய Chrome தாவலில் தேடலைத் தொடங்கும்.</translation>
 <translation id="7791543448312431591">சேர்</translation>
 <translation id="7807060072011926525">Google வழங்கியது</translation>
@@ -1089,6 +1090,7 @@
 <translation id="8136856065410661948">Chrome, Google Lens ஆகியவற்றில் இருந்து உங்கள் Apple Calendarரில் நிகழ்வுகளை உருவாக்க இது பயன்படுத்தப்படும்.</translation>
 <translation id="8156478151976189188">கடவுச்சொல்லை ஒத்திசைக்க முடியவில்லை</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> கணக்குகள்</translation>
+<translation id="8159358225423560600">சற்றுமுன்</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />உங்கள் சாதனங்கள்<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">பக்கத்தை மொழிபெயர்</translation>
@@ -1119,6 +1121,7 @@
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> நாட்களாகப் பயன்படுத்தப்படாத பக்கங்கள்</translation>
 <translation id="8407669440184693619">இந்தத் தளத்திற்கான கடவுச்சொற்கள் எதுவும் இல்லை</translation>
 <translation id="842017693807136194">இதன் மூலம் உள்நுழைந்துள்ளீர்கள்:</translation>
+<translation id="8423121072346537366">சற்றுமுன்</translation>
 <translation id="8425693829365242963">உங்கள் கடவுச்சொற்கள் தனித்துவமானவை</translation>
 <translation id="8428045167754449968">மாநகரம் / நகரம்</translation>
 <translation id="8428213095426709021">அமைப்புகள்</translation>

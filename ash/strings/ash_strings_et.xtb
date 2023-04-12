@@ -148,6 +148,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1651914502370159744">Lehe Ajalugu avamine</translation>
 <translation id="1654477262762802994">Häälpäringu alustamine</translation>
 <translation id="1668469839109562275">Sisseehitatud VPN</translation>
+<translation id="1675844249244994876">Värskenda paremat akent</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> tühjenemiseni</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> pole ühendatud.</translation>
 <translation id="1677582821739292812">Keegi vaatab teie ekraanikuva</translation>
@@ -849,6 +850,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="493076006037866439">Suumi ekraanil välja</translation>
 <translation id="4936329710968938986">Kõik, väljas</translation>
 <translation id="4938176435186993759">Peida kõik soovitused</translation>
+<translation id="4943007472417128747">Kuumkoht on WiFi kasutamiseks välja lülitatud. Kuumkoha kasutamiseks lülitage WiFi välja.</translation>
 <translation id="4945196315133970626">Märguannete väljalülitamine</translation>
 <translation id="4946376291507881335">Jäädvusta</translation>
 <translation id="495046168593986294">Keri üles</translation>
@@ -1393,6 +1395,7 @@ Uus installimine</translation>
 Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translation>
 <translation id="7526573455193969409">Võrku võidakse jälgida</translation>
 <translation id="7536035074519304529">IP-adress: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Värskenda vasakut akent</translation>
 <translation id="7543399541175347147">Linuxi rakendusi ja inkognito aknaid praegu ei toetata. Muud rakendused salvestatakse.</translation>
 <translation id="7544300628205093162">Klaviatuuri taustavalgus on sisse lülitatud</translation>
 <translation id="7548434653388805669">Aeg magama minna</translation>
@@ -1473,6 +1476,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7893503627044934815">Ei soovi seda faili näha</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Vajutasite ekraanikuva pööramise otseteed. Kas soovite ekraanikuva pöörata?</translation>
+<translation id="7901190436359881020">Vaheta aknad</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Puudutage sõrmejäljeandurit</translation>
 <translation id="7904094684485781019">Selle konto administraator on mitmesse kontosse sisselogimise keelanud.</translation>

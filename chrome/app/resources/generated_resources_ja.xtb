@@ -4942,6 +4942,7 @@
 <translation id="5338503421962489998">ローカル ストレージ</translation>
 <translation id="5339031667684712858">削除したサイト</translation>
 <translation id="5340638867532133571">サイトに支払いハンドラのインストールを許可する（推奨）</translation>
+<translation id="5340787663756381836">検索と編集(&amp;F)</translation>
 <translation id="5341793073192892252">以下の Cookie がブロックされました（サードパーティの Cookie は例外なくブロックされます）</translation>
 <translation id="5342091991439452114">PIN は <ph name="MINIMUM" /> 桁以上で設定してください</translation>
 <translation id="5344036115151554031">Linux を復元しています</translation>
@@ -9329,6 +9330,7 @@
 <translation id="939401694733344652">これらのアカウントは現在、Android アプリで使用されていません。この Android アプリで使用するアカウントを選択した場合、そのアカウントは他の Android アプリでも使用できるようになります。Android アプリのアクセス権限は、<ph name="LINK_BEGIN" />[設定] &gt; [アカウント]<ph name="LINK_END" /> で変更できます。</translation>
 <translation id="939598580284253335">パスフレーズを入力</translation>
 <translation id="939736085109172342">新しいフォルダ</translation>
+<translation id="940212040923880623">検索と編集(&amp;F)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> が Chrome タブと音声を共有しています。</translation>
 <translation id="944799160843436808">Steam on Chromebook のセットアップ中に問題が発生しました</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>

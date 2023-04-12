@@ -4949,6 +4949,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5338503421962489998">Almacenamento local</translation>
 <translation id="5339031667684712858">Sitios que quitaches</translation>
 <translation id="5340638867532133571">Permitir que os sitios instalen indicadores de pago (recomendado)</translation>
+<translation id="5340787663756381836">&amp;Buscar e editar</translation>
 <translation id="5341793073192892252">Bloqueáronse as seguintes cookies (estanse bloqueando as cookies de terceiros sen excepción)</translation>
 <translation id="5342091991439452114">O PIN debe ter como mínimo <ph name="MINIMUM" /> díxitos</translation>
 <translation id="5344036115151554031">Restaurando Linux</translation>
@@ -9337,6 +9338,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="939401694733344652">Neste momento, estas contas non se están usando con aplicacións para Android. Se seleccionas unha conta para usala con esta aplicación para Android, tamén se pode utilizar con outras aplicacións para Android. Podes cambiar o acceso ás aplicacións para Android en <ph name="LINK_BEGIN" />Configuración &gt; Contas<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Introducir frase de acceso</translation>
 <translation id="939736085109172342">Cartafol novo</translation>
+<translation id="940212040923880623">&amp;Buscar e editar</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> está compartindo audio e unha pestana de Chrome.</translation>
 <translation id="944799160843436808">Produciuse un problema ao instalar Steam en Chromebook</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>

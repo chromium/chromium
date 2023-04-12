@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Včera}few{Pred # dňami}many{Pred # dňom}other{Pred # dňami}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{pred minútou}few{pred # minútami}many{pred # minútami}other{pred # minútami}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 min}few{# min}many{# min}other{# min}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{Pred 1 dňom}few{Pred # dňami}many{Pred # dňa}other{Pred # dňami}}</translation>
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="1243314992276662751">Nahrať</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> sa nepodarilo zdieľať</translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">Zľava doprava</translation>
 <translation id="1383876407941801731">Vyhľadávanie</translation>
 <translation id="1398853756734560583">Maximalizovať</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{Pred 1 minútou}few{pred # minútami}many{pred # minúty}other{pred # minútami}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> sa nedá zdieľať</translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{Pred 1 mesiacom}few{Pred # mesiacmi}many{Pred # mesiaca}other{Pred # mesiacmi}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minúta a }few{# minúty a }many{# minúty a }other{# minút a }}</translation>
 <translation id="1643823602425662293">Upozornenie</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">Obrázok</translation>
 <translation id="4565377596337484307">Skryť heslo</translation>
 <translation id="4588090240171750605">Rolovať doprava</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{Pred 1 rokom}few{Pred # rokmi}many{Pred # roka}other{Pred # rokmi}}</translation>
 <translation id="4724120544754982507">Centrum upozornení – počet neprečítaných upozornení: <ph name="UNREAD_NOTIFICATION_COUNT" /></translation>
 <translation id="4729257764711776855">číslo</translation>
 <translation id="4746179598275229723">Rozšírenie bolo odopnuté</translation>
@@ -212,10 +216,12 @@
 <translation id="8867568208303837180">Odosiela sa...</translation>
 <translation id="8876215549894133151">Formát:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{Pred 1 hodinou}few{Pred # hodinami}many{Pred # hodiny}other{Pred # hodinami}}</translation>
 <translation id="8996630695507351249">Skontrolujte, či je zariadenie <ph name="TARGET_DEVICE_NAME" /> pripojené k internetu.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 s}few{# s}many{# s}other{# s}}</translation>
 <translation id="9059834730836941392">Zbaliť upozornenie</translation>
 <translation id="9170848237812810038">&amp;Naspäť</translation>
 <translation id="932327136139879170">Domov</translation>
 <translation id="944069440740578670">Neprečítané upozornenia</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{Pred 1 sekundou}few{pred # sekundami}many{pred # sekundy}other{pred # sekundami}}</translation>
 </translationbundle>

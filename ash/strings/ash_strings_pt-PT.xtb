@@ -147,6 +147,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1651914502370159744">Abrir a página Histórico</translation>
 <translation id="1654477262762802994">Iniciar uma consulta de voz</translation>
 <translation id="1668469839109562275">VPN incorporada</translation>
+<translation id="1675844249244994876">Atualizar a janela do lado direito</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> restante(s)</translation>
 <translation id="1677507110654891115">A funcionalidade <ph name="FEATURE_NAME" /> não está ligada.</translation>
 <translation id="1677582821739292812">Alguém está a olhar para o seu ecrã</translation>
@@ -844,6 +845,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="493076006037866439">Diminuir o zoom do ecrã</translation>
 <translation id="4936329710968938986">Todos, desativados</translation>
 <translation id="4938176435186993759">Ocultar todas as sugestões</translation>
+<translation id="4943007472417128747">A zona Wi-Fi foi desativada para usar o Wi-Fi. Para usar a zona Wi-Fi, desative o Wi-Fi.</translation>
 <translation id="4945196315133970626">Desativar notificações</translation>
 <translation id="4946376291507881335">Capturar</translation>
 <translation id="495046168593986294">Deslocar para cima</translation>
@@ -1390,6 +1392,7 @@ Nova instalação</translation>
 Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente no dispositivo.</translation>
 <translation id="7526573455193969409">A rede pode ser monitorizada</translation>
 <translation id="7536035074519304529">Endereço IP: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Atualizar a janela do lado esquerdo</translation>
 <translation id="7543399541175347147">De momento, as apps para Linux e as janelas de navegação anónima não são suportadas. As outras apps serão guardadas.</translation>
 <translation id="7544300628205093162">A retroiluminação do teclado está ativada</translation>
 <translation id="7548434653388805669">Hora de dormir</translation>
@@ -1471,6 +1474,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7893503627044934815">Não quero que este ficheiro seja mostrado</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Premiu o atalho de teclado da rotação do ecrã. Pretende rodar o ecrã?</translation>
+<translation id="7901190436359881020">Trocar as janelas</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Toque no sensor de impressões digitais.</translation>
 <translation id="7904094684485781019">O gestor desta conta removeu a permissão de início de sessão integrado.</translation>

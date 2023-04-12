@@ -14,7 +14,6 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Қойындыны топтан шығару}other{Қойындыларды топтан шығару}}</translation>
 <translation id="2277224997687551299">Топтың атауын өзгерту</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Қойындыға бетбелгі қою}other{Қойындыларға бетбелгі қою}}</translation>
-<translation id="2479148705183875116">Параметрлерге өту</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысын жию.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар қойындылар тобын жию.}}</translation>
 <translation id="2569352796411618312">Ұсыныс: <ph name="NUMBER_OF_TABS" /> қойынды біраздан бері пайдаланылмады. Олар жабылсын ба?</translation>
 <translation id="2613747923081026172">Топ құру</translation>

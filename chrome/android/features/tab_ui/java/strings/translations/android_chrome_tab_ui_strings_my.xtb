@@ -14,7 +14,6 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{တဘ် အုပ်စုဖြုတ်ရန်}other{တဘ်များ အုပ်စုဖြုတ်ရန်}}</translation>
 <translation id="2277224997687551299">အဖွဲ့အမည်ကို တည်းဖြတ်ရန်</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{တဘ်ကို လိပ်စာမှတ်ရန်}other{တဘ်များကို လိပ်စာမှတ်ရန်}}</translation>
-<translation id="2479148705183875116">'ဆက်တင်များ' သို့ သွားရန်</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> တဘ်ကို ခေါက်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခုဖြင့် တဘ်အုပ်စု လျှော့ပြပါ။}}</translation>
 <translation id="2569352796411618312">အကြံပြုချက်- သင်၏တဘ် <ph name="NUMBER_OF_TABS" /> ခုကို အခုတစ်လော အသုံးပြုမထားပါ။ ၎င်းတို့ကို ပိတ်မလား။</translation>
 <translation id="2613747923081026172">အုပ်စုဖွဲ့ရန်</translation>

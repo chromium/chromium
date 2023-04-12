@@ -14,7 +14,6 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Ophæv gruppering af fane}one{Ophæv gruppering af fane}other{Ophæv gruppering af faner}}</translation>
 <translation id="2277224997687551299">Rediger gruppenavn</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Gem fane som bogmærke}one{Gem fane som bogmærke}other{Gem faner som bogmærker}}</translation>
-<translation id="2479148705183875116">Gå til Indstillinger</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Skjul <ph name="TABS_COUNT_ONE" /> fane.}one{Skjul fanegruppe med <ph name="TABS_COUNT_MANY" /> fane.}other{Skjul fanegruppe med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="2569352796411618312">Forslag: <ph name="NUMBER_OF_TABS" /> af dine faner er ikke blevet brugt for nylig. Vil du lukke dem?</translation>
 <translation id="2613747923081026172">Opret gruppe</translation>

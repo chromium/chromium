@@ -1024,6 +1024,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7781011649027948662">Cyfieithu'r Dudalen?</translation>
 <translation id="7781069478569868053">Tudalen Tab Newydd</translation>
 <translation id="7781829728241885113">Ddoe</translation>
+<translation id="7786246662347093005">{COUNT,plural, =1{Ar ôl 1 Diwrnod}zero{Ar ôl {COUNT} Diwrnod}two{Ar ôl {COUNT} Ddiwrnod}few{Ar ôl {COUNT} Diwrnod}many{Ar ôl {COUNT} Diwrnod}other{Ar ôl {COUNT} Diwrnod}}</translation>
 <translation id="778855399387580014">Dechrau chwiliad mewn tab Chrome newydd.</translation>
 <translation id="7791543448312431591">Ychwanegu</translation>
 <translation id="7807060072011926525">Darperir gan Google</translation>
@@ -1088,6 +1089,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8136856065410661948">Bydd hwn yn cael ei ddefnyddio i greu digwyddiadau yn eich Apple Calendar o Chrome a Google Lens.</translation>
 <translation id="8156478151976189188">Nid yw Cysoni Cyfrineiriau yn Gweithio</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> o gyfrifon</translation>
+<translation id="8159358225423560600">newydd ddigwydd</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Eich dyfeisiau<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Cyfieithu'r Dudalen</translation>
@@ -1118,6 +1120,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8393889347136007944">Tabiau sydd heb eu defnyddio am <ph name="THRESHOLD" /> o ddiwrnodau</translation>
 <translation id="8407669440184693619">Nid ydym wedi dod o hyd i unrhyw gyfrineiriau ar gyfer y wefan hon</translation>
 <translation id="842017693807136194">Wedi Mewngofnodi Gyda</translation>
+<translation id="8423121072346537366">Newydd Ddigwydd</translation>
 <translation id="8425693829365242963">Mae eich Cyfrineiriau yn Unigryw</translation>
 <translation id="8428045167754449968">Dinas / Tref</translation>
 <translation id="8428213095426709021">Gosodiadau</translation>

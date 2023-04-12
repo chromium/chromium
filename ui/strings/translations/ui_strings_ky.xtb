@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 күн мурун}other{# күн мурун}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 мүнөт мурун}other{# мүнөт мурун}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1мүн}other{#мүн}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{1 күн мурун}other{# күн мурун}}</translation>
 <translation id="1181037720776840403">Алып салуу</translation>
 <translation id="1243314992276662751">Жүктөп берүү</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> менен бөлүшүлгөн жок</translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">Солдон оңго</translation>
 <translation id="1383876407941801731">Издөө</translation>
 <translation id="1398853756734560583">Чоңойтуу</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{1 мүнөт мурун}other{# мүнөт мурун}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> менен бөлүшүү мүмкүн эмес</translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{1 ай мурун}other{# ай мурун}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 мүнөт жана }other{# мүнөт жана }}</translation>
 <translation id="1643823602425662293">Эскертме</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">Сүрөт</translation>
 <translation id="4565377596337484307">Сырсөздү жашыруу</translation>
 <translation id="4588090240171750605">Оңго сыдырып кароо</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{1 жыл мурун}other{# жыл мурун}}</translation>
 <translation id="4724120544754982507">Билдирмелер борбору, <ph name="UNREAD_NOTIFICATION_COUNT" /> окулбаган эскертме бар</translation>
 <translation id="4729257764711776855">номер</translation>
 <translation id="4746179598275229723">Кеңейтүү бошотулду</translation>
@@ -212,10 +216,12 @@
 <translation id="8867568208303837180">Жөнөтүлүүдө…</translation>
 <translation id="8876215549894133151">Формат:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> Кб</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{1 саат мурун}other{# саат мурун}}</translation>
 <translation id="8996630695507351249"><ph name="TARGET_DEVICE_NAME" /> интернетке туташканын текшериңиз.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 сек.}other{# сек.}}</translation>
 <translation id="9059834730836941392">Эскертмени жыйыштыруу</translation>
 <translation id="9170848237812810038">&amp;Кайтаруу</translation>
 <translation id="932327136139879170">Башкы</translation>
 <translation id="944069440740578670">Окулбаган билдирмелер</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{1 секунд мурун}other{# секунд мурун}}</translation>
 </translationbundle>

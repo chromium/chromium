@@ -14,7 +14,6 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Tabı ayırın}other{Tabları ayırın}}</translation>
 <translation id="2277224997687551299">Qrup adına düzəliş edin</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Taba əlfəcin əlavə edin}other{Tablara əlfəcin əlavə edin}}</translation>
-<translation id="2479148705183875116">Ayarlara keçin</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabını yığcamlaşdırın.}other{<ph name="TABS_COUNT_MANY" /> tab olan tab qrupunu yığcamlaşdırın.}}</translation>
 <translation id="2569352796411618312">Təklif: <ph name="NUMBER_OF_TABS" /> tabel bu yaxınlarda istifadə edilməyib. Bağlansınlar?</translation>
 <translation id="2613747923081026172">Qrup yaradın</translation>

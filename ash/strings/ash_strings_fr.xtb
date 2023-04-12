@@ -147,6 +147,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1651914502370159744">Ouvrir la page "Historique"</translation>
 <translation id="1654477262762802994">Soumettre une requête vocale</translation>
 <translation id="1668469839109562275">VPN intégré</translation>
+<translation id="1675844249244994876">Mettre à jour la fenêtre de droite</translation>
 <translation id="1677472565718498478">Temps restant : <ph name="TIME" /></translation>
 <translation id="1677507110654891115">La fonctionnalité <ph name="FEATURE_NAME" /> n'est pas connectée.</translation>
 <translation id="1677582821739292812">Quelqu'un regarde votre écran</translation>
@@ -843,6 +844,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="493076006037866439">Faire un zoom arrière sur l'écran</translation>
 <translation id="4936329710968938986">Tout le monde, désactivé</translation>
 <translation id="4938176435186993759">Masquer toutes les suggestions</translation>
+<translation id="4943007472417128747">Le point d'accès a été désactivé pour utiliser le Wi-Fi. Pour utiliser le point d'accès, désactivez le Wi-Fi.</translation>
 <translation id="4945196315133970626">Désactiver les notifications</translation>
 <translation id="4946376291507881335">Capturer</translation>
 <translation id="495046168593986294">Faire défiler vers le haut</translation>
@@ -1386,6 +1388,7 @@ Nouvelle installation</translation>
 Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bouton Marche/Arrêt.</translation>
 <translation id="7526573455193969409">Il est possible que le réseau soit surveillé</translation>
 <translation id="7536035074519304529">Adresse IP : <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Mettre à jour la fenêtre de gauche</translation>
 <translation id="7543399541175347147">Les applis Linux et les fenêtres de navigation privée ne sont pas prises en charge pour le moment. Les autres applis seront enregistrées.</translation>
 <translation id="7544300628205093162">Le rétroéclairage du clavier est activé</translation>
 <translation id="7548434653388805669">Il est l'heure d'aller au lit</translation>
@@ -1466,6 +1469,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7893503627044934815">Je ne souhaite pas que ce fichier soit affiché</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Vous avez appuyé sur le raccourci clavier de rotation d'écran. Voulez-vous faire pivoter l'écran ?</translation>
+<translation id="7901190436359881020">Intervertir les fenêtres</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Appuyez sur le lecteur d'empreinte</translation>
 <translation id="7904094684485781019">L'administrateur de ce compte a désactivé la connexion multicompte.</translation>

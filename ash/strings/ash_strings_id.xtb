@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">Perangkat USB-C (port depan)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> diubah ke <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik konfirmasi untuk menyimpan perubahan. Setelan sebelumnya akan dipulihkan dalam <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Perangkat Bluetooth "<ph name="DEVICE_NAME" />" meminta izin untuk bersanding. Masukan kode PIN ini pada perangkat tersebut: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">Tindakan ini akan mengizinkan <ph name="APP_NAME" /> dan semua aplikasi dan situs yang memiliki izin lokasi, serta ChromeOS untuk menggunakan lokasi jaringan seluler dan Wi-Fi.</translation>
 <translation id="1017556409696559990">Minimalkan jendela atas saat tidak ada histori sebelumnya di Chrome</translation>
 <translation id="1024364763893396229">Simpan <ph name="NAME" /> Anda</translation>
 <translation id="1032891413405719768">Baterai stilus lemah</translation>
@@ -147,6 +148,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1651914502370159744">Buka halaman Histori</translation>
 <translation id="1654477262762802994">Mulai kueri suara</translation>
 <translation id="1668469839109562275">VPN bawaan</translation>
+<translation id="1675844249244994876">Perbarui jendela kanan</translation>
 <translation id="1677472565718498478">Sisa waktu <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> tidak terhubung.</translation>
 <translation id="1677582821739292812">Seseorang sedang melihat layar Anda</translation>
@@ -191,6 +193,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Aktifkan akses lokasi</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> telah dilepas pinnya</translation>
 <translation id="1838895407229022812">Cahaya Malam nonaktif.</translation>
 <translation id="1854180393107901205">Hentikan transmisi</translation>
@@ -468,6 +471,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3255483164551725916">Apa yang bisa kamu lakukan?</translation>
 <translation id="3256109297135787951">Menghapus tanda dari item di rak</translation>
 <translation id="3260969790895726815">Ucapan diproses secara lokal dan dikte berfungsi secara offline, tetapi beberapa perintah suara tidak akan berfungsi.</translation>
+<translation id="3265032511221679826">Aktifkan akses lokasi akurat?</translation>
 <translation id="3269597722229482060">Klik Kanan</translation>
 <translation id="3289364673986435196">Menu daya</translation>
 <translation id="3289544412142055976">Aplikasi Linux saat ini tidak didukung</translation>
@@ -578,6 +582,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="366222428570480733">Pengguna Terkelola <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Geser untuk menyembunyikan jendela mengambang</translation>
 <translation id="367531336287639526">Pilih ikon pertama di sebelah kiri kolom URL</translation>
+<translation id="3677931086890821290">Tindakan ini akan mengizinkan semua aplikasi dan situs yang memiliki izin lokasi serta ChromeOS untuk menggunakan lokasi jaringan seluler dan Wi-Fi.</translation>
 <translation id="3679827876008292680">Buka tab terakhir di jendela</translation>
 <translation id="36813544980941320">Ponsel dan <ph name="DEVICE_NAME" /> akan menggunakan jaringan Wi-Fi yang sama</translation>
 <translation id="3694122362646626770">Situs web</translation>
@@ -844,6 +849,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="493076006037866439">Perkecil layar</translation>
 <translation id="4936329710968938986">Siapa saja, nonaktif</translation>
 <translation id="4938176435186993759">Sembunyikan semua saran</translation>
+<translation id="4943007472417128747">Hotspot telah dinonaktifkan untuk menggunakan Wi-Fi. Untuk menggunakan Hotspot, nonaktifkan Wi-Fi.</translation>
 <translation id="4945196315133970626">Nonaktifkan notifikasi</translation>
 <translation id="4946376291507881335">Ambil gambar</translation>
 <translation id="495046168593986294">Scroll ke atas</translation>
@@ -1388,6 +1394,7 @@ Baru diinstal</translation>
 Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</translation>
 <translation id="7526573455193969409">Jaringan mungkin dipantau</translation>
 <translation id="7536035074519304529">Alamat IP: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Perbarui jendela kiri</translation>
 <translation id="7543399541175347147">Aplikasi Linux dan jendela Samaran saat ini tidak didukung. Aplikasi lainnya akan disimpan.</translation>
 <translation id="7544300628205093162">Lampu latar keyboard mati</translation>
 <translation id="7548434653388805669">Waktunya tidur</translation>
@@ -1468,6 +1475,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7893503627044934815">Tidak ingin file ini ditampilkan</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Anda menekan pintasan keyboard untuk rotasi layar. Ingin memutar layar?</translation>
+<translation id="7901190436359881020">Tukar jendela</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Sentuh sensor sidik jari</translation>
 <translation id="7904094684485781019">Administrator untuk akun ini menonaktifkan fitur masuk banyak akun.</translation>
@@ -1743,6 +1751,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="9198992156681343238">Resolusi <ph name="DISPLAY_NAME" /> diubah ke <ph name="RESOLUTION" />. Klik konfirmasi untuk menyimpan perubahan. Setelan sebelumnya akan dipulihkan dalam <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Hubungkan <ph name="NAME" /> ke Chromebook ini</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, Dikelola oleh Administrator Anda</translation>
+<translation id="9207682216934703221">Tindakan ini akan mengizinkan <ph name="APP_NAME" />, <ph name="APP2_NAME" />, dan semua aplikasi dan situs yang memiliki izin lokasi, serta ChromeOS untuk menggunakan lokasi jaringan seluler dan Wi-Fi.</translation>
 <translation id="9210037371811586452">Keluar dari mode desktop terpadu</translation>
 <translation id="9211490828691860325">Semua desktop</translation>
 <translation id="9211681782751733685">Kurang <ph name="TIME_REMAINING" /> lagi sampai baterai terisi penuh.</translation>

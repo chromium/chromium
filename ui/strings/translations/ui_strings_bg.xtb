@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Преди 1 ден}other{Преди # дни}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Преди 1 минута}other{Преди # минути}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 мин}other{# мин}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{Преди 1 ден}other{Преди # дни}}</translation>
 <translation id="1181037720776840403">Премахване</translation>
 <translation id="1243314992276662751">Качване</translation>
 <translation id="1266864766717917324">Споделянето на <ph name="CONTENT_TYPE" /> не бе възможно</translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">Отляво надясно</translation>
 <translation id="1383876407941801731">Търсене</translation>
 <translation id="1398853756734560583">Увеличаване</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{Преди 1 минута}other{Преди # минути}}</translation>
 <translation id="1450753235335490080">Споделянето на <ph name="CONTENT_TYPE" /> не е възможно</translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{Преди 1 месец}other{Преди # месеца}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 минута и }other{# минути и }}</translation>
 <translation id="1643823602425662293">Известие</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">Изображение</translation>
 <translation id="4565377596337484307">Скриване на паролата</translation>
 <translation id="4588090240171750605">Превъртане надясно</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{Преди 1 година}other{Преди # години}}</translation>
 <translation id="4724120544754982507">Център за известия, <ph name="UNREAD_NOTIFICATION_COUNT" /> непрочетени</translation>
 <translation id="4729257764711776855">номер</translation>
 <translation id="4746179598275229723">Разширението бе освободено</translation>
@@ -212,10 +216,12 @@
 <translation id="8867568208303837180">Изпраща се...</translation>
 <translation id="8876215549894133151">Формат:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KБ</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{Преди 1 час}other{Преди # часа}}</translation>
 <translation id="8996630695507351249">Проверете дали <ph name="TARGET_DEVICE_NAME" /> има връзка с интернет.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 сек}other{# сек}}</translation>
 <translation id="9059834730836941392">Свиване на известието</translation>
 <translation id="9170848237812810038">&amp;Отмяна</translation>
 <translation id="932327136139879170">Начална страница</translation>
 <translation id="944069440740578670">Непрочетени известия</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{Преди 1 секунда}other{Преди # секунди}}</translation>
 </translationbundle>

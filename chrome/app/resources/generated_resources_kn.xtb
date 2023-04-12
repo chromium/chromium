@@ -4102,6 +4102,7 @@
 <translation id="4545759655004063573">ಸಾಕಷ್ಟು ಅನುಮತಿಗಳು ಇಲ್ಲದ ಕಾರಣ ಉಳಿಸಲಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೊಂದು ಸ್ಥಾನದಲ್ಲಿ ಉಳಿಸಿ.</translation>
 <translation id="4546308221697447294">Google Chrome ಮೂಲಕ ವೇಗವಾಗಿ ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="4546345569117159016">ಬಲ ಬಟನ್</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> ಅವರು ಈ ವಿಸ್ತರಣೆಯನ್ನು ಬಳಸಲು ಬಯಸುತ್ತಾರೆ:</translation>
 <translation id="4546692474302123343">Google Assistant ಧ್ವನಿ ಇನ್‌ಪುಟ್‌</translation>
 <translation id="4547659257713117923">ಇತರ ಸಾಧನಗಳಿಂದ ಯಾವುದೇ ಟ್ಯಾಬ್‌ಗಳಿಲ್ಲ</translation>
 <translation id="4547672827276975204">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಹೊಂದಿಸಿ</translation>
@@ -4960,6 +4961,7 @@
 <translation id="5338503421962489998">ಸ್ಥಳೀಯ ಸಂಗ್ರಹಣೆ</translation>
 <translation id="5339031667684712858">ನೀವು ತೆಗೆದುಹಾಕಿದ ಸೈಟ್‌ಗಳು</translation>
 <translation id="5340638867532133571">ಪಾವತಿ ಹ್ಯಾಂಡ್‌ಲರ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸೈಟ್‌ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಅನುಮತಿಸಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿದೆ)</translation>
+<translation id="5340787663756381836">&amp;ಹುಡುಕಿ ಹಾಗೂ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="5341793073192892252">ಕೆಳಗಿನ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ (ಮೂರನೇ-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಹೊರತುಪಡಿಸದೇ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ)</translation>
 <translation id="5342091991439452114">ಪಿನ್ ಕನಿಷ್ಠ ಪಕ್ಷ <ph name="MINIMUM" /> ಅಂಕಿಗಳಾಗಿರಬೇಕು</translation>
 <translation id="5344036115151554031">Linux ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗುತ್ತಿದೆ</translation>
@@ -9353,6 +9355,7 @@
 <translation id="939401694733344652">ಈ ಖಾತೆಗಳನ್ನು ಈಗ Android ಆ್ಯಪ್‌ಗಳ ಜೊತೆ ಬಳಸಲಾಗುತ್ತಿಲ್ಲ. ಈ Android ಆ್ಯಪ್‌ಗಳ ಜೊತೆ ಬಳಸಲು ನೀವು ಖಾತೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿದರೆ, ಖಾತೆಯನ್ನು ಇತರ Android ಆ್ಯಪ್‌ಗಳ ಜೊತೆಗೂ ಸಹ ಬಳಸಬಹುದು. ನೀವು <ph name="LINK_BEGIN" />ಸೆಟ್ಟಿಂಗ್‌ಗಳು &gt; ಖಾತೆಗಳು<ph name="LINK_END" /> ಎಂಬಲ್ಲಿ Android ಆ್ಯಪ್‌ಗಳ ಪ್ರವೇಶವನ್ನು ಬದಲಾಯಿಸಬಹುದು.</translation>
 <translation id="939598580284253335">ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="939736085109172342">ಹೊಸ ಫೋಲ್ಡರ್</translation>
+<translation id="940212040923880623">&amp;ಹುಡುಕಿ ಹಾಗೂ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="942532530371314860">Chrome ಟ್ಯಾಬ್ ಮತ್ತು ಆಡಿಯೋವನ್ನು <ph name="APP_NAME" /> ಹಂಚಿಕೊಳ್ಳುತ್ತಿದೆ.</translation>
 <translation id="944799160843436808">Chromebook ನಲ್ಲಿ Steam ಅನ್ನು ಸೆಟಪ್ ಮಾಡುವಾಗ ಸಮಸ್ಯೆ ಉಂಟಾಯಿತು</translation>
 <translation id="945522503751344254">ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ಕಳುಹಿಸಿ</translation>

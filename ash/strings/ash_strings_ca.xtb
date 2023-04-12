@@ -147,6 +147,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1651914502370159744">Obre la pàgina de l'historial</translation>
 <translation id="1654477262762802994">Inicia una consulta per veu</translation>
 <translation id="1668469839109562275">VPN integrada</translation>
+<translation id="1675844249244994876">Actualitza la finestra dreta</translation>
 <translation id="1677472565718498478">Temps restant: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">La funció <ph name="FEATURE_NAME" /> no està connectada.</translation>
 <translation id="1677582821739292812">Algú està mirant la teva pantalla</translation>
@@ -844,6 +845,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="493076006037866439">Redueix la pantalla</translation>
 <translation id="4936329710968938986">Tothom, desactivat</translation>
 <translation id="4938176435186993759">Amaga tots els suggeriments</translation>
+<translation id="4943007472417128747">El punt d'accés Wi‐Fi s'ha desactivat per utilitzar la Wi‐Fi. Desactiva la Wi‐Fi per fer servir el punt d'accés Wi‐Fi.</translation>
 <translation id="4945196315133970626">Desactiva les notificacions</translation>
 <translation id="4946376291507881335">Captura</translation>
 <translation id="495046168593986294">Desplaça't cap amunt</translation>
@@ -1385,6 +1387,7 @@ Instal·lació nova</translation>
 Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translation>
 <translation id="7526573455193969409">És possible que la xarxa estigui supervisada</translation>
 <translation id="7536035074519304529">Adreça IP: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Actualitza la finestra esquerra</translation>
 <translation id="7543399541175347147">Les aplicacions de Linux i les finestres d'incògnit no s'admeten actualment. Les altres aplicacions es desaran.</translation>
 <translation id="7544300628205093162">La il·luminació a contrallum del teclat està activada</translation>
 <translation id="7548434653388805669">Ara toca anar a dormir</translation>
@@ -1465,6 +1468,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7893503627044934815">No vull que es mostri aquest fitxer</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Has premut la tecla de drecera de la rotació de la pantalla. Vols girar la pantalla?</translation>
+<translation id="7901190436359881020">Canvia les finestres</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Toca el sensor d'empremtes digitals</translation>
 <translation id="7904094684485781019">L'administrador d'aquest compte no ha permès l'inici de sessió múltiple.</translation>
@@ -1539,7 +1543,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8214996719228530800">Canal Canary</translation>
 <translation id="8219451629189078428">El Chromebook ha d'estar encès i endollat durant aquest període de temps. Assegura't que els cables del carregador o de l'adaptador estiguin completament connectats, tant al Chromebook com a l'endoll. No apaguis el Chromebook.</translation>
 <translation id="8230305195727960608">Mode d'inversió de colors</translation>
-<translation id="8233140502441622270">Obre l'aplicació de tecles de drecera</translation>
+<translation id="8233140502441622270">Obre l'aplicació Tecles de drecera</translation>
 <translation id="8236042855478648955">Ara toca fer una pausa</translation>
 <translation id="8239034820133090126">Activa l'escriptori a la dreta</translation>
 <translation id="8246282815785366524">Et donem la benvinguda de nou, <ph name="GIVEN_NAME" /></translation>

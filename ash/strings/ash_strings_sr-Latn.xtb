@@ -148,6 +148,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1651914502370159744">Otvori stranicu Istorija</translation>
 <translation id="1654477262762802994">Započnite glasovnu pretragu</translation>
 <translation id="1668469839109562275">Ugrađeni VPN</translation>
+<translation id="1675844249244994876">Ažuriraj desni prozor</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> je preostalo</translation>
 <translation id="1677507110654891115">Funkcija <ph name="FEATURE_NAME" /> nije povezana.</translation>
 <translation id="1677582821739292812">Neko gleda vaš ekran</translation>
@@ -849,6 +850,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="493076006037866439">Umanji prikaz na ekranu</translation>
 <translation id="4936329710968938986">Svi, isključeno</translation>
 <translation id="4938176435186993759">Sakrij sve predloge</translation>
+<translation id="4943007472417128747">Hotspot je isključen da biste koristili WiFi. Da biste koristili hotspot, isključite WiFi.</translation>
 <translation id="4945196315133970626">Isključi obaveštenja</translation>
 <translation id="4946376291507881335">Snimi</translation>
 <translation id="495046168593986294">Pomeri nagore</translation>
@@ -1072,6 +1074,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="5976112937189445008">Pritisnite Enter da biste snimili prozor</translation>
 <translation id="5978382165065462689">Delite kontrolu nad ekranom preko Daljinske pomoći.</translation>
 <translation id="5980301590375426705">Zatvori kao gost</translation>
+<translation id="5983567367406220847">Hotspot je isključen zbog neaktivnosti.</translation>
 <translation id="598407983968395253">Koristi šablon</translation>
 <translation id="598882571027504733">Da biste preuzeli ažuriranje, restartujte Chromebook sa priključenom tastasturom.</translation>
 <translation id="6002179289567220515">Koristili ste fizički prekidač da biste isključili 1 kameru. Možete i da isključite pristup za sve kamere.</translation>
@@ -1374,6 +1377,7 @@ Novo instaliranje</translation>
 <translation id="7452560014878697800">Aplikacija koristi kameru</translation>
 <translation id="7453330308669753048">Rezultat istorije pretrage je uklonjen</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> do kraja punjenja</translation>
+<translation id="7459485586006128091">Hotspot je isključen zbog interne greške. Probajte ponovo da se povežete za par minuta.</translation>
 <translation id="7461924472993315131">Zakači</translation>
 <translation id="746232733191930409">Režim snimanja ekrana</translation>
 <translation id="7466449121337984263">Dodirnite senzor</translation>
@@ -1393,6 +1397,7 @@ Novo instaliranje</translation>
 Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivanje na uređaju.</translation>
 <translation id="7526573455193969409">Mreža se možda nadgleda</translation>
 <translation id="7536035074519304529">IP adresa: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Ažuriraj levi prozor</translation>
 <translation id="7543399541175347147">Linux aplikacije i prozori bez arhiviranja trenutno nisu podržani. Druge aplikacije će biti sačuvane.</translation>
 <translation id="7544300628205093162">Pozadinsko osvetljenje tastature je uključeno</translation>
 <translation id="7548434653388805669">Vreme je za spavanje</translation>
@@ -1446,6 +1451,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="776344839111254542">Kliknite za prikaz detalja ažuriranja</translation>
 <translation id="7768784765476638775">Izaberite za govor</translation>
 <translation id="7769299611924763557">GIF će uskoro biti spreman</translation>
+<translation id="7773536009433685931">Uključi WiFi</translation>
 <translation id="7780094051999721182">prečice</translation>
 <translation id="7780159184141939021">Rotirajte ekran</translation>
 <translation id="7796735576426975947">Novo obaveštenje je skriveno</translation>
@@ -1473,6 +1479,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7893503627044934815">Ne želim da mi se prikazuje ovaj fajl</translation>
 <translation id="7895348134893321514">Držač</translation>
 <translation id="7897375687985782769">Pritisnuli ste tastersku prečicu za rotaciju ekrana. Želite li da rotirate ekran?</translation>
+<translation id="7901190436359881020">Zameni prozor</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Dodirnite senzor za otisak prsta</translation>
 <translation id="7904094684485781019">Administrator za ovaj nalog je zabranio višestruko prijavljivanje.</translation>

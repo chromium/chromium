@@ -147,6 +147,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1651914502370159744">Odpiranje strani z zgodovino</translation>
 <translation id="1654477262762802994">Začetek glasovne poizvedbe</translation>
 <translation id="1668469839109562275">Vgrajeno omrežje VPN</translation>
+<translation id="1675844249244994876">Posodobitev desnega okna</translation>
 <translation id="1677472565718498478">Še <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Povezava s funkcijo <ph name="FEATURE_NAME" /> ni vzpostavljena.</translation>
 <translation id="1677582821739292812">Nekdo gleda na vaš zaslon</translation>
@@ -844,6 +845,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="493076006037866439">Pomanjšava zaslona</translation>
 <translation id="4936329710968938986">Vsi, izklopljeno</translation>
 <translation id="4938176435186993759">Skrij vse predloge</translation>
+<translation id="4943007472417128747">Dostopna točka je izklopljena zaradi uporabe Wi-Fi-ja. Če želite uporabljati dostopno točko, izklopite Wi-Fi.</translation>
 <translation id="4945196315133970626">Izklop obvestil</translation>
 <translation id="4946376291507881335">Zajemi</translation>
 <translation id="495046168593986294">Pomik navzgor</translation>
@@ -1388,6 +1390,7 @@ Nova namestitev</translation>
 Če želite napravo izklopiti, znova pridržite gumb za vklop v napravi.</translation>
 <translation id="7526573455193969409">Omrežje je morda nadzorovano</translation>
 <translation id="7536035074519304529">Naslov IP: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Posodobitev levega okna</translation>
 <translation id="7543399541175347147">Aplikacije za Linux in anonimna okna trenutno niso podprta. Druge aplikacije bodo shranjene.</translation>
 <translation id="7544300628205093162">Osvetlitev tipkovnice je vklopljena</translation>
 <translation id="7548434653388805669">Čas je za spanje</translation>
@@ -1468,6 +1471,7 @@ Nova namestitev</translation>
 <translation id="7893503627044934815">Ne želim, da se prikazuje ta datoteka</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Pritisnili ste bližnjično tipko za sukanje zaslona. Ali želite zasukati zaslon?</translation>
+<translation id="7901190436359881020">Zamenjava oken</translation>
 <translation id="7901405293566323524">Središče za telefone</translation>
 <translation id="7902625623987030061">Dotaknite se tipala prstnih odtisov.</translation>
 <translation id="7904094684485781019">Skrbnik tega računa je onemogočil prijavo z več računi.</translation>

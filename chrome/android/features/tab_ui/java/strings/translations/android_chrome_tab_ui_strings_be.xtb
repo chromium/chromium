@@ -14,7 +14,6 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Выдаліць укладку з групы}one{Выдаліць укладкі з групы}few{Выдаліць укладкі з групы}many{Выдаліць укладкі з групы}other{Выдаліць укладкі з групы}}</translation>
 <translation id="2277224997687551299">Змяніць назву групы</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Дадаць укладку ў закладкі}one{Дадаць укладкі ў закладкі}few{Дадаць укладкі ў закладкі}many{Дадаць укладкі ў закладкі}other{Дадаць укладкі ў закладкі}}</translation>
-<translation id="2479148705183875116">Перайсці ў Налады</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Згарнуць <ph name="TABS_COUNT_ONE" /> укладку.}one{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладкі.}few{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладак.}many{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладак.}other{Згарнуць групу з <ph name="TABS_COUNT_MANY" /> укладкі.}}</translation>
 <translation id="2569352796411618312">Прапанова: некалькі (<ph name="NUMBER_OF_TABS" />) укладак пэўны час не выкарыстоўваліся. Закрыць іх?</translation>
 <translation id="2613747923081026172">Стварыць групу</translation>

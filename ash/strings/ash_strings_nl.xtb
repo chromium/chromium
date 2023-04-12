@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C-apparaat (poort aan voorkant)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> gewijzigd in <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik op Bevestigen om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>
 <translation id="1013923882670373915">Bluetooth-apparaat '<ph name="DEVICE_NAME" />' wil rechten om te koppelen. Voer de volgende pincode in op dat apparaat: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">Hiermee kunnen <ph name="APP_NAME" /> en alle apps en websites met locatierechten en ChromeOS de locatie van wifi en mobiele netwerken gebruiken.</translation>
 <translation id="1017556409696559990">Het bovenste venster minimaliseren als er geen geschiedenis voor teruggaan in Chrome is</translation>
 <translation id="1024364763893396229">Je <ph name="NAME" /> opslaan</translation>
 <translation id="1032891413405719768">Batterij van stylus bijna leeg</translation>
@@ -147,6 +148,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1651914502370159744">Pagina Geschiedenis openen</translation>
 <translation id="1654477262762802994">Een gesproken zoekopdracht starten</translation>
 <translation id="1668469839109562275">Ingebouwde VPN</translation>
+<translation id="1675844249244994876">Het rechtervenster updaten</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> resterend</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> is niet verbonden.</translation>
 <translation id="1677582821739292812">Iemand bekijkt je scherm</translation>
@@ -191,6 +193,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <ph name="IME" />
 <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Locatietoegang aanzetten</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> is losgemaakt</translation>
 <translation id="1838895407229022812">Nachtverlichting staat uit.</translation>
 <translation id="1854180393107901205">Casten stoppen</translation>
@@ -468,6 +471,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3255483164551725916">Wat kun je doen?</translation>
 <translation id="3256109297135787951">De markering voor een item op je plank verwijderen</translation>
 <translation id="3260969790895726815">Spraak wordt lokaal verwerkt en dicteren werkt offline, maar sommige spraakopdrachten werken niet.</translation>
+<translation id="3265032511221679826">Toegang tot exacte locatie aanzetten?</translation>
 <translation id="3269597722229482060">Klikken met rechtermuisknop</translation>
 <translation id="3289364673986435196">Aan/uit-menu</translation>
 <translation id="3289544412142055976">Linux-apps worden momenteel niet ondersteund</translation>
@@ -578,6 +582,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="366222428570480733">Beheerde gebruiker <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Swipe om het zwevende venster te verbergen</translation>
 <translation id="367531336287639526">Het eerste icoon links van de adresbalk selecteren</translation>
+<translation id="3677931086890821290">Hiermee kunnen alle apps en websites met locatierechten en ChromeOS de locatie van wifi en mobiele netwerken gebruiken.</translation>
 <translation id="3679827876008292680">Naar het laatste tabblad in het venster gaan</translation>
 <translation id="36813544980941320">Wifi-netwerken worden gedeeld tussen je telefoon en <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Websites</translation>
@@ -844,6 +849,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="493076006037866439">Uitzoomen op scherm</translation>
 <translation id="4936329710968938986">Iedereen, uit</translation>
 <translation id="4938176435186993759">Alle suggesties verbergen</translation>
+<translation id="4943007472417128747">De hotspot is uitgezet om wifi te gebruiken. Zet wifi uit om de hotspot te gebruiken.</translation>
 <translation id="4945196315133970626">Meldingen uitzetten</translation>
 <translation id="4946376291507881335">Opnemen</translation>
 <translation id="495046168593986294">Omhoog scrollen</translation>
@@ -1067,6 +1073,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5976112937189445008">Druk op Enter om het venster op te nemen</translation>
 <translation id="5978382165065462689">De controle over je scherm delen via externe support.</translation>
 <translation id="5980301590375426705">Gastsessie sluiten</translation>
+<translation id="5983567367406220847">De hotspot is uitgezet vanwege inactiviteit.</translation>
 <translation id="598407983968395253">Template gebruiken</translation>
 <translation id="598882571027504733">Als je de update wilt downloaden, sluit je het toetsenbord aan en start je je Chromebook opnieuw op</translation>
 <translation id="6002179289567220515">Je hebt de fysieke schakelaar gebruikt om 1 camera uit te zetten. Je kunt de toegang ook voor alle camera's uitzetten.</translation>
@@ -1366,6 +1373,7 @@ Nieuwe installatie</translation>
 <translation id="7452560014878697800">Een app gebruikt je camera</translation>
 <translation id="7453330308669753048">Zoekgeschiedenisresultaat verwijderd</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> tot volledig opgeladen</translation>
+<translation id="7459485586006128091">De hotspot is uitgezet vanwege een interne fout. Probeer over een paar minuten opnieuw verbinding te maken.</translation>
 <translation id="7461924472993315131">Vastzetten</translation>
 <translation id="746232733191930409">Schermopnamemodus</translation>
 <translation id="7466449121337984263">Raak de sensor aan</translation>
@@ -1385,6 +1393,7 @@ Nieuwe installatie</translation>
 Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer ingedrukt.</translation>
 <translation id="7526573455193969409">Netwerk kan worden bijgehouden</translation>
 <translation id="7536035074519304529">IP-adres: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Het linkervenster updaten</translation>
 <translation id="7543399541175347147">Linux-apps en incognitovensters worden momenteel niet ondersteund. Andere apps worden opgeslagen.</translation>
 <translation id="7544300628205093162">Achtergrondverlichting van toetsenbord staat aan</translation>
 <translation id="7548434653388805669">Bedtijd</translation>
@@ -1438,6 +1447,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="776344839111254542">Klik om updategegevens te bekijken</translation>
 <translation id="7768784765476638775">Selecteer om voor te lezen</translation>
 <translation id="7769299611924763557">Je gif is bijna klaar</translation>
+<translation id="7773536009433685931">Wifi aanzetten</translation>
 <translation id="7780094051999721182">snelkoppelingen</translation>
 <translation id="7780159184141939021">Scherm draaien</translation>
 <translation id="7796735576426975947">Nieuwe melding verborgen</translation>
@@ -1465,6 +1475,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7893503627044934815">Wil niet dat dit bestand wordt getoond</translation>
 <translation id="7895348134893321514">Bak</translation>
 <translation id="7897375687985782769">Je hebt op de sneltoets voor schermrotatie gedrukt. Wil je het scherm draaien?</translation>
+<translation id="7901190436359881020">De vensters omwisselen</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Raak de vingerafdruksensor aan</translation>
 <translation id="7904094684485781019">De beheerder van dit account heeft toegang tot meerdere accounts niet toegestaan.</translation>
@@ -1740,6 +1751,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9198992156681343238">De resolutie van <ph name="DISPLAY_NAME" /> is gewijzigd in <ph name="RESOLUTION" />. Klik op 'Bevestigen' om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>
 <translation id="9201044636667689546"><ph name="NAME" /> koppelen aan deze Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, beheerd door je beheerder</translation>
+<translation id="9207682216934703221">Hiermee kunnen <ph name="APP_NAME" />, <ph name="APP2_NAME" /> en alle apps en websites met locatierechten en ChromeOS de locatie van wifi en mobiele netwerken gebruiken.</translation>
 <translation id="9210037371811586452">Samengestelde desktopmodus wordt gesloten</translation>
 <translation id="9211490828691860325">Alle bureaus</translation>
 <translation id="9211681782751733685">Nog <ph name="TIME_REMAINING" /> totdat de batterij volledig is opgeladen.</translation>

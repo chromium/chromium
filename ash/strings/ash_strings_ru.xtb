@@ -148,6 +148,7 @@
 <translation id="1651914502370159744">Показать историю</translation>
 <translation id="1654477262762802994">Произнесите запрос</translation>
 <translation id="1668469839109562275">Встроенная VPN</translation>
+<translation id="1675844249244994876">Обновить окно справа</translation>
 <translation id="1677472565718498478">Ещё <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Функция "<ph name="FEATURE_NAME" />" не подключена.</translation>
 <translation id="1677582821739292812">На ваш экран смотрит другой человек</translation>
@@ -848,6 +849,7 @@
 <translation id="493076006037866439">Уменьшить масштаб</translation>
 <translation id="4936329710968938986">Доступно всем: отключено</translation>
 <translation id="4938176435186993759">Скрыть все подсказки</translation>
+<translation id="4943007472417128747">Точка доступа отключена для использования Wi-Fi. Чтобы запустить ее снова, отключите Wi-Fi.</translation>
 <translation id="4945196315133970626">Отключить уведомления</translation>
 <translation id="4946376291507881335">Снимок</translation>
 <translation id="495046168593986294">Прокрутить вверх</translation>
@@ -1071,6 +1073,7 @@
 <translation id="5976112937189445008">Нажмите Ввод, чтобы записать контент в окне</translation>
 <translation id="5978382165065462689">Доступ к экрану с помощью удаленного помощника</translation>
 <translation id="5980301590375426705">Закрыть сеанс гостя</translation>
+<translation id="5983567367406220847">Точка доступа отключена из-за бездействия.</translation>
 <translation id="598407983968395253">Использовать шаблон</translation>
 <translation id="598882571027504733">Чтобы выполнить обновление, перезагрузите устройство Chromebook, не отключая от него клавиатуру.</translation>
 <translation id="6002179289567220515">Вы отключили одну камеру при помощи физического переключателя. Можно также запретить доступ ко всем камерам.</translation>
@@ -1373,6 +1376,7 @@
 <translation id="7452560014878697800">Приложение использует вашу камеру</translation>
 <translation id="7453330308669753048">Результат удален из истории поиска</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" /> % | До полной зарядки: <ph name="TIME" /></translation>
+<translation id="7459485586006128091">Точка доступа отключена из-за внутренней ошибки. Попробуйте подключиться через несколько минут.</translation>
 <translation id="7461924472993315131">Закрепить</translation>
 <translation id="746232733191930409">Режим записи видео с экрана</translation>
 <translation id="7466449121337984263">Приложите палец к сканеру.</translation>
@@ -1392,6 +1396,7 @@
 Чтобы выключить устройство, снова нажмите и удерживайте кнопку питания.</translation>
 <translation id="7526573455193969409">Сеть может отслеживаться</translation>
 <translation id="7536035074519304529">IP-адрес: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Обновить окно слева</translation>
 <translation id="7543399541175347147">Приложения для Linux и окна в режиме инкогнито пока не поддерживаются. Остальные приложения будут сохранены.</translation>
 <translation id="7544300628205093162">Подсветка клавиатуры включена.</translation>
 <translation id="7548434653388805669">Пора ложиться спать</translation>
@@ -1445,6 +1450,7 @@
 <translation id="776344839111254542">Нажмите, чтобы просмотреть информацию об обновлении</translation>
 <translation id="7768784765476638775">Озвучивание при нажатии</translation>
 <translation id="7769299611924763557">Файл GIF скоро будет готов</translation>
+<translation id="7773536009433685931">Включить Wi-Fi</translation>
 <translation id="7780094051999721182">ярлыки</translation>
 <translation id="7780159184141939021">Поворот экрана</translation>
 <translation id="7796735576426975947">Новые уведомления скрыты</translation>
@@ -1472,6 +1478,7 @@
 <translation id="7893503627044934815">Скрыть файл</translation>
 <translation id="7895348134893321514">Быстрый доступ</translation>
 <translation id="7897375687985782769">Вы нажали сочетание клавиш для поворота экрана. Выполнить это действие?</translation>
+<translation id="7901190436359881020">Поменять окна местами</translation>
 <translation id="7901405293566323524">Управление телефоном</translation>
 <translation id="7902625623987030061">Коснитесь сканера отпечатков.</translation>
 <translation id="7904094684485781019">Администратор этого аккаунта запретил множественный вход</translation>

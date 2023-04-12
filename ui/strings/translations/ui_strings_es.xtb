@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Hace 1 día}other{Hace # días}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Hace 1 minuto}other{Hace # minutos}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 min}other{# min}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{hace 1 día}other{hace # días}}</translation>
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="1243314992276662751">Subir</translation>
 <translation id="1266864766717917324">No se ha podido compartir: <ph name="CONTENT_TYPE" /></translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">De izquierda a derecha</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1398853756734560583">Maximizar</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{hace 1 minuto}other{hace # minutos}}</translation>
 <translation id="1450753235335490080">No se ha podido compartir: <ph name="CONTENT_TYPE" /></translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{hace 1 mes}other{hace # meses}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minuto y }other{# minutos y }}</translation>
 <translation id="1643823602425662293">Notificación</translation>
 <translation id="169515659049020177">Mayús</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">Imagen</translation>
 <translation id="4565377596337484307">Ocultar contraseña</translation>
 <translation id="4588090240171750605">Desplazar a la derecha</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{hace 1 año}other{hace # años}}</translation>
 <translation id="4724120544754982507">Centro de notificaciones: <ph name="UNREAD_NOTIFICATION_COUNT" /> notificaciones sin leer</translation>
 <translation id="4729257764711776855">número</translation>
 <translation id="4746179598275229723">Extensión no fijada</translation>
@@ -212,10 +216,12 @@
 <translation id="8867568208303837180">Enviando...</translation>
 <translation id="8876215549894133151">Formato:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{hace 1 hora}other{hace # horas}}</translation>
 <translation id="8996630695507351249">Comprueba que <ph name="TARGET_DEVICE_NAME" /> esté conectado a Internet.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 s}other{# s}}</translation>
 <translation id="9059834730836941392">Ocultar notificación</translation>
 <translation id="9170848237812810038">&amp;Deshacer</translation>
 <translation id="932327136139879170">Página principal</translation>
 <translation id="944069440740578670">Notificaciones no leídas</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{hace 1 segundo}other{hace # segundos}}</translation>
 </translationbundle>

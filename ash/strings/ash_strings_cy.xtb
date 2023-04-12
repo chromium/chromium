@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">Dyfais USB-C (porth blaen)</translation>
 <translation id="1013598600051641573">Mae <ph name="DISPLAY_NAME" /> wedi newid i <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Cliciwch Cadarnhau i gadw'r newidiadau. Bydd y gosodiadau blaenorol yn cael eu hadfer mewn <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Hoffai'r ddyfais Bluetooth "<ph name="DEVICE_NAME" />" gael caniatâd i baru. Rhowch y cod PIN hwn ar y ddyfais honno: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">Mae hyn yn caniatáu i <ph name="APP_NAME" /> a phob ap a gwefan sydd â chaniatâd lleoliad a ChromeOS ddefnyddio lleoliad Wi-Fi a rhwydweithiau symudol.</translation>
 <translation id="1017556409696559990">Lleihau'r ffenestr uchaf pan nad oes hanes ôl yn Chrome</translation>
 <translation id="1024364763893396229">Cadw eich <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Mae batri'r pwyntil yn isel</translation>
@@ -147,6 +148,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1651914502370159744">Agor y dudalen Hanes</translation>
 <translation id="1654477262762802994">Dechrau ymholiad llais</translation>
 <translation id="1668469839109562275">VPN integredig</translation>
+<translation id="1675844249244994876">Diweddaru'r ffenestr ar y dde</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ar ôl</translation>
 <translation id="1677507110654891115">Nid yw <ph name="FEATURE_NAME" /> wedi'i gysylltu.</translation>
 <translation id="1677582821739292812">Mae rhywun yn edrych ar eich sgrîn</translation>
@@ -191,6 +193,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ether-rwyd: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Troi mynediad lleoliad ymlaen</translation>
 <translation id="1830308660060964064">Cafodd <ph name="ITEM_TITLE" /> ei ddadbinio</translation>
 <translation id="1838895407229022812">Mae Golau Nos wedi'i ddiffodd.</translation>
 <translation id="1854180393107901205">Stopio castio</translation>
@@ -468,6 +471,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3255483164551725916">Beth allwch chi ei wneud?</translation>
 <translation id="3256109297135787951">Tynnwch yr amlygu o eitem ar eich silff</translation>
 <translation id="3260969790895726815">Mae lleferydd yn cael ei brosesu'n lleol ac mae arddweud yn gweithio all-lein, ond ni fydd rhai gorchmynion llais yn gweithio.</translation>
+<translation id="3265032511221679826">Troi mynediad union leoliad ymlaen?</translation>
 <translation id="3269597722229482060">De-glicio</translation>
 <translation id="3289364673986435196">Dewislen pŵer</translation>
 <translation id="3289544412142055976">Ni chefnogir apiau Linux ar hyn o bryd</translation>
@@ -578,6 +582,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Defnyddiwr a Reolir</translation>
 <translation id="3666266999138159418">Sweipiwch i guddio eich ffenestr arnofio</translation>
 <translation id="367531336287639526">Dewis yr eicon cyntaf i'r chwith o'r bar cyfeiriad</translation>
+<translation id="3677931086890821290">Mae hyn yn caniatáu i bob ap a gwefan sydd â chaniatâd lleoliad a ChromeOS ddefnyddio lleoliad Wi-Fi a rhwydweithiau symudol.</translation>
 <translation id="3679827876008292680">Mynd i'r tab olaf yn y ffenestr</translation>
 <translation id="36813544980941320">Bydd rhwydweithiau yn cael eu rhannu rhwng eich ffôn a <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Gwefannau</translation>
@@ -844,6 +849,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="493076006037866439">Pellhau o'r sgrîn</translation>
 <translation id="4936329710968938986">Pawb, wedi'i ddiffodd</translation>
 <translation id="4938176435186993759">Cuddio'r holl awgrymiadau</translation>
+<translation id="4943007472417128747">Mae'r boethfan wedi'i diffodd er mwyn defnyddio WiFi. I ddefnyddio'r boethfan, diffoddwch y WiFi.</translation>
 <translation id="4945196315133970626">Diffodd hysbysiadau</translation>
 <translation id="4946376291507881335">Tynnu sgrinlun</translation>
 <translation id="495046168593986294">Sgrolio i fyny</translation>
@@ -1388,6 +1394,7 @@ Gosodiad newydd</translation>
 I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</translation>
 <translation id="7526573455193969409">Mae'n bosib bod y rhwydwaith yn cael ei fonitro</translation>
 <translation id="7536035074519304529">Cyfeiriad IP: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Diweddaru'r ffenestr ar y chwith</translation>
 <translation id="7543399541175347147">Ni chefnogir apiau Linux a ffenestri anhysbys ar hyn o bryd. Bydd apiau eraill yn cael eu cadw.</translation>
 <translation id="7544300628205093162">Mae ôl-olau'r bysellfwrdd ymlaen</translation>
 <translation id="7548434653388805669">Amser gwely</translation>
@@ -1468,6 +1475,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7893503627044934815">Ddim eisiau i'r ffeil hon gael ei dangos</translation>
 <translation id="7895348134893321514">Tôt</translation>
 <translation id="7897375687985782769">Gwnaethoch bwyso'r llwybr byr bysellfwrdd ar gyfer cylchdroi'r sgrîn. Ydych chi eisiau cylchdroi'r sgrîn?</translation>
+<translation id="7901190436359881020">Cyfnewid y ffenestri</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Cyffyrddwch â'r synhwyrydd olion bysedd</translation>
 <translation id="7904094684485781019">Mae gweinyddwr y cyfrif hwn wedi gwrthod mewngofnodi i fwy nag un cyfrif.</translation>
@@ -1743,6 +1751,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="9198992156681343238">Mae cydraniad <ph name="DISPLAY_NAME" /> wedi'i newid i <ph name="RESOLUTION" />. Cliciwch Cadarnhau i gadw'r newidiadau. Bydd y gosodiadau blaenorol yn cael eu hadfer mewn <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Cysylltu <ph name="NAME" /> â'r Chromebook hwn</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, Rheolir gan eich Gweinyddwr</translation>
+<translation id="9207682216934703221">Mae hyn yn caniatáu i <ph name="APP_NAME" />, <ph name="APP2_NAME" /> a bob ap a gwefan sydd â chaniatâd lleoliad a ChromeOS ddefnyddio lleoliad Wi-Fi a rhwydweithiau symudol.</translation>
 <translation id="9210037371811586452">Wrthi'n gadael y modd bwrdd gwaith unedig</translation>
 <translation id="9211490828691860325">Pob desg</translation>
 <translation id="9211681782751733685">Mae <ph name="TIME_REMAINING" /> ar ôl nes bod y batri wedi'i wefru'n llawn.</translation>

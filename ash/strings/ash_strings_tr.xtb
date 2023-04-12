@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C cihaz (ön bağlantı noktası)</translation>
 <translation id="1013598600051641573">Çözünürlük <ph name="DISPLAY_NAME" /> için <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) olarak değiştirildi. Değişiklikleri korumak için Onayla'yı tıklayın. Önceki ayarlar <ph name="TIMEOUT_SECONDS" /> saniye içinde geri yüklenecek.</translation>
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" adlı Bluetooth cihaz eşleme izni istiyor. Lütfen söz konusu cihazda şu PIN kodunu girin: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">Bu işlem, <ph name="APP_NAME" /> uygulaması, konum iznine sahip tüm uygulama ve web siteleri, ayrıca ChromeOS'in kablosuz ve mobil ağların konumunu kullanmasına izin verir.</translation>
 <translation id="1017556409696559990">Chrome'da geri geçmişi olmadığında üst pencereyi küçült</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> cihazınızı kaydedin</translation>
 <translation id="1032891413405719768">Ekran kaleminin pili düşük</translation>
@@ -147,6 +148,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1651914502370159744">Geçmiş sayfasını aç</translation>
 <translation id="1654477262762802994">Sesli sorgu başlat</translation>
 <translation id="1668469839109562275">Yerleşik VPN</translation>
+<translation id="1675844249244994876">Sağdaki pencereyi güncelleyin</translation>
 <translation id="1677472565718498478">Kalan süre: <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> bağlı değil.</translation>
 <translation id="1677582821739292812">Ekranınıza bakan biri var</translation>
@@ -191,6 +193,7 @@ Başlamak için şunları deneyebilirsin.</translation>
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Konum erişimini aç</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> sabitlemesi kaldırıldı</translation>
 <translation id="1838895407229022812">Gece Işığı kapalı.</translation>
 <translation id="1854180393107901205">Yayını durdur</translation>
@@ -468,6 +471,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3255483164551725916">Neler yapabilirsin?</translation>
 <translation id="3256109297135787951">Rafınızdaki bir öğenin vurgusunu kaldırır</translation>
 <translation id="3260969790895726815">Konuşma yerel olarak işlenir ve dikte özelliği çevrimdışı çalışır ancak bazı sesli komutlar kullanılamaz.</translation>
+<translation id="3265032511221679826">Tam konum erişimi açılsın mı?</translation>
 <translation id="3269597722229482060">Sağ Tıkla</translation>
 <translation id="3289364673986435196">Güç menüsü</translation>
 <translation id="3289544412142055976">Linux uygulamaları şu anda desteklenmiyor</translation>
@@ -578,6 +582,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Yönetilen kullanıcı</translation>
 <translation id="3666266999138159418">Kayan pencerenizi gizlemek için kaydırın</translation>
 <translation id="367531336287639526">Adres çubuğunun solundaki ilk simgeyi seçin</translation>
+<translation id="3677931086890821290">Bu işlem, konum iznine sahip tüm uygulama ve web siteleri, ayrıca ChromeOS'in kablosuz ve mobil ağların konumunu kullanmasına izin verir.</translation>
 <translation id="3679827876008292680">Penceredeki son sekmeye git</translation>
 <translation id="36813544980941320">Kablosuz ağlar; telefonunuz ve <ph name="DEVICE_NAME" /> arasında paylaşılacak</translation>
 <translation id="3694122362646626770">Web siteleri</translation>
@@ -844,6 +849,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="493076006037866439">Ekranı uzaklaştırın</translation>
 <translation id="4936329710968938986">Herkes, kapalı</translation>
 <translation id="4938176435186993759">Tüm önerileri gizle</translation>
+<translation id="4943007472417128747">Kablosuz bağlantının kullanılması için hotspot kapatıldı. Hotspot'u kullanmak için kablosuz bağlantıyı kapatın.</translation>
 <translation id="4945196315133970626">Bildirimleri devre dışı bırak</translation>
 <translation id="4946376291507881335">Fotoğraf Çek</translation>
 <translation id="495046168593986294">Yukarı kaydır</translation>
@@ -1388,6 +1394,7 @@ Yeni yüklenmiş</translation>
 Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</translation>
 <translation id="7526573455193969409">Ağ trafiği izleniyor olabilir</translation>
 <translation id="7536035074519304529">IP adresi: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Soldaki pencereyi güncelleyin</translation>
 <translation id="7543399541175347147">Linux uygulamaları ve gizli pencereler şu anda desteklenmiyor. Diğer uygulamalar kaydedilecek.</translation>
 <translation id="7544300628205093162">Klavye arka ışığı açık</translation>
 <translation id="7548434653388805669">Uyku vakti geldi</translation>
@@ -1468,6 +1475,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="7893503627044934815">Bu dosyanın gösterilmesini istemiyorum</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Ekran döndürme klavye kısayoluna bastınız. Ekranı döndürmek istiyor musunuz?</translation>
+<translation id="7901190436359881020">Pencereleri değiştirin</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Parmak izi sensörüne dokunun</translation>
 <translation id="7904094684485781019">Bu hesabın yöneticisi, çoklu oturum açmayı engelledi.</translation>
@@ -1743,6 +1751,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="9198992156681343238">Çözünürlük <ph name="DISPLAY_NAME" /> için <ph name="RESOLUTION" /> olarak değiştirildi. Değişiklikleri korumak için Onayla'yı tıklayın. Önceki ayarlar <ph name="TIMEOUT_SECONDS" /> saniye içinde geri yüklenecek.</translation>
 <translation id="9201044636667689546"><ph name="NAME" /> cihazını bu Chromebook'a bağlayın</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, Yöneticiniz tarafından yönetiliyor</translation>
+<translation id="9207682216934703221">Bu işlem, <ph name="APP_NAME" /> ile <ph name="APP2_NAME" /> uygulaması, konum iznine sahip tüm uygulama ve web siteleri, ayrıca ChromeOS'in kablosuz ve mobil ağların konumunu kullanmasına izin verir.</translation>
 <translation id="9210037371811586452">Birleşik masaüstü modundan çıkılıyor</translation>
 <translation id="9211490828691860325">Tüm masalar</translation>
 <translation id="9211681782751733685">Pilin tam olarak şarj olmasına <ph name="TIME_REMAINING" /> kaldı.</translation>

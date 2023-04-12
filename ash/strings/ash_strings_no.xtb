@@ -1073,6 +1073,7 @@ Koble enheten til strøm.</translation>
 <translation id="5976112937189445008">Trykk på Enter for å ta opp vinduet</translation>
 <translation id="5978382165065462689">Deler kontroll av skjermen via fjernhjelp.</translation>
 <translation id="5980301590375426705">Avslutt gjesteøkten</translation>
+<translation id="5983567367406220847">Wifi-sonen er slått av på grunn av inaktivitet.</translation>
 <translation id="598407983968395253">Bruk mal</translation>
 <translation id="598882571027504733">For å laste ned oppdateringen, start Chromebooken på nytt med tastaturet tilkoblet.</translation>
 <translation id="6002179289567220515">Du brukte den fysiske bryteren til å slå av ett kamera. Du kan også slå av tilgangen for alle kameraene.</translation>
@@ -1375,6 +1376,7 @@ Nylig installert</translation>
 <translation id="7452560014878697800">Et program bruker kameraet ditt</translation>
 <translation id="7453330308669753048">Resultatet er fjernet fra søkeloggen</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> til fulladet</translation>
+<translation id="7459485586006128091">Wifi-sonen er slått av på grunn av en intern feil. Prøv å koble til på nytt om noen minutter.</translation>
 <translation id="7461924472993315131">Fest</translation>
 <translation id="746232733191930409">Skjermopptaksmodus</translation>
 <translation id="7466449121337984263">Trykk på sensoren</translation>
@@ -1448,6 +1450,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="776344839111254542">Klikk for å se oppdateringsdetaljene</translation>
 <translation id="7768784765476638775">Tekstopplesing</translation>
 <translation id="7769299611924763557">GIF-en din er snart klar</translation>
+<translation id="7773536009433685931">Slå på wifi i stedet</translation>
 <translation id="7780094051999721182">snarveier</translation>
 <translation id="7780159184141939021">Rotér skjermen</translation>
 <translation id="7796735576426975947">Et nytt varsel er skjult</translation>

@@ -1025,6 +1025,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7781011649027948662">صفحه ترجمه شود؟</translation>
 <translation id="7781069478569868053">صفحه برگه جدید</translation>
 <translation id="7781829728241885113">دیروز</translation>
+<translation id="7786246662347093005">{COUNT,plural, =1{پس‌از یک روز}one{پس‌از {COUNT} روز}other{پس‌از {COUNT} روز}}</translation>
 <translation id="778855399387580014">‏جستجویی در برگه Chrome جدیدی شروع کنید.</translation>
 <translation id="7791543448312431591">افزودن</translation>
 <translation id="7807060072011926525">‏ارائه از Google</translation>
@@ -1089,6 +1090,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8136856065410661948">‏از این دسترسی برای ایجاد رویداد در Apple Calendar از Chrome و «لنز Google» استفاده می‌شود.</translation>
 <translation id="8156478151976189188">«همگام‌سازی گذرواژه» کار نمی‌کند</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> حساب</translation>
+<translation id="8159358225423560600">همین حالا</translation>
 <translation id="8179976553408161302">ورود</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />دستگاه‌های شما<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">ترجمه صفحه</translation>
@@ -1119,6 +1121,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8393889347136007944">برگه‌هایی که به‌مدت <ph name="THRESHOLD" /> روز استفاده نشده‌اند</translation>
 <translation id="8407669440184693619">هیچ گذرواژه‌ای برای این سایت پیدا نشد</translation>
 <translation id="842017693807136194">ورود به سیستم با</translation>
+<translation id="8423121072346537366">همین حالا</translation>
 <translation id="8425693829365242963">گذرواژه‌هایتان تکراری نیست</translation>
 <translation id="8428045167754449968">شهر / شهرک</translation>
 <translation id="8428213095426709021">تنظیمات</translation>

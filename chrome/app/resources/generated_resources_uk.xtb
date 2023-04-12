@@ -4969,6 +4969,7 @@
 <translation id="5338503421962489998">Локальна пам’ять</translation>
 <translation id="5339031667684712858">Вилучені сайти</translation>
 <translation id="5340638867532133571">Дозволити сайтам встановлювати обробники платежів (рекомендується)</translation>
+<translation id="5340787663756381836">&amp;Знайти й змінити</translation>
 <translation id="5341793073192892252">Заблоковані файли cookie (сторонні файли cookie блокуються без винятку)</translation>
 <translation id="5342091991439452114">Мінімальна кількість цифр у PIN-коді: <ph name="MINIMUM" /></translation>
 <translation id="5344036115151554031">Відновлення Linux</translation>
@@ -9366,6 +9367,7 @@
 <translation id="939401694733344652">Ці облікові записи зараз не використовуються в додатках для Android. Якщо ви виберете обліковий запис для цього додатка для Android, він може також використовуватися в інших. Доступ до додатка для Android можна змінити в меню <ph name="LINK_BEGIN" />Налаштування &gt; Облікові записи<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Ввести парольну фразу</translation>
 <translation id="939736085109172342">Нова папка</translation>
+<translation id="940212040923880623">&amp;Знайти й змінити</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> транслює вкладку Chrome і аудіо.</translation>
 <translation id="944799160843436808">Не вдалося налаштувати додаток Steam на Chromebook</translation>
 <translation id="945522503751344254">Надіслати відгук</translation>

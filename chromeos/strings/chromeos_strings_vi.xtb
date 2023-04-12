@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Dưới đây là một số tài nguyên hữu ích khác:</translation>
 <translation id="1905710495812624430">Đã vượt quá số lần thử tối đa được phép.</translation>
 <translation id="1908234395526491708">Không gửi được yêu cầu UDP</translation>
+<translation id="1923388006036088459">Màu nhấn</translation>
 <translation id="1947737735496445907">Đã in</translation>
 <translation id="1951012854035635156">Trợ lý</translation>
 <translation id="1962550982027027473">Cần có APN mặc định</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Đã tải xuống xong</translation>
 <translation id="3969602104473960991">Đã cập nhật mật khẩu ChromeOS</translation>
 <translation id="397105322502079400">Đang tính...</translation>
+<translation id="3974175076798940554">Đã có nội dung dành riêng cho Chromebook Plus</translation>
 <translation id="39823212440917567">Các lệnh in quá <ph name="NUMBER_OF_DAYS" /> ngày sẽ bị xóa</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> của bạn hiện đã cập nhật</translation>
 <translation id="4003384961948020559">Không thành công – Khay đầu ra đã đầy</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">Thêm một tài khoản để đăng nhập nhiều lần. Tất cả các tài khoản đã đăng nhập đều có thể truy cập được mà không cần mật khẩu, do đó bạn chỉ nên sử dụng tính năng này với các tài khoản đáng tin cậy.</translation>
 <translation id="8364946094152050673">Máy chủ định danh trống</translation>
 <translation id="8372477600026034341">Máy chủ khác</translation>
+<translation id="8373046809163484087">Sử dụng tập hợp màu phù hợp với hình nền</translation>
 <translation id="8380114448424469341">Gắn cửa sổ vào nửa <ph name="DIRECTION" /> của màn hình</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> này do doanh nghiệp quản lý</translation>
 <translation id="8398927464629426868">Tốc độ sạc hoặc xả pin hiện tại của thiết bị</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">Tên người dùng</translation>
 <translation id="8503836310948963452">Còn một vài phút nữa thôi…</translation>
 <translation id="8508640263392900755">Chi tiết về APN</translation>
+<translation id="8522687886059337719">Giờ đây, bạn có thể sử dụng các <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />hình nền<ph name="END_LINK_WALLPAPER_SUBPAGE" /> và <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />trình bảo vệ màn hình<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> mới</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Nhà mạng của bạn có thể yêu cầu bạn bật tùy chọn này để kết nối với mạng của họ. Hãy liên hệ với nhà mạng để biết thông tin chi tiết.</translation>

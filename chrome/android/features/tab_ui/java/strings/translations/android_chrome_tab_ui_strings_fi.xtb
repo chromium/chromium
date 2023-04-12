@@ -14,7 +14,6 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Poista välilehden ryhmittely}other{Poista välilehtien ryhmittely}}</translation>
 <translation id="2277224997687551299">Muokkaa ryhmän nimeä</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Aseta välilehti kirjanmerkiksi}other{Aseta välilehdet kirjanmerkeiksi}}</translation>
-<translation id="2479148705183875116">Avaa Asetukset</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Tiivistä <ph name="TABS_COUNT_ONE" /> välilehti.}other{Tiivistä välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="2569352796411618312">Ehdotus: <ph name="NUMBER_OF_TABS" /> välilehteä ei ole käytetty vähään aikaan. Suljetaanko ne?</translation>
 <translation id="2613747923081026172">Luo ryhmä</translation>

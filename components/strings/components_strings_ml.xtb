@@ -120,7 +120,6 @@
 <translation id="1257286744552378071">നിങ്ങളുടെ സ്ഥാപനത്തിന് നിയന്ത്രണമില്ലാത്ത സൈറ്റിലാണ് പാസ്‌വേഡ് നൽകിയിരിക്കുന്നത്. നിങ്ങളുടെ അക്കൗണ്ട് പരിരക്ഷിക്കാൻ, മറ്റ് ആപ്പുകളിലും സൈറ്റുകളിലും നിങ്ങളുടെ പാസ്‌വേഡ് പുനരുപയോഗിക്കരുത്.</translation>
 <translation id="1257553931232494454">സൂം ലെവലുകൾ</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Chrome ക്രമീകരണം മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
-<translation id="1263231323834454256">വായനാ ലിസ്റ്റ്</translation>
 <translation id="1264309058268477500">ഇതര ട്രേ</translation>
 <translation id="1264974993859112054">കായികം</translation>
 <translation id="1266469291454105242">ഉപകരണ അൺലോക്ക്</translation>
@@ -251,7 +250,6 @@
 <translation id="1529789484829130889">ട്രേ 8</translation>
 <translation id="1530707389502320859">നിങ്ങൾ ഇപ്പോൾ സന്ദർശിക്കാൻ ശ്രമിച്ചത് വ്യാജ സൈറ്റാണെന്ന് തോന്നുന്നു. ചിലപ്പോൾ ചെറുതും കാണാൻ ബുദ്ധിമുട്ടുള്ളതുമായ മാറ്റങ്ങൾ URL-ൽ വരുത്തി ആക്രമണകാരികൾ സൈറ്റുകളുടെ അനുകരണ രൂപം സൃഷ്‌ടിക്കാറുണ്ട്.</translation>
 <translation id="1532118530259321453">ഈ പേജ് പറയുന്നത്:</translation>
-<translation id="153384715582417236">ഇപ്പോൾ ഇത്രമാത്രം ലഭ്യം</translation>
 <translation id="1536390784834419204">പേജ് വിവർത്തനം ചെയ്യുക</translation>
 <translation id="1539840569003678498">റിപ്പോർട്ട് അയച്ചു:</translation>
 <translation id="1549470594296187301">ഈ ഫീച്ചർ ഉപയോഗിക്കാൻ JavaScript പ്രവർത്തനക്ഷമമാക്കിയിരിക്കണം.</translation>
@@ -348,7 +346,6 @@
 <translation id="1745880797583122200">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യപ്പെട്ടിരിക്കുന്നു</translation>
 <translation id="1746113442205726301">ചിത്രം Y ഷിഫ്റ്റ്</translation>
 <translation id="1746531169546376413">0 ഡിഗ്രി</translation>
-<translation id="17513872634828108">ഓപ്പൺ ടാബുകൾ</translation>
 <translation id="1752021286346845558">മെയിൽബോക്സ് 8</translation>
 <translation id="1753068535428855445">ഡേറ്റിംഗും വ്യക്തിപരമായ കാര്യങ്ങളും</translation>
 <translation id="1753706481035618306">പേജ് നമ്പർ</translation>
@@ -360,7 +357,6 @@
 <translation id="1768211456781949159"><ph name="BEGIN_LINK" />Windows നെറ്റ്‌വർക്ക് ഡയഗണോസ്‌റ്റിക്‌സ് റൺ ചെയ്‌തുനോക്കൂ<ph name="END_LINK" />.</translation>
 <translation id="1774592222195216949"><ph name="BEGIN_LINK" />Chromium-ലെ അദൃശ്യ മോഡിനെ കുറിച്ച് കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="1778646502362731194">JIS B0</translation>
-<translation id="1787142507584202372">നിങ്ങൾ നിലവിൽ തുറന്നിട്ടുള്ള ടാബുകൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Google അക്കൗണ്ടിലെ വിവരങ്ങളും സ്വകാര്യതയും സുരക്ഷയും മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ഒന്നിലധികം പ്രവർത്തനങ്ങൾ ലഭ്യമാണ്, ഒന്നിൽ നിന്ന് മറ്റൊന്നിലേക്ക് മാറാൻ 'Tab' അമർത്തുക</translation>
@@ -368,6 +364,7 @@
 <translation id="1801812870656502108">വെർച്വൽ കാർഡിന്റെ വിശദാംശങ്ങൾ</translation>
 <translation id="1803020234906945288">ആരോഗ്യകരമായ ഭക്ഷണശീലം</translation>
 <translation id="1803351196216024260">നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കാൻ ആവശ്യപ്പെടാം</translation>
+<translation id="1806174020048213474">ഈ ആപ്പ്, വൈഫൈ ക്രെഡൻഷ്യലുകൾ ഇൻസ്റ്റാൾ ചെയ്യുന്നതിനുള്ള അനുമതി അഭ്യർത്ഥിക്കുന്നു. സജ്ജീകരിച്ചതിന് ശേഷം, ലഭ്യമായ വൈഫൈ നെറ്റ്‌വർക്കുകളിലേക്ക് നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> സ്വയമേവ കണക്റ്റ് ചെയ്യും. ഈ ക്രെഡെൻഷ്യലുകൾ നീക്കം ചെയ്യാൻ ആപ്പ് അൺഇൻസ്റ്റാൾ ചെയ്യുക.</translation>
 <translation id="1807246157184219062">ലൈറ്റ്</translation>
 <translation id="1807528111851433570">ആദ്യ ഷീറ്റ്</translation>
 <translation id="180991881384371158">CVC നിങ്ങളുടെ കാർഡിന്റെ പിൻഭാഗത്താണുള്ളത്. ഒപ്പിടാനുള്ള ബോക്‌സിന്റെ മുകളിൽ വലതുവശത്തുള്ള അവസാന 3 അക്കമാണിത്.</translation>
@@ -670,7 +667,6 @@
 <translation id="257674075312929031">ഗ്രൂപ്പ്</translation>
 <translation id="2576880857912732701">'സുരക്ഷാ ക്രമീകരണം മാനേജ് ചെയ്യുക' ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ സുരക്ഷിത ബ്രൗസിംഗും മറ്റും മാനേജ് ചെയ്യാൻ Enter അമർത്തുക</translation>
 <translation id="2586657967955657006">ക്ലിപ്പ്ബോർഡ്</translation>
-<translation id="2587730715158995865"><ph name="ARTICLE_PUBLISHER" /> എന്നയാളുടെ ലേഖനം. ഇതും മറ്റ് <ph name="OTHER_ARTICLE_COUNT" /> ലേഖനങ്ങളും വായിക്കുക.</translation>
 <translation id="2587841377698384444">ഡയറക്‌റ്ററി API ഐഡി:</translation>
 <translation id="2594318783181750337">വേഗത്തിലുള്ള വെബ് കാഴ്‌ച:</translation>
 <translation id="2595719060046994702">ഏതെങ്കിലും കമ്പനിയോ മറ്റ് സ്ഥാപനമോ മാനേജ് ചെയ്യുന്നതല്ല ഈ ഉപകരണവും അക്കൗണ്ടും.</translation>
@@ -1340,6 +1336,7 @@
 <translation id="4270541775497538019">സ്റ്റാക്കർ 6</translation>
 <translation id="4274173425554582601">കമ്പ്യൂട്ടറുകളും ഇലക്‌ട്രോണിക്‌സും</translation>
 <translation id="4275830172053184480">നിങ്ങളുടെ ഉപകരണം പുനരാരംഭിക്കുക</translation>
+<translation id="4276974990916607331">വേണ്ട</translation>
 <translation id="4277028893293644418">പാസ്‌വേഡ് റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="4277937682389409325">പ്രാദേശിക വിലാസം</translation>
 <translation id="4278390842282768270">അനുവദനീയം</translation>
@@ -1663,7 +1660,6 @@
 <translation id="5045550434625856497">പാസ്‍വേഡ് തെറ്റാണ്</translation>
 <translation id="5051305769747448211">തൽസമയ ഹാസ്യം</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{സമീപമുള്ള പങ്കിടൽ ഉപയോഗിച്ച് ഈ ഫയൽ അയയ്‌ക്കാൻ നിങ്ങളുടെ ഉപകരണത്തിൽ ഇടം (<ph name="DISK_SPACE_SIZE" />) സൃഷ്ടിക്കുക}other{സമീപമുള്ള പങ്കിടൽ ഉപയോഗിച്ച് ഈ ഫയലുകൾ അയയ്‌ക്കാൻ നിങ്ങളുടെ ഉപകരണത്തിൽ ഇടം (<ph name="DISK_SPACE_SIZE" />) സൃഷ്ടിക്കുക}}</translation>
-<translation id="5056549851600133418">നിങ്ങൾക്കുള്ള ലേഖനങ്ങൾ</translation>
 <translation id="5060483733937416656"><ph name="PROVIDER_ORIGIN" /> ഉപയോഗിക്കുന്ന വെബ്സൈറ്റുകളിൽ Windows Hello ഉപയോഗിച്ച് പരിശോധിച്ചുറപ്പിക്കാൻ നിങ്ങൾ തിരഞ്ഞെടുത്തു. നിങ്ങളുടെ പേയ്മെന്റ് രീതിയുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ ഈ ദാതാവ് സംഭരിച്ചിട്ടുണ്ടാകാം, നിങ്ങൾക്ക് ഇത് <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739"><ph name="LOOKALIKE_DOMAIN" /> ആണോ നിങ്ങൾ ഉദ്ദേശിച്ചത്?</translation>
 <translation id="5066056036849835175">പ്രിന്റിംഗ് ചരിത്രം</translation>
@@ -1701,6 +1697,7 @@
 <translation id="5129534298163637277">സ്ഥിരീകരണ ഡയലോഗ്</translation>
 <translation id="5135404736266831032">വിലാസങ്ങൾ മാനേജ് ചെയ്യുക...</translation>
 <translation id="5136841603454277753">ശരിയായ കോഡ് നൽകുക</translation>
+<translation id="5137761395480718572">ഈ ആപ്പ്, വൈഫൈ ക്രെഡൻഷ്യലുകൾ ഇൻസ്റ്റാൾ ചെയ്യുന്നതിനുള്ള അനുമതി അഭ്യർത്ഥിക്കുന്നു. സജ്ജീകരിച്ചതിന് ശേഷം, ലഭ്യമായ വൈഫൈ നെറ്റ്‌വർക്കുകളിലേക്ക് നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> സ്വയമേവ കണക്റ്റ് ചെയ്യും. ഈ ക്രെഡൻഷ്യലുകൾ നീക്കം ചെയ്യാൻ ആപ്പ് അൺഇൻസ്റ്റാൾ ചെയ്യുക. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">വെർച്വൽ കാർഡ് ഇപ്പോൾ ലഭ്യമല്ല, നിങ്ങളുടെ ബാങ്കുമായി ബന്ധപ്പെടുക</translation>
 <translation id="5138227688689900538">കുറച്ച് കാണിക്കുക</translation>
 <translation id="5145883236150621069">നയ പ്രതികരണത്തിൽ പിശക് കോഡ് ഉണ്ട്</translation>
@@ -1757,6 +1754,7 @@
 <translation id="5273881944177595304">വെബ്‌ ആപ്പുകളും ഓൺലൈൻ ടൂളുകളും</translation>
 <translation id="5274025349362408263">പുസ്തകങ്ങളും സാഹിത്യവും</translation>
 <translation id="5279286380302340275">ഡൗൺലോഡുകൾ മാനേജ് ചെയ്യുക</translation>
+<translation id="5279453600310613955">വേണ്ട</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">ഡോക്യുമെന്റ് പ്രോപ്പർട്ടികൾ</translation>
 <translation id="528468243742722775">അവസാനിപ്പിക്കുക</translation>
@@ -1860,7 +1858,6 @@
 <translation id="5541086400771735334">മെയിൽബോക്സ് 7</translation>
 <translation id="5541546772353173584">ഇമെയില്‍‌ ചേര്‍‌ക്കുക</translation>
 <translation id="5543722831081909240">180 ഡിഗ്രി</translation>
-<translation id="5545756402275714221">നിങ്ങൾക്കുള്ള ലേഖനങ്ങൾ</translation>
 <translation id="5551890439174915351">100 x 200 മി.മീ</translation>
 <translation id="5552137475244467770">ഓൺലൈനിൽ പ്രസിദ്ധീകരിച്ച ലിസ്റ്റുകൾക്ക് അനുസൃതമായി Chrome ഇടയ്ക്കിടെ നിങ്ങളുടെ പാസ്‌വേഡുകൾ പരിശോധിക്കുന്നു. ഇത് ചെയ്യുമ്പോൾ, നിങ്ങളുടെ പാസ്‌വേഡുകളും ഉപയോക്തൃനാമങ്ങളും എൻ‌ക്രിപ്റ്റ് ചെയ്‌ത നിലയിലായിരിക്കും, അതിനാൽ അവ Google ഉൾപ്പെടെ ആർക്കും വായിക്കാൻ കഴിയില്ല.</translation>
 <translation id="5556459405103347317">വീണ്ടും ലോഡ് ചെയ്യുക</translation>
@@ -2142,14 +2139,12 @@
 <translation id="6266934640124581640">ഇളം ടീൽ</translation>
 <translation id="6272088941196661550">നിങ്ങളുടെ Chrome ചരിത്രത്തിൽ പ്രസക്തമായ ആക്റ്റിവിറ്റി കാണാൻ ജേർണി പുനരാരംഭിക്കുക</translation>
 <translation id="6272383483618007430">Google അപ്ഡേറ്റ്</translation>
-<translation id="6276112860590028508">നിങ്ങളുടെ വായന പട്ടികയിൽ നിന്നുള്ള പേജുകൾ ഇവിടെ ദൃശൃമാകും</translation>
 <translation id="627746635834430766">അടുത്ത പ്രാവശ്യം വേഗത്തിൽ പണമടയ്ക്കാൻ, നിങ്ങളുടെ Google അക്കൗണ്ടിൽ ഈ കാർഡും ബില്ലിംഗ് വിലാസവും സംരക്ഷിക്കുക.</translation>
 <translation id="6279183038361895380">നിങ്ങളുടെ കഴ്‌സർ കാണിക്കാൻ |<ph name="ACCELERATOR" />| അമർത്തുക</translation>
 <translation id="6280223929691119688">ഈ വിലാസത്തിലേക്ക് ഡെലിവറി ചെയ്യാൻ കഴിയില്ല. മറ്റൊരു വിലാസം തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="6284292079994426700">26 x 38 ഇഞ്ച്</translation>
 <translation id="6285507000506177184">'Chrome-ൽ ഡൗൺലോഡുകൾ മാനേജ് ചെയ്യുക' ബട്ടൺ, Chrome-ൽ നിങ്ങൾ ഡൗൺലോഡ് ചെയ്തിരിക്കുന്ന ഫയലുകൾ മാനേജ് ചെയ്യാൻ Enter അമർത്തുക</translation>
 <translation id="6289939620939689042">പേജിന്റെ നിറം</translation>
-<translation id="6290238015253830360">നിങ്ങളുടെ നിർദ്ദേശിച്ച ലേഖനങ്ങൾ ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6295618774959045776">CVC:</translation>
 <translation id="6295855836753816081">സംരക്ഷിക്കുന്നു...</translation>
@@ -2252,6 +2247,7 @@
 <translation id="6529173248185917884">ഏഴാമത്തെ റോൾ</translation>
 <translation id="6529602333819889595">&amp;ഇല്ലാതാക്കുന്നത് വീണ്ടും ചെയ്യുക</translation>
 <translation id="6535751101619004418">കറൻസികളും വിദേശ വിനിമയവും</translation>
+<translation id="6536221421038631327">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ നിന്ന് Passpoint സബ്‌സ്ക്രിപ്ഷൻ നീക്കം ചെയ്താൽ അനുബന്ധ നെറ്റ്‌വർക്കുകളും നീക്കം ചെയ്യും. നിങ്ങളുടെ സബ്‌സ്ക്രിപ്ഷൻ പ്ലാനിൽ മാറ്റങ്ങൾ വരുത്താൻ "<ph name="FRIENDLY_NAME" />" എന്നതിനെ ബന്ധപ്പെടുക. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">മ്യൂച്ച്വൽ ഫണ്ടുകൾ</translation>
 <translation id="6545864417968258051">Bluetooth സ്‌കാനിംഗ്</translation>
 <translation id="6547208576736763147">ഇടതുവശത്ത് ഇരട്ട പഞ്ച് ചെയ്യുക</translation>
@@ -2747,7 +2743,6 @@
 <translation id="7696089921647603491">ക്ലാസിക് റോക്കുകളും പഴയവയും</translation>
 <translation id="769721561045429135">ഇപ്പോൾ, ഈ ഉപകരണത്തിൽ മാത്രം ഉപയോഗിക്കാനാവുന്ന കാർഡുകൾ നിങ്ങൾക്കുണ്ട്. കാർഡുകൾ അവലോകനം ചെയ്യാൻ, 'തുടരുക' ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="7698864304447945242">Google Play Services for AR അപ്ഡേറ്റ് ചെയ്യണോ?</translation>
-<translation id="7699293099605015246">ഇപ്പോൾ ലേഖനങ്ങൾ ലഭ്യമല്ല</translation>
 <translation id="7701040980221191251">ഒന്നുമില്ല</translation>
 <translation id="7701544340847569275">പിശകുകളോടെ അപ്ഡേറ്റ് പൂർത്തിയായി</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" /> <ph name="SITE" /> എന്നതിലേക്ക് പോകുക (സുരക്ഷിതമല്ല)<ph name="END_LINK" /></translation>
@@ -3346,6 +3341,7 @@
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Chrome ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">വൈഫൈ നെറ്റ്‌വർക്കുകൾ സജ്ജീകരിക്കാൻ <ph name="APP_NAME" /> ആപ്പിനെ അനുവദിക്കണോ?</translation>
 <translation id="936602727769022409">നിങ്ങളുടെ Google അക്കൗണ്ടിലേക്കുള്ള ആക്‌സസ് നഷ്‌ടപ്പെടാനിടയുണ്ട്. ഇപ്പോൾ തന്നെ പാസ്‌വേഡ് മാറ്റാൻ Chromium ശുപാർശ ചെയ്യുന്നു. സൈൻ ഇൻ ചെയ്യാൻ നിങ്ങളോട് ആവശ്യപ്പെടും.</translation>
 <translation id="937457230470581909">മൃഗശാലകൾ, അക്വേറിയങ്ങൾ, വന്യമൃഗസങ്കേതം</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />എന്തൊക്കെ ഡാറ്റ ഉപയോഗിക്കുന്നു:<ph name="END_BOLD" /> ഈ ഉപകരണത്തിൽ Chrome ഉപയോഗിച്ച് നിങ്ങൾ സന്ദർശിച്ച സൈറ്റുകളുടെ ലിസ്റ്റായ, അടുത്തിടെയുള്ള ബ്രൗസിംഗ് ചരിത്രത്തെ അടിസ്ഥാനമാക്കിയുള്ളതാണ് നിങ്ങളുടെ പരസ്യ വിഷയങ്ങൾ.</translation>

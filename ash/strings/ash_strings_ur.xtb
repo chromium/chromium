@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">‏USB-C آلہ (سانے کا پورٹ)</translation>
 <translation id="1013598600051641573">‏<ph name="DISPLAY_NAME" /> کو <ph name="RESOLUTION" /> (Hz<ph name="REFRESH_RATE" />) پر تبدیل کر دیا گیا ہے۔ تبدیلیاں باقی رکھنے کے لیے تصدیق کریں پر کلک کریں۔ گزشتہ ترتیبات کو <ph name="TIMEOUT_SECONDS" /> میں بحال کر دیا جائے گا۔</translation>
 <translation id="1013923882670373915">‏بلوٹوتھ آلہ "<ph name="DEVICE_NAME" />" جوڑا بنانے کی اجازت چاہتا ہے۔ براہ کرم اس PIN کوڈ کو اس آلہ پر درج کریں: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">‏اس سے <ph name="APP_NAME" /> اور سبھی ایپس اور ویب سائٹس کو مقام کی اجازت اور ChromeOS کے ساتھ Wi-Fi اور موبائل نیٹ ورکس کا مقام استعمال کرنے کی اجازت ملتی ہے۔</translation>
 <translation id="1017556409696559990">‏Chrome میں کوئی گزشتہ سرگزشت موجود نہ ہونے پر سرفہرست ونڈو کو چھوٹا کریں</translation>
 <translation id="1024364763893396229">اپنا <ph name="NAME" /> محفوظ کریں</translation>
 <translation id="1032891413405719768">اسٹائلس کی بیٹری کم ہے</translation>
@@ -147,6 +148,7 @@
 <translation id="1651914502370159744">سرگزشت کا صفحہ کھولیں</translation>
 <translation id="1654477262762802994">صوتی استفسار شروع کریں</translation>
 <translation id="1668469839109562275">‏پہلے سے موجود VPN</translation>
+<translation id="1675844249244994876">دائیں ونڈو کو اپ ڈیٹ کریں</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> باقی</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> منسلک نہیں ہے۔</translation>
 <translation id="1677582821739292812">کوئی آپ کی اسکرین پر دیکھ رہا ہے</translation>
@@ -191,6 +193,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ایتھرنیٹ: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">مقام تک رسائی آن کریں</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> سے پن کو ختم کر دیا گیا</translation>
 <translation id="1838895407229022812">نائٹ لائٹ آف ہے۔</translation>
 <translation id="1854180393107901205">کاسٹ کرنا بند کریں</translation>
@@ -468,6 +471,7 @@
 <translation id="3255483164551725916">آپ کیا کر سکتی ہیں؟</translation>
 <translation id="3256109297135787951">اپنی شیلف پر ایک آئٹم سے ہائی لائٹ ہٹائیں</translation>
 <translation id="3260969790895726815">اسپیچ پر مقامی طور پر کارروائی کی جاتی ہے اور ڈکٹیشن آف لائن کام کرتی ہے، لیکن کچھ صوتی کمانڈز کام نہیں کریں گے۔</translation>
+<translation id="3265032511221679826">قطعی مقام تک رسائی کو آن کریں؟</translation>
 <translation id="3269597722229482060">دائیں طرف کلک کریں</translation>
 <translation id="3289364673986435196">پاور مینیو</translation>
 <translation id="3289544412142055976">‏Linux ایپس فی الحال تعاون یافتہ نہیں ہیں</translation>
@@ -578,6 +582,7 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> نظم کردہ صارف</translation>
 <translation id="3666266999138159418">فلوٹنگ ونڈو کو چھپانے کے لیے سوائپ کریں</translation>
 <translation id="367531336287639526">ایڈریس بار کے بائیں جانب موجود پہلے آئیکن کو منتخب کریں</translation>
+<translation id="3677931086890821290">‏اس سے سبھی ایپس اور ویب سائٹس کو مقام کی اجازت اور ChromeOS کے ساتھ Wi-Fi اور موبائل نیٹ ورکس کا مقام استعمال کرنے کی اجازت ملتی ہے۔</translation>
 <translation id="3679827876008292680">ونڈو میں آخری ٹیب پر جائیں</translation>
 <translation id="36813544980941320">‏آپ کے فون اور <ph name="DEVICE_NAME" /> کے درمیان Wi-Fi نیٹ ورکس کا اشتراک کیا جائے گا</translation>
 <translation id="3694122362646626770">ویب سائٹس</translation>
@@ -844,6 +849,7 @@
 <translation id="493076006037866439">اسکرین کو زوم آؤٹ کریں</translation>
 <translation id="4936329710968938986">ہر کوئی، آف</translation>
 <translation id="4938176435186993759">سبھی تجاویز چھپائیں</translation>
+<translation id="4943007472417128747">‏WiFi استعمال کرنے کے لیے ہاٹ اسپاٹ کو آف کر دیا گیا ہے۔ ہاٹ اسپاٹ استعمال کرنے کے لیے، WiFi آف کریں۔</translation>
 <translation id="4945196315133970626">اطلاعات آف کریں</translation>
 <translation id="4946376291507881335">کیپچر کریں</translation>
 <translation id="495046168593986294">اوپر اسکرول کریں</translation>
@@ -1387,6 +1393,7 @@
 آلہ کو شٹ ڈاؤن کرنے کے لیے پاور بٹن کو آلہ پر دوبارہ چھوئیں اور دبائے رکھیں۔</translation>
 <translation id="7526573455193969409">ممکن ہے نیٹ ورک کو مانیٹر کیا جا رہا ہو</translation>
 <translation id="7536035074519304529">‏IP پتہ: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">بائیں ونڈو کو اپ ڈیٹ کریں</translation>
 <translation id="7543399541175347147">‏Linux ایپس اور پوشیدگی ونڈوز فی الحال تعاون یافتہ نہیں ہیں۔ دیگر ایپس کو محفوظ کیا جائے گا۔</translation>
 <translation id="7544300628205093162">کی بورڈ عقبی لائٹ آن ہے</translation>
 <translation id="7548434653388805669">سونے کا وقت ہو گیا</translation>
@@ -1467,6 +1474,7 @@
 <translation id="7893503627044934815">نہیں چاہتے کہ یہ فائل دکھائی جائے</translation>
 <translation id="7895348134893321514">ٹوٹ</translation>
 <translation id="7897375687985782769">آپ نے اسکرین کو گھمانے کیلئے کی بورڈ شارٹ کٹ دبایا ہے۔ کیا آپ اسکرین کو گھمانا چاہتے ہیں؟</translation>
+<translation id="7901190436359881020">ونڈوز تبدیل کریں</translation>
 <translation id="7901405293566323524">فون کا ہب</translation>
 <translation id="7902625623987030061">فنگر پرنٹ سینسر کو ٹچ کریں</translation>
 <translation id="7904094684485781019">اس اکاؤنٹ کے منتظم نے متعدد سائن ان کی اجازت ختم کر دی ہے۔</translation>
@@ -1742,6 +1750,7 @@
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> ریزولیوشن کو <ph name="RESOLUTION" /> پر تبدیل کر دیا گیا ہے۔ تبدیلیاں باقی رکھنے کے لیے تصدیق کریں پر کلک کریں۔ گزشتہ تبدیلیوں کو <ph name="TIMEOUT_SECONDS" /> میں بحال کر دیا جائے گا۔</translation>
 <translation id="9201044636667689546">‏اس Chromebook سے <ph name="NAME" /> کو منسلک کریں</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />، آپ کے منتظم کے زیر انتظام ہے</translation>
+<translation id="9207682216934703221">‏اس سے <ph name="APP_NAME" />، <ph name="APP2_NAME" /> اور سبھی ایپس اور ویب سائٹس کو مقام کی اجازت اور ChromeOS کے ساتھ Wi-Fi اور موبائل نیٹ ورکس کا مقام استعمال کرنے کی اجازت ملتی ہے۔</translation>
 <translation id="9210037371811586452">یونیفائیڈ ڈیسک ٹاپ وضع سے باہر نکل رہے ہیں</translation>
 <translation id="9211490828691860325">تمام ڈیسکس</translation>
 <translation id="9211681782751733685">بیٹری کے مکمل طور پر چارج ہونے میں <ph name="TIME_REMAINING" /> باقی ہے۔</translation>

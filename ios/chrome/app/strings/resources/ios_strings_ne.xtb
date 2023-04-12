@@ -1024,6 +1024,7 @@
 <translation id="7781011649027948662">यो पृष्ठ अनुवाद गर्ने हो?</translation>
 <translation id="7781069478569868053">नयाँ ट्याब पृष्ठ</translation>
 <translation id="7781829728241885113">हिजो</translation>
+<translation id="7786246662347093005">{COUNT,plural, =1{१ दिनपछि}other{{COUNT} दिनपछि}}</translation>
 <translation id="778855399387580014">Chrome को नयाँ ट्याबमा खोज सुरु गर्नुहोस्।</translation>
 <translation id="7791543448312431591">थप्नुहोस्</translation>
 <translation id="7807060072011926525">Google ले प्रदान गरेको</translation>

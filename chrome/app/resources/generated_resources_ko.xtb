@@ -4109,6 +4109,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4545759655004063573">권한이 부족하여 저장할 수 없습니다. 다른 위치에 저장하세요.</translation>
 <translation id="4546308221697447294">Chrome으로 빠르게 탐색</translation>
 <translation id="4546345569117159016">오른쪽 버튼</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" />님이 다음 확장 프로그램을 사용하려고 함</translation>
 <translation id="4546692474302123343">Google 어시스턴트 음성 입력</translation>
 <translation id="4547659257713117923">다른 기기의 탭 없음</translation>
 <translation id="4547672827276975204">자동 설정</translation>
@@ -4966,6 +4967,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5338503421962489998">로컬 저장소</translation>
 <translation id="5339031667684712858">삭제한 사이트</translation>
 <translation id="5340638867532133571">사이트에서 결제 핸들러를 설치하도록 허용(권장)</translation>
+<translation id="5340787663756381836">찾기 및 수정하기(&amp;F)</translation>
 <translation id="5341793073192892252">다음 쿠키가 차단됨(타사 쿠키는 예외 없이 차단됨)</translation>
 <translation id="5342091991439452114">PIN은 <ph name="MINIMUM" />자리 이상이어야 합니다.</translation>
 <translation id="5344036115151554031">Linux 복원 중</translation>
@@ -9358,6 +9360,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="939401694733344652">이 계정은 현재 Android 앱에서 사용되지 않습니다. 이 Android 앱에서 사용할 계정을 선택하면 다른 Android 앱에서도 같은 계정을 사용할 수 있습니다. <ph name="LINK_BEGIN" />설정 &gt; 계정<ph name="LINK_END" />에서 Android 앱 액세스를 변경할 수 있습니다.</translation>
 <translation id="939598580284253335">암호 입력</translation>
 <translation id="939736085109172342">새 폴더</translation>
+<translation id="940212040923880623">찾기 및 수정하기(&amp;F)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" />에서 Chrome 탭과 오디오를 공유 중입니다.</translation>
 <translation id="944799160843436808">Steam on Chromebook을 설정하는 중에 문제가 발생했습니다</translation>
 <translation id="945522503751344254">의견 보내기</translation>

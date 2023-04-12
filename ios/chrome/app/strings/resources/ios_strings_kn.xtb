@@ -1025,6 +1025,7 @@
 <translation id="7781011649027948662">ಪುಟವನ್ನು ಅನುವಾದಿಸಬೇಕೇ?</translation>
 <translation id="7781069478569868053">ಹೊಸ ಟ್ಯಾಬ್‌ ಪುಟ</translation>
 <translation id="7781829728241885113">ನಿನ್ನೆ</translation>
+<translation id="7786246662347093005">{COUNT,plural, =1{1 ದಿನದ ನಂತರ}one{{COUNT} ದಿನಗಳ ನಂತರ}other{{COUNT} ದಿನಗಳ ನಂತರ}}</translation>
 <translation id="778855399387580014">ಹೊಸ Chrome ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಹುಡುಕಾಟವನ್ನು ಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="7791543448312431591">ಸೇರಿಸು</translation>
 <translation id="7807060072011926525">Google ಮೂಲಕ ಒದಗಿಸಲಾಗಿದೆ</translation>
@@ -1089,6 +1090,7 @@
 <translation id="8136856065410661948">Chrome ಮತ್ತು Google Lens ಸಹಾಯದಿಂದ ನಿಮ್ಮ Apple Calendar ನಲ್ಲಿ ಈವೆಂಟ್‌ಗಳನ್ನು ರಚಿಸಲು ಇದನ್ನು ಬಳಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="8156478151976189188">ಪಾಸ್‌ವರ್ಡ್ ಸಿಂಕ್ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿಲ್ಲ</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> ಖಾತೆಗಳು</translation>
+<translation id="8159358225423560600">ಇದೀಗ</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />ನಿಮ್ಮ ಸಾಧನಗಳು<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">ಪುಟವನ್ನು ಅನುವಾದಿಸಿ</translation>
@@ -1119,6 +1121,7 @@
 <translation id="8393889347136007944">ಟ್ಯಾಬ್‌ಗಳನ್ನು <ph name="THRESHOLD" /> ದಿನಗಳವರೆಗೆ ಬಳಸಲಾಗಿಲ್ಲ</translation>
 <translation id="8407669440184693619">ಈ ಸೈಟ್‌ಗಾಗಿ ಯಾವುದೇ ಪಾಸ್‌ವರ್ಡ್ ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="842017693807136194">ಇದರಿಂದ ಸೈನ್‌ ಇನ್‌ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="8423121072346537366">ಇದೀಗ</translation>
 <translation id="8425693829365242963">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಅನನ್ಯವಾಗಿವೆ</translation>
 <translation id="8428045167754449968">ನಗರ / ಪಟ್ಟಣ</translation>
 <translation id="8428213095426709021">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>

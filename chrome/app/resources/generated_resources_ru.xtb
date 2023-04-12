@@ -2152,6 +2152,7 @@
 <translation id="2804043232879091219">Не удалось открыть альтернативный браузер.</translation>
 <translation id="2804667941345577550">Вы автоматически выйдете из аккаунта на этом сайте (в том числе на открытых вкладках).</translation>
 <translation id="2804680522274557040">Камера отключена</translation>
+<translation id="2804742109948581745">Параллельный</translation>
 <translation id="2805539617243680210">Все готово!</translation>
 <translation id="2805646850212350655">Зашифрованная файловая система (EFS) Microsoft</translation>
 <translation id="2805756323405976993">Сервисы</translation>
@@ -4095,6 +4096,7 @@
 <translation id="4545759655004063573">Не удается сохранить файл: нет прав. Выберите другой каталог.</translation>
 <translation id="4546308221697447294">Быстрый и удобный браузер Google Chrome</translation>
 <translation id="4546345569117159016">Правая кнопка</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> просит разрешить использовать это расширение:</translation>
 <translation id="4546692474302123343">Голосовой ввод в Google Ассистенте</translation>
 <translation id="4547659257713117923">Нет вкладок с других устройств</translation>
 <translation id="4547672827276975204">Автоматическое определение</translation>
@@ -4643,6 +4645,7 @@
 <translation id="5056950756634735043">Подключение к контейнеру…</translation>
 <translation id="5057110919553308744">При нажатии на расширение</translation>
 <translation id="5059241099014281248">Ограниченный вход</translation>
+<translation id="5059429103770496207">Стиль показа</translation>
 <translation id="5059526285558225588">Выберите часть экрана для демонстрации</translation>
 <translation id="5060332552815861872">Для сохранения доступен 1 принтер.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{В папке есть закладка. Все равно удалить ее?}one{В папке есть # закладка. Все равно удалить ее?}few{В папке есть # закладки. Все равно удалить ее?}many{В папке есть # закладок. Все равно удалить ее?}other{В папке есть # закладки. Все равно удалить ее?}}</translation>
@@ -7893,7 +7896,7 @@
 <translation id="7952904276017482715">Ожидаемый идентификатор: <ph name="EXPECTED_ID" />, полученный идентификатор: <ph name="NEW_ID" /></translation>
 <translation id="7953669802889559161">Способы ввода</translation>
 <translation id="7953955868932471628">Управление ярлыками</translation>
-<translation id="7955105108888461311">Запросить доступ лично</translation>
+<translation id="7955105108888461311">Попросить лично</translation>
 <translation id="7955177647836564772">Если функция Smart Lock включена и телефон разблокирован, вводить пароль или PIN-код не нужно.</translation>
 <translation id="7956373551960864128">Сохраненные принтеры</translation>
 <translation id="7957074856830851026">Получать данные об устройстве, например серийный номер или идентификатор объекта</translation>

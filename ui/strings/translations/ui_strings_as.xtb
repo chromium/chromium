@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{১ দিন পূর্বে}one{# দিন পূর্বে}other{# দিন পূর্বে}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{১ মিনিট পূর্বে}one{#  মিনিট পূর্বে}other{#  মিনিট পূর্বে}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{১মি}one{#মি}other{#মি}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{১ দিন পূৰ্বে}one{# দিন পূৰ্বে}other{# দিন পূৰ্বে}}</translation>
 <translation id="1181037720776840403">আঁতৰাওক</translation>
 <translation id="1243314992276662751">আপল’ড কৰক</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> শ্বেয়াৰ কৰিব পৰা নগ’ল</translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">বাওঁফালৰ পৰা সোঁফাললৈ</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1398853756734560583">সৰ্বাধিক মাত্ৰালৈ বঢ়াওক</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{১ মিনিট পূৰ্বে}one{# মিনিট পূৰ্বে}other{# মিনিট পূৰ্বে}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> শ্বেয়াৰ কৰিব নোৱাৰি</translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{১ মাহ পূৰ্বে}one{# মাহ পূৰ্বে}other{# মাহ পূৰ্বে}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{১ মিনিট আৰু }one{# মিনিট আৰু }other{# মিনিট আৰু }}</translation>
 <translation id="1643823602425662293">জাননী</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">প্ৰতিচ্ছবি</translation>
 <translation id="4565377596337484307">পাছৱৰ্ড লুকুৱাওক</translation>
 <translation id="4588090240171750605">সোঁফাললৈ স্ক্ৰ’ল কৰক</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{১ বছৰ পূৰ্বে}one{# বছৰ পূৰ্বে}other{# বছৰ পূৰ্বে}}</translation>
 <translation id="4724120544754982507">জাননী কেন্দ্ৰ, <ph name="UNREAD_NOTIFICATION_COUNT" /> নপঢ়া জাননীসমূহ</translation>
 <translation id="4729257764711776855">সংখ্যা</translation>
 <translation id="4746179598275229723">এক্সটেনশ্বন আনপিন কৰা আছে</translation>
@@ -212,10 +216,12 @@
 <translation id="8867568208303837180">পঠিয়াই থকা হৈছে...</translation>
 <translation id="8876215549894133151">ফৰ্মেট:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{১ ঘণ্টা পূৰ্বে}one{# ঘণ্টা পূৰ্বে}other{# ঘণ্টা পূৰ্বে}}</translation>
 <translation id="8996630695507351249">নিশ্চিত হৈ লওক যে <ph name="TARGET_DEVICE_NAME" /> ইণ্টাৰনেটৰ সৈতে সংযুক্ত হৈ আছে।</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{১ ছেকেণ্ড}one{# ছেকেণ্ড}other{# ছেকেণ্ড}}</translation>
 <translation id="9059834730836941392">জাননী সংকোচন কৰক</translation>
 <translation id="9170848237812810038">&amp;আনডু কৰক</translation>
 <translation id="932327136139879170">গৃহ</translation>
 <translation id="944069440740578670">নপঢ়া জাননীসমূহ</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{১ ছেকেণ্ড পূৰ্বে}one{# ছেকেণ্ড পূৰ্বে}other{# ছেকেণ্ড পূৰ্বে}}</translation>
 </translationbundle>

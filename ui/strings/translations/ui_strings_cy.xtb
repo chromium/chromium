@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{1 diwrnod yn ôl}zero{# diwrnod yn ôl}two{# ddiwrnod yn ôl}few{# diwrnod yn ôl}many{# diwrnod yn ôl}other{# diwrnod yn ôl}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{1 funud yn ôl}zero{# munud yn ôl}two{# funud yn ôl}few{# munud yn ôl}many{# munud yn ôl}other{# munud yn ôl}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1m}zero{#m}two{#f}few{#m}many{#m}other{#m}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{1 Diwrnod yn Ôl}zero{# Diwrnod yn Ôl}two{# Ddiwrnod yn Ôl}few{# Diwrnod yn Ôl}many{# Diwrnod yn Ôl}other{# Diwrnod yn Ôl}}</translation>
 <translation id="1181037720776840403">Dileu</translation>
 <translation id="1243314992276662751">Uwchlwytho</translation>
 <translation id="1266864766717917324">Ni ellid rhannu <ph name="CONTENT_TYPE" /></translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">O'r Chwith i'r Dde</translation>
 <translation id="1383876407941801731">Chwilio</translation>
 <translation id="1398853756734560583">Mwyhau</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{1 Funud yn Ôl}zero{# Munud yn Ôl}two{# Funud yn Ôl}few{# Munud yn Ôl}many{# Munud yn Ôl}other{# Munud yn Ôl}}</translation>
 <translation id="1450753235335490080">Methu â rhannu <ph name="CONTENT_TYPE" /></translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{1 Mis yn Ôl}zero{# Mis yn Ôl}two{# Fis yn Ôl}few{# Mis yn Ôl}many{# Mis yn Ôl}other{# Mis yn Ôl}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 funud a }zero{# munud a }two{# funud a }few{# munud a }many{# munud a }other{# munud a }}</translation>
 <translation id="1643823602425662293">Hysbysiad</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">Llun</translation>
 <translation id="4565377596337484307">Cuddio'r cyfrinair</translation>
 <translation id="4588090240171750605">Sgrolio i'r Dde</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{1 Flwyddyn yn Ôl}zero{# Mlynedd yn Ôl}two{# Flynedd yn Ôl}few{# Mlynedd yn Ôl}many{# Mlynedd yn Ôl}other{# Mlynedd yn Ôl}}</translation>
 <translation id="4724120544754982507">Canolfan Hysbysiadau, mae <ph name="UNREAD_NOTIFICATION_COUNT" /> hysbysiad sydd heb eu darllen</translation>
 <translation id="4729257764711776855">rhif</translation>
 <translation id="4746179598275229723">Estyniad wedi'i ddadbinio</translation>
@@ -212,10 +216,12 @@
 <translation id="8867568208303837180">Wrthi'n anfon yr arian...</translation>
 <translation id="8876215549894133151">Fformat:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{1 Awr yn Ôl}zero{# Awr yn Ôl}two{# Awr yn Ôl}few{# Awr yn Ôl}many{# Awr yn Ôl}other{# Awr yn Ôl}}</translation>
 <translation id="8996630695507351249">Gwnewch yn siŵr bod <ph name="TARGET_DEVICE_NAME" /> wedi'i gysylltu â'r rhyngrwyd.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 eiliad}zero{# eiliad}two{# eiliad}few{# eiliad}many{# eiliad}other{# eiliad}}</translation>
 <translation id="9059834730836941392">Crebachu'r hysbysiad</translation>
 <translation id="9170848237812810038">&amp;Dadwneud</translation>
 <translation id="932327136139879170">Cartref</translation>
 <translation id="944069440740578670">Hysbysiadau sydd heb eu darllen</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{1 Eiliad yn Ôl}zero{# Eiliad yn Ôl}two{# Eiliad yn Ôl}few{# Eiliad yn Ôl}many{# Eiliad yn Ôl}other{# Eiliad yn Ôl}}</translation>
 </translationbundle>

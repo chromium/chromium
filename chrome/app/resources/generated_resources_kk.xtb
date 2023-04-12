@@ -2147,6 +2147,7 @@
 <translation id="2804043232879091219">Балама браузер ашылмады.</translation>
 <translation id="2804667941345577550">Осы сайттан, оның ішінде ашық қойындылардан шығып кетесіз.</translation>
 <translation id="2804680522274557040">Камера өшірулі</translation>
+<translation id="2804742109948581745">Қатар</translation>
 <translation id="2805539617243680210">Барлығы дайын!</translation>
 <translation id="2805646850212350655">Microsoft Encrypting File System</translation>
 <translation id="2805756323405976993">Қолданбалар</translation>
@@ -4639,6 +4640,7 @@
 <translation id="5056950756634735043">Контейнерге қосылуда</translation>
 <translation id="5057110919553308744">Кеңейтім басылғанда</translation>
 <translation id="5059241099014281248">Кіруді шектеу</translation>
+<translation id="5059429103770496207">Көрсету стилі</translation>
 <translation id="5059526285558225588">Бөлісілетін контентті таңдаңыз</translation>
 <translation id="5060332552815861872">1 принтерді сақтауға болады.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Бұл қалтада бетбелгі бар. Оны шынымен жойғыңыз келе ме?}other{Бұл қалтада # бетбелгі бар. Оны шынымен жойғыңыз келе ме?}}</translation>

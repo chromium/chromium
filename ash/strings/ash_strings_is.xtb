@@ -147,6 +147,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1651914502370159744">Opna síðu ferils</translation>
 <translation id="1654477262762802994">Hefja raddfyrirspurn</translation>
 <translation id="1668469839109562275">Innbyggt VPN</translation>
+<translation id="1675844249244994876">Uppfæra hægri glugga</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> eftir</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> er ótengt.</translation>
 <translation id="1677582821739292812">Einhver er að horfa á skjáinn þinn</translation>
@@ -844,6 +845,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="493076006037866439">Minnka aðdrátt á skjá</translation>
 <translation id="4936329710968938986">Öll, slökkt</translation>
 <translation id="4938176435186993759">Fela allar tillögur</translation>
+<translation id="4943007472417128747">Slökkt var á heitum reit til að nota WiFi. Slökktu á WiFi til að nota heitan reit.</translation>
 <translation id="4945196315133970626">Slökkva á tilkynningum</translation>
 <translation id="4946376291507881335">Taka mynd</translation>
 <translation id="495046168593986294">Fletta upp</translation>
@@ -1388,6 +1390,7 @@ Ný uppsetning</translation>
 Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translation>
 <translation id="7526573455193969409">Hugsanlega er fylgst með netinu</translation>
 <translation id="7536035074519304529">IP-tala: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Uppfæra vinstri glugga</translation>
 <translation id="7543399541175347147">Linux forrit og huliðsgluggar eru ekki studdir eins og er. Önnur forrit verða vistuð.</translation>
 <translation id="7544300628205093162">Kveikt er á baklýsingu lyklaborðs</translation>
 <translation id="7548434653388805669">Háttatími</translation>
@@ -1468,6 +1471,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7893503627044934815">Ég vil ekki sjá þessa skrá</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Þú ýttir á flýtilykilinn fyrir skjásnúning. Viltu snúa skjánum?</translation>
+<translation id="7901190436359881020">Víxla gluggum</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Snertu fingrafaralesarann</translation>
 <translation id="7904094684485781019">Stjórnandi þessa reiknings hefur gert innskráningu á marga reikninga óvirka.</translation>

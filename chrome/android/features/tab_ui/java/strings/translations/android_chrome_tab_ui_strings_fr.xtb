@@ -14,7 +14,6 @@
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Dégrouper l'onglet}one{Dégrouper l'onglet}other{Dégrouper les onglets}}</translation>
 <translation id="2277224997687551299">Modifier le nom du groupe</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Ajouter onglet aux favoris}one{Ajouter onglet aux favoris}other{Ajouter onglets aux favoris}}</translation>
-<translation id="2479148705183875116">Accéder aux paramètres</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Réduisez <ph name="TABS_COUNT_ONE" /> onglet.}one{Réduisez le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglets.}other{Réduisez le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="2569352796411618312">Suggestion : <ph name="NUMBER_OF_TABS" /> des onglets ouverts n'ont pas été utilisés récemment. Voulez-vous les fermer ?</translation>
 <translation id="2613747923081026172">Créer un groupe</translation>

@@ -4965,6 +4965,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="5338503421962489998">Helyi tárhely</translation>
 <translation id="5339031667684712858">Eltávolított webhelyek</translation>
 <translation id="5340638867532133571">Fizetéskezelők telepítésének engedélyezése a webhelyek számára (ajánlott)</translation>
+<translation id="5340787663756381836">&amp;Keresés és szerkesztés</translation>
 <translation id="5341793073192892252">A következő cookie-kat letiltottuk (a harmadik féltől származó cookie-kat kivétel nélkül letiltjuk)</translation>
 <translation id="5342091991439452114">A PIN-kódnak legalább <ph name="MINIMUM" /> számjegyűnek kell lennie</translation>
 <translation id="5344036115151554031">A Linux rendszer visszaállítása folyamatban van</translation>
@@ -9357,6 +9358,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="939401694733344652">Ezeket a fiókokat jelenleg nem használják Android-alkalmazásokkal. Ha kiválasztja valamelyik fiókot az ezzel az Android-alkalmazással való használatra, a fiók más Android-alkalmazásokkal is használható lehet. Az Android-alkalmazások hozzáférését a <ph name="LINK_BEGIN" />Beállítások &gt; Fiókok<ph name="LINK_END" /> pontnál módosíthatja.</translation>
 <translation id="939598580284253335">Összetett jelszó megadása</translation>
 <translation id="939736085109172342">Új mappa</translation>
+<translation id="940212040923880623">&amp;Keresés és szerkesztés</translation>
 <translation id="942532530371314860">A(z) <ph name="APP_NAME" /> megosztja a Chrome egy lapját és a hangot.</translation>
 <translation id="944799160843436808">Hiba történt a Steam Chromebookon való beállítása során</translation>
 <translation id="945522503751344254">Visszajelzés küldése</translation>

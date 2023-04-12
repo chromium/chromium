@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Här är några andra användbara resurser:</translation>
 <translation id="1905710495812624430">Du har försökt för många gånger.</translation>
 <translation id="1908234395526491708">Misslyckade UDP-förfrågningar</translation>
+<translation id="1923388006036088459">Accentfärger</translation>
 <translation id="1947737735496445907">Utskrivet</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1962550982027027473">Ett standard-APN krävs</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Nedladdning slutförd</translation>
 <translation id="3969602104473960991">Lösenordet för Chrome OS har uppdaterats</translation>
 <translation id="397105322502079400">Beräknar ...</translation>
+<translation id="3974175076798940554">Exklusiva Chromebook Plus-tillgångar är nu tillgängliga</translation>
 <translation id="39823212440917567">Utskriftsjobb som är äldre än <ph name="NUMBER_OF_DAYS" /> dagar tas bort</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> har nu uppdaterats</translation>
 <translation id="4003384961948020559">Misslyckades – utmatningsfacket är fullt</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">Lägg till ett konto för multiinloggning. Alla inloggade konton kan öppnas utan lösenord, så använd bara den här funktionen med konton du litar på.</translation>
 <translation id="8364946094152050673">Inga namnservrar har angetts</translation>
 <translation id="8372477600026034341">Ytterligare värdar</translation>
+<translation id="8373046809163484087">Använd färguppsättningar som matchar din bakgrund</translation>
 <translation id="8380114448424469341">Docka fönstret på den <ph name="DIRECTION" /> halvan av skärmen</translation>
 <translation id="8395584934117017006">Denna <ph name="DEVICE_TYPE" /> är företagshanterad</translation>
 <translation id="8398927464629426868">Hur fort enheten laddas eller laddas ur för närvarande</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">Användarnamn</translation>
 <translation id="8503836310948963452">Bara några minuter kvar …</translation>
 <translation id="8508640263392900755">APN-information</translation>
+<translation id="8522687886059337719">Nu har du åtkomst till nya <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />bakgrunder<ph name="END_LINK_WALLPAPER_SUBPAGE" /> och <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />skärmsläckare<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Det här alternativet kan krävas för att du ska kunna ansluta till operatörens nätverk. Kontakta operatören för mer information.</translation>

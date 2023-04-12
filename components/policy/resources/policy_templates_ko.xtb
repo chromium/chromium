@@ -1173,6 +1173,13 @@
 
       정책을 사용 설정하거나 설정하지 않으면 빠른 답변 정의가 사용 설정됩니다.
       정책을 사용 중지하면 빠른 답변 정의가 사용 중지됩니다.</translation>
+<translation id="2095778449451007308">이 정책은 사용자가 설정에서 HTTPS 우선 모드(항상 보안 연결 사용)를 사용 설정할 수 있는지 제어합니다. HTTPS 우선 모드는 모든 탐색을 HTTPS로 업그레이드합니다.
+      이 설정을 설정하지 않거나 허용됨으로 설정할 경우 사용자는 HTTPS 우선 모드를 사용 설정할 수 있습니다.
+      이 설정을 허용되지 않음으로 설정할 경우 사용자는 HTTPS 우선 모드를 사용 설정할 수 없습니다.
+      이 설정이 force_enabled로 설정된 경우 HTTPS 우선 모드가 사용 설정되고 사용자가 사용 중지할 수 없습니다.
+      HTTPS 우선 모드 강제 사용 설정은 M112부터 지원됩니다.
+
+별도의 <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> 정책을 사용하여 이 기능을 통해 특정 호스트 이름 또는 호스트 이름 패턴이 HTTPS로 업그레이드되지 않도록 제외할 수 있습니다.</translation>
 <translation id="209586405398070749">정식 채널</translation>
 <translation id="2096932573113293941">사용자에게 승인이 필요한 플러그인의 실행 허가 요청</translation>
 <translation id="2098658257603918882">사용 및 비정상 종료 관련 데이터 보고 사용</translation>
@@ -7759,11 +7766,6 @@ False로 설정하면 로그인 화면이 표시될 때 개인 정보 보호 화
       세이프 브라우징에 관해 자세히 알아보세요(https://developers.google.com/safe-browsing).</translation>
 <translation id="8199823751103472868">정책을 설정하면 <ph name="PRODUCT_OS_NAME" />에서 힌디어 인스크립트 레이아웃이 사용 설정됩니다. False로 설정하거나 설정하지 않으면 레이아웃을 사용할 수 없습니다.</translation>
 <translation id="8202834945144737726">로그인 화면의 URL 목록에 <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> 증명 흐름 사용 설정</translation>
-<translation id="8212900161626657849">정책을 구성하지 않거나 사용 설정한 경우 <ph name="PRODUCT_NAME" />은 TLS의 포스트 퀀텀 키 협약 알고리즘인 CECPQ2에 관한 기본 롤아웃 프로세스를 따릅니다.
-
-      CECPQ2를 사용하면 TLS 메시지가 더 커지기 때문에 드물게 일부 네트워킹 하드웨어에서 버그를 유발할 수 있습니다. 정책을 False로 설정하면 네트워킹 문제를 해결하는 중에 CECPQ2를 사용 중지할 수 있습니다.
-
-      정책은 일시적인 조치로, 향후 <ph name="PRODUCT_NAME" /> 버전에서 삭제될 예정입니다.</translation>
 <translation id="8213770777756919897">이 정책은 지원이 중단되었으며 <ph name="PRODUCT_OS_NAME" /> 버전 85에서 삭제될 예정입니다. 대신 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> 정책을 사용하세요.
 
           이 정책이 설정되어 있으면 사용자가 유휴 지연 시간으로 지정된 시간 동안 유휴 상태에 있을 때 <ph name="PRODUCT_OS_NAME" />에서 실행할 작업을 지정하며, 유휴 지연 시간은 별도로 설정할 수 있습니다.

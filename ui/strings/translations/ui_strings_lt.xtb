@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Prieš 1 dieną}one{Prieš # dieną}few{Prieš # dienas}many{Prieš # dienos}other{Prieš # dienų}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Prieš 1 minutę}one{Prieš # minutę}few{Prieš # minutes}many{Prieš # minutės}other{Prieš # minučių}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 min.}one{# min.}few{# min.}many{# min.}other{# min.}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{prieš 1 dieną}one{prieš # dieną}few{prieš # dienas}many{prieš # dienos}other{prieš # dienų}}</translation>
 <translation id="1181037720776840403">Pašalinti</translation>
 <translation id="1243314992276662751">Įkelti</translation>
 <translation id="1266864766717917324">Nepavyko bendrinti turinio: <ph name="CONTENT_TYPE" /></translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">Iš kairės į dešinę</translation>
 <translation id="1383876407941801731">Ieškoti</translation>
 <translation id="1398853756734560583">Išskleisti</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{prieš 1 minutę}one{prieš # minutę}few{prieš # minutes}many{prieš # minutės}other{prieš # minučių}}</translation>
 <translation id="1450753235335490080">Nepavyko bendrinti turinio: <ph name="CONTENT_TYPE" /></translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{prieš 1 mėnesį}one{prieš # mėnesį}few{prieš # mėnesius}many{prieš # mėnesio}other{prieš # mėnesių}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minutė ir }one{# minutė ir }few{# minutės ir }many{# minutės ir }other{# minučių ir }}</translation>
 <translation id="1643823602425662293">Pranešimas</translation>
 <translation id="169515659049020177">Antrojo lygio klavišas</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">Vaizdas</translation>
 <translation id="4565377596337484307">Slėpti slaptažodį</translation>
 <translation id="4588090240171750605">Slinkti į dešinę</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{prieš 1 metus}one{prieš # metus}few{prieš # metus}many{prieš # metų}other{prieš # metų}}</translation>
 <translation id="4724120544754982507">Pranešimų centras, neskaitytų pranešimų: <ph name="UNREAD_NOTIFICATION_COUNT" /></translation>
 <translation id="4729257764711776855">numeris</translation>
 <translation id="4746179598275229723">Plėtinys atsegtas</translation>
@@ -212,10 +216,12 @@
 <translation id="8867568208303837180">Siunčiama...</translation>
 <translation id="8876215549894133151">Formatas:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{prieš 1 valandą}one{prieš # valandą}few{prieš # valandas}many{prieš # valandos}other{prieš # valandų}}</translation>
 <translation id="8996630695507351249">Įsitikinkite, kad „<ph name="TARGET_DEVICE_NAME" />“ prijungtas prie interneto.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 sek.}one{# sek.}few{# sek.}many{# sek.}other{# sek.}}</translation>
 <translation id="9059834730836941392">Sutraukti pranešimą</translation>
 <translation id="9170848237812810038">&amp;Atšaukti</translation>
 <translation id="932327136139879170">Kontaktinė namų informacija</translation>
 <translation id="944069440740578670">Neskaityti pranešimai</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{prieš 1 sekundę}one{prieš # sekundę}few{prieš # sekundes}many{prieš # sekundės}other{prieš # sekundžių}}</translation>
 </translationbundle>

@@ -4966,6 +4966,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5338503421962489998">Жергиликтүү сактагыч</translation>
 <translation id="5339031667684712858">Өчүргөн сайттарыңыз</translation>
 <translation id="5340638867532133571">Сайттарга төлөм иштеткичтерин орнотууга уруксат берүү (сунушталат)</translation>
+<translation id="5340787663756381836">&amp;Таап, түзөтүү</translation>
 <translation id="5341793073192892252">Төмөнкү кукилер бөгөттөлгөн (үчүнчү тараптардын кукилери жалпы шарттарда бөгөттөлөт)</translation>
 <translation id="5342091991439452114">PIN код кеминде <ph name="MINIMUM" /> орундуу сандан турушу керек</translation>
 <translation id="5344036115151554031">Linux калыбына келтирилүүдө</translation>
@@ -9357,6 +9358,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="939401694733344652">Бул аккаунттар азырынча Android колдонмолору менен колдонулбай турушат. Эгер ушул Android колдонмосу үчүн аккаунтту тандасаңыз, аны башка Android колдонмолорунда да пайдалана аласыз. Android колдонмосуна кирүү мүмкүнчүлүгүн <ph name="LINK_BEGIN" />Параметрлер &gt; Аккаунттар<ph name="LINK_END" /> бөлүмүнөн өзгөртө аласыз.</translation>
 <translation id="939598580284253335">Купуя сөз айкашын киргизиңиз</translation>
 <translation id="939736085109172342">Жаңы папка</translation>
+<translation id="940212040923880623">&amp;Таап, түзөтүү</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> колдонмосу Chrome өтмөгүн жана аудио файлын бөлүшүп жатат.</translation>
 <translation id="944799160843436808">Chromebook'та Steam'ди тууралоодо ката кетти</translation>
 <translation id="945522503751344254">Пикириңизди билдириңиз</translation>

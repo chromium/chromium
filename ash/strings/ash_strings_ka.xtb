@@ -148,6 +148,7 @@
 <translation id="1651914502370159744">ისტორიის გვერდის გახსნა</translation>
 <translation id="1654477262762802994">ხმოვანი მოთხოვნის დაწყება</translation>
 <translation id="1668469839109562275">ჩაშენებული VPN</translation>
+<translation id="1675844249244994876">მარჯვენა ფანჯრის განახლება</translation>
 <translation id="1677472565718498478">დარჩენილია <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> არ არის დაკავშირებული.</translation>
 <translation id="1677582821739292812">ვიღაც უყურებს თქვენს ეკრანს</translation>
@@ -848,6 +849,7 @@
 <translation id="493076006037866439">ეკრანზე მასშტაბის შემცირება</translation>
 <translation id="4936329710968938986">ყველა, გამორთული</translation>
 <translation id="4938176435186993759">ყველა შემოთავაზების დამალვა</translation>
+<translation id="4943007472417128747">უსადენო ქსელი გამოირთო Wi-Fi ქსელის გამოსაყენებლად. უსადენო ქსელი რომ გამოიყენოთ, გამორთეთ Wi-Fi ქსელი.</translation>
 <translation id="4945196315133970626">შეტყობინებების გამორთვა</translation>
 <translation id="4946376291507881335">აღბეჭდვა</translation>
 <translation id="495046168593986294">ზემოთ გადაადგილება</translation>
@@ -1392,6 +1394,7 @@
 მოწყობილობის გამოსართავად ხელახლა დააჭირეთ ხანგრძლივად ელკვების ღილაკს მოწყობილობაზე.</translation>
 <translation id="7526573455193969409">ქსელზე შესაძლოა ხორციელდებოდეს მონიტორინგი</translation>
 <translation id="7536035074519304529">IP მისამართი: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">მარცხენა ფანჯრის განახლება</translation>
 <translation id="7543399541175347147">Linux აპები და ინკოგნიტო ფანჯრები ამჟამად მხარდაუჭერელია. სხვა აპები შეინახება.</translation>
 <translation id="7544300628205093162">კლავიატურის შენათება ჩართულია</translation>
 <translation id="7548434653388805669">ძილის დროა</translation>
@@ -1472,6 +1475,7 @@
 <translation id="7893503627044934815">არ მსურს, ეს ფაილი ჩანდეს ხოლმე</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">თქვენ დააჭირეთ ეკრანის ბრუნვის კლავიატურის მალსახმობს. გსურთ ეკრანის შებრუნება?</translation>
+<translation id="7901190436359881020">ფანჯრების ჩანაცვლება</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">შეეხეთ თითის ანაბეჭდის სენსორს</translation>
 <translation id="7904094684485781019">ამ ანგარიშის ადმინისტრატორმა აკრძალა სისტემაში ერთდროული შესვლა.</translation>
