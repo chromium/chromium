@@ -70,6 +70,13 @@ using CompletionCallback = base::MockOnceCallback<void(Stage)>;
 
 const FileError kFileOk = FileError::FILE_ERROR_OK;
 
+template <typename T>
+std::string ToString(const T& x) {
+  std::ostringstream oss;
+  oss << x;
+  return std::move(oss).str();
+}
+
 // Shorthand way to represent drive files with the information that is relevant
 // for the pinning manager.
 struct DriveItem {

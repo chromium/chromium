@@ -635,7 +635,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     using drivefs::pinning::HumanReadableSize;
 
     base::Value::Dict d;
-    d.Set("stage", drivefs::pinning::ToString(progress.stage));
+    d.Set("stage", ToString(progress.stage));
     d.Set("free_space", ToString(HumanReadableSize(progress.free_space)));
     d.Set("required_space",
           ToString(HumanReadableSize(progress.required_space)));
