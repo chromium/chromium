@@ -7,6 +7,8 @@
 
 #include "net/base/net_export.h"
 
+#include <stdint.h>
+
 #include <string_view>
 #include <vector>
 
