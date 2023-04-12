@@ -29,7 +29,6 @@ std::string CreateLabelForSharedImageUsage(uint32_t usage) {
       {SHARED_IMAGE_USAGE_SCANOUT, "Scanout"},
       {SHARED_IMAGE_USAGE_OOP_RASTERIZATION, "OopRasterization"},
       {SHARED_IMAGE_USAGE_WEBGPU, "Webgpu"},
-      {SHARED_IMAGE_USAGE_PROTECTED, "Protected"},
       {SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE, "ConcurrentReadWrite"},
       {SHARED_IMAGE_USAGE_VIDEO_DECODE, "VideoDecode"},
       {SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE, "WebgpuSwapChainTexture"},
