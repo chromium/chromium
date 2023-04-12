@@ -17,7 +17,7 @@ TEST_F(BrowserAboutRewriterTest, NtpTest) {
   GURL url = GURL(kChromeUINewTabURL);
   EXPECT_TRUE(WillHandleWebBrowserAboutURL(&url, /*browser_state=*/nullptr));
   EXPECT_EQ(url, GURL(kChromeUIAboutNewTabURL));
-  EXPECT_FALSE(WillHandleWebBrowserAboutURL(&url, nil));
+  EXPECT_FALSE(WillHandleWebBrowserAboutURL(&url, /*browser_state=*/nullptr));
 }
 
 // Test that about|chrome://about is rewritten to chrome-urls and about:blank

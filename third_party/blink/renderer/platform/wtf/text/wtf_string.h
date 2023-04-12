@@ -39,10 +39,6 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
-#ifdef __OBJC__
-#include <objc/objc.h>
-#endif
-
 namespace WTF {
 
 #define DISPATCH_CASE_OP(caseSensitivity, op, args)     \

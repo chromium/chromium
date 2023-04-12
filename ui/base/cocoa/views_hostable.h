@@ -5,8 +5,6 @@
 #ifndef UI_BASE_COCOA_VIEWS_HOSTABLE_H_
 #define UI_BASE_COCOA_VIEWS_HOSTABLE_H_
 
-#import <objc/objc.h>
-
 #include "base/component_export.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
