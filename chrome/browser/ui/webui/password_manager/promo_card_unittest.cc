@@ -7,10 +7,12 @@
 #include <memory>
 
 #include "base/json/values_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
+#include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -19,8 +21,10 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -104,6 +108,10 @@ class PromoCardBaseTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     profile_store_ = CreateAndUseTestPasswordStore(profile());
+    AffiliationServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
+        profile(), base::BindRepeating([](content::BrowserContext*) {
+          return std::make_unique<password_manager::FakeAffiliationService>();
+        }));
   }
 
   PrefService* pref_service() { return profile()->GetPrefs(); }
@@ -207,6 +215,7 @@ class PromoCardCheckupTest : public PromoCardBaseTest {
  public:
   void SetUp() override {
     PromoCardBaseTest::SetUp();
+    feature_list_.InitAndEnableFeature(features::kPasswordsGrouping);
     delegate_ =
         extensions::PasswordsPrivateDelegateFactory::GetForBrowserContext(
             profile(), true);
@@ -229,6 +238,7 @@ class PromoCardCheckupTest : public PromoCardBaseTest {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   scoped_refptr<extensions::PasswordsPrivateDelegate> delegate_;
 };
 

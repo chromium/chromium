@@ -29,6 +29,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_section.html.js';
 // <if expr="_google_chrome">
+import {PromoCardId} from './promo_cards/promo_card.js';
 import {PromoCard, PromoCardsProxyImpl} from './promo_cards/promo_cards_browser_proxy.js';
 // </if>
 import {Route, RouteObserverMixin, UrlParam} from './router.js';
@@ -132,6 +133,12 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     };
 
     this.setSavedPasswordsListener_ = _passwordList => {
+      // <if expr="_google_chrome">
+      if (_passwordList.length === 0 &&
+          this.promoCard_?.id === PromoCardId.CHECKUP) {
+        this.promoCard_ = null;
+      }
+      // </if>
       updateGroups();
     };
 

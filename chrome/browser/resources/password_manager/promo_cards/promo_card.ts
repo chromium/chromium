@@ -21,7 +21,7 @@ import {PromoCard, PromoCardsProxyImpl} from './promo_cards_browser_proxy.js';
 
 // WARNING: Keep synced with
 // chrome/browser/ui/webui/password_manager/promo_cards_handler.cc.
-enum PromoCardId {
+export enum PromoCardId {
   CHECKUP = 'password_checkup_promo',
   WEB_PASSWORD_MANAGER = 'passwords_on_web_promo',
   SHORTCUT = 'password_shortcut_promo',
