@@ -155,7 +155,8 @@ export function initialiseEmojiPickerForTest(
   });
 
   // Reset DOM state.
-  document.body.innerHTML = '';
+  assert(window.trustedTypes);
+  document.body.innerHTML = window.trustedTypes.emptyHTML;
   window.localStorage.clear();
 
   for (const {key, value} of localStorage) {
