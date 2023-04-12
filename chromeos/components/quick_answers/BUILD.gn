@@ -42,6 +42,8 @@ source_set("quick_answers") {
     "utils/spell_check_language.h",
     "utils/spell_checker.cc",
     "utils/spell_checker.h",
+    "utils/translation_v2_utils.cc",
+    "utils/translation_v2_utils.h",
     "utils/unit_conversion_constants.cc",
     "utils/unit_conversion_constants.h",
     "utils/unit_converter.cc",

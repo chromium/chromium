@@ -17,6 +17,7 @@
 #include "chromeos/components/quick_answers/utils/quick_answers_metrics.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/components/quick_answers/utils/spell_checker.h"
+#include "chromeos/components/quick_answers/utils/translation_v2_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
@@ -140,13 +141,11 @@ bool ShouldSkipDefinition(const std::string& text) {
 }
 
 // Check that both the source and target languages are supported by the
-// translation API.
+// translation v2 API.
 bool AreTranslationLanguagesSupported(const std::string& source_language,
                                       const std::string& target_language) {
-  return translate::TranslateDownloadManager::IsSupportedLanguage(
-             source_language) &&
-         translate::TranslateDownloadManager::IsSupportedLanguage(
-             target_language);
+  return TranslationV2Utils::IsSupported(source_language) &&
+         TranslationV2Utils::IsSupported(target_language);
 }
 
 bool HasDigits(const std::string& word) {
