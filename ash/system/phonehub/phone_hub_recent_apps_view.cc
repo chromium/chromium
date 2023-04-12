@@ -31,6 +31,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/animation/animation_builder.h"
@@ -428,7 +429,7 @@ void PhoneHubRecentAppsView::Update() {
         recent_app_button_list_.push_back(
             recent_app_buttons_view_->AddRecentAppButton(
                 std::make_unique<PhoneHubRecentAppButton>(
-                    recent_app.icon, recent_app.visible_app_name,
+                    recent_app.color_icon, recent_app.visible_app_name,
                     pressed_callback)));
       }
 

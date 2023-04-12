@@ -147,17 +147,25 @@ TEST_F(AppStreamLauncherDataModelTest, SetAppsList) {
 TEST_F(AppStreamLauncherDataModelTest, AddAppToList) {
   std::vector<Notification::AppMetadata> apps_list;
   apps_list.emplace_back(Notification::AppMetadata(
-      u"GPay", "com.fakeapp1", gfx::Image(), absl::nullopt, true, 1,
+      u"GPay", "com.fakeapp1", /*color_icon=*/gfx::Image(),
+      /*monochrome_icon_mask=*/absl::nullopt,
+      /*icon_color*/ absl::nullopt, /*icon_is_monochrome*/ true, /*user_id=*/1,
       proto::AppStreamabilityStatus::STREAMABLE));
   apps_list.emplace_back(Notification::AppMetadata(
-      u"Gboard", "com.fakeapp2", gfx::Image(), absl::nullopt, true, 1,
+      u"Gboard", "com.fakeapp2", /*color_icon=*/gfx::Image(),
+      /*monochrome_icon_mask=*/absl::nullopt,
+      /*icon_color*/ absl::nullopt, /*icon_is_monochrome*/ true, /*user_id=*/1,
       proto::AppStreamabilityStatus::STREAMABLE));
   SetAppList(apps_list);
   AddAppToList(Notification::AppMetadata(
-      u"added_app", "com.fakeapp3", gfx::Image(), absl::nullopt, true, 1,
+      u"added_app", "com.fakeapp3", /*color_icon=*/gfx::Image(),
+      /*monochrome_icon_mask=*/absl::nullopt, /*icon_color*/ absl::nullopt,
+      /*icon_is_monochrome*/ true, /*user_id=*/1,
       proto::AppStreamabilityStatus::STREAMABLE));
   AddAppToList(Notification::AppMetadata(
-      u"a_added_app", "com.fakeapp3", gfx::Image(), absl::nullopt, true, 1,
+      u"a_added_app", "com.fakeapp3", /*color_icon=*/gfx::Image(),
+      /*monochrome_icon_mask=*/absl::nullopt, /*icon_color*/ absl::nullopt,
+      /*icon_is_monochrome*/ true, /*user_id=*/1,
       proto::AppStreamabilityStatus::STREAMABLE));
   EXPECT_TRUE(IsObserverAppListChanged());
   EXPECT_EQ(GetAppsList()->size(), 4u);
@@ -175,10 +183,14 @@ TEST_F(AppStreamLauncherDataModelTest, AddAppToList) {
 TEST_F(AppStreamLauncherDataModelTest, RemoveAppFromList) {
   std::vector<Notification::AppMetadata> apps_list;
   apps_list.emplace_back(Notification::AppMetadata(
-      u"GPay", "com.fakeapp1", gfx::Image(), absl::nullopt, true, 1,
+      u"GPay", "com.fakeapp1", /*color_icon=*/gfx::Image(),
+      /*monochrome_icon_mask=*/absl::nullopt,
+      /*icon_color*/ absl::nullopt, /*icon_is_monochrome*/ true, /*user_id=*/1,
       proto::AppStreamabilityStatus::STREAMABLE));
   apps_list.emplace_back(Notification::AppMetadata(
-      u"Gboard", "com.fakeapp2", gfx::Image(), absl::nullopt, true, 1,
+      u"Gboard", "com.fakeapp2", /*color_icon=*/gfx::Image(),
+      /*monochrome_icon_mask=*/absl::nullopt,
+      /*icon_color*/ absl::nullopt, /*icon_is_monochrome*/ true, /*user_id=*/1,
       proto::AppStreamabilityStatus::STREAMABLE));
   SetAppList(apps_list);
   auto app_to_remove = proto::App();

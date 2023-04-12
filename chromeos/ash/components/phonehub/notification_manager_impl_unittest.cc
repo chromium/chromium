@@ -36,7 +36,7 @@ Notification CreateNotification(int64_t id) {
       id,
       phonehub::Notification::AppMetadata(
           kAppName, kPackageName,
-          /*icon=*/gfx::Image(),
+          /*color_icon=*/gfx::Image(), /*monochrome_icon_mask=*/absl::nullopt,
           /*icon_color=*/absl::nullopt,
           /*icon_is_monochrome=*/true, kUserId,
           proto::AppStreamabilityStatus::STREAMABLE),

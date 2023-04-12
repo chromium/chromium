@@ -59,8 +59,9 @@ phonehub::Notification CreateNotification(int64_t id) {
   return phonehub::Notification(
       id,
       phonehub::Notification::AppMetadata(
-          kAppName, kPackageName, /*icon=*/gfx::Image(),
-          /*icon_color=*/absl::nullopt, /*icon_is_monochrome =*/true, kUserId,
+          kAppName, kPackageName, /*color_icon=*/gfx::Image(),
+          /*monochrome_icon_mask=*/absl::nullopt,
+          /*icon_color=*/absl::nullopt, /*icon_is_monochrome=*/true, kUserId,
           phonehub::proto::AppStreamabilityStatus::STREAMABLE),
       base::Time::Now(), phonehub::Notification::Importance::kDefault,
       phonehub::Notification::Category::kConversation,
@@ -75,8 +76,9 @@ phonehub::Notification CreateIncomingCallNotification(int64_t id) {
       id,
       phonehub::Notification::AppMetadata(
           kAppName, kPackageName,
-          /*icon=*/gfx::Image(), /*icon_color =*/absl::nullopt,
-          /*icon_is_monochrome =*/true, kUserId,
+          /*color_icon=*/gfx::Image(), /*monochrome_icon_mask=*/absl::nullopt,
+          /*icon_color=*/absl::nullopt,
+          /*icon_is_monochrome=*/true, kUserId,
           phonehub::proto::AppStreamabilityStatus::STREAMABLE),
       base::Time::Now(), phonehub::Notification::Importance::kDefault,
       phonehub::Notification::Category::kIncomingCall,
@@ -163,8 +165,9 @@ TEST_F(PhoneHubNotificationControllerTest, UpdateNotifications) {
       kPhoneHubNotificationId1,
       phonehub::Notification::AppMetadata(
           kAppName, kPackageName,
-          /*icon=*/gfx::Image(), /*icon_color =*/absl::nullopt,
-          /*icon_is_monochrome =*/true, kUserId,
+          /*color_icon=*/gfx::Image(), /*monochrome_icon_mask=*/absl::nullopt,
+          /*icon_color=*/absl::nullopt,
+          /*icon_is_monochrome=*/true, kUserId,
           phonehub::proto::AppStreamabilityStatus::STREAMABLE),
       base::Time::Now(), phonehub::Notification::Importance::kDefault,
       phonehub::Notification::Category::kConversation,
@@ -195,8 +198,9 @@ TEST_F(PhoneHubNotificationControllerTest, UpdateNotificationsNewIconType) {
   phonehub::Notification updated_notification(
       kPhoneHubNotificationId1,
       phonehub::Notification::AppMetadata(
-          kAppName, kPackageName, /*icon=*/gfx::Image(), iconColor,
-          /*icon_is_monochrome =*/true, kUserId,
+          kAppName, kPackageName, /*color_icon=*/gfx::Image(),
+          /*monochrome_icon_mask=*/absl::nullopt, iconColor,
+          /*icon_is_monochrome=*/true, kUserId,
           phonehub::proto::AppStreamabilityStatus::STREAMABLE),
       base::Time::Now(), phonehub::Notification::Importance::kDefault,
       phonehub::Notification::Category::kConversation,
@@ -216,8 +220,9 @@ TEST_F(PhoneHubNotificationControllerTest, UpdateNotificationsNewIconType) {
       kPhoneHubNotificationId1,
       phonehub::Notification::AppMetadata(
           kAppName, kPackageName,
-          /*icon=*/gfx::Image(), /*icon_color =*/absl::nullopt,
-          /*icon_is_monochrome =*/false, kUserId,
+          /*color_icon=*/gfx::Image(), /*monochrome_icon_mask=*/absl::nullopt,
+          /*icon_color=*/absl::nullopt,
+          /*icon_is_monochrome=*/false, kUserId,
           phonehub::proto::AppStreamabilityStatus::STREAMABLE),
       base::Time::Now(), phonehub::Notification::Importance::kDefault,
       phonehub::Notification::Category::kConversation,
@@ -339,8 +344,10 @@ TEST_F(PhoneHubNotificationControllerTest, NotificationDataAndImages) {
   phonehub::Notification fake_notification(
       kPhoneHubNotificationId0,
       phonehub::Notification::AppMetadata(
-          kAppName, kPackageName, icon, /*icon_color =*/absl::nullopt,
-          /*icon_is_monochrome =*/true, kUserId,
+          kAppName, kPackageName, /*color_icon=*/icon,
+          /*monochrome_icon_mask=*/absl::nullopt,
+          /*icon_color=*/absl::nullopt,
+          /*icon_is_monochrome=*/true, kUserId,
           phonehub::proto::AppStreamabilityStatus::STREAMABLE),
       timestamp, phonehub::Notification::Importance::kHigh,
       phonehub::Notification::Category::kConversation,
@@ -447,8 +454,9 @@ TEST_F(PhoneHubNotificationControllerTest, DoNotShowOldNotification) {
       kPhoneHubNotificationId0,
       phonehub::Notification::AppMetadata(
           kAppName, kPackageName,
-          /*icon=*/gfx::Image(), /*icon_color =*/absl::nullopt,
-          /*icon_is_monochrome =*/true, kUserId,
+          /*color_icon=*/gfx::Image(), /*monochrome_icon_mask=*/absl::nullopt,
+          /*icon_color=*/absl::nullopt,
+          /*icon_is_monochrome=*/true, kUserId,
           phonehub::proto::AppStreamabilityStatus::STREAMABLE),
       old_timestamp, phonehub::Notification::Importance::kHigh,
       phonehub::Notification::Category::kConversation,
@@ -477,8 +485,9 @@ TEST_F(PhoneHubNotificationControllerTest, DoNotShowOldNotification) {
       kPhoneHubNotificationId0,
       phonehub::Notification::AppMetadata(
           kAppName, kPackageName,
-          /*icon=*/gfx::Image(), /*icon_color =*/absl::nullopt,
-          /*icon_is_monochrome =*/true, kUserId,
+          /*color_icon=*/gfx::Image(), /*monochrome_icon_mask=*/absl::nullopt,
+          /*icon_color=*/absl::nullopt,
+          /*icon_is_monochrome=*/true, kUserId,
           phonehub::proto::AppStreamabilityStatus::STREAMABLE),
       base::Time::Now(), phonehub::Notification::Importance::kHigh,
       phonehub::Notification::Category::kConversation,
@@ -509,8 +518,9 @@ TEST_F(PhoneHubNotificationControllerTest, MinPriorityNotification) {
       kPhoneHubNotificationId0,
       phonehub::Notification::AppMetadata(
           kAppName, kPackageName,
-          /*icon=*/gfx::Image(), /*icon_color =*/absl::nullopt,
-          /*icon_is_monochrome =*/true, kUserId,
+          /*color_icon=*/gfx::Image(), /*monochrome_icon_mask=*/absl::nullopt,
+          /*icon_color=*/absl::nullopt,
+          /*icon_is_monochrome=*/true, kUserId,
           phonehub::proto::AppStreamabilityStatus::STREAMABLE),
       base::Time::Now(), phonehub::Notification::Importance::kMin,
       phonehub::Notification::Category::kConversation,

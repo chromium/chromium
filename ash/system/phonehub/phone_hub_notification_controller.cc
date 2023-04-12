@@ -677,7 +677,9 @@ PhoneHubNotificationController::CreateNotification(
   std::u16string display_source = app_metadata.visible_app_name;
 
   message_center::RichNotificationData optional_fields;
-  optional_fields.small_image = app_metadata.icon;
+  optional_fields.small_image = app_metadata.monochrome_icon_mask.has_value()
+                                    ? app_metadata.monochrome_icon_mask.value()
+                                    : app_metadata.color_icon;
   optional_fields.timestamp = notification->timestamp();
   optional_fields.accessible_name = l10n_util::GetStringFUTF16(
       IDS_ASH_PHONE_HUB_NOTIFICATION_ACCESSIBLE_NAME, display_source, title,
