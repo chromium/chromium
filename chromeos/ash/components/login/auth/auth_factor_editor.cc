@@ -5,6 +5,9 @@
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
@@ -403,8 +406,19 @@ void AuthFactorEditor::OnListAuthFactors(
       cryptohome::AuthFactorType::kPassword;
   if (user_manager::User::TypeIsKiosk(context->GetUserType()))
     fallback_type = cryptohome::AuthFactorType::kKiosk;
+
+  // Ignore unknown factors that are in development.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  bool ignore_unknown_factors =
+      command_line->HasSwitch(ash::switches::kIgnoreUnknownAuthFactors);
+
   for (const auto& factor_with_status_proto :
        reply->configured_auth_factors_with_status()) {
+    if (ignore_unknown_factors &&
+        !cryptohome::SafeConvertFactorTypeFromProto(
+            factor_with_status_proto.auth_factor().type())) {
+      continue;
+    }
     auto factor = cryptohome::DeserializeAuthFactor(
         factor_with_status_proto.auth_factor(), fallback_type);
     // Dirty hack below, as cryptohome does not send correct value as a part of
@@ -431,13 +445,15 @@ void AuthFactorEditor::OnListAuthFactors(
     if (proto_type == user_data_auth::AUTH_FACTOR_TYPE_FINGERPRINT) {
       continue;
     }
-    cryptohome::AuthFactorType type = cryptohome::ConvertFactorTypeFromProto(
-        static_cast<user_data_auth::AuthFactorType>(proto_type));
-    if (type == cryptohome::AuthFactorType::kUnknownLegacy) {
-      NOTREACHED();
+    absl::optional<cryptohome::AuthFactorType> type =
+        cryptohome::SafeConvertFactorTypeFromProto(
+            static_cast<user_data_auth::AuthFactorType>(proto_type));
+    if (!type.has_value()) {
+      LOG(ERROR) << " Unknown supported factor type, ignoring";
+      base::debug::DumpWithoutCrashing(FROM_HERE);
       continue;
     }
-    supported_factors.Put(type);
+    supported_factors.Put(type.value());
   }
 
   AuthFactorsConfiguration configured_factors(std::move(factor_list),

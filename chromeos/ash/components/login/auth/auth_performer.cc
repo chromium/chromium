@@ -5,7 +5,9 @@
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
@@ -403,7 +405,17 @@ void AuthPerformer::OnStartAuthSession(
   if (IsKioskUserType(context->GetUserType())) {
     fallback_type = cryptohome::AuthFactorType::kKiosk;
   }
+
+  // Ignore unknown factors that are in development.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  bool ignore_unknown_factors =
+      command_line->HasSwitch(ash::switches::kIgnoreUnknownAuthFactors);
+
   for (const auto& factor_proto : reply->auth_factors()) {
+    if (ignore_unknown_factors &&
+        !cryptohome::SafeConvertFactorTypeFromProto(factor_proto.type())) {
+      continue;
+    }
     next_factors.emplace_back(
         cryptohome::DeserializeAuthFactor(factor_proto, fallback_type));
   }

@@ -9,11 +9,17 @@
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/auth_factor_input.h"
 #include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cryptohome {
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
 user_data_auth::AuthFactorType ConvertFactorTypeToProto(AuthFactorType type);
+// This version would ignore unknown factor types.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
+absl::optional<AuthFactorType> SafeConvertFactorTypeFromProto(
+    user_data_auth::AuthFactorType type);
+// This version would crash if unknown factor type is specified.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
 AuthFactorType ConvertFactorTypeFromProto(user_data_auth::AuthFactorType type);
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)

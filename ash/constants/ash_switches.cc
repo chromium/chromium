@@ -660,6 +660,10 @@ const char kHomedir[] = "homedir";
 // /usr/local/vms/etc/arcvm_dev.conf will be ignored during ARCVM start.
 const char kIgnoreArcVmDevConf[] = "ignore-arcvm-dev-conf";
 
+// If true, chrome would silently ignore unknown auth factor types
+// instead of crashing.
+const char kIgnoreUnknownAuthFactors[] = "ignore-unknown-auth-factors";
+
 // If true, profile selection in UserManager will always return active user's
 // profile.
 // TODO(nkostlyev): http://crbug.com/364604 - Get rid of this switch after we
