@@ -966,12 +966,8 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
       }
       json_decl.Set("feature", feature_name->second);
       base::Value::List allowlist_json;
-      // TODO(crbug.com/1418009): Consolidate code and filter opaque origins.
-      if (decl.self_if_matches) {
-        allowlist_json.Append(decl.self_if_matches->Serialize());
-      }
-      for (const auto& origin_with_possible_wildcards : decl.allowed_origins) {
-        allowlist_json.Append(origin_with_possible_wildcards.Serialize());
+      for (const auto& allowlist_item : GetSerializedAllowedOrigins(decl)) {
+        allowlist_json.Append(allowlist_item);
       }
       json_decl.Set("allowed_origins", std::move(allowlist_json));
       json_decl.Set("matches_all_origins", decl.matches_all_origins);
@@ -1126,6 +1122,22 @@ bool operator==(const WebApp::ExternalManagementConfig& management_config1,
 bool operator!=(const WebApp::ExternalManagementConfig& management_config1,
                 const WebApp::ExternalManagementConfig& management_config2) {
   return !(management_config1 == management_config2);
+}
+
+std::vector<std::string> GetSerializedAllowedOrigins(
+    const blink::ParsedPermissionsPolicyDeclaration
+        permissions_policy_declaration) {
+  std::vector<std::string> allowed_origins;
+  if (permissions_policy_declaration.self_if_matches) {
+    CHECK(!permissions_policy_declaration.self_if_matches->opaque());
+    allowed_origins.push_back(
+        permissions_policy_declaration.self_if_matches->Serialize());
+  }
+  for (const auto& origin_with_possible_wildcards :
+       permissions_policy_declaration.allowed_origins) {
+    allowed_origins.push_back(origin_with_possible_wildcards.Serialize());
+  }
+  return allowed_origins;
 }
 
 }  // namespace web_app
