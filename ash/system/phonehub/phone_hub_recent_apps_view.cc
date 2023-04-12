@@ -22,6 +22,7 @@
 #include "ash/system/phonehub/ui_constants.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
+#include "ash/webui/eche_app_ui/system_info_provider.h"
 #include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
@@ -516,7 +517,15 @@ void PhoneHubRecentAppsView::SwitchToFullAppsList() {
 
 void PhoneHubRecentAppsView::ShowConnectionErrorDialog() {
   if (features::IsEcheNetworkConnectionStateEnabled()) {
-    connected_view_->ShowAppStreamErrorDialog();
+    connected_view_->ShowAppStreamErrorDialog(
+        phone_hub_manager_->GetSystemInfoProvider()
+            ? phone_hub_manager_->GetSystemInfoProvider()
+                  ->is_different_network()
+            : false,
+        phone_hub_manager_->GetSystemInfoProvider()
+            ? phone_hub_manager_->GetSystemInfoProvider()
+                  ->android_device_on_cellular()
+            : false);
   }
 }
 

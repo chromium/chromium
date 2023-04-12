@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_PHONE_HUB_MANAGER_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_PHONE_HUB_MANAGER_H_
 
-#include "ash/webui/eche_app_ui/system_info_provider.h"
 #include "chromeos/ash/components/phonehub/app_stream_launcher_data_model.h"
 #include "chromeos/ash/components/phonehub/app_stream_manager.h"
 #include "chromeos/ash/components/phonehub/fake_browser_tabs_model_provider.h"

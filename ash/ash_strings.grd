@@ -6402,14 +6402,20 @@ New install
       <message name="IDS_ASH_ECHE_APP_STREMING_ERROR_DIALOG_TITLE" desc="The title of dialog that appears when there is a connection error trying to stream app">
         Can't stream apps
       </message>
-      <message name="IDS_ASH_ECHE_APP_STREAMING_ERROR_DIALOG_MAIN_TEXT" desc="The main description in the dialog that appears when there is a connection error trying to stream app">
+      <message name="IDS_ASH_ECHE_APP_STREAMING_ERROR_DIALOG_UNSUPPORTED_NETWORK_TEXT" desc="The main description in the dialog that appears when devices are on unsupported network">
         This network doesn't support streaming apps from your phone. Try using your phone's hotspot. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
+      </message>
+      <message name="IDS_ASH_ECHE_APP_STREAMING_ERROR_DIALOG_DIFFERENT_NETWORK_TEXT" desc="The main description in the dialog that appears when devices are on different networks">
+        Make sure your phone and Chromebook are on the same network and then try again. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
+      </message>
+      <message name="IDS_ASH_ECHE_APP_STREAMING_ERROR_DIALOG_PHONE_ON_CELLULAR_TEXT" desc="The main description in the dialog that appears when phone is on cellular">
+        Your phone is using a mobile network. Make Sure your phone and Chromebook are on the same Wi-Fi network and then try again. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
       </message>
       <message name="IDS_ASH_ECHE_APP_STREMING_ERROR_DIALOG_TURN_ON_HOTSPOT" desc="The button in the dialog that appears when there is a connection error trying to stream app to turn on hotspot">
         Turn on hotspot
       </message>
-      <message name="IDS_ASH_ECHE_APP_STREAMING_ERROR_DIALOG_OK_TEXT" desc="Confirm button on the connection error dialog to acknowledge.">
-        Ok
+      <message name="IDS_ASH_ECHE_APP_STREAMING_ERROR_DIALOG_DISMISS_TEXT" desc="The text on the button to dismiss dialog">
+        Dismiss
       </message>
 
       <!-- Deferred update dialog -->

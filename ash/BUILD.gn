@@ -2592,6 +2592,7 @@ component("ash") {
     "//ash/style",
     "//ash/webui/diagnostics_ui/mojom:mojom",
     "//ash/webui/eche_app_ui:eche_connection_status",
+    "//ash/webui/eche_app_ui:system_info_provider",
     "//ash/webui/eche_app_ui/mojom:mojom",
     "//ash/webui/personalization_app/mojom",
     "//ash/webui/personalization_app/proto",

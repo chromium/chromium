@@ -35,7 +35,8 @@ class PhoneConnectedView : public PhoneHubContentView {
   // PhoneHubContentView:
   phone_hub_metrics::Screen GetScreenForMetrics() const override;
 
-  void ShowAppStreamErrorDialog();
+  void ShowAppStreamErrorDialog(bool is_different_network,
+                                bool is_phone_on_cellular);
 
  private:
   void OnAppStreamErrorDialogClosed();
