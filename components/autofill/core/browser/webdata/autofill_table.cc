@@ -17,6 +17,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -3504,7 +3505,8 @@ bool AutofillTable::AddFormFieldValueTime(const FormFieldData& element,
   s_exists.BindString16(0, element.name);
   s_exists.BindString16(1, element.value);
   if (!s_exists.Step()) {
-    NOTREACHED() << create_debug_info("SELECT");
+    SCOPED_CRASH_KEY_STRING1024("autofill", "sql", create_debug_info("SELECT"));
+    NOTREACHED();
     return false;
   }
 
@@ -3517,7 +3519,9 @@ bool AutofillTable::AddFormFieldValueTime(const FormFieldData& element,
     s.BindString16(1, element.name);
     s.BindString16(2, element.value);
     if (!s.Run()) {
-      NOTREACHED() << create_debug_info("UPDATE");
+      SCOPED_CRASH_KEY_STRING1024("autofill", "sql",
+                                  create_debug_info("UPDATE"));
+      NOTREACHED();
       return false;
     }
   } else {
@@ -3533,7 +3537,9 @@ bool AutofillTable::AddFormFieldValueTime(const FormFieldData& element,
     s.BindInt64(4, time_as_time_t);
     s.BindInt(5, 1);
     if (!s.Run()) {
-      NOTREACHED() << create_debug_info("INSERT");
+      SCOPED_CRASH_KEY_STRING1024("autofill", "sql",
+                                  create_debug_info("INSERT"));
+      NOTREACHED();
       return false;
     }
   }
