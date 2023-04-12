@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Prefetches from different initiator Documents with same RenderFrameHost assert_equals: Prefetch should not work for different initiators. expected "" but got "prefetch"
+Harness: the test ran to completion.
+
