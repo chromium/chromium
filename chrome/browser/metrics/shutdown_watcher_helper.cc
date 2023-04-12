@@ -25,25 +25,6 @@ void ShutdownWatcherHelper::Arm(const base::TimeDelta& duration) {
   shutdown_watchdog_->Arm();
 }
 
-// static
-base::TimeDelta ShutdownWatcherHelper::GetPerChannelTimeout(
-    base::TimeDelta duration) {
-  base::TimeDelta actual_duration = duration;
-
-  version_info::Channel channel = chrome::GetChannel();
-  if (channel == version_info::Channel::STABLE) {
-    actual_duration *= 20;
-  } else if (channel == version_info::Channel::BETA) {
-    actual_duration *= 10;
-  } else if (channel == version_info::Channel::DEV) {
-    actual_duration *= 4;
-  } else {
-    actual_duration *= 2;
-  }
-
-  return actual_duration;
-}
-
 void ShutdownWatcherHelper::Alarm() {
   metrics::ShutdownHang();
 }
