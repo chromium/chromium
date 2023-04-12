@@ -315,6 +315,9 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
 
     /** Saves the edited profile on disk. */
     private void commitChanges(AutofillProfile profile) {
+        if (willBeSavedInAccount()) {
+            profile.setSource(Source.ACCOUNT);
+        }
         // Country code and phone number are always required and are always collected from the
         // editor model.
         profile.setCountryCode(mCountryField.getValue().toString());
@@ -451,7 +454,18 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
     }
 
     private boolean willBeSavedInAccount() {
-        return mIsMigrationToAccount || (mProfile.getSource() == Source.ACCOUNT && !mIsUpdate);
+        if (mIsMigrationToAccount) {
+            return true;
+        }
+
+        if (mProfile.getSource() == Source.ACCOUNT && !mIsUpdate) {
+            return true; // Only already saved address can be updated.
+        }
+
+        // User creates a new address profile, which is going to be stored in their Google account
+        // according to the storage eligibility.
+        return mIsProfileNew
+                && PersonalDataManager.getInstance().isEligibleForAddressAccountStorage();
     }
 
     private boolean isAlreadySavedInAccount() {

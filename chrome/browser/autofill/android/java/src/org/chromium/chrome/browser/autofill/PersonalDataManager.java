@@ -482,6 +482,10 @@ public class PersonalDataManager {
             mOrigin = origin;
         }
 
+        public void setSource(@Source int source) {
+            mSource = source;
+        }
+
         public void setHonorificPrefix(String honorificPrefix) {
             mHonorificPrefix =
                     new ValueWithStatus(honorificPrefix, VerificationStatus.USER_VERIFIED);
@@ -1171,6 +1175,15 @@ public class PersonalDataManager {
     }
 
     /**
+     * Determines whether the logged in user (if any) is eligible to store
+     * Autofill address profiles to their account.
+     */
+    public boolean isEligibleForAddressAccountStorage() {
+        return PersonalDataManagerJni.get().isEligibleForAddressAccountStorage(
+                mPersonalDataManagerAndroid, PersonalDataManager.this);
+    }
+
+    /**
      * Starts loading the address validation rules for the specified {@code regionCode}.
      *
      * @param regionCode The code of the region for which to load the rules.
@@ -1432,6 +1445,8 @@ public class PersonalDataManager {
                 boolean includeOrganizationInLabel, boolean includeCountryInLabel);
         AutofillProfile getProfileByGUID(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller, String guid);
+        boolean isEligibleForAddressAccountStorage(
+                long nativePersonalDataManagerAndroid, PersonalDataManager caller);
         String setProfile(long nativePersonalDataManagerAndroid, PersonalDataManager caller,
                 AutofillProfile profile);
         String setProfileToLocal(long nativePersonalDataManagerAndroid, PersonalDataManager caller,
