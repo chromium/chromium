@@ -331,7 +331,7 @@ TEST_P(MediaRecorderHandlerTest, InitializeStartStop) {
   EXPECT_FALSE(hasVideoRecorders());
   EXPECT_FALSE(hasAudioRecorders());
 
-  EXPECT_TRUE(media_recorder_handler_->Start(0, 0, 0));
+  EXPECT_TRUE(media_recorder_handler_->Start(0, mime_type, 0, 0));
   EXPECT_TRUE(recording());
 
   EXPECT_TRUE(hasVideoRecorders() || !GetParam().has_video);
@@ -360,7 +360,7 @@ TEST_P(MediaRecorderHandlerTest, EncodeVideoFrames) {
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs,
       AudioTrackRecorder::BitrateMode::kVariable));
-  EXPECT_TRUE(media_recorder_handler_->Start(0, 0, 0));
+  EXPECT_TRUE(media_recorder_handler_->Start(0, mime_type, 0, 0));
 
   InSequence s;
   const scoped_refptr<media::VideoFrame> video_frame =
@@ -443,7 +443,7 @@ TEST_P(MediaRecorderHandlerTest, OpusEncodeAudioFrames) {
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs,
       AudioTrackRecorder::BitrateMode::kVariable));
-  EXPECT_TRUE(media_recorder_handler_->Start(0, 0, 0));
+  EXPECT_TRUE(media_recorder_handler_->Start(0, mime_type, 0, 0));
 
   InSequence s;
   const std::unique_ptr<media::AudioBus> audio_bus1 = NextAudioBus();
@@ -507,7 +507,7 @@ TEST_P(MediaRecorderHandlerTest, WebmMuxerErrorWhileEncoding) {
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs,
       AudioTrackRecorder::BitrateMode::kVariable));
-  EXPECT_TRUE(media_recorder_handler_->Start(0, 0, 0));
+  EXPECT_TRUE(media_recorder_handler_->Start(0, mime_type, 0, 0));
 
   InSequence s;
   const scoped_refptr<media::VideoFrame> video_frame =
@@ -587,7 +587,7 @@ TEST_P(MediaRecorderHandlerTest, PauseRecorderForVideo) {
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs,
       AudioTrackRecorder::BitrateMode::kVariable));
-  EXPECT_TRUE(media_recorder_handler_->Start(0, 0, 0));
+  EXPECT_TRUE(media_recorder_handler_->Start(0, mime_type, 0, 0));
 
   Mock::VerifyAndClearExpectations(recorder);
   media_recorder_handler_->Pause();
@@ -620,11 +620,11 @@ TEST_P(MediaRecorderHandlerTest, StartStopStartRecorderForVideo) {
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), mime_type, codecs,
       AudioTrackRecorder::BitrateMode::kVariable));
-  EXPECT_TRUE(media_recorder_handler_->Start(0, 0, 0));
+  EXPECT_TRUE(media_recorder_handler_->Start(0, mime_type, 0, 0));
   media_recorder_handler_->Stop();
 
   Mock::VerifyAndClearExpectations(recorder);
-  EXPECT_TRUE(media_recorder_handler_->Start(0, 0, 0));
+  EXPECT_TRUE(media_recorder_handler_->Start(0, mime_type, 0, 0));
 
   EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
   media::Muxer::VideoParameters params(gfx::Size(), 1, media::VideoCodec::kVP9,
@@ -675,7 +675,8 @@ TEST_F(MediaRecorderHandlerAudioVideoTest, EmitsCachedAudioDataOnStop) {
   media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), "video/webm", "vp9,opus",
       AudioTrackRecorder::BitrateMode::kVariable);
-  media_recorder_handler_->Start(std::numeric_limits<int>::max(), 0, 0);
+  media_recorder_handler_->Start(std::numeric_limits<int>::max(), "video/webm",
+                                 0, 0);
 
   // Feed some encoded data into the recorder. Expect that data cached by the
   // muxer is emitted on the call to Stop.
@@ -693,7 +694,8 @@ TEST_F(MediaRecorderHandlerAudioVideoTest, EmitsCachedVideoDataOnStop) {
   media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), "video/webm", "vp9,opus",
       AudioTrackRecorder::BitrateMode::kVariable);
-  media_recorder_handler_->Start(std::numeric_limits<int>::max(), 0, 0);
+  media_recorder_handler_->Start(std::numeric_limits<int>::max(), "video/webm",
+                                 0, 0);
 
   // Feed some encoded data into the recorder. Expect that data cached by the
   // muxer is emitted on the call to Stop.
@@ -712,7 +714,8 @@ TEST_F(MediaRecorderHandlerAudioVideoTest,
   media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), "video/webm", "vp9,opus",
       AudioTrackRecorder::BitrateMode::kVariable);
-  media_recorder_handler_->Start(std::numeric_limits<int>::max(), 0, 0);
+  media_recorder_handler_->Start(std::numeric_limits<int>::max(), "video/webm",
+                                 0, 0);
 
   // Feed some encoded data into the recorder. Expect that data cached by the
   // muxer is emitted on the call to Stop.
@@ -841,7 +844,7 @@ TEST_P(MediaRecorderHandlerPassthroughTest, PassesThrough) {
   media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), "", "",
       AudioTrackRecorder::BitrateMode::kVariable);
-  media_recorder_handler_->Start(0, 0, 0);
+  media_recorder_handler_->Start(0, "", 0, 0);
 
   const size_t kFrameSize = 42;
   auto frame = FakeEncodedVideoFrame::Builder()
@@ -870,7 +873,7 @@ TEST_F(MediaRecorderHandlerPassthroughTest, ErrorsOutOnCodecSwitch) {
   EXPECT_TRUE(media_recorder_handler_->Initialize(
       recorder, registry_.test_stream(), "", "",
       AudioTrackRecorder::BitrateMode::kVariable));
-  EXPECT_TRUE(media_recorder_handler_->Start(0, 0, 0));
+  EXPECT_TRUE(media_recorder_handler_->Start(0, "", 0, 0));
 
   // NOTE, Asan: the prototype of WriteData which has a const char* as data
   // ptr plays badly with gmock which tries to interpret it as a null-terminated

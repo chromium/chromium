@@ -282,10 +282,12 @@ void MediaRecorder::start(int time_slice, ExceptionState& exception_state) {
     }
   }
 
-  if (!recorder_handler_->Start(time_slice, audio_bits_per_second_,
+  const ContentType content_type(mime_type_);
+  if (!recorder_handler_->Start(time_slice, content_type.GetType(),
+                                audio_bits_per_second_,
                                 video_bits_per_second_)) {
     exception_state.ThrowDOMException(
-        DOMExceptionCode::kUnknownError,
+        DOMExceptionCode::kNotSupportedError,
         "There was an error starting the MediaRecorder.");
   }
 }

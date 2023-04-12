@@ -70,6 +70,7 @@ class MODULES_EXPORT MediaRecorderHandler final
   AudioTrackRecorder::BitrateMode AudioBitrateMode();
 
   bool Start(int timeslice,
+             const String& type,
              uint32_t audio_bits_per_second,
              uint32_t video_bits_per_second);
   void Stop();
