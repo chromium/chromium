@@ -14,7 +14,6 @@
 #include "media/gpu/buildflags.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
-#include "media/gpu/chromeos/video_frame_converter.h"
 #include "media/gpu/gpu_video_accelerator_util.h"
 #include "media/gpu/gpu_video_decode_accelerator_factory.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
@@ -131,7 +130,7 @@ class MojoMediaClientImpl : public MojoMediaClient {
           gpu_driver_bug_workarounds_,
           /*client_task_runner=*/std::move(task_runner),
           std::make_unique<PlatformVideoFramePool>(),
-          std::make_unique<media::VideoFrameConverter>(),
+          /*frame_converter=*/nullptr,
           VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
           std::move(log),
           /*oop_video_decoder=*/{});

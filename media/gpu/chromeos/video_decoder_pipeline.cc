@@ -200,7 +200,6 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
     mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder) {
   DCHECK(client_task_runner);
   DCHECK(frame_pool);
-  DCHECK(frame_converter);
   DCHECK(!renderable_fourccs.empty());
 
   CreateDecoderFunctionCB create_decoder_function_cb;
@@ -326,13 +325,14 @@ VideoDecoderPipeline::VideoDecoderPipeline(
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DETACH_FROM_SEQUENCE(decoder_sequence_checker_);
   DCHECK(main_frame_pool_);
-  DCHECK(frame_converter_);
   DCHECK(client_task_runner_);
   DVLOGF(2);
 
   decoder_weak_this_ = decoder_weak_this_factory_.GetWeakPtr();
 
   main_frame_pool_->set_parent_task_runner(decoder_task_runner_);
+  if (!frame_converter_)
+    return;
   frame_converter_->Initialize(
       decoder_task_runner_,
       base::BindRepeating(&VideoDecoderPipeline::OnFrameConverted,
@@ -594,7 +594,8 @@ void VideoDecoderPipeline::OnResetDone(base::OnceClosure reset_cb) {
 
   if (image_processor_)
     image_processor_->Reset();
-  frame_converter_->AbortPendingFrames();
+  if (frame_converter_)
+    frame_converter_->AbortPendingFrames();
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (buffer_transcryptor_)
@@ -678,7 +679,6 @@ void VideoDecoderPipeline::OnDecodeDone(bool is_flush,
 
 void VideoDecoderPipeline::OnFrameDecoded(scoped_refptr<VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  DCHECK(frame_converter_);
   DVLOGF(4);
 
   if (uses_oop_video_decoder_) {
@@ -691,17 +691,22 @@ void VideoDecoderPipeline::OnFrameDecoded(scoped_refptr<VideoFrame> frame) {
         std::move(frame),
         base::BindOnce(&VideoDecoderPipeline::OnFrameProcessed,
                        decoder_weak_this_));
-  } else {
-    frame_converter_->ConvertFrame(std::move(frame));
+    return;
   }
+  if (frame_converter_)
+    frame_converter_->ConvertFrame(std::move(frame));
+  else
+    OnFrameConverted(std::move(frame));
 }
 
 void VideoDecoderPipeline::OnFrameProcessed(scoped_refptr<VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  DCHECK(frame_converter_);
   DVLOGF(4);
 
-  frame_converter_->ConvertFrame(std::move(frame));
+  if (frame_converter_)
+    frame_converter_->ConvertFrame(std::move(frame));
+  else
+    OnFrameConverted(std::move(frame));
 }
 
 void VideoDecoderPipeline::OnFrameConverted(scoped_refptr<VideoFrame> frame) {
@@ -744,7 +749,7 @@ bool VideoDecoderPipeline::HasPendingFrames() const {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
 
-  return frame_converter_->HasPendingFrames() ||
+  return (frame_converter_ && frame_converter_->HasPendingFrames()) ||
          (image_processor_ && image_processor_->HasPendingFrames());
 }
 
@@ -755,10 +760,10 @@ void VideoDecoderPipeline::OnError(const std::string& msg) {
 
   has_error_ = true;
 
-  if (image_processor_) {
+  if (image_processor_)
     image_processor_->Reset();
-  }
-  frame_converter_->AbortPendingFrames();
+  if (frame_converter_)
+    frame_converter_->AbortPendingFrames();
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (buffer_transcryptor_)

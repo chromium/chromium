@@ -29,7 +29,6 @@
 #if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
-#include "media/gpu/chromeos/video_frame_converter.h"
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 namespace media {
@@ -167,7 +166,7 @@ void DecoderWrapper::CreateDecoderTask(base::WaitableEvent* done) {
           gpu::GpuDriverBugWorkarounds(),
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           std::make_unique<PlatformVideoFramePool>(),
-          std::make_unique<VideoFrameConverter>(),
+          /*frame_converter=*/nullptr,
           VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
           std::make_unique<NullMediaLog>(),
           /*oop_video_decoder=*/{});
