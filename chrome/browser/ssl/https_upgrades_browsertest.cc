@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -105,6 +106,9 @@ class HttpsUpgradesBrowserTest
     verify_result.cert_status = net::CERT_STATUS_COMMON_NAME_INVALID;
     mock_cert_verifier_.mock_cert_verifier()->AddResultForCertAndHost(
         cert, "bad-https.test", verify_result,
+        net::ERR_CERT_COMMON_NAME_INVALID);
+    mock_cert_verifier_.mock_cert_verifier()->AddResultForCertAndHost(
+        cert, "www.bad-https.test", verify_result,
         net::ERR_CERT_COMMON_NAME_INVALID);
 
     http_server_.AddDefaultHandlers(GetChromeTestDataDir());
@@ -1530,6 +1534,48 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
     histograms()->ExpectBucketCount(
         kNavigationRequestSecurityLevelHistogram,
         NavigationRequestSecurityLevel::kAllowlisted, 2);
+  }
+}
+
+// Regression test for crbug.com/1431026. Triggers a navigation where HTTPS
+// upgrades applied multiple times across redirects to different sites.
+// Should not crash when DCHECKS are enabled.
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, crbug1431026) {
+  GURL www_bad_https_url =
+      https_server()->GetURL("www.bad-https.test", "/simple.html");
+  GURL www_http_url =
+      http_server()->GetURL("www.bad-https.test", "/simple.html");
+
+  // Configure HTTP and bad-HTTPS URLs which redirect to www. subdomain.
+  std::string www_redirect_path =
+      base::StrCat({"/server-redirect?", www_http_url.spec()});
+  GURL redirecting_bad_https_url =
+      https_server()->GetURL("bad-https.test", www_redirect_path);
+  GURL redirecting_http_url =
+      http_server()->GetURL("bad-https.test", www_redirect_path);
+
+  // A good HTTPS URL which redirects to an HTTP URL, which also redirects.
+  GURL initial_redirecting_good_https_url = https_server()->GetURL(
+      "good-https.test",
+      base::StrCat({"/server-redirect-301?", redirecting_http_url.spec()}));
+
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(
+      content::NavigateToURL(contents, initial_redirecting_good_https_url));
+
+  if (IsHttpInterstitialEnabled()) {
+    // Should be showing interstitial on http://bad-https.test/.
+    EXPECT_EQ(redirecting_http_url, contents->GetLastCommittedURL());
+    EXPECT_TRUE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
+  } else {
+    // Either due to no upgrades, or due to fast fallback to HTTP, this should
+    // end up on http://www.bad-https.test.
+    EXPECT_EQ(www_http_url, contents->GetLastCommittedURL());
+    EXPECT_FALSE(
+        chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+            contents));
   }
 }
 

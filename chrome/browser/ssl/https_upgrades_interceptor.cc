@@ -563,10 +563,13 @@ void HttpsUpgradesInterceptor::RedirectHandler(
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!receiver_.is_bound());
-  DCHECK(!client_.is_bound());
 
-  // Set up Mojo connection and initiate the redirect.
+  // Set up Mojo connection and initiate the redirect. `client_` and `receiver_`
+  // may have been previously bound from handling a previous upgrade earlier in
+  // the same navigation, so reset them before re-binding them to handle a new
+  // redirect.
+  receiver_.reset();
+  client_.reset();
   receiver_.Bind(std::move(receiver));
   receiver_.set_disconnect_handler(
       base::BindOnce(&HttpsUpgradesInterceptor::OnConnectionClosed,
