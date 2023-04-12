@@ -73,7 +73,7 @@ std::u16string SaveUpdateAddressProfilePromptController::GetTitle() {
 
   return l10n_util::GetStringUTF16(
       is_migration_to_account_
-          ? IDS_AUTOFILL_SAVE_ADDRESS_MIGRATION_PROMPT_TITLE
+          ? IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE
           : IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE);
 }
 

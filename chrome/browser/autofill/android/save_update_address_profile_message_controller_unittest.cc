@@ -199,12 +199,11 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
                      save_callback_.Get(), action_callback_.Get());
 
   EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_SAVE_ADDRESS_MIGRATION_PROMPT_TITLE),
+                IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE),
             GetMessageWrapper()->GetTitle());
   EXPECT_EQ(
-      l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_MIGRATION_SOURCE_NOTICE,
-          base::ASCIIToUTF16(TestingProfile::kDefaultProfileUserName)),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_IN_ACCOUNT_MESSAGE_ADDRESS_MIGRATION_SOURCE_NOTICE),
       GetMessageWrapper()->GetDescription());
 
   EXPECT_EQ(l10n_util::GetStringUTF16(
@@ -212,8 +211,9 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
             GetMessageWrapper()->GetPrimaryButtonText());
   EXPECT_EQ(SaveUpdateAddressProfileMessageController::kDescriptionMaxLines,
             GetMessageWrapper()->GetDescriptionMaxLines());
-  EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_ADDRESS),
-            GetMessageWrapper()->GetIconResourceId());
+  EXPECT_EQ(
+      ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_UPLOAD_ADDRESS),
+      GetMessageWrapper()->GetIconResourceId());
 
   TriggerMessageDismissedCallback(messages::DismissReason::UNKNOWN);
 }

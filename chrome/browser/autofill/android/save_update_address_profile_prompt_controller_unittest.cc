@@ -233,7 +233,7 @@ TEST_P(SaveUpdateAddressProfilePromptControllerTest,
        ShouldReturnDataToDisplayWhenSave) {
   if (is_migration_to_account()) {
     EXPECT_EQ(l10n_util::GetStringUTF16(
-                  IDS_AUTOFILL_SAVE_ADDRESS_MIGRATION_PROMPT_TITLE),
+                  IDS_AUTOFILL_ACCOUNT_MIGRATE_ADDRESS_PROMPT_TITLE),
               controller_->GetTitle());
     EXPECT_EQ(l10n_util::GetStringUTF16(
                   IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_MIGRATION_OK_BUTTON_LABEL),
