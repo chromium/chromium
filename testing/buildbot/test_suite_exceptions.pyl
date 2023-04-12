@@ -267,12 +267,6 @@
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              # TODO(crbug.com/1412588): Remove when Jammy is the default.
-              'os': 'Ubuntu-22.04',
-            },
-          ],
           'shards': 8,
         },
       },
@@ -636,12 +630,6 @@
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              # TODO(crbug.com/1412588): Remove when Jammy is the default.
-              'os': 'Ubuntu-22.04',
-            },
-          ],
           'shards': 10,
         },
       },
@@ -1050,12 +1038,6 @@
       },
       'Linux Tests': {
         'swarming': {
-          'dimension_sets': [
-            {
-              # TODO(crbug.com/1412588): Remove when Jammy is the default.
-              'os': 'Ubuntu-22.04',
-            },
-          ],
           'shards': 20,
         },
       },
@@ -1744,16 +1726,6 @@
           'shards': 2,
         },
       },
-      'Linux Tests': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              # TODO(crbug.com/1412588): Remove when Jammy is the default.
-              'os': 'Ubuntu-22.04',
-            },
-          ],
-        },
-      },
       # https://crbug.com/1344223
       'Mac10.13 Tests': {
         'swarming': {
@@ -1855,16 +1827,6 @@
       'Linux TSan Tests': {
         'swarming': {
           'shards': 30,
-        },
-      },
-      'Linux Tests': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              # TODO(crbug.com/1412588): Remove when Jammy is the default.
-              'os': 'Ubuntu-22.04',
-            },
-          ],
         },
       },
       'Mac ASan 64 Tests (1)': { # https://crbug.com/1200640
@@ -2778,16 +2740,6 @@
           'shards': 32, # Adjusted for testing, see https://crbug.com/1179567
         },
       },
-      'Linux Tests': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              # TODO(crbug.com/1412588): Remove when Jammy is the default.
-              'os': 'Ubuntu-22.04',
-            },
-          ],
-        },
-      },
       # https://crbug.com/1192997
       'Linux Tests (Wayland)': {
         'args': [
@@ -3693,16 +3645,6 @@
           'shards': 6,
         },
       },
-      'Linux Tests': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              # TODO(crbug.com/1412588): Remove when Jammy is the default.
-              'os': 'Ubuntu-22.04',
-            },
-          ],
-        },
-      },
       'Mac ASan 64 Tests (1)': {
         'swarming': {
           'shards': 3,
@@ -3836,14 +3778,6 @@
           '--xvfb',
           '--jobs=1',
         ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              # TODO(crbug.com/1412588): Remove when Jammy is the default.
-              'os': 'Ubuntu-22.04',
-            },
-          ],
-        },
       },
       'Linux Tests (dbg)(1)': {
         'args': [
