@@ -231,6 +231,7 @@
   (sysctl-name "hw.logicalcpu_max")
   (sysctl-name "hw.machine")
   (sysctl-name "hw.ncpu")
+  (sysctl-name "hw.nperflevels")
   (sysctl-name "hw.pagesize_compat")
   (sysctl-name "hw.physicalcpu_max")
   (sysctl-name "hw.tbfrequency_compat")
@@ -246,6 +247,7 @@
   (sysctl-name "kern.usrstack64")
   (sysctl-name "kern.version")
   (sysctl-name "sysctl.proc_cputype")
+  (sysctl-name-prefix "hw.perflevel")
 )
 
 (allow network-outbound
