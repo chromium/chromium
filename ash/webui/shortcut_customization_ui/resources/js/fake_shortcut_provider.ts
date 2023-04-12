@@ -8,7 +8,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {AcceleratorResultData, AcceleratorsUpdatedObserverRemote} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 
-import {Accelerator, AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
+import {Accelerator, AcceleratorConfig, AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 
 
 /**
@@ -59,6 +59,10 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.registerObservables();
   }
 
+  triggerOnAcceleratorUpdated(): void {
+    this.observables.trigger(ON_ACCELERATORS_UPDATED_METHOD_NAME);
+  }
+
   getAcceleratorLayoutInfos(): Promise<{layoutInfos: MojoLayoutInfo[]}> {
     return this.methods.resolveMethod('getAcceleratorLayoutInfos');
   }
@@ -79,8 +83,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   addObserver(observer: AcceleratorsUpdatedObserverRemote): void {
     this.acceleratorsUpdatedPromise = this.observe(
-        ON_ACCELERATORS_UPDATED_METHOD_NAME,
-        (config: MojoAcceleratorConfig) => {
+        ON_ACCELERATORS_UPDATED_METHOD_NAME, (config: AcceleratorConfig) => {
           observer.onAcceleratorsUpdated(config);
         });
   }
@@ -92,7 +95,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   // Set the value that will be retuned when `onAcceleratorsUpdated()` is
   // called.
-  setFakeAcceleratorsUpdated(config: MojoAcceleratorConfig[]): void {
+  setFakeAcceleratorsUpdated(config: AcceleratorConfig[]): void {
     this.observables.setObservableData(
         ON_ACCELERATORS_UPDATED_METHOD_NAME, config);
   }

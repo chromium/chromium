@@ -20,7 +20,7 @@ import {setShortcutProviderForTesting, setUseFakeProviderForTesting} from 'chrom
 import {FakeShortcutSearchHandler} from 'chrome://shortcut-customization/js/search/fake_shortcut_search_handler.js';
 import {setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customization/js/search/shortcut_search_handler.js';
 import {ShortcutCustomizationAppElement} from 'chrome://shortcut-customization/js/shortcut_customization_app.js';
-import {AcceleratorCategory, AcceleratorConfigResult, AcceleratorState, AcceleratorSubcategory, LayoutInfo, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorCategory, AcceleratorConfig, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, LayoutInfo, LayoutStyle, Modifier, MojoLayoutInfo, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {getSubcategoryNameStringId} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -67,12 +67,6 @@ suite('shortcutCustomizationAppTest', function() {
     provider = new FakeShortcutProvider();
     provider.setFakeAcceleratorConfig(fakeAcceleratorConfig);
     provider.setFakeAcceleratorLayoutInfos(fakeLayoutInfo);
-    // `onAcceleratorsUpdated` gets observed as soon as the layouts are
-    //  initialized.
-    // TODO(jimmyxgong): Triggering the observer in tests is difficult
-    // with how Mojo handles union types, we will need to refactor
-    // the fake data to support the correct Mojo types for OnAceleratorsUpdated.
-    provider.setFakeAcceleratorsUpdated([fakeAcceleratorConfig]);
     provider.setFakeHasLauncherButton(true);
 
     setShortcutProviderForTesting(provider);
@@ -146,6 +140,11 @@ suite('shortcutCustomizationAppTest', function() {
     // Click on the first accelerator, expect the edit dialog to open.
     accelerators[0]!.click();
     await flushTasks();
+  }
+
+  function triggerOnAcceleratorUpdated(): Promise<void> {
+    provider.triggerOnAcceleratorUpdated();
+    return flushTasks();
   }
 
   test('LoadFakeWindowsAndDesksPage', async () => {
@@ -653,5 +652,82 @@ suite('shortcutCustomizationAppTest', function() {
     await flushTasks();
 
     assertTrue(getLinkEl().href.includes('chrome://theme/colors.css'));
+  });
+
+  test('TextAcceleratorLookupUpdatesCorrectly', async () => {
+    // Set up test to only have one shortcut.
+    const testLayoutInfo: MojoLayoutInfo[] = [
+      {
+        category: AcceleratorCategory.kWindowsAndDesks,
+        subCategory: AcceleratorSubcategory.kWindows,
+        description: strToMojoString16('Go to windows 1 through 8'),
+        style: LayoutStyle.kText,
+        source: AcceleratorSource.kAmbient,
+        action: 1,
+      },
+    ];
+    provider.setFakeAcceleratorLayoutInfos(testLayoutInfo);
+
+    page = initShortcutCustomizationAppElement();
+    waitAfterNextRender(getPage());
+    await flushTasks();
+
+    // This config is constructed to match the generated mojo type for an
+    // accelerator configuration. `layoutProperties` is an union type, so
+    // we do not have an undefined `standardAccelerator`.
+    const testAcceleratorConfig: AcceleratorConfig = {
+      [AcceleratorSource.kAmbient]: {
+        [1]: [{
+          type: AcceleratorType.kDefault,
+          state: AcceleratorState.kEnabled,
+          locked: true,
+          layoutProperties: {
+            textAccelerator: {
+              parts: [
+                {
+                  text: strToMojoString16('ctrl'),
+                  type: TextAcceleratorPartType.kModifier,
+                },
+                {
+                  text: strToMojoString16(' + '),
+                  type: TextAcceleratorPartType.kDelimiter,
+                },
+                {
+                  text: strToMojoString16('1 '),
+                  type: TextAcceleratorPartType.kKey,
+                },
+                {
+                  text: strToMojoString16('through '),
+                  type: TextAcceleratorPartType.kPlainText,
+                },
+                {
+                  text: strToMojoString16('8'),
+                  type: TextAcceleratorPartType.kKey,
+                },
+              ],
+            },
+          },
+        }],
+      },
+    };
+
+    // Cycle tabs accelerator from kAmbient[1].
+    const expectedCycleTabsAction = 1;
+
+    let textLookup = getManager().getTextAcceleratorInfos(
+        AcceleratorSource.kAmbient, expectedCycleTabsAction);
+    assertEquals(1, textLookup.length);
+
+    // Now simulate an update.
+    provider.setFakeAcceleratorsUpdated([testAcceleratorConfig]);
+    provider.setFakeHasLauncherButton(true);
+    await triggerOnAcceleratorUpdated();
+    await provider.getAcceleratorsUpdatedPromiseForTesting();
+
+    // After a call to `onAcceleratorsUpdated` we should still expect to have
+    // one text accelerator.
+    textLookup = getManager().getTextAcceleratorInfos(
+        AcceleratorSource.kAmbient, expectedCycleTabsAction);
+    assertEquals(1, textLookup.length);
   });
 });
