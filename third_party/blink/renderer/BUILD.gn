@@ -132,6 +132,14 @@ config("config") {
         "dump-graph",
       ]
     }
+
+    # Enable GC plugin forbidding mojo::Associated{Remote,Receiver}:
+    cflags += [
+      "-Xclang",
+      "-plugin-arg-blink-gc-plugin",
+      "-Xclang",
+      "forbid-associated-remote-receiver",
+    ]
   }
 }
 

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -86,6 +87,7 @@ class MODULES_EXPORT SharedStorage final : public ScriptWrappable {
   GetSharedStorageWorkletServiceClient(ExecutionContext* execution_context);
 
  private:
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::AssociatedRemote<mojom::blink::SharedStorageDocumentService>
       shared_storage_document_service_;
 

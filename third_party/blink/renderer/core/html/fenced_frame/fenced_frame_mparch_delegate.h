@@ -9,6 +9,7 @@
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
 
@@ -31,6 +32,7 @@ class CORE_EXPORT FencedFrameMPArchDelegate
   void DidChangeFramePolicy(const FramePolicy&) override;
 
  private:
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::AssociatedRemote<mojom::blink::FencedFrameOwnerHost> remote_;
 };
 

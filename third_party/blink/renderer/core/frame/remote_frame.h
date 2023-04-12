@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_view.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace cc {
 class Layer;
@@ -300,9 +301,12 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   // Whether the frame is considered to be an ad frame by Ad Tagging.
   bool is_ad_frame_;
 
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::AssociatedRemote<mojom::blink::RemoteFrameHost>
       remote_frame_host_remote_;
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::AssociatedReceiver<mojom::blink::RemoteFrame> receiver_{this};
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::AssociatedReceiver<mojom::blink::RemoteMainFrame> main_frame_receiver_{
       this};
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

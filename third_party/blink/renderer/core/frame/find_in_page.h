@@ -112,6 +112,7 @@ class CORE_EXPORT FindInPage final : public GarbageCollected<FindInPage>,
   GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::Remote<mojom::blink::FindInPageClient> client_;
 
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::AssociatedReceiver<mojom::blink::FindInPage> receiver_{this};
 };
 

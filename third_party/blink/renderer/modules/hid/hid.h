@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
 
@@ -112,6 +113,7 @@ class MODULES_EXPORT HID : public EventTargetWithInlineData,
                            Vector<device::mojom::blink::HidDeviceInfoPtr>);
 
   HeapMojoRemote<mojom::blink::HidService> service_;
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::AssociatedReceiver<device::mojom::blink::HidManagerClient> receiver_{
       this};
   HeapHashSet<Member<ScriptPromiseResolver>> get_devices_promises_;

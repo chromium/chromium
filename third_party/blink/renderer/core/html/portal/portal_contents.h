@@ -15,6 +15,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 
 namespace blink {
 
@@ -115,7 +116,9 @@ class PortalContents : public GarbageCollected<PortalContents>,
   absl::optional<PortalToken> portal_token_;
 
   // Both of these will be reset once Destroy has been called.
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::AssociatedRemote<mojom::blink::Portal> remote_portal_;
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::AssociatedReceiver<mojom::blink::PortalClient> portal_client_receiver_;
 };
 

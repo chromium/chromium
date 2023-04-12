@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "ui/display/mojom/screen_orientation.mojom-blink.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -94,6 +95,7 @@ class MockScreenOrientation final
               (device::mojom::ScreenOrientationLockType));
 
  private:
+  GC_PLUGIN_IGNORE("https://crbug.com/1381979")
   mojo::AssociatedReceiver<device::mojom::blink::ScreenOrientation> receiver_{
       this};
 };
