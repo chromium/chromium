@@ -287,12 +287,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Login.PolicyFilesStatePerBoot" enum="LoginPolicyFilesState"
-    expires_after="M100">
-  <owner>mpolzer@google.com</owner>
-  <summary>The state of Chrome OS owner key and device policy files.</summary>
-</histogram>
-
 <histogram name="Login.PromptToCompleteLoginTime" units="ms"
     expires_after="2023-10-08">
   <owner>antrim@chromium.org</owner>

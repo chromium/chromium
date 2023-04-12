@@ -65994,62 +65994,6 @@ from previous Chrome versions.
   <int value="1" label="Cryptohome failure"/>
 </enum>
 
-<enum name="LoginPolicyFilesState">
-  <summary>Policy/owner key file state.</summary>
-  <int value="0" label="HEALTHY_R11">Healthy, pre-R11</int>
-  <int value="1" label="UNUSED">Unused</int>
-  <int value="2" label="HEALTHY">Healthy</int>
-  <int value="3" label="RESERVED">Reserved</int>
-  <int value="4" label="BAD_POLICY_R11">Key OK, policy bad, pre-R11</int>
-  <int value="5" label="UNUSED0">Unused</int>
-  <int value="6" label="BAD_POLICY">Key OK, policy bad</int>
-  <int value="7" label="RESERVED0">Reserved</int>
-  <int value="8" label="KEY_OK_NO_POLICY_R11">
-    Key OK, no policy, pre-R11 user (http://crosbug.com/24916)
-  </int>
-  <int value="9" label="UNUSED1">Unused</int>
-  <int value="10" label="KEY_OK_NO_POLICY">Key OK, no policy</int>
-  <int value="11" label="RESERVED1">Reserved</int>
-  <int value="12" label="RESERVED2">Reserved</int>
-  <int value="13" label="RESERVED3">Reserved</int>
-  <int value="14" label="RESERVED4">Reserved</int>
-  <int value="15" label="RESERVED5">Reserved</int>
-  <int value="16" label="BAD_KEY_R11">Key bad, policy OK, pre-R11</int>
-  <int value="17" label="UNUSED2">Unused</int>
-  <int value="18" label="BAD_KEY">Key bad, policy OK</int>
-  <int value="19" label="RESERVED6">Reserved</int>
-  <int value="20" label="BAD_KEY_BAD_POLICY_R11">
-    Key bad, policy bad, pre-R11
-  </int>
-  <int value="21" label="UNUSED3">Unused</int>
-  <int value="22" label="BAD_KEY_BAD_POLICY_0">Key bad, policy bad</int>
-  <int value="23" label="RESERVED7">Reserved</int>
-  <int value="24" label="BAD_KEY_NO_POLICY_R11">
-    Key bad, policy bad, pre-R11
-  </int>
-  <int value="25" label="UNUSED4">Unused</int>
-  <int value="26" label="BAD_KEY_BAD_POLICY">Key bad, policy bad</int>
-  <int value="27" label="RESERVED8">Reserved</int>
-  <int value="28" label="RESERVED9">Reserved</int>
-  <int value="29" label="RESERVED10">Reserved</int>
-  <int value="30" label="RESERVED11">Reserved</int>
-  <int value="31" label="RESERVED12">Reserved</int>
-  <int value="32" label="NO_KEY_R11">No key, policy OK, pre-R11</int>
-  <int value="33" label="UNUSED5">Unused</int>
-  <int value="34" label="NO_KEY">No key, policy OK</int>
-  <int value="35" label="RESERVED13">RESERVED</int>
-  <int value="36" label="NO_KEY_BAD_POLICY_R11">
-    No key, policy bad, pre-R11
-  </int>
-  <int value="37" label="UNUSED6">Unused</int>
-  <int value="38" label="NO_KEY_BAD_POLICY">No key, bad policy</int>
-  <int value="39" label="RESERVED14">Reserved</int>
-  <int value="40" label="NO_KEY_NO_POLICY_R11">Un-owned, pre-R11</int>
-  <int value="41" label="UNUSED7">Unused</int>
-  <int value="42" label="NO_KEY_NO_POLICY">Un-owned</int>
-  <int value="43" label="RESERVED15">Reserved</int>
-</enum>
-
 <enum name="LoginReauthReasons">
   <int value="0" label="None">
     No reason recorded so far, nothing to report. This value should never be
