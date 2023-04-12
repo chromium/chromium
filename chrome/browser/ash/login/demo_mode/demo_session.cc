@@ -691,7 +691,8 @@ base::FilePath GetSplashScreenImagePath(base::FilePath localized_image_path,
 }
 
 void DemoSession::ShowSplashScreen(base::FilePath image_path) {
-  WallpaperControllerClientImpl::Get()->ShowAlwaysOnTopWallpaper(image_path);
+  WallpaperControllerClientImpl::Get()->ShowOverrideWallpaper(
+      image_path, /*always_on_top=*/true);
   remove_splash_screen_fallback_timer_->Start(
       FROM_HERE, kRemoveSplashScreenTimeout,
       base::BindOnce(&DemoSession::RemoveSplashScreen,
@@ -717,7 +718,7 @@ void DemoSession::ConfigureAndStartSplashScreen() {
 void DemoSession::RemoveSplashScreen() {
   if (splash_screen_removed_)
     return;
-  WallpaperControllerClientImpl::Get()->RemoveAlwaysOnTopWallpaper();
+  WallpaperControllerClientImpl::Get()->RemoveOverrideWallpaper();
   remove_splash_screen_fallback_timer_.reset();
   app_window_registry_observations_.RemoveAllObservations();
   splash_screen_removed_ = true;
