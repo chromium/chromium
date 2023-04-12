@@ -132,7 +132,10 @@
       <cr-link-row id="syncDashboardLink" class="hr"
           label="$i18n{manageSyncedDataTitle}"
           on-click="onSyncDashboardLinkClick_"
-          hidden="[[syncStatus.supervisedUser]]" external></cr-link-row>
+          hidden="[[syncStatus.supervisedUser]]"
+          external
+          button-aria-description="$i18n{opensInNewTab}">
+      </cr-link-row>
 
       <cr-expand-button id="encryptionDescription"
           hidden="[[syncPrefs.passphraseRequired]]"

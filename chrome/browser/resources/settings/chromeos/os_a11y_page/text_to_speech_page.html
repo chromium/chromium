@@ -38,14 +38,18 @@
         if="[[!isAccessibilityChromeVoxPageMigrationEnabled_]]">
       <cr-link-row id="chromeVoxSubpageButton"
           class="settings-box" on-click="onChromeVoxSettingsClick_"
-          label="$i18n{chromeVoxOptionsLabel}" external>
+          label="$i18n{chromeVoxOptionsLabel}"
+          external
+          button-aria-description="$i18n{opensInNewTab}">
       </cr-link-row>
     </template>
   </div>
   <div class="sub-item">
     <cr-link-row id="chromeVoxTutorialButton"
         class="settings-box" on-click="onChromeVoxTutorialClick_"
-        label="$i18n{chromeVoxTutorialLabel}" external>
+        label="$i18n{chromeVoxTutorialLabel}"
+        external
+        button-aria-description="$i18n{opensInNewTab}">
     </cr-link-row>
   </div>
 </iron-collapse>
@@ -72,7 +76,9 @@
         if="[[!isAccessibilitySelectToSpeakPageMigrationEnabled_]]">
       <cr-link-row id="selectToSpeakSubpageButton"
           class="settings-box" on-click="onSelectToSpeakSettingsClick_"
-          label="$i18n{selectToSpeakOptionsLabel}" external>
+          label="$i18n{selectToSpeakOptionsLabel}"
+          external
+          button-aria-description="$i18n{opensInNewTab}">
       </cr-link-row>
     </template>
   </div>

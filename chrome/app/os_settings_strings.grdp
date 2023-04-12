@@ -22,6 +22,9 @@
   <message name="IDS_SETTINGS_LEARN_MORE" desc="The label in the settings UI if users can obtain more information.">
     Learn more
   </message>
+  <message name="IDS_OS_SETTINGS_OPENS_IN_NEW_TAB_A11Y_LABEL" desc="ARIA (accessibility) label describing an external link which opens in a new tab.">
+    Opens in new tab
+  </message>
 
   <!--Main Page-->
   <message name="IDS_SETTINGS_SECONDARY_USER_BANNER" desc="Banner displayed in settings page when the user is secondary in a multi-profile session.">

@@ -65,14 +65,18 @@
         if="[[!isAccessibilityChromeVoxPageMigrationEnabled_]]">
       <cr-link-row id="chromeVoxSubpageButton"
           class="settings-box" on-click="onChromeVoxSettingsClick_"
-          label="$i18n{chromeVoxOptionsLabel}" external>
+          label="$i18n{chromeVoxOptionsLabel}"
+          external
+          button-aria-description="$i18n{opensInNewTab}">
       </cr-link-row>
     </template>
   </div>
   <div class="sub-item">
     <cr-link-row id="chromeVoxTutorialButton"
         class="settings-box" on-click="onChromeVoxTutorialClick_"
-        label="$i18n{chromeVoxTutorialLabel}" external>
+        label="$i18n{chromeVoxTutorialLabel}"
+        external
+        button-aria-description="$i18n{opensInNewTab}">
     </cr-link-row>
   </div>
 </iron-collapse>
@@ -98,7 +102,9 @@
         if="[[!isAccessibilitySelectToSpeakPageMigrationEnabled_]]">
       <cr-link-row id="selectToSpeakSubpageButton"
           class="settings-box" on-click="onSelectToSpeakSettingsClick_"
-          label="$i18n{selectToSpeakOptionsLabel}" external>
+          label="$i18n{selectToSpeakOptionsLabel}"
+          external
+          button-aria-description="$i18n{opensInNewTab}">
       </cr-link-row>
     </template>
   </div>
@@ -201,8 +207,11 @@
   </cr-link-row>
   <cr-link-row id="appearanceSubpageButton" class="hr"
       label="$i18n{appearanceSettingsTitle}" on-click="onAppearanceClick_"
-      sub-label="$i18n{appearanceSettingsDescription}" external
-      embedded></cr-link-row>
+      sub-label="$i18n{appearanceSettingsDescription}"
+      external
+      button-aria-description="$i18n{opensInNewTab}"
+      embedded>
+  </cr-link-row>
 </template>
 
 <h2>$i18n{keyboardAndTextInputHeading}</h2>
@@ -431,6 +440,8 @@
   <cr-link-row
       id="additionalFeaturesLink" class="hr"
       label="$i18n{additionalFeaturesTitle}"
-      on-click="onAdditionalFeaturesClick_" external>
+      on-click="onAdditionalFeaturesClick_"
+      external
+      button-aria-description="$i18n{opensInNewTab}">
   </cr-link-row>
 </template>

@@ -160,10 +160,12 @@
         id="visibilityDialog" on-close="onVisibilityDialogClose_">
     </nearby-share-contact-visibility-dialog>
   </template>
-  <cr-link-row id="manageContactsLinkRow" class="hr" external
+  <cr-link-row id="manageContactsLinkRow" class="hr"
       on-click="onManageContactsClick_"
       label="$i18n{nearbyShareManageContactsRowTitle}"
       sub-label="[[getManageContactsSubLabel_(manageContactsUrl_)]]"
+      external
+      button-aria-description="$i18n{opensInNewTab}"
       deep-link-focus-id$="[[Setting.kNearbyShareContacts]]">
   </cr-link-row>
   <div class="settings-box two-line" id="dataUsageRow">
