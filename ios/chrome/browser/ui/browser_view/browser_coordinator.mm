@@ -145,6 +145,7 @@
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator.h"
 #import "ios/chrome/browser/ui/qr_scanner/qr_scanner_legacy_coordinator.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_coordinator.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_coordinator.h"
 #import "ios/chrome/browser/ui/sad_tab/sad_tab_coordinator.h"
 #import "ios/chrome/browser/ui/safe_browsing/safe_browsing_coordinator.h"
@@ -239,6 +240,7 @@ enum class ToolbarKind {
                                   PromosManagerCommands,
                                   PolicyChangeCommands,
                                   PreloadControllerDelegate,
+                                  ReadingListCoordinatorDelegate,
                                   RepostFormTabHelperDelegate,
                                   SigninPresenter,
                                   SnapshotGeneratorDelegate,
@@ -564,6 +566,7 @@ enum class ToolbarKind {
   [self.printController dismissAnimated:YES];
 
   [self.readingListCoordinator stop];
+  self.readingListCoordinator.delegate = nil;
   self.readingListCoordinator = nil;
 
   [self.sharingCoordinator stop];
@@ -1197,6 +1200,7 @@ enum class ToolbarKind {
   self.promosManagerCoordinator = nil;
 
   [self.readingListCoordinator stop];
+  self.readingListCoordinator.delegate = nil;
   self.readingListCoordinator = nil;
 
   [self.recentTabsCoordinator stop];
@@ -1444,6 +1448,7 @@ enum class ToolbarKind {
   self.readingListCoordinator = [[ReadingListCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
+  self.readingListCoordinator.delegate = self;
   [self.readingListCoordinator start];
 }
 
@@ -2677,6 +2682,14 @@ enum class ToolbarKind {
   if (self.isActive) {
     [self.viewController displayCurrentTab];
   }
+}
+
+#pragma mark - ReadingListCoordinatorDelegate
+
+- (void)closeReadingList {
+  [self.readingListCoordinator stop];
+  self.readingListCoordinator.delegate = nil;
+  self.readingListCoordinator = nil;
 }
 
 @end

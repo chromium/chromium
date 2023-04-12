@@ -6,6 +6,7 @@ source_set("reading_list") {
   sources = [
     "reading_list_coordinator.h",
     "reading_list_coordinator.mm",
+    "reading_list_coordinator_delegate.h",
     "reading_list_list_item_custom_action_factory.h",
     "reading_list_list_item_custom_action_factory.mm",
     "reading_list_list_item_factory.h",

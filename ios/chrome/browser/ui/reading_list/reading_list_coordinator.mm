@@ -213,7 +213,7 @@
 
 - (void)dismissButtonTapped {
   base::RecordAction(base::UserMetricsAction("MobileReadingListClose"));
-  [self stop];
+  [_delegate closeReadingList];
 }
 
 - (void)stop {
@@ -255,7 +255,7 @@
 - (void)dismissReadingListListViewController:(UIViewController*)viewController {
   DCHECK_EQ(self.tableViewController, viewController);
   [self.tableViewController willBeDismissed];
-  [self stop];
+  [_delegate closeReadingList];
 }
 
 - (void)readingListListViewController:(UIViewController*)viewController
@@ -385,7 +385,7 @@
     UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
   }
 
-  [self stop];
+  [_delegate closeReadingList];
 }
 
 - (void)openItemOfflineInNewTab:(id<ReadingListListItem>)item {
