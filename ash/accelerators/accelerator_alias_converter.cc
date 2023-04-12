@@ -10,60 +10,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/ash/keyboard_capability.h"
-#include "ui/events/ash/keyboard_layout_util.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
-
-namespace {
-
-using DeviceType = ui::KeyboardCapability::DeviceType;
-
-bool IsChromeOSKeyboard(const ui::InputDevice& keyboard) {
-  const auto device_type =
-      Shell::Get()->keyboard_capability()->GetDeviceType(keyboard);
-  return device_type == DeviceType::kDeviceInternalKeyboard ||
-         device_type == DeviceType::kDeviceExternalChromeOsKeyboard;
-}
-
-// Gets the most recently plugged in external keyboard. If there are no external
-// keyboards, return the internal keyboard.
-absl::optional<ui::InputDevice> GetPriorityKeyboard() {
-  DeviceType priority_device_type = DeviceType::kDeviceUnknown;
-  absl::optional<ui::InputDevice> priority_keyboard;
-  for (const ui::InputDevice& keyboard :
-       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
-    const auto device_type =
-        Shell::Get()->keyboard_capability()->GetDeviceType(keyboard);
-    switch (device_type) {
-      case DeviceType::kDeviceUnknown:
-      case DeviceType::kDeviceInternalKeyboard:
-        if (!priority_keyboard) {
-          priority_keyboard = keyboard;
-          priority_device_type = DeviceType::kDeviceInternalKeyboard;
-        }
-        break;
-      case DeviceType::kDeviceExternalChromeOsKeyboard:
-      case DeviceType::kDeviceExternalAppleKeyboard:
-      case DeviceType::kDeviceExternalGenericKeyboard:
-      case DeviceType::kDeviceExternalUnknown:
-      case DeviceType::kDeviceHotrodRemote:
-      case DeviceType::kDeviceVirtualCoreKeyboard:
-        if (!priority_keyboard ||
-            priority_device_type == DeviceType::kDeviceInternalKeyboard ||
-            keyboard.id > priority_keyboard->id) {
-          priority_keyboard = keyboard;
-          priority_device_type = device_type;
-        }
-        break;
-    }
-  }
-  return priority_keyboard;
-}
-
-}  // namespace
 
 // TODO(zhangwenyu): Handle cases when an accelerator should be suppressed
 // because certain keys are unavailable.
@@ -101,57 +52,35 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAliases(
   // TODO(zhangwenyu): Handle the case when meta + top row key rewrite is
   // suppressed, following https://crrev.com/c/4160339.
   // Avoid remapping if [Search] is part of the original accelerator.
-  if (accelerator.IsCmdDown()) {
-    return {};
+  if (accelerator.IsCmdDown() ||
+      !Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys()) {
+    return std::vector<ui::Accelerator>();
   }
 
-  // If the accelerator is not an action key, do no aliasing.
-  absl::optional<ui::TopRowActionKey> action_key =
-      ui::KeyboardCapability::ConvertToTopRowActionKey(accelerator.key_code());
-  if (!action_key) {
-    return {};
-  }
-
-  absl::optional<ui::InputDevice> priority_keyboard = GetPriorityKeyboard();
-  if (!priority_keyboard.has_value()) {
-    return {};
-  }
-
-  const bool top_row_are_fkeys =
-      Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys();
-  absl::optional<ui::KeyboardCode> function_key =
-      Shell::Get()->keyboard_capability()->GetCorrespondingFunctionKey(
-          *priority_keyboard, *action_key);
-  if (!function_key.has_value()) {
-    return {};
-  }
-
-  if (IsChromeOSKeyboard(*priority_keyboard)) {
-    // If its a ChromeOS Keyboard, the UI should show the Action Key glyph. If
-    // `top_row_are_fkeys` is true, Search must be added so convert the "F-Key"
-    // into the action key.
-    if (top_row_are_fkeys) {
-      return {ui::Accelerator(accelerator.key_code(),
-                              accelerator.modifiers() | ui::EF_COMMAND_DOWN,
-                              accelerator.key_state())};
-    } else {
-      // Otherwise if `top_row_are_fkeys` is false, the identity accelerator
-      // should be returned.
-      return {accelerator};
-    }
-  } else {
-    // If its an external, the F-Key glyph should be shown. If
-    // `top_row_are_fkeys` is true, search must be added to convert the "F-Key"
-    // into the action key. Otherwise, the "F-Key" is implicitly the action key.
-    if (top_row_are_fkeys) {
-      return {ui::Accelerator(*function_key,
-                              accelerator.modifiers() | ui::EF_COMMAND_DOWN,
-                              accelerator.key_state())};
-    } else {
-      return {ui::Accelerator(*function_key, accelerator.modifiers(),
-                              accelerator.key_state())};
+  // Deduping is needed since keyboards with the same top row layouts generate
+  // the same alias. Use flat_set since the size is small.
+  base::flat_set<ui::Accelerator> aliases_set;
+  // TODO(zhangwenyu): Handle custom vivaldi layouts.
+  for (const ui::InputDevice& keyboard :
+       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+    absl::optional<ui::KeyboardCode> f_key =
+        Shell::Get()->keyboard_capability()->GetMappedFKeyIfExists(
+            accelerator.key_code(), keyboard);
+    if (f_key.has_value()) {
+      // When a keycode has a mapped function key (meaning it is top row
+      // key), for internal keyboard, we show icon + meta key, for external
+      // keyboard, we show F-key + meta key. If both internal and external
+      // exist, we show both variations.
+      aliases_set.insert(ui::Accelerator(
+          keyboard.type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL
+              ? accelerator.key_code()
+              : f_key.value(),
+          accelerator.modifiers() | ui::EF_COMMAND_DOWN,
+          accelerator.key_state()));
     }
   }
+
+  return std::vector<ui::Accelerator>(aliases_set.begin(), aliases_set.end());
 }
 
 std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateSixPackAliases(
@@ -223,38 +152,13 @@ std::vector<ui::Accelerator>
 AcceleratorAliasConverter::FilterAliasBySupportedKeys(
     const std::vector<ui::Accelerator>& accelerators) const {
   std::vector<ui::Accelerator> filtered_accelerators;
-  auto priority_keyboard = GetPriorityKeyboard();
-
-  for (const auto& accelerator : accelerators) {
-    if (auto action_key = ui::KeyboardCapability::ConvertToTopRowActionKey(
+  std::copy_if(
+      accelerators.begin(), accelerators.end(),
+      std::back_inserter(filtered_accelerators),
+      [](const ui::Accelerator& accelerator) {
+        return Shell::Get()->keyboard_capability()->HasKeyEventOnAnyKeyboard(
             accelerator.key_code());
-        action_key.has_value()) {
-      if (priority_keyboard &&
-          Shell::Get()->keyboard_capability()->HasTopRowActionKey(
-              *priority_keyboard, *action_key)) {
-        filtered_accelerators.push_back(accelerator);
-      }
-      continue;
-    }
-
-    if (ui::KeyboardCapability::IsSixPackKey(accelerator.key_code())) {
-      if (ui::KeyboardCapability::HasSixPackOnAnyKeyboard()) {
-        filtered_accelerators.push_back(accelerator);
-      }
-      continue;
-    }
-
-    if (accelerator.key_code() == ui::VKEY_ASSISTANT) {
-      if (ui::DeviceKeyboardHasAssistantKey()) {
-        filtered_accelerators.push_back(accelerator);
-      }
-      continue;
-    }
-
-    // Otherwise, always copy the accelerator.
-    filtered_accelerators.push_back(accelerator);
-  }
-
+      });
   return filtered_accelerators;
 }
 

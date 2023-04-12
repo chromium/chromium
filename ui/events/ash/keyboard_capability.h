@@ -44,8 +44,7 @@ enum class TopRowActionKey {
   kNextTrack,
   kPreviousTrack,
   kPlayPause,
-  kLauncher,
-  kMaxValue = kLauncher,
+  kMaxValue = kPlayPause,
 };
 
 inline constexpr auto kLayout1TopRowActionKeys =
@@ -241,11 +240,6 @@ class KeyboardCapability : public InputDeviceEventObserver {
   static std::unique_ptr<EventDeviceInfo> CreateEventDeviceInfoFromInputDevice(
       const InputDevice& keyboard);
 
-  // Converts from the given `key_code` to the corresponding meaning in
-  // `TopRowActionKey` enum.
-  static absl::optional<TopRowActionKey> ConvertToTopRowActionKey(
-      ui::KeyboardCode key_code);
-
   void AddObserver(Observer* observer);
 
   void RemoveObserver(Observer* observer);
@@ -331,12 +325,6 @@ class KeyboardCapability : public InputDeviceEventObserver {
   bool HasTopRowActionKey(const InputDevice& keyboard,
                           TopRowActionKey action_key) const;
   bool HasTopRowActionKeyOnAnyKeyboard(TopRowActionKey action_key) const;
-
-  // Gets the corresponding function key for the given `action_key` on the given
-  // `keyboard`.
-  absl::optional<KeyboardCode> GetCorrespondingFunctionKey(
-      const InputDevice& keyboard,
-      TopRowActionKey action_key) const;
 
   const base::flat_map<int, KeyboardInfo>& keyboard_info_map() const {
     return keyboard_info_map_;

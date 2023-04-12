@@ -738,14 +738,6 @@ TEST_F(KeyboardCapabilityTest, TopRowLayout1) {
         keyboard_capability_->HasTopRowActionKey(input_device, action_key))
         << "Action Key: " << static_cast<int>(action_key);
   }
-
-  ui::KeyboardCode expected_fkey = ui::VKEY_F1;
-  for (const auto action_key : ui::kLayout1TopRowActionKeys) {
-    EXPECT_EQ(expected_fkey, keyboard_capability_->GetCorrespondingFunctionKey(
-                                 input_device, action_key));
-    expected_fkey =
-        static_cast<ui::KeyboardCode>(static_cast<int>(expected_fkey) + 1);
-  }
 }
 
 TEST_F(KeyboardCapabilityTest, TopRowLayout2) {
@@ -763,14 +755,6 @@ TEST_F(KeyboardCapabilityTest, TopRowLayout2) {
         keyboard_capability_->HasTopRowActionKey(input_device, action_key))
         << "Action Key: " << static_cast<int>(action_key);
   }
-
-  ui::KeyboardCode expected_fkey = ui::VKEY_F1;
-  for (const auto action_key : ui::kLayout2TopRowActionKeys) {
-    EXPECT_EQ(expected_fkey, keyboard_capability_->GetCorrespondingFunctionKey(
-                                 input_device, action_key));
-    expected_fkey =
-        static_cast<ui::KeyboardCode>(static_cast<int>(expected_fkey) + 1);
-  }
 }
 
 TEST_F(KeyboardCapabilityTest, TopRowLayoutWilco) {
@@ -779,7 +763,7 @@ TEST_F(KeyboardCapabilityTest, TopRowLayoutWilco) {
   fake_keyboard_manager_->AddFakeKeyboard(wilco_device,
                                           kKbdTopRowLayoutWilcoTag,
                                           /*has_custom_top_row=*/false);
-  ui::InputDevice drallion_device(kDeviceId2, ui::INPUT_DEVICE_INTERNAL,
+  ui::InputDevice drallion_device(kDeviceId1, ui::INPUT_DEVICE_INTERNAL,
                                   "Internal Keyboard");
   fake_keyboard_manager_->AddFakeKeyboard(drallion_device,
                                           kKbdTopRowLayoutDrallionTag,
@@ -797,16 +781,6 @@ TEST_F(KeyboardCapabilityTest, TopRowLayoutWilco) {
         ui::kLayoutWilcoDrallionTopRowActionKeys.contains(action_key),
         keyboard_capability_->HasTopRowActionKey(drallion_device, action_key))
         << "Action Key: " << static_cast<int>(action_key);
-  }
-
-  ui::KeyboardCode expected_fkey = ui::VKEY_F1;
-  for (const auto action_key : ui::kLayoutWilcoDrallionTopRowActionKeys) {
-    EXPECT_EQ(expected_fkey, keyboard_capability_->GetCorrespondingFunctionKey(
-                                 wilco_device, action_key));
-    EXPECT_EQ(expected_fkey, keyboard_capability_->GetCorrespondingFunctionKey(
-                                 drallion_device, action_key));
-    expected_fkey =
-        static_cast<ui::KeyboardCode>(static_cast<int>(expected_fkey) + 1);
   }
 }
 
@@ -868,7 +842,6 @@ class TopRowLayoutCustomTest
         return CustomTopRowScanCode::kPreviousTrack;
       case ui::TopRowActionKey::kPlayPause:
         return CustomTopRowScanCode::kPlayPause;
-      case ui::TopRowActionKey::kLauncher:
       case ui::TopRowActionKey::kUnknown:
       case ui::TopRowActionKey::kNone:
         return 0;
@@ -946,14 +919,6 @@ TEST_P(TopRowLayoutCustomTest, TopRowLayout) {
     EXPECT_EQ(base::Contains(top_row_action_keys_, action_key),
               keyboard_capability_->HasTopRowActionKey(keyboard, action_key))
         << "Action Key: " << static_cast<int>(action_key);
-  }
-
-  ui::KeyboardCode expected_fkey = ui::VKEY_F1;
-  for (const auto action_key : top_row_action_keys_) {
-    EXPECT_EQ(expected_fkey, keyboard_capability_->GetCorrespondingFunctionKey(
-                                 keyboard, action_key));
-    expected_fkey =
-        static_cast<ui::KeyboardCode>(static_cast<int>(expected_fkey) + 1);
   }
 }
 
