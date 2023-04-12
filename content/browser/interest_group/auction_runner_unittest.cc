@@ -12659,8 +12659,8 @@ TEST_F(AuctionRunnerTest, RecencyPassed) {
     int reported_recency;
     EXPECT_TRUE(base::StringToInt(split[1], &reported_recency));
     // Even noised results should be in the recency range.
-    EXPECT_GE(reported_recency, 1);
-    EXPECT_LE(reported_recency, 32);
+    EXPECT_GE(reported_recency, 0);
+    EXPECT_LE(reported_recency, 31);
     if (reported_recency == kRecencyBucketed) {
       num_correct++;
     }
