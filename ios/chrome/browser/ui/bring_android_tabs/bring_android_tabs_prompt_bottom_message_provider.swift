@@ -26,7 +26,8 @@ class BringAndroidTabsPromptBottomMessageProvider: NSObject {
   // hierarchy when the view is displayed or removed.
   lazy var viewController: UIViewController = {
     var viewController = UIHostingController(
-      rootView: BringAndroidTabsPromptBottomMessageView(tabsCount: self.tabsCount, provider: self))
+      rootView: BringAndroidTabsPromptBottomMessageView(
+        tabsCount: self.tabsCount, provider: self))
     // Workaround of SwiftUI/UIKit interoperality limitation that the topmost
     // view always have an opaque background.
     viewController.view.backgroundColor = UIColor.clear

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 
+#import "base/time/time.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -98,3 +100,6 @@ const CGFloat kThumbStripPlusSignButtonSlideOutDistance = 400.0f;
 
 // Alpha of the background color of the toolbar.
 const CGFloat kToolbarBackgroundAlpha = 0.75;
+
+// Duration for animations in the tab grid.
+const base::TimeDelta kAnimationDuration = base::Milliseconds(200);

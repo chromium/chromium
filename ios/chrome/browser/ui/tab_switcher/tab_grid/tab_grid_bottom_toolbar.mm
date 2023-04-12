@@ -28,8 +28,6 @@
   NSArray<NSLayoutConstraint*>* _compactConstraints;
   NSArray<NSLayoutConstraint*>* _floatingConstraints;
   NSLayoutConstraint* _largeNewTabButtonBottomAnchor;
-  TabGridNewTabButton* _smallNewTabButton;
-  TabGridNewTabButton* _largeNewTabButton;
   UIBarButtonItem* _doneButton;
   UIBarButtonItem* _closeAllOrUndoButton;
   UIBarButtonItem* _editButton;
@@ -266,6 +264,9 @@
   // Remove the border of UIToolbar.
   [_toolbar setShadowImage:[[UIImage alloc] init]
         forToolbarPosition:UIBarPositionAny];
+  [_toolbar
+      setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1
+                                      forAxis:UILayoutConstraintAxisVertical];
 
   _closeAllOrUndoButton = [[UIBarButtonItem alloc] init];
   _closeAllOrUndoButton.tintColor =

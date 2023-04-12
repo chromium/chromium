@@ -173,6 +173,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Constraints for the pinned tabs view.
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* pinnedTabsConstraints;
+// Bottom constraint for the regular tabs bottom message view.
+@property(nonatomic, strong)
+    NSArray<NSLayoutConstraint*>* regularTabsBottomMessageConstraints;
 
 // The current state of the tab grid when using the thumb strip.
 @property(nonatomic, assign) ViewRevealState currentState;
@@ -309,6 +312,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [super viewDidLayoutSubviews];
   // Modify Incognito and Regular Tabs Insets
   [self setInsetForGridViews];
+  // Reset bottom message width after bottom toolbar is updated after an
+  // orientation change. As this depends on
+  // `regularTabsViewController.gridView.contentOffset.x`, this should not be
+  // done in `-traitCollectionDidChange` when the updated layout has not been
+  // finalized.
+  [self updateRegularTabsBottomMessageConstraintsIfExists];
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
@@ -724,10 +733,25 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [_reauthAgent addObserver:self];
 }
 
-- (void)setBottomMessage:(UIViewController*)bottomMessage {
-  _bottomMessage = bottomMessage;
-  // TODO(crbug.com/1418117): Move around other UI components in the regular tab
-  // grid accordingly, and add/remove `bottomMessage` to the view hierarchy.
+- (void)setRegularTabsBottomMessage:(UIViewController*)bottomMessage {
+  if (_regularTabsBottomMessage == bottomMessage) {
+    return;
+  }
+  [_regularTabsBottomMessage willMoveToParentViewController:nil];
+  [_regularTabsBottomMessage.view removeFromSuperview];
+  [_regularTabsBottomMessage removeFromParentViewController];
+  _regularTabsBottomMessage = bottomMessage;
+  if (!_regularTabsBottomMessage) {
+    [self slideOutRegularTabsBottomMessage];
+    return;
+  }
+  [self.regularTabsViewController
+      addChildViewController:self.regularTabsBottomMessage];
+  [self.regularTabsViewController.view
+      addSubview:self.regularTabsBottomMessage.view];
+  [self.regularTabsBottomMessage
+      didMoveToParentViewController:self.regularTabsViewController];
+  [self initializeRegularTabsBottomMessageView];
 }
 
 #pragma mark - TabGridPaging
@@ -762,6 +786,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [self.incognitoTabsDelegate resetToAllItems];
     [self hideScrim];
   }
+
+  // Reset the visibility of bottom message, if exists.
+  if (self.regularTabsBottomMessage) {
+    self.regularTabsBottomMessage.view.hidden =
+        self.tabGridMode != TabGridModeNormal;
+  }
+
   [self setInsetForGridViews];
   self.regularTabsViewController.mode = self.tabGridMode;
   self.incognitoTabsViewController.mode = self.tabGridMode;
@@ -2156,7 +2187,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
   self.currentPageViewController.accessibilityElementsHidden = YES;
   __weak __typeof(self) weakSelf = self;
-  [UIView animateWithDuration:0.2
+  [UIView animateWithDuration:kAnimationDuration.InSecondsF()
       animations:^{
         TabGridViewController* strongSelf = weakSelf;
         if (!strongSelf)
@@ -2176,7 +2207,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Hides scrim overlay.
 - (void)hideScrim {
   __weak TabGridViewController* weakSelf = self;
-  [UIView animateWithDuration:0.2
+  [UIView animateWithDuration:kAnimationDuration.InSecondsF()
       animations:^{
         TabGridViewController* strongSelf = weakSelf;
         if (!strongSelf)
@@ -2327,7 +2358,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (UIEdgeInsets)calculateInsetForRegularGridView {
   UIEdgeInsets inset = [self calculateInsetForIncognitoGridView];
 
-  if (IsPinnedTabsEnabled() && !self.pinnedTabsViewController.view.isHidden) {
+  if (self.regularTabsBottomMessage &&
+      !self.regularTabsBottomMessage.view.hidden) {
+    inset.bottom += self.regularTabsBottomMessage.view.bounds.size.height;
+  }
+  if (IsPinnedTabsEnabled() && !self.pinnedTabsViewController.view.hidden) {
     CGFloat pinnedViewHeight =
         self.pinnedTabsViewController.view.bounds.size.height;
     inset.bottom += pinnedViewHeight + kPinnedViewBottomPadding;
@@ -2441,8 +2476,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                    animations:^{
                      self.regularTabsViewController.gridView.contentInset =
                          inset;
-                   }
-                   completion:nil];
+                     [self updateRegularTabsBottomMessageConstraintsIfExists];
+                   }];
 }
 
 - (void)pinnedTabsViewController:
@@ -3133,6 +3168,114 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   self.pinnedTabsConstraints = pinnedTabsConstraints;
   [NSLayoutConstraint activateConstraints:self.pinnedTabsConstraints];
+}
+
+// Updates the bottom constraint for the bottom message on the regular tabs.
+- (void)updateRegularTabsBottomMessageConstraintsIfExists {
+  if (!self.regularTabsBottomMessage) {
+    return;
+  }
+  [NSLayoutConstraint
+      deactivateConstraints:self.regularTabsBottomMessageConstraints];
+  self.regularTabsBottomMessageConstraints = nil;
+
+  UIView* bottomMessageView = self.regularTabsBottomMessage.view;
+  NSMutableArray<NSLayoutConstraint*>* constraints =
+      [[NSMutableArray alloc] init];
+  // left and right anchors.
+  if ([self shouldUseCompactLayout]) {
+    [constraints addObjectsFromArray:@[
+      [bottomMessageView.widthAnchor
+          constraintEqualToAnchor:self.view.widthAnchor],
+      [bottomMessageView.centerXAnchor
+          constraintEqualToAnchor:self.regularTabsViewController.view
+                                      .centerXAnchor]
+    ]];
+  } else {
+    // Make space on the right so that the message would NOT cover the new tab
+    // button.
+    CGFloat trailingMarginToShowNewTabButton =
+        kTabGridFloatingButtonHorizontalInset +
+        self.bottomToolbar.largeNewTabButton.intrinsicContentSize.width;
+    [constraints addObjectsFromArray:@[
+      [bottomMessageView.widthAnchor
+          constraintEqualToAnchor:self.view.widthAnchor
+                         constant:self.regularTabsViewController.gridView
+                                      .contentOffset.x -
+                                  trailingMarginToShowNewTabButton],
+      [bottomMessageView.leadingAnchor
+          constraintEqualToAnchor:self.regularTabsViewController.view
+                                      .leadingAnchor]
+    ]];
+  }
+  // Bottom and top anchors.
+  CGFloat topLayoutAnchorConstant =
+      [self shouldUseCompactLayout]
+          ? self.topToolbar.intrinsicContentSize.height +
+                self.bottomToolbar.intrinsicContentSize.height
+          : self.topToolbar.intrinsicContentSize.height;
+  NSLayoutYAxisAnchor* bottomAnchor = [self shouldUseCompactLayout]
+                                          ? self.bottomToolbar.topAnchor
+                                          : self.view.bottomAnchor;
+  if (IsPinnedTabsEnabled() && !self.pinnedTabsViewController.view.hidden) {
+    bottomAnchor = self.pinnedTabsViewController.view.topAnchor;
+  }
+  [constraints addObjectsFromArray:@[
+    [bottomMessageView.bottomAnchor constraintEqualToAnchor:bottomAnchor],
+    [bottomMessageView.topAnchor
+        constraintGreaterThanOrEqualToAnchor:self.view.topAnchor
+                                    constant:topLayoutAnchorConstant]
+  ]];
+  self.regularTabsBottomMessageConstraints = constraints;
+  [NSLayoutConstraint
+      activateConstraints:self.regularTabsBottomMessageConstraints];
+}
+
+// Sets up the view for `self.regularTabsBottomMessage`. This should be called
+// when the bottom message is just set.
+- (void)initializeRegularTabsBottomMessageView {
+  UIView* bottomMessageView = self.regularTabsBottomMessage.view;
+  bottomMessageView.translatesAutoresizingMaskIntoConstraints = NO;
+  // The bottom message should cover all grid cells but not cover the blocking
+  // view.
+  bottomMessageView.layer.zPosition = FLT_MAX - 1;
+  bottomMessageView.hidden = self.tabGridMode != TabGridModeNormal;
+  [self slideInRegularTabsBottomMessage];
+}
+
+// Slides `self.regularTabsBottomMessage` from the bottom edge into place. This
+// should be called only when the bottom message is just set.
+- (void)slideInRegularTabsBottomMessage {
+  UIView* bottomMessageView = self.regularTabsBottomMessage.view;
+  self.regularTabsViewController.gridView.contentInset =
+      [self calculateInsetForRegularGridView];
+  // Initial position of `bottomMessageView should be below the view, so that
+  // the animation slides it up from the bottom, instead of sliding it down from
+  // the top.
+  NSLayoutConstraint* initialConstraint = [bottomMessageView.topAnchor
+      constraintEqualToAnchor:self.view.bottomAnchor];
+  initialConstraint.active = YES;
+  [self.regularTabsViewController.view layoutIfNeeded];
+  // Perform initial animation.
+  __weak TabGridViewController* weakSelf = self;
+  [UIView
+      animateWithDuration:kAnimationDuration.InSecondsF()
+               animations:^{
+                 initialConstraint.active = NO;
+                 [weakSelf updateRegularTabsBottomMessageConstraintsIfExists];
+                 [weakSelf.regularTabsViewController.view layoutIfNeeded];
+               }];
+}
+
+// Slides an existing `self.regularTabsBottomMessage` out of the view. This
+// should be called when the bottom message is just unset.
+- (void)slideOutRegularTabsBottomMessage {
+  UIEdgeInsets inset = [self calculateInsetForRegularGridView];
+  [UIView animateWithDuration:kAnimationDuration.InSecondsF()
+                   animations:^{
+                     self.regularTabsViewController.gridView.contentInset =
+                         inset;
+                   }];
 }
 
 @end

@@ -119,7 +119,10 @@ source_set("tab_grid_ui_constants") {
     "tab_grid_constants.mm",
   ]
 
-  deps = [ "resources:grid_background_color" ]
+  deps = [
+    "resources:grid_background_color",
+    "//base",
+  ]
 }
 
 source_set("tab_grid_paging") {

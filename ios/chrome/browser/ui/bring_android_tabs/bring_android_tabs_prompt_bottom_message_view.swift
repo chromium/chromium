@@ -11,6 +11,7 @@ private let kPromptOuterPaddingVertical: CGFloat = 8
 private let kPromptCornerRadius: CGFloat = 20
 private let kIconPadding: CGFloat = 12
 private let kTextVerticalSpacing: CGFloat = 12
+private let kTextMinimumScaleFactor: CGFloat = 0.5
 
 // The view object for "Bring Android Tabs" bottom message prompt.
 struct BringAndroidTabsPromptBottomMessageView: View {
@@ -36,6 +37,7 @@ struct BringAndroidTabsPromptBottomMessageView: View {
                 number: self.tabsCount)
             )
             .font(.body)
+            .minimumScaleFactor(kTextMinimumScaleFactor)
             Text(
               L10nUtils.pluralString(
                 messageId: IDS_IOS_BRING_ANDROID_TABS_PROMPT_SUBTITLE,
@@ -43,6 +45,7 @@ struct BringAndroidTabsPromptBottomMessageView: View {
             )
             .font(.footnote)
             .foregroundColor(.textSecondary)
+            .minimumScaleFactor(kTextMinimumScaleFactor)
           }
           .padding(.top, kTextVerticalSpacing - kPromptInnerPadding)
           Spacer()
@@ -59,7 +62,9 @@ struct BringAndroidTabsPromptBottomMessageView: View {
               L10nUtils.pluralString(
                 messageId:
                   IDS_IOS_BRING_ANDROID_TABS_PROMPT_REVIEW_TABS_BUTTON_BOTTOM_MESSAGE,
-                number: self.tabsCount))
+                number: self.tabsCount)
+            )
+            .minimumScaleFactor(kTextMinimumScaleFactor)
             Spacer()
             Image(systemName: kChevronForwardSymbol)
               .foregroundColor(.textSecondary)
