@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertDeepEquals, assertFalse} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {PropStatus, SearchData, SearchLocation, SearchRecency} from '../../externs/ts/state.js';
 import {clearSearch, updateSearch} from '../actions/search.js';
@@ -24,7 +24,7 @@ export function testSearchAction() {
   };
   assertDeepEquals(
       want, firstState,
-      `${JSON.stringify(want)} != ${JSON.stringify(firstState)}`);
+      `1. ${JSON.stringify(want)} != ${JSON.stringify(firstState)}`);
 
   // Change the options only.
   const currentOptions = {
@@ -43,9 +43,41 @@ export function testSearchAction() {
   const secondState = store.getState().search;
   assertDeepEquals(
       want, secondState,
-      `${JSON.stringify(want)} != ${JSON.stringify(secondState)}`);
+      `2. ${JSON.stringify(want)} != ${JSON.stringify(secondState)}`);
   // Check that changing options does not mutate firstState.
   assertFalse(firstState === secondState);
+
+  // Send the same options again, to verify that unchanged options do not change
+  // the state.
+  store.dispatch(updateSearch({
+    query: undefined,
+    status: undefined,
+    options: currentOptions,
+  }));
+  const unchangedState = store.getState().search;
+  assertTrue(unchangedState === secondState);
+
+  // Change the options a bit to verify that one property change inside options
+  // causes search state update.
+  const freshRecencyOptions = {
+    location: SearchLocation.THIS_FOLDER,
+    recency: SearchRecency.LAST_WEEK,
+    type: chrome.fileManagerPrivate.FileCategory.ALL,
+  };
+  store.dispatch(updateSearch({
+    query: undefined,
+    status: undefined,
+    options: freshRecencyOptions,
+  }));
+
+  want.options = freshRecencyOptions;
+  const freshRecencyOptionsState = store.getState().search;
+  assertDeepEquals(
+      want, freshRecencyOptionsState,
+      `3. ${JSON.stringify(want)} != ${
+          JSON.stringify(freshRecencyOptionsState)}`);
+  // Check that changing options does not mutate firstState.
+  assertFalse(unchangedState === freshRecencyOptionsState);
 
   // Change query and status, and verify that options did not change.
   want.query = 'query';
@@ -58,7 +90,7 @@ export function testSearchAction() {
   const thirdState = store.getState().search;
   assertDeepEquals(
       want, thirdState,
-      `${JSON.stringify(want)} != ${JSON.stringify(thirdState)}`);
+      `4. ${JSON.stringify(want)} != ${JSON.stringify(thirdState)}`);
 
   // Clear search.
   store.dispatch(clearSearch());
