@@ -50,6 +50,7 @@ using mojom::ItemEvent;
 using mojom::ItemEventPtr;
 using mojom::QueryItem;
 using mojom::QueryItemPtr;
+using mojom::QueryParameters;
 using mojom::SearchQuery;
 using mojom::SyncingStatus;
 using mojom::SyncingStatusPtr;
@@ -59,6 +60,7 @@ using testing::_;
 using testing::AnyNumber;
 using testing::DoAll;
 using testing::Field;
+using testing::Invoke;
 using testing::IsEmpty;
 using testing::Return;
 using testing::SizeIs;
@@ -131,7 +133,7 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
 
   mojom::DriveFs* GetForwardingInterface() override { NOTREACHED_NORETURN(); }
 
-  MOCK_METHOD(void, OnStartSearchQuery, (const mojom::QueryParameters&));
+  MOCK_METHOD(void, OnStartSearchQuery, (const QueryParameters&));
 
   void StartSearchQuery(mojo::PendingReceiver<SearchQuery> query,
                         const mojom::QueryParametersPtr query_params) override {
@@ -929,7 +931,6 @@ TEST_F(DriveFsPinManagerTest, OnFileCreated) {
 
   EXPECT_THAT(manager.files_to_pin_, UnorderedElementsAre(Id(item.stable_id)));
   EXPECT_THAT(manager.files_to_track_, SizeIs(1));
-  event.path = Path("/root/Path 3");
 
   // Spurious events with no stable_id should be ignored (b/268419828).
   event.stable_id = 0;
@@ -2280,6 +2281,33 @@ TEST_F(DriveFsPinManagerTest, HandleQueryItem) {
   EXPECT_THAT(manager.listed_items_, SizeIs(1));
 
   manager.Stop();
+}
+
+// Tests PinManager::OnNextPage() when a query is dropped before the response
+// is received.
+TEST_F(DriveFsPinManagerTest, DropQuery) {
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  manager.progress_.stage = Stage::kListingFiles;
+  manager.progress_.max_active_queries = 2;
+  manager.progress_.active_queries = 2;
+
+  EXPECT_CALL(drivefs_, OnGetNextPage(_))
+      .WillOnce(
+          Invoke([&manager](absl::optional<vector<QueryItemPtr>>* const items) {
+            manager.Stop();
+            *items = {};
+            return FileError::FILE_ERROR_OK;
+          }));
+
+  PinManager::Query query;
+  EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(1);
+  drivefs_.StartSearchQuery(query.BindNewPipeAndPassReceiver(),
+                            QueryParameters::New());
+
+  manager.GetNextPage(Id(101), Path("/root/My Folder"), std::move(query));
+  task_environment_.RunUntilIdle();
 }
 
 // Tests PinManager::OnSearchResult() when a query finishes and there are still
