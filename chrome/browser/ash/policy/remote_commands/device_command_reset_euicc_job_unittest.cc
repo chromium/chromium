@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/policy/remote_commands/device_command_reset_euicc_job.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -51,8 +53,11 @@ void VerifyEuiccProfileCount(size_t expected_count) {
   ash::HermesEuiccClient::Properties* euicc_properties =
       ash::HermesEuiccClient::Get()->GetProperties(
           dbus::ObjectPath(kTestEuiccPath));
-  EXPECT_EQ(expected_count,
-            euicc_properties->installed_carrier_profiles().value().size());
+  const std::vector<dbus::ObjectPath>& profile_paths =
+      ash::features::IsSmdsDbusMigrationEnabled()
+          ? euicc_properties->profiles().value()
+          : euicc_properties->installed_carrier_profiles().value();
+  EXPECT_EQ(expected_count, profile_paths.size());
 }
 
 void VerifyJobResult(const RemoteCommandJob& job,
@@ -66,10 +71,16 @@ void VerifyJobResult(const RemoteCommandJob& job,
 
 class DeviceCommandResetEuiccJobTest : public ChromeAshTestBase {
  public:
-  DeviceCommandResetEuiccJobTest()
+  explicit DeviceCommandResetEuiccJobTest(bool enable_dbus_migration)
       : ChromeAshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
             std::make_unique<content::BrowserTaskEnvironment>(
-                base::test::TaskEnvironment::TimeSource::MOCK_TIME))) {}
+                base::test::TaskEnvironment::TimeSource::MOCK_TIME))) {
+    if (enable_dbus_migration) {
+      feature_list_.InitAndEnableFeature(ash::features::kSmdsDbusMigration);
+    } else {
+      feature_list_.InitAndDisableFeature(ash::features::kSmdsDbusMigration);
+    }
+  }
   DeviceCommandResetEuiccJobTest(const DeviceCommandResetEuiccJobTest&) =
       delete;
   DeviceCommandResetEuiccJobTest& operator=(
@@ -85,9 +96,11 @@ class DeviceCommandResetEuiccJobTest : public ChromeAshTestBase {
 
     AddFakeESimProfile();
     AddFakeESimProfile();
+
     // Wait for all pending Hermes and Shill change notifications to be handled
     // so that new EUICC and profile states are reflected correctly.
     base::RunLoop().RunUntilIdle();
+
     VerifyEuiccProfileCount(/*expected_count=*/2u);
   }
 
@@ -113,12 +126,37 @@ class DeviceCommandResetEuiccJobTest : public ChromeAshTestBase {
             kAddProfileWithService);
   }
 
+  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<ash::NetworkHandlerTestHelper> helper_;
   base::TimeTicks test_start_time_ = base::TimeTicks::Now();
 };
 
-TEST_F(DeviceCommandResetEuiccJobTest, ResetEuicc) {
+class DeviceCommandResetEuiccJobTest_DBusMigrationDisabled
+    : public DeviceCommandResetEuiccJobTest {
+ public:
+  DeviceCommandResetEuiccJobTest_DBusMigrationDisabled()
+      : DeviceCommandResetEuiccJobTest(/*enable_dbus_migration=*/false) {}
+  DeviceCommandResetEuiccJobTest_DBusMigrationDisabled(
+      const DeviceCommandResetEuiccJobTest_DBusMigrationDisabled&) = delete;
+  DeviceCommandResetEuiccJobTest_DBusMigrationDisabled& operator=(
+      const DeviceCommandResetEuiccJobTest_DBusMigrationDisabled&) = delete;
+  ~DeviceCommandResetEuiccJobTest_DBusMigrationDisabled() override = default;
+};
+
+class DeviceCommandResetEuiccJobTest_DBusMigrationEnabled
+    : public DeviceCommandResetEuiccJobTest {
+ public:
+  DeviceCommandResetEuiccJobTest_DBusMigrationEnabled()
+      : DeviceCommandResetEuiccJobTest(/*enable_dbus_migration=*/true) {}
+  DeviceCommandResetEuiccJobTest_DBusMigrationEnabled(
+      const DeviceCommandResetEuiccJobTest_DBusMigrationEnabled&) = delete;
+  DeviceCommandResetEuiccJobTest_DBusMigrationEnabled& operator=(
+      const DeviceCommandResetEuiccJobTest_DBusMigrationEnabled&) = delete;
+  ~DeviceCommandResetEuiccJobTest_DBusMigrationEnabled() override = default;
+};
+
+TEST_F(DeviceCommandResetEuiccJobTest_DBusMigrationDisabled, ResetEuicc) {
   TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
       std::make_unique<SystemNotificationHelper>());
   NotificationDisplayServiceTester tester(/*profile=*/nullptr);
@@ -135,7 +173,7 @@ TEST_F(DeviceCommandResetEuiccJobTest, ResetEuicc) {
   // Verify that the notification should be displayed.
   EXPECT_TRUE(tester.GetNotification(
       DeviceCommandResetEuiccJob::kResetEuiccNotificationId));
-  // Verfiy that appropriate metrics have been logged.
+  // Verify that appropriate metrics have been logged.
   histogram_tester_.ExpectTotalCount(kResetEuiccOperationResultHistogram, 1);
   histogram_tester_.ExpectBucketCount(
       kResetEuiccOperationResultHistogram,
@@ -144,7 +182,8 @@ TEST_F(DeviceCommandResetEuiccJobTest, ResetEuicc) {
   histogram_tester_.ExpectTotalCount(kResetEuiccDurationHistogram, 1);
 }
 
-TEST_F(DeviceCommandResetEuiccJobTest, ResetEuiccFailure) {
+TEST_F(DeviceCommandResetEuiccJobTest_DBusMigrationDisabled,
+       ResetEuiccFailure) {
   // Simulate a failure by removing the cellular device.
   ash::ShillManagerClient::Get()->GetTestInterface()->ClearDevices();
   TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
@@ -162,7 +201,60 @@ TEST_F(DeviceCommandResetEuiccJobTest, ResetEuiccFailure) {
   // Verify that the notification was not displayed.
   EXPECT_FALSE(tester.GetNotification(
       DeviceCommandResetEuiccJob::kResetEuiccNotificationId));
-  // Verfiy that appropriate metrics have been logged.
+  // Verify that appropriate metrics have been logged.
+  histogram_tester_.ExpectTotalCount(kResetEuiccOperationResultHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      kResetEuiccOperationResultHistogram,
+      DeviceCommandResetEuiccJob::ResetEuiccResult::kHermesResetFailed,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount(kResetEuiccDurationHistogram, 0);
+}
+
+TEST_F(DeviceCommandResetEuiccJobTest_DBusMigrationEnabled, ResetEuicc) {
+  TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
+      std::make_unique<SystemNotificationHelper>());
+  NotificationDisplayServiceTester tester(/*profile=*/nullptr);
+
+  std::unique_ptr<RemoteCommandJob> job = CreateResetEuiccJob(test_start_time_);
+  base::test::TestFuture<void> job_finished_future;
+  EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
+                       job_finished_future.GetCallback()));
+  ASSERT_TRUE(job_finished_future.Wait()) << "Job did not finish.";
+  VerifyJobResult(*job, RemoteCommandJob::Status::SUCCEEDED,
+                  /*expected_profile_count=*/0u);
+
+  task_environment()->FastForwardBy(kNetworkListWaitTimeout);
+  // Verify that the notification should be displayed.
+  EXPECT_TRUE(tester.GetNotification(
+      DeviceCommandResetEuiccJob::kResetEuiccNotificationId));
+  // Verify that appropriate metrics have been logged.
+  histogram_tester_.ExpectTotalCount(kResetEuiccOperationResultHistogram, 1);
+  histogram_tester_.ExpectBucketCount(
+      kResetEuiccOperationResultHistogram,
+      DeviceCommandResetEuiccJob::ResetEuiccResult::kSuccess,
+      /*expected_count=*/1);
+  histogram_tester_.ExpectTotalCount(kResetEuiccDurationHistogram, 1);
+}
+
+TEST_F(DeviceCommandResetEuiccJobTest_DBusMigrationEnabled, ResetEuiccFailure) {
+  // Simulate a failure by removing the cellular device.
+  ash::ShillManagerClient::Get()->GetTestInterface()->ClearDevices();
+  TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
+      std::make_unique<SystemNotificationHelper>());
+  NotificationDisplayServiceTester tester(/*profile=*/nullptr);
+  base::test::TestFuture<void> job_finished_future;
+
+  std::unique_ptr<RemoteCommandJob> job = CreateResetEuiccJob(test_start_time_);
+  EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
+                       job_finished_future.GetCallback()));
+  ASSERT_TRUE(job_finished_future.Wait()) << "Job did not finish.";
+  VerifyJobResult(*job, RemoteCommandJob::Status::FAILED,
+                  /*expected_profile_count=*/2u);
+
+  // Verify that the notification was not displayed.
+  EXPECT_FALSE(tester.GetNotification(
+      DeviceCommandResetEuiccJob::kResetEuiccNotificationId));
+  // Verify that appropriate metrics have been logged.
   histogram_tester_.ExpectTotalCount(kResetEuiccOperationResultHistogram, 1);
   histogram_tester_.ExpectBucketCount(
       kResetEuiccOperationResultHistogram,

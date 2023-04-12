@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
@@ -54,8 +56,20 @@ const char kTestCellularIccid2[] = "100000000000000002";
 }  // namespace
 
 class CellularESimUninstallHandlerTest : public testing::Test {
+ public:
+  CellularESimUninstallHandlerTest(const CellularESimUninstallHandlerTest&) =
+      delete;
+  CellularESimUninstallHandlerTest& operator=(
+      const CellularESimUninstallHandlerTest&) = delete;
+
  protected:
-  CellularESimUninstallHandlerTest() = default;
+  explicit CellularESimUninstallHandlerTest(bool enable_dbus_migration) {
+    if (enable_dbus_migration) {
+      feature_list_.InitAndEnableFeature(ash::features::kSmdsDbusMigration);
+    } else {
+      feature_list_.InitAndDisableFeature(ash::features::kSmdsDbusMigration);
+    }
+  }
   ~CellularESimUninstallHandlerTest() override = default;
 
   // testing::Test
@@ -228,11 +242,11 @@ class CellularESimUninstallHandlerTest : public testing::Test {
         ->last_service_count_removal_for_testing_;
   }
 
- private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<NetworkDeviceHandler> network_device_handler_;
@@ -249,7 +263,35 @@ class CellularESimUninstallHandlerTest : public testing::Test {
   TestingPrefServiceSimple device_prefs_;
 };
 
-TEST_F(CellularESimUninstallHandlerTest, Success) {
+class CellularESimUninstallHandlerTest_DBusMigrationDisabled
+    : public CellularESimUninstallHandlerTest {
+ public:
+  CellularESimUninstallHandlerTest_DBusMigrationDisabled(
+      const CellularESimUninstallHandlerTest_DBusMigrationDisabled&) = delete;
+  CellularESimUninstallHandlerTest_DBusMigrationDisabled& operator=(
+      const CellularESimUninstallHandlerTest_DBusMigrationDisabled&) = delete;
+
+ protected:
+  CellularESimUninstallHandlerTest_DBusMigrationDisabled()
+      : CellularESimUninstallHandlerTest(/*enable_dbus_migration=*/false) {}
+  ~CellularESimUninstallHandlerTest_DBusMigrationDisabled() override = default;
+};
+
+class CellularESimUninstallHandlerTest_DBusMigrationEnabled
+    : public CellularESimUninstallHandlerTest {
+ public:
+  CellularESimUninstallHandlerTest_DBusMigrationEnabled(
+      const CellularESimUninstallHandlerTest_DBusMigrationEnabled&) = delete;
+  CellularESimUninstallHandlerTest_DBusMigrationEnabled& operator=(
+      const CellularESimUninstallHandlerTest_DBusMigrationEnabled&) = delete;
+
+ protected:
+  CellularESimUninstallHandlerTest_DBusMigrationEnabled()
+      : CellularESimUninstallHandlerTest(/*enable_dbus_migration=*/true) {}
+  ~CellularESimUninstallHandlerTest_DBusMigrationEnabled() override = default;
+};
+
+TEST_F(CellularESimUninstallHandlerTest_DBusMigrationDisabled, Success) {
   Init();
   EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath));
 
@@ -273,7 +315,8 @@ TEST_F(CellularESimUninstallHandlerTest, Success) {
   ExpectResult(CellularESimUninstallHandler::UninstallESimResult::kSuccess);
 }
 
-TEST_F(CellularESimUninstallHandlerTest, Success_AlreadyDisabled) {
+TEST_F(CellularESimUninstallHandlerTest_DBusMigrationDisabled,
+       Success_AlreadyDisabled) {
   Init(/*is_first_profile_active=*/false);
   EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath));
 
@@ -297,7 +340,8 @@ TEST_F(CellularESimUninstallHandlerTest, Success_AlreadyDisabled) {
   ExpectResult(CellularESimUninstallHandler::UninstallESimResult::kSuccess);
 }
 
-TEST_F(CellularESimUninstallHandlerTest, DisconnectFailure) {
+TEST_F(CellularESimUninstallHandlerTest_DBusMigrationDisabled,
+       DisconnectFailure) {
   Init();
   EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath));
 
@@ -314,7 +358,7 @@ TEST_F(CellularESimUninstallHandlerTest, DisconnectFailure) {
       CellularESimUninstallHandler::UninstallESimResult::kDisconnectFailed);
 }
 
-TEST_F(CellularESimUninstallHandlerTest, HermesFailure) {
+TEST_F(CellularESimUninstallHandlerTest_DBusMigrationDisabled, HermesFailure) {
   Init();
   EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath));
 
@@ -333,7 +377,8 @@ TEST_F(CellularESimUninstallHandlerTest, HermesFailure) {
                    kRefreshProfilesFailed);
 }
 
-TEST_F(CellularESimUninstallHandlerTest, MultipleRequests) {
+TEST_F(CellularESimUninstallHandlerTest_DBusMigrationDisabled,
+       MultipleRequests) {
   Init();
   EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath));
   EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath2));
@@ -374,7 +419,8 @@ TEST_F(CellularESimUninstallHandlerTest, MultipleRequests) {
                /*expected_count=*/2);
 }
 
-TEST_F(CellularESimUninstallHandlerTest, ResetEuiccMemory) {
+TEST_F(CellularESimUninstallHandlerTest_DBusMigrationDisabled,
+       ResetEuiccMemory) {
   Init();
   EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath));
   EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath2));
@@ -405,7 +451,188 @@ TEST_F(CellularESimUninstallHandlerTest, ResetEuiccMemory) {
                /*expected_count=*/1);
 }
 
-TEST_F(CellularESimUninstallHandlerTest, StubCellularNetwork) {
+TEST_F(CellularESimUninstallHandlerTest_DBusMigrationDisabled,
+       StubCellularNetwork) {
+  Init();
+
+  // Remove shill eSIM service and add a corresponding stub service.
+  ShillServiceClient::Get()->GetTestInterface()->RemoveService(
+      kTestNetworkServicePath);
+  base::RunLoop().RunUntilIdle();
+  AddStub(kTestCellularIccid, kDefaultEid);
+
+  // Verify that removing the eSIM profile succeeds.
+  base::RunLoop run_loop;
+  bool success;
+  UninstallESim(run_loop, kTestCellularIccid, kTestCarrierProfilePath, success);
+  run_loop.Run();
+  EXPECT_TRUE(success);
+
+  ExpectResult(CellularESimUninstallHandler::UninstallESimResult::kSuccess);
+}
+
+TEST_F(CellularESimUninstallHandlerTest_DBusMigrationEnabled, Success) {
+  Init();
+  EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath));
+
+  base::RunLoop run_loop;
+  bool status;
+  UninstallESim(run_loop, kTestCellularIccid, kTestCarrierProfilePath, status);
+  HandleNetworkDisconnect(/*should_fail=*/false);
+  run_loop.Run();
+
+  // Verify that the esim profile and shill service configuration are removed
+  // properly.
+  HermesEuiccClient::Properties* euicc_properties =
+      HermesEuiccClient::Get()->GetProperties(
+          dbus::ObjectPath(kDefaultEuiccPath));
+  ASSERT_TRUE(euicc_properties);
+  EXPECT_EQ(1u, euicc_properties->profiles().value().size());
+  EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath));
+  EXPECT_TRUE(status);
+  EXPECT_FALSE(GetSmdpAddressFromPref(kTestCellularIccid));
+
+  ExpectResult(CellularESimUninstallHandler::UninstallESimResult::kSuccess);
+}
+
+TEST_F(CellularESimUninstallHandlerTest_DBusMigrationEnabled,
+       Success_AlreadyDisabled) {
+  Init(/*is_first_profile_active=*/false);
+  EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath));
+
+  base::RunLoop run_loop;
+  bool status;
+  UninstallESim(run_loop, kTestCellularIccid, kTestCarrierProfilePath, status);
+  HandleNetworkDisconnect(/*should_fail=*/false);
+  run_loop.Run();
+
+  // Verify that the esim profile and shill service configuration are removed
+  // properly.
+  HermesEuiccClient::Properties* euicc_properties =
+      HermesEuiccClient::Get()->GetProperties(
+          dbus::ObjectPath(kDefaultEuiccPath));
+  ASSERT_TRUE(euicc_properties);
+  EXPECT_EQ(1u, euicc_properties->profiles().value().size());
+  EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath));
+  EXPECT_TRUE(status);
+  EXPECT_FALSE(GetSmdpAddressFromPref(kTestCellularIccid));
+
+  ExpectResult(CellularESimUninstallHandler::UninstallESimResult::kSuccess);
+}
+
+TEST_F(CellularESimUninstallHandlerTest_DBusMigrationEnabled,
+       DisconnectFailure) {
+  Init();
+  EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath));
+
+  bool status;
+  base::RunLoop run_loop;
+  UninstallESim(run_loop, kTestCellularIccid, kTestCarrierProfilePath, status);
+  HandleNetworkDisconnect(/*should_fail=*/true);
+  run_loop.Run();
+  EXPECT_FALSE(status);
+  EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath));
+  EXPECT_TRUE(GetSmdpAddressFromPref(kTestCellularIccid));
+
+  ExpectResult(
+      CellularESimUninstallHandler::UninstallESimResult::kDisconnectFailed);
+}
+
+TEST_F(CellularESimUninstallHandlerTest_DBusMigrationEnabled, HermesFailure) {
+  Init();
+  EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath));
+
+  HermesEuiccClient::Get()->GetTestInterface()->QueueHermesErrorStatus(
+      HermesResponseStatus::kErrorUnknown);
+  bool status;
+  base::RunLoop run_loop;
+  UninstallESim(run_loop, kTestCellularIccid, kTestCarrierProfilePath, status);
+  HandleNetworkDisconnect(/*should_fail=*/false);
+  run_loop.Run();
+  EXPECT_FALSE(status);
+  EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath));
+  EXPECT_TRUE(GetSmdpAddressFromPref(kTestCellularIccid));
+
+  ExpectResult(CellularESimUninstallHandler::UninstallESimResult::
+                   kRefreshProfilesFailed);
+}
+
+TEST_F(CellularESimUninstallHandlerTest_DBusMigrationEnabled,
+       MultipleRequests) {
+  Init();
+  EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath));
+  EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath2));
+
+  // Make two uninstall requests back to back.
+  bool status1, status2;
+  base::RunLoop run_loop1, run_loop2;
+
+  UninstallESim(run_loop1, kTestCellularIccid, kTestCarrierProfilePath,
+                status1);
+  UninstallESim(run_loop2, kTestCellularIccid2, kTestCarrierProfilePath2,
+                status2);
+
+  // Only the first profile is connected, so only one disconnect handler is
+  // needed.
+  HandleNetworkDisconnect(/*should_fail=*/false);
+
+  run_loop1.Run();
+  EXPECT_EQ(GetLastServiceCountRemovalForTesting(), 1);
+
+  run_loop2.Run();
+  EXPECT_EQ(GetLastServiceCountRemovalForTesting(), 1);
+
+  // Verify that both requests succeeded.
+  EXPECT_TRUE(status1);
+  EXPECT_TRUE(status2);
+  HermesEuiccClient::Properties* euicc_properties =
+      HermesEuiccClient::Get()->GetProperties(
+          dbus::ObjectPath(kDefaultEuiccPath));
+  ASSERT_TRUE(euicc_properties);
+  EXPECT_TRUE(euicc_properties->profiles().value().empty());
+  EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath));
+  EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath2));
+  EXPECT_FALSE(GetSmdpAddressFromPref(kTestCellularIccid));
+  EXPECT_FALSE(GetSmdpAddressFromPref(kTestCellularIccid2));
+
+  ExpectResult(CellularESimUninstallHandler::UninstallESimResult::kSuccess,
+               /*expected_count=*/2);
+}
+
+TEST_F(CellularESimUninstallHandlerTest_DBusMigrationEnabled,
+       ResetEuiccMemory) {
+  Init();
+  EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath));
+  EXPECT_TRUE(ESimServiceConfigExists(kTestNetworkServicePath2));
+
+  bool status;
+  base::RunLoop run_loop;
+  ResetEuiccMemory(run_loop, status);
+
+  HandleNetworkDisconnect(/*should_fail=*/false);
+  FastForward(CellularESimUninstallHandler::kNetworkListWaitTimeout);
+
+  run_loop.Run();
+
+  // Verify that both profiles were removed successfully.
+  EXPECT_TRUE(status);
+  HermesEuiccClient::Properties* euicc_properties =
+      HermesEuiccClient::Get()->GetProperties(
+          dbus::ObjectPath(kDefaultEuiccPath));
+  ASSERT_TRUE(euicc_properties);
+  EXPECT_TRUE(euicc_properties->profiles().value().empty());
+  EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath));
+  EXPECT_FALSE(ESimServiceConfigExists(kTestNetworkServicePath2));
+  EXPECT_FALSE(GetSmdpAddressFromPref(kTestCellularIccid));
+  EXPECT_FALSE(GetSmdpAddressFromPref(kTestCellularIccid2));
+  EXPECT_EQ(GetLastServiceCountRemovalForTesting(), 2);
+
+  ExpectResult(CellularESimUninstallHandler::UninstallESimResult::kSuccess,
+               /*expected_count=*/1);
+}
+
+TEST_F(CellularESimUninstallHandlerTest_DBusMigrationEnabled,
+       StubCellularNetwork) {
   Init();
 
   // Remove shill eSIM service and add a corresponding stub service.

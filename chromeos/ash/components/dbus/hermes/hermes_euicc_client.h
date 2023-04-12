@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "base/check.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
@@ -128,10 +130,15 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
     dbus::Property<bool>& is_active() { return is_active_; }
     dbus::Property<std::vector<dbus::ObjectPath>>&
     installed_carrier_profiles() {
+      DCHECK(!features::IsSmdsDbusMigrationEnabled());
       return installed_carrier_profiles_;
     }
-    dbus::Property<std::vector<dbus::ObjectPath>>& profiles();
+    dbus::Property<std::vector<dbus::ObjectPath>>& profiles() {
+      DCHECK(features::IsSmdsDbusMigrationEnabled());
+      return profiles_;
+    }
     dbus::Property<std::vector<dbus::ObjectPath>>& pending_carrier_profiles() {
+      DCHECK(!features::IsSmdsDbusMigrationEnabled());
       return pending_carrier_profiles_;
     }
     dbus::Property<int32_t>& physical_slot() { return physical_slot_; }

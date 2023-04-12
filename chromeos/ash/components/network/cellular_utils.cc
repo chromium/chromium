@@ -27,13 +27,19 @@ base::flat_set<dbus::ObjectPath> GetProfilePathsFromEuicc(
     HermesEuiccClient::Properties* euicc_properties) {
   base::flat_set<dbus::ObjectPath> profile_paths;
 
-  for (const dbus::ObjectPath& path :
-       euicc_properties->installed_carrier_profiles().value()) {
-    profile_paths.insert(path);
-  }
-  for (const dbus::ObjectPath& path :
-       euicc_properties->pending_carrier_profiles().value()) {
-    profile_paths.insert(path);
+  if (features::IsSmdsDbusMigrationEnabled()) {
+    for (const dbus::ObjectPath& path : euicc_properties->profiles().value()) {
+      profile_paths.insert(path);
+    }
+  } else {
+    for (const dbus::ObjectPath& path :
+         euicc_properties->installed_carrier_profiles().value()) {
+      profile_paths.insert(path);
+    }
+    for (const dbus::ObjectPath& path :
+         euicc_properties->pending_carrier_profiles().value()) {
+      profile_paths.insert(path);
+    }
   }
 
   return profile_paths;
