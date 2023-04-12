@@ -318,7 +318,8 @@ void FileReader::ExecutePendingRead() {
   loading_state_ = kLoadingStateLoading;
 
   loader_ = MakeGarbageCollected<FileReaderLoader>(
-      this, GetExecutionContext()->GetTaskRunner(TaskType::kFileReading));
+      read_type_, this,
+      GetExecutionContext()->GetTaskRunner(TaskType::kFileReading));
   loader_->Start(blob_data_handle_);
   blob_data_handle_ = nullptr;
 }
@@ -380,13 +381,12 @@ void FileReader::Terminate() {
   loading_state_ = kLoadingStateNone;
 }
 
-FileErrorCode FileReader::DidStartLoading() {
+void FileReader::DidStartLoading() {
   base::AutoReset<bool> firing_events(&still_firing_events_, true);
   FireEvent(event_type_names::kLoadstart);
-  return FileErrorCode::kOK;
 }
 
-FileErrorCode FileReader::DidReceiveData() {
+void FileReader::DidReceiveData() {
   // Fire the progress event at least every 50ms.
   if (!last_progress_notification_time_) {
     last_progress_notification_time_ = base::ElapsedTimer();
@@ -396,21 +396,21 @@ FileErrorCode FileReader::DidReceiveData() {
     FireEvent(event_type_names::kProgress);
     last_progress_notification_time_ = base::ElapsedTimer();
   }
-  return FileErrorCode::kOK;
 }
 
-void FileReader::DidFinishLoading(FileReaderData contents) {
+void FileReader::DidFinishLoading() {
   if (loading_state_ == kLoadingStateAborted)
     return;
   DCHECK_EQ(loading_state_, kLoadingStateLoading);
 
   if (read_type_ == FileReadType::kReadAsArrayBuffer) {
     result_ = MakeGarbageCollected<V8UnionArrayBufferOrString>(
-        std::move(contents).AsDOMArrayBuffer());
+        loader_->TakeContents().AsDOMArrayBuffer());
   } else {
     result_ = MakeGarbageCollected<V8UnionArrayBufferOrString>(
-        std::move(contents).AsString(read_type_, encoding_, blob_type_));
+        loader_->TakeContents().AsString(read_type_, encoding_, blob_type_));
   }
+
   // When we set m_state to DONE below, we still need to fire
   // the load and loadend events. To avoid GC to collect this FileReader, we
   // use this separate variable to keep the wrapper of this FileReader alive.
@@ -442,7 +442,6 @@ void FileReader::DidFinishLoading(FileReaderData contents) {
 }
 
 void FileReader::DidFail(FileErrorCode error_code) {
-  FileReaderAccumulator::DidFail(error_code);
   if (loading_state_ == kLoadingStateAborted)
     return;
 
@@ -490,7 +489,7 @@ void FileReader::Trace(Visitor* visitor) const {
   visitor->Trace(result_);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
-  FileReaderAccumulator::Trace(visitor);
+  FileReaderLoaderClient::Trace(visitor);
 }
 
 }  // namespace blink

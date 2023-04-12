@@ -12,8 +12,9 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
-#include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
+#include "third_party/blink/renderer/core/fileapi/file_read_type.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
+#include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
@@ -118,33 +119,35 @@ class PresentationConnection::Message final
 
 class PresentationConnection::BlobLoader final
     : public GarbageCollected<PresentationConnection::BlobLoader>,
-      public FileReaderAccumulator {
+      public FileReaderLoaderClient {
  public:
   BlobLoader(scoped_refptr<BlobDataHandle> blob_data_handle,
              PresentationConnection* presentation_connection,
              scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : presentation_connection_(presentation_connection),
-        loader_(
-            MakeGarbageCollected<FileReaderLoader>(this,
-                                                   std::move(task_runner))) {
+        loader_(MakeGarbageCollected<FileReaderLoader>(
+            FileReadType::kReadAsArrayBuffer,
+            this,
+            std::move(task_runner))) {
     loader_->Start(std::move(blob_data_handle));
   }
   ~BlobLoader() override = default;
 
-  // FileReaderAccumulator functions.
-  void DidFinishLoading(FileReaderData contents) override {
-    auto* buffer = std::move(contents).AsDOMArrayBuffer();
-    presentation_connection_->DidFinishLoadingBlob(buffer);
+  // FileReaderLoaderClient functions.
+  void DidStartLoading() override {}
+  void DidReceiveData() override {}
+  void DidFinishLoading() override {
+    presentation_connection_->DidFinishLoadingBlob(
+        loader_->TakeContents().AsDOMArrayBuffer());
   }
   void DidFail(FileErrorCode error_code) override {
-    FileReaderAccumulator::DidFail(error_code);
     presentation_connection_->DidFailLoadingBlob(error_code);
   }
 
   void Cancel() { loader_->Cancel(); }
 
   void Trace(Visitor* visitor) const override {
-    FileReaderAccumulator::Trace(visitor);
+    FileReaderLoaderClient::Trace(visitor);
     visitor->Trace(presentation_connection_);
     visitor->Trace(loader_);
   }

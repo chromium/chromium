@@ -59,8 +59,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
-#include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
+#include "third_party/blink/renderer/core/fileapi/file_read_type.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
+#include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
@@ -191,7 +192,7 @@ static std::unique_ptr<protocol::Network::Headers> BuildObjectForHeaders(
 
 class InspectorFileReaderLoaderClient final
     : public GarbageCollected<InspectorFileReaderLoaderClient>,
-      public FileReaderClient {
+      public FileReaderLoaderClient {
  public:
   InspectorFileReaderLoaderClient(
       scoped_refptr<BlobDataHandle> blob,
@@ -200,8 +201,10 @@ class InspectorFileReaderLoaderClient final
       : blob_(std::move(blob)),
         callback_(std::move(callback)),
         loader_(
-            MakeGarbageCollected<FileReaderLoader>(this,
-                                                   std::move(task_runner))) {}
+            MakeGarbageCollected<FileReaderLoader>(FileReadType::kReadByClient,
+                                                   this,
+                                                   std::move(task_runner))),
+        keep_alive_(this) {}
 
   InspectorFileReaderLoaderClient(const InspectorFileReaderLoaderClient&) =
       delete;
@@ -215,16 +218,13 @@ class InspectorFileReaderLoaderClient final
     loader_->Start(blob_);
   }
 
-  FileErrorCode DidStartLoading(uint64_t, uint64_t) override {
-    return FileErrorCode::kOK;
-  }
+  void DidStartLoading() override {}
 
-  FileErrorCode DidReceiveData(const char* data,
+  void DidReceiveDataForClient(const char* data,
                                unsigned data_length) override {
     if (!data_length)
-      return FileErrorCode::kOK;
+      return;
     raw_data_->Append(data, data_length);
-    return FileErrorCode::kOK;
   }
 
   void DidFinishLoading() override { Done(raw_data_); }
@@ -232,16 +232,14 @@ class InspectorFileReaderLoaderClient final
   void DidFail(FileErrorCode) override { Done(nullptr); }
 
   void Trace(Visitor* visitor) const override {
-    FileReaderClient::Trace(visitor);
+    FileReaderLoaderClient::Trace(visitor);
     visitor->Trace(loader_);
   }
 
  private:
   void Done(scoped_refptr<SharedBuffer> output) {
     std::move(callback_).Run(output);
-    // FileReaderLoader holds `this` as a member, so clearing it here will
-    // trigger both its garbage collection and ours.
-    loader_ = nullptr;
+    keep_alive_.Clear();
   }
 
   scoped_refptr<BlobDataHandle> blob_;
@@ -250,6 +248,7 @@ class InspectorFileReaderLoaderClient final
   base::OnceCallback<void(scoped_refptr<SharedBuffer>)> callback_;
   Member<FileReaderLoader> loader_;
   scoped_refptr<SharedBuffer> raw_data_;
+  SelfKeepAlive<InspectorFileReaderLoaderClient> keep_alive_;
 };
 
 static void ResponseBodyFileReaderLoaderDone(

@@ -37,8 +37,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
+#include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -144,7 +144,7 @@ class MODULES_EXPORT ImageBitmapFactories final
 
   class ImageBitmapLoader final : public GarbageCollected<ImageBitmapLoader>,
                                   public ExecutionContextLifecycleObserver,
-                                  public FileReaderAccumulator {
+                                  public FileReaderLoaderClient {
    public:
     static ImageBitmapLoader* Create(ImageBitmapFactories& factory,
                                      absl::optional<gfx::Rect> crop_rect,
@@ -183,8 +183,10 @@ class MODULES_EXPORT ImageBitmapFactories final
     // ExecutionContextLifecycleObserver
     void ContextDestroyed() override;
 
-    // FileReaderClient
-    void DidFinishLoading(FileReaderData) override;
+    // FileReaderLoaderClient
+    void DidStartLoading() override {}
+    void DidReceiveData() override {}
+    void DidFinishLoading() override;
     void DidFail(FileErrorCode) override;
 
     Member<FileReaderLoader> loader_;

@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
+#include "third_party/blink/renderer/core/fileapi/file_read_type.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
@@ -277,6 +278,7 @@ ImageBitmapFactories::ImageBitmapLoader::ImageBitmapLoader(
     const ImageBitmapOptions* options)
     : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
       loader_(MakeGarbageCollected<FileReaderLoader>(
+          FileReadType::kReadAsArrayBuffer,
           this,
           GetExecutionContext()->GetTaskRunner(TaskType::kFileReading))),
       factory_(&factory),
@@ -337,9 +339,8 @@ void ImageBitmapFactories::ImageBitmapLoader::ContextDestroyed() {
   }
 }
 
-void ImageBitmapFactories::ImageBitmapLoader::DidFinishLoading(
-    FileReaderData data) {
-  auto contents = std::move(data).AsArrayBufferContents();
+void ImageBitmapFactories::ImageBitmapLoader::DidFinishLoading() {
+  auto contents = loader_->TakeContents().AsArrayBufferContents();
   loader_.Clear();
   if (!contents.IsValid()) {
     RejectPromise(kAllocationFailureImageBitmapRejectionReason);
@@ -348,9 +349,7 @@ void ImageBitmapFactories::ImageBitmapLoader::DidFinishLoading(
   ScheduleAsyncImageBitmapDecoding(std::move(contents));
 }
 
-void ImageBitmapFactories::ImageBitmapLoader::DidFail(
-    FileErrorCode error_code) {
-  FileReaderAccumulator::DidFail(error_code);
+void ImageBitmapFactories::ImageBitmapLoader::DidFail(FileErrorCode) {
   RejectPromise(kUndecodableImageBitmapRejectionReason);
 }
 
@@ -429,7 +428,7 @@ void ImageBitmapFactories::ImageBitmapLoader::ResolvePromiseOnOriginalThread(
 
 void ImageBitmapFactories::ImageBitmapLoader::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
-  FileReaderAccumulator::Trace(visitor);
+  FileReaderLoaderClient::Trace(visitor);
   visitor->Trace(factory_);
   visitor->Trace(resolver_);
   visitor->Trace(options_);

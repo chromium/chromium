@@ -28,54 +28,38 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_FILE_READER_SYNC_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_FILE_READER_SYNC_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_FILE_READER_LOADER_CLIENT_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_FILE_READER_LOADER_CLIENT_H_
 
-#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "base/notreached.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-
-namespace base {
-class SingleThreadTaskRunner;
-}
 
 namespace blink {
 
-class Blob;
-class DOMArrayBuffer;
-class ExceptionState;
-class ExecutionContext;
-class FileReaderLoader;
+enum class FileErrorCode;
 
-class FileReaderSync final : public ScriptWrappable {
-  DEFINE_WRAPPERTYPEINFO();
-
+// For more information on how to read Blobs in your specific situation, see:
+// https://chromium.googlesource.com/chromium/src/+/HEAD/storage/browser/blob/README.md#accessing-reading
+class CORE_EXPORT FileReaderLoaderClient : public GarbageCollectedMixin {
  public:
-  static FileReaderSync* Create(ExecutionContext* context) {
-    return MakeGarbageCollected<FileReaderSync>(context);
+  virtual ~FileReaderLoaderClient() = default;
+
+  virtual void DidStartLoading() = 0;
+  // Clients must implement this method if they are using any ReadType except
+  // ReadByClient.
+  virtual void DidReceiveData() { NOTREACHED(); }
+  // Clients must implement this method if they are using the ReadByClient
+  // ReadType.
+  virtual void DidReceiveDataForClient(const char* data, unsigned data_length) {
+    NOTREACHED();
   }
+  virtual void DidFinishLoading() = 0;
+  virtual void DidFail(FileErrorCode) = 0;
 
-  explicit FileReaderSync(ExecutionContext*);
-
-  DOMArrayBuffer* readAsArrayBuffer(Blob*, ExceptionState&);
-  String readAsBinaryString(Blob*, ExceptionState&);
-  String readAsText(Blob* blob, ExceptionState& ec) {
-    return readAsText(blob, "", ec);
-  }
-  String readAsText(Blob*, const String& encoding, ExceptionState&);
-  String readAsDataURL(Blob*, ExceptionState&);
-
-  void Trace(Visitor* visitor) const override {
-    ScriptWrappable::Trace(visitor);
-  }
-
- private:
-  void StartLoading(FileReaderLoader&, const Blob&, ExceptionState&);
-
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  void Trace(Visitor*) const override {}
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_FILE_READER_SYNC_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_FILE_READER_LOADER_CLIENT_H_

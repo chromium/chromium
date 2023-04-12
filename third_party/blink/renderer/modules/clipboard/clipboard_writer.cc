@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/fileapi/file_read_type.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -343,31 +344,34 @@ void ClipboardWriter::WriteToSystem(Blob* blob) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!file_reader_);
   file_reader_ = MakeGarbageCollected<FileReaderLoader>(
-      this, std::move(file_reading_task_runner_));
+      FileReadType::kReadAsArrayBuffer, this,
+      std::move(file_reading_task_runner_));
   file_reader_->Start(blob->GetBlobDataHandle());
 }
 
-// FileReaderClient implementation.
-void ClipboardWriter::DidFinishLoading(FileReaderData contents) {
+// FileReaderLoaderClient implementation.
+
+void ClipboardWriter::DidStartLoading() {}
+void ClipboardWriter::DidReceiveData() {}
+
+void ClipboardWriter::DidFinishLoading() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DOMArrayBuffer* array_buffer = std::move(contents).AsDOMArrayBuffer();
+  DOMArrayBuffer* array_buffer =
+      file_reader_->TakeContents().AsDOMArrayBuffer();
   DCHECK(array_buffer);
 
   self_keep_alive_.Clear();
-  file_reader_ = nullptr;
 
   StartWrite(array_buffer, clipboard_task_runner_);
 }
 
 void ClipboardWriter::DidFail(FileErrorCode error_code) {
-  FileReaderAccumulator::DidFail(error_code);
   self_keep_alive_.Clear();
-  file_reader_ = nullptr;
   promise_->RejectFromReadOrDecodeFailure();
 }
 
 void ClipboardWriter::Trace(Visitor* visitor) const {
-  FileReaderAccumulator::Trace(visitor);
+  FileReaderLoaderClient::Trace(visitor);
   visitor->Trace(promise_);
   visitor->Trace(system_clipboard_);
   visitor->Trace(file_reader_);

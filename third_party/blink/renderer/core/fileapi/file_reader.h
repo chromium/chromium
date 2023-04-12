@@ -36,10 +36,9 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/core/fileapi/file_error.h"
 #include "third_party/blink/renderer/core/fileapi/file_read_type.h"
-#include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
+#include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -55,7 +54,7 @@ enum class FileErrorCode;
 class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
                                      public ActiveScriptWrappable<FileReader>,
                                      public ExecutionContextLifecycleObserver,
-                                     public FileReaderAccumulator {
+                                     public FileReaderLoaderClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -90,10 +89,10 @@ class CORE_EXPORT FileReader final : public EventTargetWithInlineData,
     return ExecutionContextLifecycleObserver::GetExecutionContext();
   }
 
-  // FileReaderClient
-  FileErrorCode DidStartLoading() override;
-  FileErrorCode DidReceiveData() override;
-  void DidFinishLoading(FileReaderData contents) override;
+  // FileReaderLoaderClient
+  void DidStartLoading() override;
+  void DidReceiveData() override;
+  void DidFinishLoading() override;
   void DidFail(FileErrorCode) override;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(loadstart, kLoadstart)

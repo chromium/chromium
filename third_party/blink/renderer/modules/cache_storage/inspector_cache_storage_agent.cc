@@ -20,8 +20,9 @@
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
+#include "third_party/blink/renderer/core/fileapi/file_read_type.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
+#include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
@@ -448,7 +449,7 @@ class GetCacheKeysForRequestData {
 
 class CachedResponseFileReaderLoaderClient final
     : public GarbageCollected<CachedResponseFileReaderLoaderClient>,
-      public FileReaderClient {
+      public FileReaderLoaderClient {
  public:
   static void Load(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                    scoped_refptr<BlobDataHandle> blob,
@@ -462,9 +463,7 @@ class CachedResponseFileReaderLoaderClient final
   CachedResponseFileReaderLoaderClient& operator=(
       const CachedResponseFileReaderLoaderClient&) = delete;
 
-  FileErrorCode DidStartLoading(uint64_t, uint64_t) override {
-    return FileErrorCode::kOK;
-  }
+  void DidStartLoading() override {}
 
   void DidFinishLoading() override {
     std::unique_ptr<CachedResponse> response =
@@ -483,14 +482,13 @@ class CachedResponseFileReaderLoaderClient final
     dispose();
   }
 
-  FileErrorCode DidReceiveData(const char* data,
+  void DidReceiveDataForClient(const char* data,
                                unsigned data_length) override {
     data_->Append(data, data_length);
-    return FileErrorCode::kOK;
   }
 
   void Trace(Visitor* visitor) const override {
-    FileReaderClient::Trace(visitor);
+    FileReaderLoaderClient::Trace(visitor);
     visitor->Trace(loader_);
   }
 
@@ -498,21 +496,25 @@ class CachedResponseFileReaderLoaderClient final
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       scoped_refptr<BlobDataHandle>&& blob,
       std::unique_ptr<RequestCachedResponseCallback>&& callback)
-      : loader_(MakeGarbageCollected<FileReaderLoader>(this,
-                                                       std::move(task_runner))),
+      : loader_(
+            MakeGarbageCollected<FileReaderLoader>(FileReadType::kReadByClient,
+                                                   this,
+                                                   std::move(task_runner))),
         callback_(std::move(callback)),
-        data_(SharedBuffer::Create()) {
+        data_(SharedBuffer::Create()),
+        keep_alive_(this) {
     loader_->Start(std::move(blob));
   }
 
   ~CachedResponseFileReaderLoaderClient() override = default;
 
  private:
-  void dispose() { loader_ = nullptr; }
+  void dispose() { keep_alive_.Clear(); }
 
   Member<FileReaderLoader> loader_;
   std::unique_ptr<RequestCachedResponseCallback> callback_;
   scoped_refptr<SharedBuffer> data_;
+  SelfKeepAlive<CachedResponseFileReaderLoaderClient> keep_alive_;
 };
 
 }  // namespace
