@@ -1893,12 +1893,12 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
                                        file_path_1);
 
   const base::FilePath file_path_2 = test_mount_2->CreateArbitraryFile();
-  holding_space_service->AddDownload(HoldingSpaceItem::Type::kDownload,
-                                     file_path_2);
+  holding_space_service->AddItemOfType(HoldingSpaceItem::Type::kDownload,
+                                       file_path_2);
 
   const base::FilePath file_path_3 = test_mount_1->CreateArbitraryFile();
-  holding_space_service->AddDownload(HoldingSpaceItem::Type::kDownload,
-                                     file_path_3);
+  holding_space_service->AddItemOfType(HoldingSpaceItem::Type::kDownload,
+                                       file_path_3);
 
   EXPECT_EQ(3u, GetProfile()
                     ->GetPrefs()
@@ -2383,7 +2383,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest, RemoveAll) {
       /*relative_path=*/base::FilePath("foo"), /*content=*/"foo");
 
   // Add them both to holding space, one in pinned files the other in downloads.
-  service->AddDownload(HoldingSpaceItem::Type::kDownload, download_path);
+  service->AddItemOfType(HoldingSpaceItem::Type::kDownload, download_path);
   service->AddPinnedFiles(
       {file_manager::util::GetFileManagerFileSystemContext(profile)
            ->CrackURLInFirstPartyContext(
@@ -2590,8 +2590,9 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
       case HoldingSpaceItem::Type::kArcDownload:
       case HoldingSpaceItem::Type::kDownload:
       case HoldingSpaceItem::Type::kLacrosDownload:
-        EXPECT_EQ(holding_space_model->ContainsItem(type, file_path),
-                  holding_space_service->AddDownload(type, file_path).empty());
+        EXPECT_EQ(
+            holding_space_model->ContainsItem(type, file_path),
+            holding_space_service->AddItemOfType(type, file_path).empty());
         break;
       case HoldingSpaceItem::Type::kCameraAppPhoto:
       case HoldingSpaceItem::Type::kCameraAppScanJpg:

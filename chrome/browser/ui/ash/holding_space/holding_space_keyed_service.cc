@@ -223,17 +223,6 @@ std::vector<GURL> HoldingSpaceKeyedService::GetPinnedFiles() const {
   return pinned_files;
 }
 
-const std::string& HoldingSpaceKeyedService::AddDownload(
-    HoldingSpaceItem::Type type,
-    const base::FilePath& download_file,
-    const HoldingSpaceProgress& progress,
-    HoldingSpaceImage::PlaceholderImageSkiaResolver
-        placeholder_image_skia_resolver) {
-  DCHECK(HoldingSpaceItem::IsDownload(type));
-  return AddItemOfType(type, download_file, progress,
-                       placeholder_image_skia_resolver);
-}
-
 void HoldingSpaceKeyedService::AddNearbyShare(
     const base::FilePath& nearby_share_path) {
   AddItemOfType(HoldingSpaceItem::Type::kNearbyShare, nearby_share_path);

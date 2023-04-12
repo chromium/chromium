@@ -91,18 +91,6 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   std::vector<GURL> GetPinnedFiles() const;
 
   // TODO(http://b/274477308): Remove one-off API.
-  // Adds a download item of the specified `type` backed by the provided
-  // absolute file path. Returns the id of the added holding space item or an
-  // empty string if the item was not added due to de-duplication checks.
-  // NOTE: `type` must refer to a download type.
-  const std::string& AddDownload(
-      HoldingSpaceItem::Type type,
-      const base::FilePath& download_path,
-      const HoldingSpaceProgress& progress = HoldingSpaceProgress(),
-      HoldingSpaceImage::PlaceholderImageSkiaResolver
-          placeholder_image_skia_resolver = base::NullCallback());
-
-  // TODO(http://b/274477308): Remove one-off API.
   // Adds a nearby share item backed by the provided absolute file path.
   void AddNearbyShare(const base::FilePath& nearby_share_path);
 
