@@ -77,6 +77,7 @@ class IdleActionWarningObserver;
 class LoginScreenExtensionsStorageCleaner;
 class LowDiskNotification;
 class AuthMetricsRecorder;
+class MultiCaptureLoginNotification;
 class MultiCaptureNotification;
 class NetworkChangeManagerClient;
 class NetworkPrefStateObserver;
@@ -218,6 +219,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<WebKioskAppManager> web_kiosk_app_manager_;
   std::unique_ptr<KioskAppManager> kiosk_app_manager_;
   std::unique_ptr<MultiCaptureNotification> multi_capture_notification_;
+  std::unique_ptr<MultiCaptureLoginNotification>
+      multi_capture_login_notification_;
 
   std::unique_ptr<ShortcutMappingPrefService> shortcut_mapping_pref_service_;
   std::unique_ptr<ChromeKeyboardControllerClient>
