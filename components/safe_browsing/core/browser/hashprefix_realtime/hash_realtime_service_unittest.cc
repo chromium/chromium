@@ -382,6 +382,7 @@ class HashRealTimeServiceTest : public PlatformTest {
           EXPECT_EQ(ohttp_request->relay_url, GURL(kTestRelayUrl));
           EXPECT_EQ(ohttp_request->resource_url, GURL(expected_url));
           EXPECT_EQ(ohttp_request->key_config, kOhttpKey);
+          EXPECT_EQ(ohttp_request->timeout_duration, base::Seconds(3));
         }));
 
     // Set up request response.

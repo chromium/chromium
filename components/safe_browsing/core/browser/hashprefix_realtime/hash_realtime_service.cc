@@ -383,6 +383,8 @@ void HashRealTimeService::OnGetOhttpKey(
   ohttp_request->key_config = key.value();
   ohttp_request->resource_url = GURL(GetResourceUrl(std::move(request)));
   ohttp_request->method = net::HttpRequestHeaders::kGetMethod;
+  ohttp_request->timeout_duration =
+      base::Seconds(kLookupTimeoutDurationInSeconds);
 
   mojo::PendingReceiver<network::mojom::ObliviousHttpClient> pending_receiver;
   get_network_context_.Run()->GetViaObliviousHttp(

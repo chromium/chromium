@@ -37,7 +37,7 @@ namespace {
 
 constexpr size_t kMaxResponseSize =
     5 * 1024 * 1024;  // Response size limit is 5MB
-constexpr base::TimeDelta kRequestTimeout = base::Minutes(1);
+constexpr base::TimeDelta kDefaultRequestTimeout = base::Minutes(1);
 constexpr char kObliviousHttpRequestMimeType[] = "message/ohttp-req";
 
 constexpr size_t kMaxMethodSize = 16;
@@ -372,7 +372,9 @@ void ObliviousHttpRequestHandler::ContinueHandlingRequest(
 
   state->loader->AttachStringForUpload(*maybe_encrypted_blob,
                                        kObliviousHttpRequestMimeType);
-  state->loader->SetTimeoutDuration(kRequestTimeout);
+  state->loader->SetTimeoutDuration(state->request->timeout_duration
+                                        ? *state->request->timeout_duration
+                                        : kDefaultRequestTimeout);
   state->loader->DownloadToString(
       GetURLLoaderFactory(),
       base::BindOnce(&ObliviousHttpRequestHandler::OnRequestComplete,

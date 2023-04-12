@@ -6,6 +6,7 @@
 #include <cstdint>
 
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/http/http_status_code.h"
@@ -98,6 +99,7 @@ class TestOhttpClient : public network::mojom::ObliviousHttpClient {
 
   void OnCompleted(
       network::mojom::ObliviousHttpCompletionResultPtr status) override {
+    is_on_completed_called_ = true;
     switch (expected_response_type_) {
       case ResponseType::kSuccess: {
         ASSERT_TRUE(status->is_inner_response());
@@ -134,6 +136,8 @@ class TestOhttpClient : public network::mojom::ObliviousHttpClient {
 
   void WaitForCall() { run_loop_.Run(); }
 
+  bool IsOnCompletedCalled() { return is_on_completed_called_; }
+
  private:
   ResponseType expected_response_type_;
   int expected_inner_response_code_ = 0;
@@ -141,6 +145,7 @@ class TestOhttpClient : public network::mojom::ObliviousHttpClient {
   std::multimap<std::string, std::string> expected_headers_;
   int expected_outer_response_error_code_ = 0;
   int expected_net_error_ = 0;
+  bool is_on_completed_called_ = false;
   mojo::Receiver<network::mojom::ObliviousHttpClient> receiver_;
   base::RunLoop run_loop_;
 };
@@ -150,7 +155,9 @@ class TestOhttpClient : public network::mojom::ObliviousHttpClient {
 class TestObliviousHttpRequestHandler : public testing::Test {
  public:
   TestObliviousHttpRequestHandler()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
+      : task_environment_(
+            base::test::TaskEnvironment::MainThreadType::IO,
+            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME),
         network_service_(network::NetworkService::CreateForTesting()),
         loader_factory_receiver_(&loader_factory_) {
     network::mojom::NetworkContextParamsPtr context_params =
@@ -267,6 +274,11 @@ class TestObliviousHttpRequestHandler : public testing::Test {
     request->traffic_annotation =
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
     return request;
+  }
+
+  void FastForward(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+    task_environment_.RunUntilIdle();
   }
 
  private:
@@ -450,6 +462,38 @@ TEST_F(TestObliviousHttpRequestHandler, TestRequestFormat) {
         "response body",
         {{"cache-control", "s-maxage=3600"}, {"content-type", "text/html"}});
     client.WaitForCall();
+  }
+}
+
+TEST_F(TestObliviousHttpRequestHandler, TestTimeout) {
+  std::unique_ptr<network::ObliviousHttpRequestHandler> handler =
+      CreateHandler();
+  // Default timeout.
+  {
+    TestOhttpClient client;
+    client.SetExpectedNetError(net::ERR_TIMED_OUT);
+
+    handler->StartRequest(CreateRequest(), client.CreatePendingRemote());
+
+    FastForward(base::Seconds(59));
+    EXPECT_FALSE(client.IsOnCompletedCalled());
+    FastForward(base::Seconds(1));
+    EXPECT_TRUE(client.IsOnCompletedCalled());
+  }
+  // Configured timeout.
+  {
+    TestOhttpClient client;
+    client.SetExpectedNetError(net::ERR_TIMED_OUT);
+
+    network::mojom::ObliviousHttpRequestPtr request = CreateRequest();
+    request->timeout_duration = base::Seconds(3);
+
+    handler->StartRequest(std::move(request), client.CreatePendingRemote());
+
+    FastForward(base::Seconds(2));
+    EXPECT_FALSE(client.IsOnCompletedCalled());
+    FastForward(base::Seconds(1));
+    EXPECT_TRUE(client.IsOnCompletedCalled());
   }
 }
 
