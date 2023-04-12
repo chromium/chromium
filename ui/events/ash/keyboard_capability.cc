@@ -36,10 +36,6 @@ namespace {
 using KeyboardTopRowLayout = KeyboardCapability::KeyboardTopRowLayout;
 using DeviceType = KeyboardCapability::DeviceType;
 
-// Represents scancode value seen in scan code mapping which denotes that the
-// FKey is missing on the physical device.
-const int kCustomAbsentScanCode = 0x00;
-
 // Hotrod controller vendor/product ids.
 const int kHotrodRemoteVendorId = 0x0471;
 const int kHotrodRemoteProductId = 0x21cc;
@@ -298,68 +294,6 @@ IdentifyKeyboardInfo(const InputDevice& keyboard) {
           layout, std::move(top_row_scan_codes)};
 }
 
-std::vector<TopRowActionKey> IdentifyCustomTopRowActionKeys(
-    const std::vector<uint32_t>& top_row_scan_codes) {
-  // TODO(dpad): Handle privacy screen in scan code mapping.
-  static constexpr auto kCustomScancodeMapping =
-      base::MakeFixedFlatMap<uint32_t, TopRowActionKey>({
-          // Scan code is only `kCustomScanCodeFKeyMissing` when the FKey is
-          // absent on the keyboard.
-          {kCustomAbsentScanCode, TopRowActionKey::kNone},
-
-          // Vivaldi-specific extended Set-1 AT-style scancodes.
-          {0x90, TopRowActionKey::kPreviousTrack},
-          {0x91, TopRowActionKey::kFullscreen},
-          {0x92, TopRowActionKey::kOverview},
-          {0x93, TopRowActionKey::kScreenshot},
-          {0x94, TopRowActionKey::kScreenBrightnessDown},
-          {0x95, TopRowActionKey::kScreenBrightnessUp},
-          {0x97, TopRowActionKey::kKeyboardBacklightDown},
-          {0x98, TopRowActionKey::kKeyboardBacklightUp},
-          {0x99, TopRowActionKey::kNextTrack},
-          {0x9A, TopRowActionKey::kPlayPause},
-          {0x9B, TopRowActionKey::kMicrophoneMute},
-          {0x9E, TopRowActionKey::kKeyboardBacklightToggle},
-          {0xA0, TopRowActionKey::kVolumeMute},
-          {0xAE, TopRowActionKey::kVolumeDown},
-          {0xB0, TopRowActionKey::kVolumeUp},
-          {0xE9, TopRowActionKey::kForward},
-          {0xEA, TopRowActionKey::kBack},
-          {0xE7, TopRowActionKey::kRefresh},
-
-          // HID 32-bit usage codes
-          {0x070046, TopRowActionKey::kScreenshot},
-          {0x0B002F, TopRowActionKey::kMicrophoneMute},
-          {0x0C00E2, TopRowActionKey::kVolumeMute},
-          {0x0C00E9, TopRowActionKey::kVolumeUp},
-          {0x0C00EA, TopRowActionKey::kVolumeDown},
-          {0x0C006F, TopRowActionKey::kScreenBrightnessUp},
-          {0x0C0070, TopRowActionKey::kScreenBrightnessDown},
-          {0x0C0079, TopRowActionKey::kKeyboardBacklightUp},
-          {0x0C007A, TopRowActionKey::kKeyboardBacklightDown},
-          {0x0C007C, TopRowActionKey::kKeyboardBacklightToggle},
-          {0x0C00B5, TopRowActionKey::kNextTrack},
-          {0x0C00B6, TopRowActionKey::kPreviousTrack},
-          {0x0C00CD, TopRowActionKey::kPlayPause},
-          {0x0C0224, TopRowActionKey::kBack},
-          {0x0C0225, TopRowActionKey::kForward},
-          {0x0C0227, TopRowActionKey::kRefresh},
-          {0x0C0232, TopRowActionKey::kFullscreen},
-          {0x0C029F, TopRowActionKey::kOverview},
-      });
-
-  std::vector<TopRowActionKey> top_row_action_keys;
-  for (const auto& scancode : top_row_scan_codes) {
-    auto* action_key = kCustomScancodeMapping.find(scancode);
-    if (action_key) {
-      top_row_action_keys.push_back(action_key->second);
-    } else {
-      top_row_action_keys.push_back(TopRowActionKey::kUnknown);
-    }
-  }
-  return top_row_action_keys;
-}
-
 std::vector<TopRowActionKey> IdentifyTopRowActionKeys(
     DeviceType device_type,
     KeyboardTopRowLayout layout,
@@ -374,7 +308,8 @@ std::vector<TopRowActionKey> IdentifyTopRowActionKeys(
       return {kLayoutWilcoDrallionTopRowActionKeys.begin(),
               kLayoutWilcoDrallionTopRowActionKeys.end()};
     case KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom:
-      return IdentifyCustomTopRowActionKeys(top_row_scan_codes);
+      // TODO(dpad): Implement custom top row action key mapping.
+      return {};
   }
 }
 

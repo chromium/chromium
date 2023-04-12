@@ -23,10 +23,8 @@ namespace ui {
 
 // TODO(dpad): Handle privacy screen toggle and display mirror top row keys.
 enum class TopRowActionKey {
-  kNone = 0,
-  kMinValue = kNone,
-  kUnknown,
-  kBack,
+  kBack = 0,
+  kMinValue = kBack,
   kForward,
   kRefresh,
   kFullscreen,

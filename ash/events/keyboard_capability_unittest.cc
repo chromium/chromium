@@ -12,8 +12,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "components/prefs/pref_service.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
@@ -47,28 +45,6 @@ constexpr char kKbdDefaultCustomTopRowLayout[] =
 
 // A tag that should fail parsing for the top row custom scan code string.
 constexpr char kKbdInvalidCustomTopRowLayout[] = "X X X";
-
-enum CustomTopRowScanCode : uint32_t {
-  kPreviousTrack = 0x90,
-  kFullscreen = 0x91,
-  kOverview = 0x92,
-  kScreenshot = 0x93,
-  kScreenBrightnessDown = 0x94,
-  kScreenBrightnessUp = 0x95,
-  kPrivacyScreenToggle = 0x96,
-  kKeyboardBacklightDown = 0x97,
-  kKeyboardBacklightUp = 0x98,
-  kNextTrack = 0x99,
-  kPlayPause = 0x9A,
-  kMicrophoneMute = 0x9B,
-  kKeyboardBacklightToggle = 0x9E,
-  kVolumeMute = 0xA0,
-  kVolumeDown = 0xAE,
-  kVolumeUp = 0xB0,
-  kForward = 0xE9,
-  kBack = 0xEA,
-  kRefresh = 0xE7,
-};
 
 constexpr int kDeviceId1 = 5;
 constexpr int kDeviceId2 = 10;
@@ -780,144 +756,6 @@ TEST_F(KeyboardCapabilityTest, TopRowLayoutWilco) {
     EXPECT_EQ(
         ui::kLayoutWilcoDrallionTopRowActionKeys.contains(action_key),
         keyboard_capability_->HasTopRowActionKey(drallion_device, action_key))
-        << "Action Key: " << static_cast<int>(action_key);
-  }
-}
-
-class TopRowLayoutCustomTest
-    : public KeyboardCapabilityTest,
-      public testing::WithParamInterface<std::vector<ui::TopRowActionKey>> {
- public:
-  void SetUp() override {
-    KeyboardCapabilityTest::SetUp();
-    top_row_action_keys_ = GetParam();
-    custom_layout_string_.clear();
-
-    std::vector<std::string> custom_scan_codes;
-    custom_scan_codes.reserve(top_row_action_keys_.size());
-    for (const auto& action_key : top_row_action_keys_) {
-      const uint32_t scan_code = ConvertTopRowActionKeyToScanCode(action_key);
-      custom_scan_codes.push_back(
-          base::ToLowerASCII(base::HexEncode(&scan_code, 1)));
-    }
-
-    custom_layout_string_ = base::JoinString(custom_scan_codes, " ");
-  }
-
-  uint32_t ConvertTopRowActionKeyToScanCode(ui::TopRowActionKey action_key) {
-    switch (action_key) {
-      case ui::TopRowActionKey::kBack:
-        return CustomTopRowScanCode::kBack;
-      case ui::TopRowActionKey::kForward:
-        return CustomTopRowScanCode::kForward;
-      case ui::TopRowActionKey::kRefresh:
-        return CustomTopRowScanCode::kRefresh;
-      case ui::TopRowActionKey::kFullscreen:
-        return CustomTopRowScanCode::kFullscreen;
-      case ui::TopRowActionKey::kOverview:
-        return CustomTopRowScanCode::kOverview;
-      case ui::TopRowActionKey::kScreenshot:
-        return CustomTopRowScanCode::kScreenshot;
-      case ui::TopRowActionKey::kScreenBrightnessDown:
-        return CustomTopRowScanCode::kScreenBrightnessDown;
-      case ui::TopRowActionKey::kScreenBrightnessUp:
-        return CustomTopRowScanCode::kScreenBrightnessUp;
-      case ui::TopRowActionKey::kMicrophoneMute:
-        return CustomTopRowScanCode::kMicrophoneMute;
-      case ui::TopRowActionKey::kVolumeMute:
-        return CustomTopRowScanCode::kVolumeMute;
-      case ui::TopRowActionKey::kVolumeDown:
-        return CustomTopRowScanCode::kVolumeDown;
-      case ui::TopRowActionKey::kVolumeUp:
-        return CustomTopRowScanCode::kVolumeUp;
-      case ui::TopRowActionKey::kKeyboardBacklightToggle:
-        return CustomTopRowScanCode::kKeyboardBacklightToggle;
-      case ui::TopRowActionKey::kKeyboardBacklightDown:
-        return CustomTopRowScanCode::kKeyboardBacklightDown;
-      case ui::TopRowActionKey::kKeyboardBacklightUp:
-        return CustomTopRowScanCode::kKeyboardBacklightUp;
-      case ui::TopRowActionKey::kNextTrack:
-        return CustomTopRowScanCode::kNextTrack;
-      case ui::TopRowActionKey::kPreviousTrack:
-        return CustomTopRowScanCode::kPreviousTrack;
-      case ui::TopRowActionKey::kPlayPause:
-        return CustomTopRowScanCode::kPlayPause;
-      case ui::TopRowActionKey::kUnknown:
-      case ui::TopRowActionKey::kNone:
-        return 0;
-    }
-  }
-
- protected:
-  std::vector<ui::TopRowActionKey> top_row_action_keys_;
-  std::string custom_layout_string_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    TopRowLayoutCustomTest,
-    testing::ValuesIn(std::vector<std::vector<ui::TopRowActionKey>>{
-        // Test with full 15 key set.
-        {
-            ui::TopRowActionKey::kBack,
-            ui::TopRowActionKey::kForward,
-            ui::TopRowActionKey::kRefresh,
-            ui::TopRowActionKey::kFullscreen,
-            ui::TopRowActionKey::kOverview,
-            ui::TopRowActionKey::kScreenshot,
-            ui::TopRowActionKey::kScreenBrightnessDown,
-            ui::TopRowActionKey::kScreenBrightnessUp,
-            ui::TopRowActionKey::kMicrophoneMute,
-            ui::TopRowActionKey::kVolumeMute,
-            ui::TopRowActionKey::kVolumeDown,
-            ui::TopRowActionKey::kVolumeUp,
-            ui::TopRowActionKey::kKeyboardBacklightToggle,
-            ui::TopRowActionKey::kKeyboardBacklightDown,
-            ui::TopRowActionKey::kKeyboardBacklightUp,
-        },
-        // Test the remaining untested set of keys.
-        {
-            ui::TopRowActionKey::kOverview,
-            ui::TopRowActionKey::kScreenshot,
-            ui::TopRowActionKey::kScreenBrightnessDown,
-            ui::TopRowActionKey::kScreenBrightnessUp,
-            ui::TopRowActionKey::kMicrophoneMute,
-            ui::TopRowActionKey::kVolumeMute,
-            ui::TopRowActionKey::kVolumeDown,
-            ui::TopRowActionKey::kVolumeUp,
-            ui::TopRowActionKey::kKeyboardBacklightToggle,
-            ui::TopRowActionKey::kKeyboardBacklightDown,
-            ui::TopRowActionKey::kKeyboardBacklightUp,
-            ui::TopRowActionKey::kNextTrack,
-            ui::TopRowActionKey::kPreviousTrack,
-            ui::TopRowActionKey::kPlayPause,
-        },
-        // Tests with a small subset of the possible keys.
-        {
-            ui::TopRowActionKey::kBack,
-            ui::TopRowActionKey::kForward,
-            ui::TopRowActionKey::kRefresh,
-        },
-        {
-            ui::TopRowActionKey::kMicrophoneMute,
-            ui::TopRowActionKey::kVolumeMute,
-            ui::TopRowActionKey::kVolumeDown,
-            ui::TopRowActionKey::kVolumeUp,
-            ui::TopRowActionKey::kKeyboardBacklightToggle,
-        }}));
-
-TEST_P(TopRowLayoutCustomTest, TopRowLayout) {
-  ui::InputDevice keyboard(kDeviceId1, ui::INPUT_DEVICE_INTERNAL,
-                           "Internal Keyboard");
-  fake_keyboard_manager_->AddFakeKeyboard(keyboard, custom_layout_string_,
-                                          /*has_custom_top_row=*/true);
-
-  for (ui::TopRowActionKey action_key = ui::TopRowActionKey::kMinValue;
-       action_key <= ui::TopRowActionKey::kMaxValue;
-       action_key =
-           static_cast<ui::TopRowActionKey>(static_cast<int>(action_key) + 1)) {
-    EXPECT_EQ(base::Contains(top_row_action_keys_, action_key),
-              keyboard_capability_->HasTopRowActionKey(keyboard, action_key))
         << "Action Key: " << static_cast<int>(action_key);
   }
 }
