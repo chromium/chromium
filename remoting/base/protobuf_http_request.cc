@@ -63,7 +63,8 @@ void ProtobufHttpRequest::OnResponse(
       RunResponseCallback(url_loader_status);
     }
   }
-  DCHECK(!response_callback_);
+  // NOTE: Don't access member variables here, since |this| might have been
+  // deleted by the callback.
   std::move(invalidator).Run();
 }
 

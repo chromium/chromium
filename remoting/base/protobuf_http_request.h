@@ -10,11 +10,9 @@
 #include "base/memory/raw_ptr.h"
 #include "remoting/base/protobuf_http_request_base.h"
 
-namespace google {
-namespace protobuf {
+namespace google::protobuf {
 class MessageLite;
-}  // namespace protobuf
-}  // namespace google
+}  // namespace google::protobuf
 
 namespace remoting {
 
