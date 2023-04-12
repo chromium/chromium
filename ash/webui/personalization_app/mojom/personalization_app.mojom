@@ -568,6 +568,15 @@ enum AmbientUiVisibility {
   kClosed = 3,
 };
 
+// Enumeration of screen saver running time before sleep.
+enum ScreenSaverDuration {
+  kFiveMinutes = 0,
+  kTenMinutes = 1,
+  kThirtyMinutes = 2,
+  kOneHour = 3,
+  kForever = 4,
+};
+
 // Album metadaba to display. Contains necessary data for both topic sources.
 struct AmbientModeAlbum {
   // Unique identifier for this album. It assumes unique id across different
