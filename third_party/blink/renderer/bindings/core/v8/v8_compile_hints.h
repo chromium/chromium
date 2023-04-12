@@ -44,7 +44,6 @@ class V8CrowdsourcedCompileHintsProducer
                     ScriptState* script_state);
 
   void GenerateData();
-  void DisableDataCollection() { state_ = State::kDisabled; }
 
   void Trace(Visitor* visitor) const;
 
@@ -63,9 +62,6 @@ class V8CrowdsourcedCompileHintsProducer
     // it successfully; e.g., because of throttling or because we didn't have
     // enough data).
     kDataGenerationFinished,
-
-    // This V8CompileHints shouldn't even try to generate data.
-    kDisabled
   };
   State state_ = State::kInitial;
 
@@ -99,7 +95,6 @@ class V8CrowdsourcedCompileHintsProducer
       const V8CrowdsourcedCompileHintsProducer&) = delete;
 
   void GenerateData() {}
-  void DisableDataCollection() {}
 
   void Trace(Visitor* visitor) const {}
 };
