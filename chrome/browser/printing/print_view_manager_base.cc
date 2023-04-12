@@ -655,7 +655,9 @@ void PrintViewManagerBase::UpdatePrintSettings(
   RenderParamsFromPrintSettings(*print_settings, settings->params.get());
   settings->params->document_cookie = PrintSettings::NewCookie();
   if (!PrintMsgPrintParamsIsValid(*settings->params)) {
-    PRINTER_LOG(ERROR) << "Printer settings invalid: "
+    PRINTER_LOG(ERROR) << "Printer settings invalid for "
+                       << base::UTF16ToUTF8(print_settings->device_name())
+                       << " (destination type " << printer_type << "): "
                        << PrintMsgPrintParamsErrorDetails(*settings->params);
     std::move(callback).Run(nullptr);
     return;
