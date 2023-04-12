@@ -45,39 +45,41 @@ TEST_F(ServerSharedBitmapManagerTest, TestCreate) {
   manager()->ChildAllocatedSharedBitmap(shm.region.Map(), id);
 
   std::unique_ptr<SharedBitmap> large_bitmap;
-  large_bitmap =
-      manager()->GetSharedBitmapFromId(gfx::Size(1024, 1024), RGBA_8888, id);
+  large_bitmap = manager()->GetSharedBitmapFromId(
+      gfx::Size(1024, 1024), SinglePlaneFormat::kRGBA_8888, id);
   EXPECT_FALSE(large_bitmap);
 
   std::unique_ptr<SharedBitmap> very_large_bitmap;
   very_large_bitmap = manager()->GetSharedBitmapFromId(
-      gfx::Size(1, (1 << 30) | 1), RGBA_8888, id);
+      gfx::Size(1, (1 << 30) | 1), SinglePlaneFormat::kRGBA_8888, id);
   EXPECT_FALSE(very_large_bitmap);
 
   std::unique_ptr<SharedBitmap> negative_size_bitmap;
-  negative_size_bitmap =
-      manager()->GetSharedBitmapFromId(gfx::Size(-1, 1024), RGBA_8888, id);
+  negative_size_bitmap = manager()->GetSharedBitmapFromId(
+      gfx::Size(-1, 1024), SinglePlaneFormat::kRGBA_8888, id);
   EXPECT_FALSE(negative_size_bitmap);
 
   SharedBitmapId id2 = SharedBitmap::GenerateId();
   std::unique_ptr<SharedBitmap> invalid_bitmap;
-  invalid_bitmap =
-      manager()->GetSharedBitmapFromId(bitmap_size, RGBA_8888, id2);
+  invalid_bitmap = manager()->GetSharedBitmapFromId(
+      bitmap_size, SinglePlaneFormat::kRGBA_8888, id2);
   EXPECT_FALSE(invalid_bitmap);
 
   std::unique_ptr<SharedBitmap> shared_bitmap;
-  shared_bitmap = manager()->GetSharedBitmapFromId(bitmap_size, RGBA_8888, id);
+  shared_bitmap = manager()->GetSharedBitmapFromId(
+      bitmap_size, SinglePlaneFormat::kRGBA_8888, id);
   ASSERT_TRUE(shared_bitmap);
   EXPECT_TRUE(
       std::equal(span.begin(), span.begin() + 4, shared_bitmap->pixels()));
 
   std::unique_ptr<SharedBitmap> large_bitmap2;
-  large_bitmap2 =
-      manager()->GetSharedBitmapFromId(gfx::Size(1024, 1024), RGBA_8888, id);
+  large_bitmap2 = manager()->GetSharedBitmapFromId(
+      gfx::Size(1024, 1024), SinglePlaneFormat::kRGBA_8888, id);
   EXPECT_FALSE(large_bitmap2);
 
   std::unique_ptr<SharedBitmap> shared_bitmap2;
-  shared_bitmap2 = manager()->GetSharedBitmapFromId(bitmap_size, RGBA_8888, id);
+  shared_bitmap2 = manager()->GetSharedBitmapFromId(
+      bitmap_size, SinglePlaneFormat::kRGBA_8888, id);
   EXPECT_TRUE(shared_bitmap2->pixels() == shared_bitmap->pixels());
   shared_bitmap2.reset();
   EXPECT_TRUE(std::equal(span.begin(), span.end(), shared_bitmap->pixels()));
@@ -110,7 +112,8 @@ TEST_F(ServerSharedBitmapManagerTest, TestLocalCreate) {
   }
 
   std::unique_ptr<SharedBitmap> returned_bitmap =
-      manager()->GetSharedBitmapFromId(bitmap_size, RGBA_8888, id);
+      manager()->GetSharedBitmapFromId(bitmap_size,
+                                       SinglePlaneFormat::kRGBA_8888, id);
 
   // Check the shared bitmap returns the address of pixmap allocated earlier.
   ASSERT_TRUE(returned_bitmap);
@@ -140,7 +143,8 @@ TEST_F(ServerSharedBitmapManagerTest, AddDuplicate) {
   manager()->ChildAllocatedSharedBitmap(shm2.region.Map(), id);
 
   std::unique_ptr<SharedBitmap> shared_bitmap;
-  shared_bitmap = manager()->GetSharedBitmapFromId(bitmap_size, RGBA_8888, id);
+  shared_bitmap = manager()->GetSharedBitmapFromId(
+      bitmap_size, SinglePlaneFormat::kRGBA_8888, id);
   ASSERT_TRUE(shared_bitmap);
   EXPECT_TRUE(std::equal(span.begin(), span.end(), shared_bitmap->pixels()));
   manager()->ChildDeletedSharedBitmap(id);
