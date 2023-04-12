@@ -1526,6 +1526,7 @@ const CustomPreviewers = {
   TypeError: ErrorProperties,
   URIError: ErrorProperties,
   Function: [previewFunction],
+  AsyncFunction: [previewFunction],
 };
 
 /**
