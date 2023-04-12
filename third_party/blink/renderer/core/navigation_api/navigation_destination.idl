@@ -6,8 +6,8 @@
 [
   Exposed=Window
 ] interface NavigationDestination {
-  readonly attribute DOMString? key;
-  readonly attribute DOMString? id;
+  readonly attribute DOMString key;
+  readonly attribute DOMString id;
   readonly attribute USVString url;
   readonly attribute long long index;
   readonly attribute boolean sameDocument;
