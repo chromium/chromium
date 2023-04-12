@@ -234,8 +234,12 @@ void ThumbnailCache::Put(TabId tab_id,
   thumbnail->SetBitmap(bitmap);
 
   RemoveFromReadQueue(tab_id);
-  MakeSpaceForNewItemIfNecessary(tab_id);
-  cache_.Put(tab_id, std::move(thumbnail));
+  if (!base::FeatureList::IsEnabled(kThumbnailCacheRefactor) ||
+      base::Contains(visible_ids_, tab_id)) {
+    MakeSpaceForNewItemIfNecessary(tab_id);
+    cache_.Put(tab_id, std::move(thumbnail));
+    NotifyObserversOfThumbnailAddedToCache(tab_id);
+  }
 
   if (use_approximation_thumbnail_) {
     std::pair<SkBitmap, float> approximation =
@@ -324,7 +328,7 @@ bool ThumbnailCache::CheckAndUpdateThumbnailMetaData(TabId tab_id,
   return true;
 }
 
-void ThumbnailCache::UpdateVisibleIds(const TabIdList& priority,
+void ThumbnailCache::UpdateVisibleIds(const std::vector<TabId>& priority,
                                       TabId primary_tab_id) {
   bool needs_update = false;
   if (primary_tab_id_ != primary_tab_id) {
@@ -885,6 +889,7 @@ void ThumbnailCache::PostCompressionTask(TabId tab_id,
     if (base::android::ApplicationStatusListener::GetState() ==
         base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES) {
       thumbnail->CreateUIResource();
+      NotifyObserversOfThumbnailAddedToCache(tab_id);
     }
   }
   WriteThumbnailIfNecessary(tab_id, std::move(compressed_data), scale,
@@ -1058,19 +1063,30 @@ void ThumbnailCache::PostReadTask(TabId tab_id,
       time_stamp = meta_iter->second.capture_time();
     }
 
-    MakeSpaceForNewItemIfNecessary(tab_id);
-    std::unique_ptr<Thumbnail> thumbnail = Thumbnail::Create(
-        tab_id, time_stamp, scale, ui_resource_provider_, this);
-    thumbnail->SetCompressedBitmap(std::move(compressed_data), content_size);
-    if (kPreferCPUMemory) {
-      thumbnail->CreateUIResource();
-    }
+    if (!base::FeatureList::IsEnabled(kThumbnailCacheRefactor) ||
+        (base::FeatureList::IsEnabled(kThumbnailCacheRefactor) &&
+         base::Contains(visible_ids_, tab_id))) {
+      MakeSpaceForNewItemIfNecessary(tab_id);
+      std::unique_ptr<Thumbnail> thumbnail = Thumbnail::Create(
+          tab_id, time_stamp, scale, ui_resource_provider_, this);
+      thumbnail->SetCompressedBitmap(std::move(compressed_data), content_size);
+      if (kPreferCPUMemory) {
+        thumbnail->CreateUIResource();
+      }
 
-    cache_.Put(tab_id, std::move(thumbnail));
-    NotifyObserversOfThumbnailRead(tab_id);
+      cache_.Put(tab_id, std::move(thumbnail));
+      NotifyObserversOfThumbnailAddedToCache(tab_id);
+      NotifyObserversOfThumbnailRead(tab_id);
+    }
   }
 
   ReadNextThumbnail();
+}
+
+void ThumbnailCache::NotifyObserversOfThumbnailAddedToCache(TabId tab_id) {
+  for (ThumbnailCacheObserver& observer : observers_) {
+    observer.OnThumbnailAddedToCache(tab_id);
+  }
 }
 
 void ThumbnailCache::NotifyObserversOfThumbnailRead(TabId tab_id) {
