@@ -11,11 +11,13 @@ DemoAshRequiresLacrosTest*
 DesksTemplatesClientLacrosTest*
 Dictation*
 ExtensionKeeplistTest*
+NonKioskAcceleratorLacrosTest*
 SelectToSpeak*
 SwitchAccess*
 VpnExtensionObserverBrowserTest*
 WebAppsCrosapiBrowserTest*
 WebAppProviderBridgeBrowserTest*
+WebKioskAcceleratorLacrosTest*
 WebKioskAshRequiresLacrosTest*
 # TODO(b/262789941) Enable more accessibility tests.
 -ChromeVoxBackgroundTest.TabSwitchAndRefreshRecovery
