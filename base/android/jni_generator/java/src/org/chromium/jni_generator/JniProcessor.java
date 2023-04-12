@@ -30,8 +30,10 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -54,8 +56,10 @@ import javax.tools.Diagnostic;
  * containing an interface annotated with NativeMethods.
  *
  */
+@SupportedOptions({JniProcessor.PACKAGE_PREFIX_OPTION})
 @AutoService(Processor.class)
 public class JniProcessor extends AbstractProcessor {
+    static final String PACKAGE_PREFIX_OPTION = "package_prefix";
     private static final Class<NativeMethods> JNI_STATIC_NATIVES_CLASS = NativeMethods.class;
     private static final Class<CheckDiscard> CHECK_DISCARD_CLASS = CheckDiscard.class;
 
@@ -92,6 +96,17 @@ public class JniProcessor extends AbstractProcessor {
         return SourceVersion.latestSupported();
     }
 
+    @Override
+    public synchronized void init(ProcessingEnvironment processingEnv) {
+        super.init(processingEnv);
+        if (processingEnv.getOptions().containsKey(PACKAGE_PREFIX_OPTION)) {
+            mGenJniClassName = ClassName.get(
+                    String.format("%s.%s", processingEnv.getOptions().get(PACKAGE_PREFIX_OPTION),
+                            mGenJniClassName.packageName()),
+                    mGenJniClassName.simpleName());
+        }
+    }
+
     /**
      * Processes annotations that match getSupportedAnnotationTypes()
      * Called each 'round' of annotation processing, must fail gracefully if set is empty.
@@ -116,8 +131,8 @@ public class JniProcessor extends AbstractProcessor {
             if (mNativesBuilder == null) {
                 String genJniPrefix = e.getAnnotation(JNI_STATIC_NATIVES_CLASS).value();
                 if (!genJniPrefix.isEmpty()) {
-                    mGenJniClassName =
-                            ClassName.get("org.chromium.base.natives", genJniPrefix + "_GEN_JNI");
+                    mGenJniClassName = ClassName.get(mGenJniClassName.packageName(),
+                            genJniPrefix + "_" + mGenJniClassName.simpleName());
                 }
 
                 FieldSpec.Builder testingFlagBuilder =
@@ -220,7 +235,12 @@ public class JniProcessor extends AbstractProcessor {
     String getNativeMethodName(String packageName, String className, String oldMethodName) {
         // e.g. org.chromium.base.Foo_Class.bar
         // => org_chromium_base_Foo_1Class_bar()
-        return String.format("%s.%s.%s", packageName, className, oldMethodName)
+        final String packagePrefix =
+                processingEnv.getOptions().getOrDefault(PACKAGE_PREFIX_OPTION, "");
+        return (packagePrefix.length() > 0
+                        ? String.format(
+                                "%s.%s.%s.%s", packagePrefix, packageName, className, oldMethodName)
+                        : String.format("%s.%s.%s", packageName, className, oldMethodName))
                 .replaceAll("_", "_1")
                 .replaceAll("\\.", "_");
     }

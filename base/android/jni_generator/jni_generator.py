@@ -263,6 +263,13 @@ def _GetJNIFirstParam(native, for_declaration):
   return [c_type + ' jcaller']
 
 
+def GetFullyQualifiedClassWithPackagePrefix(fully_qualified_class,
+                                            package_prefix):
+  if package_prefix:
+    return '%s/%s' % (package_prefix.replace(".", "/"), fully_qualified_class)
+  return fully_qualified_class
+
+
 def _GetParamsInDeclaration(native):
   """Returns the params for the forward declaration.
 
@@ -884,12 +891,13 @@ class ProxyHelpers(object):
     return name_prefix + ('N' if short_name else 'GEN_JNI')
 
   @staticmethod
-  def GetPackage(short_name):
-    return 'J' if short_name else 'org/chromium/base/natives'
+  def GetPackage(short_name, package_prefix=None):
+    package = 'J' if short_name else 'org/chromium/base/natives'
+    return GetFullyQualifiedClassWithPackagePrefix(package, package_prefix)
 
   @staticmethod
-  def GetQualifiedClass(short_name, name_prefix=None):
-    return '%s/%s' % (ProxyHelpers.GetPackage(short_name),
+  def GetQualifiedClass(short_name, name_prefix=None, package_prefix=None):
+    return '%s/%s' % (ProxyHelpers.GetPackage(short_name, package_prefix),
                       ProxyHelpers.GetClass(short_name, name_prefix))
 
   @staticmethod
@@ -985,6 +993,9 @@ class JNIFromJavaSource(object):
   """Uses the given java source file to generate the JNI header file."""
 
   def __init__(self, contents, fully_qualified_class, options):
+    if options.package_prefix:
+      fully_qualified_class = GetFullyQualifiedClassWithPackagePrefix(
+          fully_qualified_class, options.package_prefix)
     contents = RemoveComments(contents)
     self.jni_params = JniParams(fully_qualified_class)
     self.jni_params.ExtractImportsAndInnerClasses(contents)
@@ -1024,12 +1035,14 @@ class HeaderFileGeneratorHelper(object):
                module_name,
                fully_qualified_class,
                use_proxy_hash,
+               package_prefix,
                split_name=None,
                enable_jni_multiplexing=False):
     self.class_name = class_name
     self.module_name = module_name
     self.fully_qualified_class = fully_qualified_class
     self.use_proxy_hash = use_proxy_hash
+    self.package_prefix = package_prefix
     self.split_name = split_name
     self.enable_jni_multiplexing = enable_jni_multiplexing
 
@@ -1050,7 +1063,7 @@ class HeaderFileGeneratorHelper(object):
       return 'Java_%s_%s' % (EscapeClassName(
           ProxyHelpers.GetQualifiedClass(
               self.use_proxy_hash or self.enable_jni_multiplexing,
-              self.module_name)), method_name)
+              self.module_name, self.package_prefix)), method_name)
 
     template = Template('Java_${JAVA_NAME}_native${NAME}')
 
@@ -1067,7 +1080,7 @@ class HeaderFileGeneratorHelper(object):
       if isinstance(entry, NativeMethod) and entry.is_proxy:
         short_name = self.use_proxy_hash or self.enable_jni_multiplexing
         ret[ProxyHelpers.GetClass(short_name, self.module_name)] \
-          = ProxyHelpers.GetQualifiedClass(short_name, self.module_name)
+          = ProxyHelpers.GetQualifiedClass(short_name, self.module_name, self.package_prefix)
         continue
       ret[self.class_name] = self.fully_qualified_class
 
@@ -1101,8 +1114,8 @@ const char kClassPath_${JAVA_CLASS}[] = \
       # Since all proxy methods use the same class, defining this in every
       # header file would result in duplicated extern initializations.
       if full_clazz != ProxyHelpers.GetQualifiedClass(
-          self.use_proxy_hash or self.enable_jni_multiplexing,
-          self.module_name):
+          self.use_proxy_hash or self.enable_jni_multiplexing, self.module_name,
+          self.package_prefix):
         ret += [template.substitute(values)]
 
     class_getter = """\
@@ -1134,8 +1147,8 @@ JNI_REGISTRATION_EXPORT std::atomic<jclass> g_${JAVA_CLASS}_clazz(nullptr);
       # Since all proxy methods use the same class, defining this in every
       # header file would result in duplicated extern initializations.
       if full_clazz != ProxyHelpers.GetQualifiedClass(
-          self.use_proxy_hash or self.enable_jni_multiplexing,
-          self.module_name):
+          self.use_proxy_hash or self.enable_jni_multiplexing, self.module_name,
+          self.package_prefix):
         ret += [template.substitute(values)]
 
     return ''.join(ret)
@@ -1160,6 +1173,7 @@ class InlHeaderFileGenerator(object):
         module_name,
         fully_qualified_class,
         self.options.use_proxy_hash,
+        self.options.package_prefix,
         split_name=self.options.split_name,
         enable_jni_multiplexing=self.options.enable_jni_multiplexing)
 
@@ -1534,6 +1548,10 @@ def WrapOutput(output):
 def GenerateJNIHeader(input_file, output_file, options):
   try:
     if os.path.splitext(input_file)[1] == '.class':
+      # The current package-prefix implementation does not support adding
+      # prefix to java compiled classes. The current support is only for
+      # java source files.
+      assert not options.package_prefix
       jni_from_javap = JNIFromJavaP.CreateFromClass(input_file, options)
       content = jni_from_javap.GetContent()
     else:
@@ -1657,6 +1675,11 @@ See SampleForTests.java for more details.
   parser.add_argument(
       '--split_name',
       help='Split name that the Java classes should be loaded from.')
+  parser.add_argument(
+      '--package_prefix',
+      help=
+      'Adds a prefix to the classes fully qualified-name. Effectively changing a class name from'
+      'foo.bar -> prefix.foo.bar')
   # TODO(agrieve): --stamp used only to make incremental builds work.
   #     Remove --stamp at some point after 2022.
   parser.add_argument('--stamp',

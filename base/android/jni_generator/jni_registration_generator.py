@@ -86,7 +86,7 @@ def _Generate(options, java_file_paths):
         for signature, cases in d['SIGNATURE_TO_CASES'].items():
           signature_to_cases[signature].extend(cases)
       combined_dict['FORWARDING_CALLS'] = _AddForwardingCalls(
-          signature_to_cases, module_name)
+          signature_to_cases, module_name, options.package_prefix)
 
   if options.header_path:
     assert len(
@@ -110,14 +110,14 @@ def _Generate(options, java_file_paths):
           # J/N.java
           zip_helpers.add_to_zip_hermetic(
               srcjar,
-              '%s.java' %
-              jni_generator.ProxyHelpers.GetQualifiedClass(True, module_name),
+              '%s.java' % jni_generator.ProxyHelpers.GetQualifiedClass(
+                  True, module_name, options.package_prefix),
               data=CreateProxyJavaFromDict(options, module_name, combined_dict))
           # org/chromium/base/natives/GEN_JNI.java
           zip_helpers.add_to_zip_hermetic(
               srcjar,
-              '%s.java' %
-              jni_generator.ProxyHelpers.GetQualifiedClass(False, module_name),
+              '%s.java' % jni_generator.ProxyHelpers.GetQualifiedClass(
+                  False, module_name, options.package_prefix),
               data=CreateProxyJavaFromDict(options,
                                            module_name,
                                            combined_dict,
@@ -126,8 +126,8 @@ def _Generate(options, java_file_paths):
           # org/chromium/base/natives/GEN_JNI.java
           zip_helpers.add_to_zip_hermetic(
               srcjar,
-              '%s.java' %
-              jni_generator.ProxyHelpers.GetQualifiedClass(False, module_name),
+              '%s.java' % jni_generator.ProxyHelpers.GetQualifiedClass(
+                  False, module_name, options.package_prefix),
               data=CreateProxyJavaFromDict(options, module_name, combined_dict))
 
 
@@ -139,6 +139,10 @@ def _DictForPath(options, path):
 
   fully_qualified_class = jni_generator.ExtractFullyQualifiedJavaClassName(
       path, contents)
+
+  if options.package_prefix:
+    fully_qualified_class = jni_generator.GetFullyQualifiedClassWithPackagePrefix(
+        fully_qualified_class, options.package_prefix)
 
   natives, found_module_name = jni_generator.ProxyHelpers.ExtractStaticProxyNatives(
       fully_qualified_class=fully_qualified_class,
@@ -165,7 +169,7 @@ def _DictForPath(options, path):
   return dict_generator.Generate()
 
 
-def _AddForwardingCalls(signature_to_cases, module_name):
+def _AddForwardingCalls(signature_to_cases, module_name, package_prefix):
   template = string.Template("""
 JNI_GENERATOR_EXPORT ${RETURN} Java_${CLASS_NAME}_${PROXY_SIGNATURE}(
     JNIEnv* env,
@@ -191,8 +195,8 @@ ${CLASS_NAME}_${PROXY_SIGNATURE} was called with an invalid switch number: "\
             jni_generator.JavaDataTypeToC(return_type),
             'CLASS_NAME':
             jni_generator.EscapeClassName(
-                jni_generator.ProxyHelpers.GetQualifiedClass(True,
-                                                             module_name)),
+                jni_generator.ProxyHelpers.GetQualifiedClass(
+                    True, module_name, package_prefix)),
             'PROXY_SIGNATURE':
             jni_generator.EscapeClassName(
                 _GetMultiplexProxyName(return_type, params_list)),
@@ -268,16 +272,17 @@ ${REGISTER_NATIVES}
   sub_dict = {
       'ESCAPED_PROXY_CLASS':
       jni_generator.EscapeClassName(
-          jni_generator.ProxyHelpers.GetQualifiedClass(short_name,
-                                                       module_name)),
+          jni_generator.ProxyHelpers.GetQualifiedClass(short_name, module_name,
+                                                       options.package_prefix)),
       'PROXY_CLASS':
-      jni_generator.ProxyHelpers.GetQualifiedClass(short_name, module_name),
+      jni_generator.ProxyHelpers.GetQualifiedClass(short_name, module_name,
+                                                   options.package_prefix),
       'KMETHODS':
       registration_dict['PROXY_NATIVE_METHOD_ARRAY'],
       'REGISTRATION_NAME':
       jni_generator.GetRegistrationFunctionName(
-          jni_generator.ProxyHelpers.GetQualifiedClass(short_name,
-                                                       module_name)),
+          jni_generator.ProxyHelpers.GetQualifiedClass(short_name, module_name,
+                                                       options.package_prefix)),
   }
 
   if registration_dict['PROXY_NATIVE_METHOD_ARRAY']:
@@ -322,7 +327,8 @@ ${METHODS}
                                          or options.enable_jni_multiplexing)
   class_name = jni_generator.ProxyHelpers.GetClass(is_natives_class,
                                                    module_name)
-  package = jni_generator.ProxyHelpers.GetPackage(is_natives_class)
+  package = jni_generator.ProxyHelpers.GetPackage(is_natives_class,
+                                                  options.package_prefix)
 
   if forwarding or not (options.use_proxy_hash
                         or options.enable_jni_multiplexing):
@@ -429,6 +435,7 @@ class DictionaryGenerator(object):
         self.module_name,
         fully_qualified_class,
         options.use_proxy_hash,
+        options.package_prefix,
         enable_jni_multiplexing=options.enable_jni_multiplexing)
     self.registration_dict = None
 
@@ -549,7 +556,7 @@ ${KMETHODS}
         return_type, params_list = native.return_and_signature
         class_name = jni_generator.EscapeClassName(
             jni_generator.ProxyHelpers.GetQualifiedClass(
-                True, self.module_name))
+                True, self.module_name, self.options.package_prefix))
         proxy_signature = jni_generator.EscapeClassName(
             _GetMultiplexProxyName(return_type, params_list))
 
@@ -748,7 +755,8 @@ def _MakeForwardingProxy(options, module_name, proxy_native):
   params_with_types = ', '.join(
       '%s %s' % (p.datatype, p.name) for p in proxy_native.params)
   param_names = ', '.join(p.name for p in proxy_native.params)
-  proxy_class = jni_generator.ProxyHelpers.GetQualifiedClass(True, module_name)
+  proxy_class = jni_generator.ProxyHelpers.GetQualifiedClass(
+      True, module_name, options.package_prefix)
 
   if options.enable_jni_multiplexing:
     if not param_names:
@@ -877,6 +885,11 @@ def main(argv):
   arg_parser.add_argument('--include-test-only',
                           action='store_true',
                           help='Whether to maintain ForTesting JNI methods.')
+  arg_parser.add_argument(
+      '--package_prefix',
+      help=
+      'Adds a prefix to the classes fully qualified-name. Effectively changing a class name from'
+      'foo.bar -> prefix.foo.bar')
   args = arg_parser.parse_args(build_utils.ExpandFileArgs(argv[1:]))
 
   if not args.enable_proxy_mocks and args.require_mocks:

@@ -63,6 +63,7 @@ class JniGeneratorOptions(object):
     self.unchecked_exceptions = False
     self.split_name = None
     self.include_test_only = True
+    self.package_prefix = None
 
 
 class JniRegistrationGeneratorOptions(object):
@@ -79,6 +80,7 @@ class JniRegistrationGeneratorOptions(object):
     self.include_test_only = False
     self.header_path = None
     self.module_name = ''
+    self.package_prefix = None
 
 
 class BaseTest(unittest.TestCase):
@@ -115,7 +117,7 @@ class BaseTest(unittest.TestCase):
           signature_to_cases[signature].extend(cases)
       combined_dict[
           'FORWARDING_CALLS'] = jni_registration_generator._AddForwardingCalls(
-              signature_to_cases, '')
+              signature_to_cases, '', '')
 
     return combined_dict
 
@@ -1674,6 +1676,63 @@ class ProxyTestGenerator(BaseTest):
             ptr_type='long')
     ]
     self.AssertListEquals(golden_natives, _RemoveHashedNames(natives))
+
+
+@unittest.skipIf(os.name == 'nt', 'Not intended to work on Windows')
+class PackagePrefixTestGenerator(BaseTest):
+  def testJniSelfDocumentingExampleWithPackagePrefix(self):
+    options = JniGeneratorOptions()
+    options.package_prefix = 'this.is.a.package.prefix'
+    generated_text = self._CreateJniHeaderFromFile(
+        os.path.join(_JAVA_SRC_DIR, 'SampleForTests.java'),
+        'org/chromium/example/jni_generator/SampleForTests', options)
+    self.AssertGoldenTextEquals(
+        generated_text,
+        golden_file='SampleForTestsWithPackagePrefix_jni.golden')
+
+  def testProxyPackagePrefixWithManualRegistration(self):
+    input_java_files = ['SampleForAnnotationProcessor.java']
+    options = JniRegistrationGeneratorOptions()
+    options.package_prefix = 'this.is.a.package.prefix'
+    options.manual_jni_registration = True
+    name_to_goldens = {
+        'this/is/a/package/prefix/org/chromium/base/natives/GEN_JNI.java':
+        'testProxyPackagePrefixWithManualRegistration.2.golden',
+    }
+    self._TestEndToEndRegistration(
+        input_java_files, options, name_to_goldens,
+        'testProxyPackagePrefixWithManualRegistrationHeader.golden')
+
+  def testProxyPackagePrefixWithProxyHash(self):
+    input_java_files = ['SampleForAnnotationProcessor.java']
+    options = JniRegistrationGeneratorOptions()
+    options.package_prefix = 'this.is.a.package.prefix'
+    options.use_proxy_hash = True
+    name_to_goldens = {
+        'this/is/a/package/prefix/org/chromium/base/natives/GEN_JNI.java':
+        'testProxyPackagePrefixWithProxyHash.2.golden',
+        'this/is/a/package/prefix/J/N.java':
+        'testProxyPackagePrefixWithProxyHash.golden',
+    }
+    self._TestEndToEndRegistration(
+        input_java_files, options, name_to_goldens,
+        'testProxyPackagePrefixWithProxyHashHeader.golden')
+
+  def testProxyPackagePrefixWithManualRegistrationWithProxyHash(self):
+    input_java_files = ['SampleForAnnotationProcessor.java']
+    options = JniRegistrationGeneratorOptions()
+    options.package_prefix = 'this.is.a.package.prefix'
+    options.manual_jni_registration = True
+    options.use_proxy_hash = True
+    name_to_goldens = {
+        'this/is/a/package/prefix/org/chromium/base/natives/GEN_JNI.java':
+        'testProxyPackagePrefixWithManualRegistrationProxyHash.2.golden',
+        'this/is/a/package/prefix/J/N.java':
+        'testProxyPackagePrefixWithManualRegistrationProxyHash.golden',
+    }
+    self._TestEndToEndRegistration(
+        input_java_files, options, name_to_goldens,
+        'testProxyPackagePrefixWithManualRegistrationProxyHashHeader.golden')
 
 
 @unittest.skipIf(os.name == 'nt', 'Not intended to work on Windows')
