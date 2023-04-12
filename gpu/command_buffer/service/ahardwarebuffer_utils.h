@@ -30,21 +30,6 @@ namespace gpu {
 class SharedContextState;
 class VulkanImage;
 
-// TODO(vikassoni): In future we will need to expose the set of formats and
-// constraints (e.g. max size) to the clients somehow that are available for
-// certain combinations of SharedImageUsage flags (e.g. when Vulkan is on,
-// SHARED_IMAGE_USAGE_GLES2 + SHARED_IMAGE_USAGE_DISPLAY_READ implies AHB, so
-// those restrictions apply, but that's decided on the service side). For now
-// getting supported format is a static mechanism like this. We probably need
-// something like gpu::Capabilities.texture_target_exception_list.
-
-// Returns whether the format is supported by AHardwareBuffer.
-bool GPU_GLES2_EXPORT
-AHardwareBufferSupportedFormat(viz::ResourceFormat format);
-
-// Returns the corresponding AHardwareBuffer format.
-unsigned int GPU_GLES2_EXPORT AHardwareBufferFormat(viz::ResourceFormat format);
-
 // Create a vulkan image from the AHB handle.
 std::unique_ptr<VulkanImage> CreateVkImageFromAhbHandle(
     base::android::ScopedHardwareBufferHandle ahb_handle,

@@ -8,7 +8,6 @@
 
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/check.h"
-#include "base/notreached.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -21,41 +20,6 @@
 #include "ui/gl/scoped_binders.h"
 
 namespace gpu {
-
-bool AHardwareBufferSupportedFormat(viz::ResourceFormat format) {
-  switch (format) {
-    case viz::RGBA_8888:
-    case viz::RGB_565:
-    case viz::BGR_565:
-    case viz::RGBA_F16:
-    case viz::RGBX_8888:
-    case viz::RGBA_1010102:
-      return true;
-    default:
-      return false;
-  }
-}
-
-unsigned int AHardwareBufferFormat(viz::ResourceFormat format) {
-  DCHECK(AHardwareBufferSupportedFormat(format));
-  switch (format) {
-    case viz::RGBA_8888:
-      return AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM;
-    case viz::RGB_565:
-      return AHARDWAREBUFFER_FORMAT_R5G6B5_UNORM;
-    case viz::BGR_565:
-      return AHARDWAREBUFFER_FORMAT_R5G6B5_UNORM;
-    case viz::RGBA_F16:
-      return AHARDWAREBUFFER_FORMAT_R16G16B16A16_FLOAT;
-    case viz::RGBX_8888:
-      return AHARDWAREBUFFER_FORMAT_R8G8B8X8_UNORM;
-    case viz::RGBA_1010102:
-      return AHARDWAREBUFFER_FORMAT_R10G10B10A2_UNORM;
-    default:
-      NOTREACHED();
-      return AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM;
-  }
-}
 
 std::unique_ptr<VulkanImage> CreateVkImageFromAhbHandle(
     base::android::ScopedHardwareBufferHandle ahb_handle,
