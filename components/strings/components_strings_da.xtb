@@ -1935,7 +1935,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5689199277474810259">Eksportér i JSON</translation>
 <translation id="5689516760719285838">Placering</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates-værdien er ikke relevant og anvendes ikke, medmindre politikken DnsOverHttpsMode er angivet som enten <ph name="SECURE_DNS_MODE_AUTOMATIC" /> eller <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
-<translation id="5695542892312572833">Vil du bruge Windows Hello til at bekræfte og gennemføre dit køb?</translation>
+<translation id="5695542892312572833">Vil du bruge Windows Hello til at verificere og gennemføre dit køb?</translation>
 <translation id="5701381305118179107">Centrér</translation>
 <translation id="570530837424789914">Administrer...</translation>
 <translation id="5706906618852913030">Vil du gemme adressen på din konto?</translation>
@@ -2262,7 +2262,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6508722015517270189">Genstart Chrome</translation>
 <translation id="6513005815064132016">Websitet kan anmode om tilladelse til at registrere din kameraposition</translation>
 <translation id="6517596291481585650">Advarsel! Denne politik blev ikke flettet som angivet i politikken, da den ikke er en liste.</translation>
-<translation id="6518133107902771759">Bekræft</translation>
+<translation id="6518133107902771759">Verificer</translation>
 <translation id="6521745193039995384">Ikke aktiv</translation>
 <translation id="6529173248185917884">Syvende papirrulle</translation>
 <translation id="6529602333819889595">&amp;Annuller fortryd slet</translation>
@@ -2536,7 +2536,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> overholder ikke sikkerhedsstandarderne.</translation>
 <translation id="7210993021468939304">Linux-aktivitet i containeren. Kan også installere og køre Linux-apps i containeren.</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /> om dette problem.</translation>
-<translation id="7217745192097460130">Vil du bruge Touch ID til at bekræfte og gennemføre dit køb?</translation>
+<translation id="7217745192097460130">Vil du bruge Touch ID til at verificere og gennemføre dit køb?</translation>
 <translation id="7219179957768738017">Forbindelsen bruger <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Behandler</translation>
 <translation id="7221855153210829124">Vise notifikationer</translation>

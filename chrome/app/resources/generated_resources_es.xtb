@@ -1645,7 +1645,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2365507699358342471">Este sitio web puede ver el texto y las imágenes que se hayan copiado en el portapapeles.</translation>
 <translation id="2367972762794486313">Mostrar aplicaciones</translation>
 <translation id="2369058545741334020">Abrir en modo Lectura</translation>
-<translation id="236939127352773362">Cuando algún dispositivo cercano esté compartiendo archivos</translation>
+<translation id="236939127352773362">Cuando algún dispositivo cercano esté compartiendo contenido</translation>
 <translation id="2371076942591664043">Abrir al &amp;finalizar</translation>
 <translation id="2373666622366160481">Ajustar al tamaño del papel</translation>
 <translation id="2375406435414127095">Conecta tu teléfono</translation>
@@ -3852,7 +3852,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="435527878592612277">Selecciona una foto</translation>
 <translation id="4356100841225547054">Desactivar volumen</translation>
 <translation id="4358302248024731679">Para diagnosticar mejor los problemas de Bluetooth, los Googlers pueden incluir registros de Bluetooth adicionales en sus comentarios. Si seleccionas esta opción, tu informe contendrá registros btsnoop y HCI de la sesión actual modificados para retirar tanta información personal identificable como sea posible. Solo los administradores del grupo de productos de ChromeOS de Listnr podrán acceder a estos registros, que se eliminarán definitivamente después de 90 días.</translation>
-<translation id="4358643842961018282">El dispositivo está actualizado</translation>
+<translation id="4358643842961018282">Tu dispositivo está actualizado</translation>
 <translation id="4359408040881008151">Instalada debido a las extensiones dependientes</translation>
 <translation id="4359717112757026264">Paisaje urbano</translation>
 <translation id="4361142739114356624">Falta la clave privada de este certificado de cliente o no es válida</translation>
@@ -4336,7 +4336,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4785914069240823137">Cancelar recorte</translation>
 <translation id="4788092183367008521">Revisa tu conexión de red y vuelve a intentarlo.</translation>
 <translation id="4789348252524569426">No se pueden instalar los archivos de voz. El dispositivo debe actualizarse. Reinícialo y vuelve a intentarlo.</translation>
-<translation id="4789550509729954245">Mostrar notificación cuando algún dispositivo cercano esté compartiendo archivos</translation>
+<translation id="4789550509729954245">Mostrar notificación cuando algún dispositivo cercano esté compartiendo contenido</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Habilitar aceleración del TrackPoint</translation>
 <translation id="4792711294155034829">&amp;Notificar un error...</translation>
@@ -6364,7 +6364,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6630117778953264026">Mayor seguridad</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> desea acceder de forma permanente a un certificado parar autenticarse en tu nombre.</translation>
 <translation id="6633126565486451781">Este archivo podría haber sido leído o editado, ya que este sitio no utiliza una conexión segura.</translation>
-<translation id="6635362468090274700">Nadie puede compartir nada contigo hasta que tu dispositivo sea visible.<ph name="BR" /><ph name="BR" />Para hacerlo visible temporalmente, abre el área de estado y activa la visibilidad Nearby.</translation>
+<translation id="6635362468090274700">Nadie puede compartir contenido contigo hasta que tu dispositivo sea visible.<ph name="BR" /><ph name="BR" />Para hacerlo visible temporalmente, abre el área de estado y activa la visibilidad de Nearby.</translation>
 <translation id="6635674640674343739">No se puede establecer la conexión de red. Revisa tu conexión de red e inténtalo de nuevo.</translation>
 <translation id="6635944431854494329">El propietario puede controlar esta función desde Configuración &gt; Configuración avanzada &gt; Enviar automáticamente los datos de uso y diagnóstico a Google.</translation>
 <translation id="6636623428211296678">Explora más ajustes a continuación o termina ahora</translation>
