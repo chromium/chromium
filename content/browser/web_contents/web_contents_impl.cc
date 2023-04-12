@@ -2886,16 +2886,16 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
 
   if (GetController().GetVisibleEntry() &&
       GetController().GetVisibleEntry()->GetIsOverridingUserAgent()) {
-    bool is_request_desktop_site = false;
 #if BUILDFLAG(IS_ANDROID)
     // Only ignore viewport meta tag when Request Desktop Site is used, but not
     // in other situations where embedder changes to arbitrary mobile UA string.
-    is_request_desktop_site =
+    bool is_request_desktop_site =
         renderer_preferences_.user_agent_override.ua_metadata_override &&
         !renderer_preferences_.user_agent_override.ua_metadata_override->mobile;
-#endif
-
     prefs.viewport_meta_enabled = !is_request_desktop_site;
+#else
+    prefs.viewport_meta_enabled = false;
+#endif
   }
 
   prefs.spatial_navigation_enabled =
