@@ -19,6 +19,7 @@
 #include "ui/events/event.h"
 #include "ui/ozone/common/bitmap_cursor_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor.h"
+#include "ui/ozone/platform/wayland/host/wayland_cursor_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
@@ -30,6 +31,9 @@
 #include "ui/platform_window/platform_window_init_properties.h"
 
 using ::testing::_;
+using ::testing::AllOf;
+using ::testing::Ge;
+using ::testing::Le;
 using ::testing::Mock;
 using ::testing::Ne;
 using ::testing::SaveArg;
@@ -479,31 +483,45 @@ TEST_F(WaylandPointerTest, SetBitmap) {
 // Tests that bitmap is set on pointer focus and the pointer surface respects
 // provided scale of the surface image.
 TEST_F(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
-  for (int32_t scale = 1; scale < 5; scale++) {
-    gfx::Size size = {10 * scale, 10 * scale};
+  for (float scale : {1.0, 1.2, 1.5, 1.75, 2.0, 2.5, 3.0}) {
+    gfx::Size size = {static_cast<int>(10 * scale),
+                      static_cast<int>(10 * scale)};
     SkBitmap dummy_cursor;
     SkImageInfo info = SkImageInfo::Make(size.width(), size.height(),
                                          SkColorType::kBGRA_8888_SkColorType,
                                          SkAlphaType::kPremul_SkAlphaType);
     dummy_cursor.allocPixels(info, size.width() * 4);
 
+    const gfx::Point hotspot_px = {5, 8};
+    const gfx::Point hotspot_dip =
+        gfx::ScaleToRoundedPoint(hotspot_px, 1 / scale);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
     BitmapCursorFactory cursor_factory;
+#else
+    WaylandCursorFactory cursor_factory(connection_.get());
+#endif
     cursor_factory.SetDeviceScaleFactor(scale);
-    auto cursor = cursor_factory.CreateImageCursor(
-        mojom::CursorType::kCustom, dummy_cursor, gfx::Point(5, 8));
+    auto cursor = cursor_factory.CreateImageCursor(mojom::CursorType::kCustom,
+                                                   dummy_cursor, hotspot_px);
 
     SendEnter(10, 10);
 
     // Set a cursor.
     wl_resource* surface_resource = nullptr;
 
-    PostToServerAndWait(
-        [&surface_resource](wl::TestWaylandServerThread* server) {
-          auto* const pointer = server->seat()->pointer();
+    PostToServerAndWait([&surface_resource,
+                         hotspot_dip](wl::TestWaylandServerThread* server) {
+      auto* const pointer = server->seat()->pointer();
 
-          EXPECT_CALL(*pointer, SetCursor(Ne(nullptr), 5, 8))
-              .WillOnce(SaveArg<0>(&surface_resource));
-        });
+      // Allow up to 1 DIP of precision loss.
+      EXPECT_CALL(
+          *pointer,
+          SetCursor(Ne(nullptr),
+                    AllOf(Ge(hotspot_dip.x() - 1), Le(hotspot_dip.x() + 1)),
+                    AllOf(Ge(hotspot_dip.y() - 1), Le(hotspot_dip.y() + 1))))
+          .WillOnce(SaveArg<0>(&surface_resource));
+    });
 
     window_->SetCursor(cursor);
     connection_->Flush();
@@ -518,17 +536,25 @@ TEST_F(WaylandPointerTest, SetBitmapAndScaleOnPointerFocus) {
 
     ASSERT_TRUE(surface_resource);
 
-    PostToServerAndWait(
-        [surface_resource, scale](wl::TestWaylandServerThread* server) {
-          auto* const pointer = server->seat()->pointer();
+    PostToServerAndWait([surface_resource, scale,
+                         hotspot_dip](wl::TestWaylandServerThread* server) {
+      auto* const pointer = server->seat()->pointer();
 
-          auto* mock_pointer_surface =
-              wl::MockSurface::FromResource(surface_resource);
-          EXPECT_EQ(mock_pointer_surface->buffer_scale(), scale);
+      auto* mock_pointer_surface =
+          wl::MockSurface::FromResource(surface_resource);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      EXPECT_EQ(mock_pointer_surface->buffer_scale(), std::ceil(scale));
+#else
+      EXPECT_EQ(mock_pointer_surface->buffer_scale(), std::ceil(scale - 0.2f));
+#endif
 
-          // Update the focus.
-          EXPECT_CALL(*pointer, SetCursor(Ne(nullptr), 5, 8));
-        });
+      // Update the focus.
+      EXPECT_CALL(
+          *pointer,
+          SetCursor(Ne(nullptr),
+                    AllOf(Ge(hotspot_dip.x() - 1), Le(hotspot_dip.x() + 1)),
+                    AllOf(Ge(hotspot_dip.y() - 1), Le(hotspot_dip.y() + 1))));
+    });
 
     SendEnter(50, 75);
 

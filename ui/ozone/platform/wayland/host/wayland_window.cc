@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -961,6 +962,11 @@ bool WaylandWindow::CommitOverlays(
 
 void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
   DCHECK(cursor);
+  CHECK(connection_->surface_submission_in_pixel_coordinates() ||
+        cursor->type() == CursorType::kNone ||
+        base::IsValueInRangeForNumericType<int>(
+            cursor->cursor_image_scale_factor()));
+
   absl::optional<int32_t> shape =
       WaylandZcrCursorShapes::ShapeFromType(cursor->type());
 
@@ -984,8 +990,8 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
     connection_->zcr_cursor_shapes()->SetCursorShape(shape.value());
   } else {  // Use client-side bitmap cursors as fallback.
     // Translate physical pixels to DIPs.
-    gfx::Point hotspot_in_dips =
-        gfx::ScaleToRoundedPoint(cursor->hotspot(), 1.0f / ui_scale_);
+    gfx::Point hotspot_in_dips = gfx::ScaleToRoundedPoint(
+        cursor->hotspot(), 1.0f / cursor->cursor_image_scale_factor());
     connection_->SetCursorBitmap(
         cursor->bitmaps(), hotspot_in_dips,
         std::ceil(cursor->cursor_image_scale_factor()));

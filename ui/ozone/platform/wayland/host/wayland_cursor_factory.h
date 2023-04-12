@@ -41,6 +41,15 @@ class WaylandCursorFactory : public BitmapCursorFactory,
   // CursorFactory:
   scoped_refptr<PlatformCursor> GetDefaultCursor(
       mojom::CursorType type) override;
+  scoped_refptr<PlatformCursor> CreateImageCursor(
+      mojom::CursorType type,
+      const SkBitmap& bitmap,
+      const gfx::Point& hotspot) override;
+  scoped_refptr<PlatformCursor> CreateAnimatedCursor(
+      mojom::CursorType type,
+      const std::vector<SkBitmap>& bitmaps,
+      const gfx::Point& hotspot,
+      base::TimeDelta frame_delay) override;
   void SetDeviceScaleFactor(float scale) override;
 
  protected:
@@ -77,6 +86,9 @@ class WaylandCursorFactory : public BitmapCursorFactory,
   // Loads the theme with the current size and scale.  Does nothing if data
   // already exists.
   void MaybeLoadThemeCursors();
+  // Returns the cache key in theme_cache_ to be used for the current size
+  // and scale.
+  int GetCacheKey() const;
   void OnThemeLoaded(const std::string& loaded_theme_name,
                      int loaded_theme_size,
                      wl_cursor_theme* loaded_theme);
