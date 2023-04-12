@@ -39,6 +39,8 @@ using blink::mojom::SubAppsServiceAddParametersPtr;
 using blink::mojom::SubAppsServiceListResultEntry;
 using blink::mojom::SubAppsServiceListResultEntryPtr;
 using blink::mojom::SubAppsServiceListResultPtr;
+using blink::mojom::SubAppsServiceRemoveResult;
+using blink::mojom::SubAppsServiceRemoveResultPtr;
 using blink::mojom::SubAppsServiceResultCode;
 
 namespace web_app {
@@ -61,6 +63,9 @@ constexpr const char kSubAppPathInvalid[] = "/invalid/sub/app/path.html";
 constexpr const char kSubAppIdInvalid[] = "/invalid-sub-app-id";
 
 }  // namespace
+
+using RemoveResultsMojo =
+    std::vector<blink::mojom::SubAppsServiceRemoveResultPtr>;
 
 // There's one simple end-to-end test that actually calls the JS API interface,
 // the rest test the mojo interface (since the first layer listening to the API
@@ -173,12 +178,31 @@ class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
   }
 
   // Calls the Remove() method on the mojo interface which is async, and waits
-  // for it to finish. Argument should be a path, not a full URL.
-  SubAppsServiceResultCode CallRemove(const std::string& unhashed_app_id_path) {
-    base::test::TestFuture<SubAppsServiceResultCode> future;
-    remote_->Remove(unhashed_app_id_path, future.GetCallback());
+  // for it to finish.
+  RemoveResultsMojo CallRemove(
+      const std::vector<std::string>& unhashed_app_id_paths) {
+    base::test::TestFuture<RemoveResultsMojo> future;
+    remote_->Remove(unhashed_app_id_paths, future.GetCallback());
     EXPECT_TRUE(future.Wait()) << "Remove did not trigger the callback.";
-    return future.Get();
+    return future.Take();
+  }
+
+  RemoveResultsMojo SingleRemoveResultMojo(
+      UnhashedAppId unhashed_app_id,
+      SubAppsServiceResultCode result_code) {
+    std::vector<blink::mojom::SubAppsServiceRemoveResultPtr> result;
+    result.emplace_back(
+        SubAppsServiceRemoveResult::New(unhashed_app_id, result_code));
+    return result;
+  }
+
+  std::vector<std::pair<UnhashedAppId, SubAppsServiceResultCode>>
+  RemoveResultsToList(RemoveResultsMojo results) {
+    std::vector<std::pair<UnhashedAppId, SubAppsServiceResultCode>> list;
+    for (auto& result : results) {
+      list.emplace_back(result->unhashed_app_id_path, result->result_code);
+    }
+    return list;
   }
 
  protected:
@@ -643,9 +667,63 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveOneApp) {
   EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
   EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(app_id));
 
-  EXPECT_EQ(SubAppsServiceResultCode::kSuccess, CallRemove(kSubAppPath));
+  EXPECT_EQ(
+      SingleRemoveResultMojo(kSubAppPath, SubAppsServiceResultCode::kSuccess),
+      CallRemove({kSubAppPath}));
   EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
   EXPECT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
+}
+
+// Remove works with a list of apps.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveListOfApps) {
+  NavigateToParentApp();
+  InstallParentApp();
+  BindRemote();
+
+  ExpectCallAdd({{kSubAppPath, SubAppsServiceResultCode::kSuccess},
+                 {kSubAppPath2, SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath, kSubAppPath}, {kSubAppPath2, kSubAppPath2}});
+
+  EXPECT_EQ(2ul, GetAllSubAppIds(parent_app_id_).size());
+
+  std::vector<std::pair<UnhashedAppId, SubAppsServiceResultCode>>
+      expected_result;
+  expected_result.emplace_back(kSubAppPath, SubAppsServiceResultCode::kSuccess);
+  expected_result.emplace_back(kSubAppPath2,
+                               SubAppsServiceResultCode::kSuccess);
+  expected_result.emplace_back(kSubAppPath3,
+                               SubAppsServiceResultCode::kFailure);
+
+  EXPECT_THAT(RemoveResultsToList(
+                  CallRemove({kSubAppPath, kSubAppPath2, kSubAppPath3})),
+              testing::UnorderedElementsAreArray(expected_result));
+
+  EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
+
+  UnhashedAppId unhashed_sub_app_id_1 = GetURLFromPath(kSubAppPath).spec();
+  UnhashedAppId unhashed_sub_app_id_2 = GetURLFromPath(kSubAppPath2).spec();
+  EXPECT_FALSE(
+      provider().registrar_unsafe().IsInstalled(unhashed_sub_app_id_1));
+  EXPECT_FALSE(
+      provider().registrar_unsafe().IsInstalled(unhashed_sub_app_id_2));
+}
+
+// Calling remove with an empty list doesn't crash.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveEmptyList) {
+  InstallParentApp();
+  NavigateToParentApp();
+  BindRemote();
+
+  AppId app_id = GenerateAppIdFromPath(kSubAppPath);
+
+  ExpectCallAdd({{kSubAppPath, SubAppsServiceResultCode::kSuccess}},
+                {{kSubAppPath, kSubAppPath}});
+  EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(app_id));
+
+  CallRemove({});
+  EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
+  EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(app_id));
 }
 
 // Remove fails for a regular installed app.
@@ -657,7 +735,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveFailRegularApp) {
   NavigateToParentApp();
   BindRemote();
 
-  EXPECT_EQ(SubAppsServiceResultCode::kFailure, CallRemove(kSubAppPath));
+  EXPECT_EQ(
+      SingleRemoveResultMojo(kSubAppPath, SubAppsServiceResultCode::kFailure),
+      CallRemove({kSubAppPath}));
 }
 
 // Remove fails for a sub-app with a different parent_app_id.
@@ -676,7 +756,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveFailWrongParent) {
   remote_.reset();
   BindRemote();
 
-  EXPECT_EQ(SubAppsServiceResultCode::kFailure, CallRemove(kSubAppPath2));
+  EXPECT_EQ(
+      SingleRemoveResultMojo(kSubAppPath2, SubAppsServiceResultCode::kFailure),
+      CallRemove({kSubAppPath2}));
 }
 
 // Remove call returns failure if the calling app isn't installed.
@@ -685,7 +767,9 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   NavigateToParentApp();
   BindRemote();
 
-  EXPECT_EQ(SubAppsServiceResultCode::kFailure, CallRemove(kSubAppPath));
+  EXPECT_EQ(
+      SingleRemoveResultMojo(kSubAppPath, SubAppsServiceResultCode::kFailure),
+      CallRemove({kSubAppPath}));
 }
 
 // Remove call closes the mojo connection if the argument is wrong origin to the
@@ -699,11 +783,11 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveFailWrongOrigin) {
   remote_.set_disconnect_handler(disconnect_handler_future.GetCallback());
   // This call should never succeed and the disconnect handler should be called
   // instead.
-  remote_->Remove(
-      kDifferentDomain,
-      base::BindLambdaForTesting([](SubAppsServiceResultCode result) {
-        ADD_FAILURE() << "Callback unexpectedly invoked.";
-      }));
+  remote_->Remove({kDifferentDomain},
+                  base::BindLambdaForTesting(
+                      [](std::vector<SubAppsServiceRemoveResultPtr> result) {
+                        ADD_FAILURE() << "Callback unexpectedly invoked.";
+                      }));
   ASSERT_TRUE(disconnect_handler_future.Wait())
       << "Disconnect handler not invoked.";
 }

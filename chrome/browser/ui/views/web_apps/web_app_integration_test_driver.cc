@@ -1279,11 +1279,12 @@ void WebAppIntegrationTestDriver::RemoveSubApp(Site parentapp, Site subapp) {
   const base::Value& remove_result =
       content::EvalJs(
           web_contents,
-          content::JsReplace("navigator.subApps.remove($1)", sub_url))
+          content::JsReplace("navigator.subApps.remove([$1])", sub_url))
           .value;
 
-  // remove() returns void.
-  EXPECT_TRUE(remove_result.is_none());
+  base::Value::Dict expected_output;
+  expected_output.Set(sub_url, "success");
+  EXPECT_EQ(expected_output, remove_result);
 
   AfterStateChangeAction();
 }

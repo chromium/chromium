@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/types/expected.h"
@@ -36,6 +37,8 @@ using blink::mojom::SubAppsServiceAddResultPtr;
 using blink::mojom::SubAppsServiceListResult;
 using blink::mojom::SubAppsServiceListResultEntry;
 using blink::mojom::SubAppsServiceListResultEntryPtr;
+using blink::mojom::SubAppsServiceRemoveResult;
+using blink::mojom::SubAppsServiceRemoveResultPtr;
 using blink::mojom::SubAppsServiceResultCode;
 
 namespace web_app {
@@ -110,14 +113,6 @@ const AppId* GetAppId(content::RenderFrameHost& render_frame_host) {
 void OnAdd(SubAppsServiceImpl::AddCallback result_callback,
            SubAppsServiceImpl::AddResults results) {
   std::move(result_callback).Run(AddResultsToMojo(results));
-}
-
-void OnRemove(SubAppsServiceImpl::RemoveCallback result_callback,
-              webapps::UninstallResultCode code) {
-  std::move(result_callback)
-      .Run(code == webapps::UninstallResultCode::kSuccess
-               ? SubAppsServiceResultCode::kSuccess
-               : SubAppsServiceResultCode::kFailure);
 }
 
 }  // namespace
@@ -231,14 +226,15 @@ void SubAppsServiceImpl::List(ListCallback result_callback) {
                                          std::move(sub_apps_list)));
 }
 
-void SubAppsServiceImpl::Remove(const UnhashedAppId& unhashed_app_id_path,
-                                RemoveCallback result_callback) {
+void SubAppsServiceImpl::Remove(
+    const std::vector<std::string>& unhashed_app_id_paths,
+    RemoveCallback result_callback) {
   WebAppProvider* provider = GetWebAppProvider(render_frame_host());
   if (!provider->on_registry_ready().is_signaled()) {
     provider->on_registry_ready().Post(
         FROM_HERE,
         base::BindOnce(&SubAppsServiceImpl::Remove,
-                       weak_ptr_factory_.GetWeakPtr(), unhashed_app_id_path,
+                       weak_ptr_factory_.GetWeakPtr(), unhashed_app_id_paths,
                        std::move(result_callback)));
     return;
   }
@@ -246,32 +242,66 @@ void SubAppsServiceImpl::Remove(const UnhashedAppId& unhashed_app_id_path,
   // Verify that the calling app is installed itself (cf. `Add`).
   const AppId* calling_app_id = GetAppId(render_frame_host());
   if (!calling_app_id) {
-    return std::move(result_callback).Run(SubAppsServiceResultCode::kFailure);
+    std::vector<SubAppsServiceRemoveResultPtr> result;
+    for (const std::string& unhashed_app_id_path : unhashed_app_id_paths) {
+      result.emplace_back(SubAppsServiceRemoveResult::New(
+          unhashed_app_id_path, SubAppsServiceResultCode::kFailure));
+    }
+
+    return std::move(result_callback).Run(std::move(result));
   }
 
+  auto remove_barrier_callback =
+      base::BarrierCallback<SubAppsServiceRemoveResultPtr>(
+          unhashed_app_id_paths.size(), std::move(result_callback));
+
+  for (const std::string& unhashed_app_id_path : unhashed_app_id_paths) {
+    RemoveSubApp(unhashed_app_id_path, remove_barrier_callback, calling_app_id);
+  }
+}
+
+void SubAppsServiceImpl::RemoveSubApp(
+    const std::string& unhashed_app_id_path,
+    base::OnceCallback<void(SubAppsServiceRemoveResultPtr)> callback,
+    const AppId* calling_app_id) {
   // Convert `unhashed_app_id_path` from path form to full URL form.
-  base::expected<std::string, std::string> unhashed_app_id = ConvertPathToUrl(
-      unhashed_app_id_path, render_frame_host().GetLastCommittedOrigin());
-  if (!unhashed_app_id.has_value()) {
+  base::expected<std::string, std::string> unhashed_app_id_with_error =
+      ConvertPathToUrl(unhashed_app_id_path,
+                       render_frame_host().GetLastCommittedOrigin());
+  if (!unhashed_app_id_with_error.has_value()) {
     // Compromised renderer, bail immediately (this call deletes *this).
-    return ReportBadMessageAndDeleteThis(unhashed_app_id.error());
+    return ReportBadMessageAndDeleteThis(unhashed_app_id_with_error.error());
   }
 
-  AppId sub_app_id = GenerateAppIdFromUnhashed(unhashed_app_id.value());
+  const UnhashedAppId unhashed_app_id = unhashed_app_id_with_error.value();
+  AppId sub_app_id = GenerateAppIdFromUnhashed(unhashed_app_id);
+  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
   const WebApp* app = provider->registrar_unsafe().GetAppById(sub_app_id);
 
-  // Verify that the app we're trying to remove exists, that its parent_app is
-  // the one doing the current call, and that the app was locally installed.
+  // Verify that the app we're trying to remove exists, is installed and that
+  // its parent_app is the one doing the current call.
   if (!app || !app->parent_app_id() ||
       *calling_app_id != *app->parent_app_id() ||
-      !app->is_locally_installed()) {
-    return std::move(result_callback).Run(SubAppsServiceResultCode::kFailure);
+      !provider->registrar_unsafe().IsInstalled(sub_app_id)) {
+    return std::move(callback).Run(SubAppsServiceRemoveResult::New(
+        unhashed_app_id_path, SubAppsServiceResultCode::kFailure));
   }
 
   provider->install_finalizer().UninstallExternalWebApp(
       sub_app_id, WebAppManagement::Type::kSubApp,
       webapps::WebappUninstallSource::kSubApp,
-      base::BindOnce(&OnRemove, std::move(result_callback)));
+      base::BindOnce(
+          [](std::string unhashed_app_id_path,
+             webapps::UninstallResultCode result_code) {
+            SubAppsServiceResultCode result =
+                result_code == webapps::UninstallResultCode::kSuccess
+                    ? SubAppsServiceResultCode::kSuccess
+                    : SubAppsServiceResultCode::kFailure;
+            return SubAppsServiceRemoveResult::New(unhashed_app_id_path,
+                                                   result);
+          },
+          unhashed_app_id_path)
+          .Then(std::move(callback)));
 }
 
 }  // namespace web_app

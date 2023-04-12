@@ -32,6 +32,7 @@ using mojom::blink::SubAppsServiceAddParametersPtr;
 using mojom::blink::SubAppsServiceAddResultPtr;
 using mojom::blink::SubAppsServiceListResultEntryPtr;
 using mojom::blink::SubAppsServiceListResultPtr;
+using mojom::blink::SubAppsServiceRemoveResultPtr;
 using mojom::blink::SubAppsServiceResultCode;
 
 namespace {
@@ -49,6 +50,19 @@ Vector<std::pair<String, V8SubAppsResultCode>> AddResultsFromMojo(
     add_results_idl.emplace_back(add_result->unhashed_app_id_path, result_code);
   }
   return add_results_idl;
+}
+
+Vector<std::pair<String, V8SubAppsResultCode>> RemoveResultsFromMojo(
+    Vector<SubAppsServiceRemoveResultPtr> remove_results_mojo) {
+  Vector<std::pair<String, V8SubAppsResultCode>> results;
+  for (auto& remove_result : remove_results_mojo) {
+    auto result_code =
+        remove_result->result_code == SubAppsServiceResultCode::kSuccess
+            ? V8SubAppsResultCode(V8SubAppsResultCode::Enum::kSuccess)
+            : V8SubAppsResultCode(V8SubAppsResultCode::Enum::kFailure);
+    results.emplace_back(remove_result->unhashed_app_id_path, result_code);
+  }
+  return results;
 }
 
 Vector<SubAppsServiceAddParametersPtr> AddOptionsToMojo(
@@ -207,35 +221,37 @@ ScriptPromise SubApps::list(ScriptState* script_state,
 }
 
 ScriptPromise SubApps::remove(ScriptState* script_state,
-                              const String& unhashed_app_id_path,
+                              const Vector<String>& unhashed_app_id_paths,
                               ExceptionState& exception_state) {
   if (!CheckPreconditionsMaybeThrow(exception_state)) {
     return ScriptPromise();
   }
 
-  // Check that the argument is a root-relative path.
-  if (KURL(unhashed_app_id_path).IsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "Arguments must be root-relative paths.");
-    return ScriptPromise();
+  // Check that the arguments are root-relative paths.
+  for (const auto& unhashed_app_id_path : unhashed_app_id_paths) {
+    if (KURL(unhashed_app_id_path).IsValid()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          "Arguments must be root-relative paths.");
+      return ScriptPromise();
+    }
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   GetService()->Remove(
-      unhashed_app_id_path,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          [](ScriptPromiseResolver* resolver, SubAppsServiceResultCode result) {
-            if (result == SubAppsServiceResultCode::kSuccess) {
-              resolver->Resolve();
-            } else {
-              resolver->Reject(V8ThrowDOMException::CreateOrDie(
-                  resolver->GetScriptState()->GetIsolate(),
-                  DOMExceptionCode::kOperationError,
-                  "Unable to remove given sub-app. Check whether the calling "
-                  "app is installed."));
+      unhashed_app_id_paths,
+      resolver->WrapCallbackInScriptScope(
+          WTF::BindOnce([](ScriptPromiseResolver* resolver,
+                           Vector<SubAppsServiceRemoveResultPtr> results_mojo) {
+            for (const auto& remove_result : results_mojo) {
+              if (remove_result->result_code ==
+                  SubAppsServiceResultCode::kFailure) {
+                return resolver->Reject(
+                    RemoveResultsFromMojo(std::move(results_mojo)));
+              }
             }
+            resolver->Resolve(RemoveResultsFromMojo(std::move(results_mojo)));
           })));
-
   return resolver->Promise();
 }
 

@@ -37,6 +37,11 @@ struct SubAppsServiceListResultEntry {
   string app_name;
 };
 
+struct SubAppsServiceRemoveResult {
+  string unhashed_app_id_path;
+  SubAppsServiceResultCode result_code;
+};
+
 // Sub Apps APIs allow installed PWAs to install shortcuts to their various
 // sub-parts by means of installing the sub-component.  Example: main app hosted
 // at https://office.org/ which provides a full set of office productivity tools
@@ -53,7 +58,7 @@ interface SubAppsService {
   // List all sub-apps installed by the app making the API call.
   List() => (SubAppsServiceListResult result);
 
-  // Uninstalls the sub-app represented by the given argument previously
+  // Uninstalls the sub-apps represented by the given argument previously
   // installed via the `Add` method by the same app making the current API call.
-  Remove(string unhashed_app_id_path) => (SubAppsServiceResultCode result);
+  Remove(array<string> unhashed_app_id_paths) => (array<SubAppsServiceRemoveResult> result);
 };
