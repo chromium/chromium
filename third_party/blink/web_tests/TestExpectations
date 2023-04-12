@@ -2963,7 +2963,6 @@ crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-fromelement/capture.html
 crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-image/MediaStreamTrack-getConstraints.https.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-audio.https.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Crash ]
-crbug.com/1180993 [ Mac10.14 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Crash Failure ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/screen-capture/getdisplaymedia.https.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/video-rvfc/request-video-frame-callback-during-xr-session.https.html [ Crash Timeout ]
@@ -5516,19 +5515,6 @@ crbug.com/1268594 [ Win ] css3/filters/composited-layer-bounds-after-sw-blur-ani
 
 # Security OWP fixit week
 crbug.com/1270355 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/009.html [ Timeout ]
-
-# Sheriff 2021-11-18
-crbug.com/1180993 [ Fuchsia ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Failure Pass Timeout ]
-crbug.com/1180993 [ Linux ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Failure Pass Timeout ]
-crbug.com/1180993 [ Mac10.13 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Failure Pass Timeout ]
-crbug.com/1180993 [ Mac10.15 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Failure Pass Timeout ]
-crbug.com/1180993 [ Mac11 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Failure Pass Timeout ]
-crbug.com/1180993 [ Mac11-arm64 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Failure Pass Timeout ]
-crbug.com/1180993 [ Mac12 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Failure Pass Timeout ]
-crbug.com/1180993 [ Mac12-arm64 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Failure Pass Timeout ]
-crbug.com/1180993 [ Mac13 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Failure Pass Timeout ]
-crbug.com/1180993 [ Mac13-arm64 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Failure Pass Timeout ]
-crbug.com/1180993 [ Win ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Failure Pass Timeout ]
 
 # Sheriff 2021-11-19
 crbug.com/1186771 [ Mac ] fast/scroll-snap/snaps-after-scrollbar-scrolling-track.html [ Crash ]
