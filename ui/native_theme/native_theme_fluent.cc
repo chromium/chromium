@@ -82,7 +82,13 @@ void NativeThemeFluent::PaintScrollbarThumb(cc::PaintCanvas* canvas,
   path.addRRect(rrect);
   canvas->clipPath(path, true);
 
-  const SkColor thumb_color = color_provider->GetColor(kColorScrollbarThumb);
+  ColorId thumb_color_id = kColorScrollbarThumb;
+  if (state == NativeTheme::kPressed) {
+    thumb_color_id = kColorScrollbarThumbPressed;
+  } else if (state == NativeTheme::kHovered) {
+    thumb_color_id = kColorScrollbarThumbHovered;
+  }
+  const SkColor thumb_color = color_provider->GetColor(thumb_color_id);
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setColor(thumb_color);
