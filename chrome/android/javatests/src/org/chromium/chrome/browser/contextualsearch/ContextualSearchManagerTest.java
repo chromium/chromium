@@ -39,6 +39,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
@@ -639,6 +640,8 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    // TODO(donnd): reenable - recent fixes as of 3/31/2023
+    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1075895")
     // Previously disabled: https://crbug.com/1127796
     public void testQuickActionUrl(@EnabledFeature int enabledFeature) throws Exception {
         final String testUrl = mTestServer.getURL("/chrome/test/data/android/google.html");
