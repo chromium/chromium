@@ -101,13 +101,6 @@ bool IsDataOrAbout(const GURL& url) {
          url.scheme() == url::kDataScheme;
 }
 
-// When enabled, we cache the result of IsNavigationSameSite() to avoid
-// redundant work during a given navigation event. See
-// RenderFrameHostManager::IsSameSiteGetter for more details.
-BASE_FEATURE(kCacheIsNavigationSameSite,
-             "CacheIsNavigationSameSite",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Helper function to determine whether a navigation from `current_rfh` to
 // `destination_effective_url_info` should swap BrowsingInstances to ensure that
 // `destination_effective_url_info` ends up in a dedicated process.  This is the
@@ -338,22 +331,14 @@ void ReuseDefaultProcessFromDifferentBrowsingInstanceIfPossible(
 }  // namespace
 
 RenderFrameHostManager::IsSameSiteGetter::IsSameSiteGetter()
-    : is_same_site_(absl::nullopt),
-      should_use_cached_value_(
-          base::FeatureList::IsEnabled(kCacheIsNavigationSameSite)) {}
+    : is_same_site_(absl::nullopt) {}
 
 RenderFrameHostManager::IsSameSiteGetter::IsSameSiteGetter(bool is_same_site)
-    : is_same_site_(is_same_site),
-      should_use_cached_value_(
-          base::FeatureList::IsEnabled(kCacheIsNavigationSameSite)) {}
+    : is_same_site_(is_same_site) {}
 
 bool RenderFrameHostManager::IsSameSiteGetter::Get(
     const RenderFrameHostImpl& render_frame_host,
     const UrlInfo& url_info) {
-  if (!should_use_cached_value_) {
-    return render_frame_host.IsNavigationSameSite(url_info);
-  }
-
   if (!is_same_site_.has_value()) {
     is_same_site_ = render_frame_host.IsNavigationSameSite(url_info);
   } else {

@@ -11810,11 +11810,6 @@ RenderFrameHostImpl::BuildClientSecurityStateForWorkers() const {
 
 bool RenderFrameHostImpl::IsNavigationSameSite(
     const UrlInfo& dest_url_info) const {
-  // TODO(peilinwang): remove when we've finished investigating BeginNavigation
-  // jank (https://crbug.com/1380942).
-  TRACE_EVENT0("navigation", "RenderFrameHostImpl::IsNavigationSameSite");
-  SCOPED_UMA_HISTOGRAM_TIMER("Navigation.IsNavigationSameSite.Duration");
-
   if (!WebExposedIsolationInfo::AreCompatible(
           GetSiteInstance()->GetWebExposedIsolationInfo(),
           dest_url_info.web_exposed_isolation_info)) {
