@@ -302,6 +302,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Audio.AudioMixer.NewHighestSourceCount" units="sources"
+    expires_after="2024-04-01">
+  <owner>fhernqvist@google.com</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Logs the AudioMixer source count whenever the mixer gets a new highest
+    source count. This allows us to differentiate the histogram to get the
+    number of mixers that have had a specific number of maximum sources. For
+    example, the number of AudioMixers that have had a maximum of 5 sources is
+    NewHighestSourceCount[5] - NewHighestSourceCount[6].
+
+    Note that this is not the same as logging the source count whenever a source
+    is added; logging only happens when the source count exceeds the previously
+    highest source count.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Audio.AverageExcessBufferDelayMs" units="ms"
     expires_after="2023-10-01">
   <owner>hlundin@chromium.org</owner>
