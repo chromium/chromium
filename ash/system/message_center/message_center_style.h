@@ -34,16 +34,9 @@ constexpr int kScrollShadowOffsetY = 2;
 constexpr int kScrollShadowBlur = 2;
 
 // Layout parameters for swipe control of notifications in message center.
-constexpr int kSwipeControlButtonImageSize = 20;
-constexpr int kSwipeControlButtonSize = 36;
-constexpr int kSwipeControlButtonVerticalMargin = 24;
 constexpr int kSwipeControlButtonHorizontalMargin = 8;
 constexpr SkColor kSwipeControlBackgroundColor =
     SkColorSetRGB(0xee, 0xee, 0xee);
-
-// The ratio to multiply with the swipe control width to get the width to
-// display at full opacity when swiping.
-constexpr float kSwipeControlFullOpacityRatio = 1.5f;
 
 constexpr int kMaxGroupedNotificationsInCollapsedState = 3;
 constexpr auto kGroupedCollapsedCountViewInsets =

@@ -163,7 +163,6 @@ class NotificationListView::MessageViewContainer : public MessageView::Observer,
         is_bottom ? kMessageCenterNotificationTopBottomCornerRadius
                   : message_center_notification_corner_radius;
     message_view_->UpdateCornerRadius(top_radius, bottom_radius);
-    control_view_->UpdateCornerRadius(top_radius, bottom_radius);
   }
 
   // Reset rounding the corner of the view. This is called when we end a slide.
