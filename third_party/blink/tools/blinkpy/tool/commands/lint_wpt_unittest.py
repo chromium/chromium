@@ -333,3 +333,30 @@ class LintWPTTest(LoggingTestCase):
         self.assertEqual(path, 'variant.html.ini')
         self.assertEqual(description,
                          "Subtest key 'expected' has invalid value 'CRASH'")
+
+    def test_metadata_unnecessary_conditions(self):
+        exp_error, fuzzy_error = self._check_metadata("""\
+            [reftest.html]
+              disabled:
+                if os == "mac": flaky
+                if os == "win": @False
+                flaky
+              expected:
+                if os == "mac": FAIL
+                FAIL
+              fuzzy:
+                if os == "win": [0-1;0-2, reftest-ref.html:20;200-300]
+                [0-1;0-2, reftest-ref.html:20;200-300]
+            """)
+        # Note that `disabled` is not an error because of `os == "win"`.
+        name, description, path, _ = exp_error
+        self.assertEqual(name, 'META-UNNECESSARY-CONDITION')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(description,
+                         "Test key 'expected' always has value 'FAIL'")
+        name, description, path, _ = fuzzy_error
+        self.assertEqual(name, 'META-UNNECESSARY-CONDITION')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(
+            description, "Test key 'fuzzy' always has value "
+            "'[0-1;0-2, reftest-ref.html:20;200-300]'")

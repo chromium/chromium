@@ -11,7 +11,7 @@ import logging
 import optparse
 import pathlib
 import urllib.parse
-from typing import List, Optional, Set, Tuple, Type
+from typing import List, Optional, Set, Tuple, Type, Union
 
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
@@ -25,6 +25,7 @@ from tools.lint import rules
 from wptrunner import wptmanifest
 from wptrunner.manifestexpected import fuzzy_prop
 from wptrunner.wptmanifest import node as wptnode
+from wptrunner.wptmanifest.backends.static import Compiler
 
 _log = logging.getLogger(__name__)
 
@@ -159,6 +160,14 @@ class MetadataBadValue(MetadataRule):
     implementation_statuses = {'implementing', 'not-implementing', 'default'}
 
 
+class MetadataUnnecessaryCondition(MetadataRule):
+    name = 'META-UNNECESSARY-CONDITION'
+    description = '%(section_type)s key %(key)r always has value %(value)r'
+    to_fix = """
+    Express the key as an unconditional expression without `if`.
+    """
+
+
 LintError = Tuple[str, str, str, Optional[int]]
 
 
@@ -236,7 +245,7 @@ class LintWPT(Command):
         return None
 
 
-class MetadataLinter(wptnode.NodeVisitor):
+class MetadataLinter(Compiler):
     def __init__(self, path: str, test_type: str, manifest: WPTManifest):
         self.path = path
         self.test_type = test_type
@@ -313,20 +322,34 @@ class MetadataLinter(wptnode.NodeVisitor):
             if node.data not in valid_keys:
                 self._error(MetadataUnknownKey)
             else:
-                for child in node.children:
-                    self.visit(child)
+                self._check_conditions(node)
 
-    def visit_ListNode(self, node: wptnode.ListNode):
+    def _check_conditions(self, key_value_node: wptnode.KeyValueNode):
+        conditions = []
+        for i, child in enumerate(key_value_node.children):
+            if isinstance(child, wptnode.ConditionalNode):
+                cond_expr, value = child.children
+            else:
+                assert i == len(key_value_node.children) - 1
+                cond_expr, value = None, child
+            conditions.append((cond_expr, value))
+        values = {self.visit(value) for _, value in conditions}
+        if len(conditions) > 1 and len(values) == 1:
+            (_, value), *_ = conditions
+            self._error(MetadataUnnecessaryCondition,
+                        value=_format_node(value))
+
+    def visit_ListNode(self,
+                       node: wptnode.ListNode) -> Tuple[Union[bool, str]]:
         key = self.context['key']
         # TODO(crbug.com/1406669): Recommend unwrapping one-entry lists for
         # `fuzzy`, `expected`, and `bug`.
         if key == 'implementation-status':
             self._error(MetadataBadValue, value=_format_node(node))
         else:
-            for child in node.children:
-                self.visit(child)
+            return tuple(self.visit(child) for child in node.children)
 
-    def visit_ValueNode(self, node: wptnode.ValueNode):
+    def visit_ValueNode(self, node: wptnode.ValueNode) -> str:
         assert node.data is not None
         key = self.context['key']
         if (key == 'implementation-status'
@@ -341,11 +364,13 @@ class MetadataLinter(wptnode.NodeVisitor):
                 self._error(MetadataBadValue, value=node.data)
         if key == 'bug' and not BUG_PATTERN.fullmatch(node.data):
             self._error(MetadataBadValue, value=node.data)
+        return node.data
 
-    def visit_AtomNode(self, node: wptnode.AtomNode):
+    def visit_AtomNode(self, node: wptnode.AtomNode) -> bool:
         key = self.context['key']
         if key in {'fuzzy', 'expected', 'implementation-status', 'bug'}:
             self._error(MetadataBadValue, value=_format_node(node))
+        return node.data
 
     def _error(self, rule: Type[MetadataRule], **extra):
         context = {**self.context, **extra}
