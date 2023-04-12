@@ -5533,6 +5533,7 @@ interface MLGraphBuilder
     method min
     method mul
     method pad
+    method prelu
     method relu
     method resample2d
     method reshape

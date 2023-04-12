@@ -37,6 +37,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
     kAveragePool2d,
     kMaxPool2d,
     kPad,
+    kPRelu,
     kRelu,
     kReshape,
     kResample2d,

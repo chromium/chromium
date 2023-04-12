@@ -2330,6 +2330,134 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
   }
 }
 
+TEST_F(MLGraphBuilderTest, PReluTest) {
+  V8TestingScope scope;
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  {
+    // Test building prelu when slope_shape is the same as the input_shape.
+    Vector<uint32_t> input_shape({3, 2, 5});
+    auto* input =
+        BuildInput(builder, "input", input_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* slope =
+        BuildConstant(builder, {3, 2, 5}, V8MLOperandType::Enum::kFloat32,
+                      scope.GetExceptionState());
+    auto* output = builder->prelu(input, slope, scope.GetExceptionState());
+    EXPECT_NE(output, nullptr);
+    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(output->Dimensions(), input_shape);
+    const MLOperator* p_relu = output->Operator();
+    EXPECT_NE(p_relu, nullptr);
+    EXPECT_EQ(p_relu->Kind(), MLOperator::OperatorKind::kPRelu);
+    EXPECT_EQ(p_relu->IsConnected(), true);
+    EXPECT_EQ(p_relu->Options(), nullptr);
+  }
+  {
+    // Test building prelu with input_shape = {3, 2, 5} and slope_shape = {5}.
+    Vector<uint32_t> input_shape({3, 2, 5});
+    auto* input =
+        BuildInput(builder, "input", input_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* slope = BuildConstant(builder, {5}, V8MLOperandType::Enum::kFloat32,
+                                scope.GetExceptionState());
+    auto* output = builder->prelu(input, slope, scope.GetExceptionState());
+    EXPECT_NE(output, nullptr);
+    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(output->Dimensions(), input_shape);
+    const MLOperator* p_relu = output->Operator();
+    EXPECT_NE(p_relu, nullptr);
+    EXPECT_EQ(p_relu->Kind(), MLOperator::OperatorKind::kPRelu);
+    EXPECT_EQ(p_relu->IsConnected(), true);
+    EXPECT_EQ(p_relu->Options(), nullptr);
+  }
+  {
+    // Test building prelu with input_shape = {3, 2, 5} and slope_shape = {2,
+    // 5}.
+    Vector<uint32_t> input_shape({3, 2, 5});
+    auto* input =
+        BuildInput(builder, "input", input_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* slope =
+        BuildConstant(builder, {2, 5}, V8MLOperandType::Enum::kFloat32,
+                      scope.GetExceptionState());
+    auto* output = builder->prelu(input, slope, scope.GetExceptionState());
+    EXPECT_NE(output, nullptr);
+    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(output->Dimensions(), input_shape);
+    const MLOperator* p_relu = output->Operator();
+    EXPECT_NE(p_relu, nullptr);
+    EXPECT_EQ(p_relu->Kind(), MLOperator::OperatorKind::kPRelu);
+    EXPECT_EQ(p_relu->IsConnected(), true);
+    EXPECT_EQ(p_relu->Options(), nullptr);
+  }
+  {
+    // Test building prelu with input_shape = {3, 2, 5} and slope_shape = {2}.
+    Vector<uint32_t> input_shape({3, 2, 5});
+    auto* input =
+        BuildInput(builder, "input", input_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* slope = BuildConstant(builder, {2}, V8MLOperandType::Enum::kFloat32,
+                                scope.GetExceptionState());
+    auto* output = builder->prelu(input, slope, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ("The shape of slope is not broadcastable to the shape of input.",
+              scope.GetExceptionState().Message());
+  }
+  {
+    // Test building prelu with input_shape = {5, 1, 2} and slope_shape = {2,
+    // 2}.
+    Vector<uint32_t> input_shape({5, 1, 2});
+    auto* input =
+        BuildInput(builder, "input", input_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* slope =
+        BuildConstant(builder, {2, 2}, V8MLOperandType::Enum::kFloat32,
+                      scope.GetExceptionState());
+    auto* output = builder->prelu(input, slope, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ("The shape of slope is not broadcastable to the shape of input.",
+              scope.GetExceptionState().Message());
+  }
+  {
+    // Test building prelu with input_type = float and slope_type = int32.
+    Vector<uint32_t> input_shape({3, 2, 5});
+    auto* input =
+        BuildInput(builder, "input", input_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* slope = BuildConstant(builder, {5}, V8MLOperandType::Enum::kInt32,
+                                scope.GetExceptionState());
+    auto* output = builder->prelu(input, slope, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ("The type of slope doesn't match the type of input.",
+              scope.GetExceptionState().Message());
+  }
+  {
+    // Test building prelu with input_type = int32.
+    Vector<uint32_t> input_shape({3, 2, 5});
+    auto* input =
+        BuildInput(builder, "input", input_shape, V8MLOperandType::Enum::kInt32,
+                   scope.GetExceptionState());
+    auto* slope = BuildConstant(builder, {5}, V8MLOperandType::Enum::kInt32,
+                                scope.GetExceptionState());
+    auto* output = builder->prelu(input, slope, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(
+        "The type of input and slope must be one of the floating point types.",
+        scope.GetExceptionState().Message());
+  }
+}
+
 TEST_F(MLGraphBuilderTest, ReluTest) {
   V8TestingScope scope;
   auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
