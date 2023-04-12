@@ -170,7 +170,7 @@ inline EDisplay CssValueIDToPlatformEnum(CSSValueID v) {
   if (v == CSSValueID::kInline) {
     return EDisplay::kInline;
   }
-  if (v == CSSValueID::kBlock) {
+  if (v == CSSValueID::kBlock || v == CSSValueID::kFlow) {
     return EDisplay::kBlock;
   }
   if (v == CSSValueID::kFlowRoot) {
