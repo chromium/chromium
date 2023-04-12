@@ -40,6 +40,11 @@
     overflow: hidden;
   }
 
+  /* Fade out long accelerators on the left for RTL languages. */
+  :host-context([dir=rtl]) #accelerators {
+    -webkit-mask-image: linear-gradient(to right, transparent, white 32px);
+  }
+
   .accelerator-keys {
     align-items: center;
     display: flex;
@@ -54,6 +59,11 @@
   #actionIcon {
     margin: var(--cr-toolbar-icon-margin);
     width: var(--cr-toolbar-icon-container-size);
+  }
+
+  /* Flip the arrow icon for RTL languages. */
+  :host-context([dir=rtl]) #actionIcon {
+    transform: scaleX(-1);
   }
 
   /* Bolding occurs in the JS. */
