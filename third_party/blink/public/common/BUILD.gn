@@ -296,6 +296,7 @@ source_set("headers") {
     "service_worker/service_worker_loader_helpers.h",
     "service_worker/service_worker_scope_match.h",
     "service_worker/service_worker_status_code.h",
+    "service_worker/service_worker_subresource_load_metrics.h",
     "service_worker/service_worker_type_converters.h",
     "service_worker/service_worker_types.h",
     "shared_storage/module_script_downloader.h",

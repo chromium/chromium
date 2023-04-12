@@ -244,6 +244,166 @@ struct SubresourceLoadMetrics {
   // Total number of bytes fetched by the network. This value can be -1
   // when the value is unknown or there is no data.
   int64 total_bytes_fetched;
+
+  // Metrics for service workers.
+  ServiceWorkerSubresourceLoadMetrics? service_worker_subresource_load_metrics;
+};
+
+struct ServiceWorkerSubresourceLoadMetrics {
+  // True even if one image sub resource is handled by a service worker.
+  // i.e. the service worker called `respondWith` to return the resource.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was handled.
+  bool image_handled;
+  // True even if one image sub resource caused a network fallback.
+  // i.e. the service worker did not call `respondWith`, and network fallback.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was network fallback.
+  bool image_fallback;
+
+  // True even if one CSS sub resource is handled by a service worker.
+  // i.e. the service worker called `respondWith` to return the resource.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was handled.
+  bool css_handled;
+  // True even if one CSS sub resource caused a network fallback.
+  // i.e. the service worker did not call `respondWith`, and network fallback.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was network fallback.
+  bool css_fallback;
+
+  // True even if one script sub resource is handled by a service worker.
+  // i.e. the service worker called `respondWith` to return the resource.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was handled.
+  bool script_handled;
+  // True even if one script sub resource caused a network fallback.
+  // i.e. the service worker did not call `respondWith`, and network fallback.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was network fallback.
+  bool script_fallback;
+
+  // True even if one font sub resource is handled by a service worker.
+  // i.e. the service worker called `respondWith` to return the resource.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was handled.
+  bool font_handled;
+  // True even if one font sub resource caused a network fallback.
+  // i.e. the service worker did not call `respondWith`, and network fallback.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was network fallback.
+  bool font_fallback;
+
+  // True even if one raw sub resource is handled by a service worker.
+  // i.e. the service worker called `respondWith` to return the resource.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was handled.
+  bool raw_handled;
+  // True even if one raw sub resource caused a network fallback.
+  // i.e. the service worker did not call `respondWith`, and network fallback.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was network fallback.
+  bool raw_fallback;
+
+  // True even if one SVG sub resource is handled by a service worker.
+  // i.e. the service worker called `respondWith` to return the resource.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was handled.
+  bool svg_handled;
+  // True even if one SVG sub resource caused a network fallback.
+  // i.e. the service worker did not call `respondWith`, and network fallback.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was network fallback.
+  bool svg_fallback;
+
+  // True even if one XSL sub resource is handled by a service worker.
+  // i.e. the service worker called `respondWith` to return the resource.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was handled.
+  bool xsl_handled;
+  // True even if one XSL sub resource caused a network fallback.
+  // i.e. the service worker did not call `respondWith`, and network fallback.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was network fallback.
+  bool xsl_fallback;
+
+  // True even if one Link Prefetch sub resource is handled by a service worker.
+  // i.e. the service worker called `respondWith` to return the resource.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was handled.
+  bool link_prefetch_handled;
+  // True even if one Link Prefetch sub resource caused a network fallback.
+  // i.e. the service worker did not call `respondWith`, and network fallback.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was network fallback.
+  bool link_prefetch_fallback;
+
+  // True even if one Text Track sub resource is handled by a service worker.
+  // i.e. the service worker called `respondWith` to return the resource.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was handled.
+  bool text_track_handled;
+  // True even if one Text Track sub resource caused a network fallback.
+  // i.e. the service worker did not call `respondWith`, and network fallback.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was network fallback.
+  bool text_track_fallback;
+
+  // True even if one audio sub resource is handled by a service worker.
+  // i.e. the service worker called `respondWith` to return the resource.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was handled.
+  bool audio_handled;
+  // True even if one audio sub resource caused a network fallback.
+  // i.e. the service worker did not call `respondWith`, and network fallback.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was network fallback.
+  bool audio_fallback;
+
+  // True even if one video sub resource is handled by a service worker.
+  // i.e. the service worker called `respondWith` to return the resource.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was handled.
+  bool video_handled;
+  // True even if one video sub resource caused a network fallback.
+  // i.e. the service worker did not call `respondWith`, and network fallback.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was network fallback.
+  bool video_fallback;
+
+  // True even if one manifest sub resource is handled by a service worker.
+  // i.e. the service worker called `respondWith` to return the resource.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was handled.
+  bool manifest_handled;
+  // True even if one manifest sub resource caused a network fallback.
+  // i.e. the service worker did not call `respondWith`, and network fallback.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was network fallback.
+  bool manifest_fallback;
+
+  // True even if one speculation rules sub resource is handled by a service
+  // worker.
+  // i.e. the service worker called `respondWith` to return the resource.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was handled.
+  bool speculation_rules_handled;
+  // True even if one speculation rules sub resource caused a network fallback.
+  // i.e. the service worker did not call `respondWith`, and network fallback.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was network fallback.
+  bool speculation_rules_fallback;
+
+  // True even if one mock sub resource is handled by a service worker.
+  // i.e. the service worker called `respondWith` to return the resource.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was handled.
+  bool mock_handled;
+  // True even if one mock sub resource caused a network fallback.
+  // i.e. the service worker did not call `respondWith`, and network fallback.
+  // e.g. if there are two resources, and one is handed by the service worker,
+  // and one did not, this flag will be true because one was network fallback.
+  bool mock_fallback;
 };
 
 // Enumeration of distinct cache types.

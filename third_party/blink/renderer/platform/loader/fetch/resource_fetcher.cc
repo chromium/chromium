@@ -2113,6 +2113,13 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
     }
   }
 
+  if (IsControlledByServiceWorker() ==
+      mojom::blink::ControllerServiceWorkerMode::kControlled) {
+    UpdateServiceWorkerSubresourceMetrics(
+        resource->GetType(),
+        resource->GetResponse().WasFetchedViaServiceWorker());
+  }
+
   subresource_load_metrics_.pervasive_payload_requested |=
       pervasive_payload_requested;
   if (bytes_fetched > 0) {
@@ -2783,6 +2790,117 @@ void ResourceFetcher::RecordResourceHistogram(
   base::UmaHistogramEnumeration(
       base::StrCat({RESOURCE_HISTOGRAM_PREFIX, prefix, ResourceTypeName(type)}),
       policy);
+}
+
+void ResourceFetcher::UpdateServiceWorkerSubresourceMetrics(
+    ResourceType resource_type,
+    bool handled_by_serviceworker) {
+  if (!subresource_load_metrics_.service_worker_subresource_load_metrics) {
+    subresource_load_metrics_.service_worker_subresource_load_metrics =
+        blink::ServiceWorkerSubresourceLoadMetrics{};
+  }
+  auto& metrics =
+      *subresource_load_metrics_.service_worker_subresource_load_metrics;
+  switch (resource_type) {
+    case ResourceType::kImage:  // 1
+      if (handled_by_serviceworker) {
+        metrics.image_handled |= true;
+      } else {
+        metrics.image_fallback |= true;
+      }
+      break;
+    case ResourceType::kCSSStyleSheet:  // 2
+      if (handled_by_serviceworker) {
+        metrics.css_handled |= true;
+      } else {
+        metrics.css_fallback |= true;
+      }
+      break;
+    case ResourceType::kScript:  // 3
+      if (handled_by_serviceworker) {
+        metrics.script_handled |= true;
+      } else {
+        metrics.script_fallback |= true;
+      }
+      break;
+    case ResourceType::kFont:  // 4
+      if (handled_by_serviceworker) {
+        metrics.font_handled |= true;
+      } else {
+        metrics.font_fallback |= true;
+      }
+      break;
+    case ResourceType::kRaw:  // 5
+      if (handled_by_serviceworker) {
+        metrics.raw_handled |= true;
+      } else {
+        metrics.raw_fallback |= true;
+      }
+      break;
+    case ResourceType::kSVGDocument:  // 6
+      if (handled_by_serviceworker) {
+        metrics.svg_handled |= true;
+      } else {
+        metrics.svg_fallback |= true;
+      }
+      break;
+    case ResourceType::kXSLStyleSheet:  // 7
+      if (handled_by_serviceworker) {
+        metrics.xsl_handled |= true;
+      } else {
+        metrics.xsl_fallback |= true;
+      }
+      break;
+    case ResourceType::kLinkPrefetch:  // 8
+      if (handled_by_serviceworker) {
+        metrics.link_prefetch_handled |= true;
+      } else {
+        metrics.link_prefetch_fallback |= true;
+      }
+      break;
+    case ResourceType::kTextTrack:  // 9
+      if (handled_by_serviceworker) {
+        metrics.text_track_handled |= true;
+      } else {
+        metrics.text_track_fallback |= true;
+      }
+      break;
+    case ResourceType::kAudio:  // 10
+      if (handled_by_serviceworker) {
+        metrics.audio_handled |= true;
+      } else {
+        metrics.audio_fallback |= true;
+      }
+      break;
+    case ResourceType::kVideo:  // 11
+      if (handled_by_serviceworker) {
+        metrics.video_handled |= true;
+      } else {
+        metrics.video_fallback |= true;
+      }
+      break;
+    case ResourceType::kManifest:  // 12
+      if (handled_by_serviceworker) {
+        metrics.manifest_handled |= true;
+      } else {
+        metrics.manifest_fallback |= true;
+      }
+      break;
+    case ResourceType::kSpeculationRules:  // 13
+      if (handled_by_serviceworker) {
+        metrics.speculation_rules_handled |= true;
+      } else {
+        metrics.speculation_rules_fallback |= true;
+      }
+      break;
+    case ResourceType::kMock:  // 14
+      if (handled_by_serviceworker) {
+        metrics.mock_handled |= true;
+      } else {
+        metrics.mock_fallback |= true;
+      }
+      break;
+  }
 }
 
 }  // namespace blink

@@ -428,6 +428,24 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, MAYBE_SubresourceCountUKM) {
   test_recorder.ExpectEntryMetric(
       entries[0],
       ukm::builders::ServiceWorker_OnLoad::kSubResourceFallbackRatioName, 50);
+  test_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::ServiceWorker_OnLoad::kAudioFallbackName, 0);
+  test_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::ServiceWorker_OnLoad::kAudioHandledName, 0);
+  test_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::ServiceWorker_OnLoad::kCSSStyleSheetFallbackName, 1);
+  test_recorder.ExpectEntryMetric(
+      entries[0],
+      ukm::builders::ServiceWorker_OnLoad::kCSSStyleSheetHandledName, 1);
+  test_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::ServiceWorker_OnLoad::kFontFallbackName, 0);
+  test_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::ServiceWorker_OnLoad::kFontHandledName, 0);
+  test_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::ServiceWorker_OnLoad::kImageFallbackName, 0);
+  test_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::ServiceWorker_OnLoad::kImageHandledName, 0);
 }
 
 // TODO(crbug.com/1395715): The test is flaky. Re-enable it.

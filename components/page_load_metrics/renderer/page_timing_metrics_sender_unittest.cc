@@ -171,22 +171,20 @@ TEST_F(PageTimingMetricsSenderTest, SendSubresourceLoadMetrics) {
                           PageTimingMetadataRecorder::MonotonicTiming());
   validator_.ExpectPageLoadTiming(timing);
 
-  blink::SubresourceLoadMetrics details{
+  blink::SubresourceLoadMetrics metrics{
       .number_of_subresources_loaded = 5,
       .number_of_subresource_loads_handled_by_service_worker = 2,
       .pervasive_payload_requested = true,
       .pervasive_bytes_fetched = 10,
       .total_bytes_fetched = 15,
+      .service_worker_subresource_load_metrics =
+          blink::ServiceWorkerSubresourceLoadMetrics{
+              .mock_handled = true,
+              .mock_fallback = true,
+          },
   };
-  metrics_sender_->DidObserveSubresourceLoad(details);
-
-  blink::SubresourceLoadMetrics expected = {};
-  expected.number_of_subresources_loaded = 5;
-  expected.number_of_subresource_loads_handled_by_service_worker = 2;
-  expected.pervasive_payload_requested = true;
-  expected.pervasive_bytes_fetched = 10;
-  expected.total_bytes_fetched = 15;
-  validator_.UpdateExpectedSubresourceLoadMetrics(expected);
+  metrics_sender_->DidObserveSubresourceLoad(metrics);
+  validator_.UpdateExpectedSubresourceLoadMetrics(metrics);
   metrics_sender_->mock_timer()->Fire();
   validator_.VerifyExpectedSubresourceLoadMetrics();
 }
