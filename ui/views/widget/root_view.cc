@@ -694,6 +694,7 @@ bool RootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
 }
 
 void RootView::MaybeNotifyGestureHandlerBeforeReplacement() {
+#if defined(USE_AURA)
   ui::GestureRecognizer* gesture_recognizer =
       (gesture_handler_ && widget_ ? widget_->GetGestureRecognizer() : nullptr);
   if (!gesture_recognizer)
@@ -704,6 +705,7 @@ void RootView::MaybeNotifyGestureHandlerBeforeReplacement() {
     return;
 
   gesture_recognizer->SendSynthesizedEndEvents(gesture_consumer);
+#endif
 }
 
 void RootView::SetMouseAndGestureHandler(View* new_handler) {
