@@ -29,6 +29,8 @@
 namespace sync_preferences {
 
 const char kSyncablePrefForTesting[] = "syncable-test-preference";
+const char kSyncableMergeableDictPrefForTesting[] =
+    "syncable-mergeable-dict-test-preference";
 
 namespace {
 // Not an enum class to ease cast to int.
@@ -38,7 +40,7 @@ namespace syncable_prefs_ids {
 // Please also add new entries to `SyncablePref` enum in
 // tools/metrics/histograms/enums.xml.
 enum {
-  kSyncablePrefForTesting = 0,
+  kSyncablePrefForTesting = 0,  // For tests.
   kAutofillCreditCardEnabled = 1,
   kAutofillEnabledDeprecated = 2,
   kAutofillHasSeenIban = 3,
@@ -100,7 +102,8 @@ enum {
   kPrefAlwaysTranslateList = 59,
   kPrefNeverPromptSitesWithTime = 60,
   kPrefTranslateRecentTarget = 61,
-  kPrefDogfoodGroups = 62
+  kPrefDogfoodGroups = 62,
+  kSyncableMergeableDictPrefForTesting = 63,  // For tests.
 };
 }  // namespace syncable_prefs_ids
 
@@ -263,6 +266,9 @@ const auto& SyncablePreferences() {
           syncer::PRIORITY_PREFERENCES}},
         {kSyncablePrefForTesting,
          {syncable_prefs_ids::kSyncablePrefForTesting, syncer::PREFERENCES}},
+        {kSyncableMergeableDictPrefForTesting,
+         {syncable_prefs_ids::kSyncableMergeableDictPrefForTesting,
+          syncer::PREFERENCES}},
   });
   return kCommonSyncablePrefsAllowlist;
 }
