@@ -2707,7 +2707,10 @@ id<GREYMatcher> EditDoneButton() {
   NSString* text = l10n_util::GetNSString(IDS_IOS_CHECK_PASSWORDS);
   NSString* detailText =
       base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-          IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT, 1));
+          password_manager::features::IsPasswordCheckupEnabled()
+              ? IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT
+              : IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT,
+          1));
 
   [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabel([NSString
                                           stringWithFormat:@"%@, %@", text,

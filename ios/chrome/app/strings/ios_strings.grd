@@ -2884,19 +2884,25 @@ While in Incognito, sites can't use cookies to see your browsing activity across
           =1 {for {COUNT} site or app}
           other {for {COUNT} sites and apps}}
       </message>
-      <message name="IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT" desc="Displays the number of compromised passwords present in the database.">
+      <message name="IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT" desc="Displays the number of compromised passwords present in the database.">
         {COUNT, plural,
           =0 {No compromised passwords}
           =1 {{COUNT} Compromised password}
           other {{COUNT} Compromised passwords}}
       </message>
+      <message name="IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT" desc="In sentence case: Displays the number of compromised passwords present in the database." meaning="[In sentence case]">
+        {COUNT, plural,
+          =0 {No compromised passwords}
+          =1 {{COUNT} compromised password}
+          other {{COUNT} compromised passwords}}
+      </message>
       <message name="IDS_IOS_PASSWORD_CHECKUP_REUSED_COUNT" desc="Displays the number of reused passwords present in the database. User can only have 2 or more reused passwords, so this string will always be plural.">
-        <ph name="COUNT">$1<ex>2</ex></ph> Reused passwords
+        <ph name="COUNT">$1<ex>2</ex></ph> reused passwords
       </message>
       <message name="IDS_IOS_PASSWORD_CHECKUP_WEAK_COUNT" desc="Displays the number of weak passwords present in the database.">
         {COUNT, plural,
-          =1 {{COUNT} Weak password}
-          other {{COUNT} Weak passwords}}
+          =1 {{COUNT} weak password}
+          other {{COUNT} weak passwords}}
       </message>
       <message name="IDS_IOS_PASSWORD_CHECKUP_DISMISSED_COUNT" desc="Displays the number of compromised password warnings that have been dismissed.">
         {COUNT, plural,
@@ -4409,7 +4415,7 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_ACCOUNT_TABLE_ENTER_PASSPHRASE_MESSAGE" desc="The error message to show in the account table when there is a passphrase error. [iOS only]">
         Sync is not working. To start sync enter your passphrase.
       </message>
-      <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_COMPROMISED_PASSWORDS_TITLE" desc="Title for the compromised passwords item in the Password Checkup Homepage. [Length: 16em] [iOS only]">
+      <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_COMPROMISED_PASSWORDS_TITLE" desc="In Title Case: Title for the compromised passwords item in the Password Checkup Homepage. [Length: 16em] [iOS only]" meaning="[In Title Case]">
         {count, plural,
           =0 {No Compromised Passwords}
           =1 {{count} Compromised Password}
@@ -4429,7 +4435,7 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_NO_REUSED_PASSWORDS_TITLE" desc="Title for the reused passwords item in the Password Checkup Homepage when there are no reused passwords. [Length: 16em] [iOS only]">
         Your Passwords are Unique
       </message>
-      <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_REUSED_PASSWORDS_TITLE" desc="Title for the reused passwords item in the Password Checkup Homepage when there are reused passwords. User can only have 2 or more reused passwords, so this string will always be plural. [Length: 16em] [iOS only]">
+      <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_REUSED_PASSWORDS_TITLE" desc="In Title Case: Title for the reused passwords item in the Password Checkup Homepage when there are reused passwords. User can only have 2 or more reused passwords, so this string will always be plural. [Length: 16em] [iOS only]" meaning="[In Title Case]">
         <ph name="COUNT">$1<ex>2</ex></ph> Reused Passwords
       </message>
       <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_NO_REUSED_PASSWORDS_SUBTITLE" desc="Subitle for the reused passwords item in the Password Checkup Homepage when there are no reused passwords. [iOS only]">
@@ -4441,7 +4447,7 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_NO_WEAK_PASSWORDS_TITLE" desc="Title for the weak passwords item in the Password Checkup Homepage when there are no weak passwords. [Length: 16em] [iOS only]">
         Your Passwords look Strong
       </message>
-      <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_WEAK_PASSWORDS_TITLE" desc="Title for the weak passwords item in the Password Checkup Homepage when there are weak passwords. [Length: 16em] [iOS only]">
+      <message name="IDS_IOS_PASSWORD_CHECKUP_HOMEPAGE_WEAK_PASSWORDS_TITLE" desc="In Title Case: Title for the weak passwords item in the Password Checkup Homepage when there are weak passwords. [Length: 16em] [iOS only]" meaning="[In Title Case]">
         {count, plural,
           =1 {{count} Weak Password}
           other {{count} Weak Passwords}}

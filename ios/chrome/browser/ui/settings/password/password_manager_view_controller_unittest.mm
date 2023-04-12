@@ -1053,7 +1053,7 @@ TEST_F(
   CheckTextCellTextWithId(IDS_IOS_CHECK_PASSWORDS_NOW_BUTTON,
                           GetSectionIndex(SectionIdentifierPasswordCheck), 1);
   CheckDetailItemTextWithPluralIds(
-      IDS_IOS_CHECK_PASSWORDS, IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT, 1,
+      IDS_IOS_CHECK_PASSWORDS, IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT, 1,
       GetSectionIndex(SectionIdentifierPasswordCheck), 0);
   SettingsCheckItem* checkPassword =
       GetTableViewItem(GetSectionIndex(SectionIdentifierPasswordCheck), 0);

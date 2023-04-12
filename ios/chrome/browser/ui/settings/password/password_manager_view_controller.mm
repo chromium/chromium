@@ -1416,7 +1416,9 @@ bool AreStoresEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     case PasswordCheckStateUnmutedCompromisedPasswords: {
       _passwordProblemsItem.detailText =
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
-              IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT,
+              IsPasswordCheckupEnabled()
+                  ? IDS_IOS_PASSWORD_CHECKUP_COMPROMISED_COUNT
+                  : IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT,
               self.insecurePasswordsCount));
       _passwordProblemsItem.warningState = WarningState::kSevereWarning;
 
