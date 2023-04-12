@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -61,15 +60,13 @@ class SessionDataService : public BrowserListObserver, public KeyedService {
   // content setting are removed.
   void StartCleanupInternal(bool skip_session_cookies);
 
-  // Records the Status of the last session.
-  void RecordHistogramForLastSession(Status last_status);
   // Starts another data deletion if the deletion at the end of the last session
   // did not finish.
   void MaybeContinueDeletionFromLastSesssion(Status last_status);
 
   void SetStatusPref(Status status);
-  void OnCleanupAtStartupFinished(base::TimeTicks time_started);
-  void OnCleanupAtSessionEndFinished(base::TimeTicks time_started);
+  void OnCleanupAtStartupFinished();
+  void OnCleanupAtSessionEndFinished();
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<SessionDataDeleter> deleter_;
