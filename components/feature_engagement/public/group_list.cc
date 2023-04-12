@@ -11,7 +11,10 @@ namespace feature_engagement {
 
 namespace {
 const base::Feature* const kAllGroups[] = {
-    &kIPHDummyGroup,
+    &kIPHDummyGroup,  // Ensures non-empty array for all platforms.
+#if BUILDFLAG(IS_IOS)
+    &kiOSFullscreenPromosGroup,
+#endif  // BUILDFLAG(IS_IOS)
 };
 }  // namespace
 
