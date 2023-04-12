@@ -31,6 +31,11 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {loadTimeData} from '../i18n_setup.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
+// <if expr="_google_chrome">
+import {routes} from '../route.js';
+import {Router} from '../router.js';
+
+// </if>
 
 import {getTemplate} from './about_page.html.js';
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
@@ -39,6 +44,7 @@ import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, UpdateStatus, UpdateSt
 import {PromoteUpdaterStatus} from './about_page_browser_proxy.js';
 // </if>
 // clang-format on
+
 
 const SettingsAboutPageElementBase =
     RelaunchMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
@@ -82,7 +88,8 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
       showGetTheMostOutOfChromeSection_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean('showGetTheMostOutOfChromeSection');
+          return loadTimeData.getBoolean('showGetTheMostOutOfChromeSection') &&
+              !loadTimeData.getBoolean('isGuest');
         },
       },
       // </if>
@@ -342,8 +349,8 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
     this.aboutBrowserProxy_.openFeedbackDialog();
   }
 
-  private onGetTheMostOutOfChromeClick_() {
-    // TODO(crbug.com/1423278): implement.
+  private onGetTheMostOutOfChromeTap_() {
+    Router.getInstance().navigateTo(routes.GET_MOST_CHROME);
   }
   // </if>
 
