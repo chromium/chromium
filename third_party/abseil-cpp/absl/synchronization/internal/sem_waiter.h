@@ -46,6 +46,8 @@ class SemWaiter : public WaiterCrtp<SemWaiter> {
   static constexpr char kName[] = "SemWaiter";
 
  private:
+  int TimedWait(KernelTimeout t);
+
   sem_t sem_;
 
   // This seems superfluous, but for Poke() we need to cause spurious

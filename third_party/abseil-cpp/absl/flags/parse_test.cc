@@ -18,6 +18,7 @@
 #include <stdlib.h>
 
 #include <fstream>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -235,7 +236,9 @@ ABSL_RETIRED_FLAG(std::string, legacy_str, "l", "");
 namespace {
 
 namespace flags = absl::flags_internal;
+using testing::AllOf;
 using testing::ElementsAreArray;
+using testing::HasSubstr;
 
 class ParseTest : public testing::Test {
  public:
@@ -266,6 +269,15 @@ void InvokeParseAbslOnly(const char* (&in_argv)[N]) {
 
   absl::ParseAbseilFlagsOnly(2, const_cast<char**>(in_argv), positional_args,
                              unrecognized_flags);
+}
+
+// --------------------------------------------------------------------
+
+template <int N>
+std::vector<char*> InvokeParseCommandLineImpl(const char* (&in_argv)[N]) {
+  return flags::ParseCommandLineImpl(
+      N, const_cast<char**>(in_argv), flags::UsageFlagsAction::kHandleUsage,
+      flags::OnUndefinedFlag::kAbortIfUndefined, std::cerr);
 }
 
 // --------------------------------------------------------------------
@@ -1066,8 +1078,9 @@ TEST_F(ParseDeathTest, ExitOnUnrecognizedFlagPrintsHelp) {
       "--help=int_flag",
   };
 
-  EXPECT_DEATH_IF_SUPPORTED(InvokeParse(in_args),
-                            "Try --helpfull to get a list of all flags");
+  EXPECT_EXIT(InvokeParseCommandLineImpl(in_args), testing::ExitedWithCode(1),
+              AllOf(HasSubstr("Unknown command line flag 'undef_flag1'"),
+                    HasSubstr("Try --helpfull to get a list of all flags")));
 }
 
 // --------------------------------------------------------------------

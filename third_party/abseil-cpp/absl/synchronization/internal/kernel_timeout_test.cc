@@ -64,6 +64,13 @@ TEST(KernelTimeout, FiniteTimes) {
     EXPECT_TRUE(t.is_absolute_timeout());
     EXPECT_FALSE(t.is_relative_timeout());
     EXPECT_EQ(absl::TimeFromTimespec(t.MakeAbsTimespec()), when);
+#ifndef _WIN32
+    EXPECT_LE(
+        absl::AbsDuration(absl::Now() + duration -
+                          absl::TimeFromTimespec(
+                              t.MakeClockAbsoluteTimespec(CLOCK_REALTIME))),
+        absl::Milliseconds(10));
+#endif
     EXPECT_LE(
         absl::AbsDuration(absl::DurationFromTimespec(t.MakeRelativeTimespec()) -
                           std::max(duration, absl::ZeroDuration())),
@@ -89,6 +96,10 @@ TEST(KernelTimeout, InfiniteFuture) {
   // absl::InfiniteFuture(), but we should return a very large value.
   EXPECT_GT(absl::TimeFromTimespec(t.MakeAbsTimespec()),
             absl::Now() + absl::Hours(100000));
+#ifndef _WIN32
+  EXPECT_GT(absl::TimeFromTimespec(t.MakeClockAbsoluteTimespec(CLOCK_REALTIME)),
+            absl::Now() + absl::Hours(100000));
+#endif
   EXPECT_GT(absl::DurationFromTimespec(t.MakeRelativeTimespec()),
             absl::Hours(100000));
   EXPECT_GT(absl::FromUnixNanos(t.MakeAbsNanos()),
@@ -110,6 +121,10 @@ TEST(KernelTimeout, DefaultConstructor) {
   // absl::InfiniteFuture(), but we should return a very large value.
   EXPECT_GT(absl::TimeFromTimespec(t.MakeAbsTimespec()),
             absl::Now() + absl::Hours(100000));
+#ifndef _WIN32
+  EXPECT_GT(absl::TimeFromTimespec(t.MakeClockAbsoluteTimespec(CLOCK_REALTIME)),
+            absl::Now() + absl::Hours(100000));
+#endif
   EXPECT_GT(absl::DurationFromTimespec(t.MakeRelativeTimespec()),
             absl::Hours(100000));
   EXPECT_GT(absl::FromUnixNanos(t.MakeAbsNanos()),
@@ -131,6 +146,10 @@ TEST(KernelTimeout, TimeMaxNanos) {
   // absl::InfiniteFuture(), but we should return a very large value.
   EXPECT_GT(absl::TimeFromTimespec(t.MakeAbsTimespec()),
             absl::Now() + absl::Hours(100000));
+#ifndef _WIN32
+  EXPECT_GT(absl::TimeFromTimespec(t.MakeClockAbsoluteTimespec(CLOCK_REALTIME)),
+            absl::Now() + absl::Hours(100000));
+#endif
   EXPECT_GT(absl::DurationFromTimespec(t.MakeRelativeTimespec()),
             absl::Hours(100000));
   EXPECT_GT(absl::FromUnixNanos(t.MakeAbsNanos()),
@@ -152,6 +171,10 @@ TEST(KernelTimeout, Never) {
   // absl::InfiniteFuture(), but we should return a very large value.
   EXPECT_GT(absl::TimeFromTimespec(t.MakeAbsTimespec()),
             absl::Now() + absl::Hours(100000));
+#ifndef _WIN32
+  EXPECT_GT(absl::TimeFromTimespec(t.MakeClockAbsoluteTimespec(CLOCK_REALTIME)),
+            absl::Now() + absl::Hours(100000));
+#endif
   EXPECT_GT(absl::DurationFromTimespec(t.MakeRelativeTimespec()),
             absl::Hours(100000));
   EXPECT_GT(absl::FromUnixNanos(t.MakeAbsNanos()),
@@ -170,6 +193,10 @@ TEST(KernelTimeout, InfinitePast) {
   EXPECT_FALSE(t.is_relative_timeout());
   EXPECT_LE(absl::TimeFromTimespec(t.MakeAbsTimespec()),
             absl::FromUnixNanos(1));
+#ifndef _WIN32
+  EXPECT_LE(absl::TimeFromTimespec(t.MakeClockAbsoluteTimespec(CLOCK_REALTIME)),
+            absl::FromUnixSeconds(1));
+#endif
   EXPECT_EQ(absl::DurationFromTimespec(t.MakeRelativeTimespec()),
             absl::ZeroDuration());
   EXPECT_LE(absl::FromUnixNanos(t.MakeAbsNanos()), absl::FromUnixNanos(1));
@@ -200,6 +227,13 @@ TEST(KernelTimeout, FiniteDurations) {
     EXPECT_LE(absl::AbsDuration(absl::Now() + duration -
                                 absl::TimeFromTimespec(t.MakeAbsTimespec())),
               absl::Milliseconds(5));
+#ifndef _WIN32
+    EXPECT_LE(
+        absl::AbsDuration(absl::Now() + duration -
+                          absl::TimeFromTimespec(
+                              t.MakeClockAbsoluteTimespec(CLOCK_REALTIME))),
+        absl::Milliseconds(5));
+#endif
     EXPECT_LE(
         absl::AbsDuration(absl::DurationFromTimespec(t.MakeRelativeTimespec()) -
                           duration),
@@ -241,6 +275,12 @@ TEST(KernelTimeout, NegativeDurations) {
     EXPECT_LE(absl::AbsDuration(absl::Now() -
                                 absl::TimeFromTimespec(t.MakeAbsTimespec())),
               absl::Milliseconds(5));
+#ifndef _WIN32
+    EXPECT_LE(absl::AbsDuration(absl::Now() - absl::TimeFromTimespec(
+                                                  t.MakeClockAbsoluteTimespec(
+                                                      CLOCK_REALTIME))),
+              absl::Milliseconds(5));
+#endif
     EXPECT_EQ(absl::DurationFromTimespec(t.MakeRelativeTimespec()),
               absl::ZeroDuration());
     EXPECT_LE(
@@ -263,6 +303,10 @@ TEST(KernelTimeout, InfiniteDuration) {
   // absl::InfiniteFuture(), but we should return a very large value.
   EXPECT_GT(absl::TimeFromTimespec(t.MakeAbsTimespec()),
             absl::Now() + absl::Hours(100000));
+#ifndef _WIN32
+  EXPECT_GT(absl::TimeFromTimespec(t.MakeClockAbsoluteTimespec(CLOCK_REALTIME)),
+            absl::Now() + absl::Hours(100000));
+#endif
   EXPECT_GT(absl::DurationFromTimespec(t.MakeRelativeTimespec()),
             absl::Hours(100000));
   EXPECT_GT(absl::FromUnixNanos(t.MakeAbsNanos()),
@@ -284,6 +328,10 @@ TEST(KernelTimeout, DurationMaxNanos) {
   // absl::InfiniteFuture(), but we should return a very large value.
   EXPECT_GT(absl::TimeFromTimespec(t.MakeAbsTimespec()),
             absl::Now() + absl::Hours(100000));
+#ifndef _WIN32
+  EXPECT_GT(absl::TimeFromTimespec(t.MakeClockAbsoluteTimespec(CLOCK_REALTIME)),
+            absl::Now() + absl::Hours(100000));
+#endif
   EXPECT_GT(absl::DurationFromTimespec(t.MakeRelativeTimespec()),
             absl::Hours(100000));
   EXPECT_GT(absl::FromUnixNanos(t.MakeAbsNanos()),
@@ -305,6 +353,10 @@ TEST(KernelTimeout, OverflowNanos) {
   // Timeouts should still be far in the future.
   EXPECT_GT(absl::TimeFromTimespec(t.MakeAbsTimespec()),
             absl::Now() + absl::Hours(100000));
+#ifndef _WIN32
+  EXPECT_GT(absl::TimeFromTimespec(t.MakeClockAbsoluteTimespec(CLOCK_REALTIME)),
+            absl::Now() + absl::Hours(100000));
+#endif
   EXPECT_GT(absl::DurationFromTimespec(t.MakeRelativeTimespec()),
             absl::Hours(100000));
   EXPECT_GT(absl::FromUnixNanos(t.MakeAbsNanos()),

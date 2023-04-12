@@ -22,6 +22,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
+#include <ostream>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -693,7 +694,8 @@ std::vector<std::string> GetMisspellingHints(const absl::string_view flag) {
 
 std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
                                         UsageFlagsAction usage_flag_action,
-                                        OnUndefinedFlag undef_flag_action) {
+                                        OnUndefinedFlag undef_flag_action,
+                                        std::ostream& error_help_output) {
   std::vector<char*> positional_args;
   std::vector<UnrecognizedFlag> unrecognized_flags;
 
@@ -707,8 +709,8 @@ std::vector<char*> ParseCommandLineImpl(int argc, char* argv[],
 
     if (undef_flag_action == OnUndefinedFlag::kAbortIfUndefined) {
       if (!unrecognized_flags.empty()) {
-        flags_internal::HandleUsageFlags(std::cerr, ProgramUsageMessage());
-        std::exit(1);
+        flags_internal::HandleUsageFlags(error_help_output,
+        ProgramUsageMessage()); std::exit(1);
       }
     }
   }
