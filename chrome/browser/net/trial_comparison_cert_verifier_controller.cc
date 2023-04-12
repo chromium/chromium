@@ -14,7 +14,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/net/cert_verifier_configuration.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/certificate_reporting_service.h"
 #include "chrome/browser/safe_browsing/certificate_reporting_service_factory.h"
@@ -64,14 +63,6 @@ bool TrialComparisonCertVerifierController::MaybeAllowedForProfile(
   bool is_official_build = g_is_fake_official_build_for_cert_verifier_testing;
 #if defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   is_official_build = true;
-#endif
-
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  // If the Chrome Root Store is enabled as part of the default verifier, the
-  // trial does not make sense.
-  if (GetChromeCertVerifierServiceParams(/*local_state=*/nullptr)
-          ->use_chrome_root_store)
-    return false;
 #endif
 
   return is_official_build &&

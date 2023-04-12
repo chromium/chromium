@@ -553,11 +553,6 @@ GeneratedCodeCacheSettings ContentBrowserClient::GetGeneratedCodeCacheSettings(
   return GeneratedCodeCacheSettings(false, 0, base::FilePath());
 }
 
-cert_verifier::mojom::CertVerifierServiceParamsPtr
-ContentBrowserClient::GetCertVerifierServiceParams() {
-  return nullptr;
-}
-
 void ContentBrowserClient::AllowCertificateError(
     WebContents* web_contents,
     int cert_error,

@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
@@ -103,6 +104,12 @@ CONTENT_EXPORT void SetCertVerifierServiceFactoryForTesting(
 // This method can only be called on the UI thread.
 CONTENT_EXPORT cert_verifier::mojom::CertVerifierServiceFactory*
 GetCertVerifierServiceFactory();
+
+// Returns the |mojo::Remote<CertVerifierServiceFactory>|. For testing only.
+// Must only be called on the UI thread.
+CONTENT_EXPORT
+mojo::Remote<cert_verifier::mojom::CertVerifierServiceFactory>&
+GetCertVerifierServiceFactoryRemoteForTesting();
 
 // Convenience function to create a NetworkContext from the given set of
 // |params|. Any creation of network contexts should be done through this

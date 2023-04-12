@@ -87,7 +87,6 @@
 #include "chrome/browser/metrics/chrome_browser_main_extra_parts_metrics.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/navigation_predictor/anchor_element_preloader.h"
-#include "chrome/browser/net/cert_verifier_configuration.h"
 #include "chrome/browser/net/chrome_network_delegate.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
@@ -3543,17 +3542,6 @@ ChromeContentBrowserClient::GetGeneratedCodeCacheSettings(
       cache_path = disk_cache_dir.Append(cache_path.BaseName());
   }
   return content::GeneratedCodeCacheSettings(true, size_in_bytes, cache_path);
-}
-
-cert_verifier::mojom::CertVerifierServiceParamsPtr
-ChromeContentBrowserClient::GetCertVerifierServiceParams() {
-  PrefService* local_state;
-  if (g_browser_process) {
-    local_state = g_browser_process->local_state();
-  } else {
-    local_state = startup_data_.chrome_feature_list_creator()->local_state();
-  }
-  return GetChromeCertVerifierServiceParams(local_state);
 }
 
 void ChromeContentBrowserClient::AllowCertificateError(

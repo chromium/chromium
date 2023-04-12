@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -132,6 +133,17 @@ void UpdateCRLSetWithTestFile(
   update_run_loop.Run();
 }
 
+void EnableChromeRootStoreIfOptional(CertVerifierServiceFactoryImpl* factory) {
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+  // Configure with Chrome Root Store enabled.
+  {
+    base::RunLoop run_loop;
+    factory->SetUseChromeRootStore(true, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+#endif
+}
+
 }  // namespace
 
 TEST(CertVerifierServiceFactoryTest, GetNewCertVerifier) {
@@ -144,7 +156,6 @@ TEST(CertVerifierServiceFactoryTest, GetNewCertVerifier) {
 
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
-      /*params=*/nullptr,
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
 
   mojo::Remote<mojom::CertVerifierService> cv_service_remote;
@@ -201,17 +212,11 @@ TEST(CertVerifierServiceFactoryTest, GetNewCertVerifierWithUpdatedRootStore) {
       cert_verifier::mojom::ChromeRootStore::New(
           base::as_bytes(base::make_span(proto_serialized)));
 
-  // Configure with Chrome Root Store enabled.
-  mojom::CertVerifierServiceParamsPtr service_params =
-      mojom::CertVerifierServiceParams::New();
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  service_params->use_chrome_root_store = true;
-#endif
-
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
-      std::move(service_params),
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
 
   // Feed factory the new Chrome Root Store.
   {
@@ -265,17 +270,11 @@ TEST(CertVerifierServiceFactoryTest, UpdateExistingCertVerifierWithRootStore) {
   base::Time now = base::Time::Now();
   leaf->SetValidity(now - base::Days(1), now + base::Days(1));
 
-  // Configure with Chrome Root Store enabled.
-  mojom::CertVerifierServiceParamsPtr service_params =
-      mojom::CertVerifierServiceParams::New();
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  service_params->use_chrome_root_store = true;
-#endif
-
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
-      std::move(service_params),
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
 
   mojo::Remote<mojom::CertVerifierService> cv_service_remote;
   DummyCVServiceClient cv_service_client;
@@ -379,17 +378,11 @@ TEST(CertVerifierServiceFactoryTest, OldRootStoreUpdateIgnored) {
       cert_verifier::mojom::ChromeRootStore::New(
           base::as_bytes(base::make_span(proto_serialized)));
 
-  // Configure with Chrome Root Store enabled.
-  mojom::CertVerifierServiceParamsPtr service_params =
-      mojom::CertVerifierServiceParams::New();
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  service_params->use_chrome_root_store = true;
-#endif
-
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
-      std::move(service_params),
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
 
   // Feed factory the new Chrome Root Store.
   {
@@ -454,17 +447,11 @@ TEST(CertVerifierServiceFactoryTest, BadRootStoreUpdateIgnored) {
       cert_verifier::mojom::ChromeRootStore::New(
           base::as_bytes(base::make_span(proto_serialized)));
 
-  // Configure with Chrome Root Store enabled.
-  mojom::CertVerifierServiceParamsPtr service_params =
-      mojom::CertVerifierServiceParams::New();
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  service_params->use_chrome_root_store = true;
-#endif
-
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
-      std::move(service_params),
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
 
   // Feed factory the new Chrome Root Store.
   {
@@ -621,7 +608,6 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithUpdatedRootStore) {
 
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
-      /*params=*/nullptr,
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
 
   // Feed factory the new Chrome Root Store.
@@ -660,7 +646,6 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithCompiledRootStore) {
 
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
-      /*params=*/nullptr,
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
   cert_verifier::mojom::ChromeRootStoreInfoPtr info_ptr;
   base::RunLoop request_completed_run_loop;
@@ -718,17 +703,11 @@ TEST_F(CertVerifierServiceFactoryCRLSetTest,
       net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem"));
   ASSERT_TRUE(ok_cert);
 
-  // Configure with Chrome Root Store enabled.
-  mojom::CertVerifierServiceParamsPtr service_params =
-      mojom::CertVerifierServiceParams::New();
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  service_params->use_chrome_root_store = true;
-#endif
-
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
-      std::move(service_params),
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
 
   // Feed factory the CRLSet which blocks |ok_cert|.
   UpdateCRLSetWithTestFile(&cv_service_factory_impl, "crlset_by_leaf_spki.raw");
@@ -766,17 +745,11 @@ TEST_F(CertVerifierServiceFactoryCRLSetTest,
       net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem"));
   ASSERT_TRUE(ok_cert);
 
-  // Configure with Chrome Root Store enabled.
-  mojom::CertVerifierServiceParamsPtr service_params =
-      mojom::CertVerifierServiceParams::New();
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  service_params->use_chrome_root_store = true;
-#endif
-
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
-      std::move(service_params),
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
 
   mojo::Remote<mojom::CertVerifierService> cv_service_remote;
   DummyCVServiceClient cv_service_client;
@@ -820,17 +793,11 @@ TEST_F(CertVerifierServiceFactoryCRLSetTest, CRLSetIsUpdatedIfNewer) {
       net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem"));
   ASSERT_TRUE(ok_cert);
 
-  // Configure with Chrome Root Store enabled.
-  mojom::CertVerifierServiceParamsPtr service_params =
-      mojom::CertVerifierServiceParams::New();
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  service_params->use_chrome_root_store = true;
-#endif
-
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
-      std::move(service_params),
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
 
   mojo::Remote<mojom::CertVerifierService> cv_service_remote;
   DummyCVServiceClient cv_service_client;
@@ -890,17 +857,11 @@ TEST_F(CertVerifierServiceFactoryCRLSetTest, CRLSetDoesNotDowngrade) {
       net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem"));
   ASSERT_TRUE(ok_cert);
 
-  // Configure with Chrome Root Store enabled.
-  mojom::CertVerifierServiceParamsPtr service_params =
-      mojom::CertVerifierServiceParams::New();
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  service_params->use_chrome_root_store = true;
-#endif
-
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
-      std::move(service_params),
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
 
   mojo::Remote<mojom::CertVerifierService> cv_service_remote;
   DummyCVServiceClient cv_service_client;
@@ -978,17 +939,11 @@ TEST_F(CertVerifierServiceFactoryCRLSetTest, BadCRLSetIgnored) {
       net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem"));
   ASSERT_TRUE(ok_cert);
 
-  // Configure with Chrome Root Store enabled.
-  mojom::CertVerifierServiceParamsPtr service_params =
-      mojom::CertVerifierServiceParams::New();
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  service_params->use_chrome_root_store = true;
-#endif
-
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
-      std::move(service_params),
       cv_service_factory_remote.BindNewPipeAndPassReceiver());
+
+  EnableChromeRootStoreIfOptional(&cv_service_factory_impl);
 
   mojo::Remote<mojom::CertVerifierService> cv_service_remote;
   DummyCVServiceClient cv_service_client;

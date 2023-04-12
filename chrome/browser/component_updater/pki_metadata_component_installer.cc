@@ -43,9 +43,7 @@
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-#include "chrome/browser/net/cert_verifier_configuration.h"
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "net/base/features.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #endif
 
@@ -478,19 +476,19 @@ void MaybeRegisterPKIMetadataComponent(ComponentUpdateService* cus) {
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
-  should_install |= GetChromeCertVerifierServiceParams(/*local_state=*/nullptr)
-                        ->use_chrome_root_store;
-#else
+  // If Chrome Root Store is supported, always install the component.
+  // Note that if CRS is supported but optional, the CRS setting can change
+  // during runtime based on the enterprise policy, so we still have to install
+  // the component now so that CRS updates will be processed in case we need
+  // them later. (Might be possible to refactor to only install component later
+  // when it's needed and if it's not already installed? Probably not worth the
+  // trouble though since CRS being optional is only a temporary state.)
+  // Note: On Android CRS will continue to be optional in code since chrome
+  // browser and webview use the same binary, but eventually it will just be
+  // unconditionally enabled in chrome and disabled in webview. This component
+  // is not registered in webview so setting it to always install here isn't a
+  // problem.
   should_install = true;
-#endif
-
-// Even if we aren't using Chrome Root Store for cert verification, we may be
-// trialing it. Check if the trial is enabled.
-#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-  should_install |= base::FeatureList::IsEnabled(
-      net::features::kCertDualVerificationTrialFeature);
-#endif
 #endif
 
   if (!should_install)

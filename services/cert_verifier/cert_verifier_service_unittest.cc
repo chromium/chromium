@@ -109,8 +109,9 @@ class DummyCertVerifier : public net::CertVerifierWithUpdatableProc {
   void RemoveObserver(Observer* observer) override { observer_ = nullptr; }
   void UpdateVerifyProcData(
       scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
-      scoped_refptr<net::CRLSet> crl_set,
-      const net::ChromeRootStoreData* root_store_data) override {}
+      const net::CertVerifyProcFactory::ImplParams& impl_params) override {
+    ADD_FAILURE() << "not handled";
+  }
 
   void RespondToRequest(const net::CertVerifier::RequestParams& params) {
     auto it = dummy_requests_.find(params);

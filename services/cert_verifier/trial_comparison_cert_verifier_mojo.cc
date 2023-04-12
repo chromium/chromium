@@ -78,16 +78,15 @@ TrialComparisonCertVerifierMojo::TrialComparisonCertVerifierMojo(
         config_client_receiver,
     mojo::PendingRemote<mojom::TrialComparisonCertVerifierReportClient>
         report_client,
-    scoped_refptr<net::CertVerifyProc> primary_verify_proc,
-    scoped_refptr<net::CertVerifyProcFactory> primary_verify_proc_factory,
-    scoped_refptr<net::CertVerifyProc> trial_verify_proc,
-    scoped_refptr<net::CertVerifyProcFactory> trial_verify_proc_factory)
+    scoped_refptr<net::CertVerifyProcFactory> verify_proc_factory,
+    scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+    const net::CertVerifyProcFactory::ImplParams& impl_params)
     : receiver_(this, std::move(config_client_receiver)),
       report_client_(std::move(report_client)) {
   trial_comparison_cert_verifier_ =
       std::make_unique<net::TrialComparisonCertVerifier>(
-          primary_verify_proc, primary_verify_proc_factory, trial_verify_proc,
-          trial_verify_proc_factory,
+          std::move(verify_proc_factory), std::move(cert_net_fetcher),
+          impl_params,
           base::BindRepeating(
               &TrialComparisonCertVerifierMojo::OnSendTrialReport,
               // Unretained safe because the report_callback will not be called
@@ -122,10 +121,9 @@ void TrialComparisonCertVerifierMojo::RemoveObserver(Observer* observer) {
 
 void TrialComparisonCertVerifierMojo::UpdateVerifyProcData(
     scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
-    scoped_refptr<net::CRLSet> crl_set,
-    const net::ChromeRootStoreData* root_store_data) {
+    const net::CertVerifyProcFactory::ImplParams& impl_params) {
   trial_comparison_cert_verifier_->UpdateVerifyProcData(
-      std::move(cert_net_fetcher), std::move(crl_set), root_store_data);
+      std::move(cert_net_fetcher), impl_params);
 }
 
 void TrialComparisonCertVerifierMojo::OnTrialConfigUpdated(bool allowed) {

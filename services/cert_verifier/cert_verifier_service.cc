@@ -133,10 +133,8 @@ void CertVerifierServiceImpl::SetCertVerifierServiceFactory(
 }
 
 void CertVerifierServiceImpl::UpdateVerifierData(
-    scoped_refptr<net::CRLSet> crl_set,
-    const net::ChromeRootStoreData* root_store_data) {
-  verifier_->UpdateVerifyProcData(cert_net_fetcher_, std::move(crl_set),
-                                  root_store_data);
+    const net::CertVerifyProcFactory::ImplParams& impl_params) {
+  verifier_->UpdateVerifyProcData(cert_net_fetcher_, impl_params);
 }
 
 void CertVerifierServiceImpl::Verify(

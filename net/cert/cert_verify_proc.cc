@@ -892,4 +892,21 @@ bool CertVerifyProc::HasTooLongValidity(const X509Certificate& cert) {
   return false;
 }
 
+CertVerifyProcFactory::ImplParams::ImplParams() {
+  crl_set = net::CRLSet::BuiltinCRLSet();
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+  use_chrome_root_store =
+      base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);
+#endif
+}
+
+CertVerifyProcFactory::ImplParams::~ImplParams() = default;
+
+CertVerifyProcFactory::ImplParams::ImplParams(const ImplParams&) = default;
+CertVerifyProcFactory::ImplParams& CertVerifyProcFactory::ImplParams::operator=(
+    const ImplParams& other) = default;
+CertVerifyProcFactory::ImplParams::ImplParams(ImplParams&&) = default;
+CertVerifyProcFactory::ImplParams& CertVerifyProcFactory::ImplParams::operator=(
+    ImplParams&& other) = default;
+
 }  // namespace net

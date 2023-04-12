@@ -19,11 +19,8 @@
 #include "net/cert/cert_verifier.h"
 
 namespace net {
-class CertVerifyProc;
 class CertVerifyProcFactory;
 class CertNetFetcher;
-class ChromeRootStoreData;
-class CRLSet;
 
 // TrialComparisonCertVerifier is a CertVerifier that can be used to compare
 // the results between two different CertVerifyProcs. The results are reported
@@ -45,33 +42,35 @@ class NET_EXPORT TrialComparisonCertVerifier
       const net::CertVerifyResult& primary_result,
       const net::CertVerifyResult& trial_result)>;
 
-  // Create a new TrialComparisonCertVerifier. Initially, no trial
-  // verifications will actually be performed; that is, calls to Verify() will
-  // be dispatched to the underlying |primary_verify_proc|. This can be changed
-  // by calling set_trial_allowed().
+  // Create a new TrialComparisonCertVerifier. The `verify_proc_factory` will
+  // be used to create the underlying primary and trial verifiers.
+  //
+  // Initially, no trial verifications will actually be performed; that is,
+  // calls to Verify() will be dispatched to the underlying `primary_verifier_`
+  // or `trial_verifier_` depending on the `impl_params`. This can be changed
+  // by calling `set_trial_allowed()`.
   //
   // When trial verifications are enabled, calls to Verify() will first call
-  // into |primary_verify_proc| to verify. The result of this verification will
+  // into `primary_verifier_` to verify. The result of this verification will
   // be immediately returned to the caller of Verify, allowing them to proceed.
   // However, the verifier will continue in the background, attempting to
-  // verify the same RequestParams using |trial_verify_proc|. If there are
-  // differences in the results, they will be reported via |report_callback|,
+  // verify the same RequestParams using `trial_verifier_`. If there are
+  // differences in the results, they will be reported via `report_callback`,
   // allowing the creator to receive information about differences.
   //
   // If the caller abandons the CertVerifier::Request prior to the primary
   // verification completed, no trial verification will be done. However, once
   // the primary verifier has returned, the trial verifications will continue,
   // provided that the underlying configuration has not been changed by
-  // calling SetConfig().
+  // calling `SetConfig()` or `UpdateVerifyProcData()`.
   //
-  // Note that there may be multiple calls to both |primary_verify_proc| and
-  // |trial_verify_proc|, using different parameters to account for platform
-  // differences.
+  // Note that there may be multiple calls to both the primary CertVerifyProc
+  // and trial CertVerifyProc, using different parameters to account for
+  // platform differences.
   TrialComparisonCertVerifier(
-      scoped_refptr<CertVerifyProc> primary_verify_proc,
-      scoped_refptr<CertVerifyProcFactory> primary_verify_proc_factory,
-      scoped_refptr<CertVerifyProc> trial_verify_proc,
-      scoped_refptr<CertVerifyProcFactory> trial_verify_proc_factory,
+      scoped_refptr<CertVerifyProcFactory> verify_proc_factory,
+      scoped_refptr<CertNetFetcher> cert_net_fetcher,
+      const CertVerifyProcFactory::ImplParams& impl_params,
       ReportCallback report_callback);
 
   TrialComparisonCertVerifier(const TrialComparisonCertVerifier&) = delete;
@@ -94,8 +93,7 @@ class NET_EXPORT TrialComparisonCertVerifier
   void RemoveObserver(Observer* observer) override;
   void UpdateVerifyProcData(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
-      scoped_refptr<CRLSet> crl_set,
-      const ChromeRootStoreData* root_store_data) override;
+      const CertVerifyProcFactory::ImplParams& impl_params) override;
 
  private:
   class Job;
@@ -108,6 +106,13 @@ class NET_EXPORT TrialComparisonCertVerifier
   void RemoveJob(Job* job_ptr);
   void NotifyJobsOfConfigChange();
 
+  // Processes the params from the caller, updates the state of the trial and
+  // returns the pair of {primary verifier params, trial verifier params} to
+  // be used in creating or updating the wrapped verifiers.
+  std::tuple<CertVerifyProcFactory::ImplParams,
+             CertVerifyProcFactory::ImplParams>
+  ProcessImplParams(const CertVerifyProcFactory::ImplParams& impl_params);
+
   // CertVerifier::Observer methods:
   void OnCertVerifierChanged() override;
 
@@ -115,6 +120,11 @@ class NET_EXPORT TrialComparisonCertVerifier
   bool allowed_ = false;
   // Callback that reports are sent to.
   ReportCallback report_callback_;
+
+  // The actual `use_chrome_root_store` value that is requested by the caller.
+  // This determines which verifier's result is returned to the caller as the
+  // actual verification result.
+  bool actual_use_chrome_root_store_;
 
   CertVerifier::Config config_;
 

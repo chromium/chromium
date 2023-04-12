@@ -33,10 +33,8 @@ namespace cert_verifier {
 class CertVerifierServiceFactoryImpl
     : public mojom::CertVerifierServiceFactory {
  public:
-  // Creates a CertVerifierServiceFactoryImpl. `params` may be null to use
-  // defaults.
+  // Creates a CertVerifierServiceFactoryImpl.
   explicit CertVerifierServiceFactoryImpl(
-      mojom::CertVerifierServiceParamsPtr params,
       mojo::PendingReceiver<mojom::CertVerifierServiceFactory> receiver);
   ~CertVerifierServiceFactoryImpl() override;
 
@@ -45,8 +43,6 @@ class CertVerifierServiceFactoryImpl
       mojo::PendingReceiver<mojom::CertVerifierService> receiver,
       mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
       mojom::CertVerifierCreationParamsPtr creation_params) override;
-  void GetServiceParamsForTesting(
-      GetServiceParamsForTestingCallback callback) override;
 
   // Performs the same function as above, but stores a ref to the new
   // CertNetFetcherURLLoader in |*cert_net_fetcher_ptr|, if the
@@ -66,6 +62,10 @@ class CertVerifierServiceFactoryImpl
                              UpdateChromeRootStoreCallback callback) override;
   void GetChromeRootStoreInfo(GetChromeRootStoreInfoCallback callback) override;
 #endif
+#if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+  void SetUseChromeRootStore(bool use_crs,
+                             SetUseChromeRootStoreCallback callback) override;
+#endif
 
   // Remove a CertVerifyService from needing updates to the Chrome Root Store.
   void RemoveService(internal::CertVerifierServiceImpl* service_impl);
@@ -76,15 +76,7 @@ class CertVerifierServiceFactoryImpl
 
   void OnCRLSetParsed(scoped_refptr<net::CRLSet> parsed_crl_set);
 
-  mojom::CertVerifierServiceParamsPtr service_params_;
-
-  // The most recent version of CRLSet that we've seen.
-  scoped_refptr<net::CRLSet> crl_set_;
-
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  // The most recent version of the Chrome Root Store that we've seen.
-  absl::optional<net::ChromeRootStoreData> root_store_data_;
-#endif
+  net::CertVerifyProcFactory::ImplParams proc_params_;
 
   mojo::Receiver<mojom::CertVerifierServiceFactory> receiver_;
 
