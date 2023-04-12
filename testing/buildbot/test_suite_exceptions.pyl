@@ -1044,6 +1044,12 @@
       },
       'Linux Tests': {
         'swarming': {
+          'dimension_sets': [
+            {
+              # TODO(crbug.com/1412588): Remove when Jammy is the default.
+              'os': 'Ubuntu-22.04',
+            },
+          ],
           'shards': 20,
         },
       },
