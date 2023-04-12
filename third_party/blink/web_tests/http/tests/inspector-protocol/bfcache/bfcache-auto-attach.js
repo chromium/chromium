@@ -15,7 +15,9 @@
   testRunner.log('detached OOPIF');
 
   attachedToTargetPromise = dp.Target.onceAttachedToTarget();
-  await session.evaluate('window.history.back()');
+  // Intentionally ignore evaluation errors - since we are navigating, we might
+  // get the "Inspected target navigated or closed" error response.
+  await dp.Runtime.evaluate({expression: 'window.history.back()'});
   targetInfo = (await attachedToTargetPromise).params.targetInfo;
   testRunner.log('OOPIF attached after BFCache navigation: ' + targetInfo.url);
 
