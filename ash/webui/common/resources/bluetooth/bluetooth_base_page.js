@@ -11,10 +11,11 @@ import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/paper-progress/paper-progress.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
 
+import {assertNotReached} from '//resources/ash/common/assert.js';
 import {focusWithoutInk} from '//resources/ash/common/focus_without_ink_js.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
-import {assertNotReached} from '//resources/ash/common/assert.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './bluetooth_base_page.html.js';
