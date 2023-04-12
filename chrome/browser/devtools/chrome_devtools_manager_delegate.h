@@ -33,6 +33,7 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
  public:
   static const char kTypeApp[];
   static const char kTypeBackgroundPage[];
+  static const char kTypePage[];
 
   ChromeDevToolsManagerDelegate();
 
