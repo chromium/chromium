@@ -520,9 +520,10 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldRotateKeystoreKey) {
 
   // Populate new remote specifics to bridge, which is actually still
   // |not_rotated_specifics|.
-  *entity_data.specifics.mutable_nigori() = not_rotated_specifics;
+  EntityData new_entity_data;
+  *new_entity_data.specifics.mutable_nigori() = not_rotated_specifics;
   EXPECT_CALL(*processor(), Put(HasKeystoreNigori()));
-  EXPECT_THAT(bridge()->ApplySyncChanges(std::move(entity_data)),
+  EXPECT_THAT(bridge()->ApplySyncChanges(std::move(new_entity_data)),
               Eq(absl::nullopt));
 
   // Mimic commit completion.
@@ -814,9 +815,9 @@ TEST_F(NigoriSyncBridgeImplTest,
   ASSERT_TRUE(passphrase_cryptographer->Encrypt(
       old_key_key_bag.ToProto(), specifics.mutable_encryption_keybag()));
   EntityData corrupted_entity_data;
-  *entity_data.specifics.mutable_nigori() = specifics;
+  *corrupted_entity_data.specifics.mutable_nigori() = specifics;
 
-  EXPECT_THAT(bridge()->ApplySyncChanges(std::move(entity_data)),
+  EXPECT_THAT(bridge()->ApplySyncChanges(std::move(corrupted_entity_data)),
               Ne(absl::nullopt));
 }
 
