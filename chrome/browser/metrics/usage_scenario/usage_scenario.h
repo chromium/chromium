@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_METRICS_POWER_USAGE_SCENARIO_H_
-#define CHROME_BROWSER_METRICS_POWER_USAGE_SCENARIO_H_
+#ifndef CHROME_BROWSER_METRICS_USAGE_SCENARIO_USAGE_SCENARIO_H_
+#define CHROME_BROWSER_METRICS_USAGE_SCENARIO_USAGE_SCENARIO_H_
 
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -56,4 +56,4 @@ const ScenarioParams& GetShortIntervalScenarioParams(
     const UsageScenarioDataStore::IntervalData& pre_interval_data);
 #endif  // BUILDFLAG(IS_MAC)
 
-#endif  // CHROME_BROWSER_METRICS_POWER_USAGE_SCENARIO_H_
+#endif  // CHROME_BROWSER_METRICS_USAGE_SCENARIO_USAGE_SCENARIO_H_

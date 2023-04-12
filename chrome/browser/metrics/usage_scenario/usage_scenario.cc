@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/metrics/power/usage_scenario.h"
+#include "chrome/browser/metrics/usage_scenario/usage_scenario.h"
 
 namespace {
 
@@ -116,25 +116,31 @@ const ScenarioParams& GetScenarioParamsWithVisibleWindow(
   // scenario in the histograms.xml file.
   DCHECK_GT(interval_data.max_visible_window_count, 0);
 
-  if (!interval_data.time_capturing_video.is_zero())
+  if (!interval_data.time_capturing_video.is_zero()) {
     return kVideoCaptureParams;
-  if (!interval_data.time_playing_video_full_screen_single_monitor.is_zero())
+  }
+  if (!interval_data.time_playing_video_full_screen_single_monitor.is_zero()) {
     return kFullscreenVideoParams;
+  }
   if (!interval_data.time_playing_video_in_visible_tab.is_zero()) {
     // Note: UKM data reveals that navigations are infrequent when a video is
     // playing in fullscreen, when video is captured or when audio is playing.
     // For that reason, there is no distinct suffix for navigation vs. no
     // navigation in these cases.
-    if (interval_data.top_level_navigation_count == 0)
+    if (interval_data.top_level_navigation_count == 0) {
       return kEmbeddedVideoNoNavigationParams;
+    }
     return kEmbeddedVideoWithNavigationParams;
   }
-  if (!interval_data.time_playing_audio.is_zero())
+  if (!interval_data.time_playing_audio.is_zero()) {
     return kAudioParams;
-  if (interval_data.top_level_navigation_count > 0)
+  }
+  if (interval_data.top_level_navigation_count > 0) {
     return kNavigationParams;
-  if (interval_data.user_interaction_count > 0)
+  }
+  if (interval_data.user_interaction_count > 0) {
     return kInteractionParams;
+  }
   return kPassiveParams;
 }
 }  // namespace
@@ -143,13 +149,16 @@ ScenarioParams GetLongIntervalScenario(
     const UsageScenarioDataStore::IntervalData& interval_data) {
   // The order of the conditions is important. See the full description of each
   // scenario in the histograms.xml file.
-  if (interval_data.max_tab_count == 0)
+  if (interval_data.max_tab_count == 0) {
     return kZeroWindowParams;
+  }
   if (interval_data.max_visible_window_count == 0) {
-    if (!interval_data.time_capturing_video.is_zero())
+    if (!interval_data.time_capturing_video.is_zero()) {
       return kAllTabsHiddenVideoCaptureParams;
-    if (!interval_data.time_playing_audio.is_zero())
+    }
+    if (!interval_data.time_playing_audio.is_zero()) {
       return kAllTabsHiddenAudioParams;
+    }
     return kAllTabsHiddenNoVideoCaptureOrAudioParams;
   }
   return GetScenarioParamsWithVisibleWindow(interval_data);
@@ -162,15 +171,18 @@ const ScenarioParams& GetShortIntervalScenarioParams(
   // The order of the conditions is important. See the full description of each
   // scenario in the histograms.xml file.
   if (short_interval_data.max_tab_count == 0) {
-    if (pre_interval_data.max_tab_count != 0)
+    if (pre_interval_data.max_tab_count != 0) {
       return kAllTabsHiddenZeroWindowRecentParams;
+    }
     return kZeroWindowParams;
   }
   if (short_interval_data.max_visible_window_count == 0) {
-    if (!short_interval_data.time_capturing_video.is_zero())
+    if (!short_interval_data.time_capturing_video.is_zero()) {
       return kAllTabsHiddenVideoCaptureParams;
-    if (!short_interval_data.time_playing_audio.is_zero())
+    }
+    if (!short_interval_data.time_playing_audio.is_zero()) {
       return kAllTabsHiddenAudioParams;
+    }
     if (pre_interval_data.max_visible_window_count != 0 ||
         !pre_interval_data.time_capturing_video.is_zero() ||
         !pre_interval_data.time_playing_audio.is_zero()) {

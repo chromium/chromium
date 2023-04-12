@@ -10,7 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/metrics/power/power_metrics.h"
 #include "chrome/browser/metrics/power/process_metrics_recorder_util.h"
-#include "chrome/browser/metrics/power/usage_scenario.h"
+#include "chrome/browser/metrics/usage_scenario/usage_scenario.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/metrics/histogram_functions.h"
