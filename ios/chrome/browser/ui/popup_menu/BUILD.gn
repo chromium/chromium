@@ -220,6 +220,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/find_in_page:features",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/ui/settings:constants",
+    "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/common:features",

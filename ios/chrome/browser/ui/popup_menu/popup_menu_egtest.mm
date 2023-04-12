@@ -13,6 +13,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
@@ -228,15 +229,26 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
   // The IPH appears immediately on startup, so don't open a new tab when the
   // app starts up.
   [[self class] testForStartup];
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      grey_accessibilityID(@"BubbleViewLabelIdentifier")];
+  // Scope for the synchronization disabled.
+  {
+    ScopedSynchronizationDisabler syncDisabler;
 
-  // Open the tools menu and verify the second tooltip is visible.
-  [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      grey_accessibilityID(@"BubbleViewLabelIdentifier")];
+    [[AppLaunchManager sharedManager]
+        ensureAppLaunchedWithConfiguration:config];
+
+    // The app relaunch (to enable a feature flag) may take a while, therefore
+    // the timeout is extended to 15 seconds.
+    [ChromeEarlGrey
+        waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                                @"BubbleViewLabelIdentifier")
+                                    timeout:base::Seconds(15)];
+
+    // Open the tools menu and verify the second tooltip is visible.
+    [ChromeEarlGreyUI openToolsMenu];
+    [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                        grey_accessibilityID(@"BubbleViewLabelIdentifier")];
+  }  // End of the sync disabler scope.
 }
 
 @end

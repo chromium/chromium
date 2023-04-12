@@ -18,6 +18,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/base/mac/url_conversions.h"
@@ -221,18 +222,25 @@ void RequestDesktopVersion() {
   // app starts up.
   [[self class] testForStartup];
 
-  [self enableDemoModeForFeature:"IPH_BottomToolbarTip"];
+  // Scope for the synchronization disabled.
+  {
+    ScopedSynchronizationDisabler syncDisabler;
 
-  // Verify that the Bottom toolbar Tip appeared.
-  ConditionBlock condition = ^{
-    NSError* error = nil;
-    [[EarlGrey selectElementWithMatcher:BottomToolbarTipBubble()]
-        assertWithMatcher:grey_sufficientlyVisible()
-                    error:&error];
-    return error == nil;
-  };
-  GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
-             @"Waiting for the Bottom Toolbar tip to appear");
+    [self enableDemoModeForFeature:"IPH_BottomToolbarTip"];
+
+    // Verify that the Bottom toolbar Tip appeared.
+    ConditionBlock condition = ^{
+      NSError* error = nil;
+      [[EarlGrey selectElementWithMatcher:BottomToolbarTipBubble()]
+          assertWithMatcher:grey_sufficientlyVisible()
+                      error:&error];
+      return error == nil;
+    };
+    // The app relaunch (to enable a feature flag) may take a while, therefore
+    // the timeout is extended to 15 seconds.
+    GREYAssert(WaitUntilConditionOrTimeout(base::Seconds(15), condition),
+               @"Waiting for the Bottom Toolbar tip to appear");
+  }  // End of the sync disabler scope.
 }
 
 // Verifies that the bottom toolbar tip is not displayed when the phone is not
