@@ -55,8 +55,14 @@ constexpr std::array<const char*, 6> kServiceNames = {
 // context.
 constexpr auto kIppRejectList = base::MakeFixedFlatSet<base::StringPiece>({
     "brother mfc-9340cdw",
-    "canon mx490 series",
+    "canon e480 series",
+    "canon ib4000 series",
+    "canon mb2000 series",
+    "canon mb2300 series",
+    "canon mb5000 series",
+    "canon mb5300 series",
     "canon mg3000 series",
+    "canon mx490 series",
 });
 
 namespace {
