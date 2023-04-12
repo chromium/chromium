@@ -27525,12 +27525,35 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="SafeBrowsing.AccountIntegration.DisabledDialog.OkButtonClicked">
+  <owner>jacastro@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    User clicks the OK button on the ESB disabled dialog.
+  </description>
+</action>
+
 <action
     name="SafeBrowsing.AccountIntegration.DisabledDialog.SettingsButtonClicked">
   <owner>awado@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <description>
     User clicks the settings button on the ESB disabled dialog.
+  </description>
+</action>
+
+<action name="SafeBrowsing.AccountIntegration.DisabledDialog.Shown"
+    not_user_triggered="true">
+  <owner>awado@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>The ESB disabled dialog was shown to the user.</description>
+</action>
+
+<action name="SafeBrowsing.AccountIntegration.EnabledDialog.OkButtonClicked">
+  <owner>jacastro@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>
+    User clicks the OK button on the ESB enabled dialog.
   </description>
 </action>
 
@@ -27541,6 +27564,13 @@ should be able to be added at any place in this file.
   <description>
     User clicks the settings button on the ESB enabled dialog.
   </description>
+</action>
+
+<action name="SafeBrowsing.AccountIntegration.EnabledDialog.Shown"
+    not_user_triggered="true">
+  <owner>jacastro@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <description>The ESB enabled dialog was shown to the user.</description>
 </action>
 
 <action name="SafeBrowsing.Download.WarningBypassed">

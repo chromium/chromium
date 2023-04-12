@@ -181,6 +181,37 @@ IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
 }
 
 IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
+                       EnabledDialogRecordsUserActionOnShow) {
+  base::UserActionTester uat;
+  EXPECT_EQ(
+      uat.GetActionCount("SafeBrowsing.AccountIntegration.EnabledDialog.Shown"),
+      0);
+
+  ShowTailoredSecurityEnabledDialog(browser());
+
+  EXPECT_EQ(
+      uat.GetActionCount("SafeBrowsing.AccountIntegration.EnabledDialog.Shown"),
+      1);
+}
+
+IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
+                       EnabledDialogOkButtonRecordsUserAction) {
+  base::UserActionTester uat;
+  auto* dialog = ShowTailoredSecurityEnabledDialog(browser());
+  auto* bubble_delegate = dialog->widget_delegate()->AsBubbleDialogDelegate();
+  EXPECT_EQ(
+      uat.GetActionCount(
+          "SafeBrowsing.AccountIntegration.EnabledDialog.OkButtonClicked"),
+      0);
+
+  ClickButton(bubble_delegate, bubble_delegate->GetOkButton());
+  EXPECT_EQ(
+      uat.GetActionCount(
+          "SafeBrowsing.AccountIntegration.EnabledDialog.OkButtonClicked"),
+      1);
+}
+
+IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
                        EnabledDialogCancelButtonRecordsUserAction) {
   base::UserActionTester uat;
   auto* dialog = ShowTailoredSecurityEnabledDialog(browser());
@@ -234,6 +265,35 @@ IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
                 ->GetActiveWebContents()
                 ->GetLastCommittedURL(),
             GURL(kEnhancedProtectionSettingsUrl));
+}
+
+IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
+                       DisabledDialogRecordsUserActionOnShow) {
+  base::UserActionTester uat;
+  EXPECT_EQ(uat.GetActionCount(
+                "SafeBrowsing.AccountIntegration.DisabledDialog.Shown"),
+            0);
+
+  ShowTailoredSecurityDisabledDialog(browser());
+
+  EXPECT_EQ(uat.GetActionCount(
+                "SafeBrowsing.AccountIntegration.DisabledDialog.Shown"),
+            1);
+}
+
+IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
+                       DisabledDialogOkButtonRecordsUserAction) {
+  base::UserActionTester uat;
+  auto* dialog = ShowTailoredSecurityDisabledDialog(browser());
+  auto* bubble_delegate = dialog->widget_delegate()->AsBubbleDialogDelegate();
+  EXPECT_EQ(uat.GetActionCount("SafeBrowsing.AccountIntegration.DisabledDialog."
+                               "OkButtonClicked"),
+            0);
+
+  ClickButton(bubble_delegate, bubble_delegate->GetOkButton());
+  EXPECT_EQ(uat.GetActionCount("SafeBrowsing.AccountIntegration.DisabledDialog."
+                               "OkButtonClicked"),
+            1);
 }
 
 IN_PROC_BROWSER_TEST_P(TailoredSecurityDesktopDialogManagerTest,
