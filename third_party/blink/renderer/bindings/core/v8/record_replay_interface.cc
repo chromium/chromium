@@ -244,7 +244,13 @@ function messageCallback(message) {
       }
     }
   } catch (e) {
-    log(`[RuntimeError] Message callback exception: ${e}`);
+    log(`[RuntimeError] Message callback exception: ${e?.stack || e}`);
+
+    return JSON.stringify({
+      is_error: true,
+      message: e?.message || (e + ''),
+      stack: e?.stack?.split?.("\n") || e?.stack || [],
+    });
   }
 }
 
@@ -3170,6 +3176,21 @@ static void SendMessageToFrontend(const v8_inspector::StringView& message) {
   v8::Local<v8::Function> callback = gCDPMessageCallback->Get(isolate);
   v8::MaybeLocal<v8::Value> rv = callback->Call(context, v8::Undefined(isolate), 1, &arg);
   CHECK(!rv.IsEmpty());
+
+  // If we get back a string from the call, report it as an error to the log (in such a way as it
+  // can be recovered by our error reporting), and then crash.
+  v8::Local<v8::Value> result = rv.ToLocalChecked();
+  CHECK(result->IsUndefined() || result->IsString());
+
+  if (result->IsString()) {
+    v8::String::Utf8Value messageValue(isolate, result);
+    std::string messageStr(*messageValue);
+
+    // TODO: Replace this with an API call to `RecordReplaySetCrashReasonCallback`
+    // See RUN-1562: https://linear.app/replay/issue/RUN-1562
+    recordreplay::Print("ErrorFatal %s:%d %s", "js", 0, messageStr.c_str());
+    IMMEDIATE_CRASH();
+  }
 }
 
 struct InspectorChannel final : public v8_inspector::V8Inspector::Channel {
