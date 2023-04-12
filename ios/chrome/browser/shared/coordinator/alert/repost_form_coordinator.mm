@@ -7,6 +7,8 @@
 #import "base/check.h"
 #import "base/memory/weak_ptr.h"
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -96,7 +98,15 @@ using completion_block_util::GetSafeDecidePolicyCompletion;
   // 400 milliseconds
   const int64_t kDelayBetweenAttemptsNanoSecs = 0.4 * NSEC_PER_SEC;
   if (_repostAttemptCount >= kMaximumNumberAttempts) {
-    NOTREACHED();
+    if (!self.baseViewController.view.window) {
+      NOTREACHED() << "no window is found";
+    } else {
+      UIViewController* presented =
+          self.baseViewController.presentedViewController;
+      NOTREACHED() << "presenting view controller "
+                   << base::SysNSStringToUTF8(
+                          NSStringFromClass([presented class]));
+    }
     [self stop];
     return;
   }
