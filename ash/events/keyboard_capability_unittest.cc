@@ -414,6 +414,58 @@ TEST_F(KeyboardCapabilityTest, TestIsTopRowKey) {
   EXPECT_FALSE(keyboard_capability_->IsTopRowKey(ui::KeyboardCode::VKEY_A));
 }
 
+TEST_F(KeyboardCapabilityTest, TestHasGlobeKey) {
+  ui::InputDevice external_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/"Keyboard1");
+  external_keyboard.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(external_keyboard,
+                                          kKbdTopRowLayoutUnspecified);
+  EXPECT_FALSE(keyboard_capability_->HasGlobeKey(external_keyboard));
+
+  ui::InputDevice internal_keyboard_layout1(
+      /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/"Keyboard2");
+  internal_keyboard_layout1.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(internal_keyboard_layout1,
+                                          kKbdTopRowLayout1Tag);
+  EXPECT_FALSE(keyboard_capability_->HasGlobeKey(internal_keyboard_layout1));
+
+  ui::InputDevice internal_keyboard_layout2(
+      /*id=*/3, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/"Keyboard3");
+  internal_keyboard_layout2.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(internal_keyboard_layout2,
+                                          kKbdTopRowLayout2Tag);
+  EXPECT_FALSE(keyboard_capability_->HasGlobeKey(internal_keyboard_layout2));
+
+  ui::InputDevice internal_keyboard_layout_custom(
+      /*id=*/4, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/"Keyboard4");
+  internal_keyboard_layout_custom.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(internal_keyboard_layout_custom,
+                                          kKbdDefaultCustomTopRowLayout,
+                                          /*has_custom_top_row=*/true);
+  EXPECT_FALSE(
+      keyboard_capability_->HasGlobeKey(internal_keyboard_layout_custom));
+
+  ui::InputDevice internal_keyboard_wilco(
+      /*id=*/5, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/"Keyboard5");
+  internal_keyboard_wilco.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(internal_keyboard_wilco,
+                                          kKbdTopRowLayoutWilcoTag);
+  EXPECT_TRUE(keyboard_capability_->HasGlobeKey(internal_keyboard_wilco));
+
+  ui::InputDevice internal_keyboard_drallion(
+      /*id=*/6, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/"Keyboard6");
+  internal_keyboard_drallion.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(internal_keyboard_drallion,
+                                          kKbdTopRowLayoutDrallionTag);
+  EXPECT_TRUE(keyboard_capability_->HasGlobeKey(internal_keyboard_drallion));
+}
+
 class ModifierKeyTest : public KeyboardCapabilityTest,
                         public testing::WithParamInterface<
                             std::tuple<ui::DeviceCapabilities,

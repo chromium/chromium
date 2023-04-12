@@ -774,6 +774,31 @@ const std::vector<uint32_t>* KeyboardCapability::GetTopRowScanCodes(
   return GetTopRowScanCodes(*keyboard);
 }
 
+bool KeyboardCapability::HasGlobeKey(const InputDevice& keyboard) const {
+  const KeyboardInfo* keyboard_info = GetKeyboardInfo(keyboard);
+  if (!keyboard_info) {
+    return false;
+  }
+
+  // TODO(dpad): This is not quite right, some external keyboards have it as
+  // well.
+  // Globe key only exists on drallion or wilco devices.
+  return keyboard_info->top_row_layout ==
+             KeyboardTopRowLayout::kKbdTopRowLayoutDrallion ||
+         keyboard_info->top_row_layout ==
+             KeyboardTopRowLayout::kKbdTopRowLayoutWilco;
+}
+
+bool KeyboardCapability::HasGlobeKeyOnAnyKeyboard() const {
+  for (const ui::InputDevice& keyboard :
+       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+    if (HasGlobeKey(keyboard)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void KeyboardCapability::OnDeviceListsComplete() {
   TrimKeyboardInfoMap();
 }

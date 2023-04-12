@@ -251,6 +251,13 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
       continue;
     }
 
+    if (accelerator.key_code() == ui::VKEY_MODECHANGE) {
+      if (Shell::Get()->keyboard_capability()->HasGlobeKeyOnAnyKeyboard()) {
+        filtered_accelerators.push_back(accelerator);
+      }
+      continue;
+    }
+
     // Otherwise, always copy the accelerator.
     filtered_accelerators.push_back(accelerator);
   }

@@ -332,6 +332,10 @@ class KeyboardCapability : public InputDeviceEventObserver {
                           TopRowActionKey action_key) const;
   bool HasTopRowActionKeyOnAnyKeyboard(TopRowActionKey action_key) const;
 
+  // Check if the globe key exists on the given keyboard.
+  bool HasGlobeKey(const InputDevice& keyboard) const;
+  bool HasGlobeKeyOnAnyKeyboard() const;
+
   // Gets the corresponding function key for the given `action_key` on the given
   // `keyboard`.
   absl::optional<KeyboardCode> GetCorrespondingFunctionKey(
