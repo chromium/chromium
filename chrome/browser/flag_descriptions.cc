@@ -2118,6 +2118,13 @@ const char kOmniboxDisableCGIParamMatchingName[] =
 const char kOmniboxDisableCGIParamMatchingDescription[] =
     "Disables using matches in CGI parameter names while scoring suggestions.";
 
+const char kOmniboxIgnoreIntermediateResultsName[] =
+    "Ignore intermediate Autocomplete results.";
+const char kOmniboxIgnoreIntermediateResultsDescription[] =
+    "When active, reduces number of Autocomplete updates to cover only the "
+    "first (synchronous) and last (final) Autocomplete result. This reduces "
+    "resource utlization (CPU, memory) during active Omnibox input session.";
+
 const char kOmniboxDiscardTemporaryInputOnTabSwitchName[] =
     "Omnibox discard temporary input on tab switch";
 const char kOmniboxDiscardTemporaryInputOnTabSwitchDescription[] =

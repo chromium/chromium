@@ -65211,6 +65211,7 @@ from previous Chrome versions.
   <int value="1786414968" label="ForceOffTextAutosizing:enabled"/>
   <int value="1786692012"
       label="AssistantEnableMediaSessionIntegration:disabled"/>
+  <int value="1786724316" label="OmniboxIgnoreIntermediateResults:enabled"/>
   <int value="1787279386" label="VirtualKeyboardMultitouch:enabled"/>
   <int value="1787572807" label="PrefixWebAppWindowsWithAppName:enabled"/>
   <int value="1789517771" label="MacV2Sandbox:enabled"/>
@@ -65823,6 +65824,7 @@ from previous Chrome versions.
   <int value="2104439359"
       label="OmniboxDefaultTypedNavigationsToHttps:enabled"/>
   <int value="2104788328" label="use-winrt-midi-api"/>
+  <int value="2105594942" label="OmniboxIgnoreIntermediateResults:disabled"/>
   <int value="2106254561" label="lacros-data-backward-migration-policy"/>
   <int value="2106798283" label="SafetyTip:disabled"/>
   <int value="2106855416" label="HostWindowsInAppShimProcess:enabled"/>
