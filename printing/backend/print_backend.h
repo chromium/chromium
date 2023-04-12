@@ -282,6 +282,17 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
       const std::string& printer_name,
       PrinterCapsAndDefaults* printer_info) = 0;
 
+#if BUILDFLAG(IS_WIN)
+  // Gets the printable area for just a single paper size.  Returns nullopt if
+  // there is any error in retrieving this data.
+  // TODO(crbug.com/1424368):  Remove this if the printable areas can be made
+  // fully available from `GetPrinterSemanticCapsAndDefaults()`.
+  virtual absl::optional<gfx::Rect> GetPaperPrintableArea(
+      const std::string& printer_name,
+      const std::string& paper_vendor_id,
+      const gfx::Size& paper_size_um) = 0;
+#endif
+
   // Gets the information about driver for a specific printer.
   virtual std::string GetPrinterDriverInfo(const std::string& printer_name) = 0;
 

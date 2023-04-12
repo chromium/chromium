@@ -450,6 +450,24 @@ void PrintSettings::SetPrinterPrintableArea(
     page_setup_device_units_.FlipOrientation();
 }
 
+#if BUILDFLAG(IS_WIN)
+void PrintSettings::UpdatePrinterPrintableArea(
+    const gfx::Rect& printable_area_um) {
+  // Scale the page size and printable area to device units.
+  float x_scale = static_cast<float>(device_units_per_inch_size().width()) /
+                  kMicronsPerInch;
+  float y_scale = static_cast<float>(device_units_per_inch_size().height()) /
+                  kMicronsPerInch;
+
+  gfx::Rect printable_area_device_units =
+      gfx::ScaleToRoundedRect(printable_area_um, x_scale, y_scale);
+
+  page_setup_device_units_.Init(page_setup_device_units_.physical_size(),
+                                printable_area_device_units,
+                                page_setup_device_units_.text_height());
+}
+#endif
+
 void PrintSettings::SetCustomMargins(
     const PageMargins& requested_margins_in_points) {
   requested_custom_margins_in_points_ = requested_margins_in_points;

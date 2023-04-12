@@ -17,6 +17,7 @@
 #include "printing/mojom/print.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/strings/string_number_conversions.h"
 #include "base/types/expected.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -129,6 +130,45 @@ mojom::ResultCode TestPrintBackend::GetPrinterCapsAndDefaults(
     PrinterCapsAndDefaults* printer_caps) {
   return ReportErrorNotImplemented(FROM_HERE);
 }
+
+#if BUILDFLAG(IS_WIN)
+absl::optional<gfx::Rect> TestPrintBackend::GetPaperPrintableArea(
+    const std::string& printer_name,
+    const std::string& paper_vendor_id,
+    const gfx::Size& paper_size_um) {
+  auto found = printer_map_.find(printer_name);
+  if (found == printer_map_.end()) {
+    return absl::nullopt;
+  }
+
+  const std::unique_ptr<PrinterData>& data = found->second;
+  if (data->blocked_by_permissions) {
+    return absl::nullopt;
+  }
+
+  // Capabilities might not have been provided.
+  if (!data->caps) {
+    return absl::nullopt;
+  }
+
+  // Windows uses non-zero IDs to represent specific standard paper sizes.
+  unsigned id;
+  if (base::StringToUint(paper_vendor_id, &id) && id) {
+    PrinterSemanticCapsAndDefaults::Papers& papers = data->caps->papers;
+    for (auto paper = papers.begin(); paper != papers.end(); ++paper) {
+      if (paper->vendor_id == paper_vendor_id) {
+        return paper->printable_area_um;
+      }
+    }
+
+    // No match for the specified paper identification.
+    return absl::nullopt;
+  }
+
+  // Custom paper size.  For testing just treat as match to paper size.
+  return gfx::Rect(paper_size_um);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 std::string TestPrintBackend::GetPrinterDriverInfo(
     const std::string& printer_name) {

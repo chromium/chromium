@@ -88,6 +88,13 @@ class PrinterQuery {
                           base::OnceClosure callback);
 #endif
 
+#if BUILDFLAG(IS_WIN)
+  // Updates the printable area of the provided `PrintSettings` object.
+  // TODO(crbug.com/1424368):  Remove this if the printable areas can be made
+  // fully available from `PrintBackend::GetPrinterSemanticCapsAndDefaults()`.
+  static bool UpdatePrintableArea(PrintSettings& print_settings);
+#endif
+
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   // Provide the client ID when the caller has registered with the
   // `PrintBackendServiceManager` for getting settings for system print.
