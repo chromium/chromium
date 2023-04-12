@@ -1518,7 +1518,8 @@ enum class ToolbarKind {
     translate::TranslateManager* translateManager =
         translateClient->GetTranslateManager();
     DCHECK(translateManager);
-    translateManager->ShowTranslateUI(/*auto_translate=*/true);
+    translateManager->ShowTranslateUI(/*auto_translate=*/true,
+                                      /*triggered_from_menu=*/true);
   }
 }
 

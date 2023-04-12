@@ -83,20 +83,26 @@ void TranslateInfoBarDelegate::Create(
     old_infobar = infobar_manager->infobar_at(i);
     old_delegate = old_infobar->delegate()->AsTranslateInfoBarDelegate();
     if (old_delegate) {
-      if (!replace_existing_infobar)
+      if (!replace_existing_infobar) {
         return;
+      }
       break;
     }
   }
 
-  // Try to reuse existing translate infobar delegate.
   if (old_delegate) {
-    old_delegate->step_ = step;
-    for (auto& observer : old_delegate->observers_) {
-      observer.OnTargetLanguageChanged(target_language);
-      observer.OnTranslateStepChanged(step, error_type);
+    if (!triggered_from_menu) {
+      // Try to reuse existing translate infobar delegate.
+      old_delegate->step_ = step;
+      for (auto& observer : old_delegate->observers_) {
+        observer.OnTargetLanguageChanged(target_language);
+        observer.OnTranslateStepChanged(step, error_type);
+      }
+      return;
     }
-    return;
+    // The old infobar may still be visible, but a new translate flow started.
+    // Remove the previous infobar and add a new one.
+    infobar_manager->RemoveInfoBar(old_infobar);
   }
 
   // Add the new delegate.

@@ -71,6 +71,20 @@ class MockObserver : public TranslateInfoBarDelegate::Observer {
   MOCK_METHOD(bool, IsDeclinedByUser, (), (override));
 };
 
+class MockManagerObserver : public infobars::InfoBarManager::Observer {
+ public:
+  MOCK_METHOD(void, OnInfoBarAdded, (infobars::InfoBar*), (override));
+  MOCK_METHOD(void, OnInfoBarRemoved, (infobars::InfoBar*, bool), (override));
+  MOCK_METHOD(void,
+              OnInfoBarReplaced,
+              (infobars::InfoBar*, infobars::InfoBar*),
+              (override));
+  MOCK_METHOD(void,
+              OnManagerShuttingDown,
+              (infobars::InfoBarManager*),
+              (override));
+};
+
 class TestLanguageModel : public language::LanguageModel {
   std::vector<LanguageDetails> GetLanguages() override {
     return {LanguageDetails("en", 1.0)};
@@ -131,8 +145,12 @@ class TranslateInfoBarDelegateTest : public ::testing::Test {
 };
 
 TEST_F(TranslateInfoBarDelegateTest, CreateTranslateInfobarDelegate) {
+  ::testing::StrictMock<MockObserver> mock_observer;
+  ::testing::StrictMock<MockManagerObserver> mock_manager_observer;
   EXPECT_EQ(infobar_manager_->infobar_count(), 0u);
+  infobar_manager_->AddObserver(&mock_manager_observer);
 
+  EXPECT_CALL(mock_manager_observer, OnInfoBarAdded(_));
   // Create the initial InfoBar
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/false, manager_->GetWeakPtr(),
@@ -143,6 +161,7 @@ TEST_F(TranslateInfoBarDelegateTest, CreateTranslateInfobarDelegate) {
   EXPECT_EQ(infobar_manager_->infobar_count(), 1u);
   TranslateInfoBarDelegate* delegate =
       infobar_manager_->infobar_at(0)->delegate()->AsTranslateInfoBarDelegate();
+  delegate->AddObserver(&mock_observer);
   EXPECT_FALSE(delegate->is_error());
   EXPECT_EQ(TranslateStep::TRANSLATE_STEP_TRANSLATING,
             delegate->translate_step());
@@ -150,6 +169,10 @@ TEST_F(TranslateInfoBarDelegateTest, CreateTranslateInfobarDelegate) {
   EXPECT_EQ(delegate->target_language_code(), kTargetLanguage);
   EXPECT_EQ(delegate->source_language_code(), kSourceLanguage);
 
+  EXPECT_CALL(mock_observer, OnTargetLanguageChanged("en"));
+  EXPECT_CALL(mock_observer, OnTranslateStepChanged(
+                                 TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE,
+                                 TranslateErrors::NONE));
   // Create another one and replace the old one
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/true, manager_->GetWeakPtr(),
@@ -158,9 +181,10 @@ TEST_F(TranslateInfoBarDelegateTest, CreateTranslateInfobarDelegate) {
       /*triggered_from_menu=*/false);
 
   EXPECT_EQ(infobar_manager_->infobar_count(), 1u);
-  delegate =
+  TranslateInfoBarDelegate* delegate_after =
       infobar_manager_->infobar_at(0)->delegate()->AsTranslateInfoBarDelegate();
-  EXPECT_EQ(delegate->translate_step(),
+
+  EXPECT_EQ(delegate_after->translate_step(),
             TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE);
 
   // Create but don't replace existing one.
@@ -171,10 +195,74 @@ TEST_F(TranslateInfoBarDelegateTest, CreateTranslateInfobarDelegate) {
       /*triggered_from_menu=*/false);
 
   EXPECT_EQ(infobar_manager_->infobar_count(), 1u);
-  delegate =
+  TranslateInfoBarDelegate* delegate_final =
       infobar_manager_->infobar_at(0)->delegate()->AsTranslateInfoBarDelegate();
-  ASSERT_EQ(delegate->translate_step(),
+  ASSERT_EQ(delegate_final->translate_step(),
             TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE);
+  delegate->RemoveObserver(&mock_observer);
+  infobar_manager_->RemoveObserver(&mock_manager_observer);
+}
+
+TEST_F(TranslateInfoBarDelegateTest, CreateTranslateInfobarDelegateFromMenu) {
+  ::testing::StrictMock<MockObserver> mock_observer;
+  ::testing::StrictMock<MockManagerObserver> mock_manager_observer;
+  EXPECT_EQ(infobar_manager_->infobar_count(), 0u);
+  infobar_manager_->AddObserver(&mock_manager_observer);
+
+  EXPECT_CALL(mock_manager_observer, OnInfoBarAdded(_));
+  // Create the initial InfoBar
+  TranslateInfoBarDelegate::Create(
+      /*replace_existing_infobar=*/false, manager_->GetWeakPtr(),
+      infobar_manager_.get(), TranslateStep::TRANSLATE_STEP_TRANSLATING,
+      kSourceLanguage, kTargetLanguage, TranslateErrors::NONE,
+      /*triggered_from_menu=*/true);
+
+  EXPECT_EQ(infobar_manager_->infobar_count(), 1u);
+  infobars::InfoBar* infobar = infobar_manager_->infobar_at(0);
+  TranslateInfoBarDelegate* delegate =
+      infobar->delegate()->AsTranslateInfoBarDelegate();
+  delegate->AddObserver(&mock_observer);
+  EXPECT_FALSE(delegate->is_error());
+  EXPECT_EQ(TranslateStep::TRANSLATE_STEP_TRANSLATING,
+            delegate->translate_step());
+  EXPECT_TRUE(delegate->triggered_from_menu());
+  EXPECT_EQ(delegate->target_language_code(), kTargetLanguage);
+  EXPECT_EQ(delegate->source_language_code(), kSourceLanguage);
+
+  // Create another one and replace the old one. As "triggered_from_menu", the
+  // previous infobar will be removed and a new will be created.
+  EXPECT_CALL(mock_manager_observer, OnInfoBarRemoved(infobar, true));
+  EXPECT_CALL(mock_observer, OnTranslateInfoBarDelegateDestroyed(delegate));
+  EXPECT_CALL(mock_manager_observer, OnInfoBarAdded(_));
+  TranslateInfoBarDelegate::Create(
+      /*replace_existing_infobar=*/true, manager_->GetWeakPtr(),
+      infobar_manager_.get(), TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE,
+      kSourceLanguage, kTargetLanguage, TranslateErrors::NONE,
+      /*triggered_from_menu=*/true);
+
+  EXPECT_EQ(infobar_manager_->infobar_count(), 1u);
+  TranslateInfoBarDelegate* delegate_after =
+      infobar_manager_->infobar_at(0)->delegate()->AsTranslateInfoBarDelegate();
+  delegate_after->AddObserver(&mock_observer);
+
+  EXPECT_EQ(delegate_after->translate_step(),
+            TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE);
+
+  // Create but don't replace existing one.
+  TranslateInfoBarDelegate::Create(
+      /*replace_existing_infobar=*/false, manager_->GetWeakPtr(),
+      infobar_manager_.get(), TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE,
+      kSourceLanguage, kTargetLanguage, TranslateErrors::NONE,
+      /*triggered_from_menu=*/true);
+
+  EXPECT_EQ(infobar_manager_->infobar_count(), 1u);
+  TranslateInfoBarDelegate* delegate_final =
+      infobar_manager_->infobar_at(0)->delegate()->AsTranslateInfoBarDelegate();
+  ASSERT_EQ(delegate_final->translate_step(),
+            TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE);
+
+  delegate_after->RemoveObserver(&mock_observer);
+  infobar_manager_->RemoveObserver(&mock_manager_observer);
 }
 
 TEST_F(TranslateInfoBarDelegateTest, DestructTranslateInfobarDelegate) {
