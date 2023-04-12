@@ -8770,6 +8770,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::kRevampedPasswordManagementBubble)},
 
+    {"side-search", flag_descriptions::kSideSearchName,
+     flag_descriptions::kSideSearchDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSideSearch)},
+
     {"search-web-in-side-panel", flag_descriptions::kSearchWebInSidePanelName,
      flag_descriptions::kSearchWebInSidePanelDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSearchWebInSidePanel)},

@@ -37,6 +37,7 @@ namespace test {
 class SideSearchTabContentsHelperTest : public ::testing::Test {
  public:
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kSideSearch);
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     SideSearchTabContentsHelper::CreateForWebContents(web_contents_.get());

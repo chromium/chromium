@@ -67,6 +67,7 @@ namespace test {
 class SideSearchSideContentsHelperTest : public ::testing::Test {
  public:
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({features::kSideSearch}, {});
     side_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     SideSearchSideContentsHelper::CreateForWebContents(side_contents());
