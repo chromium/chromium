@@ -57,6 +57,10 @@ try_.orchestrator_builder(
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
     mirrors = ["ci/chromeos-amd64-generic-rel"],
     compilator = "chromeos-amd64-generic-rel-compilator",
+    experiments = {
+        # go/nplus1shardsproposal
+        "chromium.add_one_test_shard": 5,
+    },
     main_list_view = "try",
     tryjob = try_.job(),
     # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
@@ -265,6 +269,10 @@ try_.orchestrator_builder(
     ],
     compilator = "linux-chromeos-rel-compilator",
     coverage_test_types = ["unit", "overall"],
+    experiments = {
+        # go/nplus1shardsproposal
+        "chromium.add_one_test_shard": 5,
+    },
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,
