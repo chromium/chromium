@@ -19,7 +19,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AmbientModeAlbum, AnimationTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
-import {isAmbientModeAllowed, isPersonalizationJellyEnabled} from '../load_time_booleans.js';
+import {isAmbientModeAllowed, isPersonalizationJellyEnabled, isScreenSaverDurationEnabled} from '../load_time_booleans.js';
 import {Paths, ScrollableTarget} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
@@ -74,6 +74,13 @@ export class AmbientSubpage extends WithPersonalizationStore {
         type: Boolean,
         value() {
           return isPersonalizationJellyEnabled();
+        },
+      },
+      isScreenSaverDurationEnabled_: {
+        readOnly: true,
+        type: Boolean,
+        value() {
+          return isScreenSaverDurationEnabled();
         },
       },
     };
