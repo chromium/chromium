@@ -84,28 +84,6 @@ base::FilePath TestFile(Profile* profile, const std::string& relative_path) {
 
 using HoldingSpaceClientImplTest = HoldingSpaceBrowserTestBase;
 
-// Verifies that `HoldingSpaceClient::AddDiagnosticsLog()` works as intended.
-IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, AddDiagnosticsLog) {
-  ASSERT_TRUE(HoldingSpaceController::Get());
-
-  auto* holding_space_client = HoldingSpaceController::Get()->client();
-  ASSERT_TRUE(holding_space_client);
-  auto* holding_space_model = HoldingSpaceController::Get()->model();
-  ASSERT_TRUE(holding_space_model);
-
-  // Create a diagnostics log item and verify that it is in the holding space.
-
-  ASSERT_EQ(0u, holding_space_model->items().size());
-  base::FilePath log_path = TestFile(GetProfile(), kTextFilePath);
-  holding_space_client->AddDiagnosticsLog(log_path);
-  ASSERT_EQ(1u, holding_space_model->items().size());
-  HoldingSpaceItem* diagnostics_log_item =
-      holding_space_model->items()[0].get();
-  EXPECT_EQ(diagnostics_log_item->type(),
-            HoldingSpaceItem::Type::kDiagnosticsLog);
-  EXPECT_EQ(diagnostics_log_item->file_path(), log_path);
-}
-
 // Verifies that `HoldingSpaceClient::AddItemOfType()` works as intended.
 IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, AddItemOfType) {
   using Type = HoldingSpaceItem::Type;

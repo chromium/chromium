@@ -2598,10 +2598,8 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
       case HoldingSpaceItem::Type::kCameraAppScanPdf:
       case HoldingSpaceItem::Type::kCameraAppVideoGif:
       case HoldingSpaceItem::Type::kCameraAppVideoMp4:
-        holding_space_service->AddItemOfType(type, file_path);
-        break;
       case HoldingSpaceItem::Type::kDiagnosticsLog:
-        holding_space_service->AddDiagnosticsLog(file_path);
+        holding_space_service->AddItemOfType(type, file_path);
         break;
       case HoldingSpaceItem::Type::kDriveSuggestion:
       case HoldingSpaceItem::Type::kLocalSuggestion:

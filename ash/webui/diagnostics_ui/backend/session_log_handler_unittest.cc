@@ -197,6 +197,11 @@ class SessionLogHandlerTest : public NoSessionAshTestBase {
     session_log_handler_->RegisterMessages();
     session_log_handler_->SetTaskRunnerForTesting(task_runner_);
 
+    // This test suite does not check `HoldingSpaceItem` ids, so there is no
+    // need to save the mock id.
+    ON_CALL(holding_space_client(), AddItemOfType)
+        .WillByDefault(testing::ReturnRef(base::EmptyString()));
+
     // Call handler to enable Javascript.
     base::Value::List args;
     web_ui_.HandleReceivedMessage("initialize", args);
@@ -398,7 +403,10 @@ TEST_F(SessionLogHandlerTest, AddToHoldingSpace) {
   base::Value::List args;
   args.Append(kHandlerFunctionName);
 
-  EXPECT_CALL(holding_space_client(), AddDiagnosticsLog(testing::Eq(log_path)));
+  EXPECT_CALL(holding_space_client(),
+              AddItemOfType(HoldingSpaceItem::Type::kDiagnosticsLog,
+                            testing::Eq(log_path)));
+
   base::RunLoop run_loop;
   session_log_handler_->SetLogCreatedClosureForTest(run_loop.QuitClosure());
   web_ui_.HandleReceivedMessage("saveSessionLog", args);

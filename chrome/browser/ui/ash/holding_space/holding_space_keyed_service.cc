@@ -223,11 +223,6 @@ std::vector<GURL> HoldingSpaceKeyedService::GetPinnedFiles() const {
   return pinned_files;
 }
 
-void HoldingSpaceKeyedService::AddDiagnosticsLog(
-    const base::FilePath& diagnostics_log_path) {
-  AddItemOfType(HoldingSpaceItem::Type::kDiagnosticsLog, diagnostics_log_path);
-}
-
 const std::string& HoldingSpaceKeyedService::AddDownload(
     HoldingSpaceItem::Type type,
     const base::FilePath& download_file,

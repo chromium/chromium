@@ -91,10 +91,6 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   std::vector<GURL> GetPinnedFiles() const;
 
   // TODO(http://b/274477308): Remove one-off API.
-  // Adds a diagnostics log item backed by the provided absolute file path.
-  void AddDiagnosticsLog(const base::FilePath& diagnostics_log_path);
-
-  // TODO(http://b/274477308): Remove one-off API.
   // Adds a download item of the specified `type` backed by the provided
   // absolute file path. Returns the id of the added holding space item or an
   // empty string if the item was not added due to de-duplication checks.

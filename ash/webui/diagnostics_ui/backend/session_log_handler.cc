@@ -121,7 +121,8 @@ void SessionLogHandler::OnSessionLogCreated(const base::FilePath& file_path,
                                             bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(session_log_handler_sequence_checker_);
   if (success) {
-    holding_space_client_->AddDiagnosticsLog(file_path);
+    holding_space_client_->AddItemOfType(
+        HoldingSpaceItem::Type::kDiagnosticsLog, file_path);
   }
 
   ResolveJavascriptCallback(save_session_log_callback_id_, success);
