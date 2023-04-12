@@ -693,9 +693,24 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [_folderChooserCoordinator start];
 }
 
-// Deletes the current node.
-- (void)deleteNodes:(const std::set<const BookmarkNode*>&)nodes {
+// Deletes the `nodeIDs` if they still exist and records `userAction`.
+- (void)deleteBookmarkNodesWithIDs:(std::set<int64_t>)nodeIDs
+                        userAction:(const char*)userAction {
+  absl::optional<std::set<const BookmarkNode*>> nodesFromIDs =
+      bookmark_utils_ios::FindNodesByIds(self.profileBookmarkModel, nodeIDs);
+  if (!nodesFromIDs) {
+    // While the contextual menu was opened, the nodes might have been removed.
+    // If the nodes don't exist anymore, there nothing to do.
+    return;
+  }
+  [self deleteBookmarkNodes:*nodesFromIDs userAction:userAction];
+}
+
+// Deletes the `nodes` and records `userAction`.
+- (void)deleteBookmarkNodes:(const std::set<const BookmarkNode*>&)nodes
+                 userAction:(const char*)userAction {
   DCHECK_GE(nodes.size(), 1u);
+  base::RecordAction(base::UserMetricsAction(userAction));
   [self.snackbarCommandsHandler
       showSnackbarMessage:bookmark_utils_ios::DeleteBookmarksWithUndoToast(
                               nodes, self.profileBookmarkModel,
@@ -844,11 +859,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
     [self.searchController dismissViewControllerAnimated:YES
                                               completion:completion];
-}
-
-- (void)handleSelectNodesForDeletion:
-    (const std::set<const bookmarks::BookmarkNode*>&)nodes {
-  [self deleteNodes:nodes];
 }
 
 - (void)handleSelectEditNodes:
@@ -1614,9 +1624,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     case BookmarksContextBarMultipleFolderSelection:
     case BookmarksContextBarMixedSelection:
       // Delete clicked.
-      [self deleteNodes:nodes];
-      base::RecordAction(
-          base::UserMetricsAction("MobileBookmarkManagerRemoveSelected"));
+      [self deleteBookmarkNodes:nodes
+                     userAction:"MobileBookmarkManagerRemoveSelected"];
       break;
     case BookmarksContextBarNone:
     default:
@@ -2281,9 +2290,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     const BookmarkNode* node = nodeItem.bookmarkNode;
     std::set<const BookmarkNode*> nodes;
     nodes.insert(node);
-    [self handleSelectNodesForDeletion:nodes];
-    base::RecordAction(
-        base::UserMetricsAction("MobileBookmarkManagerEntryDeleted"));
+    [self deleteBookmarkNodes:nodes
+                   userAction:"MobileBookmarkManagerEntryDeleted"];
   }
 }
 
@@ -2495,18 +2503,10 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
       UIAction* deleteAction = [actionFactory actionToDeleteWithBlock:^{
         BookmarksHomeViewController* innerStrongSelf = weakSelf;
-        if (!innerStrongSelf) {
-          return;
-        }
-        const bookmarks::BookmarkNode* nodeFromId =
-            bookmark_utils_ios::FindNodeById(
-                innerStrongSelf.profileBookmarkModel, nodeId);
-        if (nodeFromId) {
-          std::set<const BookmarkNode*> nodes{nodeFromId};
-          [innerStrongSelf handleSelectNodesForDeletion:nodes];
-          base::RecordAction(
-              base::UserMetricsAction("MobileBookmarkManagerEntryDeleted"));
-        }
+        std::set<int64_t> nodeIDs{nodeId};
+        [innerStrongSelf
+            deleteBookmarkNodesWithIDs:nodeIDs
+                            userAction:"MobileBookmarkManagerEntryDeleted"];
       }];
       [menuElements addObject:deleteAction];
 
