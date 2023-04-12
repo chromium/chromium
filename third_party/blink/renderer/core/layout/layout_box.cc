@@ -94,7 +94,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
 #include "third_party/blink/renderer/core/paint/box_paint_invalidator.h"
-#include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -2532,14 +2531,14 @@ bool LayoutBox::HitTestClippedOutByBorder(
 
 void LayoutBox::Paint(const PaintInfo& paint_info) const {
   NOT_DESTROYED();
-  BoxPainter(*this).Paint(paint_info);
+  NOTREACHED_NORETURN();
 }
 
 void LayoutBox::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) const {
   NOT_DESTROYED();
-  BoxPainter(*this).PaintBoxDecorationBackground(paint_info, paint_offset);
+  NOTREACHED_NORETURN();
 }
 
 PhysicalRect LayoutBox::BackgroundPaintedExtent() const {
@@ -2668,7 +2667,7 @@ bool LayoutBox::ComputeBackgroundIsKnownToBeObscured() const {
 void LayoutBox::PaintMask(const PaintInfo& paint_info,
                           const PhysicalOffset& paint_offset) const {
   NOT_DESTROYED();
-  BoxPainter(*this).PaintMask(paint_info, paint_offset);
+  NOTREACHED_NORETURN();
 }
 
 void LayoutBox::ImageChanged(WrappedImagePtr image,
