@@ -40,6 +40,7 @@ lucicfg.config(
         "outages.pyl",
         "sheriff-rotations/*.txt",
         "project.pyl",
+        "testing/gn_isolate_map.pyl",
     ],
     fail_on_warnings = True,
     lint_checks = [
@@ -198,6 +199,7 @@ luci.builder.defaults.test_presentation.set(resultdb.test_presentation(grouping_
 exec("//swarming.star")
 
 exec("//recipes.star")
+exec("//targets/targets.star")
 
 exec("//notifiers.star")
 
