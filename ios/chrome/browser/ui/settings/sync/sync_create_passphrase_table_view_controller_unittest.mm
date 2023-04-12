@@ -6,7 +6,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/compiler_specific.h"
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/test/mock_sync_service.h"

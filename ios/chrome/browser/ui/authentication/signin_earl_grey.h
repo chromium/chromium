@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/compiler_specific.h"
 #import "ios/chrome/browser/signin/capabilities_dict.h"
 #import "ios/testing/earl_grey/base_eg_test_helper_impl.h"
 

@@ -5,7 +5,6 @@
 #ifndef IOS_WEB_WEBUI_SHARED_RESOURCES_DATA_SOURCE_IOS_H_
 #define IOS_WEB_WEBUI_SHARED_RESOURCES_DATA_SOURCE_IOS_H_
 
-#include "base/compiler_specific.h"
 #include "ios/web/public/webui/url_data_source_ios.h"
 
 namespace web {

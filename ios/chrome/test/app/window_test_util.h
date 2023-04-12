@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/compiler_specific.h"
-
 namespace web {
 class WebState;
 }

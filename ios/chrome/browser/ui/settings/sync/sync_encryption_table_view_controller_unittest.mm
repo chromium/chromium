@@ -6,7 +6,6 @@
 
 #import <memory>
 
-#import "base/compiler_specific.h"
 #import "base/functional/bind.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/test/test_sync_service.h"

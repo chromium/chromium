@@ -7,8 +7,6 @@
 
 #include <vector>
 
-#include "base/compiler_specific.h"
-
 namespace base {
 class FilePath;
 }

@@ -6,7 +6,6 @@
 
 #import <memory>
 
-#import "base/compiler_specific.h"
 #import "base/run_loop.h"
 #import "base/test/test_simple_task_runner.h"
 #import "components/pref_registry/pref_registry_syncable.h"

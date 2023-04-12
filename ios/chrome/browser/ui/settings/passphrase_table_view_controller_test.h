@@ -7,7 +7,6 @@
 
 #include "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 
-#include "base/compiler_specific.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "google_apis/gaia/google_service_auth_error.h"

@@ -7,8 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/compiler_specific.h"
-
 // Test specific helpers for settings_egtest.mm.
 @interface SettingsAppInterface : NSObject
 

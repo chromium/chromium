@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_EARL_GREY_UI_H_
 
 #import <Foundation/Foundation.h>
-#include "base/compiler_specific.h"
+
 #import "ios/testing/earl_grey/base_eg_test_helper_impl.h"
 
 @protocol GREYMatcher;

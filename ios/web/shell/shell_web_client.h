@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #import "ios/web/public/web_client.h"
 
 namespace web {
