@@ -1,0 +1,70 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_DISK_CACHE_H_
+#define SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_DISK_CACHE_H_
+
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "base/component_export.h"
+#include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
+#include "net/base/completion_once_callback.h"
+#include "net/disk_cache/disk_cache.h"
+
+namespace base {
+namespace android {
+class ApplicationStatusListener;
+}  // namespace android
+class FilePath;
+}  //  namespace base
+
+namespace disk_cache {
+class BackendFileOperationsFactory;
+}  // namespace disk_cache
+
+namespace network {
+
+class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryDiskCache {
+ public:
+  SharedDictionaryDiskCache(
+      const base::FilePath& cache_directory_path,
+#if BUILDFLAG(IS_ANDROID)
+      base::android::ApplicationStatusListener* app_status_listener,
+#endif  // BUILDFLAG(IS_ANDROID)
+      scoped_refptr<disk_cache::BackendFileOperationsFactory>
+          file_operations_factory);
+  ~SharedDictionaryDiskCache();
+
+  SharedDictionaryDiskCache(const SharedDictionaryDiskCache&) = delete;
+  SharedDictionaryDiskCache& operator=(const SharedDictionaryDiskCache&) =
+      delete;
+
+  disk_cache::EntryResult OpenOrCreateEntry(
+      const std::string& key,
+      bool create,
+      disk_cache::EntryResultCallback callback);
+  int DoomEntry(const std::string& key, net::CompletionOnceCallback callback);
+  int ClearAll(net::CompletionOnceCallback callback);
+
+ private:
+  enum class State { kInitializing, kInitialized, kFailed };
+
+  void DidCreateBackend(disk_cache::BackendResult result);
+
+  base::WeakPtr<SharedDictionaryDiskCache> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+  State state_ = State::kInitializing;
+  std::unique_ptr<disk_cache::Backend> backend_;
+  std::vector<base::OnceClosure> pending_disk_cache_tasks_;
+  base::WeakPtrFactory<SharedDictionaryDiskCache> weak_factory_{this};
+};
+
+}  // namespace network
+
+#endif  // SERVICES_NETWORK_SHARED_DICTIONARY_SHARED_DICTIONARY_DISK_CACHE_H_
