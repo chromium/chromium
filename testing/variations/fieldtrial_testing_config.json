@@ -15040,6 +15040,21 @@
             ]
         }
     ],
+    "WebViewZoomKeyboardShortcuts": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewZoomKeyboardShortcuts"
+                    ]
+                }
+            ]
+        }
+    ],
     "Win10UnattendedDefault": [
         {
             "platforms": [
