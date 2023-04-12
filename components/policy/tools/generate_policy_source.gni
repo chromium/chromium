@@ -1,0 +1,109 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/policy/resources/policy_templates.gni")
+
+# Generate .proto files and constants based on policy_templates.json.
+#
+# Parameters:
+#
+#   chunking (required, boolean)
+#       Split excess policies into `subProto1`, `subProto2`, etc.
+#
+#   generate_cc (optional, default true)
+#       Generate C++ source/header files.
+#
+#   generate_app_restrictions (optional, default true)
+#       Generate app_restrictions.xml (only on Android).
+template("generate_policy_source") {
+  assert(defined(invoker.chunking))
+  chunking = invoker.chunking
+
+  if (defined(invoker.generate_cc)) {
+    generate_cc = invoker.generate_cc
+  } else {
+    generate_cc = true
+  }
+
+  if (defined(invoker.generate_app_restrictions)) {
+    generate_app_restrictions = invoker.generate_app_restrictions
+  } else {
+    generate_app_restrictions = true
+  }
+
+  action(target_name) {
+    # This protobuf is equivalent to chrome_settings.proto but shares messages
+    # for policies of the same type, so that less classes have to be generated
+    # and compiled.
+    cloud_policy_proto_path = "$target_gen_dir/proto/cloud_policy.proto"
+
+    # This is the "full" protobuf, which defines one protobuf message per
+    # policy. It is also the format currently used by the server.
+    chrome_settings_proto_path = "$target_gen_dir/proto/chrome_settings.proto"
+
+    policy_templates_generated_json_path =
+        "$policy_templates_base_dir/policy_templates.json"
+
+    script = "//components/policy/tools/generate_policy_source.py"
+    chrome_version_abspath = "//chrome/VERSION"
+    chrome_version_path = rebase_path(chrome_version_abspath, root_build_dir)
+
+    deps = [ "//components/policy:generate_policy_templates" ]
+    inputs = [
+      chrome_version_abspath,
+      policy_templates_generated_json_path,
+    ]
+    outputs = [
+      chrome_settings_proto_path,
+      cloud_policy_proto_path,
+    ]
+    args = [
+      # Input information.
+      "--chrome-version-file=" + chrome_version_path,
+      "--policy-templates-file=" +
+          rebase_path(policy_templates_generated_json_path, root_build_dir),
+      "--target-platform=" + target_os,
+    ]
+    if (!chunking) {
+      args += [ "--no-chunking" ]
+    }
+    args += [
+      # Output .proto files to be generated.
+      "--chrome-settings-protobuf=" +
+          rebase_path(chrome_settings_proto_path, root_build_dir),
+      "--cloud-policy-protobuf=" +
+          rebase_path(cloud_policy_proto_path, root_build_dir),
+    ]
+
+    if (generate_cc) {
+      # Generate C++ headers/sources.
+      constants_header_path = "$target_gen_dir/policy_constants.h"
+      constants_source_path = "$target_gen_dir/policy_constants.cc"
+      risk_tag_header_path = "$target_gen_dir/risk_tag.h"
+
+      outputs += [
+        constants_header_path,
+        constants_source_path,
+        risk_tag_header_path,
+      ]
+      args += [
+        "--policy-constants-header=" +
+            rebase_path(constants_header_path, root_build_dir),
+        "--policy-constants-source=" +
+            rebase_path(constants_source_path, root_build_dir),
+        "--risk-tag-header=" +
+            rebase_path(risk_tag_header_path, root_build_dir),
+      ]
+    }
+
+    if (generate_app_restrictions && target_os == "android") {
+      # Generate app_restrictions.xml.
+      app_restrictions_path = "$target_gen_dir/app_restrictions.xml"
+
+      outputs += [ app_restrictions_path ]
+      args += [ "--app-restrictions-definition=" +
+                rebase_path(app_restrictions_path, root_build_dir) ]
+    }
+  }
+}

@@ -193,10 +193,8 @@ void ProfileDownloader::FetchImageData() {
           cookies_allowed: NO
           setting: "This feature cannot be disabled by settings."
           chrome_policy {
-            subProto1 {
-              UserAvatarCustomizationSelectorsEnabled {
-                UserAvatarCustomizationSelectorsEnabled: false
-              }
+            UserAvatarCustomizationSelectorsEnabled {
+              UserAvatarCustomizationSelectorsEnabled: false
             }
           }
         })");

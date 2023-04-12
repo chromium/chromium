@@ -270,10 +270,8 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
               "you and your device from dangerous sites' in Chrome settings "
               "under Privacy. This feature is enabled by default."
             chrome_policy {
-              subProto1 {
-                ClientSidePhishingProtectionAllowed {
-                  ClientSidePhishingProtectionAllowed: false
-                }
+              ClientSidePhishingProtectionAllowed {
+                ClientSidePhishingProtectionAllowed: false
               }
             }
             chrome_policy {

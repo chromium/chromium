@@ -113,11 +113,9 @@ class DomainReliabilityUploaderImpl : public DomainReliabilityUploader,
               "the setting is named 'Automatically send diagnostic and usage "
               "data to Google'."
             chrome_policy {
-              subProto1 {
-                DomainReliabilityAllowed {
-                  policy_options {mode: MANDATORY}
-                  DomainReliabilityAllowed: false
-                }
+              DomainReliabilityAllowed {
+                policy_options {mode: MANDATORY}
+                DomainReliabilityAllowed: false
               }
             }
             chrome_policy {

@@ -434,10 +434,8 @@ void CheckClientDownloadRequestBase::SendRequest() {
               "from dangerous sites' under Privacy. This feature is enabled by "
               "default."
             chrome_policy {
-              subProto1 {
-                RealTimeDownloadProtectionRequestAllowed {
-                  RealTimeDownloadProtectionRequestAllowed: false
-                }
+              RealTimeDownloadProtectionRequestAllowed {
+                RealTimeDownloadProtectionRequestAllowed: false
               }
             }
             chrome_policy {

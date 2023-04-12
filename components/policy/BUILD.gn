@@ -9,6 +9,7 @@ import("//build/config/features.gni")
 import("//build/timestamp.gni")
 import("//build/toolchain/toolchain.gni")
 import("//components/policy/resources/policy_templates.gni")
+import("//components/policy/tools/generate_policy_source.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//tools/grit/grit_args.gni")
@@ -78,56 +79,14 @@ chrome_settings_proto_path = "$target_gen_dir/proto/chrome_settings.proto"
 
 constants_header_path = "$target_gen_dir/policy_constants.h"
 constants_source_path = "$target_gen_dir/policy_constants.cc"
-app_restrictions_path = "$target_gen_dir/app_restrictions.xml"
 risk_tag_header_path = "$target_gen_dir/risk_tag.h"
 
 policy_templates_deps_file = "$policy_templates_base_dir/policy_templates.d"
 policy_templates_generated_json_path =
     "$policy_templates_base_dir/policy_templates.json"
 
-action("policy_code_generate") {
-  script = "tools/generate_policy_source.py"
-  chrome_version_abspath = "//chrome/VERSION"
-  chrome_version_path = rebase_path(chrome_version_abspath, root_build_dir)
-
-  deps = [ ":generate_policy_templates" ]
-  inputs = [
-    chrome_version_abspath,
-    policy_templates_generated_json_path,
-  ]
-  outputs = [
-    constants_header_path,
-    constants_source_path,
-    chrome_settings_proto_path,
-    cloud_policy_proto_path,
-    app_restrictions_path,
-    risk_tag_header_path,
-  ]
-
-  if (target_os != "android") {
-    outputs -= [ app_restrictions_path ]
-  }
-
-  args = [
-    # Input information
-    "--chrome-version-file=" + chrome_version_path,
-    "--policy-templates-file=" +
-        rebase_path(policy_templates_generated_json_path, root_build_dir),
-    "--target-platform=" + target_os,
-
-    # Output files to be generated
-    "--policy-constants-header=" +
-        rebase_path(constants_header_path, root_build_dir),
-    "--policy-constants-source=" +
-        rebase_path(constants_source_path, root_build_dir),
-    "--chrome-settings-protobuf=" +
-        rebase_path(chrome_settings_proto_path, root_build_dir),
-    "--cloud-policy-protobuf=" +
-        rebase_path(cloud_policy_proto_path, root_build_dir),
-    "--app-restrictions-definition=" +
-        rebase_path(app_restrictions_path, root_build_dir),
-    "--risk-tag-header=" + rebase_path(risk_tag_header_path, root_build_dir),
-  ]
+generate_policy_source("policy_code_generate") {
+  chunking = true
 }
 
 policy_templates_grd_file = "resources/policy_templates.build.grd"
@@ -343,7 +302,7 @@ if (gen_policy_templates_android && is_android) {
   _generated_resources_dir = "$root_gen_dir/chrome/app/policy/android"
 
   copy("app_restrictions_resources_copy") {
-    sources = [ app_restrictions_path ]
+    sources = [ "$target_gen_dir/app_restrictions.xml" ]
     outputs = [ "$_generated_resources_dir/xml-v21/app_restrictions.xml" ]
     deps = [
       ":policy_code_generate",

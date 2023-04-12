@@ -309,12 +309,34 @@ class PolicyGenerationTest(unittest.TestCase):
     with patch('codecs.open', mock_open()) as mocked_file:
       with codecs.open(output_path, 'w', encoding='utf-8') as f:
         generate_policy_source._WriteCloudPolicyProtobuf(
-            self.policies, self.policy_atomic_groups, self.target_platform, f,
-            self.risk_tags)
+            self.policies,
+            self.policy_atomic_groups,
+            self.target_platform,
+            f,
+            self.risk_tags,
+            chunking=True)
 
     mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
 
     self._assertCallsEqual(test_data.EXPECTED_CLOUD_POLICY_PROTOBUF,
+                           mocked_file().write.call_args_list)
+
+  def testWriteCloudPolicyProtobufNoChunking(self):
+    output_path = 'mock_cloud_policy_proto'
+
+    with patch('codecs.open', mock_open()) as mocked_file:
+      with codecs.open(output_path, 'w', encoding='utf-8') as f:
+        generate_policy_source._WriteCloudPolicyProtobuf(
+            self.policies,
+            self.policy_atomic_groups,
+            self.target_platform,
+            f,
+            self.risk_tags,
+            chunking=False)
+
+    mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
+
+    self._assertCallsEqual(test_data.EXPECTED_CLOUD_POLICY_PROTOBUF_NO_CHUNKING,
                            mocked_file().write.call_args_list)
 
   def testWriteChromeSettingsProtobuf(self):
@@ -323,13 +345,36 @@ class PolicyGenerationTest(unittest.TestCase):
     with patch('codecs.open', mock_open()) as mocked_file:
       with codecs.open(output_path, 'w', encoding='utf-8') as f:
         generate_policy_source._WriteChromeSettingsProtobuf(
-            self.policies, self.policy_atomic_groups, self.target_platform, f,
-            self.risk_tags)
+            self.policies,
+            self.policy_atomic_groups,
+            self.target_platform,
+            f,
+            self.risk_tags,
+            chunking=True)
 
       mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
 
       self._assertCallsEqual(test_data.EXPECTED_CHROME_SETTINGS_PROTOBUF,
                              mocked_file().write.call_args_list)
+
+  def testWriteChromeSettingsProtobufNoChunking(self):
+    output_path = 'mock_chrome_settings_proto'
+
+    with patch('codecs.open', mock_open()) as mocked_file:
+      with codecs.open(output_path, 'w', encoding='utf-8') as f:
+        generate_policy_source._WriteChromeSettingsProtobuf(
+            self.policies,
+            self.policy_atomic_groups,
+            self.target_platform,
+            f,
+            self.risk_tags,
+            chunking=False)
+
+      mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
+
+      self._assertCallsEqual(
+          test_data.EXPECTED_CHROME_SETTINGS_PROTOBUF_NO_CHUNKING,
+          mocked_file().write.call_args_list)
 
   def testWritePolicyProto(self):
     output_path = 'mock_write_policy_proto'
@@ -370,6 +415,7 @@ class PolicyGenerationTest(unittest.TestCase):
               target_platform,
               f,
               self.risk_tags,
+              chunking=True,
           )
       with self.subTest(target_platform=target_platform):
         mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
@@ -398,6 +444,7 @@ class PolicyGenerationTest(unittest.TestCase):
               target_platform,
               f,
               self.risk_tags,
+              chunking=True,
           )
       with self.subTest(target_platform=target_platform):
         mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
@@ -423,6 +470,7 @@ class PolicyGenerationTest(unittest.TestCase):
             self.target_platform,
             f,
             self.risk_tags,
+            chunking=True,
         )
     mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
     self._assertCallsEqual(test_data.EXPECTED_CROS_POLICY_CONSTANTS_HEADER,
@@ -438,6 +486,7 @@ class PolicyGenerationTest(unittest.TestCase):
             self.target_platform,
             f,
             self.risk_tags,
+            chunking=True,
         )
     mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
     self._assertCallsEqual(test_data.EXPECTED_CROS_POLICY_CONSTANTS_SOURCE,
@@ -454,6 +503,7 @@ class PolicyGenerationTest(unittest.TestCase):
             self.target_platform,
             f,
             self.risk_tags,
+            chunking=True,
         )
     mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
     self._assertCallsEqual(test_data.EXPECTED_APP_RESTRICTIONS_XML,
@@ -491,13 +541,23 @@ class PolicyGenerationTest(unittest.TestCase):
     ]
 
     for policy_data in test_data:
+      # With chunking:
       self.assertEqual(
-          generate_policy_source._ChunkNumber(policy_data.policy_id),
+          generate_policy_source._ChunkNumber(policy_data.policy_id,
+                                              chunking=True),
           policy_data.chunk_number)
       self.assertEqual(
           generate_policy_source._FieldNumber(policy_data.policy_id,
                                               policy_data.chunk_number),
           policy_data.field_number)
+
+      # Without chunking:
+      self.assertEqual(
+          generate_policy_source._ChunkNumber(policy_data.policy_id,
+                                              chunking=False), 0)
+      self.assertEqual(
+          generate_policy_source._FieldNumber(policy_data.policy_id, 0),
+          policy_data.policy_id + 2)
 
 
 if __name__ == '__main__':
