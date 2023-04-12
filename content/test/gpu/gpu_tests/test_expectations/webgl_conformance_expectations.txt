@@ -322,6 +322,9 @@ crbug.com/1321312 [ mac nvidia-0xfe9 no-passthrough ] conformance/ogles/GL/array
 crbug.com/1417485 [ android android-nexus-5x passthrough ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Failure ]
 crbug.com/1417485 [ android android-nexus-5x passthrough ] conformance/reading/read-pixels-test.html [ Failure ]
 
+# VANGLE + debug timeouts on Windows and Linux
+crbug.com/1432243 [ debug angle-vulkan passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Skip ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################
@@ -333,7 +336,12 @@ crbug.com/1417485 [ android android-nexus-5x passthrough ] conformance/reading/r
 # builds, but the validating decoder/debug builds slow them down significantly.
 # Also slow on Fuchsia smart displays due to their lower specs.
 crbug.com/1426593 [ no-passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
-crbug.com/1426593 [ debug passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
+crbug.com/1426593 [ debug angle-d3d9 passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
+crbug.com/1426593 [ debug angle-d3d11 passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
+crbug.com/1426593 [ debug angle-metal passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
+crbug.com/1426593 [ debug angle-opengl passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
+crbug.com/1426593 [ debug angle-opengles passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
+crbug.com/1426593 [ debug angle-swiftshader passthrough ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
 crbug.com/1426593 [ passthrough web-engine-shell ] conformance/uniforms/no-over-optimization-on-uniform-array-* [ Slow ]
 
 # Seems to do enough JavaScript work that heartbeats are not reliably sent.
