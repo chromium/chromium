@@ -77,14 +77,14 @@ function startFrameCapture(videoTag, duration) {
  * Returns the video recorded by RecordMedia encoded in Base64.
  */
 function getRecordedVideoAsBase64() {
-  return gVideoBase64;
+  silentReturnToTest(gVideoBase64);
 }
 
 /**
  * Queries if we're done with the frame capturing yet.
  */
 function doneFrameCapturing() {
-  return logAndReturn(gCapturingStatus);
+  returnToTest(gCapturingStatus);
 }
 
 /**
@@ -97,6 +97,6 @@ function getStreamFromElement_(element) {
   } else if (element.src !== undefined) {
     return element.src;
   } else {
-    throw new Error('Error extracting stream from element.');
+    failTest('Error extracting stream from element.');
   }
 }

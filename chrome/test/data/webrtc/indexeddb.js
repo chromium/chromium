@@ -19,11 +19,13 @@ var gDatabase = null;
 var gCertificate = null;
 var gCertificateClone = null;
 
-// Public interface to tests.
+// Public interface to tests. These are expected to be called with
+// ExecuteJavascript invocations from the browser tests and will return answers
+// through the DOM automation controller.
 
 function openDatabase() {
   if (gDatabase !== null)
-    throw new Error('The database is already open.');
+    throw failTest('The database is already open.');
   var reqOpen = indexedDB.open(kDatabaseName);
   reqOpen.onupgradeneeded = function() {
     // This happens before |onsuccess| if the database is new or its version is
@@ -31,41 +33,35 @@ function openDatabase() {
     var db = reqOpen.result;
     var certStore = db.createObjectStore('certificates', { keyPath: 'id' });
   };
-  return new Promise((resolve, reject) => {
-    reqOpen.onsuccess = function() {
-      if (gDatabase !== null)
-        return reject(new Error('The database is already open.'));
-      gDatabase = reqOpen.result;
-      return resolve(logAndReturn('ok-database-opened'));
-    }
-    reqOpen.onerror = function() {
-      reject(new Error('The database could not be opened. Error: ' +
-        reqOpen.error));
-    }
-  });
+  reqOpen.onsuccess = function() {
+    if (gDatabase !== null)
+      failTest('The database is already open.');
+    gDatabase = reqOpen.result;
+    returnToTest('ok-database-opened');
+  }
+  reqOpen.onerror = function() {
+    failTest('The database could not be opened. Error: ' + reqOpen.error);
+  }
 }
 
 function closeDatabase() {
   if (gDatabase === null)
-    throw new Error('The database is already closed.');
+    throw failTest('The database is already closed.');
   gDatabase.close();
   gDatabase = null;
-  return logAndReturn('ok-database-closed');
+  returnToTest('ok-database-closed');
 }
 
 function deleteDatabase() {
   if (gDatabase !== null)
-    throw new Error('The database should be closed before deleting.');
+    throw failTest('The database should be closed before deleting.');
   var reqDelete = indexedDB.deleteDatabase(kDatabaseName);
-  return new Promise((resolve, reject) => {
-    reqDelete.onsuccess = function () {
-      resolve(logAndReturn('ok-database-deleted'));
-    };
-    reqDelete.onerror = function () {
-      reject(new Error('The database could not be deleted. Error: '
-        + reqDelete.error));
-    };
-  });
+  reqDelete.onsuccess = function () {
+    returnToTest('ok-database-deleted');
+  };
+  reqDelete.onerror = function () {
+    failTest('The database could not be deleted. Error: ' + reqDelete.error);
+  };
 }
 
 /**
@@ -78,18 +74,18 @@ function deleteDatabase() {
  * certificate will be used by the peer connection.
  */
 function generateAndCloneCertificate(keygenAlgorithm) {
-  return RTCPeerConnection.generateCertificate(keygenAlgorithm).then(
+  RTCPeerConnection.generateCertificate(keygenAlgorithm).then(
       function(certificate) {
         gCertificate = certificate;
         if (gCertificate.getFingerprints().length == 0)
-          throw new Error('getFingerprints() is empty.');
+          throw failTest('getFingerprints() is empty.');
         for (let i = 0; i < gCertificate.getFingerprints().length; ++i) {
           if (gCertificate.getFingerprints()[i].algorithm != 'sha-256')
-            throw new Error('Unexpected fingerprint algorithm.');
+            throw failTest('Unexpected fingerprint algorithm.');
           if (gCertificate.getFingerprints()[i].value.length == 0)
-            throw new Error('Unexpected fingerprint value.');
+            throw failTest('Unexpected fingerprint value.');
         }
-        return cloneCertificate_(gCertificate).then(
+        cloneCertificate_(gCertificate).then(
             function(clone) {
               let cloneIsEqual = (clone.getFingerprints().length ==
                                   gCertificate.getFingerprints().length);
@@ -105,19 +101,19 @@ function generateAndCloneCertificate(keygenAlgorithm) {
                 }
               }
               if (!cloneIsEqual) {
-                throw new Error('The cloned certificate\'s fingerprints does ' +
+                throw failTest('The cloned certificate\'s fingerprints does ' +
                                'not match the original certificate.');
               }
 
               gCertificateClone = clone;
-              return logAndReturn('ok-generated-and-cloned');
+              returnToTest('ok-generated-and-cloned');
             },
             function() {
-              throw new Error('Error cloning certificate.');
+              failTest('Error cloning certificate.');
             });
       },
       function() {
-        throw new Error('Certificate generation failed. keygenAlgorithm: ' +
+        failTest('Certificate generation failed. keygenAlgorithm: ' +
             JSON.stringify(keygenAlgorithm));
       });
 }
@@ -128,7 +124,7 @@ function generateAndCloneCertificate(keygenAlgorithm) {
 function saveCertificate_(certificate) {
   return new Promise(function(resolve, reject) {
     if (gDatabase === null)
-      throw new Error('The database is not open.');
+      throw failTest('The database is not open.');
 
     var certTrans = gDatabase.transaction('certificates', 'readwrite');
     var certStore = certTrans.objectStore('certificates');
@@ -150,7 +146,7 @@ function saveCertificate_(certificate) {
 function loadCertificate_() {
   return new Promise(function(resolve, reject) {
     if (gDatabase === null)
-      throw new Error('The database is not open.');
+      throw failTest('The database is not open.');
 
     var certTrans = gDatabase.transaction('certificates', 'readonly');
     var certStore = certTrans.objectStore('certificates');
@@ -177,7 +173,7 @@ function cloneCertificate_(certificate) {
     .then(function(clone) {
       // Save + load successful.
       if (clone === null)
-        new Error('loadCertificate returned a null certificate.');
+        failTest('loadCertificate returned a null certificate.');
       return clone;
     });
 }

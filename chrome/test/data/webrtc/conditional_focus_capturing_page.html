@@ -21,14 +21,12 @@
           const controller = new CaptureController();
           const mediaStream = await navigator.mediaDevices.getDisplayMedia({ controller });
           if (onCorrectMicrotask) {
-            return handleCaptureSuccess(mediaStream, busyWaitMs, focusCallValue, controller);
+            handleCaptureSuccess(mediaStream, busyWaitMs, focusCallValue, controller);
           } else {
-            return new Promise(resolve => {
-              setTimeout(resolve, 0);
-            }).then(() => handleCaptureSuccess(mediaStream, busyWaitMs, focusCallValue, controller));
+            setTimeout(handleCaptureSuccess, 0, mediaStream, busyWaitMs, focusCallValue, controller);
           }
         } catch (error) {
-          return "capture-failure";
+          window.domAutomationController.send("capture-failure");
         }
       }
 
@@ -50,14 +48,14 @@
           try {
             controller.setFocusBehavior(focusCallValue);
           } catch (error) {
-            return `${error}`;
+            window.domAutomationController.send(`${error}`);
           }
         }
 
         // Allow the microtask to fire before unblocking the test.
-        return new Promise(resolve => {
-          setTimeout(resolve);
-        }).then(() => "capture-success");
+        setTimeout(() => {
+          window.domAutomationController.send("capture-success");
+        });
       }
 
       // Calls setFocusBehavior(focusCallValueBeforeCapture) before
@@ -73,9 +71,9 @@
           if (focusCallValueAfterCapture) {
             controller.setFocusBehavior(focusCallValueAfterCapture);
           }
-          return "capture-success";
+          window.domAutomationController.send("capture-success");
         } catch (error) {
-          return `${error}`;
+          window.domAutomationController.send(`${error}`);
         }
       }
     </script>

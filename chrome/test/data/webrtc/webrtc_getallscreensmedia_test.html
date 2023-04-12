@@ -18,11 +18,11 @@
         const track_ids = stored_media_streams.map(
           stream => stream.getTracks()[0].id
         ).toString();
-        return logAndReturn(
+        returnToTest(
           stream_ids + ":" + track_ids
         );
       } catch (error) {
-        return logAndReturn("capture-failure," + error.name);
+        returnToTest("capture-failure," + error.name);
       }
     }
 
@@ -31,27 +31,31 @@
         stream => stream.getTracks()[0].id === track_id
       );
       if (!stream) {
-        return logAndReturn("error-stream-not-found");
+        returnToTest("error-stream-not-found");
+        return;
       }
 
       const video_tracks = stream.getVideoTracks();
       if (video_tracks.length != 1) {
-        return logAndReturn("error-invalid-tracks-size");
+        returnToTest("error-invalid-tracks-size");
+        return;
       }
 
       const video_track = video_tracks[0];
       if (typeof video_track.screenDetailed !== "function") {
-        return logAndReturn("error-no-screen-detailed");
+        returnToTest("error-no-screen-detailed");
+        return;
       }
 
       try {
         const screen_detailed = video_track.screenDetailed();
         if (!screen_detailed) {
-          return logAndReturn("error-screen-detailed-does-not-exist");
+          returnToTest("error-screen-detailed-does-not-exist");
+          return;
         }
-        return logAndReturn("success-screen-detailed");
+        returnToTest("success-screen-detailed");
       } catch (error) {
-        return logAndReturn("error-screen-detailed");
+        returnToTest("error-screen-detailed");
       }
     }
 

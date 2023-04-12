@@ -89,15 +89,19 @@ struct TabInfo {
     // Bring the tab into focus. This avoids getDisplayMedia rejection.
     browser->tab_strip_model()->ActivateTabAt(tab_strip_index);
 
-    EXPECT_EQ(content::EvalJs(web_contents->GetPrimaryMainFrame(),
-                              "captureOtherTab();"),
-              "capture-success");
+    std::string script_result;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        web_contents->GetPrimaryMainFrame(), "captureOtherTab();",
+        &script_result));
+    EXPECT_EQ(script_result, "capture-success");
   }
 
   void StartCapturingFromEmbeddedFrame() {
-    EXPECT_EQ(content::EvalJs(web_contents->GetPrimaryMainFrame(),
-                              "captureOtherTabFromEmbeddedFrame();"),
-              "embedded-capture-success");
+    std::string script_result;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        web_contents->GetPrimaryMainFrame(),
+        "captureOtherTabFromEmbeddedFrame();", &script_result));
+    EXPECT_EQ(script_result, "embedded-capture-success");
   }
 
   url::Origin GetOrigin() const {
@@ -110,35 +114,43 @@ struct TabInfo {
       bool expose_origin,
       const std::string& handle,
       const std::vector<std::string>& permitted_origins) {
-    EXPECT_EQ(content::EvalJs(
-                  web_contents->GetPrimaryMainFrame(),
-                  base::StringPrintf(
-                      "callSetCaptureHandleConfig(%s, \"%s\", %s);",
-                      expose_origin ? "true" : "false", handle.c_str(),
-                      StringifyPermittedOrigins(permitted_origins).c_str())),
-              "capture-handle-set");
+    std::string script_result;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        web_contents->GetPrimaryMainFrame(),
+        base::StringPrintf(
+            "callSetCaptureHandleConfig(%s, \"%s\", %s);",
+            expose_origin ? "true" : "false", handle.c_str(),
+            StringifyPermittedOrigins(permitted_origins).c_str()),
+        &script_result));
+    EXPECT_EQ(script_result, "capture-handle-set");
 
     capture_handle =
         StringifyCaptureHandle(web_contents, expose_origin, handle);
   }
 
   std::string ReadCaptureHandle() {
-    return content::EvalJs(web_contents->GetPrimaryMainFrame(),
-                           "readCaptureHandle();")
-        .ExtractString();
+    std::string script_result;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        web_contents->GetPrimaryMainFrame(), "readCaptureHandle();",
+        &script_result));
+    return script_result;
   }
 
   std::string ReadCaptureHandleInEmbeddedFrame() {
-    return content::EvalJs(web_contents->GetPrimaryMainFrame(),
-                           "readCaptureHandleInEmbeddedFrame();")
-        .ExtractString();
+    std::string script_result;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        web_contents->GetPrimaryMainFrame(),
+        "readCaptureHandleInEmbeddedFrame();", &script_result));
+    return script_result;
   }
 
   void Navigate(GURL url, bool expect_handle_reset = false) {
-    ASSERT_EQ(content::EvalJs(web_contents->GetPrimaryMainFrame(),
-                              base::StringPrintf("clickLinkToUrl(\"%s\");",
-                                                 url.spec().c_str())),
-              "link-success");
+    std::string script_result;
+    ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+        web_contents->GetPrimaryMainFrame(),
+        base::StringPrintf("clickLinkToUrl(\"%s\");", url.spec().c_str()),
+        &script_result));
+    ASSERT_EQ(script_result, "link-success");
 
     if (expect_handle_reset) {
       capture_handle = "";
@@ -146,22 +158,28 @@ struct TabInfo {
   }
 
   std::string LastEvent() {
-    return content::EvalJs(web_contents->GetPrimaryMainFrame(),
-                           "readLastEvent();")
-        .ExtractString();
+    std::string script_result = "error-not-modified";
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        web_contents->GetPrimaryMainFrame(), "readLastEvent();",
+        &script_result));
+    return script_result;
   }
 
   std::string LastEmbeddedEvent() {
-    return content::EvalJs(web_contents->GetPrimaryMainFrame(),
-                           "readLastEmbeddedEvent();")
-        .ExtractString();
+    std::string script_result = "error-not-modified";
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        web_contents->GetPrimaryMainFrame(), "readLastEmbeddedEvent();",
+        &script_result));
+    return script_result;
   }
 
   void StartEmbeddingFrame(const GURL& url) {
-    EXPECT_EQ(content::EvalJs(web_contents->GetPrimaryMainFrame(),
-                              base::StringPrintf("startEmbeddingFrame('%s');",
-                                                 url.spec().c_str())),
-              "embedding-done");
+    std::string script_result;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        web_contents->GetPrimaryMainFrame(),
+        base::StringPrintf("startEmbeddingFrame('%s');", url.spec().c_str()),
+        &script_result));
+    EXPECT_EQ(script_result, "embedding-done");
   }
 
   raw_ptr<Browser> browser;
@@ -285,10 +303,12 @@ class CaptureHandleBrowserTest : public WebRtcTestBase {
     // The target for getDisplayMedia is determined via the title. If we want
     // the capturing page to capture itself, then it has to change its title.
     if (self_capture) {
-      EXPECT_EQ(content::EvalJs(
-                    web_contents->GetPrimaryMainFrame(),
-                    base::StringPrintf("setTitle(\"%s\");", kCapturedTabTitle)),
-                "title-changed");
+      std::string script_result;
+      EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+          web_contents->GetPrimaryMainFrame(),
+          base::StringPrintf("setTitle(\"%s\");", kCapturedTabTitle),
+          &script_result));
+      EXPECT_EQ(script_result, "title-changed");
     }
 
     auto tab_info = MakeTabInfoFromActiveTab(browser);
@@ -599,9 +619,11 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTest,
   EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 
   // In-document navigation does not change the capture handle (config).
-  EXPECT_EQ(content::EvalJs(captured_tab.web_contents->GetPrimaryMainFrame(),
-                            "clickLinkToPageBottom();"),
-            "navigated");
+  std::string navigation_result;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      captured_tab.web_contents->GetPrimaryMainFrame(),
+      "clickLinkToPageBottom();", &navigation_result));
+  ASSERT_EQ(navigation_result, "navigated");
 
   // No event was fired (verified in teardown) and getCaptureHandle returns the
   // same configuration as previously.
@@ -805,11 +827,13 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTestPrerender,
       servers_[kCapturedServer]->GetURL(kCapturedPageOther));
   content::RenderFrameHost* prerender_rfh =
       prerender_helper_->GetPrerenderedMainFrameHost(host_id);
-  EXPECT_EQ(content::EvalJs(prerender_rfh,
-                            base::StringPrintf(
-                                "callSetCaptureHandleConfig(%s, \"%s\", %s);",
-                                "true", "prerender_handle",
-                                StringifyPermittedOrigins({"*"}).c_str())),
-            "capture-handle-set");
+  std::string script_result;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      prerender_rfh,
+      base::StringPrintf("callSetCaptureHandleConfig(%s, \"%s\", %s);", "true",
+                         "prerender_handle",
+                         StringifyPermittedOrigins({"*"}).c_str()),
+      &script_result));
+  EXPECT_EQ(script_result, "capture-handle-set");
   EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 }

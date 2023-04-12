@@ -9,9 +9,9 @@
       async function runTestedFunction(constraints) {
         try {
           await navigator.mediaDevices.getDisplayMedia(constraints);
-          window.parent.postMessage("embedded-capture-success", "*");
+          window.domAutomationController.send("embedded-capture-success");
         } catch (e) {
-          window.parent.postMessage("embedded-capture-failure", "*");
+          window.domAutomationController.send("embedded-capture-failure");
         }
       }
 

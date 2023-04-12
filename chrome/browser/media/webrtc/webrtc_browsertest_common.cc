@@ -125,15 +125,14 @@ bool HasYuvAndY4mFile(const base::FilePath::CharType* reference_file) {
 
 bool SleepInJavascript(content::WebContents* tab_contents, int timeout_msec) {
   const std::string javascript = base::StringPrintf(
-      "new Promise(resolve => {"
-      "  setTimeout(function() {"
-      "    resolve('sleep-ok');"
-      "  }, %d);"
-      "});",
-      timeout_msec);
+      "setTimeout(function() {"
+      "  window.domAutomationController.send('sleep-ok');"
+      "}, %d)", timeout_msec);
 
-  return content::EvalJs(tab_contents, javascript).ExtractString() ==
-         "sleep-ok";
+  std::string result;
+  bool ok = content::ExecuteScriptAndExtractString(
+      tab_contents, javascript, &result);
+  return ok && result == "sleep-ok";
 }
 
 bool PollingWaitUntil(const std::string& javascript,
@@ -152,7 +151,11 @@ bool PollingWaitUntil(const std::string& javascript,
   std::string result;
 
   while (base::Time::Now() - start_time < timeout) {
-    result = content::EvalJs(tab_contents, javascript).ExtractString();
+    if (!content::ExecuteScriptAndExtractString(tab_contents, javascript,
+                                                &result)) {
+      LOG(ERROR) << "Failed to execute javascript " << javascript;
+      return false;
+    }
 
     if (evaluates_to == result) {
       return true;

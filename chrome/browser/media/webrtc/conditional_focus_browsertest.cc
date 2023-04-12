@@ -125,12 +125,14 @@ class ConditionalFocusBrowserTest : public WebRtcTestBase {
                bool on_correct_microtask = true,
                const std::string& expected_result = "capture-success") {
     std::string script_result;
-    EXPECT_EQ(content::EvalJs(
-                  capturing_tab_->GetPrimaryMainFrame(),
-                  base::StringPrintf("captureOtherTab(%d, '%s', %s);",
-                                     busy_wait_ms, ToString(focus_enum_value),
-                                     on_correct_microtask ? "true" : "false")),
-              expected_result);
+    // TODO(crbug.com/1243764): Use EvalJs() instead.
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        capturing_tab_->GetPrimaryMainFrame(),
+        base::StringPrintf("captureOtherTab(%d, '%s', %s);", busy_wait_ms,
+                           ToString(focus_enum_value),
+                           on_correct_microtask ? "true" : "false"),
+        &script_result));
+    EXPECT_EQ(script_result, expected_result);
   }
 
   void Wait(base::TimeDelta timeout) {
@@ -154,22 +156,27 @@ class ConditionalFocusBrowserTest : public WebRtcTestBase {
   }
 
   void CallFocusAndExpectError(const std::string& expected_error) {
-    EXPECT_EQ(content::EvalJs(capturing_tab_->GetPrimaryMainFrame(),
-                              "callFocusAndExpectError();"),
-              expected_error);
+    std::string script_result;
+    // TODO(crbug.com/1243764): Use EvalJs() instead.
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        capturing_tab_->GetPrimaryMainFrame(), "callFocusAndExpectError();",
+        &script_result));
+    EXPECT_EQ(script_result, expected_error);
   }
 
   void CallSetFocusBehaviorBeforeCapture(
       FocusEnumValue focus_enum_value_before_capture,
       FocusEnumValue focus_enum_value_after_capture = FocusEnumValue::kNoValue,
       const std::string& expected_result = "capture-success") {
-    EXPECT_EQ(
-        content::EvalJs(
-            capturing_tab_->GetPrimaryMainFrame(),
-            base::StringPrintf("callSetFocusBehaviorBeforeCapture('%s', '%s');",
-                               ToString(focus_enum_value_before_capture),
-                               ToString(focus_enum_value_after_capture))),
-        expected_result);
+    std::string script_result;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        capturing_tab_->GetPrimaryMainFrame(),
+        base::StringPrintf("callSetFocusBehaviorBeforeCapture('%s', '%s');",
+                           ToString(focus_enum_value_before_capture),
+                           ToString(focus_enum_value_after_capture)),
+        &script_result));
+    // TODO(crbug.com/1243764): Use EvalJs() instead.
+    EXPECT_EQ(script_result, expected_result);
   }
 
  protected:

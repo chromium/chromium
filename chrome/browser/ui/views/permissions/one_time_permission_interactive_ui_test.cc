@@ -199,6 +199,7 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
       permissions::PermissionRequestManager::AutoResponseType auto_response,
       bool expect_prompt,
       int tab_index) {
+    std::string result;
     content::WebContents* contents =
         current_browser()->tab_strip_model()->GetWebContentsAt(tab_index);
     SetFrameForScriptExecutionToCurrent(contents);
@@ -207,9 +208,9 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
     permissions::PermissionRequestObserver observer(contents);
     GetUserMedia(contents, kAudioVideoCallConstraints);
     EXPECT_EQ(expect_prompt, observer.request_shown());
-    EXPECT_EQ(
-        content::EvalJs(render_frame_host_, "obtainGetUserMediaResult();"),
-        kOkGotStream);
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        render_frame_host_, "obtainGetUserMediaResult();", &result));
+    EXPECT_EQ(result, kOkGotStream);
   }
 
   void DiscardTabAt(int index) {

@@ -70,7 +70,9 @@ var gNegotiationNeededCount = 0;
 /** @private */
 var gTrackEvents = [];
 
-// Public interface to tests.
+// Public interface to tests. These are expected to be called with
+// ExecuteJavascript invocations from the browser tests and will return answers
+// through the DOM automation controller.
 
 /**
  * Creates a peer connection. Must be called before most other public functions
@@ -85,22 +87,22 @@ var gTrackEvents = [];
 function preparePeerConnection(
     keygenAlgorithm = null, peerConnectionConstraints = null) {
   if (gPeerConnection !== null)
-    throw new Error('Creating peer connection, but we already have one.');
+    throw failTest('Creating peer connection, but we already have one.');
 
   if (keygenAlgorithm === null) {
     gPeerConnection = createPeerConnection_(null, peerConnectionConstraints);
-    return logAndReturn('ok-peerconnection-created');
+    returnToTest('ok-peerconnection-created');
+  } else {
+    RTCPeerConnection.generateCertificate(keygenAlgorithm).then(
+        function(certificate) {
+          preparePeerConnectionWithCertificate(certificate,
+              peerConnectionConstraints);
+        },
+        function() {
+          failTest('Certificate generation failed. keygenAlgorithm: ' +
+              JSON.stringify(keygenAlgorithm));
+        });
   }
-  return RTCPeerConnection.generateCertificate(keygenAlgorithm).then(
-      function(certificate) {
-        return preparePeerConnectionWithCertificate(certificate,
-            peerConnectionConstraints);
-      },
-      function() {
-        throw new Error('Certificate generation failed. keygenAlgorithm: ' +
-            JSON.stringify(keygenAlgorithm));
-      })
-      .catch((err) => 'Test failed: ' + err.stack);
 }
 
 /**
@@ -114,10 +116,10 @@ function preparePeerConnection(
 function preparePeerConnectionWithCertificate(
     certificate, peerConnectionConstraints = null) {
   if (gPeerConnection !== null)
-    throw new Error('Creating peer connection, but we already have one.');
+    throw failTest('Creating peer connection, but we already have one.');
   gPeerConnection = createPeerConnection_(
       {iceServers:[], certificates:[certificate]}, peerConnectionConstraints);
-  return logAndReturn('ok-peerconnection-created');
+  returnToTest('ok-peerconnection-created');
 }
 
 /**
@@ -125,7 +127,7 @@ function preparePeerConnectionWithCertificate(
  */
 function forceOpusDtx() {
   gOpusDtx = true;
-  return logAndReturn('ok-forced');
+  returnToTest('ok-forced');
 }
 
 /**
@@ -138,7 +140,7 @@ function forceOpusDtx() {
  */
 function setDefaultAudioCodec(audioCodec) {
   gDefaultAudioCodec = audioCodec;
-  return logAndReturn('ok');
+  returnToTest('ok');
 }
 
 /**
@@ -158,7 +160,7 @@ function setDefaultVideoCodec(videoCodec, preferHwVideoCodec, profile) {
   gDefaultVideoCodec = videoCodec;
   gDefaultPreferHwVideoCodec = preferHwVideoCodec;
   gDefaultVideoCodecProfile = profile;
-  return logAndReturn('ok');
+  returnToTest('ok');
 }
 
 /**
@@ -168,7 +170,7 @@ function setDefaultVideoCodec(videoCodec, preferHwVideoCodec, profile) {
  */
 function setDefaultVideoTargetBitrate(bitrate) {
   gDefaultVideoTargetBitrate = bitrate;
-  return logAndReturn('ok');
+  returnToTest('ok');
 }
 
 /**
@@ -177,7 +179,7 @@ function setDefaultVideoTargetBitrate(bitrate) {
  */
 function createDataChannel(label) {
   peerConnection_().createDataChannel(label);
-  return logAndReturn('ok-created');
+  returnToTest('ok-created');
 }
 
 /**
@@ -188,10 +190,8 @@ function createDataChannel(label) {
  * @param {!Object} constraints Any createOffer constraints.
  */
 function createLocalOffer(constraints) {
-  return new Promise((resolve, reject) => {
-    peerConnection_().createOffer(
-      resolve, reject, constraints);
-    }).then(function(localOffer) {
+  peerConnection_().createOffer(
+      function(localOffer) {
         success('createOffer');
 
         setLocalDescription(peerConnection, localOffer);
@@ -211,9 +211,10 @@ function createLocalOffer(constraints) {
           localOffer.sdp = setSdpVideoTargetBitrate(localOffer.sdp,
                                                     gDefaultVideoTargetBitrate);
         }
-        return logAndReturn('ok-' + JSON.stringify(localOffer));
+        returnToTest('ok-' + JSON.stringify(localOffer));
       },
-      function(error) { return new MethodError('createOffer', error, false); });
+      function(error) { failure('createOffer', error); },
+      constraints);
 }
 
 /**
@@ -228,66 +229,56 @@ function createLocalOffer(constraints) {
 function receiveOfferFromPeer(sessionDescJson, constraints) {
   offer = parseJson_(sessionDescJson);
   if (!offer.type)
-    throw new Error('Got invalid session description from peer: '
-      + sessionDescJson);
+    failTest('Got invalid session description from peer: ' + sessionDescJson);
   if (offer.type != 'offer')
-    throw new Error('Expected to receive offer from peer, got '
-      + offer.type);
+    failTest('Expected to receive offer from peer, got ' + offer.type);
 
   var sessionDescription = new RTCSessionDescription(offer);
-  return Promise.all([
-    new Promise((resolve, reject) => {
-      peerConnection_().setRemoteDescription(
-          sessionDescription,
-          resolve, reject);
-      }).then(
-        function() { success('setRemoteDescription'); },
-        function(error) {
-          throw new MethodError('setRemoteDescription', error);
-        }),
+  peerConnection_().setRemoteDescription(
+      sessionDescription,
+      function() { success('setRemoteDescription'); },
+      function(error) { failure('setRemoteDescription', error); });
 
-    new Promise((resolve, reject) => {
-      peerConnection_().createAnswer(resolve, reject, constraints);
-    }).then(
+  peerConnection_().createAnswer(
       function(answer) {
         success('createAnswer');
         setLocalDescription(peerConnection, answer);
         if (gOpusDtx) {
           answer.sdp = setOpusDtxEnabled(answer.sdp);
         }
-        return logAndReturn('ok-' + JSON.stringify(answer));
+        returnToTest('ok-' + JSON.stringify(answer));
       },
-      function(error) { throw new MethodError('createAnswer', error); }),
-  ]).then(([_, result]) => result);
+      function(error) { failure('createAnswer', error); },
+      constraints);
 }
 
 /**
  * Verifies that the codec previously set using setDefault[Audio/Video]Codec()
  * is the default audio/video codec, e.g. the first one in the list on the
- * 'm=audio'/'m=video' SDP answer line. If this is not the case, a new
- * |MethodError| is thrown. If no codec was previously set using
- * setDefault[Audio/Video]Codec(), this function will return
- * 'ok-no-defaults-set'.
+ * 'm=audio'/'m=video' SDP answer line. If this is not the case, |failure|
+ * occurs. If no codec was previously set using setDefault[Audio/Video]Codec(),
+ * this function will return 'ok-no-defaults-set'.
  *
  * @param {!string} sessionDescJson A JSON-encoded session description.
  */
 function verifyDefaultCodecs(sessionDescJson) {
   let sessionDesc = parseJson_(sessionDescJson);
   if (!sessionDesc.type) {
-    throw new MethodError('verifyDefaultCodecs',
+    failure('verifyDefaultCodecs',
              'Invalid session description: ' + sessionDescJson);
   }
   if (gDefaultAudioCodec !== null && gDefaultVideoCodec !== null) {
-    return logAndReturn('ok-no-defaults-set');
+    returnToTest('ok-no-defaults-set');
+    return;
   }
   if (gDefaultAudioCodec !== null) {
     let defaultAudioCodec = getSdpDefaultAudioCodec(sessionDesc.sdp);
     if (defaultAudioCodec === null) {
-      throw new MethodError('verifyDefaultCodecs',
+      failure('verifyDefaultCodecs',
                'Could not determine default audio codec.');
     }
     if (gDefaultAudioCodec !== defaultAudioCodec) {
-      throw new MethodError('verifyDefaultCodecs',
+      failure('verifyDefaultCodecs',
                'Expected default audio codec ' + gDefaultAudioCodec +
                ', got ' + defaultAudioCodec + '.');
     }
@@ -295,16 +286,16 @@ function verifyDefaultCodecs(sessionDescJson) {
   if (gDefaultVideoCodec !== null) {
     let defaultVideoCodec = getSdpDefaultVideoCodec(sessionDesc.sdp);
     if (defaultVideoCodec === null) {
-      throw new MethodError('verifyDefaultCodecs',
+      failure('verifyDefaultCodecs',
                'Could not determine default video codec.');
     }
     if (gDefaultVideoCodec !== defaultVideoCodec) {
-      throw new MethodError('verifyDefaultCodecs',
+      failure('verifyDefaultCodecs',
                'Expected default video codec ' + gDefaultVideoCodec +
                ', got ' + defaultVideoCodec + '.');
     }
   }
-  return logAndReturn('ok-verified');
+  returnToTest('ok-verified');
 }
 
 /**
@@ -316,18 +307,19 @@ function verifyDefaultCodecs(sessionDescJson) {
 function verifyLocalDescriptionContainsCertificate(certificate) {
   let localDescription = peerConnection_().localDescription;
   if (localDescription == null)
-    throw new Error('localDescription is null.');
+    throw failTest('localDescription is null.');
   for (let i = 0; i < certificate.getFingerprints().length; ++i) {
     let fingerprintSdp = 'a=fingerprint:' +
         certificate.getFingerprints()[i].algorithm + ' ' +
         certificate.getFingerprints()[i].value.toUpperCase();
     if (localDescription.sdp.includes(fingerprintSdp)) {
-      return logAndReturn('ok-verified');
+      returnToTest('ok-verified');
+      return;
     }
   }
   if (!localDescription.sdp.includes('a=fingerprint'))
-    throw new Error('localDescription does not contain any fingerprints.');
-  throw new Error('Certificate fingerprint not found in localDescription.');
+    throw failTest('localDescription does not contain any fingerprints.');
+  throw failTest('Certificate fingerprint not found in localDescription.');
 }
 
 /**
@@ -342,23 +334,18 @@ function verifyLocalDescriptionContainsCertificate(certificate) {
 function receiveAnswerFromPeer(sessionDescJson) {
   answer = parseJson_(sessionDescJson);
   if (!answer.type)
-    throw new Error('Got invalid session description from peer: '
-      + sessionDescJson);
+    failTest('Got invalid session description from peer: ' + sessionDescJson);
   if (answer.type != 'answer')
-    throw new Error('Expected to receive answer from peer, got ' + answer.type);
+    failTest('Expected to receive answer from peer, got ' + answer.type);
 
   var sessionDescription = new RTCSessionDescription(answer);
-  return new Promise((resolve, reject) => {
-    peerConnection_().setRemoteDescription(
-        sessionDescription, resolve, reject);
-  }).then(
+  peerConnection_().setRemoteDescription(
+      sessionDescription,
       function() {
         success('setRemoteDescription');
-        return logAndReturn('ok-accepted-answer');
+        returnToTest('ok-accepted-answer');
       },
-      function(error) {
-        throw new MethodError('setRemoteDescription', error);
-      });
+      function(error) { failure('setRemoteDescription', error); });
 }
 
 /**
@@ -367,7 +354,7 @@ function receiveAnswerFromPeer(sessionDescJson) {
  */
 function addLocalStream() {
   addLocalStreamToPeerConnection(peerConnection_());
-  return logAndReturn('ok-added');
+  returnToTest('ok-added');
 }
 
 /**
@@ -383,7 +370,7 @@ function addLocalStream() {
  *     relative to this directory (e.g. ../pyauto_private/webrtc/file.wav).
  */
 function addAudioFile(url) {
-  return loadAudioAndAddToPeerConnection(url, peerConnection_());
+  loadAudioAndAddToPeerConnection(url, peerConnection_());
 }
 
 /**
@@ -391,7 +378,7 @@ function addAudioFile(url) {
  */
 function playAudioFile() {
   playPreviouslyLoadedAudioFile(peerConnection_());
-  return logAndReturn('ok-playing');
+  returnToTest('ok-playing');
 }
 
 /**
@@ -400,7 +387,7 @@ function playAudioFile() {
 function hangUp() {
   peerConnection_().close();
   gPeerConnection = null;
-  return logAndReturn('ok-call-hung-up');
+  returnToTest('ok-call-hung-up');
 }
 
 /**
@@ -411,15 +398,14 @@ function hangUp() {
  *
  * Returns a JSON-encoded array of RTCIceCandidate instances to the test.
  */
-async function getAllIceCandidates() {
-  while (peerConnection_().iceGatheringState != 'complete') {
+function getAllIceCandidates() {
+  if (peerConnection_().iceGatheringState != 'complete') {
     console.log('Still ICE gathering - waiting...');
-    await new Promise(resolve => {
-      setTimeout(resolve, 100);
-    });
+    setTimeout(getAllIceCandidates, 100);
+    return;
   }
 
-  return logAndReturn(JSON.stringify(gIceCandidates));
+  returnToTest(JSON.stringify(gIceCandidates));
 }
 
 /**
@@ -432,22 +418,21 @@ async function getAllIceCandidates() {
 function receiveIceCandidates(iceCandidatesJson) {
   var iceCandidates = parseJson_(iceCandidatesJson);
   if (!iceCandidates.length)
-    throw new Error('Received invalid ICE candidate list from peer: ' +
+    throw failTest('Received invalid ICE candidate list from peer: ' +
         iceCandidatesJson);
 
-  return new Promise((resolve, reject) => {
-    for (const iceCandidate of iceCandidates) {
-      if (!iceCandidate.candidate)
-        throw new Error('Received invalid ICE candidate from peer: ' +
-            iceCandidatesJson);
+  iceCandidates.forEach(function(iceCandidate) {
+    if (!iceCandidate.candidate)
+      failTest('Received invalid ICE candidate from peer: ' +
+          iceCandidatesJson);
 
-      peerConnection_().addIceCandidate(new RTCIceCandidate(iceCandidate,
+    peerConnection_().addIceCandidate(new RTCIceCandidate(iceCandidate,
         function() { success('addIceCandidate'); },
-        function(error) { reject(new MethodError('addIceCandidate', error)); }
-      ));
-    }
-    resolve(logAndReturn('ok-received-candidates'));
+        function(error) { failure('addIceCandidate', error); }
+    ));
   });
+
+  returnToTest('ok-received-candidates');
 }
 
 /**
@@ -461,16 +446,16 @@ function receiveIceCandidates(iceCandidatesJson) {
 function setMediaElementMuted(elementId, muted) {
   var element = document.getElementById(elementId);
   if (!element)
-    throw new Error('Cannot mute ' + elementId + '; does not exist.');
+    throw failTest('Cannot mute ' + elementId + '; does not exist.');
   element.muted = muted;
-  return logAndReturn('ok-muted');
+  returnToTest('ok-muted');
 }
 
 /**
  * Returns
  */
 function hasSeenCryptoInSdp() {
-  return logAndReturn(gHasSeenCryptoInSdp);
+  returnToTest(gHasSeenCryptoInSdp);
 }
 
 /**
@@ -481,9 +466,7 @@ function hasSeenCryptoInSdp() {
  * Returns ok-got-stats on success.
  */
 function verifyLegacyStatsGenerated() {
-  return new Promise(resolve => {
-    peerConnection_().getStats(resolve);
-  }).then(
+  peerConnection_().getStats(
     function(response) {
       var reports = response.result();
       var numStats = 0;
@@ -493,9 +476,9 @@ function verifyLegacyStatsGenerated() {
         for (var j = 0; j < statNames.length; j++) {
           var statValue = reports[i].stat(statNames[j]);
           if (typeof statValue != 'string')
-            throw new Error('A stat was returned that is not a string.');
+            throw failTest('A stat was returned that is not a string.');
           if (!isWhitelistedLegacyStat(statNames[j])) {
-            throw new Error(
+            throw failTest(
                 '"' + statNames[j] + '" is not a whitelisted stat. Exposing ' +
                 'new metrics in the legacy getStats() API is not allowed. ' +
                 'Please follow the standardization process: ' +
@@ -505,8 +488,8 @@ function verifyLegacyStatsGenerated() {
         }
       }
       if (numStats === 0)
-        throw new Error('No stats was returned by getStats.');
-      return logAndReturn('ok-got-stats');
+        throw failTest('No stats was returned by getStats.');
+      returnToTest('ok-got-stats');
     });
 }
 
@@ -519,12 +502,10 @@ function verifyLegacyStatsGenerated() {
  */
 function measureGetStatsCallbackPerformance() {
   let t0 = performance.now();
-  return new Promise(resolve => {
-    peerConnection_().getStats(resolve);
-  }).then(
+  peerConnection_().getStats(
     function(response) {
       let t1 = performance.now();
-      return logAndReturn('ok-' + (t1 - t0));
+      returnToTest('ok-' + (t1 - t0));
     });
 }
 
@@ -532,7 +513,7 @@ function measureGetStatsCallbackPerformance() {
  * Returns the last iceGatheringState emitted from icegatheringstatechange.
  */
 function getLastGatheringState() {
-  return logAndReturn(gIceGatheringState);
+  returnToTest(gIceGatheringState);
 }
 
 /**
@@ -541,11 +522,9 @@ function getLastGatheringState() {
  * negotiationneeded events.
  */
 function getNegotiationNeededCount() {
-  return new Promise(resolve => {
-    window.setTimeout(resolve, 0);
-  }).then(function() {
-    return logAndReturn('ok-negotiation-count-is-' + gNegotiationNeededCount);
-  });
+  window.setTimeout(function() {
+    returnToTest('ok-negotiation-count-is-' + gNegotiationNeededCount);
+  }, 0);
 }
 
 /**
@@ -557,9 +536,9 @@ function getNegotiationNeededCount() {
  */
 function getTrackEvents() {
   let result = '';
-  for (const event of gTrackEvents) {
+  gTrackEvents.forEach(function(event) {
     if (event.receiver.track != event.track)
-      throw new Error('RTCTrackEvent\'s track does not match its receiver\'s.');
+      throw failTest('RTCTrackEvent\'s track does not match its receiver\'s.');
     let eventString = 'RTCTrackEvent ' + event.track.id;
     event.streams.forEach(function(stream) {
       eventString += ' ' + stream.id;
@@ -567,8 +546,8 @@ function getTrackEvents() {
     if (result.length)
       result += ' ';
     result += eventString;
-  }
-  return logAndReturn('ok-' + result);
+  });
+  returnToTest('ok-' + result);
 }
 
 // Internals.
@@ -579,7 +558,7 @@ function createPeerConnection_(rtcConfig, peerConnectionConstraints) {
     peerConnection =
         new RTCPeerConnection(rtcConfig, peerConnectionConstraints);
   } catch (exception) {
-    throw new Error('Failed to create peer connection: ' + exception);
+    throw failTest('Failed to create peer connection: ' + exception);
   }
   peerConnection.onaddstream = addStreamCallback_;
   peerConnection.onremovestream = removeStreamCallback_;
@@ -593,7 +572,7 @@ function createPeerConnection_(rtcConfig, peerConnectionConstraints) {
 /** @private */
 function peerConnection_() {
   if (gPeerConnection == null)
-    throw new Error('Trying to use peer connection, but none was created.');
+    throw failTest('Trying to use peer connection, but none was created.');
   return gPeerConnection;
 }
 
@@ -627,7 +606,7 @@ function setLocalDescription(peerConnection, sessionDescription) {
   peerConnection.setLocalDescription(
     sessionDescription,
     function() { success('setLocalDescription'); },
-    function(error) { new MethodError('setLocalDescription', error); });
+    function(error) { failure('setLocalDescription', error); });
 }
 
 /** @private */
@@ -653,8 +632,8 @@ function parseJson_(json) {
   try {
     return JSON.parse(jsonWithEscapedLineBreaks);
   } catch (exception) {
-    throw new Error('Failed to parse JSON: ' + jsonWithEscapedLineBreaks +
-      ', got ' + exception);
+    failTest('Failed to parse JSON: ' + jsonWithEscapedLineBreaks + ', got ' +
+             exception);
   }
 }
 

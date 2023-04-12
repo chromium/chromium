@@ -49,7 +49,7 @@ function startDetection(videoElementId, width, height) {
     }
   }, 100);
 
-  return logAndReturn('ok-started');
+  returnToTest('ok-started');
 }
 
 /**
@@ -68,13 +68,14 @@ function isVideoPlaying() {
       if (!allElementsRoughlyEqualTo_(gFingerprints, gFingerprints[0])) {
         clearInterval(gDetectorInterval);
         gDetectorInterval = null;
-        return 'video-playing';
+        silentReturnToTest('video-playing');
+        return;
       }
     }
   } catch (exception) {
     throw failTest('Failed to detect video: ' + exception.message);
   }
-  return 'video-not-playing';
+  silentReturnToTest('video-not-playing');
 }
 
 /**
@@ -86,15 +87,17 @@ function isVideoStopped() {
   // Video is considered to be stopped if the last 5 fingerprints are the same.
   // We only check for rough equality though to account for rounding errors.
   if (gFingerprints.length < 5) {
-    return 'video-not-stopped';
+    silentReturnToTest('video-not-stopped');
+    return;
   }
 
   if (allElementsRoughlyEqualTo_(gFingerprints.slice(-5),
                                  gFingerprints[gFingerprints.length - 1])) {
-    return 'video-stopped';
+    silentReturnToTest('video-stopped');
+    return;
   }
 
-  return 'video-not-stopped';
+  silentReturnToTest('video-not-stopped');
 }
 
 /**
@@ -109,7 +112,7 @@ function getStreamSize(videoElementId) {
   if (!video)
     throw failTest('Could not find video element with id ' + videoElementId);
 
-  return logAndReturn('ok-' + video.videoWidth + 'x' + video.videoHeight);
+  returnToTest('ok-' + video.videoWidth + 'x' + video.videoHeight);
 }
 
 // Internals.

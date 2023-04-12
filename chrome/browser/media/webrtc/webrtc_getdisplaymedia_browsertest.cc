@@ -168,8 +168,10 @@ void RunGetDisplayMedia(content::WebContents* tab,
 }
 
 void StopAllTracks(content::WebContents* tab) {
-  EXPECT_EQ(content::EvalJs(tab->GetPrimaryMainFrame(), "stopAllTracks();"),
-            "stopped");
+  std::string result;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      tab->GetPrimaryMainFrame(), "stopAllTracks();", &result));
+  EXPECT_EQ(result, "stopped");
 }
 
 void UpdateWebContentsTitle(content::WebContents* contents,
@@ -345,8 +347,10 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
     return;
   }
 
-  EXPECT_EQ(content::EvalJs(tab->GetPrimaryMainFrame(), "waitVideoUnmuted();"),
-            "unmuted");
+  std::string result;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      tab->GetPrimaryMainFrame(), "waitVideoUnmuted();", &result));
+  EXPECT_EQ(result, "unmuted");
 
   const policy::DlpContentRestrictionSet kScreenShareRestricted(
       policy::DlpContentRestriction::kScreenShare,
@@ -355,14 +359,16 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithPicker,
   helper.ChangeConfidentiality(tab, kScreenShareRestricted);
   content::WaitForLoadStop(tab);
 
-  EXPECT_EQ(content::EvalJs(tab->GetPrimaryMainFrame(), "waitVideoMuted();"),
-            "muted");
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      tab->GetPrimaryMainFrame(), "waitVideoMuted();", &result));
+  EXPECT_EQ(result, "muted");
 
   const policy::DlpContentRestrictionSet kEmptyRestrictionSet;
   helper.ChangeConfidentiality(tab, kEmptyRestrictionSet);
 
-  EXPECT_EQ(content::EvalJs(tab->GetPrimaryMainFrame(), "waitVideoUnmuted();"),
-            "unmuted");
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      tab->GetPrimaryMainFrame(), "waitVideoUnmuted();", &result));
+  EXPECT_EQ(result, "unmuted");
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -442,16 +448,18 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
                      /*is_fake_ui=*/true, /*expect_success=*/true,
                      /*is_tab_capture=*/PreferCurrentTab());
 
-  EXPECT_EQ(content::EvalJs(tab->GetPrimaryMainFrame(),
-                            "getDisplaySurfaceSetting();"),
-            test_config_.display_surface);
+  std::string result;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      tab->GetPrimaryMainFrame(), "getDisplaySurfaceSetting();", &result));
+  EXPECT_EQ(result, test_config_.display_surface);
 
-  EXPECT_EQ(content::EvalJs(tab->GetPrimaryMainFrame(),
-                            "getLogicalSurfaceSetting();"),
-            "true");
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      tab->GetPrimaryMainFrame(), "getLogicalSurfaceSetting();", &result));
+  EXPECT_EQ(result, "true");
 
-  EXPECT_EQ(content::EvalJs(tab->GetPrimaryMainFrame(), "getCursorSetting();"),
-            "never");
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      tab->GetPrimaryMainFrame(), "getCursorSetting();", &result));
+  EXPECT_EQ(result, "never");
 }
 
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
@@ -467,8 +475,10 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
                      /*is_fake_ui=*/true, /*expect_success=*/true,
                      /*is_tab_capture=*/PreferCurrentTab());
 
-  EXPECT_EQ(content::EvalJs(tab->GetPrimaryMainFrame(), "hasAudioTrack();"),
-            "true");
+  std::string result;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      tab->GetPrimaryMainFrame(), "hasAudioTrack();", &result));
+  EXPECT_EQ(result, "true");
 }
 
 IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
@@ -488,12 +498,14 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCaptureBrowserTestWithFakeUI,
                      /*is_fake_ui=*/true, /*expect_success=*/true,
                      /*is_tab_capture=*/PreferCurrentTab());
 
-  EXPECT_EQ(content::EvalJs(tab->GetPrimaryMainFrame(), "getWidthSetting();"),
-            base::StringPrintf("%d", kMaxWidth));
+  std::string result;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      tab->GetPrimaryMainFrame(), "getWidthSetting();", &result));
+  EXPECT_EQ(result, base::StringPrintf("%d", kMaxWidth));
 
-  EXPECT_EQ(
-      content::EvalJs(tab->GetPrimaryMainFrame(), "getFrameRateSetting();"),
-      base::StringPrintf("%d", kMaxFrameRate));
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      tab->GetPrimaryMainFrame(), "getFrameRateSetting();", &result));
+  EXPECT_EQ(result, base::StringPrintf("%d", kMaxFrameRate));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -558,14 +570,15 @@ IN_PROC_BROWSER_TEST_P(WebRtcScreenCapturePermissionPolicyBrowserTest,
       "{video: true, selfBrowserSurface: 'include', preferCurrentTab: %s}",
       PreferCurrentTab() ? "true" : "false");
 
-  EXPECT_EQ(
-      content::EvalJs(
-          OpenTestPageInNewTab(kMainHtmlPage)->GetPrimaryMainFrame(),
-          base::StringPrintf(
-              "runGetDisplayMedia(%s, \"%s\");", constraints.c_str(),
-              allowlisted_by_policy_ ? "allowedFrame" : "disallowedFrame")),
-      allowlisted_by_policy_ ? "embedded-capture-success"
-                             : "embedded-capture-failure");
+  std::string result;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      OpenTestPageInNewTab(kMainHtmlPage)->GetPrimaryMainFrame(),
+      base::StringPrintf(
+          "runGetDisplayMedia(%s, \"%s\");", constraints.c_str(),
+          allowlisted_by_policy_ ? "allowedFrame" : "disallowedFrame"),
+      &result));
+  EXPECT_EQ(result, allowlisted_by_policy_ ? "embedded-capture-success"
+                                           : "embedded-capture-failure");
 }
 
 // Test class used to test WebRTC with App Windows. Unfortunately, due to
@@ -711,9 +724,10 @@ IN_PROC_BROWSER_TEST_F(WebRtcSameOriginPolicyBrowserTest,
       ui_test_utils::NavigateToURL(browser(), GetFileURL(kMainHtmlFileName)));
 
   // Verify that the video stream has ended.
-  EXPECT_EQ(content::EvalJs(capturing_tab->GetPrimaryMainFrame(),
-                            "waitVideoEnded();"),
-            "ended");
+  std::string result;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      capturing_tab->GetPrimaryMainFrame(), "waitVideoEnded();", &result));
+  EXPECT_EQ(result, "ended");
 }
 
 IN_PROC_BROWSER_TEST_F(WebRtcSameOriginPolicyBrowserTest,
@@ -753,9 +767,11 @@ IN_PROC_BROWSER_TEST_F(WebRtcSameOriginPolicyBrowserTest,
       embedded_test_server()->GetURL("/webrtc/captured_page_main.html")));
 
   // Verify that the video hasn't been ended.
-  EXPECT_EQ(content::EvalJs(capturing_tab->GetPrimaryMainFrame(),
-                            "video_track.readyState;"),
-            "live");
+  std::string result;
+  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+      capturing_tab->GetPrimaryMainFrame(),
+      "returnToTest(video_track.readyState);", &result));
+  EXPECT_EQ(result, "live");
 }
 
 class GetDisplayMediaVideoTrackBrowserTest
@@ -825,27 +841,32 @@ class GetDisplayMediaVideoTrackBrowserTest
   }
 
   std::string GetVideoTrackType() {
-    return content::EvalJs(tab_->GetPrimaryMainFrame(), "getVideoTrackType();")
-        .ExtractString();
+    std::string result;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        tab_->GetPrimaryMainFrame(), "getVideoTrackType();", &result));
+    return result;
   }
 
   std::string GetVideoCloneTrackType() {
-    return content::EvalJs(tab_->GetPrimaryMainFrame(),
-                           "getVideoCloneTrackType();")
-        .ExtractString();
+    std::string result;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        tab_->GetPrimaryMainFrame(), "getVideoCloneTrackType();", &result));
+    return result;
   }
 
   bool HasAudioTrack() {
-    std::string result =
-        content::EvalJs(tab_->GetPrimaryMainFrame(), "hasAudioTrack();")
-            .ExtractString();
+    std::string result;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        tab_->GetPrimaryMainFrame(), "hasAudioTrack();", &result));
     EXPECT_TRUE(result == "true" || result == "false");
     return result == "true";
   }
 
   std::string GetAudioTrackType() {
-    return content::EvalJs(tab_->GetPrimaryMainFrame(), "getAudioTrackType();")
-        .ExtractString();
+    std::string result;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        tab_->GetPrimaryMainFrame(), "getAudioTrackType();", &result));
+    return result;
   }
 
   std::string ExpectedVideoTrackType() const {
@@ -998,8 +1019,10 @@ class GetDisplayMediaHiDpiBrowserTest
 
  private:
   std::string RunJs(const std::string& command) {
-    return content::EvalJs(tab_->GetPrimaryMainFrame(), command)
-        .ExtractString();
+    std::string result;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        tab_->GetPrimaryMainFrame(), command, &result));
+    return result;
   }
 
   base::test::ScopedFeatureList feature_list_;

@@ -51,7 +51,8 @@ $ = function(id) {
  */
 function doGetUserMedia(constraints) {
   if (!navigator.getUserMedia) {
-    return logAndReturn('Browser does not support WebRTC.');
+    returnToTest('Browser does not support WebRTC.');
+    return;
   }
   debug(
       'Requesting doGetUserMedia: constraints: ' +
@@ -71,8 +72,8 @@ function doGetUserMedia(constraints) {
   var timeoutPromise = new Promise(function(resolve) {
     setTimeout(() => resolve('request-timedout'), 4000);
   });
-  return Promise.race([gumPromise, timeoutPromise]).then(function(value) {
-    return logAndReturn(value);
+  Promise.race([gumPromise, timeoutPromise]).then(function(value) {
+    returnToTest(value);
   });
 }
 
@@ -84,10 +85,11 @@ function doGetUserMedia(constraints) {
  *     callback) depending on which callback got called by WebRTC.
  */
 function obtainGetUserMediaResult() {
+  returnToTest(gRequestWebcamAndMicrophoneResult);
   var ret = gRequestWebcamAndMicrophoneResult;
   // Reset for the next call.
   gRequestWebcamAndMicrophoneResult = 'not-called-yet';
-  return logAndReturn(ret);
+  return ret;
 }
 
 /**
@@ -95,7 +97,7 @@ function obtainGetUserMediaResult() {
  */
 function stopLocalStream() {
   if (gLocalStream == null)
-    throw new Error(
+    throw failTest(
         'Tried to stop local stream, ' +
         'but media access is not granted.');
 
@@ -107,7 +109,7 @@ function stopLocalStream() {
   });
   gLocalStream = null;
   gRequestWebcamAndMicrophoneResult = 'not-called-yet';
-  return logAndReturn('ok-stopped');
+  returnToTest('ok-stopped');
 }
 
 // Functions callable from other JavaScript modules.
@@ -118,13 +120,13 @@ function stopLocalStream() {
  */
 function addLocalStreamToPeerConnection(peerConnection) {
   if (gLocalStream == null)
-    throw new Error(
+    throw failTest(
         'Tried to add local stream to peer connection, ' +
         'but there is no stream yet.');
   try {
     peerConnection.addStream(gLocalStream, gAddStreamConstraints);
   } catch (exception) {
-    throw new Error(
+    throw failTest(
         'Failed to add stream with constraints ' + gAddStreamConstraints +
         ': ' + exception);
   }
@@ -187,14 +189,12 @@ function getUserMediaFailedCallback_(error) {
 }
 
 function openDesktopMediaStream() {
-  return new Promise(resolve => {
-    window.addEventListener('message', function(event) {
-      // Only trigger if streamId is present (callback from, not to, extension).
-      if (typeof event.data.streamId !== 'undefined') {
-        return resolve(logAndReturn(event.data.streamId));
-      }
-    });
-
-    window.postMessage({desktopSourceTypes: ['window', 'screen', 'tab']}, '*');
+  window.addEventListener('message', function(event) {
+    // Only trigger if streamId is present (callback from, not to, extension).
+    if (typeof event.data.streamId !== 'undefined') {
+      returnToTest(event.data.streamId);
+    }
   });
+
+  window.postMessage({desktopSourceTypes: ['window', 'screen', 'tab']}, '*');
 }
