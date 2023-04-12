@@ -269,6 +269,7 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorTextfieldSelectionBackground] = {kColorTextSelectionBackground};
   mixer[kColorTextfieldSelectionForeground] = {kColorTextSelectionForeground};
   mixer[kColorTextfieldOutline] = {kColorFocusableBorderUnfocused};
+  mixer[kColorTextfieldOutlineHover] = {kColorFocusableBorderUnfocused};
   mixer[kColorTextfieldDisabledOutline] = {kColorFocusableBorderUnfocused};
   mixer[kColorTextfieldInvalidOutline] = {kColorAlertHighSeverity};
   mixer[kColorThrobber] =
