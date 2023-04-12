@@ -60,10 +60,6 @@ bool EntrySorter(scoped_refptr<const ReadingListEntry> rhs,
 @implementation ReadingListMediator
 
 @synthesize dataSink = _dataSink;
-@synthesize model = _model;
-@synthesize shouldMonitorModel = _shouldMonitorModel;
-@synthesize itemFactory = _itemFactory;
-@synthesize faviconLoader = _faviconLoader;
 
 #pragma mark - Public
 
@@ -90,6 +86,14 @@ bool EntrySorter(scoped_refptr<const ReadingListEntry> rhs,
 
 - (void)markEntryRead:(const GURL&)URL {
   self.model->SetReadStatusIfExists(URL, true);
+}
+
+- (void)disconnect {
+  _dataSink = nil;
+  _model = nullptr;
+  _itemFactory = nil;
+  _faviconLoader = nullptr;
+  _modelBridge.reset();
 }
 
 #pragma mark - ReadingListDataSource

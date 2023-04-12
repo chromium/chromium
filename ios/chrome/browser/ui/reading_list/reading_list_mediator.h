@@ -36,6 +36,9 @@ class ReadingListModel;
 // Marks the entry with `URL` as read.
 - (void)markEntryRead:(const GURL&)URL;
 
+// Disconnects the mediator and clear internal dependencies.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_READING_LIST_READING_LIST_MEDIATOR_H_

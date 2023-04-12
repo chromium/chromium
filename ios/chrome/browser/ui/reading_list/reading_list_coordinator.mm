@@ -226,6 +226,9 @@
   self.tableViewController = nil;
   self.navigationController = nil;
 
+  [self.mediator disconnect];
+  self.mediator = nil;
+
   [self.sharingCoordinator stop];
   self.sharingCoordinator = nil;
 
