@@ -32,6 +32,11 @@ class ASH_EXPORT TouchpadPrefHandler {
       const AccountId& account_id,
       mojom::Touchpad* touchpad) = 0;
 
+  // Updates the `settings` member of the `mojom::Touchpad` object using
+  // default settings.
+  virtual void InitializeWithDefaultTouchpadSettings(
+      mojom::Touchpad* touchpad) = 0;
+
   // Updates device settings stored in prefs to match the values in
   // `touchpad.settings`.
   virtual void UpdateTouchpadSettings(PrefService* pref_service,

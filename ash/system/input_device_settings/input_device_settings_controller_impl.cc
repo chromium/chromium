@@ -265,11 +265,7 @@ void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
     DispatchKeyboardSettingsChanged(id);
   }
   for (const auto& [id, touchpad] : touchpads_) {
-    touchpad_pref_handler_->InitializeTouchpadSettings(active_pref_service_,
-                                                       touchpad.get());
-    if (active_pref_service_) {
-      metrics_manager_->RecordTouchpadInitialMetrics(*touchpad);
-    }
+    InitializeTouchpadSettings(touchpad.get());
     DispatchTouchpadSettingsChanged(id);
   }
   for (const auto& [id, mouse] : mice_) {
@@ -283,6 +279,7 @@ void InputDeviceSettingsControllerImpl::RefreshAllDeviceSettings() {
 
   RefreshStoredLoginScreenKeyboardSettings();
   RefreshStoredLoginScreenMouseSettings();
+  RefreshStoredLoginScreenTouchpadSettings();
   RefreshStoredLoginScreenPointingStickSettings();
 }
 
@@ -378,6 +375,34 @@ void InputDeviceSettingsControllerImpl::
   }
 }
 
+void InputDeviceSettingsControllerImpl::
+    RefreshStoredLoginScreenTouchpadSettings() {
+  if (!local_state_ || !active_account_id_.has_value()) {
+    return;
+  }
+
+  // Our map of touchpads is sorted so iterating in reverse order guarantees
+  // that we'll select the most recently connected device.
+  auto external_iter = base::ranges::find(
+      touchpads_.rbegin(), touchpads_.rend(), /*value=*/true,
+      [](const auto& touchpad) { return touchpad.second->is_external; });
+  auto internal_iter = base::ranges::find(
+      touchpads_.rbegin(), touchpads_.rend(), /*value=*/false,
+      [](const auto& touchpad) { return touchpad.second->is_external; });
+
+  if (external_iter != touchpads_.rend()) {
+    auto& external_touchpad = *external_iter->second;
+    touchpad_pref_handler_->UpdateLoginScreenTouchpadSettings(
+        local_state_, active_account_id_.value(), external_touchpad);
+  }
+
+  if (internal_iter != touchpads_.rend()) {
+    auto& internal_touchpad = *internal_iter->second;
+    touchpad_pref_handler_->UpdateLoginScreenTouchpadSettings(
+        local_state_, active_account_id_.value(), internal_touchpad);
+  }
+}
+
 void InputDeviceSettingsControllerImpl::OnLoginScreenFocusedPodChanged(
     const AccountId& account_id) {
   active_account_id_ = account_id;
@@ -400,6 +425,12 @@ void InputDeviceSettingsControllerImpl::OnLoginScreenFocusedPodChanged(
     pointing_stick_pref_handler_->InitializeLoginScreenPointingStickSettings(
         local_state_, account_id, pointing_stick.get());
     DispatchPointingStickSettingsChanged(id);
+  }
+
+  for (const auto& [id, touchpad] : touchpads_) {
+    touchpad_pref_handler_->InitializeLoginScreenTouchpadSettings(
+        local_state_, account_id, touchpad.get());
+    DispatchTouchpadSettingsChanged(id);
   }
 }
 
@@ -585,6 +616,8 @@ void InputDeviceSettingsControllerImpl::SetTouchpadSettings(
       DispatchTouchpadSettingsChanged(device_id);
     }
   }
+
+  RefreshStoredLoginScreenTouchpadSettings();
 }
 
 void InputDeviceSettingsControllerImpl::SetMouseSettings(
@@ -793,11 +826,7 @@ void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
     std::vector<DeviceId> touchpad_ids_to_remove) {
   for (const auto& touchpad : touchpads_to_add) {
     auto mojom_touchpad = BuildMojomTouchpad(touchpad);
-    touchpad_pref_handler_->InitializeTouchpadSettings(active_pref_service_,
-                                                       mojom_touchpad.get());
-    if (active_pref_service_) {
-      metrics_manager_->RecordTouchpadInitialMetrics(*mojom_touchpad);
-    }
+    InitializeTouchpadSettings(mojom_touchpad.get());
     touchpads_.insert_or_assign(touchpad.id, std::move(mojom_touchpad));
     DispatchTouchpadConnected(touchpad.id);
   }
@@ -805,6 +834,8 @@ void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
   for (const auto id : touchpad_ids_to_remove) {
     DispatchTouchpadDisconnectedAndEraseFromList(id);
   }
+
+  RefreshStoredLoginScreenTouchpadSettings();
 }
 
 void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
@@ -926,6 +957,26 @@ void InputDeviceSettingsControllerImpl::InitializePointingStickSettings(
 
   pointing_stick_pref_handler_->InitializeLoginScreenPointingStickSettings(
       local_state_, active_account_id_.value(), pointing_stick);
+}
+
+void InputDeviceSettingsControllerImpl::InitializeTouchpadSettings(
+    mojom::Touchpad* touchpad) {
+  if (active_pref_service_) {
+    touchpad_pref_handler_->InitializeTouchpadSettings(active_pref_service_,
+                                                       touchpad);
+    metrics_manager_->RecordTouchpadInitialMetrics(*touchpad);
+    return;
+  }
+
+  // Ensure `touchpad.settings` is left in a valid state. This state occurs
+  // during OOBE setup and when signing in a new user.
+  if (!active_account_id_.has_value() || !local_state_) {
+    touchpad_pref_handler_->InitializeWithDefaultTouchpadSettings(touchpad);
+    return;
+  }
+
+  touchpad_pref_handler_->InitializeLoginScreenTouchpadSettings(
+      local_state_, active_account_id_.value(), touchpad);
 }
 
 }  // namespace ash

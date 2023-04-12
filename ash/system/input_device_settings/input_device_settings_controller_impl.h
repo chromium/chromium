@@ -119,6 +119,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   void InitializeKeyboardSettings(mojom::Keyboard* keyboard);
   void InitializeMouseSettings(mojom::Mouse* mouse);
   void InitializePointingStickSettings(mojom::PointingStick* pointing_stick);
+  void InitializeTouchpadSettings(mojom::Touchpad* touchpad);
 
   // Update the cached per-user keyboard settings on the login screen using the
   // most recently connected internal/external device (if applicable). This
@@ -130,6 +131,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   void RefreshStoredLoginScreenKeyboardSettings();
   void RefreshStoredLoginScreenMouseSettings();
   void RefreshStoredLoginScreenPointingStickSettings();
+  void RefreshStoredLoginScreenTouchpadSettings();
 
   base::ObserverList<InputDeviceSettingsController::Observer> observers_;
 

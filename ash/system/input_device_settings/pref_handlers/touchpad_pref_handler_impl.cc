@@ -396,4 +396,9 @@ void TouchpadPrefHandlerImpl::UpdateLoginScreenTouchpadSettings(
                    touchpad, /*force_persistence=*/{}, settings_dict)));
 }
 
+void TouchpadPrefHandlerImpl::InitializeWithDefaultTouchpadSettings(
+    mojom::Touchpad* touchpad) {
+  touchpad->settings = GetDefaultTouchpadSettings();
+}
+
 }  // namespace ash

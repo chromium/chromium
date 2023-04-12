@@ -37,6 +37,9 @@ class ASH_EXPORT TouchpadPrefHandlerImpl : public TouchpadPrefHandler {
       PrefService* local_state,
       const AccountId& account_id,
       const mojom::Touchpad& touchpad) override;
+
+  void InitializeWithDefaultTouchpadSettings(
+      mojom::Touchpad* touchpad) override;
 };
 
 }  // namespace ash
