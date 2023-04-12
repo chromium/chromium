@@ -89,6 +89,8 @@ class ShellFileSelectHelper
   // Dialog box used for choosing files to upload from file form fields.
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 
+  std::unique_ptr<ui::SelectFileDialog::FileTypeInfo> select_file_types_;
+
   // The type of file dialog last shown.
   ui::SelectFileDialog::Type dialog_type_ =
       ui::SelectFileDialog::SELECT_OPEN_FILE;
