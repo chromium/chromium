@@ -405,6 +405,11 @@ bool PinManager::CanPin(const FileMetadata& md, const Path& path) {
     return false;
   }
 
+  if (md.trashed) {
+    VLOG(1) << "Skipped " << id << " " << Quote(path) << ": Trashed";
+    return false;
+  }
+
   return true;
 }
 
@@ -848,7 +853,20 @@ void PinManager::HandleQueryItem(Id dir_id,
       // The shortcut target is not accessible.
       progress_.skipped_items++;
       VLOG(1) << "Broken shortcut " << id << " " << Quote(path) << ": "
-              << Quote(md);
+              << "Target " << Quote(md.type) << " "
+              << Id(md.shortcut_details->target_stable_id)
+              << " has lookup error: "
+              << Quote(md.shortcut_details->target_lookup_status);
+      return;
+    }
+
+    // Is the shortcut's target in the trash bin?
+    if (md.trashed) {
+      // The shortcut target is in the trash bin.
+      progress_.skipped_items++;
+      VLOG(1) << "Broken shortcut " << id << " " << Quote(path) << ": "
+              << "Target " << Quote(md.type) << " "
+              << Id(md.shortcut_details->target_stable_id) << " is trashed";
       return;
     }
 

@@ -296,7 +296,7 @@ TEST_F(DriveFsPinManagerTest, CanPin) {
   md.available_offline = true;
   EXPECT_FALSE(PinManager::CanPin(md, path));
 
-  // Already pinned file that is not cached yet should be followed as if it was
+  // Already pinned file that is not cached yet should be monitored as if it was
   // just pinned.
   md.pinned = true;
   md.available_offline = false;
@@ -307,6 +307,12 @@ TEST_F(DriveFsPinManagerTest, CanPin) {
   md.available_offline = true;
   EXPECT_TRUE(PinManager::CanPin(md, path));
   md.available_offline = false;
+  EXPECT_TRUE(PinManager::CanPin(md, path));
+
+  // Trashed item shouldn't be pinned.
+  md.trashed = true;
+  EXPECT_FALSE(PinManager::CanPin(md, path));
+  md.trashed = false;
   EXPECT_TRUE(PinManager::CanPin(md, path));
 
   // Shortcut cannot be pinned.
