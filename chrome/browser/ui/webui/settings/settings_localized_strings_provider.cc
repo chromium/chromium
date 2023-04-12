@@ -518,6 +518,7 @@ void AddDownloadsStrings(content::WebUIDataSource* html_source) {
       {"promptForDownload", IDS_SETTINGS_PROMPT_FOR_DOWNLOAD},
       {"openFileTypesAutomatically",
        IDS_SETTINGS_OPEN_FILE_TYPES_AUTOMATICALLY},
+      {"showDownloadsWhenFinished", IDS_SETTINGS_DOWNLOADS_SHOW_WHEN_FINISHED},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

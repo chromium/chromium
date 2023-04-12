@@ -41,3 +41,10 @@
         </cr-button>
       </div>
     </template>
+    <template is="dom-if" if="[[downloadBubbleEnabled_]]">
+      <settings-toggle-button id="showDownloadsToggle"
+          class="hr"
+          pref="{{prefs.download_bubble.partial_view_enabled}}"
+          label="$i18n{showDownloadsWhenFinished}">
+      </settings-toggle-button>
+    </template>

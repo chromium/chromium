@@ -1479,6 +1479,9 @@
   <message name="IDS_SETTINGS_OPEN_FILE_TYPES_AUTOMATICALLY" desc="The information label for the 'Clear auto-opening settings' button">
     Open certain file types automatically after downloading
   </message>
+  <message name="IDS_SETTINGS_DOWNLOADS_SHOW_WHEN_FINISHED" desc="Label for the setting which enables the automatic showing of downloads when the downloads finish.">
+    Show downloads when they're done
+  </message>
 
   <!-- On Startup Page -->
   <message name="IDS_SETTINGS_ON_STARTUP" desc="Name of the on startup page.">

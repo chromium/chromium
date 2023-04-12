@@ -264,6 +264,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[drive::prefs::kDriveFsBulkPinningEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 #endif
+  (*s_allowlist)[::prefs::kDownloadBubblePartialViewEnabled] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Miscellaneous. TODO(stevenjb): categorize.
   (*s_allowlist)[::prefs::kEnableDoNotTrack] =
