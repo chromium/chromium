@@ -1483,16 +1483,26 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   return self.scrimView.superview ? YES : NO;
 }
 
-// Triggers the URL sharing flow for the given `URL` and `title`, with the
-// `indexPath` for the cell representing the UI component for that URL.
-- (void)shareURL:(const GURL&)URL
-           title:(NSString*)title
-       indexPath:(NSIndexPath*)indexPath {
-  UIView* cellView = [self.tableView cellForRowAtIndexPath:indexPath];
+// Triggers the URL sharing flow for `bookmarkNodeID` node, if it still exists.
+- (void)shareBookmarkNodeWithID:(int64_t)bookmarkNodeID
+                      indexPath:(NSIndexPath*)indexPath {
+  const bookmarks::BookmarkNode* bookmarkNodeFromID =
+      bookmark_utils_ios::FindNodeById(self.profileBookmarkModel,
+                                       bookmarkNodeID);
+  if (!bookmarkNodeFromID) {
+    // While the contextual menu was opened, the node might has been removed.
+    // If the node doesn't exist anymore, there nothing to do.
+    return;
+  }
+  DCHECK(bookmarkNodeFromID->is_url());
+  GURL bookmarkURL = bookmarkNodeFromID->url();
+  NSString* title =
+      bookmark_utils_ios::TitleForBookmarkNode(bookmarkNodeFromID);
   SharingParams* params =
-      [[SharingParams alloc] initWithURL:URL
+      [[SharingParams alloc] initWithURL:bookmarkURL
                                    title:title
                                 scenario:SharingScenario::BookmarkEntry];
+  UIView* cellView = [self.tableView cellForRowAtIndexPath:indexPath];
   self.sharingCoordinator =
       [[SharingCoordinator alloc] initWithBaseViewController:self
                                                      browser:self.browser
@@ -2484,22 +2494,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       }];
       [menuElements addObject:editAction];
 
-      [menuElements
-          addObject:[actionFactory actionToShareWithBlock:^{
-            BookmarksHomeViewController* innerStrongSelf = weakSelf;
-            if (!innerStrongSelf) {
-              return;
-            }
-            const bookmarks::BookmarkNode* nodeFromId =
-                bookmark_utils_ios::FindNodeById(
-                    innerStrongSelf.profileBookmarkModel, nodeId);
-            if (nodeFromId) {
-              [weakSelf
-                   shareURL:nodeURL
-                      title:bookmark_utils_ios::TitleForBookmarkNode(nodeFromId)
-                  indexPath:indexPath];
-            }
-          }]];
+      [menuElements addObject:[actionFactory actionToShareWithBlock:^{
+                      BookmarksHomeViewController* innerStrongSelf = weakSelf;
+                      [innerStrongSelf shareBookmarkNodeWithID:nodeId
+                                                     indexPath:indexPath];
+                    }]];
 
       UIAction* deleteAction = [actionFactory actionToDeleteWithBlock:^{
         BookmarksHomeViewController* innerStrongSelf = weakSelf;
