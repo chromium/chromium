@@ -83,7 +83,8 @@ std::ostream& operator<<(std::ostream& ostream,
 // Returns resolution and number of planes given |pix_mp|.
 std::ostream& operator<<(std::ostream& ostream,
                          const struct v4l2_pix_format_mplane& pix_mp) {
-  ostream << pix_mp.width << " x " << pix_mp.height
+  ostream << media::FourccToString(pix_mp.pixelformat) << ", " << pix_mp.width
+          << " x " << pix_mp.height
           << ", num_planes = " << static_cast<size_t>(pix_mp.num_planes) << ".";
 
   return ostream;
