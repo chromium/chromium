@@ -72,6 +72,13 @@ CGFloat GetPixelLength() {
   return 1.0 / [UIScreen mainScreen].scale;
 }
 
+// Returns the width of the alert.
+CGFloat GetAlertWidth() {
+  BOOL is_a11y_content_size = UIContentSizeCategoryIsAccessibilityCategory(
+      [UIApplication sharedApplication].preferredContentSizeCategory);
+  return is_a11y_content_size ? kAlertWidthAccessibility : kAlertWidth;
+}
+
 // Positions the content view on the screen.
 void PositionContentViewInParentView(UIView* contentView, UIView* parentView) {
   [NSLayoutConstraint activateConstraints:@[
@@ -265,13 +272,6 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   self.swipeRecognizer.direction = UISwipeGestureRecognizerDirectionDown;
   self.swipeRecognizer.enabled = NO;
   [self.contentView addGestureRecognizer:self.swipeRecognizer];
-
-  auto GetAlertWidth = ^CGFloat(void) {
-    BOOL isAccessibilityContentSize =
-        UIContentSizeCategoryIsAccessibilityCategory(
-            [UIApplication sharedApplication].preferredContentSizeCategory);
-    return isAccessibilityContentSize ? kAlertWidthAccessibility : kAlertWidth;
-  };
 
   NSLayoutConstraint* widthConstraint =
       [self.contentView.widthAnchor constraintEqualToConstant:GetAlertWidth()];
@@ -587,30 +587,47 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   for (NSArray<AlertAction*>* rowOfActions in self.actions) {
     DCHECK_GT([rowOfActions count], 0U);
     AddSeparatorToStackView(buttons);
-    UIStackView* rowOfButtons = [[UIStackView alloc] init];
-    rowOfButtons.axis = UILayoutConstraintAxisHorizontal;
-    rowOfButtons.alignment = UIStackViewAlignmentCenter;
-    UIView* firstButton;
+    // Calculate the axis for the sub-stackview.
+    CGFloat maxWidth = 0;
+    NSMutableArray<GrayHighlightButton*>* rowOfButtons =
+        [[NSMutableArray alloc] init];
     for (AlertAction* action in rowOfActions) {
-      if (action != [rowOfActions firstObject]) {
-        AddSeparatorToStackView(rowOfButtons);
-      }
       GrayHighlightButton* button = GetButtonForAction(action);
       [button addTarget:self
                     action:@selector(didSelectActionForButton:)
           forControlEvents:UIControlEventTouchUpInside];
-      [rowOfButtons addArrangedSubview:button];
-      if (firstButton) {
+      [rowOfButtons addObject:button];
+      maxWidth = MAX(maxWidth, button.intrinsicContentSize.width);
+    }
+    UILayoutConstraintAxis axis =
+        maxWidth > GetAlertWidth() / rowOfActions.count
+            ? UILayoutConstraintAxisVertical
+            : UILayoutConstraintAxisHorizontal;
+    // Actually creates and adds the stack view to the view, and position the
+    // buttons.
+    UIStackView* rowOfButtonStackView = [[UIStackView alloc] init];
+    rowOfButtonStackView.axis = axis;
+    rowOfButtonStackView.alignment = UIStackViewAlignmentCenter;
+    GrayHighlightButton* firstButton = [rowOfButtons firstObject];
+    GrayHighlightButton* lastButton = [rowOfButtons lastObject];
+    for (GrayHighlightButton* button in rowOfButtons) {
+      [rowOfButtonStackView addArrangedSubview:button];
+      if (button != lastButton) {
+        AddSeparatorToStackView(rowOfButtonStackView);
+      }
+      if (axis == UILayoutConstraintAxisHorizontal) {
         [button.widthAnchor constraintEqualToAnchor:firstButton.widthAnchor]
             .active = YES;
+        AddSameConstraintsToSides(button, rowOfButtonStackView,
+                                  (LayoutSides::kTop | LayoutSides::kBottom));
       } else {
-        firstButton = button;
+        AddSameConstraintsToSides(
+            button, rowOfButtonStackView,
+            (LayoutSides::kTrailing | LayoutSides::kLeading));
       }
-      AddSameConstraintsToSides(button, rowOfButtons,
-                                (LayoutSides::kTop | LayoutSides::kBottom));
     }
-    [buttons addArrangedSubview:rowOfButtons];
-    AddSameConstraintsToSides(rowOfButtons, buttons,
+    [buttons addArrangedSubview:rowOfButtonStackView];
+    AddSameConstraintsToSides(rowOfButtonStackView, buttons,
                               (LayoutSides::kTrailing | LayoutSides::kLeading));
   }
   return buttons;
