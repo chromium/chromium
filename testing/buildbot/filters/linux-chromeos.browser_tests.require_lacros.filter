@@ -65,6 +65,32 @@ WebKioskAshRequiresLacrosTest*
 -ChromeVoxBackgroundTest.ShowContextMenu
 -ChromeVoxBackgroundTestWithTestServer.InPageLinks
 -ChromeVoxBackgroundTest.UseEditableState
+# TODO(crbug.com/1424533): Flaky
+-ChromeVoxEditingTest.GiantTextAreaPerformance
+-ChromeVoxEditingTest.EditableLineTwoStaticTexts
+-ChromeVoxEditingTest.MoveByLineIntent
+-ChromeVoxEditingTest.RichTextImageByCharacter
+-ChromeVoxEditingTest.SelectAllBareTextContent
+-ChromeVoxEditingTest.TelTrimsWhitespace
+-ChromeVoxEditingTest.TextAreaBrailleEmptyLine
+-ChromeVoxEditingTest.TextAreaEvents
+-ChromeVoxEditingTest.RichTextExtendByCharacter
+-ChromeVoxEditingTest.InputEvents
+-ChromeVoxEditingTest.SelectAll
+-ChromeVoxEditingTest.BackwardWordDeleteAcrossParagraphs
+-ChromeVoxTutorialTest.BasicTest
+-ChromeVoxTutorialTest.EarconLesson
+-ChromeVoxBackgroundTest.NavigationIgnoresLabels
+-ChromeVoxBackgroundTest.GroupNavigation
+-ChromeVoxBackgroundTest.MenuItemRadio
+-ChromeVoxBackgroundTest.NestedListNavigationMixed
+-ChromeVoxBackgroundTest.ShowContextMenuOnViewsTab
+-ChromeVoxBackgroundTest.NewTabRead
+-ChromeVoxAutoScrollHandlerTest.RecyclerViewByCharacter
+-ChromeVoxAutoScrollHandlerTest.ScrollForward
+-ChromeVoxPanelTest.TouchGesturesMenuAvailableWhenInTouchMode
+-ChromeVoxPanelTest.ActionsMenu
+-ChromeVoxPanelTest.SearchMenu
 # TODO(b/268051293) Flaky
 -SelectToSpeakKeystrokeSelectionTest.NonReorderedSvgPreservesSelectionStartEnd
 -SelectToSpeakKeystrokeSelectionTest.OmniboxPartiallySelectedInMid
