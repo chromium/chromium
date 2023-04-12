@@ -768,6 +768,67 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_nil()];
 }
 
+// Tests that swiping down dismisses multiple bookmarks UIs on the same
+// navigation controller.
+- (void)testSwipeDownToDismissMultipleBookmarksUI {
+  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+
+  // Invoke Edit through long press.
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"First URL")]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          BookmarksContextMenuEditButton()]
+      performAction:grey_tap()];
+
+  // Tap the Folder button and verify folder chooser UI is displayed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Change Folder")]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarkFolderPickerViewContainerIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Choose to move the bookmark into a new folder and verify folder creator is
+  // visible.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBookmarkCreateNewFolderCellIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarkFolderCreateViewContainerIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap on Folder button to open folder chooser UI and verify `New Folder`
+  // section is not visible.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Change Folder")]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarkFolderPickerViewContainerIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBookmarkCreateNewFolderCellIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Swipe TableView down and verify that we're back to the bookmarks list.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarkFolderPickerViewContainerIdentifier)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarkFolderPickerViewContainerIdentifier)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBookmarksHomeTableViewIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 - (void)testFolderEmptyState {
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];

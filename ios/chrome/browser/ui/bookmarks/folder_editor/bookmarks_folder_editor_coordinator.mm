@@ -123,19 +123,24 @@
   [self stopBookmarksFolderChooserCoordinator];
 
   DCHECK(_viewController);
-  if (_baseNavigationController) {
-    DCHECK_EQ(self.baseNavigationController.topViewController, _viewController);
-    [_baseNavigationController popViewControllerAnimated:YES];
-  } else if (_navigationController) {
+  if (_navigationController) {
     [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
     _navigationController = nil;
-  } else {
+  } else if (_baseNavigationController &&
+             _baseNavigationController.presentingViewController) {
+    // If `_baseNavigationController.presentingViewController` is `nil` then
+    // the parent coordinator (who owns the `_baseNavigationController`) has
+    // already been dismissed. In this case `_baseNavigationController` itself
+    // is no longer being presented and this coordinator was dismissed as well.
+    DCHECK_EQ(_baseNavigationController.topViewController, _viewController);
+    [_baseNavigationController popViewControllerAnimated:YES];
+  } else if (!_baseNavigationController) {
     // If there is no `_baseNavigationController` and `_navigationController`,
     // the view controller has been already dismissed. See
     // `presentationControllerDidDismiss:` and
     // `bookmarksFolderEditorDidDismiss:`.
     // Therefore `self.baseViewController.presentedViewController` must be
-    // `nullptr`.
+    // `nil`.
     DCHECK(!self.baseViewController.presentedViewController);
   }
   [_viewController disconnect];
