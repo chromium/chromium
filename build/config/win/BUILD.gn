@@ -332,6 +332,11 @@ config("common_linker_setup") {
   }
 }
 
+# Flags that should be applied to building .exe files but not .dll files.
+config("exe_flags") {
+  rustflags = [ "-Ctarget-feature=+crt-static" ]
+}
+
 config("default_cfg_compiler") {
   # Emit table of address-taken functions for Control-Flow Guard (CFG).
   # This is needed to allow functions to be called by code that is built
