@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/fast_checkout/fast_checkout_client.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_manager.h"
@@ -15,6 +14,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
+#include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -37,9 +37,8 @@ TouchToFillDelegateAndroidImpl::DryRunResult::operator=(DryRunResult&&) =
 TouchToFillDelegateAndroidImpl::DryRunResult::~DryRunResult() = default;
 
 TouchToFillDelegateAndroidImpl::TouchToFillDelegateAndroidImpl(
-    BrowserAutofillManager* manager,
-    FastCheckoutClient* fast_checkout_client)
-    : manager_(manager), fast_checkout_client_(fast_checkout_client) {
+    BrowserAutofillManager* manager)
+    : manager_(manager) {
   DCHECK(manager);
 }
 
@@ -94,7 +93,7 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
     return {TriggerOutcome::kFieldNotEmptyOrNotFocusable, {}};
   }
   // Trigger only if Fast Checkout was not shown before.
-  if (!fast_checkout_client_->IsNotShownYet()) {
+  if (!manager_->client()->GetFastCheckoutClient()->IsNotShownYet()) {
     return {TriggerOutcome::kFastCheckoutWasShown, {}};
   }
   // Trigger only if there is at least 1 complete valid credit card on file.

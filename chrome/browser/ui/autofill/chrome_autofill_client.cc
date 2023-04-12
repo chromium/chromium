@@ -26,6 +26,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
@@ -368,6 +369,14 @@ profile_metrics::BrowserProfileType ChromeAutofillClient::GetProfileType()
   // |kRegular| when it does not exist.
   return profile ? profile_metrics::GetBrowserProfileType(profile)
                  : profile_metrics::BrowserProfileType::kRegular;
+}
+
+FastCheckoutClient* ChromeAutofillClient::GetFastCheckoutClient() {
+#if BUILDFLAG(IS_ANDROID)
+  return fast_checkout_client_.get();
+#else
+  return nullptr;
+#endif
 }
 
 std::unique_ptr<webauthn::InternalAuthenticator>
@@ -768,8 +777,8 @@ bool ChromeAutofillClient::TryToShowFastCheckout(
     base::WeakPtr<AutofillManager> autofill_manager) {
 #if BUILDFLAG(IS_ANDROID)
   const GURL& url = web_contents()->GetLastCommittedURL();
-  return FastCheckoutClient::GetOrCreateForWebContents(web_contents())
-      ->TryToStart(url, form, field, autofill_manager);
+  return GetFastCheckoutClient()->TryToStart(url, form, field,
+                                             autofill_manager);
 #else
   return false;
 #endif
@@ -778,8 +787,7 @@ bool ChromeAutofillClient::TryToShowFastCheckout(
 void ChromeAutofillClient::HideFastCheckout(bool allow_further_runs) {
 #if BUILDFLAG(IS_ANDROID)
   if (IsShowingFastCheckoutUI()) {
-    FastCheckoutClient::GetOrCreateForWebContents(web_contents())
-        ->Stop(/*allow_further_runs=*/allow_further_runs);
+    GetFastCheckoutClient()->Stop(/*allow_further_runs=*/allow_further_runs);
   }
 #endif
 }
@@ -790,8 +798,7 @@ bool ChromeAutofillClient::IsFastCheckoutSupported(
     const AutofillManager& autofill_manager) {
 #if BUILDFLAG(IS_ANDROID)
   return base::FeatureList::IsEnabled(::features::kFastCheckout) &&
-         FastCheckoutClient::GetOrCreateForWebContents(web_contents())
-             ->IsSupported(form, field, autofill_manager);
+         GetFastCheckoutClient()->IsSupported(form, field, autofill_manager);
 #else
   return false;
 #endif
@@ -799,8 +806,7 @@ bool ChromeAutofillClient::IsFastCheckoutSupported(
 
 bool ChromeAutofillClient::IsShowingFastCheckoutUI() {
 #if BUILDFLAG(IS_ANDROID)
-  return FastCheckoutClient::GetOrCreateForWebContents(web_contents())
-      ->IsShowing();
+  return GetFastCheckoutClient()->IsShowing();
 #else
   return false;
 #endif
@@ -1213,6 +1219,10 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
   if (auto* zoom_controller =
           zoom::ZoomController::FromWebContents(web_contents)) {
     zoom_observation_.Observe(zoom_controller);
+  }
+#else
+  if (base::FeatureList::IsEnabled(::features::kFastCheckout)) {
+    fast_checkout_client_ = std::make_unique<FastCheckoutClientImpl>(this);
   }
 #endif
 }

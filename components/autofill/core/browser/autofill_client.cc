@@ -90,6 +90,10 @@ profile_metrics::BrowserProfileType AutofillClient::GetProfileType() const {
   return profile_metrics::BrowserProfileType::kRegular;
 }
 
+FastCheckoutClient* AutofillClient::GetFastCheckoutClient() {
+  return nullptr;
+}
+
 void AutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
     const std::vector<CardUnmaskChallengeOption>& challenge_options,
     base::OnceCallback<void(const std::string&)>

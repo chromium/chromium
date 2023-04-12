@@ -40,6 +40,7 @@
 #include "components/autofill/core/browser/test_address_normalizer.h"
 #include "components/autofill/core/browser/test_form_data_importer.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/ui/mock_fast_checkout_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -190,6 +191,10 @@ class TestAutofillClientTemplate : public T {
 
   AutofillOfferManager* GetAutofillOfferManager() override {
     return autofill_offer_manager_.get();
+  }
+
+  FastCheckoutClient* GetFastCheckoutClient() override {
+    return &mock_fast_checkout_client_;
   }
 
   const GURL& GetLastCommittedPrimaryMainFrameURL() const override {
@@ -641,6 +646,7 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<testing::NiceMock<MockIBANManager>> mock_iban_manager_;
   ::testing::NiceMock<MockMerchantPromoCodeManager>
       mock_merchant_promo_code_manager_;
+  ::testing::NiceMock<MockFastCheckoutClient> mock_fast_checkout_client_;
 
   // NULL by default.
   std::unique_ptr<PrefService> prefs_;

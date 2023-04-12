@@ -8,10 +8,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/fast_checkout/fast_checkout_client.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -92,8 +92,7 @@ class FormStructure;
 // TODO(crbug.com/1324900): Consider using more descriptive name.
 class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
  public:
-  TouchToFillDelegateAndroidImpl(BrowserAutofillManager* manager,
-                                 FastCheckoutClient* fast_checkout_client);
+  explicit TouchToFillDelegateAndroidImpl(BrowserAutofillManager* manager);
   TouchToFillDelegateAndroidImpl(const TouchToFillDelegateAndroidImpl&) =
       delete;
   TouchToFillDelegateAndroidImpl& operator=(
@@ -187,7 +186,6 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   TouchToFillState ttf_credit_card_state_ = TouchToFillState::kShouldShow;
 
   const raw_ptr<BrowserAutofillManager> manager_;
-  const raw_ptr<FastCheckoutClient> fast_checkout_client_;
   FormData query_form_;
   FormFieldData query_field_;
   bool dismissed_by_user_;

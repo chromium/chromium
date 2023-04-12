@@ -1,9 +1,9 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_CLIENT_H_
-#define CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_CLIENT_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_FAST_CHECKOUT_CLIENT_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_FAST_CHECKOUT_CLIENT_H_
 
 #include "base/memory/weak_ptr.h"
 
@@ -15,19 +15,12 @@ struct FormData;
 struct FormFieldData;
 }  // namespace autofill
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 // Abstract interface for handling a fast checkout run.
 class FastCheckoutClient {
  public:
   FastCheckoutClient(const FastCheckoutClient&) = delete;
   FastCheckoutClient& operator=(const FastCheckoutClient&) = delete;
-
-  // Factory method for creating a `FastCheckoutClient` instance.
-  static FastCheckoutClient* GetOrCreateForWebContents(
-      content::WebContents* web_contents);
+  virtual ~FastCheckoutClient() = default;
 
   // Starts the fast checkout run. Returns true if the run was successful.
   virtual bool TryToStart(
@@ -60,7 +53,6 @@ class FastCheckoutClient {
 
  protected:
   FastCheckoutClient() = default;
-  virtual ~FastCheckoutClient() = default;
 };
 
-#endif  // CHROME_BROWSER_FAST_CHECKOUT_FAST_CHECKOUT_CLIENT_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_FAST_CHECKOUT_CLIENT_H_

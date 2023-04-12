@@ -152,11 +152,8 @@ class MockBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
 
 class TestFastCheckoutClientImpl : public FastCheckoutClientImpl {
  public:
-  static TestFastCheckoutClientImpl* CreateForWebContents(
-      content::WebContents* web_contents);
-
-  explicit TestFastCheckoutClientImpl(content::WebContents* web_contents)
-      : FastCheckoutClientImpl(web_contents) {}
+  explicit TestFastCheckoutClientImpl(autofill::ContentAutofillClient* client)
+      : FastCheckoutClientImpl(client) {}
 
   std::unique_ptr<FastCheckoutController> CreateFastCheckoutController()
       override {
@@ -203,16 +200,6 @@ class MockFastCheckoutAccessibilityService
   MOCK_METHOD(void, Announce, (const std::u16string&), (override));
 };
 
-// static
-TestFastCheckoutClientImpl* TestFastCheckoutClientImpl::CreateForWebContents(
-    content::WebContents* web_contents) {
-  const void* key = WebContentsUserData<FastCheckoutClientImpl>::UserDataKey();
-  web_contents->SetUserData(
-      key, std::make_unique<TestFastCheckoutClientImpl>(web_contents));
-  return static_cast<TestFastCheckoutClientImpl*>(
-      web_contents->GetUserData(key));
-}
-
 class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
  public:
   FastCheckoutClientImplTest()
@@ -236,7 +223,7 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
             }));
 
     test_client_ =
-        TestFastCheckoutClientImpl::CreateForWebContents(web_contents());
+        std::make_unique<TestFastCheckoutClientImpl>(autofill_client());
 
     // Prepare the FastCheckoutController.
     auto fast_checkout_controller =
@@ -273,7 +260,7 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
         autofill::PersonalDataManagerFactory::GetForProfile(profile()));
   }
 
-  FastCheckoutClientImpl* fast_checkout_client() { return test_client_; }
+  FastCheckoutClientImpl* fast_checkout_client() { return test_client_.get(); }
 
   MockFastCheckoutController* fast_checkout_controller() {
     return fast_checkout_controller_;
@@ -391,8 +378,8 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
       autofill_driver_injector_;
   autofill::TestAutofillManagerInjector<NiceMock<MockBrowserAutofillManager>>
       autofill_manager_injector_;
+  std::unique_ptr<TestFastCheckoutClientImpl> test_client_;
   raw_ptr<MockFastCheckoutController> fast_checkout_controller_;
-  raw_ptr<TestFastCheckoutClientImpl> test_client_;
   raw_ptr<MockFastCheckoutTriggerValidator> validator_;
   raw_ptr<MockFastCheckoutAccessibilityService> accessibility_service_;
 };
@@ -409,16 +396,6 @@ MATCHER_P(FormFieldDataEqualTo,
           "Compares two autofill::FormFieldData instances with their DeepEqual "
           "function.") {
   return autofill::FormFieldData::DeepEqual(arg, form_data);
-}
-
-TEST_F(
-    FastCheckoutClientImplTest,
-    GetOrCreateForWebContents_ClientWasAlreadyCreated_ReturnsExistingInstance) {
-  raw_ptr<FastCheckoutClient> client =
-      FastCheckoutClient::GetOrCreateForWebContents(web_contents());
-
-  // There is only one client per `WebContents`.
-  EXPECT_EQ(client, fast_checkout_client());
 }
 
 TEST_F(FastCheckoutClientImplTest, Start_InvalidAutofillManager_NoRun) {

@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_FAST_CHECKOUT_MOCK_FAST_CHECKOUT_CLIENT_H_
-#define CHROME_BROWSER_FAST_CHECKOUT_MOCK_FAST_CHECKOUT_CLIENT_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_MOCK_FAST_CHECKOUT_CLIENT_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_MOCK_FAST_CHECKOUT_CLIENT_H_
 
-#include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
+#include "components/autofill/core/browser/ui/fast_checkout_client.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
 
-class MockFastCheckoutClient : public FastCheckoutClientImpl {
+class MockFastCheckoutClient : public FastCheckoutClient {
  public:
-  static MockFastCheckoutClient* CreateForWebContents(
-      content::WebContents* web_contents);
-
-  explicit MockFastCheckoutClient(content::WebContents* web_contents);
+  MockFastCheckoutClient();
   ~MockFastCheckoutClient() override;
 
   MOCK_METHOD(bool,
@@ -40,4 +37,4 @@ class MockFastCheckoutClient : public FastCheckoutClientImpl {
   MOCK_METHOD(bool, IsNotShownYet, (), (const override));
 };
 
-#endif
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_MOCK_FAST_CHECKOUT_CLIENT_H_

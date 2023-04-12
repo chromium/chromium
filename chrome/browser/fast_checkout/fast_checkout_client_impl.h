@@ -9,14 +9,15 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/fast_checkout/fast_checkout_accessibility_service.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
-#include "chrome/browser/fast_checkout/fast_checkout_client.h"
 #include "chrome/browser/fast_checkout/fast_checkout_enums.h"
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper.h"
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator.h"
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller_impl.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
@@ -26,13 +27,13 @@ class LogManager;
 }
 
 class FastCheckoutClientImpl
-    : public content::WebContentsUserData<FastCheckoutClientImpl>,
-      public FastCheckoutClient,
+    : public FastCheckoutClient,
       public FastCheckoutControllerImpl::Delegate,
       public autofill::PersonalDataManagerObserver,
       public autofill::AutofillManager::Observer,
       public autofill::payments::FullCardRequest::ResultDelegate {
  public:
+  explicit FastCheckoutClientImpl(autofill::ContentAutofillClient* client);
   ~FastCheckoutClientImpl() override;
 
   FastCheckoutClientImpl(const FastCheckoutClientImpl&) = delete;
@@ -95,14 +96,11 @@ class FastCheckoutClientImpl
   };
 
  protected:
-  explicit FastCheckoutClientImpl(content::WebContents* web_contents);
-
   // Creates the UI controller.
   virtual std::unique_ptr<FastCheckoutController>
   CreateFastCheckoutController();
 
  private:
-  friend class content::WebContentsUserData<FastCheckoutClientImpl>;
   friend class FastCheckoutClientImplTest;
   FRIEND_TEST_ALL_PREFIXES(
       FastCheckoutClientImplTest,
@@ -220,7 +218,7 @@ class FastCheckoutClientImpl
   base::OneShotTimer timeout_timer_;
 
   // The `ChromeAutofillClient` instance attached to the same `WebContents`.
-  raw_ptr<autofill::AutofillClient> autofill_client_ = nullptr;
+  raw_ptr<autofill::ContentAutofillClient> autofill_client_ = nullptr;
 
   // The `AutofillManager` instance invoking the fast checkout run. Note that
   // `this` class generally outlives `AutofillManager`.
