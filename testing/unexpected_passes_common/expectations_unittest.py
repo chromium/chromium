@@ -660,6 +660,45 @@ crbug.com/2345 [ win ] foo/test [ RetryOnFailure ]
     with open(self.filename) as f:
       self.assertEqual(f.read(), expected_contents)
 
+  def testNestedGroupAndNarrowingAllRemovable(self):
+    """Tests that a disable block within a group can be properly removed."""
+    contents = self.header + """
+crbug.com/2345 [ win ] baz/test [ Failure ]
+
+# Description
+# finder:group-start name
+# finder:disable-narrowing
+crbug.com/1234 [ win ] foo/test [ Failure ]
+crbug.com/1234 [ win ] bar/test [ Failure ]
+# finder:enable-narrowing
+# finder:group-end
+
+crbug.com/3456 [ linux ] foo/test [ Failure ]
+"""
+
+    stale_expectations = [
+        data_types.Expectation('foo/test', ['win'], ['Failure'],
+                               'crbug.com/1234'),
+        data_types.Expectation('bar/test', ['win'], ['Failure'],
+                               'crbug.com/1234'),
+    ]
+
+    expected_contents = self.header + """
+crbug.com/2345 [ win ] baz/test [ Failure ]
+
+
+crbug.com/3456 [ linux ] foo/test [ Failure ]
+"""
+
+    with open(self.filename, 'w') as f:
+      f.write(contents)
+
+    removed_urls = self.instance.RemoveExpectationsFromFile(
+        stale_expectations, self.filename, expectations.RemovalType.STALE)
+    self.assertEqual(removed_urls, set(['crbug.com/1234']))
+    with open(self.filename) as f:
+      self.assertEqual(f.read(), expected_contents)
+
   def testGroupBlockNotAllRemovable(self):
     """Tests that a group with not all members removable is not removed."""
     contents = self.header + """
