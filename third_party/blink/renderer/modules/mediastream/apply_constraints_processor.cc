@@ -223,6 +223,10 @@ void ApplyConstraintsProcessor::MaybeStopVideoContentSourceForRestart() {
   }
 
   if (video_source_->GetCurrentFormat() == settings.Format()) {
+    if (settings.min_frame_rate().has_value()) {
+      GetCurrentVideoTrack()->SetMinimumFrameRate(
+          settings.min_frame_rate().value());
+    }
     video_source_->ReconfigureTrack(GetCurrentVideoTrack(),
                                     settings.track_adapter_settings());
     ApplyConstraintsSucceeded();
