@@ -476,8 +476,7 @@ public class PaymentUiService
         if (mParams.getPaymentOptions().requestShipping) {
             boolean haveCompleteShippingAddress = false;
             for (int i = 0; i < mAutofillProfiles.size(); i++) {
-                if (AutofillAddress.checkAddressCompletionStatus(
-                            mAutofillProfiles.get(i), AutofillAddress.CompletenessCheckType.NORMAL)
+                if (AutofillAddress.checkAddressCompletionStatus(mAutofillProfiles.get(i))
                         == AutofillAddress.CompletionStatus.COMPLETE) {
                     haveCompleteShippingAddress = true;
                     break;

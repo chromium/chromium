@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.Addre
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressUiComponent;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.AutofillAddress;
-import org.chromium.chrome.browser.payments.AutofillAddress.CompletenessCheckType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
@@ -202,9 +201,8 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
                 : mContext.getString(R.string.autofill_edit_address_dialog_title);
         // When creating a new autofill profile, we use the country code of the default locale on
         // the device.
-        final AutofillAddress address = mIsProfileNew
-                ? new AutofillAddress(mContext, new AutofillProfile(), CompletenessCheckType.NORMAL)
-                : toEdit;
+        final AutofillAddress address =
+                mIsProfileNew ? new AutofillAddress(mContext, new AutofillProfile()) : toEdit;
 
         mProfile = address.getProfile();
 

@@ -53,15 +53,6 @@ public class AutofillAddress extends EditableOption {
         int MAX_VALUE = 1 << 4;
     }
 
-    @IntDef({CompletenessCheckType.NORMAL, CompletenessCheckType.IGNORE_PHONE})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface CompletenessCheckType {
-        /** A normal completeness check. */
-        int NORMAL = 0;
-        /** A completeness check that ignores phone numbers. */
-        int IGNORE_PHONE = 1;
-    }
-
     @Nullable private static Pattern sRegionCodePattern;
 
     private final Context mContext;
@@ -69,7 +60,6 @@ public class AutofillAddress extends EditableOption {
     @Nullable private String mShippingLabelWithCountry;
     @Nullable private String mShippingLabelWithoutCountry;
     @Nullable private String mBillingLabel;
-    private final @CompletenessCheckType int mCheckType;
 
     /**
      * Builds the autofill address.
@@ -78,24 +68,11 @@ public class AutofillAddress extends EditableOption {
      * @param profile The autofill profile containing the address information.
      */
     public AutofillAddress(Context context, AutofillProfile profile) {
-        this(context, profile, CompletenessCheckType.NORMAL);
-    }
-
-    /**
-     * Builds the autofill address.
-     *
-     * @param context The context where this address was created.
-     * @param profile The autofill profile containing the address information.
-     * @param checkType The type of completeness to check.
-     */
-    public AutofillAddress(
-            Context context, AutofillProfile profile, @CompletenessCheckType int checkType) {
         super(profile.getGUID(), profile.getFullName(), profile.getLabel(),
                 profile.getPhoneNumber(), null);
         mContext = context;
         mProfile = profile;
         mIsEditable = true;
-        mCheckType = checkType;
         checkAndUpdateAddressCompleteness();
     }
 
@@ -193,7 +170,7 @@ public class AutofillAddress extends EditableOption {
      */
     private void checkAndUpdateAddressCompleteness() {
         Pair<Integer, Integer> messageResIds =
-                getEditMessageAndTitleResIds(checkAddressCompletionStatus(mProfile, mCheckType));
+                getEditMessageAndTitleResIds(checkAddressCompletionStatus(mProfile));
 
         mEditMessage = messageResIds.first.intValue() == 0
                 ? null
@@ -252,12 +229,10 @@ public class AutofillAddress extends EditableOption {
      * renderer.
      *
      * @param profile   The autofill profile containing the address information.
-     * @param checkType The type of completeness to check.
      * @return int      The completion status.
      */
     @CompletionStatus
-    public static int checkAddressCompletionStatus(
-            AutofillProfile profile, @CompletenessCheckType int checkType) {
+    public static int checkAddressCompletionStatus(AutofillProfile profile) {
         @CompletionStatus
         int completionStatus = CompletionStatus.COMPLETE;
 
@@ -268,9 +243,8 @@ public class AutofillAddress extends EditableOption {
         // TODO(crbug.com/999286): PhoneNumberUtils internally trigger disk reads for certain
         //                         devices/configurations.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            if (checkType != CompletenessCheckType.IGNORE_PHONE
-                    && !PhoneNumberUtils.isGlobalPhoneNumber(PhoneNumberUtils.stripSeparators(
-                            profile.getPhoneNumber().toString()))) {
+            if (!PhoneNumberUtils.isGlobalPhoneNumber(
+                        PhoneNumberUtils.stripSeparators(profile.getPhoneNumber().toString()))) {
                 completionStatus |= CompletionStatus.INVALID_PHONE_NUMBER;
             }
         }
@@ -344,7 +318,7 @@ public class AutofillAddress extends EditableOption {
     }
 
     private int calculateCompletenessScore() {
-        int missingFields = checkAddressCompletionStatus(mProfile, mCheckType);
+        int missingFields = checkAddressCompletionStatus(mProfile);
 
         // Count how many are set. The completeness of the address is weighted so as
         // to dominate the other fields.
