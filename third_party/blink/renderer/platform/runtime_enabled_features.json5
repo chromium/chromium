@@ -1115,7 +1115,7 @@
     },
     {
       name: "CSSTransitionDiscrete",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Support for tree-scoped [1] timeline names (e.g. produced by
