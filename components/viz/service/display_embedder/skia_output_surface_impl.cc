@@ -111,8 +111,8 @@ OutputSurface::Type GetOutputSurfaceType(SkiaOutputSurfaceDependency* deps) {
 }  // namespace
 
 SkiaOutputSurfaceImpl::ScopedPaint::ScopedPaint(
-    SkDeferredDisplayListRecorder* root_recorder)
-    : recorder_(root_recorder) {}
+    SkDeferredDisplayListRecorder* root_ddl_recorder)
+    : ddl_recorder_(root_ddl_recorder) {}
 
 SkiaOutputSurfaceImpl::ScopedPaint::ScopedPaint(
     SkSurfaceCharacterization characterization)
@@ -122,8 +122,8 @@ SkiaOutputSurfaceImpl::ScopedPaint::ScopedPaint(
     SkSurfaceCharacterization characterization,
     gpu::Mailbox mailbox)
     : mailbox_(mailbox) {
-  recorder_storage_.emplace(characterization);
-  recorder_ = &recorder_storage_.value();
+  ddl_recorder_storage_.emplace(characterization);
+  ddl_recorder_ = &ddl_recorder_storage_.value();
 }
 
 SkiaOutputSurfaceImpl::ScopedPaint::~ScopedPaint() = default;
@@ -233,7 +233,7 @@ SkiaOutputSurfaceImpl::~SkiaOutputSurfaceImpl() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   TRACE_EVENT0("viz", __PRETTY_FUNCTION__);
   current_paint_.reset();
-  root_recorder_.reset();
+  root_ddl_recorder_.reset();
 
   if (!render_pass_image_cache_.empty()) {
     std::vector<AggregatedRenderPassId> render_pass_ids;
@@ -311,12 +311,12 @@ void SkiaOutputSurfaceImpl::DiscardBackbuffer() {
   gpu_task_scheduler_->ScheduleOrRetainGpuTask(std::move(callback), {});
 }
 
-void SkiaOutputSurfaceImpl::RecreateRootRecorder() {
+void SkiaOutputSurfaceImpl::RecreateRootDDLRecorder() {
   DCHECK(characterization_.isValid());
-  root_recorder_.emplace(characterization_);
+  root_ddl_recorder_.emplace(characterization_);
   // This will trigger the lazy initialization of the recorder
-  std::ignore = root_recorder_->getCanvas();
-  reset_recorder_on_swap_ = false;
+  std::ignore = root_ddl_recorder_->getCanvas();
+  reset_ddl_recorder_on_swap_ = false;
 }
 
 void SkiaOutputSurfaceImpl::Reshape(const ReshapeParams& params) {
@@ -367,7 +367,7 @@ void SkiaOutputSurfaceImpl::Reshape(const ReshapeParams& params) {
 
   size_ = params.size;
   format_ = params.format;
-  RecreateRootRecorder();
+  RecreateRootDDLRecorder();
 }
 
 void SkiaOutputSurfaceImpl::SetUpdateVSyncParametersCallback(
@@ -409,10 +409,10 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintCurrentFrame() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Make sure there is no unsubmitted PaintFrame or PaintRenderPass.
   DCHECK(!current_paint_);
-  DCHECK(root_recorder_);
-  reset_recorder_on_swap_ = true;
-  current_paint_.emplace(&root_recorder_.value());
-  return current_paint_->recorder()->getCanvas();
+  DCHECK(root_ddl_recorder_);
+  reset_ddl_recorder_on_swap_ = true;
+  current_paint_.emplace(&root_ddl_recorder_.value());
+  return current_paint_->ddl_recorder()->getCanvas();
 }
 
 void SkiaOutputSurfaceImpl::MakePromiseSkImage(
@@ -606,11 +606,11 @@ void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
                  /*make_current=*/true,
                  /*need_framebuffer=*/!dependency_->IsOffscreen());
 
-  // Recreate |root_recorder_| after SwapBuffers has been scheduled on GPU
+  // Recreate |root_ddl_recorder_| after SwapBuffers has been scheduled on GPU
   // thread to save some time in BeginPaintCurrentFrame
   // Recreating recorder is expensive. Avoid recreation if there was no paint.
-  if (reset_recorder_on_swap_) {
-    RecreateRootRecorder();
+  if (reset_ddl_recorder_on_swap_) {
+    RecreateRootDDLRecorder();
   }
 }
 
@@ -635,8 +635,8 @@ void SkiaOutputSurfaceImpl::SwapBuffersSkipped(
                  /*make_current=*/true, /*need_framebuffer=*/false);
 
   // Recreating recorder is expensive. Avoid recreation if there was no paint.
-  if (reset_recorder_on_swap_) {
-    RecreateRootRecorder();
+  if (reset_ddl_recorder_on_swap_) {
+    RecreateRootDDLRecorder();
   }
 }
 
@@ -686,7 +686,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
   }
 
   current_paint_.emplace(characterization, mailbox);
-  return current_paint_->recorder()->getCanvas();
+  return current_paint_->ddl_recorder()->getCanvas();
 }
 
 SkCanvas* SkiaOutputSurfaceImpl::RecordOverdrawForCurrentPaint() {
@@ -694,10 +694,10 @@ SkCanvas* SkiaOutputSurfaceImpl::RecordOverdrawForCurrentPaint() {
 
   DCHECK(debug_settings_->show_overdraw_feedback);
   DCHECK(current_paint_);
-  DCHECK(!overdraw_surface_recorder_);
+  DCHECK(!overdraw_surface_ddl_recorder_);
 
   nway_canvas_.emplace(characterization_.width(), characterization_.height());
-  nway_canvas_->addCanvas(current_paint_->recorder()->getCanvas());
+  nway_canvas_->addCanvas(current_paint_->ddl_recorder()->getCanvas());
 
   // Overdraw feedback uses |SkOverdrawCanvas|, which relies on a buffer with an
   // 8-bit unorm alpha channel to work. RGBA8 is always supported, so we use it.
@@ -710,8 +710,8 @@ SkCanvas* SkiaOutputSurfaceImpl::RecordOverdrawForCurrentPaint() {
           /*mipmap=*/false, characterization_.refColorSpace(),
           /*is_overlay=*/false, /*scanout_dcomp_surface=*/false);
   if (characterization.isValid()) {
-    overdraw_surface_recorder_.emplace(characterization);
-    overdraw_canvas_.emplace((overdraw_surface_recorder_->getCanvas()));
+    overdraw_surface_ddl_recorder_.emplace(characterization);
+    overdraw_canvas_.emplace((overdraw_surface_ddl_recorder_->getCanvas()));
     nway_canvas_->addCanvas(&overdraw_canvas_.value());
   }
 
@@ -725,14 +725,14 @@ void SkiaOutputSurfaceImpl::EndPaint(
     bool is_overlay) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_paint_);
-  auto ddl = current_paint_->recorder()->detach();
+  auto ddl = current_paint_->ddl_recorder()->detach();
 
   sk_sp<SkDeferredDisplayList> overdraw_ddl;
-  if (overdraw_surface_recorder_) {
-    overdraw_ddl = overdraw_surface_recorder_->detach();
+  if (overdraw_surface_ddl_recorder_) {
+    overdraw_ddl = overdraw_surface_ddl_recorder_->detach();
     DCHECK(overdraw_ddl);
     overdraw_canvas_.reset();
-    overdraw_surface_recorder_.reset();
+    overdraw_surface_ddl_recorder_.reset();
     nway_canvas_.reset();
   }
 
@@ -966,12 +966,18 @@ void SkiaOutputSurfaceImpl::InitializeOnGpuThread(
       std::move(add_child_window_to_browser_callback));
   if (!impl_on_gpu_) {
     *result = false;
-  } else {
-    capabilities_ = impl_on_gpu_->capabilities();
-    is_displayed_as_overlay_ = impl_on_gpu_->IsDisplayedAsOverlay();
-    gr_context_thread_safe_ = impl_on_gpu_->GetGrContextThreadSafeProxy();
-    *result = true;
+    return;
   }
+  capabilities_ = impl_on_gpu_->capabilities();
+  is_displayed_as_overlay_ = impl_on_gpu_->IsDisplayedAsOverlay();
+
+  if (auto* gr_context = dependency_->GetSharedContextState()->gr_context()) {
+    gr_context_thread_safe_ = gr_context->threadSafeProxy();
+  }
+  graphite_recorder_ =
+      dependency_->GetSharedContextState()->viz_compositor_graphite_recorder();
+
+  *result = true;
 }
 
 SkSurfaceCharacterization

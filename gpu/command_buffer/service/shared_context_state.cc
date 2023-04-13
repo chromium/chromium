@@ -370,12 +370,13 @@ bool SharedContextState::InitializeGanesh(
 bool SharedContextState::InitializeGraphite(
     const GpuPreferences& gpu_preferences) {
 #if BUILDFLAG(ENABLE_SKIA_GRAPHITE)
-  skgpu::graphite::ContextOptions options = GetDefaultGraphiteContextOptions();
+  skgpu::graphite::ContextOptions context_options =
+      GetDefaultGraphiteContextOptions();
 
   if (gr_context_type_ == GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
     if (dawn_context_provider_ &&
-        dawn_context_provider_->InitializeGraphiteContext(options)) {
+        dawn_context_provider_->InitializeGraphiteContext(context_options)) {
       graphite_context_ = dawn_context_provider_->GetGraphiteContext();
     } else {
       DLOG(ERROR) << "Failed to create Graphite Context for Dawn";
@@ -385,7 +386,7 @@ bool SharedContextState::InitializeGraphite(
     CHECK_EQ(gr_context_type_, GrContextType::kGraphiteMetal);
 #if BUILDFLAG(SKIA_USE_METAL)
     if (metal_context_provider_ &&
-        metal_context_provider_->InitializeGraphiteContext(options)) {
+        metal_context_provider_->InitializeGraphiteContext(context_options)) {
       graphite_context_ = metal_context_provider_->GetGraphiteContext();
     } else {
       DLOG(ERROR) << "Failed to create Graphite Context for Metal";
@@ -397,7 +398,8 @@ bool SharedContextState::InitializeGraphite(
     LOG(ERROR) << "Skia Graphite disabled: Graphite Context creation failed.";
     return false;
   }
-  // TODO(crbug.com/1429361): Create graphite recorders here.
+  gpu_main_graphite_recorder_ = graphite_context_->makeRecorder();
+  viz_compositor_graphite_recorder_ = graphite_context_->makeRecorder();
   transfer_cache_ = std::make_unique<ServiceTransferCache>(gpu_preferences);
   return true;
 #else   // BUILDFLAG(ENABLE_SKIA_GRAPHITE)

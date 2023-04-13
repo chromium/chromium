@@ -43,6 +43,10 @@ class SharedImageRepresentationFactory;
 struct SwapBuffersCompleteParams;
 }  // namespace gpu
 
+namespace skgpu::graphite {
+class Recorder;
+}  // namespace skgpu::graphite
+
 namespace viz {
 
 class ImageContextImpl;
@@ -239,7 +243,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info);
   void ContextLost();
 
-  void RecreateRootRecorder();
+  void RecreateRootDDLRecorder();
 
   raw_ptr<OutputSurfaceClient> client_ = nullptr;
   bool needs_swap_size_notifications_ = false;
@@ -263,28 +267,28 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   gfx::BufferFormat format_;
   int sample_count_ = 1;
   SkSurfaceCharacterization characterization_;
-  bool reset_recorder_on_swap_ = false;
-  absl::optional<SkDeferredDisplayListRecorder> root_recorder_;
+  bool reset_ddl_recorder_on_swap_ = false;
+  absl::optional<SkDeferredDisplayListRecorder> root_ddl_recorder_;
 
   class ScopedPaint {
    public:
-    explicit ScopedPaint(SkDeferredDisplayListRecorder* root_recorder);
+    explicit ScopedPaint(SkDeferredDisplayListRecorder* root_ddl_recorder);
     explicit ScopedPaint(SkSurfaceCharacterization characterization);
     ScopedPaint(SkSurfaceCharacterization characterization,
                 gpu::Mailbox mailbox);
     ~ScopedPaint();
 
-    SkDeferredDisplayListRecorder* recorder() { return recorder_; }
+    SkDeferredDisplayListRecorder* ddl_recorder() { return ddl_recorder_; }
     gpu::Mailbox mailbox() { return mailbox_; }
 
    private:
     // This is recorder being used for current paint
     // This field is not a raw_ptr<> because it was filtered by the rewriter
     // for: #union
-    RAW_PTR_EXCLUSION SkDeferredDisplayListRecorder* recorder_;
+    RAW_PTR_EXCLUSION SkDeferredDisplayListRecorder* ddl_recorder_;
     // If we need new recorder for this Paint (i.e. it's not root render pass),
     // it's stored here
-    absl::optional<SkDeferredDisplayListRecorder> recorder_storage_;
+    absl::optional<SkDeferredDisplayListRecorder> ddl_recorder_storage_;
     const gpu::Mailbox mailbox_;
   };
 
@@ -322,7 +326,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   // The SkDDL recorder is used for overdraw feedback. It is created by
   // BeginPaintOverdraw, and FinishPaintCurrentFrame will turn it into a SkDDL
   // and play the SkDDL back on the GPU thread.
-  absl::optional<SkDeferredDisplayListRecorder> overdraw_surface_recorder_;
+  absl::optional<SkDeferredDisplayListRecorder> overdraw_surface_ddl_recorder_;
 
   // |overdraw_canvas_| is used to record draw counts.
   absl::optional<SkOverdrawCanvas> overdraw_canvas_;
@@ -376,6 +380,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   std::unique_ptr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu_;
 
   sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe_;
+  raw_ptr<skgpu::graphite::Recorder> graphite_recorder_ = nullptr;
 
   bool has_set_draw_rectangle_for_frame_ = false;
   absl::optional<gfx::Rect> draw_rectangle_;

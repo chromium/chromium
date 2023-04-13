@@ -1618,11 +1618,6 @@ void SkiaOutputSurfaceImplOnGpu::EndAccessImages(
     context->EndAccessIfNecessary();
 }
 
-sk_sp<GrContextThreadSafeProxy>
-SkiaOutputSurfaceImplOnGpu::GetGrContextThreadSafeProxy() {
-  return gr_context() ? gr_context()->threadSafeProxy() : nullptr;
-}
-
 void SkiaOutputSurfaceImplOnGpu::ReleaseImageContexts(
     std::vector<std::unique_ptr<ExternalUseClient::ImageContext>>
         image_contexts) {

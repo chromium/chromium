@@ -201,7 +201,6 @@ class SkiaOutputSurfaceImplOnGpu
   void ResetStateOfImages();
   void EndAccessImages(const base::flat_set<ImageContextImpl*>& image_contexts);
 
-  sk_sp<GrContextThreadSafeProxy> GetGrContextThreadSafeProxy();
   size_t max_resource_cache_bytes() const { return max_resource_cache_bytes_; }
   void ReleaseImageContexts(
       std::vector<std::unique_ptr<ExternalUseClient::ImageContext>>
