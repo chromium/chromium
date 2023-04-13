@@ -1637,6 +1637,9 @@ message DeviceStatusReportRequest {
 
   // Root device size as displayed in the device UI.
   optional int64 root_device_total_storage_bytes = 47;
+
+  // Flag whether LaCros is the primary browser.
+  optional bool is_lacros_primary_browser = 48;
 }
 
 message OsUpdateStatus {
