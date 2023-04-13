@@ -2,25 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_COMPOSITING_CATEGORIZED_WORKER_POOL_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_COMPOSITING_CATEGORIZED_WORKER_POOL_H_
+#ifndef CC_RASTER_CATEGORIZED_WORKER_POOL_H_
+#define CC_RASTER_CATEGORIZED_WORKER_POOL_H_
+
+#include <memory>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/task/post_job.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/thread_annotations.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
+#include "cc/cc_export.h"
 #include "cc/raster/task_category.h"
 #include "cc/raster/task_graph_runner.h"
 #include "cc/raster/task_graph_work_queue.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace blink {
+namespace cc {
 
 // A pool of threads used to run categorized work. The work can be scheduled on
 // the threads using different interfaces.
@@ -30,20 +34,29 @@ namespace blink {
 //    schedule a graph of tasks with their dependencies.
 // 3. CreateSequencedTaskRunner() creates a sequenced task runner that might run
 //    in parallel with other instances of sequenced task runners.
-class PLATFORM_EXPORT CategorizedWorkerPool : public base::TaskRunner,
-                                              public cc::TaskGraphRunner {
+class CC_EXPORT CategorizedWorkerPool : public base::TaskRunner,
+                                        public TaskGraphRunner {
  public:
+  class CC_EXPORT Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Called on the delegate with a worker pool thread ID as soon as the
+    // thread is created.
+    virtual void NotifyThreadWillRun(base::PlatformThreadId tid) = 0;
+  };
+
   CategorizedWorkerPool();
-  ~CategorizedWorkerPool() override;
 
-  // Get or create the singleton worker pool.
-  static CategorizedWorkerPool* GetOrCreate();
+  // Get or create the singleton worker pool. This object lives forever. If
+  // `delegate` is non-null, it must also live forever.
+  static CategorizedWorkerPool* GetOrCreate(Delegate* delegate = nullptr);
 
-  // Overridden from cc::TaskGraphRunner:
-  cc::NamespaceToken GenerateNamespaceToken() override;
-  void WaitForTasksToFinishRunning(cc::NamespaceToken token) override;
-  void CollectCompletedTasks(cc::NamespaceToken token,
-                             cc::Task::Vector* completed_tasks) override;
+  // Overridden from TaskGraphRunner:
+  NamespaceToken GenerateNamespaceToken() override;
+  void WaitForTasksToFinishRunning(NamespaceToken token) override;
+  void CollectCompletedTasks(NamespaceToken token,
+                             Task::Vector* completed_tasks) override;
 
   virtual void FlushForTesting() = 0;
 
@@ -55,7 +68,7 @@ class PLATFORM_EXPORT CategorizedWorkerPool : public base::TaskRunner,
   // terminated.
   virtual void Shutdown() = 0;
 
-  cc::TaskGraphRunner* GetTaskGraphRunner() { return this; }
+  TaskGraphRunner* GetTaskGraphRunner() { return this; }
 
   // Create a new sequenced task graph runner.
   scoped_refptr<base::SequencedTaskRunner> CreateSequencedTaskRunner();
@@ -64,17 +77,19 @@ class PLATFORM_EXPORT CategorizedWorkerPool : public base::TaskRunner,
   class CategorizedWorkerPoolSequencedTaskRunner;
   friend class CategorizedWorkerPoolSequencedTaskRunner;
 
+  ~CategorizedWorkerPool() override;
+
   // Simple Task for the TaskGraphRunner that wraps a closure.
   // This class is used to schedule TaskRunner tasks on the
   // |task_graph_runner_|.
-  class ClosureTask : public cc::Task {
+  class ClosureTask : public Task {
    public:
     explicit ClosureTask(base::OnceClosure closure);
 
     ClosureTask(const ClosureTask&) = delete;
     ClosureTask& operator=(const ClosureTask&) = delete;
 
-    // Overridden from cc::Task:
+    // Overridden from Task:
     void RunOnWorkerThread() override;
 
    protected:
@@ -84,51 +99,52 @@ class PLATFORM_EXPORT CategorizedWorkerPool : public base::TaskRunner,
     base::OnceClosure closure_;
   };
 
-  void CollectCompletedTasksWithLockAcquired(cc::NamespaceToken token,
-                                             cc::Task::Vector* completed_tasks)
+  void CollectCompletedTasksWithLockAcquired(NamespaceToken token,
+                                             Task::Vector* completed_tasks)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Determines if we should run a new task for the given category. This factors
   // in whether a task is available and whether the count of running tasks is
   // low enough to start a new one.
-  bool ShouldRunTaskForCategoryWithLockAcquired(cc::TaskCategory category)
+  bool ShouldRunTaskForCategoryWithLockAcquired(TaskCategory category)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Lock to exclusively access all the following members that are used to
   // implement the TaskRunner and TaskGraphRunner interfaces.
   mutable base::Lock lock_;
   // Stores the tasks to be run, sorted by priority.
-  cc::TaskGraphWorkQueue work_queue_ GUARDED_BY(lock_);
+  TaskGraphWorkQueue work_queue_ GUARDED_BY(lock_);
   // Namespace used to schedule tasks in the task graph runner.
-  const cc::NamespaceToken namespace_token_;
+  const NamespaceToken namespace_token_;
   // List of tasks currently queued up for execution.
-  cc::Task::Vector tasks_ GUARDED_BY(lock_);
+  Task::Vector tasks_ GUARDED_BY(lock_);
   // Graph object used for scheduling tasks.
-  cc::TaskGraph graph_ GUARDED_BY(lock_);
+  TaskGraph graph_ GUARDED_BY(lock_);
   // Cached vector to avoid allocation when getting the list of complete
   // tasks.
-  cc::Task::Vector completed_tasks_ GUARDED_BY(lock_);
+  Task::Vector completed_tasks_ GUARDED_BY(lock_);
   // Condition variable that is waited on by origin threads until a namespace
   // has finished running all associated tasks.
   base::ConditionVariable has_namespaces_with_finished_running_tasks_cv_;
 };
 
-class PLATFORM_EXPORT CategorizedWorkerPoolImpl : public CategorizedWorkerPool {
+class CC_EXPORT CategorizedWorkerPoolImpl : public CategorizedWorkerPool {
  public:
-  CategorizedWorkerPoolImpl();
-  ~CategorizedWorkerPoolImpl() override;
+  explicit CategorizedWorkerPoolImpl(Delegate* delegate = nullptr);
+
+  void ThreadWillRun(base::PlatformThreadId tid);
 
   // Overridden from base::TaskRunner:
   bool PostDelayedTask(const base::Location& from_here,
                        base::OnceClosure task,
                        base::TimeDelta delay) override;
 
-  // Overridden from cc::TaskGraphRunner:
-  void ScheduleTasks(cc::NamespaceToken token, cc::TaskGraph* graph) override;
+  // Overridden from TaskGraphRunner:
+  void ScheduleTasks(NamespaceToken token, TaskGraph* graph) override;
 
   // Runs a task from one of the provided categories. Categories listed first
   // have higher priority.
-  void Run(const Vector<cc::TaskCategory>& categories,
+  void Run(const std::vector<TaskCategory>& categories,
            base::ConditionVariable* has_ready_to_run_tasks_cv);
 
   // Overridden from CategorizedWorkerPool:
@@ -137,25 +153,28 @@ class PLATFORM_EXPORT CategorizedWorkerPoolImpl : public CategorizedWorkerPool {
   void Shutdown() override;
 
  private:
-  void ScheduleTasksWithLockAcquired(cc::NamespaceToken token,
-                                     cc::TaskGraph* graph)
+  ~CategorizedWorkerPoolImpl() override;
+
+  void ScheduleTasksWithLockAcquired(NamespaceToken token, TaskGraph* graph)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   // Runs a task from one of the provided categories. Categories listed first
   // have higher priority. Returns false if there were no tasks to run.
-  bool RunTaskWithLockAcquired(const Vector<cc::TaskCategory>& categories)
+  bool RunTaskWithLockAcquired(const std::vector<TaskCategory>& categories)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Run next task for the given category. Caller must acquire |lock_| prior to
   // calling this function and make sure at least one task is ready to run.
-  void RunTaskInCategoryWithLockAcquired(cc::TaskCategory category)
+  void RunTaskInCategoryWithLockAcquired(TaskCategory category)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Helper function which signals worker threads if tasks are ready to run.
   void SignalHasReadyToRunTasksWithLockAcquired()
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
+  const raw_ptr<Delegate> delegate_;
+
   // The actual threads where work is done.
-  Vector<std::unique_ptr<base::SimpleThread>> threads_;
+  std::vector<std::unique_ptr<base::SimpleThread>> threads_;
 
   // Condition variables for foreground and background threads.
   base::ConditionVariable has_task_for_normal_priority_thread_cv_;
@@ -165,22 +184,21 @@ class PLATFORM_EXPORT CategorizedWorkerPoolImpl : public CategorizedWorkerPool {
   bool shutdown_ GUARDED_BY(lock_);
 };
 
-class PLATFORM_EXPORT CategorizedWorkerPoolJob : public CategorizedWorkerPool {
+class CC_EXPORT CategorizedWorkerPoolJob : public CategorizedWorkerPool {
  public:
   CategorizedWorkerPoolJob();
-  ~CategorizedWorkerPoolJob() override;
 
   // Overridden from base::TaskRunner:
   bool PostDelayedTask(const base::Location& from_here,
                        base::OnceClosure task,
                        base::TimeDelta delay) override;
 
-  // Overridden from cc::TaskGraphRunner:
-  void ScheduleTasks(cc::NamespaceToken token, cc::TaskGraph* graph) override;
+  // Overridden from TaskGraphRunner:
+  void ScheduleTasks(NamespaceToken token, TaskGraph* graph) override;
 
   // Runs a task from one of the provided categories. Categories listed first
   // have higher priority.
-  void Run(base::span<const cc::TaskCategory> categories,
+  void Run(base::span<const TaskCategory> categories,
            base::JobDelegate* job_delegate);
 
   // Overridden from CategorizedWorkerPool:
@@ -189,20 +207,20 @@ class PLATFORM_EXPORT CategorizedWorkerPoolJob : public CategorizedWorkerPool {
   void Shutdown() override;
 
  private:
-  absl::optional<cc::TaskGraphWorkQueue::PrioritizedTask>
-  GetNextTaskToRunWithLockAcquired(
-      base::span<const cc::TaskCategory> categories);
+  ~CategorizedWorkerPoolJob() override;
 
-  base::JobHandle* ScheduleTasksWithLockAcquired(cc::NamespaceToken token,
-                                                 cc::TaskGraph* graph)
+  absl::optional<TaskGraphWorkQueue::PrioritizedTask>
+  GetNextTaskToRunWithLockAcquired(base::span<const TaskCategory> categories);
+
+  base::JobHandle* ScheduleTasksWithLockAcquired(NamespaceToken token,
+                                                 TaskGraph* graph)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Helper function which signals worker threads if tasks are ready to run.
   base::JobHandle* GetJobHandleToNotifyWithLockAcquired()
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  size_t GetMaxJobConcurrency(
-      base::span<const cc::TaskCategory> categories) const;
+  size_t GetMaxJobConcurrency(base::span<const TaskCategory> categories) const;
 
   size_t max_concurrency_foreground_ = 0;
 
@@ -210,6 +228,6 @@ class PLATFORM_EXPORT CategorizedWorkerPoolJob : public CategorizedWorkerPool {
   base::JobHandle foreground_job_handle_;
 };
 
-}  // namespace blink
+}  // namespace cc
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WIDGET_COMPOSITING_CATEGORIZED_WORKER_POOL_H_
+#endif  // CC_RASTER_CATEGORIZED_WORKER_POOL_H_

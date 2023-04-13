@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/widget/compositing/categorized_worker_pool.h"
+#include "cc/raster/categorized_worker_pool.h"
+
+#include <utility>
+
+#include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/sequenced_task_runner_test_template.h"
-#include "base/test/task_environment.h"
 #include "base/test/task_runner_test_template.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
 #include "cc/test/task_graph_runner_test_template.h"
-#include "third_party/blink/public/platform/platform.h"
 
-namespace blink {
+namespace cc {
 namespace {
 
 // Number of threads spawned in tests.
@@ -35,7 +37,6 @@ class CategorizedWorkerPoolTestDelegate {
   ~CategorizedWorkerPoolTestDelegate() { categorized_worker_pool_->Shutdown(); }
 
  private:
-  base::test::TaskEnvironment task_environment_;
   scoped_refptr<CategorizedWorkerPool> categorized_worker_pool_ =
       base::MakeRefCounted<T>();
 };
@@ -58,7 +59,6 @@ class CategorizedWorkerPoolSequencedTestDelegate {
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
   scoped_refptr<CategorizedWorkerPool> categorized_worker_pool_ =
       base::MakeRefCounted<T>();
 };
@@ -70,7 +70,7 @@ class CategorizedWorkerPoolTaskGraphRunnerTestDelegate {
 
   void StartTaskGraphRunner() { categorized_worker_pool_->Start(kNumThreads); }
 
-  cc::TaskGraphRunner* GetTaskGraphRunner() {
+  TaskGraphRunner* GetTaskGraphRunner() {
     return categorized_worker_pool_->GetTaskGraphRunner();
   }
 
@@ -81,7 +81,6 @@ class CategorizedWorkerPoolTaskGraphRunnerTestDelegate {
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
   scoped_refptr<CategorizedWorkerPool> categorized_worker_pool_ =
       base::MakeRefCounted<T>();
 };
@@ -102,18 +101,17 @@ class CategorizedWorkerPoolTest : public testing::TestWithParam<bool> {
   }
 
   void TearDown() override {
-    cc::Task::Vector completed_tasks;
+    Task::Vector completed_tasks;
     categorized_worker_pool_->CollectCompletedTasks(namespace_token_,
                                                     &completed_tasks);
     categorized_worker_pool_->Shutdown();
   }
 
-  base::test::TaskEnvironment task_environment_;
   scoped_refptr<CategorizedWorkerPool> categorized_worker_pool_;
-  cc::NamespaceToken namespace_token_;
+  NamespaceToken namespace_token_;
 };
 
-class ClosureTask : public cc::Task {
+class ClosureTask : public Task {
  public:
   explicit ClosureTask(base::OnceClosure closure)
       : closure_(std::move(closure)) {}
@@ -121,7 +119,7 @@ class ClosureTask : public cc::Task {
   ClosureTask(const ClosureTask&) = delete;
   ClosureTask& operator=(const ClosureTask&) = delete;
 
-  // Overridden from cc::Task:
+  // Overridden from Task:
   void RunOnWorkerThread() override { std::move(closure_).Run(); }
 
  protected:
@@ -137,8 +135,8 @@ class ClosureTask : public cc::Task {
 // TASK_CATEGORY_BACKGROUND_WITH_NORMAL_THREAD_PRIORITY don't run
 // concurrently.
 TEST_P(CategorizedWorkerPoolTest, BackgroundTasksDontRunConcurrently) {
-  cc::Task::Vector tasks;
-  cc::TaskGraph graph;
+  Task::Vector tasks;
+  TaskGraph graph;
   bool is_running_task = false;
 
   for (size_t i = 0; i < 100; ++i) {
@@ -152,10 +150,10 @@ TEST_P(CategorizedWorkerPoolTest, BackgroundTasksDontRunConcurrently) {
           is_running_task = false;
         })));
 
-    graph.nodes.push_back(cc::TaskGraph::Node(
+    graph.nodes.push_back(TaskGraph::Node(
         tasks.back(),
-        i % 2 == 0 ? cc::TASK_CATEGORY_BACKGROUND
-                   : cc::TASK_CATEGORY_BACKGROUND_WITH_NORMAL_THREAD_PRIORITY,
+        i % 2 == 0 ? TASK_CATEGORY_BACKGROUND
+                   : TASK_CATEGORY_BACKGROUND_WITH_NORMAL_THREAD_PRIORITY,
         /* priority=*/0u, /* dependencies=*/0u));
   }
 
@@ -168,15 +166,15 @@ TEST_P(CategorizedWorkerPoolTest, BackgroundTasksDontRunConcurrently) {
 // doesn't run at background thread priority.
 TEST_P(CategorizedWorkerPoolTest,
        AcquiresForegroundResourcesNotBackgroundThreadPriority) {
-  cc::Task::Vector tasks;
-  cc::TaskGraph graph;
+  Task::Vector tasks;
+  TaskGraph graph;
 
   tasks.push_back(base::MakeRefCounted<ClosureTask>(base::BindOnce([]() {
     EXPECT_NE(base::ThreadType::kBackground,
               base::PlatformThread::GetCurrentThreadType());
   })));
-  graph.nodes.push_back(cc::TaskGraph::Node(
-      tasks.back(), cc::TASK_CATEGORY_BACKGROUND_WITH_NORMAL_THREAD_PRIORITY,
+  graph.nodes.push_back(TaskGraph::Node(
+      tasks.back(), TASK_CATEGORY_BACKGROUND_WITH_NORMAL_THREAD_PRIORITY,
       /* priority=*/0u, /* dependencies=*/0u));
 
   categorized_worker_pool_->ScheduleTasks(namespace_token_, &graph);
@@ -188,7 +186,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          CategorizedWorkerPoolTest,
                          testing::Values(false, true));
 
-}  // namespace blink
+}  // namespace cc
 
 // Test suite instantiation needs to be in the same namespace as test suite
 // definition.
@@ -198,22 +196,20 @@ namespace base {
 INSTANTIATE_TYPED_TEST_SUITE_P(
     CategorizedWorkerPoolImpl,
     TaskRunnerTest,
-    blink::CategorizedWorkerPoolTestDelegate<blink::CategorizedWorkerPoolImpl>);
+    cc::CategorizedWorkerPoolTestDelegate<cc::CategorizedWorkerPoolImpl>);
 INSTANTIATE_TYPED_TEST_SUITE_P(
     CategorizedWorkerPoolJob,
     TaskRunnerTest,
-    blink::CategorizedWorkerPoolTestDelegate<blink::CategorizedWorkerPoolJob>);
+    cc::CategorizedWorkerPoolTestDelegate<cc::CategorizedWorkerPoolJob>);
 
-INSTANTIATE_TYPED_TEST_SUITE_P(
-    CategorizedWorkerPoolImpl,
-    SequencedTaskRunnerTest,
-    blink::CategorizedWorkerPoolSequencedTestDelegate<
-        blink::CategorizedWorkerPoolImpl>);
-INSTANTIATE_TYPED_TEST_SUITE_P(
-    CategorizedWorkerPoolJob,
-    SequencedTaskRunnerTest,
-    blink::CategorizedWorkerPoolSequencedTestDelegate<
-        blink::CategorizedWorkerPoolJob>);
+INSTANTIATE_TYPED_TEST_SUITE_P(CategorizedWorkerPoolImpl,
+                               SequencedTaskRunnerTest,
+                               cc::CategorizedWorkerPoolSequencedTestDelegate<
+                                   cc::CategorizedWorkerPoolImpl>);
+INSTANTIATE_TYPED_TEST_SUITE_P(CategorizedWorkerPoolJob,
+                               SequencedTaskRunnerTest,
+                               cc::CategorizedWorkerPoolSequencedTestDelegate<
+                                   cc::CategorizedWorkerPoolJob>);
 
 }  // namespace base
 
@@ -221,20 +217,20 @@ namespace cc {
 
 // Multithreaded tests.
 using CategorizedWorkerPoolImplTaskGraphRunnerTestDelegate_1_5 =
-    ::testing::Types<blink::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
-                         blink::CategorizedWorkerPoolImpl,
+    ::testing::Types<CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
+                         CategorizedWorkerPoolImpl,
                          1>,
-                     blink::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
-                         blink::CategorizedWorkerPoolImpl,
+                     CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
+                         CategorizedWorkerPoolImpl,
                          2>,
-                     blink::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
-                         blink::CategorizedWorkerPoolImpl,
+                     CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
+                         CategorizedWorkerPoolImpl,
                          3>,
-                     blink::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
-                         blink::CategorizedWorkerPoolImpl,
+                     CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
+                         CategorizedWorkerPoolImpl,
                          4>,
-                     blink::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
-                         blink::CategorizedWorkerPoolImpl,
+                     CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
+                         CategorizedWorkerPoolImpl,
                          5>>;
 
 INSTANTIATE_TYPED_TEST_SUITE_P(
@@ -242,20 +238,20 @@ INSTANTIATE_TYPED_TEST_SUITE_P(
     TaskGraphRunnerTest,
     CategorizedWorkerPoolImplTaskGraphRunnerTestDelegate_1_5);
 using CategorizedWorkerPoolJobTaskGraphRunnerTestDelegate_1_5 =
-    ::testing::Types<blink::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
-                         blink::CategorizedWorkerPoolJob,
+    ::testing::Types<CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
+                         CategorizedWorkerPoolJob,
                          1>,
-                     blink::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
-                         blink::CategorizedWorkerPoolJob,
+                     CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
+                         CategorizedWorkerPoolJob,
                          2>,
-                     blink::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
-                         blink::CategorizedWorkerPoolJob,
+                     CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
+                         CategorizedWorkerPoolJob,
                          3>,
-                     blink::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
-                         blink::CategorizedWorkerPoolJob,
+                     CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
+                         CategorizedWorkerPoolJob,
                          4>,
-                     blink::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
-                         blink::CategorizedWorkerPoolJob,
+                     CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
+                         CategorizedWorkerPoolJob,
                          5>>;
 INSTANTIATE_TYPED_TEST_SUITE_P(
     CategorizedWorkerPoolJob_1_5_Threads,
@@ -264,17 +260,15 @@ INSTANTIATE_TYPED_TEST_SUITE_P(
 
 // Single threaded tests.
 using CategorizedWorkerPoolImplTaskGraphRunnerTestDelegate =
-    blink::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
-        blink::CategorizedWorkerPoolImpl,
-        1>;
+    CategorizedWorkerPoolTaskGraphRunnerTestDelegate<CategorizedWorkerPoolImpl,
+                                                     1>;
 INSTANTIATE_TYPED_TEST_SUITE_P(
     CategorizedWorkerPoolImpl,
     SingleThreadTaskGraphRunnerTest,
     CategorizedWorkerPoolImplTaskGraphRunnerTestDelegate);
 using CategorizedWorkerPoolJobTaskGraphRunnerTestDelegate =
-    blink::CategorizedWorkerPoolTaskGraphRunnerTestDelegate<
-        blink::CategorizedWorkerPoolJob,
-        1>;
+    CategorizedWorkerPoolTaskGraphRunnerTestDelegate<CategorizedWorkerPoolJob,
+                                                     1>;
 INSTANTIATE_TYPED_TEST_SUITE_P(
     CategorizedWorkerPoolJob,
     SingleThreadTaskGraphRunnerTest,

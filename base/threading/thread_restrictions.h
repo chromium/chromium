@@ -172,9 +172,6 @@ namespace audio {
 class OutputDevice;
 }
 namespace blink {
-class CategorizedWorkerPoolImpl;
-class CategorizedWorkerPoolJob;
-class CategorizedWorkerPool;
 class DiskDataAllocator;
 class IdentifiabilityActiveSampler;
 class RTCVideoDecoderAdapter;
@@ -190,6 +187,9 @@ class NonMainThreadImpl;
 }
 }  // namespace blink
 namespace cc {
+class CategorizedWorkerPoolImpl;
+class CategorizedWorkerPoolJob;
+class CategorizedWorkerPool;
 class CompletionEvent;
 class TileTaskManagerImpl;
 }  // namespace cc
@@ -742,13 +742,13 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitives {
   friend class android_webview::JsSandboxIsolate;
   friend class base::SimpleThread;
   friend class base::internal::GetAppOutputScopedAllowBaseSyncPrimitives;
-  friend class blink::CategorizedWorkerPoolImpl;
-  friend class blink::CategorizedWorkerPoolJob;
   friend class blink::IdentifiabilityActiveSampler;
   friend class blink::SourceStream;
   friend class blink::VideoTrackRecorderImplContextProvider;
   friend class blink::WorkerThread;
   friend class blink::scheduler::NonMainThreadImpl;
+  friend class cc::CategorizedWorkerPoolImpl;
+  friend class cc::CategorizedWorkerPoolJob;
   friend class chrome_cleaner::ResetShortcutsComponent;
   friend class chrome_cleaner::SystemReportComponent;
   friend class content::BrowserMainLoop;
@@ -829,13 +829,13 @@ class BASE_EXPORT
   friend class base::StackSamplingProfiler;
   friend class base::internal::JobTaskSource;
   friend class base::sequence_manager::internal::TaskQueueImpl;
-  friend class blink::CategorizedWorkerPoolImpl;
-  friend class blink::CategorizedWorkerPoolJob;
-  friend class blink::CategorizedWorkerPool;
   friend class blink::LegacyWebRtcVideoFrameAdapter;
   friend class blink::RTCVideoDecoderAdapter;
   friend class blink::RTCVideoEncoder;
   friend class blink::WebRtcVideoFrameAdapter;
+  friend class cc::CategorizedWorkerPoolImpl;
+  friend class cc::CategorizedWorkerPoolJob;
+  friend class cc::CategorizedWorkerPool;
   friend class cc::TileTaskManagerImpl;
   friend class content::DesktopCaptureDevice;
   friend class content::EmergencyTraceFinalisationCoordinator;

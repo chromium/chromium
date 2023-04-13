@@ -36,6 +36,9 @@ specific_include_rules = {
         "+testing/libfuzzer/proto/lpm_interface.h",
         "+third_party/protobuf/src/google/protobuf/repeated_field.h",
     ],
+    "modules_initializer.cc": [
+        "+cc/raster/categorized_worker_pool.h",
+    ],
     ".*_decoder_fuzzer.cc": [
         "+base/run_loop.h",
     ],

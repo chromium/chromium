@@ -322,7 +322,8 @@ _CONFIG = [
             'base::TestMockTimeTaskRunner',
             'base::TickClock',
 
-            # cc painting types.
+            # cc painting and raster types.
+            'cc::CategorizedWorkerPool',
             'cc::InspectablePaintRecorder',
             'cc::InspectableRecordPaintCanvas',
             'cc::PaintCanvas',

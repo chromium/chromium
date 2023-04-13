@@ -118,9 +118,6 @@ const char kMinHeightForGpuRasterTile[] = "min-height-for-gpu-raster-tile";
 // signal to dismiss a splash screen.
 const char kNetworkQuietTimeout[] = "network-quiet-timeout";
 
-// Number of worker threads used to rasterize content.
-const char kNumRasterThreads[] = "num-raster-threads";
-
 // Visibly render a border around layout shift rects in the web page to help
 // debug and study layout shifts.
 const char kShowLayoutShiftRegions[] = "show-layout-shift-regions";

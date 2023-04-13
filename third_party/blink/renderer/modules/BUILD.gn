@@ -184,6 +184,7 @@ component("modules") {
 
   deps = [
     ":make_modules_generated",
+    "//cc",
     "//components/webrtc:thread_wrapper",
     "//gin",
     "//net:net",

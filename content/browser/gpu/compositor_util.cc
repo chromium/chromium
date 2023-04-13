@@ -293,8 +293,9 @@ base::Value GetFeatureStatusImpl(GpuFeatureInfoType type) {
       if (gpu_feature_data.name == "multiple_raster_threads") {
         const base::CommandLine& command_line =
             *base::CommandLine::ForCurrentProcess();
-        if (command_line.HasSwitch(blink::switches::kNumRasterThreads))
+        if (command_line.HasSwitch(cc::switches::kNumRasterThreads)) {
           status += "_force";
+        }
         status += "_on";
       }
       if (gpu_feature_data.name == "opengl" ||
@@ -431,13 +432,12 @@ int NumberOfRendererRasterThreads() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
 
-  if (command_line.HasSwitch(blink::switches::kNumRasterThreads)) {
+  if (command_line.HasSwitch(cc::switches::kNumRasterThreads)) {
     std::string string_value =
-        command_line.GetSwitchValueASCII(blink::switches::kNumRasterThreads);
+        command_line.GetSwitchValueASCII(cc::switches::kNumRasterThreads);
     if (!base::StringToInt(string_value, &num_raster_threads)) {
       DLOG(WARNING) << "Failed to parse switch "
-                    << blink::switches::kNumRasterThreads << ": "
-                    << string_value;
+                    << cc::switches::kNumRasterThreads << ": " << string_value;
     }
   }
 
