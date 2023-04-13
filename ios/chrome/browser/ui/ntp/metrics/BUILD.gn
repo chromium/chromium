@@ -16,6 +16,8 @@ source_set("metrics") {
     "feed_session_recorder.mm",
     "metrics.h",
     "metrics.mm",
+    "new_tab_page_metrics_recorder.h",
+    "new_tab_page_metrics_recorder.mm",
   ]
   deps = [
     "//base",
@@ -26,6 +28,8 @@ source_set("metrics") {
     "//ios/chrome/browser/discover_feed:constants",
     "//ios/chrome/browser/discover_feed:discover_feed_refresher",
     "//ios/chrome/browser/ntp:features",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/content_suggestions:metrics",
     "//ios/chrome/browser/ui/favicon",
     "//ios/chrome/browser/ui/ntp",

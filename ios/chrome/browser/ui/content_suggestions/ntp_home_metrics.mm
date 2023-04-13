@@ -16,47 +16,6 @@
 #error "This file requires ARC support."
 #endif
 
-namespace ntp_home {
-
-// Records when an NTP impression has occurred for purposes of Tile Ablation.
-void NTPImpressionHasOccurred() {
-  base::Time now = base::Time::Now();
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  if ([defaults boolForKey:kDoneWithTileAblationKey]) {
-    return;
-  }
-  // Find/Set first NTP impression ever.
-  NSDate* firstImpressionRecordedTileAblationExperiment =
-      base::mac::ObjCCast<NSDate>(
-          [defaults objectForKey:kFirstImpressionRecordedTileAblationKey]);
-  int impressions = [defaults integerForKey:kNumberOfNTPImpressionsRecordedKey];
-  // Record first NTP impression.
-  if (firstImpressionRecordedTileAblationExperiment == nil) {
-    [defaults setObject:now.ToNSDate()
-                 forKey:kFirstImpressionRecordedTileAblationKey];
-    [defaults setObject:now.ToNSDate() forKey:kLastNTPImpressionRecordedKey];
-    [defaults setInteger:1 forKey:kNumberOfNTPImpressionsRecordedKey];
-    return;
-  }
-  NSDate* lastImpressionTileAblation = base::mac::ObjCCast<NSDate>(
-      [defaults objectForKey:kLastNTPImpressionRecordedKey]);
-  // Check when the last impression happened.
-  if (now - base::Time::FromNSDate(lastImpressionTileAblation) >=
-      base::Minutes(kTileAblationImpressionThresholdMinutes)) {
-    // Count impression for MVT/Shortcuts Experiment.
-    [defaults setObject:now.ToNSDate() forKey:kLastNTPImpressionRecordedKey];
-    [defaults setInteger:impressions + 1
-                  forKey:kNumberOfNTPImpressionsRecordedKey];
-  }
-}
-
-void RecordNTPImpression(IOSNTPImpression impression_type) {
-  UMA_HISTOGRAM_ENUMERATION("IOS.NTP.Impression", impression_type, COUNT);
-  NTPImpressionHasOccurred();
-}
-
-}  // namespace ntp_home
-
 @interface NTPHomeMetrics ()
 @property(nonatomic, assign) ChromeBrowserState* browserState;
 @end
@@ -88,10 +47,6 @@ void RecordNTPImpression(IOSNTPImpression impression_type) {
   } else {
     UMA_HISTOGRAM_ENUMERATION("IOS.ContentSuggestions.ActionOnNTP", type);
   }
-}
-
-- (void)recordOverscrollActionForType:(OverscrollActionType)type {
-  UMA_HISTOGRAM_ENUMERATION("IOS.NTP.OverscrollAction", type);
 }
 
 @end

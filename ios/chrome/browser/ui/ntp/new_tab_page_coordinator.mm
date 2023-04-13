@@ -85,6 +85,7 @@
 #import "ios/chrome/browser/ui/ntp/incognito/incognito_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
+#import "ios/chrome/browser/ui/ntp/metrics/new_tab_page_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_component_factory_protocol.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator+private.h"
@@ -259,7 +260,12 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
     componentFactory;
 
 // Recorder for the metrics related to the NTP.
+// TODO(crbug.com/1431193): Merge this with NewTabPageMetricsRecorder and
+// ContentSuggestionsMetricsRecorder.
 @property(nonatomic, strong) NTPHomeMetrics* NTPMetrics;
+
+// Recorder for new tab page metrics.
+@property(nonatomic, strong) NewTabPageMetricsRecorder* NTPMetricsRecorder;
 
 @end
 
@@ -398,6 +404,9 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   self.feedHeaderViewController = nil;
   [self.feedTopSectionCoordinator stop];
   self.feedTopSectionCoordinator = nil;
+
+  self.NTPMetrics = nil;
+  self.NTPMetricsRecorder = nil;
 
   if (self.feedSignInPromoCoordinator) {
     [self.feedSignInPromoCoordinator stop];
@@ -620,6 +629,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   self.NTPMetrics =
       [[NTPHomeMetrics alloc] initWithBrowserState:browser->GetBrowserState()];
   self.NTPMetrics.webState = self.webState;
+  self.NTPMetricsRecorder = [[NewTabPageMetricsRecorder alloc] init];
 }
 
 #pragma mark - Configurators
@@ -1231,7 +1241,7 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
   id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   [applicationCommandsHandler openURLInNewTab:[OpenNewTabCommand command]];
-  [self.NTPMetrics
+  [self.NTPMetricsRecorder
       recordOverscrollActionForType:OverscrollActionType::kOpenedNewTab];
 }
 
@@ -1240,13 +1250,13 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
       HandlerForProtocol(self.browser->GetCommandDispatcher(),
                          BrowserCoordinatorCommands);
   [browserCoordinatorCommandsHandler closeCurrentTab];
-  [self.NTPMetrics
+  [self.NTPMetricsRecorder
       recordOverscrollActionForType:OverscrollActionType::kCloseTab];
 }
 
 - (void)overscrollActionRefresh:(OverscrollActionsController*)controller {
   [self reload];
-  [self.NTPMetrics
+  [self.NTPMetricsRecorder
       recordOverscrollActionForType:OverscrollActionType::kPullToRefresh];
 }
 
@@ -1443,17 +1453,20 @@ bool IsNTPActiveForWebState(web::WebState* web_state) {
     self.didAppearTime = base::TimeTicks::Now();
     if ([self isFeedHeaderVisible]) {
       if ([self.feedExpandedPref value]) {
-        ntp_home::RecordNTPImpression(ntp_home::REMOTE_SUGGESTIONS);
+        [self.NTPMetricsRecorder
+            recordNTPImpression:IOSNTPImpressionType::kFeedVisible];
       } else {
-        ntp_home::RecordNTPImpression(ntp_home::REMOTE_COLLAPSED);
+        [self.NTPMetricsRecorder
+            recordNTPImpression:IOSNTPImpressionType::kFeedCollapsed];
       }
     } else {
-      ntp_home::RecordNTPImpression(ntp_home::LOCAL_SUGGESTIONS);
+      [self.NTPMetricsRecorder
+          recordNTPImpression:IOSNTPImpressionType::kFeedDisabled];
     }
   } else {
     if (!self.didAppearTime.is_null()) {
-      UmaHistogramMediumTimes("NewTabPage.TimeSpent",
-                              base::TimeTicks::Now() - self.didAppearTime);
+      [self.NTPMetricsRecorder
+          recordTimeSpentInNTP:base::TimeTicks::Now() - self.didAppearTime];
       self.didAppearTime = base::TimeTicks();
     }
   }

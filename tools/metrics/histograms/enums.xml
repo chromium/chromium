@@ -53776,10 +53776,10 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="13" label="Compact beside Compact with Slideover"/>
 </enum>
 
-<enum name="IOSNTPImpression">
-  <int value="0" label="Local suggestions"/>
-  <int value="1" label="Remote suggestions"/>
-  <int value="2" label="Remote suggestions collapsed"/>
+<enum name="IOSNTPImpressionType">
+  <int value="0" label="Feed disabled"/>
+  <int value="1" label="Feed visible"/>
+  <int value="2" label="Feed collapsed"/>
 </enum>
 
 <enum name="IOSNTPOverscrollAction">
