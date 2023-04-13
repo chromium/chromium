@@ -9,8 +9,8 @@ features:
   dynamic_refresh: true
   per_profile: false
 owners:
-- okalitova@chromium.org
-- janagrill@google.com
+- timloh@google.com
+- parallels-cros@google.com
 schema:
   maximum: 1000
   minimum: 0

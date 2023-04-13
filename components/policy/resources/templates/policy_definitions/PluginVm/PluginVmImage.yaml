@@ -10,8 +10,8 @@ features:
   dynamic_refresh: true
   per_profile: false
 owners:
-- okalitova@chromium.org
-- aoldemeier@chromium.org
+- timloh@google.com
+- parallels-cros@google.com
 schema:
   properties:
     hash:

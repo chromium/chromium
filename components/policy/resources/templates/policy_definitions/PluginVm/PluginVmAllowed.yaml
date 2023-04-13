@@ -14,8 +14,8 @@ items:
 - caption: Do not allow devices to use a PluginVm
   value: false
 owners:
-- okalitova@chromium.org
-- aoldemeier@chromium.org
+- timloh@google.com
+- parallels-cros@google.com
 schema:
   type: boolean
 supported_on:
