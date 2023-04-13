@@ -338,15 +338,19 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
         brp_group_name = "EnabledBeforeAllocWithoutZapping";
 #endif
         break;
-      case features::BackupRefPtrMode::kEnabledWithoutMemoryReclaimer:
+      case features::BackupRefPtrMode::kEnabledWithMemoryReclaimer:
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
-        brp_group_name = "EnabledPrevSlotWithoutMemoryReclaimer";
+        brp_group_name = "EnabledPrevSlotWithMemoryReclaimer";
 #else
-        brp_group_name = "EnabledBeforeAllocWithoutMemoryReclaimer";
+        brp_group_name = "EnabledBeforeAllocWithMemoryReclaimer";
 #endif
         break;
       case features::BackupRefPtrMode::kDisabledButSplitPartitions2Way:
         brp_group_name = "DisabledBut2WaySplit";
+        break;
+      case features::BackupRefPtrMode::
+          kDisabledButSplitPartitions2WayWithMemoryReclaimer:
+        brp_group_name = "DisabledBut2WaySplitWithMemoryReclaimer";
         break;
       case features::BackupRefPtrMode::kDisabledButSplitPartitions3Way:
         brp_group_name = "DisabledBut3WaySplit";
@@ -859,7 +863,7 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
   bool use_dedicated_aligned_partition = false;
   bool add_dummy_ref_count = false;
   bool process_affected_by_brp_flag = false;
-  bool disable_memory_reclaimer = false;
+  bool enable_memory_reclaimer = false;
 
 #if (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&  \
      BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) || \
@@ -897,8 +901,8 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
         // Do nothing. Equivalent to !IsEnabled(kPartitionAllocBackupRefPtr).
         break;
 
-      case base::features::BackupRefPtrMode::kEnabledWithoutMemoryReclaimer:
-        disable_memory_reclaimer = true;
+      case base::features::BackupRefPtrMode::kEnabledWithMemoryReclaimer:
+        enable_memory_reclaimer = true;
         ABSL_FALLTHROUGH_INTENDED;
       case base::features::BackupRefPtrMode::kEnabled:
         enable_brp_zapping = true;
@@ -923,6 +927,12 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
         split_main_partition = true;
         break;
 
+      case base::features::BackupRefPtrMode::
+          kDisabledButSplitPartitions2WayWithMemoryReclaimer:
+        split_main_partition = true;
+        enable_memory_reclaimer = true;
+        break;
+
       case base::features::BackupRefPtrMode::kDisabledButSplitPartitions3Way:
         split_main_partition = true;
         use_dedicated_aligned_partition = true;
@@ -942,7 +952,7 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
 
   return {enable_brp,
           enable_brp_zapping,
-          !disable_memory_reclaimer,
+          enable_memory_reclaimer,
           split_main_partition,
           use_dedicated_aligned_partition,
           add_dummy_ref_count,
