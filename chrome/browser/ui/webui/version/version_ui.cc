@@ -55,6 +55,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
 #include "chrome/browser/ui/webui/version/version_handler_win.h"
 #include "chrome/browser/ui/webui/version/version_util_win.h"
 #endif
@@ -181,6 +182,23 @@ int VersionUI::VersionProcessorVariation() {
     case base::mac::CPUType::kArm:
       return IDS_VERSION_UI_64BIT_ARM;
   }
+#elif BUILDFLAG(IS_WIN)
+#if defined(ARCH_CPU_ARM64)
+  return IDS_VERSION_UI_64BIT_ARM;
+#else
+  bool emulated = base::win::OSInfo::IsRunningEmulatedOnArm64();
+#if defined(ARCH_CPU_X86)
+  if (emulated) {
+    return IDS_VERSION_UI_32BIT_TRANSLATED_INTEL;
+  }
+  return IDS_VERSION_UI_32BIT;
+#else   // defined(ARCH_CPU_X86)
+  if (emulated) {
+    return IDS_VERSION_UI_64BIT_TRANSLATED_INTEL;
+  }
+  return IDS_VERSION_UI_64BIT;
+#endif  // defined(ARCH_CPU_X86)
+#endif  // defined(ARCH_CPU_ARM64)
 #elif defined(ARCH_CPU_64_BITS)
   return IDS_VERSION_UI_64BIT;
 #elif defined(ARCH_CPU_32_BITS)
