@@ -31,19 +31,27 @@ bool CounterRulesEqual(const CounterDirectiveMap* a_map,
   return base::ranges::equal(*a_map, *b_map, [](const auto& a, const auto& b) {
     switch (property) {
       case CSSPropertyID::kCounterIncrement:
-        if (a.value.IncrementValue() != b.value.IncrementValue()) {
+        if (a.value.IsIncrement() != b.value.IsIncrement()) {
+          return false;
+        }
+        if (a.value.IsIncrement() &&
+            a.value.IncrementValue() != b.value.IncrementValue()) {
           return false;
         }
         break;
       case CSSPropertyID::kCounterReset:
-        if (a.value.IsReset() != b.value.IsReset() ||
-            a.value.ResetValue() != b.value.ResetValue()) {
+        if (a.value.IsReset() != b.value.IsReset()) {
+          return false;
+        }
+        if (a.value.IsReset() && a.value.ResetValue() != b.value.ResetValue()) {
           return false;
         }
         break;
       case CSSPropertyID::kCounterSet:
-        if (a.value.IsSet() != b.value.IsSet() ||
-            a.value.SetValue() != b.value.SetValue()) {
+        if (a.value.IsSet() != b.value.IsSet()) {
+          return false;
+        }
+        if (a.value.IsSet() && a.value.SetValue() != b.value.SetValue()) {
           return false;
         }
         break;
