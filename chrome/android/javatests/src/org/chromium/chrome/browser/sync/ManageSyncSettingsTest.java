@@ -363,17 +363,25 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mSyncTestRule.setPaymentsIntegrationEnabled(true);
 
+        // Get the UI elements.
         ManageSyncSettings fragment = startManageSyncPreferences();
-        assertSyncOnState(fragment);
         ChromeSwitchPreference syncEverything = getSyncEverything(fragment);
-        mSyncTestRule.togglePreference(syncEverything);
-
         CheckBoxPreference syncAutofill =
                 (CheckBoxPreference) fragment.findPreference(ManageSyncSettings.PREF_SYNC_AUTOFILL);
-        mSyncTestRule.togglePreference(syncAutofill);
-
         CheckBoxPreference paymentsIntegration = (CheckBoxPreference) fragment.findPreference(
                 ManageSyncSettings.PREF_SYNC_PAYMENTS_INTEGRATION);
+
+        assertSyncOnState(fragment);
+        Assert.assertFalse(paymentsIntegration.isEnabled());
+        Assert.assertTrue(paymentsIntegration.isChecked());
+
+        mSyncTestRule.togglePreference(syncEverything);
+
+        Assert.assertTrue(paymentsIntegration.isEnabled());
+        Assert.assertTrue(paymentsIntegration.isChecked());
+
+        mSyncTestRule.togglePreference(syncAutofill);
+
         Assert.assertFalse(paymentsIntegration.isEnabled());
         Assert.assertFalse(paymentsIntegration.isChecked());
 

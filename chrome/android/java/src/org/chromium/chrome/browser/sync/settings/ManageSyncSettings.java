@@ -147,10 +147,8 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     // Contains preferences for all sync data types.
     private CheckBoxPreference[] mSyncTypePreferences;
 
-    private Preference mTurnOffSync;
     private Preference mGoogleActivityControls;
     private Preference mSyncEncryption;
-    private Preference mReviewSyncData;
 
     private PreferenceCategory mSearchAndBrowseCategory;
     private ChromeSwitchPreference mUrlKeyedAnonymizedData;
@@ -197,24 +195,24 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         mSyncRecentTabs = (CheckBoxPreference) findPreference(PREF_SYNC_RECENT_TABS);
         mSyncSettings = (CheckBoxPreference) findPreference(PREF_SYNC_SETTINGS);
 
-        mTurnOffSync = findPreference(PREF_TURN_OFF_SYNC);
+        Preference turnOffSync = findPreference(PREF_TURN_OFF_SYNC);
 
         Profile profile = Profile.getLastUsedRegularProfile();
         if (!mIsFromSigninScreen) {
-            mTurnOffSync.setVisible(true);
+            turnOffSync.setVisible(true);
             if (!profile.isChild()) {
                 // Non-child users have an option to sign out and turn off sync.  This is to ensure
                 // that revoking consents for sign in and sync does not require more steps than
                 // enabling them.
-                mTurnOffSync.setIcon(R.drawable.ic_signout_40dp);
-                mTurnOffSync.setTitle(R.string.sign_out_and_turn_off_sync);
-                mTurnOffSync.setOnPreferenceClickListener(SyncSettingsUtils.toOnClickListener(
+                turnOffSync.setIcon(R.drawable.ic_signout_40dp);
+                turnOffSync.setTitle(R.string.sign_out_and_turn_off_sync);
+                turnOffSync.setOnPreferenceClickListener(SyncSettingsUtils.toOnClickListener(
                         this, this::onSignOutAndTurnOffSyncClicked));
             } else {
                 // Child users are force signed-in, so have an option which only turns off sync.
-                mTurnOffSync.setIcon(R.drawable.ic_turn_off_sync_48dp);
-                mTurnOffSync.setTitle(R.string.turn_off_sync);
-                mTurnOffSync.setOnPreferenceClickListener(
+                turnOffSync.setIcon(R.drawable.ic_turn_off_sync_48dp);
+                turnOffSync.setTitle(R.string.turn_off_sync);
+                turnOffSync.setOnPreferenceClickListener(
                         SyncSettingsUtils.toOnClickListener(this, this::onTurnOffSyncClicked));
             }
 
@@ -225,8 +223,8 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         mSyncEncryption = findPreference(PREF_ENCRYPTION);
         mSyncEncryption.setOnPreferenceClickListener(
                 SyncSettingsUtils.toOnClickListener(this, this::onSyncEncryptionClicked));
-        mReviewSyncData = findPreference(PREF_SYNC_REVIEW_DATA);
-        mReviewSyncData.setOnPreferenceClickListener(SyncSettingsUtils.toOnClickListener(
+        Preference reviewSyncData = findPreference(PREF_SYNC_REVIEW_DATA);
+        reviewSyncData.setOnPreferenceClickListener(SyncSettingsUtils.toOnClickListener(
                 this, () -> SyncSettingsUtils.openSyncDashboard(getActivity())));
 
         mSyncTypePreferences = new CheckBoxPreference[] {mSyncAutofill, mSyncBookmarks,
@@ -245,9 +243,8 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         mUrlKeyedAnonymizedData =
                 (ChromeSwitchPreference) findPreference(PREF_URL_KEYED_ANONYMIZED_DATA);
         boolean urlKeyedAnonymizedDataShouldBeEnabled =
-                UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionManaged(profile)
-                ? UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(profile)
-                : true;
+                !UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionManaged(profile)
+                || UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(profile);
         mUrlKeyedAnonymizedData.setChecked(urlKeyedAnonymizedDataShouldBeEnabled);
         mUrlKeyedAnonymizedData.setManagedPreferenceDelegate((
                 ChromeManagedPreferenceDelegate) (preference
@@ -592,43 +589,31 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     private void updateDataTypeState() {
         boolean syncEverything = mSyncService.hasKeepEverythingSynced();
         mSyncEverything.setChecked(syncEverything);
-        if (syncEverything) {
-            for (CheckBoxPreference pref : mSyncTypePreferences) {
-                // TODO(https://crbug.com/1407184): Remove this special-casing
-                //  SyncPaymentsIntegration is not checked for child users as it is disabled
-                if (pref.equals(mSyncPaymentsIntegration)
-                        && !PersonalDataManager.isPaymentsIntegrationEnabled()) {
-                    pref.setChecked(false);
-                } else {
-                    pref.setChecked(true);
-                }
-                pref.setEnabled(false);
-            }
-            return;
-        }
 
+        // TODO(https://crbug.com/1407184): Use a loop on {@code mSyncTypePreferences} to update
+        // these states.
         Set<Integer> syncTypes = mSyncService.getSelectedTypes();
         mSyncAutofill.setChecked(syncTypes.contains(UserSelectableType.AUTOFILL));
-        mSyncAutofill.setEnabled(true);
+        mSyncAutofill.setEnabled(!syncEverything);
         mSyncBookmarks.setChecked(syncTypes.contains(UserSelectableType.BOOKMARKS));
-        mSyncBookmarks.setEnabled(true);
+        mSyncBookmarks.setEnabled(!syncEverything);
         mSyncHistory.setChecked(syncTypes.contains(UserSelectableType.HISTORY));
-        mSyncHistory.setEnabled(true);
+        mSyncHistory.setEnabled(!syncEverything);
         mSyncPasswords.setChecked(syncTypes.contains(UserSelectableType.PASSWORDS));
-        mSyncPasswords.setEnabled(true);
+        mSyncPasswords.setEnabled(!syncEverything);
         mSyncReadingList.setChecked(syncTypes.contains(UserSelectableType.READING_LIST));
-        mSyncReadingList.setEnabled(true);
+        mSyncReadingList.setEnabled(!syncEverything);
         mSyncRecentTabs.setChecked(syncTypes.contains(UserSelectableType.TABS));
-        mSyncRecentTabs.setEnabled(true);
+        mSyncRecentTabs.setEnabled(!syncEverything);
         mSyncSettings.setChecked(syncTypes.contains(UserSelectableType.PREFERENCES));
-        mSyncSettings.setEnabled(true);
+        mSyncSettings.setEnabled(!syncEverything);
 
         // Payments integration requires AUTOFILL user selectable type
         boolean syncAutofill = syncTypes.contains(UserSelectableType.AUTOFILL);
-        mSyncPaymentsIntegration.setChecked(
-                syncAutofill && PersonalDataManager.isPaymentsIntegrationEnabled());
+        mSyncPaymentsIntegration.setChecked((syncEverything || syncAutofill)
+                && PersonalDataManager.isPaymentsIntegrationEnabled());
         mSyncPaymentsIntegration.setEnabled(
-                syncAutofill && !Profile.getLastUsedRegularProfile().isChild());
+                !syncEverything && syncAutofill && !Profile.getLastUsedRegularProfile().isChild());
     }
 
     /**
