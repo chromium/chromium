@@ -36,6 +36,10 @@ class ArcFlossBridge : public ArcBluetoothBridge,
   void RemoveSdpRecord(uint32_t service_handle,
                        RemoveSdpRecordCallback callback) override;
 
+  // Closes Bluetooth sockets. Releases the corresponding resources.
+  void CloseBluetoothListeningSocket(BluetoothListeningSocket* socket);
+  void CloseBluetoothConnectingSocket(BluetoothConnectingSocket* socket);
+
   // floss::FlossAdapterClient::Observer overrides
   void SdpSearchComplete(
       const floss::FlossDeviceId device,
@@ -71,6 +75,19 @@ class ArcFlossBridge : public ArcBluetoothBridge,
   // use to resolve CreateSdpRecord calls.
   base::flat_map<device::BluetoothUUID, CreateSdpRecordCallback>
       create_sdp_record_callbacks_{};
+
+  void CreateBluetoothListenSocket(
+      mojom::BluetoothSocketType type,
+      mojom::BluetoothSocketFlagsPtr flags,
+      int port,
+      BluetoothSocketListenCallback callback) override;
+
+  void CreateBluetoothConnectSocket(
+      mojom::BluetoothSocketType type,
+      mojom::BluetoothSocketFlagsPtr flags,
+      mojom::BluetoothAddressPtr addr,
+      int port,
+      BluetoothSocketConnectCallback callback) override;
 
   // WeakPtrFactory to use for callbacks.
   base::WeakPtrFactory<ArcFlossBridge> weak_factory_{this};

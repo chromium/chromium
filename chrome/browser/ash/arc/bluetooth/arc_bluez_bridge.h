@@ -30,12 +30,51 @@ class ArcBluezBridge : public ArcBluetoothBridge {
   void RemoveSdpRecord(uint32_t service_handle,
                        RemoveSdpRecordCallback callback) override;
 
+  // Closes Bluetooth sockets. Releases the corresponding resources.
+  void CloseBluetoothListeningSocket(BluetoothListeningSocket* socket);
+  void CloseBluetoothConnectingSocket(BluetoothConnectingSocket* socket);
+
  protected:
   bluez::BluetoothAdapterBlueZ* GetAdapter() const;
 
   void HandlePoweredOn() override;
 
+  void OnGetServiceRecordsDone(
+      mojom::BluetoothAddressPtr remote_addr,
+      const device::BluetoothUUID& target_uuid,
+      const std::vector<bluez::BluetoothServiceRecordBlueZ>& records_bluez);
+  void OnGetServiceRecordsError(
+      mojom::BluetoothAddressPtr remote_addr,
+      const device::BluetoothUUID& target_uuid,
+      bluez::BluetoothServiceRecordBlueZ::ErrorCode error_code);
+
+  // Called when the listening socket is ready to accept().
+  void OnBluezListeningSocketReady(BluetoothListeningSocket* sock_wrapper);
+
+  // Called when the connecting socket is ready.
+  void OnBluezConnectingSocketReady(BluetoothConnectingSocket* sock_wrapper);
+
+  void CreateBluetoothListenSocket(
+      mojom::BluetoothSocketType type,
+      mojom::BluetoothSocketFlagsPtr flags,
+      int port,
+      BluetoothSocketListenCallback callback) override;
+
+  void CreateBluetoothConnectSocket(
+      mojom::BluetoothSocketType type,
+      mojom::BluetoothSocketFlagsPtr flags,
+      mojom::BluetoothAddressPtr addr,
+      int port,
+      BluetoothSocketConnectCallback callback) override;
+
  private:
+  // Bluetooth sockets that live in Chrome.
+  std::set<std::unique_ptr<BluetoothListeningSocket>, base::UniquePtrComparator>
+      listening_sockets_;
+  std::set<std::unique_ptr<BluetoothConnectingSocket>,
+           base::UniquePtrComparator>
+      connecting_sockets_;
+
   // WeakPtrFactory to use for callbacks.
   base::WeakPtrFactory<ArcBluezBridge> weak_factory_{this};
 };

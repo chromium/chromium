@@ -2,7 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <bluetooth/bluetooth.h>
+#include <bluetooth/l2cap.h>
+#include <bluetooth/rfcomm.h>
+
+#include "ash/components/arc/bluetooth/bluetooth_type_converters.h"
+#include "base/functional/callback_helpers.h"
+#include "base/guid.h"
 #include "chrome/browser/ash/arc/bluetooth/arc_floss_bridge.h"
+#include "device/bluetooth/bluetooth_socket.h"
+#include "device/bluetooth/floss/floss_dbus_manager.h"
+#include "device/bluetooth/floss/floss_socket_manager.h"
 
 #include "base/logging.h"
 
@@ -154,6 +164,12 @@ void ArcFlossBridge::RemoveSdpRecord(uint32_t service_handle,
       std::move(response_callback), service_handle);
 }
 
+void ArcFlossBridge::CloseBluetoothListeningSocket(
+    BluetoothListeningSocket* ptr) {}
+
+void ArcFlossBridge::CloseBluetoothConnectingSocket(
+    BluetoothConnectingSocket* ptr) {}
+
 void ArcFlossBridge::SdpSearchComplete(
     const floss::FlossDeviceId device,
     const device::BluetoothUUID uuid,
@@ -206,6 +222,22 @@ void ArcFlossBridge::SendCachedDevices() const {
         mojom::BluetoothAddress::From(device->GetAddress()),
         GetDeviceProperties(mojom::BluetoothPropertyType::ALL, device));
   }
+}
+void ArcFlossBridge::CreateBluetoothListenSocket(
+    mojom::BluetoothSocketType type,
+    mojom::BluetoothSocketFlagsPtr flags,
+    int port,
+    ArcFlossBridge::BluetoothSocketListenCallback callback) {
+  NOTIMPLEMENTED();
+}
+
+void ArcFlossBridge::CreateBluetoothConnectSocket(
+    mojom::BluetoothSocketType type,
+    mojom::BluetoothSocketFlagsPtr flags,
+    mojom::BluetoothAddressPtr addr,
+    int port,
+    ArcFlossBridge::BluetoothSocketConnectCallback callback) {
+  NOTIMPLEMENTED();
 }
 
 void ArcFlossBridge::CompleteCreateSdpRecord(

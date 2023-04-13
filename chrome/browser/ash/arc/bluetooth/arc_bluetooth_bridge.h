@@ -73,6 +73,15 @@ class ArcBluetoothBridge
   using RemoveSdpRecordCallback =
       base::OnceCallback<void(arc::mojom::BluetoothStatus)>;
 
+  static constexpr int kAutoSockPort = 0;
+  static constexpr int kMinRfcommChannel = 1;
+  static constexpr int kMaxRfcommChannel = 30;
+
+  // Copied from the values of L2CAP_PSM_LE_DYN_START and L2CAP_PSM_LE_DYN_END
+  // in /include/net/bluetooth/l2cap.h
+  static constexpr int kMinL2capLePsm = 0x0080;
+  static constexpr int kMaxL2capLePsm = 0x00FF;
+
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcBluetoothBridge* GetForBrowserContext(
@@ -555,10 +564,6 @@ class ArcBluetoothBridge
   // Chrome.
   struct BluetoothListeningSocket {
     mojom::BluetoothSocketType sock_type;
-    // TODO(b/163099156): Remove the following two fields when
-    // RfcommListenDeprecated()/RfcommConnectDeprecated() are removed.
-    bool created_by_deprecated_method = false;
-    mojo::Remote<mojom::RfcommListeningSocketClient> deprecated_remote;
     mojo::Remote<mojom::BluetoothListenSocketClient> remote;
     base::ScopedFD file;
     std::unique_ptr<base::FileDescriptorWatcher::Controller> controller;
@@ -567,10 +572,6 @@ class ArcBluetoothBridge
   };
   struct BluetoothConnectingSocket {
     mojom::BluetoothSocketType sock_type;
-    // TODO(b/163099156): Remove the following two fields when
-    // RfcommListenDeprecated()/RfcommConnectDeprecated() are removed.
-    bool created_by_deprecated_method = false;
-    mojo::Remote<mojom::RfcommConnectingSocketClient> deprecated_remote;
     mojo::Remote<mojom::BluetoothConnectSocketClient> remote;
     base::ScopedFD file;
     std::unique_ptr<base::FileDescriptorWatcher::Controller> controller;
@@ -578,26 +579,24 @@ class ArcBluetoothBridge
     ~BluetoothConnectingSocket();
   };
 
-  // Creates a Bluetooth socket with socket option |optval|, and then bind() and
-  // listen() with requested |port| number. The actual port number will be
-  // filled in |port| as the return value. Returns a BluetoothListeningSocket
-  // that holds the socket.
-  std::unique_ptr<BluetoothListeningSocket> CreateBluetoothListenSocket(
+  // Creates a Bluetooth socket with options in |flags| and starts listening to
+  // it with the requested |port| number. The actual port number must be filled
+  // in and sent to the callback in this function implementation. Returns a
+  // BluetoothListeningSocket that holds the socket.
+  virtual void CreateBluetoothListenSocket(
       mojom::BluetoothSocketType type,
-      int32_t optval,
-      uint16_t* port);
+      mojom::BluetoothSocketFlagsPtr flags,
+      int port,
+      BluetoothSocketListenCallback callback) = 0;
   // Creates a Bluetooth socket with socket option |optval|, and then calls
   // connect() to (|addr|, |port|). This connect() call is non-blocking.
   // Returns a BluetoothConnectingSocket that holds the socket.
-  std::unique_ptr<BluetoothConnectingSocket> CreateBluetoothConnectSocket(
+  virtual void CreateBluetoothConnectSocket(
       mojom::BluetoothSocketType type,
-      int32_t optval,
+      mojom::BluetoothSocketFlagsPtr flags,
       mojom::BluetoothAddressPtr addr,
-      uint16_t port);
-
-  // Closes Bluetooth sockets. Releases the corresponding resources.
-  void CloseBluetoothListeningSocket(BluetoothListeningSocket* socket);
-  void CloseBluetoothConnectingSocket(BluetoothConnectingSocket* socket);
+      int port,
+      BluetoothSocketConnectCallback callback) = 0;
 
   // Called when the listening socket is ready to accept().
   void OnBluetoothListeningSocketReady(
@@ -714,13 +713,6 @@ class ArcBluetoothBridge
   // This queue will hold requests from both Start/CancelDiscovery() and
   // Start/StopLEScan().
   ArcBluetoothTaskQueue discovery_queue_;
-
-  // Bluetooth sockets that live in Chrome.
-  std::set<std::unique_ptr<BluetoothListeningSocket>, base::UniquePtrComparator>
-      listening_sockets_;
-  std::set<std::unique_ptr<BluetoothConnectingSocket>,
-           base::UniquePtrComparator>
-      connecting_sockets_;
 
   // Observes the ARC connection to Bluetooth service in Android. We need to do
   // some cleanup when it is down.
