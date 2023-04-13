@@ -33,6 +33,9 @@
 #include <memory>
 #include <utility>
 
+#include "base/no_destructor.h"
+#include "base/synchronization/lock.h"
+
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
@@ -306,6 +309,10 @@ bool DOMWrapperWorld::HasWrapperInAnyWorldInMainThread(
 bool DOMWrapperWorld::UnsetNonMainWorldWrapperIfSet(
     ScriptWrappable* object,
     const v8::TracedReference<v8::Object>& handle) {
+  // This function can be called in parallel.
+  static base::NoDestructor<base::Lock> g_lock;
+  base::AutoLock lock(*g_lock);
+
   for (DOMWrapperWorld* world : GetWorldMap().Values()) {
     DOMDataStore& data_store = world->DomDataStore();
     if (data_store.UnsetSpecificWrapperIfSet(object, handle))
