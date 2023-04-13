@@ -13,10 +13,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
-#elif BUILDFLAG(IS_IOS)
-#include <objc/objc.h>
 #elif BUILDFLAG(IS_MAC)
-#include <objc/objc.h>
 #include <string>
 #elif BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
@@ -63,6 +60,7 @@ struct IAccessible;
 #elif BUILDFLAG(IS_IOS)
 struct CGContext;
 #ifdef __OBJC__
+struct objc_object;
 @class UIEvent;
 @class UIFont;
 @class UIImage;
@@ -88,6 +86,7 @@ struct CGContext;
 @class NSWindow;
 @class NSTextField;
 #else
+struct objc_object;
 class NSCursor;
 class NSEvent;
 class NSFont;
@@ -140,8 +139,6 @@ using NativeEvent = NSEvent*;
 // function call (GetNativeNSView or GetNativeNSWindow) to retrieve the
 // underlying NSView or NSWindow <https://crbug.com/893719>. These are wrapper
 // classes only and do not maintain any ownership, thus the __unsafe_unretained.
-// (__unsafe_unretained is defined in <objc/objc.h> for non-Obj-C so it's OK to
-// use in C++ code.)
 class GFX_EXPORT NativeView {
  public:
   constexpr NativeView() = default;
@@ -153,7 +150,7 @@ class GFX_EXPORT NativeView {
   // is easily grep-able.
   NSView* GetNativeNSView() const { return ns_view_; }
 
-  explicit operator bool() const { return ns_view_ != nil; }
+  explicit operator bool() const { return ns_view_ != nullptr; }
   bool operator==(const NativeView& other) const {
     return ns_view_ == other.ns_view_;
   }
@@ -166,7 +163,11 @@ class GFX_EXPORT NativeView {
   std::string ToString() const;
 
  private:
-  __unsafe_unretained NSView* ns_view_ = nil;
+#if defined(__has_feature) && __has_feature(objc_arc)
+  __unsafe_unretained NSView* ns_view_ = nullptr;
+#else
+  NSView* ns_view_ = nullptr;
+#endif
 };
 class GFX_EXPORT NativeWindow {
  public:
@@ -179,7 +180,7 @@ class GFX_EXPORT NativeWindow {
   // is easily grep-able.
   NSWindow* GetNativeNSWindow() const { return ns_window_; }
 
-  explicit operator bool() const { return ns_window_ != nil; }
+  explicit operator bool() const { return ns_window_ != nullptr; }
   bool operator==(const NativeWindow& other) const {
     return ns_window_ == other.ns_window_;
   }
@@ -192,7 +193,11 @@ class GFX_EXPORT NativeWindow {
   std::string ToString() const;
 
  private:
-  __unsafe_unretained NSWindow* ns_window_ = nil;
+#if defined(__has_feature) && __has_feature(objc_arc)
+  __unsafe_unretained NSWindow* ns_window_ = nullptr;
+#else
+  NSWindow* ns_window_ = nullptr;
+#endif
 };
 constexpr NativeView kNullNativeView = NativeView(nullptr);
 constexpr NativeWindow kNullNativeWindow = NativeWindow(nullptr);
@@ -212,10 +217,18 @@ using NativeFont = HFONT;
 using NativeViewAccessible = IAccessible*;
 #elif BUILDFLAG(IS_IOS)
 using NativeFont = UIFont*;
+#ifdef __OBJC__
 using NativeViewAccessible = id;
+#else
+using NativeViewAccessible = struct objc_object*;
+#endif
 #elif BUILDFLAG(IS_MAC)
 using NativeFont = NSFont*;
+#ifdef __OBJC__
 using NativeViewAccessible = id;
+#else
+using NativeViewAccessible = struct objc_object*;
+#endif
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)

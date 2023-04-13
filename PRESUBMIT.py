@@ -1568,6 +1568,18 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       False,
       []
     ),
+    BanRule(
+      r'objc/objc.h',
+      (
+        'Do not include <objc/objc.h>. It defines away ARC lifetime '
+        'annotations, and is thus dangerous.',
+        'Please use the pimpl pattern; search for `ObjCStorage` for examples.',
+        'For further reading on how to safely mix C++ and Obj-C, see',
+        'https://chromium.googlesource.com/chromium/src/+/main/docs/mac/mixing_cpp_and_objc.md'
+      ),
+      True,
+      []
+    ),
 )
 
 _BANNED_MOJOM_PATTERNS : Sequence[BanRule] = (

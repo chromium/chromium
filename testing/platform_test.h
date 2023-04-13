@@ -8,11 +8,9 @@
 #include <gtest/gtest.h>
 
 #if defined(GTEST_OS_MAC)
-#include <objc/objc.h>
-
 // The purpose of this class us to provide a hook for platform-specific
 // operations across unit tests.  For example, on the Mac, it creates and
-// releases an outer NSAutoreleasePool for each test case.  For now, it's only
+// releases an autorelease pool for each test case.  For now, it's only
 // implemented on the Mac.  To enable this for another platform, just adjust
 // the #ifdefs and add a platform_test_<platform>.cc implementation file.
 class PlatformTest : public testing::Test {
@@ -23,13 +21,12 @@ class PlatformTest : public testing::Test {
   PlatformTest();
 
  private:
-  // |pool_| is a NSAutoreleasePool, but since this header may be imported from
-  // files built with Objective-C ARC that forbids explicit usage of
-  // NSAutoreleasePools, it is declared as id here.
-  id pool_;
+  void* autorelease_pool_;
 };
 #else
-typedef testing::Test PlatformTest;
+
+using PlatformTest = testing::Test;
+
 #endif // GTEST_OS_MAC
 
 #endif // TESTING_PLATFORM_TEST_H_
