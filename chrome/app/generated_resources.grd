@@ -7113,6 +7113,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_CART_LOWER_YOUR" desc="Name of the chrome cart module in lowercase shown in various UIs.">
         your carts
       </message>
+      <message name="IDS_NTP_MODULES_QUEST_CART_ANNOTATION" desc="Annotation that shows in the ChromeCart tile in Quest module to let users know that this tile is from pending items in their shopping cart.">
+        In your cart
+      </message>
       <message name="IDS_NTP_MODULES_CART_INFO" desc="Text shown in the body of the info dialog of the cart module.">
         You’re seeing carts that help you easily get back to items you left in shopping carts across the web.
         <ph name="BREAK">&lt;br&gt;</ph>
