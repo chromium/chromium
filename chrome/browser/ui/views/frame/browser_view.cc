@@ -4525,6 +4525,14 @@ bool BrowserView::MaybeShowFeaturePromo(
         body_text_replacements,
     user_education::FeaturePromoController::BubbleCloseCallback
         close_callback) {
+  // Trying to show a promo before the browser is initialized can result in a
+  // failure to retrieve accelerators, which can cause issues for screen reader
+  // users.
+  if (!initialized_) {
+    LOG(ERROR) << "Attempting to show IPH " << iph_feature.name
+               << " before browser initialization; IPH will not be shown.";
+    return false;
+  }
   return feature_promo_controller_ &&
          feature_promo_controller_->MaybeShowPromo(
              iph_feature, body_text_replacements, std::move(close_callback));
