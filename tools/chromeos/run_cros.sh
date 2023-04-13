@@ -82,13 +82,13 @@ function build_args {
   ARGS="--user-data-dir=${USER_DATA_DIR} \
     --enable-wayland-server --ash-debug-shortcuts \
     --enable-ui-devtools --ash-dev-shortcuts --login-manager \
+    --lacros-chrome-additional-args=--gpu-sandbox-start-early \
     --login-profile=user --lacros-mojo-socket-for-testing=$LACROS_SOCK_FILE \
     --ash-host-window-bounds=${DISPLAY_CONFIG} \
     --enable-features=${FEATURES} \
     ${TOUCH_DEVICE_OPTION} \
     --lacros-chrome-path=${LACROS_BUILD_DIR}"
 
-  #  --no-sandbox --enable-wayland-server --ash-debug-shortcuts \
   # To enable internal display.
   ARGS="${ARGS} --use-first-display-as-internal"
 }
@@ -144,7 +144,7 @@ function start_lacros_chrome {
     -s ${LACROS_SOCK_FILE} \
     ${LACROS_BUILD_DIR}/chrome \
     --user-data-dir=${lacros_user_data_dir} \
-    --enable-ui-devtools
+    --enable-ui-devtools --gpu-sandbox-start-early
 }
 
 function lacros_log {
