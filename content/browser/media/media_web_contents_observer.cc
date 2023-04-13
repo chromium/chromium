@@ -86,6 +86,8 @@ class MediaWebContentsObserver::PlayerInfo {
 
   bool IsAudible() const { return has_audio_ && is_playing_ && !muted_; }
 
+  GlobalRenderFrameHostId GetHostId() { return id_.frame_routing_id; }
+
  private:
   void NotifyPlayerStarted() {
     observer_->web_contents_impl()->MediaStartedPlaying(
@@ -500,7 +502,8 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
       media_web_contents_observer_->web_contents_impl()->audio_stream_monitor();
 
   if (should_add_client && !audio_client_registration_) {
-    audio_client_registration_ = audio_stream_monitor->RegisterAudibleClient();
+    audio_client_registration_ =
+        audio_stream_monitor->RegisterAudibleClient(player_info->GetHostId());
   } else if (!should_add_client && audio_client_registration_) {
     audio_client_registration_.reset();
   }

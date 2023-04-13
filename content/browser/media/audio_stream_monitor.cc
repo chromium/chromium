@@ -29,13 +29,14 @@ AudioStreamMonitor* GetMonitorForRenderFrame(int render_process_id,
 }  // namespace
 
 AudioStreamMonitor::AudibleClientRegistration::AudibleClientRegistration(
+    GlobalRenderFrameHostId host_id,
     AudioStreamMonitor* audio_stream_monitor)
-    : audio_stream_monitor_(audio_stream_monitor) {
-  audio_stream_monitor_->AddAudibleClient();
+    : host_id_(host_id), audio_stream_monitor_(audio_stream_monitor) {
+  audio_stream_monitor_->AddAudibleClient(host_id_);
 }
 
 AudioStreamMonitor::AudibleClientRegistration::~AudibleClientRegistration() {
-  audio_stream_monitor_->RemoveAudibleClient();
+  audio_stream_monitor_->RemoveAudibleClient(host_id_);
 }
 
 bool AudioStreamMonitor::StreamID::operator<(const StreamID& other) const {
@@ -58,7 +59,7 @@ AudioStreamMonitor::AudioStreamMonitor(WebContents* contents)
 }
 
 AudioStreamMonitor::~AudioStreamMonitor() {
-  DCHECK_EQ(audible_clients_, 0);
+  DCHECK(audible_clients_.empty());
 }
 
 bool AudioStreamMonitor::WasRecentlyAudible() const {
@@ -90,23 +91,32 @@ void AudioStreamMonitor::RenderProcessGone(int render_process_id) {
 }
 
 std::unique_ptr<AudioStreamMonitor::AudibleClientRegistration>
-AudioStreamMonitor::RegisterAudibleClient() {
+AudioStreamMonitor::RegisterAudibleClient(GlobalRenderFrameHostId host_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  return std::make_unique<AudibleClientRegistration>(this);
+  return std::make_unique<AudibleClientRegistration>(host_id, this);
 }
 
-void AudioStreamMonitor::AddAudibleClient() {
+void AudioStreamMonitor::AddAudibleClient(GlobalRenderFrameHostId host_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK_GE(audible_clients_, 0);
-  ++audible_clients_;
+
+  audible_clients_[host_id]++;
   UpdateStreams();
 }
 
-void AudioStreamMonitor::RemoveAudibleClient() {
+void AudioStreamMonitor::RemoveAudibleClient(GlobalRenderFrameHostId host_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK_GE(audible_clients_, 0);
-  --audible_clients_;
+  DCHECK(!audible_clients_.empty());
+
+  auto it = audible_clients_.find(host_id);
+  CHECK(it != audible_clients_.end());
+  CHECK_GT(it->second, 0u);
+  it->second--;
+
   UpdateStreams();
+
+  if (it->second == 0) {
+    audible_clients_.erase(it);
+  }
 }
 
 // static
@@ -192,36 +202,43 @@ void AudioStreamMonitor::UpdateStreams() {
   bool was_audible = is_audible_;
   is_audible_ = false;
 
-  // Record whether or not a RenderFrameHost is audible.
-  base::flat_map<RenderFrameHostImpl*, bool> audible_frame_map;
-  audible_frame_map.reserve(streams_.size());
+  // Determine whether a RenderFrameHost is audible based on
+  // stream and non-stream client states.
+  base::flat_map<GlobalRenderFrameHostId, bool> audible_frames;
+  audible_frames.reserve(streams_.size() + audible_clients_.size());
+
   for (auto& kv : streams_) {
     const bool is_stream_audible = kv.second;
     is_audible_ |= is_stream_audible;
-
-    // Record whether or not the RenderFrame is audible. A RenderFrame is
-    // audible when it has at least one audio stream that is audible.
-    auto* render_frame_host_impl =
-        static_cast<RenderFrameHostImpl*>(RenderFrameHost::FromID(
-            kv.first.render_process_id, kv.first.render_frame_id));
-    // This may be nullptr in tests.
-    if (!render_frame_host_impl)
-      continue;
-    audible_frame_map[render_frame_host_impl] |= is_stream_audible;
+    GlobalRenderFrameHostId host_id(kv.first.render_process_id,
+                                    kv.first.render_frame_id);
+    audible_frames[host_id] |= is_stream_audible;
   }
 
-  // Check non-stream audible clients.
-  is_audible_ |= (audible_clients_ > 0);
+  for (auto& kv : audible_clients_) {
+    const bool is_client_audible = kv.second > 0;
+    is_audible_ |= is_client_audible;
+    audible_frames[kv.first] |= is_client_audible;
+  }
 
-  if (was_audible && !is_audible_)
+  if (was_audible && !is_audible_) {
     last_became_silent_time_ = clock_->NowTicks();
+  }
 
-  // Update RenderFrameHost audible state only when state changed.
-  for (auto& kv : audible_frame_map) {
-    auto* render_frame_host_impl = kv.first;
+  // Update RenderFrameHostImpl audible state if state has changed.
+  for (const auto& kv : audible_frames) {
+    auto* render_frame_host_impl =
+        static_cast<RenderFrameHostImpl*>(RenderFrameHost::FromID(kv.first));
+
+    // RenderFrameHostImpl may be null in some tests.
+    if (!render_frame_host_impl) {
+      continue;
+    }
+
     bool is_frame_audible = kv.second;
-    if (is_frame_audible != render_frame_host_impl->is_audible())
+    if (is_frame_audible != render_frame_host_impl->is_audible()) {
       render_frame_host_impl->OnAudibleStateChanged(is_frame_audible);
+    }
   }
 
   if (is_audible_ != was_audible) {
