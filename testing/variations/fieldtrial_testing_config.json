@@ -211,6 +211,35 @@
             ]
         }
     ],
+    "AndroidMediaPickerAdoption": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Direct",
+                    "params": {
+                        "use_action_pick_images": "true"
+                    },
+                    "enable_features": [
+                        "MediaPickerAdoption"
+                    ],
+                    "min_os_version": "13.0.0"
+                },
+                {
+                    "name": "Enabled_Direct_Plus",
+                    "params": {
+                        "use_action_pick_images_plus": "true"
+                    },
+                    "enable_features": [
+                        "MediaPickerAdoption"
+                    ],
+                    "min_os_version": "13.0.0"
+                }
+            ]
+        }
+    ],
     "AndroidMessagesSaveCard": [
         {
             "platforms": [
