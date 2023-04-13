@@ -9,6 +9,7 @@ import './strings.m.js';
 import './password_list_item.js';
 import './dialogs/add_password_dialog.js';
 import './dialogs/auth_timed_out_dialog.js';
+import './dialogs/move_passwords_dialog.js';
 import './user_utils_mixin.js';
 // <if expr="_google_chrome">
 import './promo_cards/promo_card.js';
@@ -81,19 +82,21 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
       showAddPasswordDialog_: Boolean,
       showAuthTimedOutDialog_: Boolean,
+      showMovePasswordsDialog_: Boolean,
 
       movePasswordsText_: String,
 
-      numberOfPasswordsOnDevice_: {
+      passwordsOnDevice_: {
         type: Number,
-        computed: 'computeNumberOfPasswordsOnDevice_(groups_)',
+        computed: 'computePasswordsOnDevice_(groups_)',
       },
 
       showMovePasswords_: {
         type: Boolean,
         computed: 'computeShowMovePasswords_(isAccountStoreUser, ' +
-            'numberOfPasswordsOnDevice_)',
+            'passwordsOnDevice_)',
       },
+
       // <if expr="_google_chrome">
       promoCard_: {
         type: Object,
@@ -115,6 +118,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private shownGroupsCount_: number;
   private showAddPasswordDialog_: boolean;
   private showAuthTimedOutDialog_: boolean;
+  private showMovePasswordsDialog_: boolean;
   private movePasswordsText_: string;
   // <if expr="_google_chrome">
   private promoCard_: PromoCard|null;
@@ -152,10 +156,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
     this.authTimedOutListener_ = this.onAuthTimedOut_.bind(this);
     window.addEventListener('auth-timed-out', this.authTimedOutListener_);
-    this.$.movePasswords.addEventListener(
-        'click', this.onMovePasswordsClicked_);
-    this.$.importPasswords.addEventListener(
-        'click', this.onImportPasswordsClicked_);
   }
 
   override disconnectedCallback() {
@@ -208,7 +208,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     this.showAddPasswordDialog_ = true;
   }
 
-  private onAddPasswordDialogClosed_() {
+  private onAddPasswordDialogClose_() {
     this.showAddPasswordDialog_ = false;
   }
 
@@ -216,31 +216,31 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     this.showAuthTimedOutDialog_ = true;
   }
 
-  private onAuthTimedOutDialogClosed_() {
+  private onAuthTimedOutDialogClose_() {
     this.showAuthTimedOutDialog_ = false;
   }
 
-  private computeNumberOfPasswordsOnDevice_(): number {
+  private computePasswordsOnDevice_():
+      chrome.passwordsPrivate.PasswordUiEntry[] {
     const localStorage = [
       chrome.passwordsPrivate.PasswordStoreSet.DEVICE_AND_ACCOUNT,
       chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
     ];
     return this.groups_.map(group => group.entries)
         .flat()
-        .filter(entry => localStorage.includes(entry.storedIn))
-        .length;
+        .filter(entry => localStorage.includes(entry.storedIn));
   }
 
   private computeShowMovePasswords_(): boolean {
     // TODO(crbug.com/1420548): Check for conflicts if needed.
-    return this.computeNumberOfPasswordsOnDevice_() > 0 &&
+    return this.computePasswordsOnDevice_().length > 0 &&
         this.isAccountStoreUser;
   }
 
   private async onGroupsChanged_() {
     this.movePasswordsText_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'movePasswords', this.computeNumberOfPasswordsOnDevice_());
+            'movePasswords', this.computePasswordsOnDevice_().length);
   }
 
   private getMovePasswordsText_(): TrustedHTML {
@@ -250,7 +250,11 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   private onMovePasswordsClicked_(e: Event) {
     e.preventDefault();
-    // TODO(crbug.com/1420548): Show move passwords dialog.
+    this.showMovePasswordsDialog_ = true;
+  }
+
+  private onMovePasswordsDialogClose_() {
+    this.showMovePasswordsDialog_ = false;
   }
 
   private showImportPasswordsOption_(): boolean {

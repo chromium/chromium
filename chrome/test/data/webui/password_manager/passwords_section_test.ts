@@ -441,4 +441,28 @@ suite('PasswordsSectionTest', function() {
 
     assertFalse(isVisible(section.$.importPasswords));
   });
+
+  test('clicking move passwords opens move passwords dialog', async function() {
+    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.groups = [createCredentialGroup({
+      name: 'test.com',
+      credentials: [createPasswordEntry(
+          {username: 'user', id: 0, inProfileStore: true})],
+    })];
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: true,
+    };
+
+    const section = await createPasswordsSection();
+
+    assertTrue(isVisible(section.$.movePasswords));
+
+    section.$.movePasswords.click();
+    await flushTasks();
+
+    const movdeDialog =
+        section.shadowRoot!.querySelector('move-passwords-dialog');
+    assertTrue(!!movdeDialog);
+    assertTrue(movdeDialog.$.dialog.open);
+  });
 });
