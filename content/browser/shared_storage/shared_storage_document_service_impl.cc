@@ -15,6 +15,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "url/url_constants.h"
@@ -22,6 +23,18 @@
 namespace content {
 
 namespace {
+
+// TODO(yaoxia): This should be function in FrameTreeNode.
+bool IsSecureFrame(RenderFrameHost* frame) {
+  while (frame) {
+    if (!network::IsOriginPotentiallyTrustworthy(
+            frame->GetLastCommittedOrigin())) {
+      return false;
+    }
+    frame = frame->GetParent();
+  }
+  return true;
+}
 
 using AccessType =
     SharedStorageWorkletHostManager::SharedStorageObserverInterface::AccessType;
@@ -68,6 +81,14 @@ void SharedStorageDocumentServiceImpl::Bind(
         receiver) {
   CHECK(!receiver_)
       << "Multiple attempts to bind the SharedStorageDocumentService receiver";
+
+  if (!IsSecureFrame(&render_frame_host())) {
+    // This could indicate a compromised renderer, so let's terminate it.
+    mojo::ReportBadMessage(
+        "Attempted to request SharedStorageDocumentService from an insecure "
+        "context");
+    return;
+  }
 
   receiver_.Bind(std::move(receiver));
 }
