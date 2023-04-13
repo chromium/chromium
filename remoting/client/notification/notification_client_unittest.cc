@@ -106,8 +106,8 @@ class NotificationClientTest : public ::testing::Test {
         test_locale, should_ignore_dev_messages));
   }
 
-  raw_ptr<MockJsonFetcher> fetcher_;
   std::unique_ptr<NotificationClient> client_;
+  raw_ptr<MockJsonFetcher> fetcher_;  // Owned by `client_`.
 };
 
 TEST_F(NotificationClientTest, NoRule) {

@@ -214,13 +214,20 @@ class MessageAndLinkTextResults
     }
     if (done_ && is_message_translation_fetched_ &&
         is_link_translation_fetched_) {
-      std::move(done_).Run(true);
+      RunDoneCallback(true);
     }
   }
 
   void NotifyFetchFailed() {
     DCHECK(done_);
-    std::move(done_).Run(false);
+    RunDoneCallback(false);
+  }
+
+  void RunDoneCallback(bool arg) {
+    // Drop unowned resources before invoking callback destroying them.
+    out_link_translation_ = nullptr;
+    out_message_translation_ = nullptr;
+    std::move(done_).Run(arg);
   }
 
   std::string locale_;
