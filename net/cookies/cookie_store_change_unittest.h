@@ -1780,16 +1780,14 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, PartitionedCookies) {
       "__Host-b=2; Secure; Path=/; Partitioned",
       CookieOptions::MakeAllInclusive(), absl::nullopt /* server_time */,
       absl::nullopt /* system_time */,
-      absl::make_optional(
-          CookiePartitionKey::FromURLForTesting(GURL("https://sub.foo.com"))));
+      CookiePartitionKey::FromURLForTesting(GURL("https://sub.foo.com")));
   // Partitioned cookie with a different partition key
   this->CreateAndSetCookie(
       cs, GURL("https://www.example.com"),
       "__Host-c=3; Secure; Path=/; Partitioned",
       CookieOptions::MakeAllInclusive(), absl::nullopt /* server_time */,
       absl::nullopt /* system_time */,
-      absl::make_optional(
-          CookiePartitionKey::FromURLForTesting(GURL("https://www.bar.com"))));
+      CookiePartitionKey::FromURLForTesting(GURL("https://www.bar.com")));
   this->DeliverChangeNotifications();
 
   ASSERT_EQ(2u, cookie_changes.size());
@@ -1817,8 +1815,7 @@ TYPED_TEST_P(CookieStoreChangeUrlTest, PartitionedCookies) {
       "__Host-b=2; Secure; Path=/; Partitioned; Max-Age=7200",
       CookieOptions::MakeAllInclusive(), absl::nullopt /* server_time */,
       absl::nullopt /* system_time */,
-      absl::make_optional(
-          CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com"))));
+      CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com")));
   this->DeliverChangeNotifications();
   ASSERT_EQ(0u, other_cookie_changes.size());
   // Check that the other listener was invoked.
@@ -3067,16 +3064,14 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, PartitionedCookies) {
       "__Host-a=2; Secure; Path=/; Partitioned",
       CookieOptions::MakeAllInclusive(), absl::nullopt /* server_time */,
       absl::nullopt /* system_time */,
-      absl::make_optional(
-          CookiePartitionKey::FromURLForTesting(GURL("https://sub.foo.com"))));
+      CookiePartitionKey::FromURLForTesting(GURL("https://sub.foo.com")));
   // Partitioned cookie with a different partition key
   this->CreateAndSetCookie(
       cs, GURL("https://www.example.com"),
       "__Host-a=3; Secure; Path=/; Partitioned",
       CookieOptions::MakeAllInclusive(), absl::nullopt /* server_time */,
       absl::nullopt /* system_time */,
-      absl::make_optional(
-          CookiePartitionKey::FromURLForTesting(GURL("https://www.bar.com"))));
+      CookiePartitionKey::FromURLForTesting(GURL("https://www.bar.com")));
   this->DeliverChangeNotifications();
 
   ASSERT_EQ(2u, cookie_changes.size());
@@ -3103,8 +3098,7 @@ TYPED_TEST_P(CookieStoreChangeNamedTest, PartitionedCookies) {
       "__Host-a=2; Secure; Path=/; Partitioned; Max-Age=7200",
       CookieOptions::MakeAllInclusive(), absl::nullopt /* server_time */,
       absl::nullopt /* system_time */,
-      absl::make_optional(
-          CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com"))));
+      CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com")));
   this->DeliverChangeNotifications();
   ASSERT_EQ(0u, other_cookie_changes.size());
   // Check that the other listener was invoked.
