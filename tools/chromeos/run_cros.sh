@@ -103,7 +103,7 @@ function start_ash_chrome {
 
   check_chrome_dir "$ASH_CHROME_BUILD_DIR" ash-chrome-build-dir
   if [ $LACROS_ENABLED ]; then
-    check_chrome_dir "$LACROS_BUILD_DIR" lacros-chrome-build-dir
+    check_chrome_dir "$LACROS_BUILD_DIR" lacros-build-dir
   fi
   ensure_user_dir ${USER_DATA_DIR} "ash-chrome"
 
