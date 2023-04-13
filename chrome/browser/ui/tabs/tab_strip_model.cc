@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/user_notes/user_notes_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -806,6 +807,10 @@ bool TabStripModel::IsGroupCollapsed(
 bool TabStripModel::IsTabBlocked(int index) const {
   CHECK(ContainsIndex(index)) << index;
   return contents_data_[index]->blocked();
+}
+
+bool TabStripModel::IsTabClosable(int index) const {
+  return !web_app::IsPinnedHomeTab(this, index) || count() == 1;
 }
 
 absl::optional<tab_groups::TabGroupId> TabStripModel::GetTabGroupForTab(

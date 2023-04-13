@@ -167,12 +167,6 @@ bool CanOpenFile(Browser* browser) {
   return true;
 }
 
-bool IsPinnedHomeTab(Browser* browser) {
-  return web_app::AppBrowserController::IsWebApp(browser) &&
-         web_app::IsPinnedHomeTab(browser->tab_strip_model(),
-                                  browser->tab_strip_model()->active_index());
-}
-
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1408,9 +1402,11 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   bool is_isolated_app = current_web_contents->GetPrimaryMainFrame()
                              ->GetWebExposedIsolationLevel() >=
                          WebExposedIsolationLevel::kMaybeIsolatedApplication;
+  bool is_pinned_home_tab = web_app::IsPinnedHomeTab(
+      browser_->tab_strip_model(), browser_->tab_strip_model()->active_index());
   command_updater_.UpdateCommandEnabled(
       IDC_OPEN_IN_CHROME,
-      IsWebAppOrCustomTab() && !is_isolated_app && !IsPinnedHomeTab(browser_));
+      IsWebAppOrCustomTab() && !is_isolated_app && !is_pinned_home_tab);
 
   command_updater_.UpdateCommandEnabled(
       IDC_TOGGLE_REQUEST_TABLET_SITE,
@@ -1757,8 +1753,8 @@ void BrowserCommandController::UpdateCommandsForWebContentsFocus() {
 
 void BrowserCommandController::UpdateCommandsForTabStripStateChanged() {
   command_updater_.UpdateCommandEnabled(
-      IDC_CLOSE_TAB,
-      !IsPinnedHomeTab(browser_) || browser_->tab_strip_model()->count() == 1);
+      IDC_CLOSE_TAB, browser_->tab_strip_model()->IsTabClosable(
+                         browser_->tab_strip_model()->active_index()));
 }
 
 BrowserWindow* BrowserCommandController::window() {

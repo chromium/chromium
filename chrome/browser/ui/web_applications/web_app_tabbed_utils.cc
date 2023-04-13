@@ -4,17 +4,19 @@
 
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 
+#include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
-bool HasPinnedHomeTab(TabStripModel* tab_strip_model) {
+bool HasPinnedHomeTab(const TabStripModel* tab_strip_model) {
   if (!tab_strip_model->ContainsIndex(0))
     return false;
-  return tab_strip_model->IsTabPinned(0);
+  return tab_strip_model->delegate()->IsForWebApp() &&
+         tab_strip_model->IsTabPinned(0);
 }
 
-bool IsPinnedHomeTab(TabStripModel* tab_strip_model, int index) {
+bool IsPinnedHomeTab(const TabStripModel* tab_strip_model, int index) {
   return HasPinnedHomeTab(tab_strip_model) && index == 0;
 }
 
