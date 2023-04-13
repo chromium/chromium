@@ -395,11 +395,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
 
   // <if expr="_google_chrome">
-  private showGetMostChrome_(visibility?: boolean): boolean {
-    return visibility !== false &&
-        loadTimeData.getBoolean('showGetTheMostOutOfChromeSection');
-  }
-
   private onSendHighEfficiencyFeedbackClick_(e: Event) {
     e.stopPropagation();
     this.performanceBrowserProxy_.openHighEfficiencyFeedbackDialog();

@@ -1005,10 +1005,6 @@ GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)');
 registerTest('MetricsReporting', 'metrics_reporting_tests.js');
 GEN('#endif');
 
-GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)');
-registerTest('GetMostChromePage', 'get_most_chrome_page_test.js');
-GEN('#endif');
-
 function registerTest(testName, module, caseName) {
   const className = `CrSettings${testName}Test`;
   this[className] = class extends CrSettingsBrowserTest {

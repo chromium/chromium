@@ -82,9 +82,6 @@ suite('AdvancedPage', function() {
 
   test('advanced pages', function() {
     const sections = ['a11y', 'languages', 'downloads', 'reset'];
-    // <if expr="_google_chrome">
-    sections.push('getMostChrome');
-    // </if>
     for (let i = 0; i < sections.length; i++) {
       const section = getSection(basicPage, sections[i]!);
       assertTrue(!!section);
