@@ -109,9 +109,6 @@ class PrinterQuery {
   // Returns true if a PrintingContext is still associated to this instance.
   bool is_valid() const;
 
-  // Posts the given task to be run.
-  bool PostTask(const base::Location& from_here, base::OnceClosure task);
-
   // Provide an override for generating worker threads in tests.
   static void SetCreatePrinterQueryCallbackForTest(
       CreatePrinterQueryCallback* callback);

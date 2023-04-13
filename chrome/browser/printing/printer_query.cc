@@ -151,6 +151,8 @@ void PrinterQuery::PostSettingsDone(base::OnceClosure callback,
                                     absl::optional<bool> maybe_is_modifiable,
                                     std::unique_ptr<PrintSettings> new_settings,
                                     mojom::ResultCode result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   // `this` is owned by `callback`, so `base::Unretained()` is safe.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -292,12 +294,6 @@ std::unique_ptr<PrintSettings> PrinterQuery::GetPdfSettings() {
 
   printing_context_->UsePdfSettings();
   return printing_context_->TakeAndResetSettings();
-}
-
-bool PrinterQuery::PostTask(const base::Location& from_here,
-                            base::OnceClosure task) {
-  return content::GetUIThreadTaskRunner({})->PostTask(from_here,
-                                                      std::move(task));
 }
 
 void PrinterQuery::InvokeSettingsCallback(SettingsCallback callback,
