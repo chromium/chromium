@@ -47,6 +47,7 @@
 namespace {
 
 using base::UmaHistogramEnumeration;
+using password_manager::constants::kMaxPasswordNoteLength;
 using password_manager::metrics_util::LogPasswordSettingsReauthResult;
 using password_manager::metrics_util::PasswordCheckInteraction;
 using password_manager::metrics_util::ReauthResult;
@@ -631,8 +632,7 @@ const int kMinNoteCharAmountForWarning = 901;
 
   // Update save button state based on the note's length and validity of other
   // input fields.
-  BOOL noteValid = tableViewItem.text.length <=
-                   password_manager::constants::kMaxPasswordNoteLength;
+  BOOL noteValid = tableViewItem.text.length <= kMaxPasswordNoteLength;
   if (self.isNoteValid != noteValid) {
     self.isNoteValid = noteValid;
     tableViewItem.validText = noteValid;
@@ -640,6 +640,15 @@ const int kMinNoteCharAmountForWarning = 901;
     self.shouldEnableSave =
         noteValid && [self checkIfValidSite] && [self checkIfValidPassword];
     [self toggleNavigationBarRightButtonItem];
+  }
+
+  // Notify that the note character limit has been reached via VoiceOver.
+  if (!noteValid) {
+    NSString* tooLongNoteMessage = l10n_util::GetNSStringF(
+        IDS_IOS_SETTINGS_PASSWORDS_TOO_LONG_NOTE_DESCRIPTION,
+        base::NumberToString16(kMaxPasswordNoteLength));
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                    tooLongNoteMessage);
   }
 
   // Update note footer based on the note's length.

@@ -774,6 +774,15 @@ const int kMinNoteCharAmountForWarning = 901;
   [self toggleNavigationBarRightButtonItem];
   [self reconfigureCellsForItems:@[ tableViewItem ]];
 
+  // Notify that the note character limit has been reached via VoiceOver.
+  if (!noteValid) {
+    NSString* tooLongNoteMessage = l10n_util::GetNSStringF(
+        IDS_IOS_SETTINGS_PASSWORDS_TOO_LONG_NOTE_DESCRIPTION,
+        base::NumberToString16(kMaxPasswordNoteLength));
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                    tooLongNoteMessage);
+  }
+
   BOOL shouldDisplayNoteFooter =
       tableViewItem.text.length >= kMinNoteCharAmountForWarning;
   NSIndexPath* indexPath = [self.tableViewModel
