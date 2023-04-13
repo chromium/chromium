@@ -83,7 +83,8 @@ class ASH_EXPORT AppListModelProvider {
 
   AppListModel* model_ = &default_model_;
   SearchModel* search_model_ = &default_search_model_;
-  QuickAppAccessModel* quick_app_access_model_;
+  QuickAppAccessModel* quick_app_access_model_ =
+      &default_quick_app_access_model_;
 
   base::ObserverList<Observer> observers_;
 };

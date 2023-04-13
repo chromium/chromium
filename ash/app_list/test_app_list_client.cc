@@ -101,6 +101,10 @@ TestAppListClient::CreateLauncherSearchIphSession() {
 
 void TestAppListClient::OpenSearchBoxIphUrl() {}
 
+void TestAppListClient::LoadIcon(int profile_id, const std::string& app_id) {
+  loaded_icon_app_ids_.push_back(app_id);
+}
+
 std::vector<TestAppListClient::SearchResultActionId>
 TestAppListClient::GetAndResetInvokedResultActions() {
   std::vector<SearchResultActionId> result;

@@ -348,7 +348,9 @@ class ASH_EXPORT AppListControllerImpl
   // Set the launchable quick app button shown next to the home button. This app
   // icon is shown next to the home button until the app is launched or the
   // launcher is opened.
-  void SetHomeButtonQuickApp(const std::string& app_id);
+  // Returns true when the quick app was changed to a valid `app_id` or reset
+  // using an empty `app_id`.
+  bool SetHomeButtonQuickApp(const std::string& app_id);
 
  private:
   // Convenience methods for getting models from `model_provider_`.

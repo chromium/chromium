@@ -73,6 +73,10 @@ void AppListItem::SetDefaultIconAndColor(const gfx::ImageSkia& icon,
         observer.ItemIconChanged(config_type);
     }
   }
+
+  for (auto& observer : observers_) {
+    observer.ItemDefaultIconChanged();
+  }
 }
 
 const gfx::ImageSkia& AppListItem::GetDefaultIcon() const {

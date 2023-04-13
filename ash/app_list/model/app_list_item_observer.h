@@ -18,6 +18,9 @@ class APP_LIST_MODEL_EXPORT AppListItemObserver : public base::CheckedObserver {
   // changed.
   virtual void ItemIconChanged(AppListConfigType config_type) {}
 
+  // Invoked after the item's default icon changes.
+  virtual void ItemDefaultIconChanged() {}
+
   // Invoked after item's icon version number is changed.
   virtual void ItemIconVersionChanged() {}
 
