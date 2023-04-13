@@ -357,13 +357,13 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Compositing.Display.HardwareDisplayController.SchedulePageFlipResult"
-    enum="PageFlipResult" expires_after="2023-03-02">
-  <owner>jshargo@chromium.org</owner>
+    enum="PageFlipResult" expires_after="2024-03-02">
   <owner>seanpaul@chromium.org</owner>
   <owner>chromeos-gfx-compositor@chromium.org</owner>
   <summary>
     Logged once per frame, represents whether we could successfully schedule a
-    page flip, or what error we encountered along the way.
+    page flip, or what error we encountered along the way. Note: this metric was
+    expired from 2023-03-02 to 2023-04-13.
   </summary>
 </histogram>
 
@@ -461,10 +461,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Compositing.Display.OverlayProcessorUsingStrategy.NumOverlays{Counted}"
-    units="overlay candidates" expires_after="2022-11-30">
+    units="overlay candidates" expires_after="2023-11-30">
   <owner>khaslett@chromium.org</owner>
   <owner>kylechar@chromium.org</owner>
-  <summary>Logged once per frame, the number of overlays {Counted}</summary>
+  <owner>chromeos-gfx-compositor@chromium.org</owner>
+  <summary>
+    Logged once per frame, the number of overlays {Counted}. Note: this metric
+    was expired from 2022-11-30 to 2023-04-13.
+  </summary>
   <token key="Counted">
     <variant name="Attempted"
         summary="attempted. This is only logged when using the
