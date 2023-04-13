@@ -230,10 +230,6 @@ const std::string& HoldingSpaceKeyedService::AddPhoneHubCameraRollItem(
                        progress);
 }
 
-void HoldingSpaceKeyedService::AddScan(const base::FilePath& file_path) {
-  AddItemOfType(HoldingSpaceItem::Type::kScan, file_path);
-}
-
 void HoldingSpaceKeyedService::SetSuggestions(
     const std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>&
         suggestions) {

@@ -2627,8 +2627,6 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
                                              /*from_incognito_profile=*/false);
         break;
       case HoldingSpaceItem::Type::kScan:
-        holding_space_service->AddScan(file_path);
-        break;
       case HoldingSpaceItem::Type::kScreenRecording:
       case HoldingSpaceItem::Type::kScreenRecordingGif:
       case HoldingSpaceItem::Type::kScreenshot:
