@@ -52,7 +52,8 @@ class CORE_EXPORT CanvasFontCache final
   void WillProcessTask(const base::PendingTask&, bool) override {}
 
   // For testing
-  bool IsInCache(const String&);
+  bool IsInCache(const String&) const;
+  unsigned int GetCacheSize() const;
 
   ~CanvasFontCache() override;
 

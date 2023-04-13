@@ -87,6 +87,12 @@ bool CanvasFontCache::GetFontUsingDefaultStyle(HTMLCanvasElement& element,
 
 MutableCSSPropertyValueSet* CanvasFontCache::ParseFont(
     const String& font_string) {
+  // When the page becomes hidden it should trigger PruneAll(). In case this
+  // did not happen, prune here. See crbug.com/1421699.
+  if (fetched_fonts_.size() > HardMaxFonts()) {
+    PruneAll();
+  }
+
   MutableCSSPropertyValueSet* parsed_style;
   MutableStylePropertyMap::iterator i = fetched_fonts_.find(font_string);
   if (i != fetched_fonts_.end()) {
@@ -118,7 +124,7 @@ MutableCSSPropertyValueSet* CanvasFontCache::ParseFont(
 void CanvasFontCache::DidProcessTask(const base::PendingTask& pending_task) {
   DCHECK(pruning_scheduled_);
   DCHECK(main_cache_purge_preventer_);
-  while (fetched_fonts_.size() > MaxFonts()) {
+  while (fetched_fonts_.size() > std::min(MaxFonts(), HardMaxFonts())) {
     fetched_fonts_.erase(font_lru_list_.back());
     fonts_resolved_using_default_style_.erase(font_lru_list_.back());
     font_lru_list_.pop_back();
@@ -137,8 +143,12 @@ void CanvasFontCache::SchedulePruningIfNeeded() {
   pruning_scheduled_ = true;
 }
 
-bool CanvasFontCache::IsInCache(const String& font_string) {
+bool CanvasFontCache::IsInCache(const String& font_string) const {
   return fetched_fonts_.find(font_string) != fetched_fonts_.end();
+}
+
+unsigned int CanvasFontCache::GetCacheSize() const {
+  return fetched_fonts_.size();
 }
 
 void CanvasFontCache::PruneAll() {
