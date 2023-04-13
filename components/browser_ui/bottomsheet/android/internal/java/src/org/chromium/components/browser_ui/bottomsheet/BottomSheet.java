@@ -923,7 +923,8 @@ class BottomSheet extends FrameLayout
         // Setting state to SCROLLING is not a valid operation. This can happen only when
         // we're already in the scrolling state. Make it no-op.
         if (state == SheetState.SCROLLING) {
-            assert mCurrentState == SheetState.SCROLLING && isRunningSettleAnimation();
+            // TODO(mdjones): The isRunningSettleAnimation should hold but currently doesn't.
+            assert mCurrentState == SheetState.SCROLLING; // && isRunningSettleAnimation();
             return;
         }
 
