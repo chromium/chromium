@@ -63,6 +63,8 @@ import './os_a11y_page/display_and_magnification_page.js';
 import './os_a11y_page/keyboard_and_text_input_page.js';
 import './os_a11y_page/cursor_and_touchpad_page.js';
 import './os_a11y_page/chromevox_subpage.js';
+import './os_a11y_page/bluetooth_braille_display_manager.js';
+import './os_a11y_page/bluetooth_braille_display_ui.js';
 import './os_a11y_page/select_to_speak_subpage.js';
 import './os_a11y_page/switch_access_action_assignment_dialog.js';
 import './os_a11y_page/switch_access_action_assignment_pane.js';
@@ -111,6 +113,8 @@ export {TetherConnectionDialogElement} from './internet_page/tether_connection_d
 export {KeyboardShortcutBanner} from './keyboard_shortcut_banner/keyboard_shortcut_banner.js';
 export {SettingsMultideviceCombinedSetupItemElement} from './multidevice_page/multidevice_combined_setup_item.js';
 export {SettingsAudioAndCaptionsPageElement} from './os_a11y_page/audio_and_captions_page.js';
+export {BluetoothBrailleDisplayListener, BluetoothBrailleDisplayManager} from './os_a11y_page/bluetooth_braille_display_manager.js';
+export {BluetoothBrailleDisplayUiElement} from './os_a11y_page/bluetooth_braille_display_ui.js';
 export {SettingsCursorAndTouchpadPageElement} from './os_a11y_page/cursor_and_touchpad_page.js';
 export {SettingsKeyboardAndTextInputPageElement} from './os_a11y_page/keyboard_and_text_input_page.js';
 export {SettingsManageA11yPageElement} from './os_a11y_page/manage_a11y_page.js';

@@ -1207,6 +1207,24 @@
   <message name="IDS_SETTINGS_CHROMEVOX_MENU_BRAILLE_COMMANDS" desc="In the ChromeVox settings subpage, the label for the toggle that enables displaying Perkins Brailler commands in the ChromeVox menus.">
     Show braille commands in the ChromeVox menus
   </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_BLUETOOTH_BRAILLE_DISPLAY_CONNECT" desc="Labels a button which when pressed, connects to a selected bluetooth braille display.">
+    Connect
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_BLUETOOTH_BRAILLE_DISPLAY_DISCONNECT" desc="Labels a button which when pressed, disconnects from a selected bluetooth braille display.">
+    Disconnect
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_BLUETOOTH_BRAILLE_DISPLAY_CONNECTING" desc="Labels a button which is disabled and indicates the system is connecting to a bluetooth braille display.">
+    Connecting
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_BLUETOOTH_BRAILLE_DISPLAY_FORGET" desc="Labels a button which when pressed, forgets the selected bluetooth braille display.">
+    Forget
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_BLUETOOTH_BRAILLE_DISPLAY_PINCODE_LABEL" desc="Labels a text field which prompts the user for a pincode when pairing a bluetooth braille display.">
+    Please enter a pin
+  </message>
+  <message name="IDS_SETTINGS_CHROMEVOX_BLUETOOTH_BRAILLE_DISPLAY_SELECT_LABEL" desc="Labels a select control which lists all bluetooth braille displays.">
+    Select a bluetooth braille display
+  </message>
   <message name="IDS_SETTINGS_CHROMEVOX_VIRTUAL_BRAILLE_DISPLAY" desc="In the ChromeVox settings subpage, a section header for options about the ChromeVox virtual braille display. This section lets users change the rows, columns, and display style of the virtual braille display.">
     Virtual Braille Display
   </message>

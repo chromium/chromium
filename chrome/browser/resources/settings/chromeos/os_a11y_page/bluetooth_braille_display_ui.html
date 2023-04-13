@@ -1,0 +1,57 @@
+<style include="settings-shared">
+  settings-dropdown-menu {
+    --md-select-width: 100%;
+  }
+
+  .container {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+    margin-inline-end: var(--cr-section-padding);
+    min-height: var(--cr-section-min-height);
+  }
+
+  .controls {
+    align-items: center;
+    display: flex;
+    flex: 1;
+  }
+
+  .menu {
+    flex: 1;
+  }
+
+  .menu,
+  .button {
+    margin-inline-start: 16px;
+  }
+
+</style>
+
+<div class="container">
+  <span class="label">$i18n{chromeVoxBluetoothBrailleDisplaySelectLabel}</span>
+  <template is="dom-if" if="[[inPinMode_]]">
+    <div class="container">
+      $i18n{chromeVoxBluetoothBrailleDisplayPincodeLabel}
+      <cr-input type="text" on-change="onPincodeChanged_"></cr-input>
+    </div>
+  </template>
+  <template is="dom-if" if="[[!inPinMode_]]">
+    <div id="controls" class="controls">
+      <settings-dropdown-menu
+          id="displaySelect"
+          class="menu"
+          label="$i18n{chromeVoxBluetoothBrailleDisplaySelectLabel}"
+          pref="{{brailleDisplayAddressPref_}}"
+          menu-options="[[brailleDisplayMenuOptions_]]">
+      </settings-dropdown-menu>
+      <cr-button id="connectOrDisconnect" class="button">
+        $i18n{chromeVoxBluetoothBrailleDisplayConnect}
+      </cr-button>
+      <cr-button id="forget" class="button">
+        $i18n{chromeVoxBluetoothBrailleDisplayForget}
+      </cr-button>
+    </div>
+  </template>
+</div>

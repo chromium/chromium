@@ -4,7 +4,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<style include="settings-shared">
+<style include="settings-shared md-select">
   :host {
     --cr-section-indent-width: 60px;
   }
@@ -194,6 +194,7 @@ found in the LICENSE file.
       pref="{{prefs.settings.a11y.chromevox.menu_braille_commands}}"
       label="$i18n{chromeVoxMenuBrailleCommands}">
   </settings-toggle-button>
+  <bluetooth-braille-display-ui></bluetooth-braille-display-ui>
   <div class="text-row">
     <div>$i18n{chromeVoxVirtualBrailleDisplay}</div>
     <div class="secondary">$i18n{chromeVoxVirtualBrailleDisplayDetails}</div>
