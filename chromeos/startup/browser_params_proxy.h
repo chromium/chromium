@@ -128,6 +128,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
   const crosapi::mojom::StandaloneBrowserAppServiceBlockList*
   StandaloneBrowserAppServiceBlockList() const;
 
+  bool EnableCpuMappableNativeGpuMemoryBuffers() const;
+
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
 

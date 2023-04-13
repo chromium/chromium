@@ -154,6 +154,7 @@
 #include "services/device/public/mojom/hid.mojom.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
+#include "ui/gfx/switches.h"
 
 using MojoOptionalBool = crosapi::mojom::DeviceSettings::OptionalBool;
 
@@ -603,6 +604,10 @@ void InjectBrowserInitParams(
 
   params->standalone_browser_app_service_blocklist =
       extensions::BuildStandaloneBrowserAppServiceBlockListInitParam();
+
+  params->enable_cpu_mappable_native_gpu_memory_buffers =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableNativeGpuMemoryBuffers);
 }
 
 template <typename BrowserParams>
