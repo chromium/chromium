@@ -371,6 +371,7 @@ src/webgpu/shader/execution/expression/call/builtin/atomicOr.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/atomicStore.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/atomicSub.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/atomicXor.spec.ts
+src/webgpu/shader/execution/expression/call/builtin/bitcast.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/ceil.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/clamp.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/cos.spec.ts
