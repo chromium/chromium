@@ -287,7 +287,7 @@ void URLRequestTestJob::ProcessNextOperation() {
       stage_ = DATA_AVAILABLE;
       // OK if ReadRawData wasn't called yet.
       if (async_buf_) {
-        int result = CopyDataForRead(async_buf_, async_buf_size_);
+        int result = CopyDataForRead(async_buf_.get(), async_buf_size_);
         if (result < 0)
           NOTREACHED() << "Reads should not fail in DATA_AVAILABLE.";
         if (NextReadAsync()) {

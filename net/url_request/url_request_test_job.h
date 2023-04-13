@@ -173,7 +173,7 @@ class URLRequestTestJob : public URLRequestJob {
   int offset_ = 0;
 
   // Holds the buffer for an asynchronous ReadRawData call
-  raw_ptr<IOBuffer> async_buf_ = nullptr;
+  scoped_refptr<IOBuffer> async_buf_;
   int async_buf_size_ = 0;
 
   LoadTimingInfo load_timing_info_;
