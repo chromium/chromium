@@ -489,6 +489,10 @@
                   '|third_party/blink/web_tests/http/tests/csspaint/' \
                   '|third_party/blink/web_tests/externla/wpt/css/css-paint-api/'
     },
+    'blink_peerconnection': {
+      'filepath': 'third_party/blink/renderer/modules/peerconnection/' \
+                  '|third_party/blink/renderer/platform/peerconnection/',
+    },
     'blink_permissions': {
       'filepath': 'third_party/blink/renderer/modules/permissions/' \
                   '|third_party/blink/public/mojom/permissions/',
@@ -2447,6 +2451,7 @@
     'blink_out_of_process_frames': ['dcheng@chromium.org'],
     'blink_paint' : ['blink-reviews-paint@chromium.org'],
     'blink_paintworklet' : ['xidachen@chromium.org'],
+    'blink_peerconnection' : ['video-networking+chromium-reviews@google.com'],
     'blink_permissions': ['permissions-reviews@chromium.org'],
     'blink_platform': ['kinuko+watch@chromium.org'],
     'blink_platform_graphics': ['blink-reviews-platform-graphics@chromium.org',
