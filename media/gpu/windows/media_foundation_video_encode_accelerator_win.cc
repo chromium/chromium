@@ -255,7 +255,7 @@ bool IsCodecSupportedForEncoding(VideoCodec codec, bool* svc_supported) {
 
   *svc_supported = false;
   for (UINT32 i = 0; i < encoder_count; i++) {
-    if (!svc_supported && IsSvcSupported(activates[i], codec)) {
+    if (!*svc_supported && IsSvcSupported(activates[i], codec)) {
       *svc_supported = true;
     }
     activates[i]->Release();
