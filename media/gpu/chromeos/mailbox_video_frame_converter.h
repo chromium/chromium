@@ -13,7 +13,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/service/shared_image_stub.h"
-#include "media/gpu/chromeos/video_frame_converter.h"
+#include "media/base/video_frame.h"
 #include "media/gpu/media_gpu_export.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
@@ -34,14 +34,13 @@ struct GpuFenceHandle;
 
 namespace media {
 
-class VideoFrame;
-
 // This class is used for converting GpuMemoryBuffer-backed VideoFrames to
 // gpu::Mailbox-backed VideoFrames. See ConvertFrame() for more details. After
 // conversion, the gpu::Mailbox-backed VideoFrame will retain a reference of the
 // VideoFrame passed to ConvertFrame().
-class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
+class MEDIA_GPU_EXPORT MailboxVideoFrameConverter {
  public:
+  using OutputCB = base::RepeatingCallback<void(scoped_refptr<VideoFrame>)>;
   using UnwrapFrameCB =
       base::RepeatingCallback<VideoFrame*(const VideoFrame& wrapped_frame)>;
   using GetCommandBufferStubCB =
@@ -81,7 +80,7 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
   // |enable_unsafe_webgpu| hints whether to request the creation of
   // SharedImages with SHARED_IMAGE_USAGE_WEBGPU. Returns nullptr if the
   // MailboxVideoFrameConverter can't be created.
-  static std::unique_ptr<VideoFrameConverter> Create(
+  static std::unique_ptr<MailboxVideoFrameConverter> Create(
       UnwrapFrameCB unwrap_frame_cb,
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
       GetCommandBufferStubCB get_stub_cb,
@@ -91,17 +90,24 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
   MailboxVideoFrameConverter& operator=(const MailboxVideoFrameConverter&) =
       delete;
 
+  // Initializes the converter. This method must be called before any
+  // ConvertFrame() is called.
+  void Initialize(scoped_refptr<base::SequencedTaskRunner> parent_task_runner,
+                  OutputCB output_cb);
+
   // Enqueues |frame| to be converted to a gpu::Mailbox-backed VideoFrame. If
-  // the |unwrap_frame_cb| supplied in Create() is non-null, |frame| must wrap a
-  // GpuMemoryBuffer-backed VideoFrame that is retrieved via that callback.
+  // the |unwrap_frame_cb| supplied in Create() is non-null, |frame| must wrap
+  // a GpuMemoryBuffer-backed VideoFrame that is retrieved via that callback.
   // Otherwise, |frame| will be used directly and must be a
-  // GpuMemoryBuffer-backed VideoFrame. The generated gpu::Mailbox is kept alive
-  // until the GpuMemoryBuffer-backed VideoFrame is destroyed.
-  void ConvertFrame(scoped_refptr<VideoFrame> frame) override;
-  void AbortPendingFrames() override;
-  bool HasPendingFrames() const override;
+  // GpuMemoryBuffer-backed VideoFrame. The generated gpu::Mailbox is kept
+  // alive until the GpuMemoryBuffer-backed VideoFrame is destroyed. These
+  // methods must be called on |parent_task_runner_|
+  void ConvertFrame(scoped_refptr<VideoFrame> frame);
+  void AbortPendingFrames();
+  bool HasPendingFrames() const;
 
  private:
+  friend struct std::default_delete<MailboxVideoFrameConverter>;
   friend class MailboxVideoFrameConverterTest;
   friend class MailboxVideoFrameConverterWithUnwrappedFramesTest;
 
@@ -117,8 +123,9 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
       std::unique_ptr<GpuDelegate> gpu_delegate,
       bool enable_unsafe_webgpu);
   // Destructor runs on the GPU main thread.
-  ~MailboxVideoFrameConverter() override;
-  void Destroy() override;
+  ~MailboxVideoFrameConverter();
+
+  void Destroy();
   void DestroyOnGPUThread();
 
   // TODO(crbug.com/998279): replace s/OnGPUThread/OnGPUTaskRunner/.
@@ -206,6 +213,13 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
 
   const bool enable_unsafe_webgpu_;
 
+  // The working task runner.
+  scoped_refptr<base::SequencedTaskRunner> parent_task_runner_;
+
+  // The callback to return converted frames back to client. This callback will
+  // be called on |parent_task_runner_|.
+  OutputCB output_cb_;
+
   // The weak pointer of this, bound to |parent_task_runner_|.
   // Used at the VideoFrame destruction callback.
   base::WeakPtr<MailboxVideoFrameConverter> parent_weak_this_;
@@ -218,4 +232,15 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
 };
 
 }  // namespace media
+
+namespace std {
+
+// Specialize std::default_delete to call Destroy().
+template <>
+struct MEDIA_GPU_EXPORT default_delete<media::MailboxVideoFrameConverter> {
+  void operator()(media::MailboxVideoFrameConverter* ptr) const;
+};
+
+}  // namespace std
+
 #endif  // MEDIA_GPU_CHROMEOS_MAILBOX_VIDEO_FRAME_CONVERTER_H_

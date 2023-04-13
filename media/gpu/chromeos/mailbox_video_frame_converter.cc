@@ -16,7 +16,6 @@
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "media/base/format_utils.h"
-#include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
@@ -172,7 +171,7 @@ class MailboxVideoFrameConverter::ScopedSharedImage {
 };
 
 // static
-std::unique_ptr<VideoFrameConverter> MailboxVideoFrameConverter::Create(
+std::unique_ptr<MailboxVideoFrameConverter> MailboxVideoFrameConverter::Create(
     UnwrapFrameCB unwrap_frame_cb,
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     GetCommandBufferStubCB get_stub_cb,
@@ -192,7 +191,7 @@ std::unique_ptr<VideoFrameConverter> MailboxVideoFrameConverter::Create(
   auto gpu_delegate = std::make_unique<GpuDelegateImpl>(
       gpu_task_runner, std::move(get_gpu_channel_cb));
 
-  return base::WrapUnique<VideoFrameConverter>(new MailboxVideoFrameConverter(
+  return base::WrapUnique(new MailboxVideoFrameConverter(
       std::move(unwrap_frame_cb), std::move(gpu_task_runner),
       std::move(gpu_delegate), enable_unsafe_webgpu));
 }
@@ -210,6 +209,13 @@ MailboxVideoFrameConverter::MailboxVideoFrameConverter(
 
   parent_weak_this_ = parent_weak_this_factory_.GetWeakPtr();
   gpu_weak_this_ = gpu_weak_this_factory_.GetWeakPtr();
+}
+
+void MailboxVideoFrameConverter::Initialize(
+    scoped_refptr<base::SequencedTaskRunner> parent_task_runner,
+    OutputCB output_cb) {
+  parent_task_runner_ = std::move(parent_task_runner);
+  output_cb_ = std::move(output_cb);
 }
 
 void MailboxVideoFrameConverter::Destroy() {
@@ -571,3 +577,12 @@ void MailboxVideoFrameConverter::OnError(const base::Location& location,
 }
 
 }  // namespace media
+
+namespace std {
+
+void default_delete<media::MailboxVideoFrameConverter>::operator()(
+    media::MailboxVideoFrameConverter* ptr) const {
+  ptr->Destroy();
+}
+
+}  // namespace std
