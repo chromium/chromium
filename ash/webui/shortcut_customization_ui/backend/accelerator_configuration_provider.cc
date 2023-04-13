@@ -441,58 +441,13 @@ void AcceleratorConfigurationProvider::AddAccelerator(
     return;
   }
 
-  // Check if `accelerator` conflicts with non-configurable accelerators.
-  // This includes: browser, accessbility, and ambient accelerators.
-  const uint32_t* non_configurable_conflict_id =
-      non_configurable_accelerator_to_id_.Find(accelerator);
-  // If there was a conflict with a non-configurable accelerator
-  if (non_configurable_conflict_id) {
-    pending_accelerator_.reset();
-    result_data->result = AcceleratorConfigResult::kConflict;
-    // Get the shortcut name and add it to the return struct.
-    result_data->shortcut_name = l10n_util::GetStringUTF16(
-        accelerator_layout_lookup_[GetUuid(mojom::AcceleratorSource::kAmbient,
-                                           *non_configurable_conflict_id)]
-            .description_string_id);
-    std::move(callback).Run(std::move(result_data));
+  absl::optional<AcceleratorResultDataPtr> result_data_ptr =
+      PreprocessAddAccelerator(source, action_id, accelerator);
+  // Check if there was an error during processing the accelerator, if so return
+  // early with the error.
+  if (result_data_ptr.has_value()) {
+    std::move(callback).Run(std::move(*result_data_ptr));
     return;
-  }
-
-  // Check if the accelerator conflicts with an existing ash accelerator.
-  const AcceleratorAction* found_ash_action =
-      ash_accelerator_configuration_->FindAcceleratorAction(accelerator);
-  if (found_ash_action &&
-      !ash_accelerator_configuration_->IsDeprecated(accelerator)) {
-    // Accelerator already exists, check if it belongs to a locked action.
-    const auto& layout_iter = accelerator_layout_lookup_.find(
-        GetUuid(mojom::AcceleratorSource::kAsh, *found_ash_action));
-    CHECK(layout_iter != accelerator_layout_lookup_.end());
-    const AcceleratorLayoutDetails& layout_details = layout_iter->second;
-    const std::u16string& shortcut_name =
-        l10n_util::GetStringUTF16(layout_details.description_string_id);
-    if (layout_details.locked) {
-      pending_accelerator_.reset();
-      result_data->result = AcceleratorConfigResult::kActionLocked;
-      result_data->shortcut_name = shortcut_name;
-      std::move(callback).Run(std::move(result_data));
-      return;
-    }
-
-    // If not locked, then check if the user has already pressed the accelerator
-    // for this action. If not, store it and return the error. If this is a
-    // different accelerator then store it.
-    if (!pending_accelerator_ || pending_accelerator_->action != action_id ||
-        pending_accelerator_->source != source ||
-        pending_accelerator_->accelerator != accelerator) {
-      result_data->result =
-          mojom::AcceleratorConfigResult::kConflictCanOverride;
-      pending_accelerator_.reset();
-      pending_accelerator_ =
-          std::make_unique<PendingAccelerator>(accelerator, source, action_id);
-      result_data->shortcut_name = shortcut_name;
-      std::move(callback).Run(std::move(result_data));
-      return;
-    }
   }
 
   // Continue with adding the accelerator.
@@ -522,6 +477,51 @@ void AcceleratorConfigurationProvider::RemoveAccelerator(
   AcceleratorConfigResult result =
       ash_accelerator_configuration_->RemoveAccelerator(action_id, accelerator);
   result_data->result = result;
+  std::move(callback).Run(std::move(result_data));
+}
+
+void AcceleratorConfigurationProvider::ReplaceAccelerator(
+    mojom::AcceleratorSource source,
+    uint32_t action_id,
+    const ui::Accelerator& old_accelerator,
+    const ui::Accelerator& new_accelerator,
+    ReplaceAcceleratorCallback callback) {
+  CHECK(::features::IsShortcutCustomizationEnabled());
+
+  AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
+
+  absl::optional<AcceleratorConfigResult> validated_source_action_result =
+      ValidateSourceAndAction(source, action_id,
+                              ash_accelerator_configuration_);
+
+  if (validated_source_action_result.has_value()) {
+    result_data->result = *validated_source_action_result;
+    std::move(callback).Run(std::move(result_data));
+    return;
+  }
+
+  // Verify old accelerator exists.
+  const AcceleratorAction* old_accelerator_id =
+      ash_accelerator_configuration_->FindAcceleratorAction(old_accelerator);
+  if (!old_accelerator_id || *old_accelerator_id != action_id) {
+    result_data->result = AcceleratorConfigResult::kNotFound;
+    std::move(callback).Run(std::move(result_data));
+    return;
+  }
+
+  // Check if there was an error during processing the accelerator, if so return
+  // early with the error.
+  absl::optional<AcceleratorResultDataPtr> result_data_ptr =
+      PreprocessAddAccelerator(source, action_id, new_accelerator);
+  if (result_data_ptr.has_value()) {
+    std::move(callback).Run(std::move(*result_data_ptr));
+    return;
+  }
+
+  // Continue with replacing the accelerator.
+  pending_accelerator_.reset();
+  result_data->result = ash_accelerator_configuration_->ReplaceAccelerator(
+      action_id, old_accelerator, new_accelerator);
   std::move(callback).Run(std::move(result_data));
 }
 
@@ -637,6 +637,66 @@ void AcceleratorConfigurationProvider::CreateAndAppendAliasedAccelerators(
     output.push_back(CreateStandardAcceleratorInfo(
         accelerator_alias, locked, GetAcceleratorType(accelerator), state));
   }
+}
+
+absl::optional<AcceleratorResultDataPtr>
+AcceleratorConfigurationProvider::PreprocessAddAccelerator(
+    mojom::AcceleratorSource source,
+    AcceleratorActionId action_id,
+    const ui::Accelerator& accelerator) {
+  AcceleratorResultDataPtr result_data = AcceleratorResultData::New();
+
+  // Check if `accelerator` conflicts with non-configurable accelerators.
+  // This includes: browser, accessbility, and ambient accelerators.
+  const uint32_t* non_configurable_conflict_id =
+      non_configurable_accelerator_to_id_.Find(accelerator);
+  // If there was a conflict with a non-configurable accelerator
+  if (non_configurable_conflict_id) {
+    pending_accelerator_.reset();
+    result_data->result = AcceleratorConfigResult::kConflict;
+    // Get the shortcut name and add it to the return struct.
+    result_data->shortcut_name = l10n_util::GetStringUTF16(
+        accelerator_layout_lookup_[GetUuid(mojom::AcceleratorSource::kAmbient,
+                                           *non_configurable_conflict_id)]
+            .description_string_id);
+    return result_data;
+  }
+
+  // Check if the accelerator conflicts with an existing ash accelerator.
+  const AcceleratorAction* found_ash_action =
+      ash_accelerator_configuration_->FindAcceleratorAction(accelerator);
+  if (found_ash_action &&
+      !ash_accelerator_configuration_->IsDeprecated(accelerator)) {
+    // Accelerator already exists, check if it belongs to a locked action.
+    const auto& layout_iter = accelerator_layout_lookup_.find(
+        GetUuid(mojom::AcceleratorSource::kAsh, *found_ash_action));
+    CHECK(layout_iter != accelerator_layout_lookup_.end());
+    const AcceleratorLayoutDetails& layout_details = layout_iter->second;
+    const std::u16string& shortcut_name =
+        l10n_util::GetStringUTF16(layout_details.description_string_id);
+    if (layout_details.locked) {
+      pending_accelerator_.reset();
+      result_data->result = AcceleratorConfigResult::kActionLocked;
+      result_data->shortcut_name = shortcut_name;
+      return result_data;
+    }
+
+    // If not locked, then check if the user has already pressed the accelerator
+    // for this action. If not, store it and return the error. If this is a
+    // different accelerator then store it.
+    if (!pending_accelerator_ || pending_accelerator_->action != action_id ||
+        pending_accelerator_->source != source ||
+        pending_accelerator_->accelerator != accelerator) {
+      result_data->result =
+          mojom::AcceleratorConfigResult::kConflictCanOverride;
+      pending_accelerator_.reset();
+      pending_accelerator_ =
+          std::make_unique<PendingAccelerator>(accelerator, source, action_id);
+      result_data->shortcut_name = shortcut_name;
+      return result_data;
+    }
+  }
+  return absl::nullopt;
 }
 
 void AcceleratorConfigurationProvider::SetLayoutDetailsMapForTesting(

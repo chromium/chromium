@@ -85,6 +85,11 @@ class AcceleratorConfigurationProvider
                          uint32_t action_id,
                          const ui::Accelerator& accelerator,
                          RemoveAcceleratorCallback callback) override;
+  void ReplaceAccelerator(mojom::AcceleratorSource source,
+                          uint32_t action_id,
+                          const ui::Accelerator& old_accelerator,
+                          const ui::Accelerator& new_accelerator,
+                          ReplaceAcceleratorCallback callback) override;
   void RestoreDefault(mojom::AcceleratorSource source,
                       uint32_t action_id,
                       RestoreDefaultCallback callback) override;
@@ -163,6 +168,13 @@ class AcceleratorConfigurationProvider
       mojom::AcceleratorType type,
       mojom::AcceleratorState state,
       std::vector<mojom::AcceleratorInfoPtr>& output);
+
+  // Returns a non-null value if there was an error with pre-processing the
+  // accelerator to be added.
+  absl::optional<shortcut_customization::mojom::AcceleratorResultDataPtr>
+  PreprocessAddAccelerator(mojom::AcceleratorSource source,
+                           AcceleratorActionId action_id,
+                           const ui::Accelerator& accelerator);
 
   void SetLayoutDetailsMapForTesting(
       const std::vector<AcceleratorLayoutDetails>& layouts);

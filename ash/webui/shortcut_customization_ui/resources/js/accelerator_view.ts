@@ -414,9 +414,9 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
           .replaceAccelerator(
               this.source, this.action, (getAccelerator(this.acceleratorInfo)),
               (getAccelerator(newAcceleratorInfo)))
-          .then((result: AcceleratorConfigResult) => {
+          .then(({result}) => {
             // TODO(jimmyxgong): Handle other error cases.
-            if (result === AcceleratorConfigResult.kSuccess) {
+            if (result.result === AcceleratorConfigResult.kSuccess) {
               this.lookupManager.replaceAccelerator(
                   this.source, this.action,
                   this.acceleratorInfo.layoutProperties.standardAccelerator

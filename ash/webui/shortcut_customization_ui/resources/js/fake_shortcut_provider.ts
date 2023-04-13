@@ -106,10 +106,14 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     return this.methods.resolveMethod('addAccelerator');
   }
 
-  replaceAccelerator(): Promise<AcceleratorConfigResult> {
+  replaceAccelerator(
+      _source: AcceleratorSource, _actionId: number,
+      _old_accelerator: Accelerator,
+      _new_accelerator: Accelerator): Promise<{result: AcceleratorResultData}> {
     // Always return kSuccess in this fake.
-    this.methods.setResult(
-        'replaceAccelerator', AcceleratorConfigResult.kSuccess);
+    const result = new AcceleratorResultData();
+    result.result = AcceleratorConfigResult.kSuccess;
+    this.methods.setResult('replaceAccelerator', {result});
     return this.methods.resolveMethod('replaceAccelerator');
   }
 

@@ -113,9 +113,13 @@ suite('fakeShortcutProviderTest', function() {
 
   test('ReplaceAcceleratorFake', () => {
     // TODO(jimmyxgong): Remove this test once real data is ready.
-    return getProvider().replaceAccelerator().then((result) => {
-      assertEquals(AcceleratorConfigResult.kSuccess, result);
-    });
+    return getProvider()
+        .replaceAccelerator(
+            AcceleratorSource.kAsh, /*action_id=*/ 0, {} as Accelerator,
+            {} as Accelerator)
+        .then(({result}) => {
+          assertEquals(AcceleratorConfigResult.kSuccess, result.result);
+        });
   });
 
   test('RemoveAcceleratorFake', () => {
