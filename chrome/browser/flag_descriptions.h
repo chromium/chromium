@@ -772,9 +772,6 @@ extern const char kEnableWebAuthenticationChromeOSAuthenticatorDescription[];
 extern const char kEnableZeroCopyTabCaptureName[];
 extern const char kEnableZeroCopyTabCaptureDescription[];
 
-extern const char kEnableRegionCaptureExperimentalSubtypesName[];
-extern const char kEnableRegionCaptureExperimentalSubtypesDescription[];
-
 extern const char kExperimentalWebAssemblyFeaturesName[];
 extern const char kExperimentalWebAssemblyFeaturesDescription[];
 

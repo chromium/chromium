@@ -582,10 +582,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 // a commit failure (see crbug.com/1257607).
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReportFCPOnlyOnSuccessfulCommit);
 
-// If enabled, the `CropTarget.fromElement()` method will allow for the use
-// of additional element tag tyeps, instead of just <div> and <iframe>.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRegionCaptureExperimentalSubtypes);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kRegisterJSSourceLocationBlockingBFCache);
 

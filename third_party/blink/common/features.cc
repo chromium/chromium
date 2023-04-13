@@ -1263,11 +1263,6 @@ BASE_FEATURE(kReportFCPOnlyOnSuccessfulCommit,
              "ReportFCPOnlyOnSuccessfulCommit",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// TODO(crbug.com/1382005): Deprecate this flag.
-BASE_FEATURE(kRegionCaptureExperimentalSubtypes,
-             "RegionCaptureExperimentalSubtypes",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, Source Location blocking BFCache is captured
 // to send it to the browser.
 BASE_FEATURE(kRegisterJSSourceLocationBlockingBFCache,

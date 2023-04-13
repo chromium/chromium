@@ -61,8 +61,6 @@ class CORE_EXPORT HTMLIFrameElement : public HTMLFrameElementBase,
 
   bool Credentialless() const override { return credentialless_; }
 
-  bool IsSupportedByRegionCapture() const override { return true; }
-
  private:
   void SetCollapsed(bool) override;
 

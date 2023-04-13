@@ -253,10 +253,7 @@ struct TabInfo {
 // detection of JS errors.
 class RegionCaptureBrowserTest : public WebRtcTestBase {
  public:
-  RegionCaptureBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kRegionCaptureExperimentalSubtypes);
-  }
+  RegionCaptureBrowserTest() = default;
   ~RegionCaptureBrowserTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
