@@ -133,8 +133,9 @@ struct MemberHashRecordReplayRegisteredPointerId
   static bool Equal(const U& a, const V& b) {
     return a == b;
   }
-};
 
+  static constexpr bool kIsRecordReplayDeterministicHash = true;
+};
 
 // Replay's hashing function with Member<>-wrapped objects, using the function
 // RecordReplayId for the hashing key.
@@ -195,6 +196,8 @@ struct MemberHashRecordReplayId
   static bool Equal(const U& a, const V& b) {
     return a == b;
   }
+
+  static constexpr bool kIsRecordReplayDeterministicHash = true;
 };
 
 template <typename T>
@@ -329,6 +332,12 @@ class ConstructTraits<blink::Member<T>, Traits, Allocator> final
 template <typename T, typename Traits, typename Allocator>
 class ConstructTraits<blink::WeakMember<T>, Traits, Allocator> final
     : public MemberConstructTraits<blink::WeakMember<T>> {};
+
+template <typename T>
+struct IsPointerType<blink::WeakMember<T>> : std::true_type {};
+
+template <typename T>
+struct IsPointerType<blink::Member<T>> : std::true_type {};
 
 }  // namespace WTF
 
