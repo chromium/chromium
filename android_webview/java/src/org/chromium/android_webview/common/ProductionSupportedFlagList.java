@@ -326,6 +326,8 @@ public final class ProductionSupportedFlagList {
                             + "instances of the image are outside of the "
                             + "viewport."),
             Flag.baseFeature(BlinkFeatures.SVG_RASTER_OPTIMIZATIONS),
+            Flag.baseFeature(BlinkFeatures.DELAY_OUT_OF_VIEWPORT_LAZY_IMAGES,
+                    "Delays out-of-viewport lazy loaded images."),
             Flag.baseFeature(BlinkFeatures.SEND_MOUSE_EVENTS_DISABLED_FORM_CONTROLS,
                     "This changes event propagation for disabled form controls."),
             Flag.baseFeature(ContentFeatures.SURFACE_SYNC_FULLSCREEN_KILLSWITCH,
