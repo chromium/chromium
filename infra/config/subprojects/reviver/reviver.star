@@ -55,6 +55,7 @@ polymorphic.launcher(
         "ci/android-nougat-x86-rel",
         "ci/android-pie-x86-rel",
         "ci/android-12-x64-rel",
+        "ci/android-12l-x64-dbg-tests",
     ],
 )
 
