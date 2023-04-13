@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
+#include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/stream_texture_shared_image_interface.h"
 #include "gpu/command_buffer/service/texture_owner.h"
@@ -35,7 +36,8 @@ struct Mailbox;
 // This class is thread safe to be used by multiple gpu threads as
 // |texture_owner_| is thread safe and all other members are only accessed on
 // gpu main thread.
-class StreamTexture : public StreamTextureSharedImageInterface,
+class StreamTexture : public RefCountedLockHelperDrDc,
+                      public StreamTextureSharedImageInterface,
                       public mojom::StreamTexture {
  public:
   static scoped_refptr<StreamTexture> Create(
