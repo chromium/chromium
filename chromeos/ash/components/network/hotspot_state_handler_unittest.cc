@@ -107,6 +107,17 @@ TEST_F(HotspotStateHandlerTest, GetHotspotState) {
   EXPECT_EQ(hotspot_state_handler_->GetHotspotState(),
             hotspot_config::mojom::HotspotState::kEnabling);
   EXPECT_EQ(3u, observer_.hotspot_status_changed_count());
+
+  // Simulate user stopping tethering.
+  status_dict.Set(shill::kTetheringStatusStateProperty,
+                  shill::kTetheringStateStopping);
+  network_state_test_helper_.manager_test()->SetManagerProperty(
+      shill::kTetheringStatusProperty, base::Value(status_dict.Clone()));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(hotspot_state_handler_->GetHotspotState(),
+            hotspot_config::mojom::HotspotState::kDisabling);
+  EXPECT_EQ(4u, observer_.hotspot_status_changed_count());
 }
 
 TEST_F(HotspotStateHandlerTest, GetHotspotActiveClientCount) {

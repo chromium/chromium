@@ -89,6 +89,10 @@ hotspot_config::mojom::HotspotState ShillTetheringStateToMojomState(
     return HotspotState::kEnabling;
   }
 
+  if (shill_state == shill::kTetheringStateStopping) {
+    return HotspotState::kDisabling;
+  }
+
   NOTREACHED() << "Unexpected shill tethering state: " << shill_state;
   return HotspotState::kDisabled;
 }
