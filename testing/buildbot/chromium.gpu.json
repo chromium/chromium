@@ -2093,9 +2093,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2122,9 +2122,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2148,9 +2148,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2188,9 +2188,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2226,9 +2226,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2264,9 +2264,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2287,7 +2287,7 @@
           "--expected-vendor-id",
           "1002",
           "--expected-device-id",
-          "6821"
+          "67ef"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -2306,9 +2306,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2353,9 +2353,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2400,9 +2400,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2439,9 +2439,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2477,9 +2477,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2517,9 +2517,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2544,9 +2544,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2574,9 +2574,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2602,9 +2602,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2628,9 +2628,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2668,9 +2668,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2706,9 +2706,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2744,9 +2744,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2767,7 +2767,7 @@
           "--expected-vendor-id",
           "1002",
           "--expected-device-id",
-          "6821"
+          "67ef"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -2786,9 +2786,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2833,9 +2833,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2880,9 +2880,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2920,9 +2920,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2958,9 +2958,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -2998,9 +2998,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],

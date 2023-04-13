@@ -4171,11 +4171,7 @@
       # upstream test coverage without the capacity hit from WebGL 2.
       'Linux V8 FYI Release (NVIDIA)',
       'Linux V8 FYI Release - pointer compression (NVIDIA)',
-      # Not enough capacity on Mac AMD https://crbug.com/1375306.
-      'Mac FYI Retina ASAN (AMD)',
-      'Mac FYI Retina Release (AMD)',
       'Mac V8 FYI Release (Intel)',
-      'mac-angle-chromium-amd',
     ],
   },
   'webgl2_conformance_gles_passthrough_tests': {
@@ -4231,23 +4227,17 @@
       'Mac FYI Retina ASAN (AMD)': {
         'args': [
           '--extra-browser-args=--disable-metal-shader-cache',
-          # This slows down tests and we are currently having AMD Mac capacity
-          # issues.
-          # '--enable-metal-debug-layers',
+          '--enable-metal-debug-layers',
         ],
       },
       'Mac FYI Retina Release (AMD)': {
         'args': [
-          # This slows down tests and we are currently having AMD Mac capacity
-          # issues.
-          # '--enable-metal-debug-layers',
+          '--enable-metal-debug-layers',
         ],
       },
       'mac-angle-chromium-amd': {
         'args': [
-          # This slows down tests and we are currently having AMD Mac capacity
-          # issues.
-          # '--enable-metal-debug-layers',
+          '--enable-metal-debug-layers',
         ],
       },
       'mac-angle-chromium-intel': {
@@ -4262,6 +4252,21 @@
       # so use the old --force_high_performance_gpu flag there
       # crbug.com/1421053, crbug.com/1424896, crbug.com/1251724
       'Mac FYI Experimental Retina Release (AMD)': {
+        'args': {
+          '--extra-browser-args': '--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --force_high_performance_gpu',
+        },
+      },
+      'Mac FYI Retina ASAN (AMD)': {
+        'args': {
+          '--extra-browser-args': '--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --force_high_performance_gpu',
+        },
+      },
+      'Mac FYI Retina Release (AMD)': {
+        'args': {
+          '--extra-browser-args': '--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --force_high_performance_gpu',
+        },
+      },
+      'mac-angle-chromium-amd': {
         'args': {
           '--extra-browser-args': '--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --force_high_performance_gpu',
         },
@@ -4306,7 +4311,7 @@
       },
     },
   },
-  'webgl_conformance_gl_passthrough_tests 1002:6821': {
+  'webgl_conformance_gl_passthrough_tests 1002:67ef': {
     'modifications': {
       'mac_optional_gpu_tests_rel': {
         'args': [
@@ -4344,23 +4349,17 @@
       'Mac FYI Retina ASAN (AMD)': {
         'args': [
           '--extra-browser-args=--disable-metal-shader-cache',
-          # This slows down tests and we are currently having AMD Mac capacity
-          # issues.
-          # '--enable-metal-debug-layers',
+          '--enable-metal-debug-layers',
         ],
       },
       'Mac FYI Retina Release (AMD)': {
         'args': [
-          # This slows down tests and we are currently having AMD Mac capacity
-          # issues.
-          # '--enable-metal-debug-layers',
+          '--enable-metal-debug-layers',
         ],
       },
       'mac-angle-chromium-amd': {
         'args': [
-          # This slows down tests and we are currently having AMD Mac capacity
-          # issues.
-          # '--enable-metal-debug-layers',
+          '--enable-metal-debug-layers',
         ],
       },
       'mac-angle-chromium-intel': {
@@ -4375,6 +4374,21 @@
       # so use the old --force_high_performance_gpu flag there
       # crbug.com/1421053, crbug.com/1424896, crbug.com/1251724
       'Mac FYI Experimental Retina Release (AMD)': {
+        'args': {
+          '--extra-browser-args': '--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --force_high_performance_gpu',
+        },
+      },
+      'Mac FYI Retina ASAN (AMD)': {
+        'args': {
+          '--extra-browser-args': '--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --force_high_performance_gpu',
+        },
+      },
+      'Mac FYI Retina Release (AMD)': {
+        'args': {
+          '--extra-browser-args': '--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --force_high_performance_gpu',
+        },
+      },
+      'mac-angle-chromium-amd': {
         'args': {
           '--extra-browser-args': '--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --force_high_performance_gpu',
         },
@@ -4455,14 +4469,12 @@
     },
   },
   'webgpu_blink_web_tests_with_backend_validation': {
-    # Remove from bots where capacity is constrained.
     'remove_from': [
       # TODO(crbug.com/1363409): Enable these once they're shown to work on
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
-      'Dawn Mac x64 DEPS Release (AMD)',
-      'Dawn Mac x64 Release (AMD)',
+      # Remove from bots where capacity is constrained.
       'Dawn Win10 x64 DEPS Release (Intel)',
       'Dawn Win10 x64 Release (Intel)',
       'linux-code-coverage',
@@ -4476,9 +4488,6 @@
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
-      # GPU hang kills the bot. https://crbug.com/dawn/1511
-      'Dawn Mac x64 Release (AMD)',
-      'Dawn Mac x64 DEPS Release (AMD)',
     ],
     'modifications': {
       # These tests must run with a GPU.
@@ -4528,14 +4537,12 @@
     },
   },
   'webgpu_cts_with_validation_tests': {
-    # Remove from bots where capacity is constrained.
     'remove_from': [
       # TODO(crbug.com/1363409): Enable these once they're shown to work on
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
       'Dawn Android arm Release (Pixel 4)',
-      'Dawn Mac x64 DEPS Release (AMD)',
-      'Dawn Mac x64 Release (AMD)',
+      # Remove from bots where capacity is constrained.
       'Dawn Win10 x64 DEPS Release (Intel)',
       'Dawn Win10 x64 Release (Intel)',
       'Dawn Win10 x86 DEPS Release (Intel)',
@@ -4557,8 +4564,6 @@
   'webgpu_swiftshader_web_platform_cts_with_validation_tests': {
     # Remove from bots where capacity is constrained.
     'remove_from': [
-      'Dawn Mac x64 DEPS Release (AMD)',
-      'Dawn Mac x64 Release (AMD)',
       'Dawn Win10 x64 DEPS Release (Intel)',
       'Dawn Win10 x64 Release (Intel)',
       'Dawn Win10 x86 DEPS Release (Intel)',

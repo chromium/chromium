@@ -104,7 +104,7 @@
   },
   # Not enough capacity on Mac AMD https://crbug.com/1380184.
   # 'MAC_RETINA_AMD_GPU_STABLE': {
-  #   'identifier': '1002:6821',
+  #   'identifier': '1002:67ef',
   #   'mixins': [
   #     'mac_retina_amd_gpu_stable',
   #   ],

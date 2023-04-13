@@ -604,9 +604,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -630,9 +630,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -655,7 +655,7 @@
           "--expected-vendor-id",
           "1002",
           "--expected-device-id",
-          "6821"
+          "67ef"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -674,9 +674,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -693,10 +693,53 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu",
           "--webgl-conformance-version=2.0.1",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_tests_output.json",
           "--jobs=4"
+        ],
+        "isolate_name": "telemetry_gpu_integration_test",
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "webgl2_conformance_gl_passthrough_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "should_retry_with_patch": false,
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "containment_type": "AUTO",
+          "dimension_sets": [
+            {
+              "cpu": "x86-64",
+              "display_attached": "1",
+              "gpu": "1002:67ef",
+              "hidpi": "1",
+              "os": "Mac-13.2.1",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 20
+        },
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
+      },
+      {
+        "args": [
+          "webgl2_conformance",
+          "--show-stdout",
+          "--browser=release",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --force_high_performance_gpu",
+          "--webgl-conformance-version=2.0.1",
+          "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_tests_output.json",
+          "--jobs=4",
+          "--enable-metal-debug-layers"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -715,9 +758,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -756,9 +799,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -776,9 +819,10 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --force_high_performance_gpu",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json",
-          "--jobs=4"
+          "--jobs=4",
+          "--enable-metal-debug-layers"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
         "merge": {
@@ -797,9 +841,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -838,9 +882,9 @@
             {
               "cpu": "x86-64",
               "display_attached": "1",
-              "gpu": "1002:6821",
+              "gpu": "1002:67ef",
               "hidpi": "1",
-              "os": "Mac-12.1",
+              "os": "Mac-13.2.1",
               "pool": "chromium.tests.gpu"
             }
           ],
