@@ -1758,6 +1758,28 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::RemoveObserver(
     ax_tree_manager->ax_tree()->RemoveObserver(this);
 }
 
+void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
+    OnStringAttributeChanged(AXTree* tree,
+                             AXNode* node,
+                             ax::mojom::StringAttribute attr,
+                             const std::string& old_value,
+                             const std::string& new_value) {
+  if (attr != ax::mojom::StringAttribute::kName ||
+      new_value.length() >= old_value.length()) {
+    return;
+  }
+  if (!start_->IsNullPosition() &&
+      start_->tree_id() == node->tree()->GetAXTreeID() &&
+      start_->anchor_id() == node->id()) {
+    start_->SnapToMaxTextOffsetIfBeyond();
+  }
+  if (!end_->IsNullPosition() &&
+      end_->tree_id() == node->tree()->GetAXTreeID() &&
+      end_->anchor_id() == node->id()) {
+    end_->SnapToMaxTextOffsetIfBeyond();
+  }
+}
+
 // Ensures that our endpoints are located on non-deleted nodes (step 1, case A
 // and B). See comment in header file for more details.
 void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
