@@ -1931,6 +1931,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_THANKS" desc="The action button to dismiss the password bottom sheet and revert to using the keyboard to fill in username and password information on the webpage.">
         No Thanks
       </message>
+      <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_PASSWORD_MANAGER" desc="The password bottom sheet's long press menu item to open the password manager.">
+        Password Manager
+      </message>
+      <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_SHOW_DETAILS" desc="The password bottom sheet's long press menu item to open the password details page, which displays more information, like username, password and associated website.">
+        Show Details
+      </message>
       <message name="IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_CHIP" desc="Acessibility label to describe the UI which displays a product's price in the Price Tracking Item UI.">
           Price
       </message>
@@ -3126,7 +3132,7 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_SETTINGS_PRIVACY_TITLE" desc="Title for the Privacy and Security preferences.">
         Privacy and Security
       </message>
-      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_PASSWORDS_TITLE" desc="Title for the passwords element of safety check" meaning="Row title to access the passowrd check subpage if a probelm is found with user's saved passwords [CHAR_LIMIT=20]">
+      <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_PASSWORDS_TITLE" desc="Title for the passwords element of safety check" meaning="Row title to access the password check subpage if a probelm is found with user's saved passwords [CHAR_LIMIT=20]">
         Passwords
       </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_PASSWORDS_DESCRIPTION" desc="Description text on the password element describing what the password check does.">
