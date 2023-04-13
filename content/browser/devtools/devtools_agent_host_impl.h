@@ -62,7 +62,6 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   void DisconnectWebContents() override;
   void ConnectWebContents(WebContents* wc) override;
   RenderProcessHost* GetProcessHost() override;
-  void ForceDetachAllSessions() override;
 
   struct NetworkLoaderFactoryParamsAndInfo {
     NetworkLoaderFactoryParamsAndInfo();
@@ -126,8 +125,18 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
   DevToolsRendererChannel* GetRendererChannel() { return &renderer_channel_; }
 
   const std::vector<DevToolsSession*>& sessions() const { return sessions_; }
+  // Returns refptr retaining `this`. All other references may be removed
+  // at this point, so `this` will become invalid as soon as returned refptr
+  // gets destroyed.
+  [[nodiscard]] scoped_refptr<DevToolsAgentHost> ForceDetachAllSessionsImpl();
 
  private:
+  // Note that calling this may result in the instance being deleted,
+  // as instance may be owned by client sessions. This should not be
+  // used by methods of derived classes, use `ForceDetachAllSessionsImpl()`
+  // above instead.
+  void ForceDetachAllSessions() override;
+
   friend class DevToolsAgentHost;  // for static methods
   friend class DevToolsSession;
   friend class DevToolsRendererChannel;
