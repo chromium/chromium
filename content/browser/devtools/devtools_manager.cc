@@ -18,6 +18,10 @@ DevToolsManager::DevToolsManager()
     : delegate_(
           GetContentClient()->browser()->CreateDevToolsManagerDelegate()) {}
 
+void DevToolsManager::ShutdownForTests() {
+  base::Singleton<DevToolsManager>::OnExit(nullptr);
+}
+
 DevToolsManager::~DevToolsManager() = default;
 
 }  // namespace content

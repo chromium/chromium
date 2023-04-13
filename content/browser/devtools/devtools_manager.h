@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/singleton.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 
 namespace content {
@@ -29,6 +30,10 @@ class DevToolsManager {
   virtual ~DevToolsManager();
 
   DevToolsManagerDelegate* delegate() const { return delegate_.get(); }
+
+  // It is necessary to recreate the delegate when the ContentBrowserClient gets
+  // swapped out.
+  static void CONTENT_EXPORT ShutdownForTests();
 
  private:
   friend struct base::DefaultSingletonTraits<DevToolsManager>;
