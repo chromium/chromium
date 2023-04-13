@@ -13,6 +13,17 @@ class GURL;
 
 namespace network {
 
+// We now use CSPSource matching for both Content Security Policies and
+// Permissions Policies. This emum is used to differentiate between them.
+enum class CSPSourceContext {
+  // This is the default context for which the code path was written.
+  ContentSecurityPolicy,
+
+  // Unlike the ContentSecurityPolicy context, this one prevents 'upgrade'
+  // matching (e.g., an https URL matching an http CSP Source).
+  PermissionsPolicy
+};
+
 // Check if a CSP |source| matches the scheme-source grammar.
 bool CSPSourceIsSchemeOnly(const mojom::CSPSource& source);
 
@@ -21,6 +32,7 @@ COMPONENT_EXPORT(NETWORK_CPP)
 bool CheckCSPSource(const mojom::CSPSource& source,
                     const GURL& url,
                     const mojom::CSPSource& self_source,
+                    CSPSourceContext context,
                     bool has_followed_redirect = false,
                     bool is_opaque_fenced_frame = false);
 

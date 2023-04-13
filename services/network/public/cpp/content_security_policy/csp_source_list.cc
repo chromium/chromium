@@ -24,9 +24,11 @@ bool AllowFromSources(const GURL& url,
                       bool has_followed_redirect,
                       bool is_opaque_fenced_frame) {
   for (const auto& source : sources) {
-    if (CheckCSPSource(*source, url, self_source, has_followed_redirect,
-                       is_opaque_fenced_frame))
+    if (CheckCSPSource(*source, url, self_source,
+                       CSPSourceContext::ContentSecurityPolicy,
+                       has_followed_redirect, is_opaque_fenced_frame)) {
       return true;
+    }
   }
   return false;
 }
@@ -229,8 +231,9 @@ bool CheckCSPSourceList(mojom::CSPDirectiveName directive_name,
   }
 
   if (source_list.allow_self &&
-      CheckCSPSource(self_source, url, self_source, has_followed_redirect,
-                     is_opaque_fenced_frame)) {
+      CheckCSPSource(self_source, url, self_source,
+                     CSPSourceContext::ContentSecurityPolicy,
+                     has_followed_redirect, is_opaque_fenced_frame)) {
     return true;
   }
 
