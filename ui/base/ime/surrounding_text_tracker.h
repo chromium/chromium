@@ -9,7 +9,9 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/functional/callback.h"
 #include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/gfx/range/range.h"
 
@@ -75,8 +77,28 @@ class COMPONENT_EXPORT(UI_BASE_IME) SurroundingTextTracker {
   void OnExtendSelectionAndDelete(size_t before, size_t after);
 
  private:
+  // History of events and their expected states.
+  struct Entry {
+    State state;
+    base::RepeatingClosure command;
+
+    Entry(State state, base::RepeatingClosure command);
+
+    // Copy/Move-able.
+    Entry(const Entry&);
+    Entry(Entry&& entry);
+    Entry& operator=(const Entry&);
+    Entry& operator=(Entry&&);
+
+    ~Entry();
+  };
+
+  void ResetInternal(base::StringPiece16 surrounding_text,
+                     const gfx::Range& selection);
+
+  // The latest known state.
   State predicted_state_;
-  std::deque<State> expected_updates_;
+  std::deque<Entry> expected_updates_;
 };
 
 }  // namespace ui
