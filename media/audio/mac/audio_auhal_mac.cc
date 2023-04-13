@@ -39,8 +39,8 @@ static const AudioChannelLabel kCoreAudioChannelMapping[] = {
     kAudioChannelLabel_LeftCenter,
     kAudioChannelLabel_RightCenter,
     kAudioChannelLabel_CenterSurround,
-    kAudioChannelLabel_LeftSurroundDirect,
-    kAudioChannelLabel_RightSurroundDirect,
+    kAudioChannelLabel_RearSurroundLeft,
+    kAudioChannelLabel_RearSurroundRight
 };
 static_assert(0 == LEFT && 1 == RIGHT && 2 == CENTER && 3 == LFE &&
                   4 == BACK_LEFT &&
