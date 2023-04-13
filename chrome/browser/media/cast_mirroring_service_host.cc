@@ -151,16 +151,6 @@ bool IsAccessCodeCastTabSwitchingUIEnabled(
              Profile::FromBrowserContext(web_contents->GetBrowserContext()));
 }
 
-// Returns true if this user is allowed to use Access Codes to
-// discover cast devices, and IsAccessCodeCastFreezeUiEnabled flag is enabled.
-bool IsAccessCodeCastFreezeUIEnabled(
-    const content::WebContentsMediaCaptureId& id) {
-  auto* web_contents = GetContents(id);
-  return web_contents &&
-         media_router::IsAccessCodeCastFreezeUiEnabled(
-             Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-}
-
 // Returns the size of the primary display in pixels, or absl::nullopt if it
 // cannot be determined.
 absl::optional<gfx::Size> GetScreenResolution() {
@@ -179,9 +169,7 @@ CastMirroringServiceHost::CastMirroringServiceHost(
     : source_media_id_(source_media_id),
       gpu_client_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
       tab_switching_ui_enabled_(IsAccessCodeCastTabSwitchingUIEnabled(
-          source_media_id.web_contents_id)),
-      freeze_ui_enabled_(
-          IsAccessCodeCastFreezeUIEnabled(source_media_id.web_contents_id)) {
+          source_media_id.web_contents_id)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   // Observe the target WebContents for Tab mirroring.
   if (source_media_id_.type == content::DesktopMediaID::TYPE_WEB_CONTENTS)
@@ -615,7 +603,7 @@ void CastMirroringServiceHost::OpenOffscreenTab(
 
 void CastMirroringServiceHost::Pause() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (freeze_ui_enabled_ && video_capture_host_) {
+  if (video_capture_host_) {
     content::GetIOThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&PauseVideoCaptureHostOnIO, video_capture_host_->impl(),
@@ -626,7 +614,7 @@ void CastMirroringServiceHost::Pause() {
 
 void CastMirroringServiceHost::Resume() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (freeze_ui_enabled_ && video_capture_host_) {
+  if (video_capture_host_) {
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&ResumeVideoCaptureHostOnIO, video_capture_host_->impl(),
