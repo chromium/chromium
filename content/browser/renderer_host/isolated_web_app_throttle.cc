@@ -230,17 +230,28 @@ NavigationThrottle::ThrottleCheckResult IsolatedWebAppThrottle::DoThrottle(
     return block_action;
   }
 
-  // Block iframe navigations to the app's origin if the parent frame doesn't
-  // belong to the app. This prevents non-app frames from having access to an
-  // app frame.
   if (!navigation_handle()->IsInMainFrame()) {
-    const url::SchemeHostPort& parent_tuple =
-        navigation_handle()
-            ->GetParentFrame()
-            ->GetLastCommittedOrigin()
-            .GetTupleOrPrecursorTupleIfOpaque();
-    if (parent_tuple != web_contents_isolation_tuple) {
-      return block_action;
+    {
+      // Block iframe navigations to the app's origin if the parent frame
+      // doesn't belong to the app. This prevents non-app frames from having
+      // access to an app frame.
+      const url::SchemeHostPort& parent_tuple =
+          navigation_handle()
+              ->GetParentFrame()
+              ->GetLastCommittedOrigin()
+              .GetTupleOrPrecursorTupleIfOpaque();
+      if (parent_tuple != web_contents_isolation_tuple) {
+        return block_action;
+      }
+    }
+
+    // Allow iframe same-origin navigations to blob: and data: URLs
+    // (cross-origin iframe navigation are already allowed and handled further
+    // up as part of the `dest_tuple != web_contents_isolation_tuple`
+    // condition).
+    if (navigation_handle()->GetURL().SchemeIs(url::kDataScheme) ||
+        navigation_handle()->GetURL().SchemeIsBlob()) {
+      return NavigationThrottle::PROCEED;
     }
   }
 
