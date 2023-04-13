@@ -100,6 +100,35 @@ def CheckChangedLUCIConfigs(input_api, output_api):
       input_api, output_api)
 
 
+# TODO(gbeaty) pinpoint runs builds against revisions that aren't tip-of-tree,
+# so recipe side config can't be updated to refer to
+# //infra/config/generated/testing/gn_isolate_map.pyl until all of the revisions
+# that pinpoint will run against have that file. To workaround this, we'll copy
+# the generated file to //testing/buildbot/gn_isiolate_map.pyl. Once pinpoint is
+# only building revisions that contain
+# //infra/config/generated/testing/gn_isolate_map.pyl, the recipe configs can be
+# updated and we can remove this presubmit check,
+# //testing/buildbot/gn_isiolate_map.pyl and
+# //infra/config/scripts/sync-isolate-map.py.
+def CheckGnIsolateMapPylSynced(input_api, output_api):
+  if ('infra/config/generated/testing/gn_isolate_map.pyl'
+      in input_api.LocalPaths()):
+    with open('generated/testing/gn_isolate_map.pyl') as f:
+      ic_gn_isolate_map = f.read()
+    with open('../../testing/buildbot/gn_isolate_map.pyl') as f:
+      tb_gn_isolate_map = f.read()
+    if ic_gn_isolate_map != tb_gn_isolate_map:
+      sync_script_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
+                                                'scripts/sync-isolate-map.pyl')
+      return [
+          output_api.PresubmitError(
+              '//testing/buildbot/gn_isolate_map.pyl must be kept in sync with'
+              ' //infra/config/generated/testing/gn_isolate_map.pyl, please run'
+              f' {sync_script_path}')
+      ]
+  return []
+
+
 # Footer indicating a CL that is trying to address an outage by some mechanism
 # other than those in infra/config/outages
 _OUTAGE_ACTION_FOOTER = 'Infra-Config-Outage-Action'
