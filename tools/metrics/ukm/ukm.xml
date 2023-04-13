@@ -1180,6 +1180,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="SubFrame.LayoutInstability.CumulativeShiftScore">
     <summary>
+      Deprecated as of 04/23. It is still reported, but most users should use
+      AmpPageLoad.SubFrame.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms.
+
       Measures the cumulative layout shift (bit.ly/lsm-explainer) that has
       occurred during the session, in the AMP subframe. This metric's integral
       value is 100x the fractional cumulative layout shift score described in
@@ -10698,6 +10701,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="CumulativeShiftScoreAfterBackForwardCacheRestore">
     <summary>
+      Deprecated as of 04/23. It is still reported, but most users should use
+      PageLoad.LayoutInstability.MaxCumulativeShiftScore.AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms.
+
       Measures the cumulative layout shift (bit.ly/3fQz29y) that has occurred
       during the session, after the page is restored from the back-forward
       cache. This metric's integral value is 100x the fractional cumulative
@@ -16016,6 +16022,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="LayoutInstability.CumulativeShiftScore">
     <summary>
+      Deprecated as of 04/23. It is still reported, but most users should use
+      PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms.
+
       Measures the cumulative layout shift (bit.ly/lsm-explainer) that has
       occurred on the page (including all subframes) during the session. This
       metric's integral value is 100x the fractional cumulative layout shift
