@@ -91,6 +91,12 @@ const CGFloat kRecommendationSymbolSize = 22;
 // Minimal amount of characters in password note to display the warning.
 const int kMinNoteCharAmountForWarning = 901;
 
+// Returns the index of a password in the `passwords` array.
+int GetPasswordIndex(int section) {
+  // Only one password at position 0 shows if no grouping applied.
+  return IsPasswordGroupingEnabled() ? section : 0;
+}
+
 }  // namespace
 
 #pragma mark - TableViewTextItemWithConfigureHandler
@@ -141,8 +147,7 @@ const int kMinNoteCharAmountForWarning = 901;
 
 @interface PasswordDetailsTableViewController () <
     TableViewTextEditItemDelegate,
-    TableViewMultiLineTextEditItemDelegate,
-    UIGestureRecognizerDelegate> {
+    TableViewMultiLineTextEditItemDelegate> {
   // Index of the password the user wants to reveal.
   NSInteger _passwordIndexToReveal;
 
@@ -549,7 +554,7 @@ const int kMinNoteCharAmountForWarning = 901;
     }
     case PasswordDetailsItemTypeChangePasswordButton:
       if (!self.tableView.editing) {
-        int passwordIndex = IsPasswordGroupingEnabled() ? indexPath.section : 0;
+        int passwordIndex = GetPasswordIndex(indexPath.section);
         DCHECK(self.applicationCommandsHandler);
         DCHECK(self.passwords[passwordIndex].changePasswordURL.is_valid());
         OpenNewTabCommand* command = [OpenNewTabCommand
@@ -567,9 +572,29 @@ const int kMinNoteCharAmountForWarning = 901;
       [textFieldCell.textView becomeFirstResponder];
       break;
     }
-    case PasswordDetailsItemTypeChangePasswordRecommendation:
     case PasswordDetailsItemTypeDeleteButton:
+      if (self.tableView.editing) {
+        UITableViewCell* cell =
+            [self.tableView cellForRowAtIndexPath:indexPath];
+        [self didTapDeleteButton:cell
+                 atPasswordIndex:GetPasswordIndex(indexPath.section)];
+        [self.tableView
+            deselectRowAtIndexPath:self.tableView.indexPathForSelectedRow
+                          animated:YES];
+      }
+      break;
     case PasswordDetailsItemTypeMoveToAccountButton:
+      if (!self.tableView.editing) {
+        UITableViewCell* cell =
+            [self.tableView cellForRowAtIndexPath:indexPath];
+        [self didTapMoveButton:cell
+               atPasswordIndex:GetPasswordIndex(indexPath.section)];
+        [self.tableView
+            deselectRowAtIndexPath:self.tableView.indexPathForSelectedRow
+                          animated:YES];
+      }
+      break;
+    case PasswordDetailsItemTypeChangePasswordRecommendation:
     case PasswordDetailsItemTypeMoveToAccountRecommendation:
       break;
   }
@@ -603,7 +628,23 @@ const int kMinNoteCharAmountForWarning = 901;
 - (BOOL)tableView:(UITableView*)tableView
     shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
-  return !self.editing || itemType == PasswordDetailsItemTypeNote;
+  switch (itemType) {
+    case PasswordDetailsItemTypeNote:
+      return YES;
+    case PasswordDetailsItemTypeWebsite:
+    case PasswordDetailsItemTypeFederation:
+    case PasswordDetailsItemTypeUsername:
+    case PasswordDetailsItemTypePassword:
+    case PasswordDetailsItemTypeChangePasswordButton:
+    case PasswordDetailsItemTypeMoveToAccountButton:
+      return !self.editing;
+    case PasswordDetailsItemTypeDeleteButton:
+      return self.editing;
+    case PasswordDetailsItemTypeChangePasswordRecommendation:
+    case PasswordDetailsItemTypeMoveToAccountRecommendation:
+      return NO;
+  }
+  return YES;
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
@@ -655,31 +696,11 @@ const int kMinNoteCharAmountForWarning = 901;
                  addTarget:self
                     action:@selector(didTapShowHideButton:)
           forControlEvents:UIControlEventTouchUpInside];
-      [textFieldCell.identifyingIconButton setTag:indexPath.section];
+      textFieldCell.identifyingIconButton.tag = indexPath.section;
       break;
     }
-    case PasswordDetailsItemTypeChangePasswordRecommendation: {
-      cell.selectionStyle = UITableViewCellSelectionStyleNone;
-      break;
-    }
-    case PasswordDetailsItemTypeDeleteButton: {
-      UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
-          initWithTarget:self
-                  action:@selector(didTapDeleteButton:)];
-      tapRecognizer.delegate = self;
-      [cell addGestureRecognizer:tapRecognizer];
-      [cell setTag:indexPath.section];
-      break;
-    }
-    case PasswordDetailsItemTypeMoveToAccountButton: {
-      UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
-          initWithTarget:self
-                  action:@selector(didTapMoveButton:)];
-      tapRecognizer.delegate = self;
-      [cell addGestureRecognizer:tapRecognizer];
-      [cell setTag:indexPath.section];
-      break;
-    }
+    case PasswordDetailsItemTypeChangePasswordRecommendation:
+    case PasswordDetailsItemTypeMoveToAccountRecommendation:
     case PasswordDetailsItemTypeNote: {
       cell.selectionStyle = UITableViewCellSelectionStyleNone;
       break;
@@ -688,6 +709,8 @@ const int kMinNoteCharAmountForWarning = 901;
     case PasswordDetailsItemTypeWebsite:
     case PasswordDetailsItemTypeFederation:
     case PasswordDetailsItemTypeChangePasswordButton:
+    case PasswordDetailsItemTypeDeleteButton:
+    case PasswordDetailsItemTypeMoveToAccountButton:
       break;
   }
   return cell;
@@ -702,6 +725,7 @@ const int kMinNoteCharAmountForWarning = 901;
     case PasswordDetailsItemTypeUsername:
     case PasswordDetailsItemTypePassword:
     case PasswordDetailsItemTypeNote:
+    case PasswordDetailsItemTypeDeleteButton:
       return YES;
   }
   return NO;
@@ -787,7 +811,7 @@ const int kMinNoteCharAmountForWarning = 901;
       tableViewItem.text.length >= kMinNoteCharAmountForWarning;
   NSIndexPath* indexPath = [self.tableViewModel
       indexPathForItem:static_cast<TableViewItem*>(tableViewItem)];
-  int passwordIndex = IsPasswordGroupingEnabled() ? indexPath.section : 0;
+  int passwordIndex = GetPasswordIndex(indexPath.section);
 
   // Refresh the cells' height and update note footer based on note's length.
   [self.tableView beginUpdates];
@@ -1413,26 +1437,23 @@ const int kMinNoteCharAmountForWarning = 901;
   }
 }
 
-- (void)didTapDeleteButton:(UIGestureRecognizer*)gestureRecognizer {
-  UIView* view = gestureRecognizer.view;
-  int position = view.tag;
-  DCHECK(position >= 0);
+- (void)didTapDeleteButton:(UITableViewCell*)cell
+           atPasswordIndex:(int)passwordIndex {
+  DCHECK(passwordIndex >= 0);
   DCHECK(self.handler);
   [self.handler
-      showPasswordDeleteDialogWithPasswordDetails:self.passwords[position]
-                                       anchorView:view];
+      showPasswordDeleteDialogWithPasswordDetails:self.passwords[passwordIndex]
+                                       anchorView:cell];
 }
 
-- (void)didTapMoveButton:(UIGestureRecognizer*)gestureRecognizer {
+- (void)didTapMoveButton:(UITableViewCell*)cell
+         atPasswordIndex:(int)passwordIndex {
   [self setOrExtendAuthValidityTimer];
-  UIView* view = gestureRecognizer.view;
-  // Only one password at position 0 shows if no grouping applied.
-  int passwordIndex = IsPasswordGroupingEnabled() ? view.tag : 0;
 
   // With password notes feature enabled the authentication happens during
   // navigation from the password list view to the password details view.
   if (IsPasswordNotesWithBackupEnabled()) {
-    [self moveCredentialToAccountStore:passwordIndex anchorView:view];
+    [self moveCredentialToAccountStore:passwordIndex anchorView:cell];
     return;
   }
 
@@ -1452,7 +1473,7 @@ const int kMinNoteCharAmountForWarning = 901;
           return;
         }
 
-        [self moveCredentialToAccountStore:passwordIndex anchorView:view];
+        [self moveCredentialToAccountStore:passwordIndex anchorView:cell];
       };
   [self.reauthModule
       attemptReauthWithLocalizedReason:
