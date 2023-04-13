@@ -262,7 +262,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kOmniboxConsumesImeInsets,
     &kOmniboxModernizeVisualUpdate,
     &kOpaqueOriginForIncomingIntents,
-    &kOptimizeGeolocationHeaderGeneration,
     &kPartnerHomepageInitialLoadImprovement,
     &kProbabilisticCryptidRenderer,
     &kQuickDeleteForAndroid,
@@ -846,10 +845,6 @@ BASE_FEATURE(kOmniboxModernizeVisualUpdate,
 
 BASE_FEATURE(kOpaqueOriginForIncomingIntents,
              "OpaqueOriginForIncomingIntents",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kOptimizeGeolocationHeaderGeneration,
-             "OptimizeGeolocationHeaderGeneration",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPartnerHomepageInitialLoadImprovement,

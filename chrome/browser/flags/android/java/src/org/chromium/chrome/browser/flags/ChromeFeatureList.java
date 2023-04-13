@@ -395,8 +395,6 @@ public abstract class ChromeFeatureList {
             "OpaqueOriginForIncomingIntents";
     public static final String OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS =
             "OptimizationGuidePushNotifications";
-    public static final String OPTIMIZE_GEOLOCATION_HEADER_GENERATION =
-            "OptimizeGeolocationHeaderGeneration";
     public static final String PAGE_ANNOTATIONS_SERVICE = "PageAnnotationsService";
     public static final String PAGE_INFO_ABOUT_THIS_SITE_EN = "PageInfoAboutThisSiteEn";
     public static final String PAGE_INFO_ABOUT_THIS_SITE_IMPROVED_BOTTOMSHEET =
