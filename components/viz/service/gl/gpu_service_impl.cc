@@ -823,6 +823,9 @@ void GpuServiceImpl::CreateVideoEncodeAcceleratorProvider(
     CHECK(vea_thread_->StartWithOptions(std::move(thread_options)));
   }
   runner = vea_thread_->task_runner();
+#elif BUILDFLAG(IS_WIN)
+  // Windows hardware encoder requires a COM STA thread.
+  runner = base::ThreadPool::CreateCOMSTATaskRunner({base::MayBlock()});
 #else
   // MayBlock() because MF VEA can take long time running GetSupportedProfiles()
   if (base::FeatureList::IsEnabled(

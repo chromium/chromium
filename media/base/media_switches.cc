@@ -1262,6 +1262,9 @@ BASE_FEATURE(kUseSequencedTaskRunnerForMediaService,
              "UseSequencedTaskRunnerForMediaService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// SequencedTaskRunner isn't supported on Windows since the accelerator requires
+// a COM STA TaskRunner.
+#if !BUILDFLAG(IS_WIN)
 // Use SequencedTaskRunner for MojoVideoEncodeAcceleratorProvider.
 BASE_FEATURE(kUseSequencedTaskRunnerForMojoVEAProvider,
              "UseSequencedTaskRunnerForMojoVEAProvider",
@@ -1271,11 +1274,12 @@ BASE_FEATURE(kUseSequencedTaskRunnerForMojoVEAProvider,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+#endif  // !BUILDFLAG(IS_WIN)
 
 // Use TaskRunner for each MojoVideoEncodeAcceleratorService. Replaces
 // per-accelerator encoding task runner.
 BASE_FEATURE(kUseTaskRunnerForMojoVEAService,
-             "kUseTaskRunnerForMojoVEAService",
+             "UseTaskRunnerForMojoVEAService",
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
