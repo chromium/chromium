@@ -106,15 +106,10 @@ export class EmojiPicker extends PolymerElement {
   private searchExtensionEnabled: boolean;
   private incognito: boolean;
   private gifSupport: boolean;
-
-  private scrollTimeout: number|null = null;
-  private groupScrollTimeout: number|null = null;
-  private groupButtonScrollTimeout: number|null = null;
   private activeVariant: EmojiGroupComponent|null = null;
   private apiProxy: EmojiPickerApiProxy = EmojiPickerApiProxyImpl.getInstance();
   private autoScrollingToGroup: boolean = false;
   private highlightBarMoving: boolean = false;
-  private groupTabsMoving: boolean = false;
   private nextGifPos: {[key: string]: string};
   private status: Status|null;
   private previousGifValidation: Date;
@@ -661,13 +656,9 @@ export class EmojiPicker extends PolymerElement {
   }
 
   private onEmojiScroll() {
-    // the scroll event is fired very frequently while scrolling.
-    // only update active tab 100ms after last scroll event by setting
-    // a timeout.
-    if (this.scrollTimeout) {
-      clearTimeout(this.scrollTimeout);
-    }
-    this.scrollTimeout = setTimeout(() => {
+    // The scroll event is fired very frequently while scrolling.
+    // Thus we wrap it with `requestAnimationFrame`
+    requestAnimationFrame(() => {
       this.updateActiveCategory();
       this.updateActiveGroup();
       // Using ! here as this.status will always exist when GIF support is on.
@@ -675,7 +666,7 @@ export class EmojiPicker extends PolymerElement {
           !this.isGifInErrorState(this.status!)) {
         this.checkScrollPosition();
       }
-    }, 100);
+    });
   }
 
   private onRightChevronClick() {
@@ -685,7 +676,6 @@ export class EmojiPicker extends PolymerElement {
           constants.EMOJI_NUM_TABS_IN_FIRST_PAGE;
       this.scrollToGroup(
           EMOJI_GROUP_TABS[constants.GROUP_PER_ROW - 1]?.groupId);
-      this.groupTabsMoving = true;
       this.$.bar.style.left = constants.EMOJI_PICKER_TOTAL_EMOJI_WIDTH_PX;
     } else {
       const maxPagination =
@@ -705,8 +695,6 @@ export class EmojiPicker extends PolymerElement {
         this.emojiGroupTabs.find((tab) => tab.pagination === this.pagination);
     if (this.category === CategoryEnum.GIF && nextTab) {
       this.setGifGroupElements(nextTab.groupId);
-    } else {
-      this.groupTabsMoving = true;
     }
     this.scrollToGroup(nextTab?.groupId);
   }
@@ -729,18 +717,7 @@ export class EmojiPicker extends PolymerElement {
       return;
     }
 
-    this.groupTabsMoving = true;
-
-    if (this.groupButtonScrollTimeout) {
-      clearTimeout(this.groupButtonScrollTimeout);
-    }
-    this.groupButtonScrollTimeout =
-        setTimeout(this.groupTabScrollFinished.bind(this), 100);
-  }
-
-  private groupTabScrollFinished() {
-    this.groupTabsMoving = false;
-    this.updateActiveGroup();
+    requestAnimationFrame(() => this.updateActiveGroup());
   }
 
   private updateChevrons() {
@@ -903,7 +880,7 @@ export class EmojiPicker extends PolymerElement {
     }
 
     // Once tab scroll is updated, update the position of the highlight bar.
-    if (!this.highlightBarMoving && !this.groupTabsMoving) {
+    if (!this.highlightBarMoving) {
       // Update the scroll position of the emoji groups so that active group is
       // visible.
       if (!this.textSubcategoryBarEnabled) {
