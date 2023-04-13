@@ -5,6 +5,10 @@
     height: 100%;
   }
 
+  :host-context(body.jelly-enabled) navigation-view-panel {
+    --navigation-view-panel-bg-color: var(--cros-sys-app_base_shaded);
+  }
+
   page-toolbar {
     min-height: 56px;
     position: sticky;
