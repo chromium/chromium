@@ -391,20 +391,8 @@ bool TextInput::GetTextFromRange(const gfx::Range& range,
 void TextInput::OnInputMethodChanged() {
   // This observer method does not signify anything meaningful. When the user
   // switches input method, |InputMethodChanged()| is triggered instead of
-  // this, and the ui::InputMethod we are attached to is a singleton.
-
-  // TODO(timloh): This is dead code, remove it.
-
-  DCHECK_EQ(surface_, seat_->GetFocusedSurface());
-  ui::InputMethod* input_method = GetInputMethod(surface_->window());
-  if (input_method == input_method_)
-    return;
-  input_method_->DetachTextInputClient(this);
-  virtual_keyboard_observation_.Reset();
-  input_method_ = input_method;
-  if (auto* controller = input_method_->GetVirtualKeyboardController())
-    virtual_keyboard_observation_.Observe(controller);
-  input_method_->SetFocusedTextInputClient(this);
+  // this, and the ui::InputMethod we are attached to is a singleton which does
+  // not change.
 }
 
 bool TextInput::ChangeTextDirectionAndLayoutAlignment(
