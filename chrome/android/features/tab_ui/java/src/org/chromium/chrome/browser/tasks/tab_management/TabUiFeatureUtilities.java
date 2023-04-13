@@ -94,6 +94,12 @@ public class TabUiFeatureUtilities {
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_SELECTION_EDITOR_V2,
                     TAB_SELECTION_EDITOR_V2_BOOKMARKS_PARAM, true);
 
+    // Field trial parameter for disabling new tab button anchor for tab strip redesign.
+    private static final String TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR_PARAM = "disable_ntb_anchor";
+    public static final BooleanCachedFieldTrialParameter TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_STRIP_REDESIGN,
+                    TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR_PARAM, false);
+
     private static Boolean sTabManagementModuleSupportedForTesting;
 
     /**
@@ -101,6 +107,13 @@ public class TabUiFeatureUtilities {
      */
     public static void setTabManagementModuleSupportedForTesting(@Nullable Boolean enabled) {
         sTabManagementModuleSupportedForTesting = enabled;
+    }
+
+    /**
+     * @return Whether New tab button anchor for tab strip redesign is disabled.
+     */
+    public static boolean isTabStripNtbAnchorDisabled() {
+        return TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR.getValue();
     }
 
     /**

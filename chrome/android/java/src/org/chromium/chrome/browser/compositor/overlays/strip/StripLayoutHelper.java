@@ -1773,11 +1773,19 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mNewTabButton.setVisible(!isEmpty);
         if (mInReorderMode || isEmpty) return null;
 
-        if (!ChromeFeatureList.sTabStripRedesign.isEnabled()) {
+        if (!ChromeFeatureList.sTabStripRedesign.isEnabled()
+                || TabUiFeatureUtilities.isTabStripNtbAnchorDisabled()) {
             // 2. Get offset from strip stacker.
             float offset = mStripStacker.computeNewTabButtonOffset(mStripTabs, mTabOverlapWidth,
                     mLeftMargin, mRightMargin, mWidth, mNewTabButtonWidth,
                     Math.abs(getNewTabButtonTouchTargetOffset()), mCachedTabWidth, animate);
+
+            // For TSI, NTB touch target offset is skewed towards the end of strip and then visually
+            // placed correctly in the cc layer. Since we do not skew NTB touch target offset for
+            // TSR here, so revert.
+            if (TabUiFeatureUtilities.isTabStripNtbAnchorDisabled()) {
+                offset += getNewTabButtonTouchTargetOffset();
+            }
 
             // 3. Hide the new tab button if it's not visible on the screen.
             boolean isRtl = LocalizationUtils.isLayoutRtl();
