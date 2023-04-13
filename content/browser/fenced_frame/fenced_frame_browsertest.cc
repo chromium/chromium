@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/back_forward_cache_browsertest.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
@@ -4597,7 +4596,7 @@ class FencedFrameReportEventBrowserTest
   FencedFrameReportEventBrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kAllowURNsInIframes, {}},
-         {kAttributionFencedFrameReportingBeacon, {}}},
+         {features::kAttributionFencedFrameReportingBeacon, {}}},
         {/* disabled_features */});
   }
 
@@ -6131,7 +6130,7 @@ class FencedFrameAutomaticBeaconBrowserTest
   FencedFrameAutomaticBeaconBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kAllowURNsInIframes,
-                              kAttributionFencedFrameReportingBeacon},
+                              features::kAttributionFencedFrameReportingBeacon},
         /*disabled_features=*/{});
   }
 
