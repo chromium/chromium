@@ -41,7 +41,7 @@
 #include "chrome/browser/supervised_user/android/web_content_handler_impl.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/supervised_user/chromeos/web_content_handler_impl.h"
 #endif
 
@@ -52,7 +52,7 @@ std::unique_ptr<supervised_user::WebContentHandler> CreateWebContentHandler(
     GURL url,
     Profile* profile,
     int frame_id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<WebContentHandlerImpl>(
       web_contents, url,
       *LargeIconServiceFactory::GetForBrowserContext(profile), frame_id);

@@ -43,6 +43,8 @@ class WebContentHandler {
   virtual ~WebContentHandler();
 
   // Initiates the OS specific local approval flow for a given `url`.
+  // Not all platforms with supervised users support this operation,
+  // and they must throw an error when implementing this method.
   virtual void RequestLocalApproval(
       const GURL& url,
       const std::u16string& child_display_name,
@@ -69,8 +71,8 @@ class WebContentHandler {
 
  protected:
   // Processes the outcome of the local approval request.
-  // Shared between the platforms. Should be called by platform specific
-  // completion callback.
+  // Should be called by platform specific completion callback.
+  // TODO(b/278079069): Refactor and convert the class to an interface.
   void OnLocalApprovalRequestCompleted(
       supervised_user::SupervisedUserSettingsService& settings_service,
       const GURL& url,

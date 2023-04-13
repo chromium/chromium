@@ -4,13 +4,7 @@
 
 #include "chrome/browser/supervised_user/chromeos/web_content_handler_impl.h"
 
-#include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/logging.h"
-#include "base/notreached.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/parent_access_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/supervised_user/chromeos/supervised_user_favicon_request_handler.h"
@@ -24,6 +18,12 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/parent_access_ash.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -92,6 +92,7 @@ void WebContentHandlerImpl::RequestLocalApproval(
     const GURL& url,
     const std::u16string& child_display_name,
     ApprovalRequestInitiatedCallback callback) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   CHECK(web_contents_);
   supervised_user::SupervisedUserSettingsService* settings_service =
       SupervisedUserSettingsServiceFactory::GetForKey(
@@ -100,16 +101,18 @@ void WebContentHandlerImpl::RequestLocalApproval(
 
   crosapi::mojom::ParentAccess* parent_access =
       crosapi::CrosapiManager::Get()->crosapi_ash()->parent_access_ash();
-  DCHECK(parent_access);
-
-  gfx::ImageSkia favicon = favicon_handler_->GetFaviconOrFallback();
+  CHECK(parent_access);
 
   parent_access->GetWebsiteParentApproval(
-      url.GetWithEmptyPath(), child_display_name, favicon,
+      url.GetWithEmptyPath(), child_display_name,
+      favicon_handler_->GetFaviconOrFallback(),
       base::BindOnce(&WebContentHandlerImpl::OnLocalApprovalRequestCompleted,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::ref(*settings_service), url, base::TimeTicks::Now()));
   std::move(callback).Run(true);
+#else   // Local Web approvals not yet supported on Lacros.
+  NOTREACHED_NORETURN();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void WebContentHandlerImpl::ShowFeedback(GURL url, std::u16string reason) {

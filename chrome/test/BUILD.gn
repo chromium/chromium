@@ -605,9 +605,9 @@ static_library("test_support") {
 
   if (is_chromeos_ash) {
     sources += [
-      "../browser/ash/login/app_mode/test/ash_accelerator_helpers.cc",
       "../browser/apps/app_service/metrics/app_platform_metrics_service_test_base.cc",
       "../browser/apps/app_service/metrics/app_platform_metrics_service_test_base.h",
+      "../browser/ash/login/app_mode/test/ash_accelerator_helpers.cc",
       "../browser/ash/login/lock/screen_locker_tester.cc",
       "../browser/ash/login/lock/screen_locker_tester.h",
       "../browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.cc",
@@ -9128,10 +9128,10 @@ test("unit_tests") {
       sources += [
         "../browser/supervised_user/chromeos/mock_large_icon_service.cc",
         "../browser/supervised_user/chromeos/mock_large_icon_service.h",
+        "../browser/supervised_user/chromeos/web_content_handler_impl_unittest.cc",
       ]
     }
     if (is_chromeos_ash) {
-      sources += [ "../browser/supervised_user/chromeos/web_content_handler_impl_unittest.cc" ]
       deps += [ "//chrome/browser/ash/crosapi" ]
     }
     if (is_android) {

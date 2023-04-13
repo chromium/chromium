@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/supervised_user/chrome_web_content_handler_base.h"
+#include "chromeos/crosapi/mojom/parent_access.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -22,7 +22,7 @@ class LargeIconService;
 
 class SupervisedUserFaviconRequestHandler;
 
-// Chrome Ash specific implementation of web content handler.
+// Chrome OS specific implementation of web content handler.
 class WebContentHandlerImpl : public ChromeWebContentHandlerBase {
  public:
   WebContentHandlerImpl(content::WebContents* web_contents,
