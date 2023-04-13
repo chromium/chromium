@@ -33,11 +33,12 @@
                       delegate:(id<PasswordControllerDelegate>)delegate {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    self.viewController = [[PasswordSuggestionBottomSheetViewController alloc]
-        initWithFaviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
-                                  browser->GetBrowserState())];
+    self.viewController =
+        [[PasswordSuggestionBottomSheetViewController alloc] init];
     self.mediator = [[PasswordSuggestionBottomSheetMediator alloc]
         initWithWebStateList:browser->GetWebStateList()
+               faviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
+                                 browser->GetBrowserState())
                       params:params];
     self.viewController.delegate = self.mediator;
 

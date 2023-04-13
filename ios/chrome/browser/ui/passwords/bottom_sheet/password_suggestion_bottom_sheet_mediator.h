@@ -11,6 +11,7 @@ namespace autofill {
 struct FormActivityParams;
 }  // namespace autofill
 
+class FaviconLoader;
 class WebStateList;
 
 @protocol PasswordSuggestionBottomSheetConsumer;
@@ -22,6 +23,7 @@ class WebStateList;
     : NSObject <PasswordSuggestionBottomSheetDelegate>
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                       faviconLoader:(FaviconLoader*)faviconLoader
                               params:
                                   (const autofill::FormActivityParams&)params;
 

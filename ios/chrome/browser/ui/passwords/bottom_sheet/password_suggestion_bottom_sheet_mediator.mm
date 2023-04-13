@@ -5,14 +5,18 @@
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -30,6 +34,9 @@
 // List of suggestions in the bottom sheet.
 @property(nonatomic, strong) NSArray<FormSuggestion*>* suggestions;
 
+// Default globe favicon when no favicon is available.
+@property(nonatomic, readonly) FaviconAttributes* defaultGlobeIconAttributes;
+
 @end
 
 @implementation PasswordSuggestionBottomSheetMediator {
@@ -44,14 +51,22 @@
 
   // Web Frame associated with this bottom sheet.
   std::string _frameId;
+
+  // FaviconLoader is a keyed service that uses LargeIconService to retrieve
+  // favicon images.
+  raw_ptr<FaviconLoader> _faviconLoader;
 }
 
+@synthesize defaultGlobeIconAttributes = _defaultGlobeIconAttributes;
+
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                       faviconLoader:(FaviconLoader*)faviconLoader
                               params:
                                   (const autofill::FormActivityParams&)params {
   if (self = [super init]) {
     _needsRefocus = true;
     _frameId = params.frame_id;
+    _faviconLoader = faviconLoader;
 
     _webStateList = webStateList;
     web::WebState* activeWebState = _webStateList->GetActiveWebState();
@@ -86,6 +101,7 @@
 }
 
 - (void)disconnect {
+  _faviconLoader = nullptr;
   _webStateList = nullptr;
   _forwarder = nullptr;
   _observer = nullptr;
@@ -118,6 +134,21 @@
     web::WebFrame* frame = web::GetWebFrameWithId(activeWebState, _frameId);
     BottomSheetTabHelper::FromWebState(activeWebState)
         ->DetachListenersAndRefocus(frame);
+  }
+}
+
+- (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
+           faviconBlockHandler:(FaviconLoader::FaviconAttributesCompletionBlock)
+                                   faviconLoadedBlock {
+  CHECK(_faviconLoader);
+  // Try loading the url's favicon.
+  GURL URL(base::SysNSStringToUTF8([self descriptionAtRow:indexPath.row]));
+  if (!URL.is_empty()) {
+    _faviconLoader->FaviconForPageUrl(
+        URL, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
+        /*fallback_to_google_server=*/NO, faviconLoadedBlock);
+  } else {
+    faviconLoadedBlock([self defaultGlobeIconAttributes]);
   }
 }
 
@@ -160,6 +191,26 @@
 - (void)renderProcessGoneForWebState:(web::WebState*)webState {
   _needsRefocus = false;
   [self.consumer dismiss];
+}
+
+#pragma mark - Private
+
+// Returns the display description at a given row in the table view.
+- (NSString*)descriptionAtRow:(NSInteger)row {
+  FormSuggestion* formSuggestion = [self.suggestions objectAtIndex:row];
+  return formSuggestion.displayDescription;
+}
+
+// Returns the default favicon attributes after making sure they are
+// initialized.
+- (FaviconAttributes*)defaultGlobeIconAttributes {
+  if (!_defaultGlobeIconAttributes) {
+    _defaultGlobeIconAttributes = [FaviconAttributes
+        attributesWithImage:DefaultSymbolWithPointSize(
+                                kGlobeAmericasSymbol,
+                                kDesiredMediumFaviconSizePt)];
+  }
+  return _defaultGlobeIconAttributes;
 }
 
 @end

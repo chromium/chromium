@@ -6,9 +6,7 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/memory/raw_ptr.h"
-#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
-#import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/passwords/password_controller_delegate.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
@@ -19,7 +17,6 @@
 #import "ios/chrome/browser/ui/settings/password/create_password_manager_title_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
-#import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -74,24 +71,15 @@ CGFloat const kTableViewCornerRadius = 10;
   // List of suggestions in the bottom sheet
   // The property is defined by PasswordSuggestionBottomSheetConsumer protocol.
   NSArray<FormSuggestion*>* _suggestions;
-
-  // FaviconLoader is a keyed service that uses LargeIconService to retrieve
-  // favicon images.
-  raw_ptr<FaviconLoader> _faviconLoader;
 }
-
-// Temporary favicon to load for now.
-@property(nonatomic, strong) FaviconAttributes* defaultWorldIconAttributes;
 
 @end
 
 @implementation PasswordSuggestionBottomSheetViewController
 
-- (instancetype)initWithFaviconLoader:(FaviconLoader*)faviconLoader {
+- (instancetype)init {
   self = [super init];
   if (self) {
-    _faviconLoader = faviconLoader;
-
     [self setUpBottomSheet];
   }
   return self;
@@ -317,29 +305,26 @@ CGFloat const kTableViewCornerRadius = 10;
 // Defaults to the globe symbol if no URL is associated with the cell.
 - (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
                        forCell:(UITableViewCell*)cell {
-  CHECK(_faviconLoader);
-  // Try loading the url's favicon.
-  GURL url(base::SysNSStringToUTF8([self descriptionAtRow:indexPath.row]));
-  if (!url.is_empty()) {
-    __weak __typeof(self) weakSelf = self;
-    auto faviconLoadedBlock = ^(FaviconAttributes* attributes) {
-      [weakSelf configureFaviconAttributes:attributes forCell:cell];
-    };
+  TableViewItem* item =
+      [_tableViewController.tableViewModel itemAtIndexPath:indexPath];
+  DCHECK(item);
+  DCHECK(cell);
 
-    _faviconLoader->FaviconForPageUrl(
-        url, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
-        /*fallback_to_google_server=*/NO, faviconLoadedBlock);
-  } else {
-    [self configureFaviconAttributes:[self defaultWorldIconAttributes]
-                             forCell:cell];
-  }
-}
-
-// Sets favicon attributes for the provided cell.
-- (void)configureFaviconAttributes:(FaviconAttributes*)attributes
-                           forCell:(UITableViewCell*)cell {
+  TableViewURLItem* URLItem = base::mac::ObjCCastStrict<TableViewURLItem>(item);
   TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
-  [URLCell.faviconView configureWithAttributes:attributes];
+
+  NSString* itemIdentifier = URLItem.uniqueIdentifier;
+
+  auto faviconLoadedBlock = ^(FaviconAttributes* attributes) {
+    // Only set favicon if the cell hasn't been reused.
+    if ([URLCell.cellUniqueIdentifier isEqualToString:itemIdentifier]) {
+      DCHECK(attributes);
+      [URLCell.faviconView configureWithAttributes:attributes];
+    }
+  };
+
+  [self.delegate loadFaviconAtIndexPath:indexPath
+                    faviconBlockHandler:faviconLoadedBlock];
 }
 
 // Sets the password bottom sheet's table view to full height.
@@ -352,27 +337,6 @@ CGFloat const kTableViewCornerRadius = 10;
 // Notifies the delegate that a password suggestion was selected by the user.
 - (void)didSelectSuggestion {
   [self.delegate didSelectSuggestion:_row];
-}
-
-// Returns the default globe symbol
-- (UIImage*)globeIcon {
-  if (@available(iOS 15, *)) {
-    return DefaultSymbolWithPointSize(kGlobeAmericasSymbol,
-                                      kDesiredMediumFaviconSizePt);
-  } else {
-    return DefaultSymbolWithPointSize(kGlobeSymbol,
-                                      kDesiredMediumFaviconSizePt);
-  }
-}
-
-// Returns the default favicon attributes after making sure they are
-// initialized.
-- (FaviconAttributes*)defaultWorldIconAttributes {
-  if (!_defaultWorldIconAttributes) {
-    _defaultWorldIconAttributes =
-        [FaviconAttributes attributesWithImage:[self globeIcon]];
-  }
-  return _defaultWorldIconAttributes;
 }
 
 - (CGFloat)rowHeight {

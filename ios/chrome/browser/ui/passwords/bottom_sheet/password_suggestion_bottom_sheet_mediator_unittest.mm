@@ -8,6 +8,11 @@
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/favicon/favicon_service_factory.h"
+#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -146,11 +151,25 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
  protected:
   PasswordSuggestionBottomSheetMediatorTest()
       : test_web_state_(std::make_unique<web::FakeWebState>()),
-        web_state_list_(&web_state_list_delegate_) {}
+        web_state_list_(&web_state_list_delegate_),
+        chrome_browser_state_(TestChromeBrowserState::Builder().Build()) {}
 
   void SetUp() override {
     GURL url("http://foo.com");
     test_web_state_->SetCurrentURL(url);
+
+    TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(ios::FaviconServiceFactory::GetInstance(),
+                              ios::FaviconServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        IOSChromeLargeIconServiceFactory::GetInstance(),
+        IOSChromeLargeIconServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        IOSChromeFaviconLoaderFactory::GetInstance(),
+        IOSChromeFaviconLoaderFactory::GetDefaultFactory());
+    builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
+                              ios::HistoryServiceFactory::GetDefaultFactory());
+    chrome_browser_state_ = builder.Build();
 
     consumer_ =
         OCMProtocolMock(@protocol(PasswordSuggestionBottomSheetConsumer));
@@ -177,6 +196,8 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
 
     mediator_ = [[PasswordSuggestionBottomSheetMediator alloc]
         initWithWebStateList:&web_state_list_
+               faviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
+                                 chrome_browser_state_.get())
                       params:params_];
   }
 
@@ -191,6 +212,7 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
   std::unique_ptr<web::FakeWebState> test_web_state_;
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
+  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   id consumer_;
   NSArray<id<FormSuggestionProvider>>* suggestion_providers_;
   autofill::FormActivityParams params_;
