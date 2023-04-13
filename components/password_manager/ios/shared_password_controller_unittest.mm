@@ -157,6 +157,14 @@ class SharedPasswordControllerTest : public PlatformTest {
     OCMExpect([form_helper_ setDelegate:[OCMArg any]]);
     OCMExpect([suggestion_helper_ setDelegate:[OCMArg any]]);
 
+    auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    web_frames_manager_ = web_frames_manager.get();
+    web::ContentWorld content_world =
+        PasswordManagerJavaScriptFeature::GetInstance()
+            ->GetSupportedContentWorld();
+    web_state_.SetWebFramesManager(content_world,
+                                   std::move(web_frames_manager));
+
     controller_ =
         [[SharedPasswordController alloc] initWithWebState:&web_state_
                                                    manager:&password_manager_
@@ -167,14 +175,6 @@ class SharedPasswordControllerTest : public PlatformTest {
     [suggestion_helper_ verify];
     [form_helper_ verify];
     UniqueIDDataTabHelper::CreateForWebState(&web_state_);
-
-    auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
-    web_frames_manager_ = web_frames_manager.get();
-    web::ContentWorld content_world =
-        PasswordManagerJavaScriptFeature::GetInstance()
-            ->GetSupportedContentWorld();
-    web_state_.SetWebFramesManager(content_world,
-                                   std::move(web_frames_manager));
 
     web_state_.SetCurrentURL(GURL(kTestURL));
   }
@@ -194,6 +194,22 @@ class SharedPasswordControllerTest : public PlatformTest {
   }
 
  protected:
+  void AddWebFrame(std::unique_ptr<web::WebFrame> frame,
+                   id completion_handler) {
+    [[[form_helper_ expect] ignoringNonObjectArgs]
+        setUpForUniqueIDsWithInitialState:1
+                                  inFrame:frame.get()];
+
+    OCMExpect([form_helper_ findPasswordFormsInFrame:frame.get()
+                                   completionHandler:completion_handler]);
+
+    web_frames_manager_->AddWebFrame(std::move(frame));
+  }
+
+  void AddWebFrame(std::unique_ptr<web::WebFrame> frame) {
+    AddWebFrame(std::move(frame), [OCMArg any]);
+  }
+
   autofill::test::AutofillUnitTestEnvironment autofill_test_environment_;
   web::FakeWebState web_state_;
   web::FakeWebFramesManager* web_frames_manager_;
@@ -219,7 +235,7 @@ TEST_F(SharedPasswordControllerTest,
   auto web_frame =
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/true, GURL(kTestURL));
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
+  AddWebFrame(std::move(web_frame));
 
   EXPECT_CALL(password_manager_, PropagateFieldDataManagerInfo);
   EXPECT_CALL(password_manager_, DidNavigateMainFrame(true));
@@ -236,10 +252,6 @@ TEST_F(SharedPasswordControllerTest, FormsArePropagatedOnHTMLPageLoad) {
       web::FakeWebFrame::Create("dummy-frame-id",
                                 /*is_main_frame=*/true, GURL(kTestURL));
   web::WebFrame* frame = web_frame.get();
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
-  [[[form_helper_ expect] ignoringNonObjectArgs]
-      setUpForUniqueIDsWithInitialState:1
-                                inFrame:frame];
 
   id mock_completion_handler =
       [OCMArg checkWithBlock:^(void (^completionHandler)(
@@ -252,11 +264,9 @@ TEST_F(SharedPasswordControllerTest, FormsArePropagatedOnHTMLPageLoad) {
         completionHandler({form_data}, 1);
         return YES;
       }];
-  OCMExpect([form_helper_ findPasswordFormsInFrame:frame
-                                 completionHandler:mock_completion_handler]);
+  AddWebFrame(std::move(web_frame), mock_completion_handler);
 
   web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
-  web_state_.OnWebFrameDidBecomeAvailable(frame);
 
   [suggestion_helper_ verify];
   [form_helper_ verify];
@@ -271,6 +281,11 @@ TEST_F(SharedPasswordControllerTest, NoFormsArePropagatedOnNonHTMLPageLoad) {
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/true, GURL(kTestURL));
   web::WebFrame* frame = web_frame.get();
+
+  [[[form_helper_ expect] ignoringNonObjectArgs]
+      setUpForUniqueIDsWithInitialState:1
+                                inFrame:web_frame.get()];
+
   web_frames_manager_->AddWebFrame(std::move(web_frame));
 
   [[form_helper_ reject] findPasswordFormsInFrame:frame
@@ -294,7 +309,6 @@ TEST_F(SharedPasswordControllerTest, FormHelperSetsUpUniqueIDsForNewFrame) {
                                 inFrame:web_frame.get()];
   OCMExpect([form_helper_ findPasswordFormsInFrame:web_frame.get()
                                  completionHandler:[OCMArg any]]);
-  web_state_.OnWebFrameDidBecomeAvailable(web_frame.get());
 }
 
 // Tests that suggestions are reported as unavailable for nonpassword forms.
@@ -313,7 +327,7 @@ TEST_F(SharedPasswordControllerTest,
   auto web_frame =
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/false, GURL(kTestURL));
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
+  AddWebFrame(std::move(web_frame));
 
   id mock_completion_handler =
       [OCMArg checkWithBlock:^BOOL(void (^completionHandler)(BOOL)) {
@@ -353,7 +367,7 @@ TEST_F(SharedPasswordControllerTest, ReturnsNoSuggestionsIfNoneAreAvailable) {
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/false, GURL(kTestURL));
   web::WebFrame* frame = web_frame.get();
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
+  AddWebFrame(std::move(web_frame));
 
   [[[suggestion_helper_ expect] andReturn:@[]]
       retrieveSuggestionsWithFormID:form_query.uniqueFormID
@@ -435,7 +449,7 @@ TEST_F(SharedPasswordControllerTest, ReturnsSuggestionsIfAvailable) {
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/false, GURL(kTestURL));
   web::WebFrame* frame = web_frame.get();
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
+  AddWebFrame(std::move(web_frame));
 
   [[[suggestion_helper_ expect] andReturn:@[ suggestion ]]
       retrieveSuggestionsWithFormID:form_query.uniqueFormID
@@ -478,7 +492,7 @@ TEST_F(SharedPasswordControllerTest,
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/false, GURL(kTestURL));
   web::WebFrame* frame = web_frame.get();
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
+  AddWebFrame(std::move(web_frame));
 
   [[[suggestion_helper_ expect] andReturn:@[]]
       retrieveSuggestionsWithFormID:form_query.uniqueFormID
@@ -564,7 +578,7 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/false, GURL(kTestURL));
   web::FakeWebFrame* frame = web_frame.get();
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
+  AddWebFrame(std::move(web_frame));
 
   id extract_completion_handler_arg = [OCMArg
       checkWithBlock:^(void (^completion_handler)(BOOL, autofill::FormData)) {
@@ -614,7 +628,7 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/true, GURL(kTestURL));
   web::FakeWebFrame* frame = web_frame.get();
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
+  AddWebFrame(std::move(web_frame));
 
   FormSuggestion* suggestion = [FormSuggestion
       suggestionWithValue:@"test-value"
@@ -688,7 +702,7 @@ TEST_F(SharedPasswordControllerTest, TriggerPasswordGeneration) {
   auto web_frame = web::FakeWebFrame::Create("frame-id", /*is_main_frame=*/true,
                                              GURL(kTestURL));
   web::FakeWebFrame* frame = web_frame.get();
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
+  AddWebFrame(std::move(web_frame));
 
   [controller_ webState:&web_state_
       didRegisterFormActivity:params
@@ -768,16 +782,15 @@ TEST_F(SharedPasswordControllerTest,
   auto web_frame = web::FakeWebFrame::Create("frame-id", /*is_main_frame=*/true,
                                              GURL(kTestURL));
   web::FakeWebFrame* frame = web_frame.get();
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
+  OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
+
+  AddWebFrame(std::move(web_frame));
 
   OCMExpect([form_helper_ findPasswordFormsInFrame:frame
                                  completionHandler:mock_completion_handler]);
 
   autofill::FormActivityParams params;
   params.type = "form_changed";
-
-  OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
-
   [controller_ webState:&web_state_
       didRegisterFormActivity:params
                       inFrame:frame];
@@ -802,6 +815,14 @@ class SharedPasswordControllerTestWithRealSuggestionHelper
     form_helper_ = OCMStrictClassMock([PasswordFormHelper class]);
     OCMExpect([form_helper_ setDelegate:[OCMArg any]]);
 
+    auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
+    web_frames_manager_ = web_frames_manager.get();
+    web::ContentWorld content_world =
+        PasswordManagerJavaScriptFeature::GetInstance()
+            ->GetSupportedContentWorld();
+    web_state_.SetWebFramesManager(content_world,
+                                   std::move(web_frames_manager));
+
     PasswordControllerDriverHelper* driver_helper =
         [[PasswordControllerDriverHelper alloc] initWithWebState:&web_state_];
     controller_ =
@@ -816,14 +837,6 @@ class SharedPasswordControllerTestWithRealSuggestionHelper
 
     UniqueIDDataTabHelper::CreateForWebState(&web_state_);
 
-    auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
-    web_frames_manager_ = web_frames_manager.get();
-    web::ContentWorld content_world =
-        PasswordManagerJavaScriptFeature::GetInstance()
-            ->GetSupportedContentWorld();
-    web_state_.SetWebFramesManager(content_world,
-                                   std::move(web_frames_manager));
-
     web_state_.SetCurrentURL(GURL(kTestURL));
   }
 
@@ -832,6 +845,14 @@ class SharedPasswordControllerTestWithRealSuggestionHelper
 
     EXPECT_CALL(password_manager_, GetClient)
         .WillRepeatedly(Return(&password_manager_client_));
+  }
+
+  void AddWebFrame(std::unique_ptr<web::WebFrame> frame) {
+    [[[form_helper_ expect] ignoringNonObjectArgs]
+        setUpForUniqueIDsWithInitialState:1
+                                  inFrame:frame.get()];
+
+    web_frames_manager_->AddWebFrame(std::move(frame));
   }
 
  protected:
@@ -856,7 +877,11 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/true, GURL(kTestURL));
   web::WebFrame* frame = web_frame.get();
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
+
+  [[form_helper_ expect] findPasswordFormsInFrame:frame
+                                completionHandler:[OCMArg any]];
+
+  AddWebFrame(std::move(web_frame));
 
   EXPECT_CALL(password_manager_, OnPasswordFormsParsed);
   EXPECT_CALL(password_manager_, OnPasswordFormsRendered);
@@ -918,7 +943,11 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/true, GURL(kTestURL));
   web::WebFrame* frame = web_frame.get();
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
+
+  [[form_helper_ expect] findPasswordFormsInFrame:frame
+                                completionHandler:[OCMArg any]];
+
+  AddWebFrame(std::move(web_frame));
 
   EXPECT_CALL(password_manager_, OnPasswordFormsParsed);
   EXPECT_CALL(password_manager_, OnPasswordFormsRendered);
@@ -1012,7 +1041,9 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/false, GURL(kTestURL));
   web::WebFrame* frame = web_frame.get();
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
+  [[form_helper_ expect] findPasswordFormsInFrame:frame
+                                completionHandler:[OCMArg any]];
+  AddWebFrame(std::move(web_frame));
 
   ASSERT_TRUE(IsCrossOriginIframe(&web_state_, frame->IsMainFrame(),
                                   frame->GetSecurityOrigin()));
@@ -1064,7 +1095,10 @@ TEST_F(SharedPasswordControllerTestWithRealSuggestionHelper,
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/true, GURL(kTestURL));
   web::WebFrame* frame = web_frame.get();
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
+
+  [[form_helper_ expect] findPasswordFormsInFrame:frame
+                                completionHandler:[OCMArg any]];
+  AddWebFrame(std::move(web_frame));
 
   EXPECT_CALL(password_manager_, OnPasswordFormsParsed);
   EXPECT_CALL(password_manager_, OnPasswordFormsRendered);
@@ -1128,10 +1162,6 @@ TEST_P(SharedPasswordControllerTestCrossOrigin,
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/false, GURL(kTestURL));
   web::WebFrame* frame = web_frame.get();
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
-
-  ASSERT_TRUE(IsCrossOriginIframe(&web_state_, frame->IsMainFrame(),
-                                  frame->GetSecurityOrigin()));
 
   [[[form_helper_ expect] ignoringNonObjectArgs]
       setUpForUniqueIDsWithInitialState:1
@@ -1144,7 +1174,11 @@ TEST_P(SharedPasswordControllerTestCrossOrigin,
     [[form_helper_ reject] findPasswordFormsInFrame:frame
                                   completionHandler:[OCMArg any]];
   }
-  [controller_ webState:&web_state_ frameDidBecomeAvailable:frame];
+
+  web_frames_manager_->AddWebFrame(std::move(web_frame));
+
+  ASSERT_TRUE(IsCrossOriginIframe(&web_state_, frame->IsMainFrame(),
+                                  frame->GetSecurityOrigin()));
   [form_helper_ verify];
 }
 
@@ -1159,7 +1193,7 @@ TEST_P(SharedPasswordControllerTestCrossOrigin,
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/false, GURL(kTestURL));
   web::WebFrame* frame = web_frame.get();
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
+  AddWebFrame(std::move(web_frame));
 
   ASSERT_TRUE(IsCrossOriginIframe(&web_state_, frame->IsMainFrame(),
                                   frame->GetSecurityOrigin()));
@@ -1170,7 +1204,7 @@ TEST_P(SharedPasswordControllerTestCrossOrigin,
   } else {
     EXPECT_CALL(password_manager_, OnIframeDetach).Times(0);
   }
-  [controller_ webState:&web_state_ frameWillBecomeUnavailable:frame];
+  web_frames_manager_->RemoveWebFrame(frame->GetFrameId());
 }
 
 // Tests checkIfSuggestionsAvailableForForm supports cross-origin iframes when
@@ -1184,7 +1218,7 @@ TEST_P(SharedPasswordControllerTestCrossOrigin,
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/false, GURL(kTestURL));
   web::WebFrame* frame = web_frame.get();
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
+  AddWebFrame(std::move(web_frame));
 
   ASSERT_TRUE(IsCrossOriginIframe(&web_state_, frame->IsMainFrame(),
                                   frame->GetSecurityOrigin()));
@@ -1232,7 +1266,7 @@ TEST_P(SharedPasswordControllerTestCrossOrigin,
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/false, GURL(kTestURL));
   web::WebFrame* frame = web_frame.get();
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
+  AddWebFrame(std::move(web_frame));
 
   ASSERT_TRUE(IsCrossOriginIframe(&web_state_, frame->IsMainFrame(),
                                   frame->GetSecurityOrigin()));
@@ -1286,7 +1320,7 @@ TEST_P(SharedPasswordControllerTestCrossOrigin,
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/false, GURL(kTestURL));
   web::WebFrame* frame = web_frame.get();
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
+  AddWebFrame(std::move(web_frame));
 
   ASSERT_TRUE(IsCrossOriginIframe(&web_state_, frame->IsMainFrame(),
                                   frame->GetSecurityOrigin()));
@@ -1314,27 +1348,31 @@ TEST_P(SharedPasswordControllerTestCrossOrigin,
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/false, GURL(kTestURL));
   web::WebFrame* frame = web_frame.get();
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
 
   ASSERT_TRUE(IsCrossOriginIframe(&web_state_, frame->IsMainFrame(),
                                   frame->GetSecurityOrigin()));
 
-  id mock_completion_handler =
-      [OCMArg checkWithBlock:^(void (^completionHandler)(
-          const std::vector<autofill::FormData>& forms, uint32_t maxID)) {
-        return YES;
-      }];
-
   if (IsCrossOriginSupportEnabled()) {
     OCMExpect([form_helper_ findPasswordFormsInFrame:frame
-                                   completionHandler:mock_completion_handler]);
+                                   completionHandler:[OCMArg any]]);
   } else {
     [[form_helper_ reject] findPasswordFormsInFrame:frame
-                                  completionHandler:mock_completion_handler];
+                                  completionHandler:[OCMArg any]];
   }
+
+  [[[form_helper_ expect] ignoringNonObjectArgs]
+      setUpForUniqueIDsWithInitialState:1
+                                inFrame:frame];
+
+  web_frames_manager_->AddWebFrame(std::move(web_frame));
 
   autofill::FormActivityParams params;
   params.type = "form_changed";
+
+  if (IsCrossOriginSupportEnabled()) {
+    OCMExpect([form_helper_ findPasswordFormsInFrame:frame
+                                   completionHandler:[OCMArg any]]);
+  }
 
   [controller_ webState:&web_state_
       didRegisterFormActivity:params
@@ -1354,7 +1392,7 @@ TEST_P(SharedPasswordControllerTestCrossOrigin,
       web::FakeWebFrame::Create(SysNSStringToUTF8(kTestFrameID),
                                 /*is_main_frame=*/false, GURL(kTestURL));
   web::WebFrame* frame = web_frame.get();
-  web_frames_manager_->AddWebFrame(std::move(web_frame));
+  AddWebFrame(std::move(web_frame));
 
   ASSERT_TRUE(IsCrossOriginIframe(&web_state_, frame->IsMainFrame(),
                                   frame->GetSecurityOrigin()));

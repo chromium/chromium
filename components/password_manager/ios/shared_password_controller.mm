@@ -48,6 +48,7 @@
 #include "ios/web/common/url_scheme_util.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/js_messaging/web_frames_manager_observer_bridge.h"
 #include "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -127,6 +128,10 @@ BOOL canProcessCrossOriginIframes() {
   // Bridge to observe WebState from Objective-C.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
 
+  // Bridge to observe the web frames manager from Objective-C.
+  std::unique_ptr<web::WebFramesManagerObserverBridge>
+      _webFramesManagerObserverBridge;
+
   // Bridge to observe form activity in |_webState|.
   std::unique_ptr<FormActivityObserverBridge> _formActivityObserverBridge;
 
@@ -169,6 +174,12 @@ BOOL canProcessCrossOriginIframes() {
     _webStateObserverBridge =
         std::make_unique<web::WebStateObserverBridge>(self);
     _webState->AddObserver(_webStateObserverBridge.get());
+    _webFramesManagerObserverBridge =
+        std::make_unique<web::WebFramesManagerObserverBridge>(self);
+    web::WebFramesManager* framesManager =
+        password_manager::PasswordManagerJavaScriptFeature::GetInstance()
+            ->GetWebFramesManager(_webState);
+    framesManager->AddObserver(_webFramesManagerObserverBridge.get());
     _formActivityObserverBridge =
         std::make_unique<FormActivityObserverBridge>(_webState, self);
     _formHelper = formHelper;
@@ -270,56 +281,55 @@ BOOL canProcessCrossOriginIframes() {
   }
 }
 
-- (void)webState:(web::WebState*)webState
-    frameDidBecomeAvailable:(web::WebFrame*)web_frame {
-  DCHECK_EQ(_webState, webState);
-  DCHECK(web_frame);
+- (void)webFramesManager:(web::WebFramesManager*)webFramesManager
+    frameBecameAvailable:(web::WebFrame*)webFrame {
+  DCHECK(webFrame);
   UniqueIDDataTabHelper* uniqueIDDataTabHelper =
       UniqueIDDataTabHelper::FromWebState(_webState);
   uint32_t nextAvailableRendererID =
       uniqueIDDataTabHelper->GetNextAvailableRendererID();
   [self.formHelper setUpForUniqueIDsWithInitialState:nextAvailableRendererID
-                                             inFrame:web_frame];
+                                             inFrame:webFrame];
 
-  if (IsCrossOriginIframe(_webState, web_frame->IsMainFrame(),
-                          web_frame->GetSecurityOrigin()) &&
+  if (IsCrossOriginIframe(_webState, webFrame->IsMainFrame(),
+                          webFrame->GetSecurityOrigin()) &&
       !canProcessCrossOriginIframes()) {
     return;
   }
 
-  if (webState->ContentIsHTML()) {
+  if (_webState->ContentIsHTML()) {
     [self findPasswordFormsAndSendToPasswordStoreForFormChange:false
-                                                       inFrame:web_frame];
+                                                       inFrame:webFrame];
   }
 }
 
 // Track detaching iframes.
-- (void)webState:(web::WebState*)webState
-    frameWillBecomeUnavailable:(web::WebFrame*)web_frame {
-  DCHECK_EQ(_webState, webState);
+- (void)webFramesManager:(web::WebFramesManager*)webFramesManager
+    frameBecameUnavailable:(const std::string&)frameId {
   // No need to try to detect submissions when the webState is being destroyed.
-  if (webState->IsBeingDestroyed()) {
+  if (_webState->IsBeingDestroyed()) {
     return;
   }
-  if (web_frame->IsMainFrame()) {
+  web::WebFrame* webFrame = webFramesManager->GetFrameWithId(frameId);
+  if (!webFrame || webFrame->IsMainFrame()) {
     return;
   }
 
-  if (IsCrossOriginIframe(_webState, web_frame->IsMainFrame(),
-                          web_frame->GetSecurityOrigin()) &&
+  if (IsCrossOriginIframe(_webState, webFrame->IsMainFrame(),
+                          webFrame->GetSecurityOrigin()) &&
       !canProcessCrossOriginIframes()) {
     return;
   }
 
   // Casting is safe, as this code is run on iOS Chrome & WebView only.
   auto* driver = static_cast<IOSPasswordManagerDriver*>(
-      [_driverHelper PasswordManagerDriver:web_frame]);
+      [_driverHelper PasswordManagerDriver:webFrame]);
   if (driver)
     driver->ProcessFrameDeletion();
 
   auto fieldDataManager =
       UniqueIDDataTabHelper::FromWebState(_webState)->GetFieldDataManager();
-  _passwordManager->OnIframeDetach(web_frame->GetFrameId(), driver,
+  _passwordManager->OnIframeDetach(webFrame->GetFrameId(), driver,
                                    *fieldDataManager);
 }
 
@@ -328,6 +338,11 @@ BOOL canProcessCrossOriginIframes() {
   if (_webState) {
     _webState->RemoveObserver(_webStateObserverBridge.get());
     _webStateObserverBridge.reset();
+    web::WebFramesManager* framesManager =
+        password_manager::PasswordManagerJavaScriptFeature::GetInstance()
+            ->GetWebFramesManager(_webState);
+    framesManager->RemoveObserver(_webFramesManagerObserverBridge.get());
+    _webFramesManagerObserverBridge.reset();
     _formActivityObserverBridge.reset();
     _webState = nullptr;
   }
