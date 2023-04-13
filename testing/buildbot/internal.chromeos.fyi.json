@@ -1129,6 +1129,29 @@
       }
     ]
   },
+  "chromeos-jacuzzi-chrome-skylab-fyi": {
+    "additional_compile_targets": [
+      "chrome",
+      "linux_symbols",
+      "symupload"
+    ],
+    "skylab_tests": [
+      {
+        "args": [],
+        "autotest_name": "tast.chrome-from-tls",
+        "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi-release/R114-15410.0.0",
+        "name": "chrome_all_tast_tests JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM",
+        "shards": 10,
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && !informational)",
+        "test": "chrome_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
+        "timeout_sec": 21600,
+        "variant_id": "JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM"
+      }
+    ]
+  },
   "chromeos-octopus-chrome-skylab-fyi": {
     "additional_compile_targets": [
       "chrome",

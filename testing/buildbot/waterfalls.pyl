@@ -6716,6 +6716,16 @@
         ],
         'test_suites': {
           'skylab_tests': 'chromeos_brya_skylab_tests',
+        }
+      },
+      'chromeos-jacuzzi-chrome-skylab-fyi': {
+        'additional_compile_targets': [
+          "chrome",
+          "linux_symbols",
+          "symupload",
+        ],
+        'test_suites': {
+          'skylab_tests': 'chromeos_jacuzzi_skylab_tests',
         },
         'os_type': 'chromeos',
       },

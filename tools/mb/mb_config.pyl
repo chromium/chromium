@@ -906,6 +906,7 @@
       'chromeos-betty-pi-arc-chrome-dchecks': 'chromeos_betty-pi-arc_dchecks_reclient',
       'chromeos-betty-pi-arc-finch-smoke-chrome': 'chromeos_betty-pi-arc_dchecks_reclient',
       'chromeos-brya-chrome-skylab-fyi': 'chromeos_brya_include_unwind_tables_official_dchecks_skylab_reclient',
+      'chromeos-jacuzzi-chrome-skylab-fyi': 'chromeos_jacuzzi_include_unwind_tables_official_dchecks_skylab_reclient',
       'chromeos-octopus-chrome-skylab-fyi': 'chromeos_octopus_include_unwind_tables_official_dchecks_skylab_reclient',
       'chromeos-trogdor-chrome-skylab-fyi': 'chromeos_trogdor_include_unwind_tables_official_dchecks_skylab_reclient',
       'chromeos-volteer-chrome-skylab-fyi': 'chromeos_volteer_include_unwind_tables_official_dchecks_skylab_reclient',
@@ -967,6 +968,7 @@
       'chromeos-eve-chrome': 'chromeos_eve_include_unwind_tables_official_dchecks',
       'chromeos-eve-compile-chrome': 'chromeos_eve_include_unwind_tables_official_dchecks',
       'chromeos-jacuzzi-chrome': 'chromeos_jacuzzi_include_unwind_tables_official',
+      'chromeos-jacuzzi-chrome-skylab': 'chromeos_jacuzzi_include_unwind_tables_official_dchecks_skylab_reclient',
       'chromeos-jacuzzi-compile-chrome': 'chromeos_jacuzzi_include_unwind_tables_official',
       'chromeos-kevin-chrome': 'chromeos_kevin_include_unwind_tables_official_dchecks',
       'chromeos-kevin-compile-chrome': 'chromeos_kevin_include_unwind_tables_official_dchecks',
@@ -2267,6 +2269,11 @@
       # 'dcheck_always_on',
       'also_build_lacros_chrome_for_architecture_arm',
     ],
+
+    'chromeos_jacuzzi_include_unwind_tables_official_dchecks_skylab_reclient': [
+      'chromeos_device_reclient', 'jacuzzi', 'include_unwind_tables', 'official', 'dcheck_always_on', 'is_skylab',
+    ],
+
     'chromeos_jacuzzi_include_unwind_tables_official_reclient': [
       'chromeos_device_reclient', 'jacuzzi', 'include_unwind_tables', 'official',
       # TODO(crbug.com/1275785): Enable DCHECKs on jacuzzi bots when the

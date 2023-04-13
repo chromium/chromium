@@ -545,6 +545,18 @@
     'enabled': True,
     'identifier': 'JACUZZI_RELEASE_BETA',
   },
+  'CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM': {
+    'skylab': {
+      'cros_board': 'jacuzzi',
+      'cros_chrome_version': '114.0.5692.0',
+      'cros_img': 'jacuzzi-release/R114-15410.0.0',
+      'tast_expr': '("group:mainline" && !informational)',
+      'autotest_name': 'tast.chrome-from-tls',
+      'shards': 10,
+    },
+    'enabled': True,
+    'identifier': 'JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM',
+  },
   'CROS_JACUZZI_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'jacuzzi',
