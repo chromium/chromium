@@ -134,11 +134,17 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
   FlossSocketManager();
   ~FlossSocketManager() override;
 
-  // Listen for connections using a connection oriented LE L2Cap channel.
+  // Listen for connections using a L2Cap channel.
   virtual void ListenUsingL2cap(const Security security_level,
                                 ResponseCallback<BtifStatus> callback,
                                 ConnectionStateChanged ready_cb,
                                 ConnectionAccepted new_connection_cb);
+
+  // Listen for connections using a connection oriented LE L2Cap channel.
+  virtual void ListenUsingL2capLe(const Security security_level,
+                                  ResponseCallback<BtifStatus> callback,
+                                  ConnectionStateChanged ready_cb,
+                                  ConnectionAccepted new_connection_cb);
 
   // Listen for connections using an RFCOMM channel. This API exposes all of the
   // options supported by Floss and should only be used if there are no safer
@@ -162,11 +168,17 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
                                  ConnectionStateChanged ready_cb,
                                  ConnectionAccepted new_connection_cb);
 
-  // Connect via a connection oriented LE L2Cap channel on given psm.
+  // Connect via a L2Cap channel on given psm.
   virtual void ConnectUsingL2cap(const FlossDeviceId& remote_device,
                                  const int psm,
                                  const Security security_level,
                                  ConnectionCompleted callback);
+
+  // Connect via a connection oriented LE L2Cap channel on given psm.
+  virtual void ConnectUsingL2capLe(const FlossDeviceId& remote_device,
+                                   const int psm,
+                                   const Security security_level,
+                                   ConnectionCompleted callback);
 
   // Connect to a remote service using a RFCOMM channel.
   virtual void ConnectUsingRfcomm(const FlossDeviceId& remote_device,

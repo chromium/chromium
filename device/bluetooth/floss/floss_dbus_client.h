@@ -129,15 +129,19 @@ extern DEVICE_BLUETOOTH_EXPORT const char kOnDefaultAdapterChanged[];
 namespace socket_manager {
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
 extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingInsecureL2capChannel[];
+extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingInsecureL2capLeChannel[];
 extern DEVICE_BLUETOOTH_EXPORT const char
     kListenUsingInsecureRfcommWithServiceRecord[];
 extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingL2capChannel[];
+extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingL2capLeChannel[];
 extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingRfcomm[];
 extern DEVICE_BLUETOOTH_EXPORT const char kListenUsingRfcommWithServiceRecord[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCreateInsecureL2capChannel[];
+extern DEVICE_BLUETOOTH_EXPORT const char kCreateInsecureL2capLeChannel[];
 extern DEVICE_BLUETOOTH_EXPORT const char
     kCreateInsecureRfcommSocketToServiceRecord[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCreateL2capChannel[];
+extern DEVICE_BLUETOOTH_EXPORT const char kCreateL2capLeChannel[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCreateRfcommSocketToServiceRecord[];
 extern DEVICE_BLUETOOTH_EXPORT const char kAccept[];
 extern DEVICE_BLUETOOTH_EXPORT const char kClose[];

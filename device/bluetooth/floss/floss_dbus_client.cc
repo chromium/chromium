@@ -125,16 +125,21 @@ namespace socket_manager {
 const char kRegisterCallback[] = "RegisterCallback";
 const char kListenUsingInsecureL2capChannel[] =
     "ListenUsingInsecureL2capChannel";
+const char kListenUsingInsecureL2capLeChannel[] =
+    "ListenUsingInsecureL2capLeChannel";
 const char kListenUsingInsecureRfcommWithServiceRecord[] =
     "ListenUsingInsecureRfcommWithServiceRecord";
 const char kListenUsingL2capChannel[] = "ListenUsingL2capChannel";
+const char kListenUsingL2capLeChannel[] = "ListenUsingL2capLeChannel";
 const char kListenUsingRfcomm[] = "ListenUsingRfcomm";
 const char kListenUsingRfcommWithServiceRecord[] =
     "ListenUsingRfcommWithServiceRecord";
 const char kCreateInsecureL2capChannel[] = "CreateInsecureL2capChannel";
+const char kCreateInsecureL2capLeChannel[] = "CreateInsecureL2capLeChannel";
 const char kCreateInsecureRfcommSocketToServiceRecord[] =
     "CreateInsecureRfcommSocketToServiceRecord";
 const char kCreateL2capChannel[] = "CreateL2capChannel";
+const char kCreateL2capLeChannel[] = "CreateL2capLeChannel";
 const char kCreateRfcommSocketToServiceRecord[] =
     "CreateRfcommSocketToServiceRecord";
 const char kAccept[] = "Accept";

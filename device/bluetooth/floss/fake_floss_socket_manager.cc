@@ -105,6 +105,15 @@ void FakeFlossSocketManager::ListenUsingL2cap(
       base::unexpected(Error(kNotImplemented, "ListenUsingL2Cap")));
 }
 
+void FakeFlossSocketManager::ListenUsingL2capLe(
+    const Security security_level,
+    ResponseCallback<BtifStatus> callback,
+    ConnectionStateChanged ready_cb,
+    ConnectionAccepted new_connection_cb) {
+  std::move(callback).Run(
+      base::unexpected(Error(kNotImplemented, "ListenUsingL2CapLe")));
+}
+
 void FakeFlossSocketManager::ListenUsingRfcomm(
     const std::string& name,
     const device::BluetoothUUID& uuid,
@@ -128,6 +137,14 @@ void FakeFlossSocketManager::ListenUsingRfcomm(
 }
 
 void FakeFlossSocketManager::ConnectUsingL2cap(
+    const FlossDeviceId& remote_device,
+    const int psm,
+    const Security security_level,
+    ConnectionCompleted callback) {
+  std::move(callback).Run(BtifStatus::kFail, /*socket=*/absl::nullopt);
+}
+
+void FakeFlossSocketManager::ConnectUsingL2capLe(
     const FlossDeviceId& remote_device,
     const int psm,
     const Security security_level,
