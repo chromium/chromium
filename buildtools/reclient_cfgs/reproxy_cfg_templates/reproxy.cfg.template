@@ -9,3 +9,4 @@ deps_cache_max_mb=256
 # enable_deps_cache=true
 use_unified_uploads=true
 fast_log_collection=true
+depsscanner_address=exec://${scandeps_bin_path}
