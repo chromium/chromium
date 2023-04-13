@@ -74,3 +74,19 @@ JNI_Fido2CredentialRequest_MakeCredentialResponseFromJson(
   return MojoClassFromJSON<blink::mojom::MakeCredentialAuthenticatorResponse>(
       env, webauthn::MakeCredentialResponseFromValue, jjson);
 }
+
+static base::android::ScopedJavaLocalRef<jstring>
+JNI_Fido2CredentialRequest_GetOptionsToJson(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& byte_buffer) {
+  return MojoClassToJSON<blink::mojom::PublicKeyCredentialRequestOptions>(
+      env, byte_buffer);
+}
+
+static base::android::ScopedJavaLocalRef<jbyteArray>
+JNI_Fido2CredentialRequest_GetCredentialResponseFromJson(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& jjson) {
+  return MojoClassFromJSON<blink::mojom::GetAssertionAuthenticatorResponse>(
+      env, webauthn::GetAssertionResponseFromValue, jjson);
+}
