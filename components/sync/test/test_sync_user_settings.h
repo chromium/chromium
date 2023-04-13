@@ -26,7 +26,8 @@ class TestSyncUserSettings : public SyncUserSettings {
   ~TestSyncUserSettings() override;
 
   bool IsSyncRequested() const override;
-  void SetSyncRequested(bool requested) override;
+  void SetSyncRequested() override;
+  void ClearSyncRequested() override;
 
   bool IsFirstSetupComplete() const override;
   void SetFirstSetupComplete(SyncFirstSetupCompleteSource source) override;

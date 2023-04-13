@@ -232,7 +232,7 @@ TEST_F(OsSyncHandlerTest, OpenConfigPageBeforeSyncEngineInitialized) {
 // Tests that transport state signals not related to user intention to
 // configure sync don't trigger sync engine start.
 TEST_F(OsSyncHandlerTest, OnlyStartEngineWhenConfiguringSync) {
-  user_settings_->SetSyncRequested(false);
+  user_settings_->ClearSyncRequested();
   sync_service_->SetTransportState(SyncService::TransportState::INITIALIZING);
   NotifySyncStateChanged();
   EXPECT_FALSE(user_settings_->IsSyncRequested());

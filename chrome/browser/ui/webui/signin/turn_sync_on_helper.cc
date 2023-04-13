@@ -502,7 +502,7 @@ void TurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
     // progress.
     // TODO(https://crbug.com/811211): Remove this handle.
     sync_blocker_ = sync_service->GetSetupInProgressHandle();
-    sync_service->GetUserSettings()->SetSyncRequested(true);
+    sync_service->GetUserSettings()->SetSyncRequested();
 
     // For managed users and users on enterprise machines that might have cloud
     // policies, it is important to wait until sync is initialized so that the

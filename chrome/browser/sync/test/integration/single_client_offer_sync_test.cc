@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnDisableSync) {
   EXPECT_EQ(0uL, pdm->GetAutofillOffers().size());
 
   // Turn sync on again, the data should come back.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);
+  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
   // StopAndClear() also clears the "first setup complete" flag, so set it
   // again.
   GetSyncService(0)->GetUserSettings()->SetFirstSetupComplete(
@@ -125,12 +125,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientOfferSyncTest, ClearOnStopSync) {
   ASSERT_EQ(1uL, pdm->GetAutofillOffers().size());
 
   // Stop sync, the offer data should be gone.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested(false);
+  GetSyncService(0)->GetUserSettings()->ClearSyncRequested();
   WaitForNumberOfOffers(0, pdm);
   EXPECT_EQ(0uL, pdm->GetAutofillOffers().size());
 
   // Turn sync on again, the data should come back.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested(true);
+  GetSyncService(0)->GetUserSettings()->SetSyncRequested();
   // Wait until Sync restores the card and it arrives at PDM.
   WaitForNumberOfOffers(1, pdm);
   EXPECT_EQ(1uL, pdm->GetAutofillOffers().size());

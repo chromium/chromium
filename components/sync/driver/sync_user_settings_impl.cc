@@ -74,8 +74,12 @@ bool SyncUserSettingsImpl::IsSyncRequested() const {
   return prefs_->IsSyncRequested();
 }
 
-void SyncUserSettingsImpl::SetSyncRequested(bool requested) {
-  prefs_->SetSyncRequested(requested);
+void SyncUserSettingsImpl::SetSyncRequested() {
+  prefs_->SetSyncRequested(true);
+}
+
+void SyncUserSettingsImpl::ClearSyncRequested() {
+  prefs_->SetSyncRequested(false);
 }
 
 bool SyncUserSettingsImpl::IsFirstSetupComplete() const {

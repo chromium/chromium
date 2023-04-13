@@ -190,7 +190,7 @@ void SyncInternalsMessageHandler::HandleRequestStart(
     return;
   }
 
-  service->GetUserSettings()->SetSyncRequested(true);
+  service->GetUserSettings()->SetSyncRequested();
   // If the service was previously stopped with CLEAR_DATA, then the
   // "first-setup-complete" bit was also cleared, and now the service wouldn't
   // fully start up. So set that too.
@@ -207,7 +207,7 @@ void SyncInternalsMessageHandler::HandleRequestStopKeepData(
     return;
   }
 
-  service->GetUserSettings()->SetSyncRequested(false);
+  service->GetUserSettings()->ClearSyncRequested();
 }
 
 void SyncInternalsMessageHandler::HandleRequestStopClearData(

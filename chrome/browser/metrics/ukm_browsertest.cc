@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, RegularPlusIncognitoCheck) {
   // Client ID should not have been reset.
   EXPECT_EQ(original_client_id, ukm_test_helper.GetClientId());
 
-  harness->service()->GetUserSettings()->SetSyncRequested(false);
+  harness->service()->GetUserSettings()->ClearSyncRequested();
   ClosePlatformBrowser(browser1);
 }
 
@@ -522,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, IncognitoPlusRegularCheck) {
   ClosePlatformBrowser(incognito_browser);
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
 
-  harness->service()->GetUserSettings()->SetSyncRequested(false);
+  harness->service()->GetUserSettings()->ClearSyncRequested();
   ClosePlatformBrowser(browser);
 }
 
@@ -549,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, RegularPlusGuestCheck) {
   // Client ID should not have been reset.
   EXPECT_EQ(original_client_id, ukm_test_helper.GetClientId());
 
-  harness->service()->GetUserSettings()->SetSyncRequested(false);
+  harness->service()->GetUserSettings()->ClearSyncRequested();
   CloseBrowserSynchronously(regular_browser);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
@@ -584,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, ProfilePickerCheck) {
   profiles::testing::WaitForPickerClosed();
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
 
-  harness->service()->GetUserSettings()->SetSyncRequested(false);
+  harness->service()->GetUserSettings()->ClearSyncRequested();
   CloseBrowserSynchronously(regular_browser);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
@@ -626,7 +626,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, OpenNonSyncCheck) {
   }
 #endif
 
-  harness->service()->GetUserSettings()->SetSyncRequested(false);
+  harness->service()->GetUserSettings()->ClearSyncRequested();
   CloseBrowserSynchronously(sync_browser);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -661,7 +661,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MetricsConsentCheck) {
   // Client ID should have been reset.
   EXPECT_NE(original_client_id, ukm_test_helper.GetClientId());
 
-  harness->service()->GetUserSettings()->SetSyncRequested(false);
+  harness->service()->GetUserSettings()->ClearSyncRequested();
   ClosePlatformBrowser(browser);
 }
 
@@ -695,7 +695,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, LogProtoData) {
   EXPECT_EQ(base::SysInfo::HardwareModelName(),
             report->system_profile().hardware().hardware_class());
 
-  harness->service()->GetUserSettings()->SetSyncRequested(false);
+  harness->service()->GetUserSettings()->ClearSyncRequested();
   CloseBrowserSynchronously(sync_browser);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -820,7 +820,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, NetworkProviderPopulatesSystemProfile) {
   EXPECT_EQ(SystemProfileProto::Network::EFFECTIVE_CONNECTION_TYPE_4G,
             report->system_profile().network().max_effective_connection_type());
 
-  harness->service()->GetUserSettings()->SetSyncRequested(false);
+  harness->service()->GetUserSettings()->ClearSyncRequested();
   CloseBrowserSynchronously(sync_browser);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -851,7 +851,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MAYBE_ConsentAddedButNoSyncCheck) {
   g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(true);
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
 
-  harness->service()->GetUserSettings()->SetSyncRequested(false);
+  harness->service()->GetUserSettings()->ClearSyncRequested();
   ClosePlatformBrowser(browser);
 }
 
@@ -884,7 +884,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, SingleDisableExtensionsSyncCheck) {
   // Client ID should not be reset.
   EXPECT_EQ(original_client_id, ukm_test_helper.GetClientId());
 
-  harness->service()->GetUserSettings()->SetSyncRequested(false);
+  harness->service()->GetUserSettings()->ClearSyncRequested();
   CloseBrowserSynchronously(sync_browser);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -935,8 +935,8 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MultiDisableExtensionsSyncCheck) {
   EXPECT_TRUE(ukm_test_helper.IsExtensionRecordingEnabled());
   EXPECT_EQ(original_client_id, ukm_test_helper.GetClientId());
 
-  harness2->service()->GetUserSettings()->SetSyncRequested(false);
-  harness1->service()->GetUserSettings()->SetSyncRequested(false);
+  harness2->service()->GetUserSettings()->ClearSyncRequested();
+  harness1->service()->GetUserSettings()->ClearSyncRequested();
   CloseBrowserSynchronously(browser2);
   CloseBrowserSynchronously(browser1);
 }
@@ -1098,7 +1098,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, SingleSyncSignoutCheck) {
   EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
   EXPECT_NE(original_client_id, ukm_test_helper.GetClientId());
 
-  harness->service()->GetUserSettings()->SetSyncRequested(false);
+  harness->service()->GetUserSettings()->ClearSyncRequested();
   ClosePlatformBrowser(browser);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
@@ -1131,8 +1131,8 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MultiSyncSignoutCheck) {
   EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
   EXPECT_NE(original_client_id, ukm_test_helper.GetClientId());
 
-  harness2->service()->GetUserSettings()->SetSyncRequested(false);
-  harness1->service()->GetUserSettings()->SetSyncRequested(false);
+  harness2->service()->GetUserSettings()->ClearSyncRequested();
+  harness1->service()->GetUserSettings()->ClearSyncRequested();
   CloseBrowserSynchronously(browser2);
   CloseBrowserSynchronously(browser1);
 }
@@ -1153,7 +1153,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, ServiceListenerInitFailedCheck) {
 
   Browser* sync_browser = CreateBrowser(profile);
   EXPECT_FALSE(ukm_test_helper.IsRecordingEnabled());
-  harness->service()->GetUserSettings()->SetSyncRequested(false);
+  harness->service()->GetUserSettings()->ClearSyncRequested();
   CloseBrowserSynchronously(sync_browser);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -1180,7 +1180,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MetricsReportingCheck) {
   Browser* sync_browser = CreateBrowser(profile);
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
 
-  harness->service()->GetUserSettings()->SetSyncRequested(false);
+  harness->service()->GetUserSettings()->ClearSyncRequested();
   CloseBrowserSynchronously(sync_browser);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -1222,7 +1222,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, MAYBE_HistoryDeleteCheck) {
   EXPECT_EQ(original_client_id, ukm_test_helper.GetClientId());
   EXPECT_TRUE(ukm_test_helper.IsRecordingEnabled());
 
-  harness->service()->GetUserSettings()->SetSyncRequested(false);
+  harness->service()->GetUserSettings()->ClearSyncRequested();
   ClosePlatformBrowser(browser);
 }
 
@@ -1284,7 +1284,7 @@ IN_PROC_BROWSER_TEST_P(UkmConsentParamBrowserTest, GroupPolicyConsentCheck) {
             UkmConsentParamBrowserTest::IsMetricsAndCrashReportingEnabled());
   EXPECT_EQ(is_enabled, ukm_test_helper.IsRecordingEnabled());
 
-  harness->service()->GetUserSettings()->SetSyncRequested(false);
+  harness->service()->GetUserSettings()->ClearSyncRequested();
   CloseBrowserSynchronously(sync_browser);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

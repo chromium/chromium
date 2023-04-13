@@ -184,7 +184,7 @@ TEST_F(SyncServiceImplStartupTest, StartFirstTime) {
   // This tells the SyncServiceImpl that setup is now in progress, which
   // causes it to try starting up the engine. We're not signed in yet though, so
   // that won't work.
-  sync_service()->GetUserSettings()->SetSyncRequested(true);
+  sync_service()->GetUserSettings()->SetSyncRequested();
   std::unique_ptr<SyncSetupInProgressHandle> sync_blocker =
       sync_service()->GetSetupInProgressHandle();
   EXPECT_FALSE(sync_service()->IsEngineInitialized());
@@ -445,9 +445,9 @@ TEST_F(SyncServiceImplStartupTest, StopSync) {
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
 
-  // On SetSyncRequested(false), the sync service will immediately start up
+  // On ClearSyncRequested(), the sync service will immediately start up
   // again in transport mode.
-  sync_service()->GetUserSettings()->SetSyncRequested(false);
+  sync_service()->GetUserSettings()->ClearSyncRequested();
   base::RunLoop().RunUntilIdle();
 
   // Sync-the-feature is still considered off.
@@ -671,7 +671,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
 
   // Initiate Sync (the feature) setup before the engine initializes itself in
   // transport mode.
-  sync_service()->GetUserSettings()->SetSyncRequested(true);
+  sync_service()->GetUserSettings()->SetSyncRequested();
   std::unique_ptr<SyncSetupInProgressHandle> setup_in_progress_handle =
       sync_service()->GetSetupInProgressHandle();
 

@@ -193,7 +193,7 @@
     // Sync has to be set as requested in order to display the preferences
     // correctly and differentiate the special state where the user is signed
     // in, but the sync feature can't start yet.
-    _syncService->GetUserSettings()->SetSyncRequested(true);
+    _syncService->GetUserSettings()->SetSyncRequested();
   } else {
     // TODO(crbug.com/1254359): Dedupe duplicated code, here and in
     // user_signin_mediator.

@@ -110,10 +110,9 @@ jboolean SyncServiceAndroidBridge::IsSyncRequested(JNIEnv* env) {
   return native_sync_service_->GetUserSettings()->IsSyncRequested();
 }
 
-void SyncServiceAndroidBridge::SetSyncRequested(JNIEnv* env,
-                                                jboolean requested) {
+void SyncServiceAndroidBridge::SetSyncRequested(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  native_sync_service_->GetUserSettings()->SetSyncRequested(requested);
+  native_sync_service_->GetUserSettings()->SetSyncRequested();
 }
 
 jboolean SyncServiceAndroidBridge::CanSyncFeatureStart(JNIEnv* env) {

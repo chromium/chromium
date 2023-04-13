@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, AutofillCounter) {
   EXPECT_TRUE(IsSyncEnabled());
 
   // Stopping the Sync service triggers a restart.
-  sync_service->GetUserSettings()->SetSyncRequested(false);
+  sync_service->GetUserSettings()->ClearSyncRequested();
   WaitForCounting();
   EXPECT_FALSE(IsSyncEnabled());
 }
@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, PasswordCounter) {
   EXPECT_TRUE(IsSyncEnabled());
 
   // Stopping the Sync service triggers a restart.
-  sync_service->GetUserSettings()->SetSyncRequested(false);
+  sync_service->GetUserSettings()->ClearSyncRequested();
   WaitForCounting();
   EXPECT_FALSE(IsSyncEnabled());
 }
@@ -316,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(SyncAwareCounterTest, HistoryCounter) {
   // active again.
 
   // Stopping the Sync service triggers a restart.
-  sync_service->GetUserSettings()->SetSyncRequested(false);
+  sync_service->GetUserSettings()->ClearSyncRequested();
   WaitForCounting();
   EXPECT_FALSE(IsSyncEnabled());
 }

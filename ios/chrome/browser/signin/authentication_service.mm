@@ -414,7 +414,7 @@ void AuthenticationService::GrantSyncConsent(id<SystemIdentity> identity) {
   // badge in settings screen) check the sync auth error state. Sync
   // needs to be kicked off so that it resets the auth error quickly once
   // `identity` is reauthenticated.
-  sync_service_->GetUserSettings()->SetSyncRequested(true);
+  sync_service_->GetUserSettings()->SetSyncRequested();
 }
 
 void AuthenticationService::SignOut(

@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   // On ChromeOS, Sync-the-feature gets started automatically once a primary
   // account is signed in. To prevent that, explicitly set SyncRequested to
   // false.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested(false);
+  GetSyncService(0)->GetUserSettings()->ClearSyncRequested();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   // On ChromeOS, Sync-the-feature gets started automatically once a primary
   // account is signed in. To prevent that, explicitly set SyncRequested to
   // false.
-  GetSyncService(0)->GetUserSettings()->SetSyncRequested(false);
+  GetSyncService(0)->GetUserSettings()->ClearSyncRequested();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so
