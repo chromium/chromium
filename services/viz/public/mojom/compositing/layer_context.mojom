@@ -1,0 +1,47 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
+import "services/viz/public/mojom/compositing/local_surface_id.mojom";
+
+// Metadata about a layer tree to be updated with each LayerContext commit.
+struct LayerTreeUpdate {
+  gfx.mojom.Rect device_viewport;
+  float device_scale_factor;
+  LocalSurfaceId local_surface_id_from_parent;
+};
+
+// Drives updates to a GPU-side LayerTreeHostImpl from its corresponding
+// client-side (e.g. renderer- or browser-side) LayerTreeHost.
+interface LayerContext {
+  // Updates the LocalSurfaceId associated with the tree.
+  SetTargetLocalSurfaceId(LocalSurfaceId id);
+
+  // Globally controls whether the tree contents are visible.
+  SetVisible(bool visible);
+
+  // Flushes pending updates from the client to the LayerTreeHostImpl.
+  Commit(LayerTreeUpdate update);
+};
+
+// Provides feedback from a GPU-side LayerTreeHostImpl to its corresponding
+// client-side (e.g. renderer- or browser-side) LayerTreeHost.
+interface LayerContextClient {
+  // Sent by the LayerTreeHostImpl when it needs to produce a new frame soon and
+  // the client had previously indicated that it wants an opporunity to make
+  // changes to the tree before that frame is drawn.
+  OnRequestCommitForFrame(BeginFrameArgs args);
+};
+
+// Parameters needed to bind a LayerContext endpoint via a CompositorFrameSink.
+struct PendingLayerContext {
+  // TODO(https://crbug.com/1431762): De-associate these interfaces from
+  // CompositorFrameSink.
+  pending_associated_receiver<LayerContext> receiver;
+  pending_associated_remote<LayerContextClient> client;
+};
+

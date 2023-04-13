@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
 import "services/viz/public/mojom/compositing/compositor_frame.mojom";
+import "services/viz/public/mojom/compositing/layer_context.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/compositing/frame_timing_details.mojom";
 import "services/viz/public/mojom/compositing/returned_resource.mojom";
@@ -92,6 +93,13 @@ interface CompositorFrameSink {
   // the value has been set to anything other than kUnspecified, subsequent calls
   // are silently ignored.
   InitializeCompositorFrameSinkType(CompositorFrameSinkType type);
+
+  // Binds to the LayerContext interface for this frame sink. Once this is bound
+  // the frame sink is permanently in LayerContext mode and the client should no
+  // longer submit frames through the CompositorFrameSink interface. Instead
+  // frames will automtaically be submitted by Viz based on the state of a
+  // GPU-side layer tree which can be manipulated through this LayerContext.
+  BindLayerContext(PendingLayerContext context);
 
   // Informs the display compositor the IDs of the thread involved in frame
   // production. This is used on Android PerformanceHint API to dynamically

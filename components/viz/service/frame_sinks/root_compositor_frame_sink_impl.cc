@@ -25,6 +25,7 @@
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/frame_sinks/gpu_vsync_begin_frame_source.h"
 #include "components/viz/service/hit_test/hit_test_aggregator.h"
+#include "services/viz/public/mojom/compositing/layer_context.mojom.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -491,6 +492,11 @@ void RootCompositorFrameSinkImpl::DidDeleteSharedBitmap(
 void RootCompositorFrameSinkImpl::InitializeCompositorFrameSinkType(
     mojom::CompositorFrameSinkType type) {
   support_->InitializeCompositorFrameSinkType(type);
+}
+
+void RootCompositorFrameSinkImpl::BindLayerContext(
+    mojom::PendingLayerContextPtr context) {
+  support_->BindLayerContext(*context);
 }
 
 #if BUILDFLAG(IS_ANDROID)

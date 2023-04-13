@@ -6,6 +6,7 @@ include_rules = [
   "+components/viz/service/display",
   "+components/viz/service/display_embedder",
   "+components/viz/service/hit_test",
+  "+components/viz/service/layers",
   "+components/viz/service/performance_hint",
   "+components/viz/service/surfaces",
   "+components/viz/service/transitions",

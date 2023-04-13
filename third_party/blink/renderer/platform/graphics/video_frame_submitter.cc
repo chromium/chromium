@@ -30,6 +30,7 @@
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "services/viz/public/mojom/compositing/frame_sink_bundle.mojom-blink.h"
+#include "services/viz/public/mojom/compositing/layer_context.mojom-blink.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -151,6 +152,9 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
     }
     bundle_->InitializeCompositorFrameSinkType(frame_sink_id_.sink_id(), type);
   }
+
+  void BindLayerContext(
+      viz::mojom::blink::PendingLayerContextPtr context) override {}
 
 #if BUILDFLAG(IS_ANDROID)
   void SetThreadIds(const WTF::Vector<int32_t>& thread_ids) override {

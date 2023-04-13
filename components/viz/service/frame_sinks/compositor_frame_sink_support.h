@@ -29,11 +29,13 @@
 #include "components/viz/service/frame_sinks/surface_resource_holder_client.h"
 #include "components/viz/service/frame_sinks/video_capture/capturable_frame_sink.h"
 #include "components/viz/service/hit_test/hit_test_aggregator.h"
+#include "components/viz/service/layers/layer_context_impl.h"
 #include "components/viz/service/surfaces/frame_index_constants.h"
 #include "components/viz/service/surfaces/surface_client.h"
 #include "components/viz/service/transitions/surface_animation_manager.h"
 #include "components/viz/service/viz_service_export.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
+#include "services/viz/public/mojom/compositing/layer_context.mojom.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -41,6 +43,7 @@ namespace viz {
 
 class FrameSinkManagerImpl;
 class LatestLocalSurfaceIdLookupDelegate;
+class LayerContextImpl;
 class Surface;
 class SurfaceManager;
 
@@ -132,6 +135,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   base::TimeDelta GetPreferredFrameInterval(
       mojom::CompositorFrameSinkType* type) const;
   void InitializeCompositorFrameSinkType(mojom::CompositorFrameSinkType type);
+  void BindLayerContext(mojom::PendingLayerContext& context);
   void SetThreadIds(
       bool from_untrusted_client,
       base::flat_set<base::PlatformThreadId> unverified_thread_ids);
@@ -454,6 +458,10 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
 
   // Region capture bounds associated with the last surface that was aggregated.
   RegionCaptureBounds current_capture_bounds_;
+
+  // In LayerContext mode only, this is the Viz LayerContext implementation
+  // which owns the backend layer tree for this frame sink.
+  std::unique_ptr<LayerContextImpl> layer_context_impl_;
 
   base::WeakPtrFactory<CompositorFrameSinkSupport> weak_factory_{this};
 };
