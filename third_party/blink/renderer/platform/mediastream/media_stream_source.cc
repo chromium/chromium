@@ -149,7 +149,8 @@ MediaStreamSource::MediaStreamSource(const String& id,
       name_(name),
       remote_(remote),
       ready_state_(ready_state),
-      requires_consumer_(requires_consumer) {
+      requires_consumer_(requires_consumer),
+      audio_consumer_lock_("MediaStreamSource") {
   SendLogMessage(
       String::Format(
           "MediaStreamSource({id=%s}, {type=%s}, {name=%s}, {remote=%d}, "
