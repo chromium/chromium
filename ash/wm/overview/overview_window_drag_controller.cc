@@ -347,10 +347,11 @@ void OverviewWindowDragController::StartNormalDragMode(
 
   // Expand desks bar when normal drag starts and desks bar is in zero state for
   // feature Jellyroll.
-  if (chromeos::features::IsJellyrollEnabled() &&
-      overview_grid->desks_bar_view()->IsZeroState()) {
-    overview_grid->desks_bar_view()->UpdateNewMiniViews(
-        /*initializing_bar_view=*/false, /*expanding_bar_view=*/true);
+  auto* desks_bar_view = overview_grid->desks_bar_view();
+  if (desks_bar_view && desks_bar_view->IsZeroState() &&
+      chromeos::features::IsJellyrollEnabled()) {
+    desks_bar_view->UpdateNewMiniViews(/*initializing_bar_view=*/false,
+                                       /*expanding_bar_view=*/true);
   }
 
   item_->UpdateShadowTypeForDrag(/*is_dragging=*/true);
@@ -675,8 +676,9 @@ void OverviewWindowDragController::ContinueNormalDrag(
   bounds.set_y(centerpoint.y() - bounds.height() / 2.f);
   item_->SetBounds(bounds, OVERVIEW_ANIMATION_NONE);
 
-  if (chromeos::features::IsJellyrollEnabled()) {
-    auto* new_desk_button = overview_grid->desks_bar_view()->new_desk_button();
+  auto* desks_bar_view = overview_grid->desks_bar_view();
+  if (desks_bar_view && chromeos::features::IsJellyrollEnabled()) {
+    auto* new_desk_button = desks_bar_view->new_desk_button();
 
     // When `Jellyroll` is enabled, the header of window is shown during
     // dragging. Overview item should be hovered on the new desk button with
@@ -776,6 +778,7 @@ OverviewWindowDragController::CompleteNormalDrag(
     }
   }
 
+  auto* desks_bar_view = current_grid->desks_bar_view();
   // Snap a window if appropriate.
   if (should_allow_split_view_ &&
       snap_position_ != SplitViewController::SnapPosition::kNone) {
@@ -786,8 +789,7 @@ OverviewWindowDragController::CompleteNormalDrag(
     // ended. Thus we need to check whether `overview_session_` is being
     // shutting down or not here before triggering `MaybeShrinkDesksBarView`.
     if (!overview_session_->is_shutting_down()) {
-      if (chromeos::features::IsJellyrollEnabled()) {
-        auto* desks_bar_view = current_grid->desks_bar_view();
+      if (desks_bar_view && chromeos::features::IsJellyrollEnabled()) {
         desks_bar_view->UpdateDeskIconButtonState(
             desks_bar_view->new_desk_button(),
             CrOSNextDeskIconButton::State::kExpanded);
@@ -833,8 +835,7 @@ OverviewWindowDragController::CompleteNormalDrag(
   } else {
     item_->set_should_restack_on_animation_end(true);
     overview_session_->PositionWindows(/*animate=*/true);
-    if (chromeos::features::IsJellyrollEnabled()) {
-      auto* desks_bar_view = current_grid->desks_bar_view();
+    if (desks_bar_view && chromeos::features::IsJellyrollEnabled()) {
       desks_bar_view->UpdateDeskIconButtonState(
           desks_bar_view->new_desk_button(),
           CrOSNextDeskIconButton::State::kExpanded);

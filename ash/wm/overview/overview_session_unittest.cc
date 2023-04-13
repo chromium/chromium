@@ -103,6 +103,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -2601,7 +2602,8 @@ TEST_P(OverviewSessionTest, ShadowBounds) {
   // Helper function which returns the ratio of the item width and height minus
   // the header and window margin.
   auto item_ratio = [](OverviewItem* item) {
-    gfx::RectF boundsf = item->GetWindowTargetBoundsWithInsets();
+    gfx::RectF boundsf = item->target_bounds();
+    boundsf.Inset(gfx::InsetsF(kWindowMargin));
     return boundsf.width() / boundsf.height();
   };
 
@@ -2644,7 +2646,7 @@ TEST_P(OverviewSessionTest, ShadowBounds) {
   // the header of window margin.
   EXPECT_NEAR(shadow_ratio(wide_item), item_ratio(wide_item), 0.01f);
   EXPECT_NEAR(shadow_ratio(tall_item), item_ratio(tall_item), 0.01f);
-  EXPECT_NEAR(shadow_ratio(normal_item), 1.f, 0.01f);
+  EXPECT_NEAR(shadow_ratio(normal_item), item_ratio(normal_item), 0.01f);
 
   // Verify all the shadows are within the bounds of their respective item
   // widgets when the overview windows are positioned with animations.
@@ -2657,7 +2659,7 @@ TEST_P(OverviewSessionTest, ShadowBounds) {
 
   EXPECT_NEAR(shadow_ratio(wide_item), item_ratio(wide_item), 0.01f);
   EXPECT_NEAR(shadow_ratio(tall_item), item_ratio(tall_item), 0.01f);
-  EXPECT_NEAR(shadow_ratio(normal_item), 1.f, 0.01f);
+  EXPECT_NEAR(shadow_ratio(normal_item), item_ratio(normal_item), 0.01f);
 
   // Test that leaving overview mode cleans up properly.
   ToggleOverview();

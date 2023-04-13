@@ -100,9 +100,9 @@ OverviewItemView::OverviewItemView(
   // elements existing.
   SetShowPreview(show_preview);
   // Do not show header if the current overview item is the drop target widget.
-  if (show_preview || overview_item_->overview_grid()->IsDropTargetWindow(
-                          overview_item_->GetWindow())) {
-    header_view()->layer()->SetOpacity(0.f);
+  if (overview_item_->overview_grid()->IsDropTargetWindow(
+          overview_item_->GetWindow())) {
+    header_view()->SetVisible(false);
     current_header_visibility_ = HeaderVisibility::kInvisible;
   }
 

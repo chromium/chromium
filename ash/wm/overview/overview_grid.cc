@@ -832,6 +832,8 @@ void OverviewGrid::AddDropTargetForDraggingFromThisGrid(
   drop_target_widget_ =
       CreateDropTargetWidget(root_window_, dragged_item->GetWindow());
   const size_t position = GetOverviewItemIndex(dragged_item) + 1u;
+  // TODO(b/277979324): Consider avoid creating overview item for drop target
+  // widget.
   overview_session_->AddItem(drop_target_widget_->GetNativeWindow(),
                              /*reposition=*/true, /*animate=*/false,
                              /*ignored_items=*/{dragged_item}, position);
@@ -850,6 +852,8 @@ void OverviewGrid::AddDropTargetNotForDraggingFromThisGrid(
     drop_target_widget_->SetOpacity(1.f);
   }
   const size_t position = FindInsertionIndex(dragged_window);
+  // TODO(b/277979324): Consider avoid creating overview item for drop target
+  // widget.
   overview_session_->AddItem(drop_target_window, /*reposition=*/true, animate,
                              /*ignored_items=*/{}, position);
 }
