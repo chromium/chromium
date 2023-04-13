@@ -7811,6 +7811,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSmdsSupportDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSmdsSupport)},
 
+    {"smds-support-euicc-upload",
+     flag_descriptions::kSmdsSupportEuiccUploadName,
+     flag_descriptions::kSmdsSupportEuiccUploadDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kSmdsSupportEuiccUpload)},
+
     {"smds-dbus-migration", flag_descriptions::kSmdsDbusMigrationName,
      flag_descriptions::kSmdsDbusMigrationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSmdsDbusMigration)},

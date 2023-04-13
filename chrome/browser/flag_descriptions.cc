@@ -6442,6 +6442,13 @@ const char kSmdsSupportDescription[] =
     "eSIM profiles using Subscription Manager Discovery Service (SM-DS). This "
     "flag is a no-op unless the smds-dbus-migration flag is enabled";
 
+const char kSmdsSupportEuiccUploadName[] = "SM-DS Support EUICC Upload";
+const char kSmdsSupportEuiccUploadDescription[] =
+    "Feature to enable tracking when a policy-defined cellular network "
+    "configured to use SM-DS has already been applied and an eSIM profile for "
+    "the network was installed. This flag is a no-op unless the smds-support "
+    "and smds-dbus-migration flags are enabled.";
+
 const char kSmdsDbusMigrationName[] = "SM-DS DBus Migration";
 const char kSmdsDbusMigrationDescription[] =
     "Feature to enable the usage of DBus APIs that improve the stability"

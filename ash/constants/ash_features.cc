@@ -2017,6 +2017,10 @@ BASE_FEATURE(kSmartLockUIRevamp,
 
 BASE_FEATURE(kSmdsSupport, "SmdsSupport", base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSmdsSupportEuiccUpload,
+             "SmdsSupportEuiccUpload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSmdsDbusMigration,
              "SmdsDbusMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3309,6 +3313,12 @@ bool IsShimlessRMADiagnosticPageEnabled() {
 bool IsSmdsSupportEnabled() {
   return base::FeatureList::IsEnabled(kSmdsDbusMigration) &&
          base::FeatureList::IsEnabled(kSmdsSupport);
+}
+
+bool IsSmdsSupportEuiccUploadEnabled() {
+  return base::FeatureList::IsEnabled(kSmdsDbusMigration) &&
+         base::FeatureList::IsEnabled(kSmdsSupport) &&
+         base::FeatureList::IsEnabled(kSmdsSupportEuiccUpload);
 }
 
 bool IsSmdsDbusMigrationEnabled() {
