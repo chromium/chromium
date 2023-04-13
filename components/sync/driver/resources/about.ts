@@ -7,7 +7,7 @@ import 'chrome://resources/js/jstemplate_compiled.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {addWebUiListener, removeWebUiListener, WebUiListener} from 'chrome://resources/js/cr.js';
 
-import {requestDataAndRegisterForUpdates, requestStart, requestStopClearData, requestStopKeepData, setIncludeSpecifics, triggerRefresh} from './chrome_sync.js';
+import {requestDataAndRegisterForUpdates, requestStart, requestStopClearData, setIncludeSpecifics, triggerRefresh} from './chrome_sync.js';
 import {ProtocolEvent} from './traffic_log.js';
 
 // Contains the latest snapshot of sync about info.
@@ -266,10 +266,6 @@ function onLoad() {
   const requestStartEl = document.querySelector<HTMLElement>('#request-start');
   assert(requestStartEl);
   requestStartEl.addEventListener('click', requestStart);
-  const requestStopKeepDataEl =
-      document.querySelector<HTMLElement>('#request-stop-keep-data');
-  assert(requestStopKeepDataEl);
-  requestStopKeepDataEl.addEventListener('click', requestStopKeepData);
   const requestStopClearDataEl =
       document.querySelector<HTMLElement>('#request-stop-clear-data');
   assert(requestStopClearDataEl);

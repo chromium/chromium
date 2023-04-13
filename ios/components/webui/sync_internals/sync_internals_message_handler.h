@@ -57,9 +57,6 @@ class SyncInternalsMessageHandler : public web::WebUIIOSMessageHandler,
   // Handler for requestStart message.
   void HandleRequestStart(const base::Value::List& args);
 
-  // Handler for requestStopKeepData message.
-  void HandleRequestStopKeepData(const base::Value::List& args);
-
   // Handler for requestStopClearData message.
   void HandleRequestStopClearData(const base::Value::List& args);
 

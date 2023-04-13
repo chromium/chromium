@@ -78,13 +78,6 @@ export function requestStart() {
 }
 
 /**
- * Stops the SyncService while keeping the sync data around.
- */
-export function requestStopKeepData() {
-  chrome.send('requestStopKeepData');
-}
-
-/**
  * Stops the SyncService and clears the sync data.
  */
 export function requestStopClearData() {

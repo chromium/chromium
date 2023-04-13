@@ -24,7 +24,6 @@ bool WebViewSyncInternalsUI::OverrideHandleWebUIIOSMessage(
   // ios/web_view only supports sync in transport mode. Explicitly override sync
   // start and stop messages and perform a no op.
   return message == syncer::sync_ui_util::kRequestStart ||
-         message == syncer::sync_ui_util::kRequestStopKeepData ||
          message == syncer::sync_ui_util::kRequestStopClearData;
 }
 

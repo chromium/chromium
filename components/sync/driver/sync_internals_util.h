@@ -47,7 +47,6 @@ inline constexpr char kRequestIncludeSpecificsInitialState[] =
     "requestIncludeSpecificsInitialState";
 inline constexpr char kRequestListOfTypes[] = "requestListOfTypes";
 inline constexpr char kRequestStart[] = "requestStart";
-inline constexpr char kRequestStopKeepData[] = "requestStopKeepData";
 inline constexpr char kRequestStopClearData[] = "requestStopClearData";
 inline constexpr char kSetIncludeSpecifics[] = "setIncludeSpecifics";
 inline constexpr char kTriggerRefresh[] = "triggerRefresh";

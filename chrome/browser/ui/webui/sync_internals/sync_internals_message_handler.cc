@@ -128,12 +128,6 @@ void SyncInternalsMessageHandler::RegisterMessages() {
                           base::Unretained(this)));
 
   web_ui()->RegisterMessageCallback(
-      syncer::sync_ui_util::kRequestStopKeepData,
-      base::BindRepeating(
-          &SyncInternalsMessageHandler::HandleRequestStopKeepData,
-          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
       syncer::sync_ui_util::kRequestStopClearData,
       base::BindRepeating(
           &SyncInternalsMessageHandler::HandleRequestStopClearData,
@@ -266,18 +260,6 @@ void SyncInternalsMessageHandler::HandleRequestStart(
   // fully start up. So set that too.
   service->GetUserSettings()->SetFirstSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-}
-
-void SyncInternalsMessageHandler::HandleRequestStopKeepData(
-    const base::Value::List& args) {
-  DCHECK_EQ(0U, args.size());
-
-  SyncService* service = GetSyncService();
-  if (!service) {
-    return;
-  }
-
-  service->GetUserSettings()->ClearSyncRequested();
 }
 
 void SyncInternalsMessageHandler::HandleRequestStopClearData(
