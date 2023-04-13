@@ -25,7 +25,6 @@ class EventMetricsTest : public testing::Test {
 TEST_F(EventMetricsTest, ScrollBeginCreateWithNullBeginRwhTime) {
   // Arrange
   base::TimeTicks event_time = base::TimeTicks::Now() - base::Microseconds(100);
-  base::TimeTicks blocking_touch_dispatched_to_renderer_timestamp;
   base::TimeTicks arrived_in_browser_main_timestamp;
   base::TimeTicks now = base::TimeTicks::Now();
 
@@ -33,8 +32,7 @@ TEST_F(EventMetricsTest, ScrollBeginCreateWithNullBeginRwhTime) {
   std::unique_ptr<ScrollEventMetrics> scroll_event_metric =
       ScrollEventMetrics::Create(
           ui::ET_GESTURE_SCROLL_BEGIN, ui::ScrollInputType::kTouchscreen,
-          /*is_inertial=*/false, event_time, arrived_in_browser_main_timestamp,
-          blocking_touch_dispatched_to_renderer_timestamp);
+          /*is_inertial=*/false, event_time, arrived_in_browser_main_timestamp);
 
   // Assert
   EXPECT_EQ(event_time, scroll_event_metric->GetDispatchStageTimestamp(
@@ -43,11 +41,6 @@ TEST_F(EventMetricsTest, ScrollBeginCreateWithNullBeginRwhTime) {
             scroll_event_metric->GetDispatchStageTimestamp(
                 EventMetrics::DispatchStage::kArrivedInRendererCompositor));
   // not set
-  EXPECT_TRUE(scroll_event_metric
-                  ->GetDispatchStageTimestamp(
-                      EventMetrics::DispatchStage::
-                          kScrollsBlockingTouchDispatchedToRenderer)
-                  .is_null());
   EXPECT_TRUE(scroll_event_metric
                   ->GetDispatchStageTimestamp(
                       EventMetrics::DispatchStage::kArrivedInBrowserMain)
@@ -73,8 +66,6 @@ TEST_F(EventMetricsTest, ScrollBeginCreateWithNullBeginRwhTime) {
 TEST_F(EventMetricsTest, ScrollBeginCreate) {
   // Arrange
   base::TimeTicks event_time = base::TimeTicks::Now() - base::Microseconds(100);
-  base::TimeTicks blocking_touch_dispatched_to_renderer_timestamp =
-      base::TimeTicks::Now() - base::Microseconds(70);
   base::TimeTicks arrived_in_browser_main_timestamp =
       base::TimeTicks::Now() - base::Microseconds(50);
   base::TimeTicks now = base::TimeTicks::Now();
@@ -83,16 +74,11 @@ TEST_F(EventMetricsTest, ScrollBeginCreate) {
   std::unique_ptr<ScrollEventMetrics> scroll_event_metric =
       ScrollEventMetrics::Create(
           ui::ET_GESTURE_SCROLL_BEGIN, ui::ScrollInputType::kTouchscreen,
-          /*is_inertial=*/false, event_time, arrived_in_browser_main_timestamp,
-          blocking_touch_dispatched_to_renderer_timestamp);
+          /*is_inertial=*/false, event_time, arrived_in_browser_main_timestamp);
 
   // Assert
   EXPECT_EQ(event_time, scroll_event_metric->GetDispatchStageTimestamp(
                             EventMetrics::DispatchStage::kGenerated));
-  EXPECT_EQ(blocking_touch_dispatched_to_renderer_timestamp,
-            scroll_event_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::
-                    kScrollsBlockingTouchDispatchedToRenderer));
   EXPECT_EQ(arrived_in_browser_main_timestamp,
             scroll_event_metric->GetDispatchStageTimestamp(
                 EventMetrics::DispatchStage::kArrivedInBrowserMain));
@@ -121,15 +107,12 @@ TEST_F(EventMetricsTest, ScrollBeginCreate) {
 TEST_F(EventMetricsTest, ScrollBeginCreateFromExisting) {
   // Arrange
   base::TimeTicks event_time = base::TimeTicks::Now() - base::Microseconds(100);
-  base::TimeTicks blocking_touch_dispatched_to_renderer_timestamp =
-      base::TimeTicks::Now() - base::Microseconds(70);
   base::TimeTicks arrived_in_browser_main_timestamp =
       base::TimeTicks::Now() - base::Microseconds(50);
   std::unique_ptr<ScrollEventMetrics> scroll_metric =
       ScrollEventMetrics::Create(
           ui::ET_GESTURE_SCROLL_BEGIN, ui::ScrollInputType::kTouchscreen,
-          /*is_inertial=*/false, event_time, arrived_in_browser_main_timestamp,
-          blocking_touch_dispatched_to_renderer_timestamp);
+          /*is_inertial=*/false, event_time, arrived_in_browser_main_timestamp);
 
   // Act
   std::unique_ptr<ScrollEventMetrics> copy_scroll_metric =
@@ -144,12 +127,6 @@ TEST_F(EventMetricsTest, ScrollBeginCreateFromExisting) {
                 EventMetrics::DispatchStage::kGenerated),
             copy_scroll_metric->GetDispatchStageTimestamp(
                 EventMetrics::DispatchStage::kGenerated));
-  EXPECT_EQ(scroll_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::
-                    kScrollsBlockingTouchDispatchedToRenderer),
-            copy_scroll_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::
-                    kScrollsBlockingTouchDispatchedToRenderer));
   EXPECT_EQ(scroll_metric->GetDispatchStageTimestamp(
                 EventMetrics::DispatchStage::kArrivedInBrowserMain),
             copy_scroll_metric->GetDispatchStageTimestamp(
@@ -184,7 +161,6 @@ TEST_F(EventMetricsTest, ScrollBeginCreateFromExisting) {
 TEST_F(EventMetricsTest, ScrollUpdateCreateWithNullBeginRwhTime) {
   // Arrange
   base::TimeTicks event_time = base::TimeTicks::Now() - base::Microseconds(100);
-  base::TimeTicks blocking_touch_dispatched_to_renderer_timestamp;
   base::TimeTicks arrived_in_browser_main_timestamp;
   base::TimeTicks now = base::TimeTicks::Now();
   TraceId trace_id(123);
@@ -195,8 +171,7 @@ TEST_F(EventMetricsTest, ScrollUpdateCreateWithNullBeginRwhTime) {
           ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kTouchscreen,
           /*is_inertial=*/false,
           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, /*delta=*/0.4,
-          event_time, arrived_in_browser_main_timestamp, trace_id,
-          blocking_touch_dispatched_to_renderer_timestamp);
+          event_time, arrived_in_browser_main_timestamp, trace_id);
 
   // Assert
   EXPECT_EQ(trace_id, scroll_event_metric->trace_id());
@@ -206,11 +181,6 @@ TEST_F(EventMetricsTest, ScrollUpdateCreateWithNullBeginRwhTime) {
             scroll_event_metric->GetDispatchStageTimestamp(
                 EventMetrics::DispatchStage::kArrivedInRendererCompositor));
   // not set
-  EXPECT_TRUE(scroll_event_metric
-                  ->GetDispatchStageTimestamp(
-                      EventMetrics::DispatchStage::
-                          kScrollsBlockingTouchDispatchedToRenderer)
-                  .is_null());
   EXPECT_TRUE(scroll_event_metric
                   ->GetDispatchStageTimestamp(
                       EventMetrics::DispatchStage::kArrivedInBrowserMain)
@@ -236,8 +206,6 @@ TEST_F(EventMetricsTest, ScrollUpdateCreateWithNullBeginRwhTime) {
 TEST_F(EventMetricsTest, ScrollUpdateCreate) {
   // Arrange
   base::TimeTicks event_time = base::TimeTicks::Now() - base::Microseconds(100);
-  base::TimeTicks blocking_touch_dispatched_to_renderer_timestamp =
-      base::TimeTicks::Now() - base::Microseconds(70);
   base::TimeTicks arrived_in_browser_main_timestamp =
       base::TimeTicks::Now() - base::Microseconds(50);
   base::TimeTicks now = base::TimeTicks::Now();
@@ -249,17 +217,12 @@ TEST_F(EventMetricsTest, ScrollUpdateCreate) {
           ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kTouchscreen,
           /*is_inertial=*/false,
           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, /*delta=*/0.4,
-          event_time, arrived_in_browser_main_timestamp, TraceId(trace_id),
-          blocking_touch_dispatched_to_renderer_timestamp);
+          event_time, arrived_in_browser_main_timestamp, TraceId(trace_id));
 
   // Assert
   EXPECT_EQ(trace_id, scroll_event_metric->trace_id());
   EXPECT_EQ(event_time, scroll_event_metric->GetDispatchStageTimestamp(
                             EventMetrics::DispatchStage::kGenerated));
-  EXPECT_EQ(blocking_touch_dispatched_to_renderer_timestamp,
-            scroll_event_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::
-                    kScrollsBlockingTouchDispatchedToRenderer));
   EXPECT_EQ(arrived_in_browser_main_timestamp,
             scroll_event_metric->GetDispatchStageTimestamp(
                 EventMetrics::DispatchStage::kArrivedInBrowserMain));
@@ -288,8 +251,6 @@ TEST_F(EventMetricsTest, ScrollUpdateCreate) {
 TEST_F(EventMetricsTest, ScrollUpdateCreateFromExisting) {
   // Arrange
   base::TimeTicks event_time = base::TimeTicks::Now() - base::Microseconds(100);
-  base::TimeTicks blocking_touch_dispatched_to_renderer_timestamp =
-      base::TimeTicks::Now() - base::Microseconds(70);
   base::TimeTicks arrived_in_browser_main_timestamp =
       base::TimeTicks::Now() - base::Microseconds(50);
   TraceId trace_id(123);
@@ -298,8 +259,7 @@ TEST_F(EventMetricsTest, ScrollUpdateCreateFromExisting) {
           ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kTouchscreen,
           /*is_inertial=*/false,
           ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, /*delta=*/0.4,
-          event_time, arrived_in_browser_main_timestamp, trace_id,
-          blocking_touch_dispatched_to_renderer_timestamp);
+          event_time, arrived_in_browser_main_timestamp, trace_id);
 
   // Act
   std::unique_ptr<ScrollUpdateEventMetrics> copy_scroll_metric =
@@ -317,12 +277,6 @@ TEST_F(EventMetricsTest, ScrollUpdateCreateFromExisting) {
             copy_scroll_metric->GetDispatchStageTimestamp(
                 EventMetrics::DispatchStage::kGenerated));
   EXPECT_EQ(scroll_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::
-                    kScrollsBlockingTouchDispatchedToRenderer),
-            copy_scroll_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::
-                    kScrollsBlockingTouchDispatchedToRenderer));
-  EXPECT_EQ(scroll_metric->GetDispatchStageTimestamp(
                 EventMetrics::DispatchStage::kArrivedInBrowserMain),
             copy_scroll_metric->GetDispatchStageTimestamp(
                 EventMetrics::DispatchStage::kArrivedInBrowserMain));
@@ -350,96 +304,6 @@ TEST_F(EventMetricsTest, ScrollUpdateCreateFromExisting) {
   EXPECT_EQ(scroll_metric->GetDispatchStageTimestamp(
                 EventMetrics::DispatchStage::kRendererMainFinished),
             copy_scroll_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::kRendererMainFinished));
-}
-
-TEST_F(EventMetricsTest, Create) {
-  // Arrange
-  base::TimeTicks event_time = base::TimeTicks::Now() - base::Microseconds(100);
-  base::TimeTicks arrived_in_browser_main_timestamp =
-      base::TimeTicks::Now() - base::Microseconds(50);
-  base::TimeTicks now = base::TimeTicks::Now();
-
-  // Act
-  std::unique_ptr<EventMetrics> event_metric = EventMetrics::Create(
-      ui::ET_TOUCH_MOVED, event_time, arrived_in_browser_main_timestamp);
-
-  // Assert
-  EXPECT_EQ(event_time, event_metric->GetDispatchStageTimestamp(
-                            EventMetrics::DispatchStage::kGenerated));
-  EXPECT_EQ(arrived_in_browser_main_timestamp,
-            event_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::kArrivedInBrowserMain));
-  EXPECT_LE(now,
-            event_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::kArrivedInRendererCompositor));
-  // not set
-  EXPECT_TRUE(event_metric
-                  ->GetDispatchStageTimestamp(
-                      EventMetrics::DispatchStage::kRendererCompositorStarted)
-                  .is_null());
-  EXPECT_TRUE(event_metric
-                  ->GetDispatchStageTimestamp(
-                      EventMetrics::DispatchStage::kRendererCompositorFinished)
-                  .is_null());
-  EXPECT_TRUE(event_metric
-                  ->GetDispatchStageTimestamp(
-                      EventMetrics::DispatchStage::kRendererMainStarted)
-                  .is_null());
-  EXPECT_TRUE(event_metric
-                  ->GetDispatchStageTimestamp(
-                      EventMetrics::DispatchStage::kRendererMainFinished)
-                  .is_null());
-}
-
-TEST_F(EventMetricsTest, CreateFromExisting) {
-  // Arrange
-  base::TimeTicks event_time = base::TimeTicks::Now() - base::Microseconds(100);
-  base::TimeTicks arrived_in_browser_main_timestamp =
-      base::TimeTicks::Now() - base::Microseconds(50);
-  std::unique_ptr<EventMetrics> event_metric = EventMetrics::Create(
-      ui::ET_TOUCH_MOVED, event_time, arrived_in_browser_main_timestamp);
-
-  // Act
-  std::unique_ptr<EventMetrics> copy_event_metric =
-      EventMetrics::CreateFromExisting(
-          ui::ET_TOUCH_MOVED,
-          EventMetrics::DispatchStage::kRendererMainFinished,
-          event_metric.get());
-
-  // Assert
-  EXPECT_EQ(event_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::kGenerated),
-            copy_event_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::kGenerated));
-  EXPECT_EQ(event_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::kArrivedInBrowserMain),
-            copy_event_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::kArrivedInBrowserMain));
-
-  EXPECT_EQ(event_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::kArrivedInRendererCompositor),
-            copy_event_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::kArrivedInRendererCompositor));
-
-  EXPECT_EQ(event_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::kRendererCompositorStarted),
-            copy_event_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::kRendererCompositorStarted));
-
-  EXPECT_EQ(event_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::kRendererCompositorFinished),
-            copy_event_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::kRendererCompositorFinished));
-
-  EXPECT_EQ(event_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::kRendererMainStarted),
-            copy_event_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::kRendererMainStarted));
-
-  EXPECT_EQ(event_metric->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::kRendererMainFinished),
-            copy_event_metric->GetDispatchStageTimestamp(
                 EventMetrics::DispatchStage::kRendererMainFinished));
 }
 

@@ -36,6 +36,5 @@ include_rules = [
     "+ui/gfx/display_color_spaces.h",
     "+ui/gfx/geometry",
     "+ui/latency/latency_info.h",
-    "+ui/events/event_latency_metadata.h",
     "+url",
 ]

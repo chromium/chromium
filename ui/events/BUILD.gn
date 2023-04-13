@@ -98,7 +98,6 @@ component("events_base") {
   sources = [
     "base_event_utils.cc",
     "base_event_utils.h",
-    "event_latency_metadata.h",
     "event_switches.cc",
     "event_switches.h",
     "events_base_export.h",
@@ -497,7 +496,6 @@ component("gesture_detection") {
     "//ui/display",
     "//ui/gfx",
     "//ui/gfx/geometry",
-    "//ui/latency",
   ]
 
   defines = [ "GESTURE_DETECTION_IMPLEMENTATION" ]

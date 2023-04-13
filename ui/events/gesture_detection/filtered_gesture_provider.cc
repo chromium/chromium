@@ -62,11 +62,9 @@ FilteredGestureProvider::OnTouchEvent(const MotionEvent& event) {
 void FilteredGestureProvider::OnTouchEventAck(
     uint32_t unique_event_id,
     bool event_consumed,
-    bool is_source_touch_event_set_blocking,
-    const absl::optional<EventLatencyMetadata>& event_latency_metadata) {
+    bool is_source_touch_event_set_blocking) {
   gesture_filter_.OnTouchEventAck(unique_event_id, event_consumed,
-                                  is_source_touch_event_set_blocking,
-                                  event_latency_metadata);
+                                  is_source_touch_event_set_blocking);
 }
 
 void FilteredGestureProvider::ResetGestureHandlingState() {

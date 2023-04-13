@@ -122,15 +122,4 @@ void GestureEventDataPacket::Ack(bool event_consumed,
   }
 }
 
-void GestureEventDataPacket::AddEventLatencyMetadataToGestures(
-    const EventLatencyMetadata& event_latency_metadata,
-    const base::RepeatingCallback<bool(const ui::GestureEventData&)>& filter) {
-  for (auto& gesture : gestures_) {
-    if (filter.Run(gesture)) {
-      gesture.details.GetModifiableEventLatencyMetadata() =
-          event_latency_metadata;
-    }
-  }
-}
-
 }  // namespace ui

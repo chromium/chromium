@@ -297,7 +297,6 @@ mojom("mojom_platform") {
     "//ui/base/mojom",
     "//ui/display/mojom",
     "//ui/events/mojom",
-    "//ui/events/mojom:event_latency_metadata_mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
     "//ui/gfx/range/mojom",

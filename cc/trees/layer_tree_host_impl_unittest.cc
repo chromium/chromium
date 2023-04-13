@@ -14370,8 +14370,7 @@ TEST_F(LayerTreeHostImplTest,
                : ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
         /*delta=*/10.0f, base::TimeTicks::Now(),
         base::TimeTicks::Now() + base::Milliseconds(1),
-        /*trace_id*/ base::IdType64<class ui::LatencyInfo>(123),
-        base::TimeTicks()));
+        /*trace_id*/ base::IdType64<class ui::LatencyInfo>(123)));
     host_impl_->active_tree()->AppendEventsMetricsFromMainThread(
         std::move(events_metrics));
 

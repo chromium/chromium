@@ -213,14 +213,6 @@ bool IsGestureScrollUpdate(ui::EventType type) {
 // static
 std::unique_ptr<EventMetrics> EventMetrics::Create(ui::EventType type,
                                                    base::TimeTicks timestamp) {
-  return Create(type, timestamp, base::TimeTicks());
-}
-
-// static
-std::unique_ptr<EventMetrics> EventMetrics::Create(
-    ui::EventType type,
-    base::TimeTicks timestamp,
-    base::TimeTicks arrived_in_browser_main_timestamp) {
   // TODO(crbug.com/1157090): We expect that `timestamp` is not null, but there
   // seems to be some tests that are emitting events with null timestamp. We
   // should investigate and try to fix those cases and add a `DCHECK` here to
@@ -229,8 +221,7 @@ std::unique_ptr<EventMetrics> EventMetrics::Create(
   DCHECK(!IsGestureScroll(type) && !IsGesturePinch(type));
 
   std::unique_ptr<EventMetrics> metrics =
-      CreateInternal(type, timestamp, arrived_in_browser_main_timestamp,
-                     base::DefaultTickClock::GetInstance());
+      CreateInternal(type, timestamp, base::DefaultTickClock::GetInstance());
   if (!metrics)
     return nullptr;
 
@@ -243,12 +234,11 @@ std::unique_ptr<EventMetrics> EventMetrics::Create(
 std::unique_ptr<EventMetrics> EventMetrics::CreateForTesting(
     ui::EventType type,
     base::TimeTicks timestamp,
-    base::TimeTicks arrived_in_browser_main_timestamp,
     const base::TickClock* tick_clock) {
   DCHECK(!timestamp.is_null());
 
   std::unique_ptr<EventMetrics> metrics =
-      CreateInternal(type, timestamp, base::TimeTicks(), tick_clock);
+      CreateInternal(type, timestamp, tick_clock);
   if (!metrics)
     return nullptr;
 
@@ -270,8 +260,8 @@ std::unique_ptr<EventMetrics> EventMetrics::CreateFromExisting(
   if (!existing)
     return nullptr;
 
-  std::unique_ptr<EventMetrics> metrics = CreateInternal(
-      type, base::TimeTicks(), base::TimeTicks(), existing->tick_clock_);
+  std::unique_ptr<EventMetrics> metrics =
+      CreateInternal(type, base::TimeTicks(), existing->tick_clock_);
   if (!metrics)
     return nullptr;
 
@@ -286,16 +276,14 @@ std::unique_ptr<EventMetrics> EventMetrics::CreateFromExisting(
 std::unique_ptr<EventMetrics> EventMetrics::CreateInternal(
     ui::EventType type,
     base::TimeTicks timestamp,
-    base::TimeTicks arrived_in_browser_main_timestamp,
     const base::TickClock* tick_clock) {
   absl::optional<EventType> interesting_type =
       ToInterestingEventType(type, /*scroll_is_inertial=*/absl::nullopt,
                              /*scroll_update_type=*/absl::nullopt);
   if (!interesting_type)
     return nullptr;
-  return base::WrapUnique(new EventMetrics(*interesting_type, timestamp,
-                                           arrived_in_browser_main_timestamp,
-                                           tick_clock));
+  return base::WrapUnique(
+      new EventMetrics(*interesting_type, timestamp, tick_clock));
 }
 
 EventMetrics::EventMetrics(EventType type,
@@ -353,13 +341,6 @@ void EventMetrics::SetDispatchStageTimestamp(DispatchStage stage) {
 
   dispatch_stage_timestamps_[static_cast<size_t>(stage)] =
       tick_clock_->NowTicks();
-}
-
-void EventMetrics::SetDispatchStageTimestamp(DispatchStage stage,
-                                             base::TimeTicks timestamp) {
-  DCHECK(dispatch_stage_timestamps_[static_cast<size_t>(stage)].is_null());
-
-  dispatch_stage_timestamps_[static_cast<size_t>(stage)] = timestamp;
 }
 
 base::TimeTicks EventMetrics::GetDispatchStageTimestamp(
@@ -424,8 +405,7 @@ std::unique_ptr<ScrollEventMetrics> ScrollEventMetrics::Create(
     ui::ScrollInputType input_type,
     bool is_inertial,
     base::TimeTicks timestamp,
-    base::TimeTicks arrived_in_browser_main_timestamp,
-    base::TimeTicks blocking_touch_dispatched_to_renderer) {
+    base::TimeTicks arrived_in_browser_main_timestamp) {
   // TODO(crbug.com/1157090): We expect that `timestamp` is not null, but there
   // seems to be some tests that are emitting events with null timestamp.  We
   // should investigate and try to fix those cases and add a `DCHECK` here to
@@ -441,9 +421,6 @@ std::unique_ptr<ScrollEventMetrics> ScrollEventMetrics::Create(
 
   metrics->SetDispatchStageTimestamp(
       DispatchStage::kArrivedInRendererCompositor);
-  metrics->SetDispatchStageTimestamp(
-      DispatchStage::kScrollsBlockingTouchDispatchedToRenderer,
-      blocking_touch_dispatched_to_renderer);
   return metrics;
 }
 
@@ -453,9 +430,7 @@ std::unique_ptr<ScrollEventMetrics> ScrollEventMetrics::CreateForBrowser(
     ui::ScrollInputType input_type,
     bool is_inertial,
     base::TimeTicks timestamp) {
-  return Create(type, input_type, is_inertial, timestamp,
-                /*arrived_in_browser_main_timestamp=*/base::TimeTicks(),
-                /*blocking_touch_dispatched_to_renderer=*/base::TimeTicks());
+  return Create(type, input_type, is_inertial, timestamp, base::TimeTicks());
 }
 
 // static
@@ -569,8 +544,7 @@ std::unique_ptr<ScrollUpdateEventMetrics> ScrollUpdateEventMetrics::Create(
     float delta,
     base::TimeTicks timestamp,
     base::TimeTicks arrived_in_browser_main_timestamp,
-    TraceId trace_id,
-    base::TimeTicks blocking_touch_dispatched_to_renderer) {
+    TraceId trace_id) {
   // TODO(crbug.com/1157090): We expect that `timestamp` is not null, but there
   // seems to be some tests that are emitting events with null timestamp. We
   // should investigate and try to fix those cases and add a `DCHECK` here to
@@ -587,9 +561,6 @@ std::unique_ptr<ScrollUpdateEventMetrics> ScrollUpdateEventMetrics::Create(
 
   metrics->SetDispatchStageTimestamp(
       DispatchStage::kArrivedInRendererCompositor);
-  metrics->SetDispatchStageTimestamp(
-      DispatchStage::kScrollsBlockingTouchDispatchedToRenderer,
-      blocking_touch_dispatched_to_renderer);
   return metrics;
 }
 
@@ -602,10 +573,8 @@ ScrollUpdateEventMetrics::CreateForBrowser(ui::EventType type,
                                            float delta,
                                            base::TimeTicks timestamp,
                                            TraceId trace_id) {
-  return Create(
-      type, input_type, is_inertial, scroll_update_type, delta, timestamp,
-      /*arrived_in_browser_main_timestamp=*/base::TimeTicks(), trace_id,
-      /*blocking_touch_dispatched_to_renderer=*/base::TimeTicks());
+  return Create(type, input_type, is_inertial, scroll_update_type, delta,
+                timestamp, base::TimeTicks(), trace_id);
 }
 
 // static

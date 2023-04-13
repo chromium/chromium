@@ -130,8 +130,7 @@ class LatencyInfo {
   // the trace event's name.
   // This function should only be called when adding a BEGIN component.
   void AddLatencyNumberWithTraceName(LatencyComponentType component,
-                                     const char* trace_name_str,
-                                     base::TimeTicks now);
+                                     const char* trace_name_str);
 
   // Modifies the current sequence number and adds a certain number of events
   // for a specific component.

@@ -2351,10 +2351,8 @@ TEST_F(RenderWidgetHostTest, AddAndRemoveInputEventObserver) {
   NativeWebKeyboardEvent native_event(WebInputEvent::Type::kChar, 0,
                                       GetNextSimulatedEventTime());
   ui::LatencyInfo latency_info = ui::LatencyInfo();
-  ui::EventLatencyMetadata event_latency_metadata;
   EXPECT_CALL(observer, OnInputEvent(_)).Times(1);
-  host_->DispatchInputEventWithLatencyInfo(native_event, &latency_info,
-                                           &event_latency_metadata);
+  host_->DispatchInputEventWithLatencyInfo(native_event, &latency_info);
 
   // Remove InputEventObserver.
   host_->RemoveInputEventObserver(&observer);
@@ -2362,9 +2360,7 @@ TEST_F(RenderWidgetHostTest, AddAndRemoveInputEventObserver) {
   // Confirm InputEventObserver is removed.
   EXPECT_CALL(observer, OnInputEvent(_)).Times(0);
   latency_info = ui::LatencyInfo();
-  event_latency_metadata = ui::EventLatencyMetadata();
-  host_->DispatchInputEventWithLatencyInfo(native_event, &latency_info,
-                                           &event_latency_metadata);
+  host_->DispatchInputEventWithLatencyInfo(native_event, &latency_info);
 }
 
 #if BUILDFLAG(IS_ANDROID)

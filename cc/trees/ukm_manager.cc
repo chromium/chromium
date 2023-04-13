@@ -206,8 +206,6 @@ void UkmManager::RecordEventLatencyUKM(
       switch (dispatch_stage) {
         case EventMetrics::DispatchStage::kGenerated:
           switch (end_stage) {
-            case EventMetrics::DispatchStage::
-                kScrollsBlockingTouchDispatchedToRenderer:
             case EventMetrics::DispatchStage::kArrivedInBrowserMain:
               // Will build the `GenerationToRendererCompositor` metric on the
               // `kArrivedInBrowserMain` stage.
@@ -219,9 +217,6 @@ void UkmManager::RecordEventLatencyUKM(
               NOTREACHED();
               break;
           }
-          break;
-        case EventMetrics::DispatchStage::
-            kScrollsBlockingTouchDispatchedToRenderer:
           break;
         case EventMetrics::DispatchStage::kArrivedInBrowserMain:
           DCHECK_EQ(end_stage,
