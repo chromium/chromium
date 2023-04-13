@@ -136,7 +136,6 @@ constexpr auto kRadioSliderViewPadding = gfx::Insets::TLBR(0, 20, 0, 0);
 
 constexpr int kMessageCenterCollapseThreshold = 175;
 constexpr int kStackedNotificationBarHeight = 32;
-constexpr int kStackedNotificationBarCollapsedHeight = 40;
 constexpr int kNotificationIconStackThreshold = 28;
 constexpr int kUnifiedSliderViewSpacing = 12;
 constexpr int kUnifiedMessageCenterBubbleSpacing = 8;
