@@ -52,9 +52,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
-#include "third_party/blink/renderer/core/fileapi/file_read_type.h"
+#include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
-#include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/base_fetch_context.h"
@@ -130,7 +129,7 @@ WebSocketChannelImpl::MessageData WebSocketChannelImpl::CreateMessageData(
 
 class WebSocketChannelImpl::BlobLoader final
     : public GarbageCollected<WebSocketChannelImpl::BlobLoader>,
-      public FileReaderLoaderClient {
+      public FileReaderClient {
  public:
   BlobLoader(scoped_refptr<BlobDataHandle>,
              WebSocketChannelImpl*,
@@ -139,14 +138,14 @@ class WebSocketChannelImpl::BlobLoader final
 
   void Cancel();
 
-  // FileReaderLoaderClient functions.
-  void DidStartLoading() override;
-  void DidReceiveDataForClient(const char* data, unsigned data_length) override;
+  // FileReaderClient functions.
+  FileErrorCode DidStartLoading(uint64_t, uint64_t) override;
+  FileErrorCode DidReceiveData(const char* data, unsigned data_length) override;
   void DidFinishLoading() override;
   void DidFail(FileErrorCode) override;
 
   void Trace(Visitor* visitor) const override {
-    FileReaderLoaderClient::Trace(visitor);
+    FileReaderClient::Trace(visitor);
     visitor->Trace(channel_);
     visitor->Trace(loader_);
   }
@@ -159,6 +158,8 @@ class WebSocketChannelImpl::BlobLoader final
   MessageData data_;
   size_t size_ = 0;
   size_t offset_ = 0;
+
+  bool blob_too_large_ = false;
 };
 
 WebSocketChannelImpl::BlobLoader::BlobLoader(
@@ -166,10 +167,8 @@ WebSocketChannelImpl::BlobLoader::BlobLoader(
     WebSocketChannelImpl* channel,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : channel_(channel),
-      loader_(
-          MakeGarbageCollected<FileReaderLoader>(FileReadType::kReadByClient,
-                                                 this,
-                                                 std::move(task_runner))) {
+      loader_(MakeGarbageCollected<FileReaderLoader>(this,
+                                                     std::move(task_runner))) {
   loader_->Start(std::move(blob_data_handle));
 }
 
@@ -179,29 +178,30 @@ void WebSocketChannelImpl::BlobLoader::Cancel() {
   data_ = nullptr;
 }
 
-void WebSocketChannelImpl::BlobLoader::DidStartLoading() {
+FileErrorCode WebSocketChannelImpl::BlobLoader::DidStartLoading(uint64_t,
+                                                                uint64_t) {
   const absl::optional<uint64_t> size = loader_->TotalBytes();
   DCHECK(size);
   if (size.value() > std::numeric_limits<size_t>::max()) {
-    loader_->Cancel();
-    loader_ = nullptr;
-    channel_->BlobTooLarge();
-    return;
+    blob_too_large_ = true;
+    return FileErrorCode::kAbortErr;
   }
   size_ = static_cast<size_t>(size.value());
   data_ = WebSocketChannelImpl::CreateMessageData(
       channel_->execution_context_->GetIsolate(), size_);
+  return FileErrorCode::kOK;
 }
 
-void WebSocketChannelImpl::BlobLoader::DidReceiveDataForClient(
+FileErrorCode WebSocketChannelImpl::BlobLoader::DidReceiveData(
     const char* data,
     unsigned data_length) {
   const size_t data_to_copy =
       std::min(size_ - offset_, static_cast<size_t>(data_length));
   if (!data_to_copy)
-    return;
+    return FileErrorCode::kOK;
   memcpy(data_.get() + offset_, data, data_to_copy);
   offset_ += data_to_copy;
+  return FileErrorCode::kOK;
 }
 
 void WebSocketChannelImpl::BlobLoader::DidFinishLoading() {
@@ -212,6 +212,10 @@ void WebSocketChannelImpl::BlobLoader::DidFinishLoading() {
 }
 
 void WebSocketChannelImpl::BlobLoader::DidFail(FileErrorCode error_code) {
+  if (error_code == FileErrorCode::kAbortErr && blob_too_large_) {
+    blob_too_large_ = false;
+    channel_->BlobTooLarge();
+  }
   channel_->DidFailLoadingBlob(error_code);
   loader_ = nullptr;
   data_ = nullptr;

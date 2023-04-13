@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/dcheck_is_on.h"
+#include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
-#include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -31,7 +31,7 @@ class IDBValue;
 // assumes that the overhead of creating and destroying a Vector is much smaller
 // than the IPC overhead required to load the Blob data into the renderer.
 class IDBRequestLoader : public GarbageCollected<IDBRequestLoader>,
-                         public FileReaderLoaderClient {
+                         public FileReaderClient {
  public:
   // Creates a loader that will unwrap IDBValues received by a IDBRequest.
   //
@@ -50,13 +50,13 @@ class IDBRequestLoader : public GarbageCollected<IDBRequestLoader>,
   // Halt the process of unwrapping values, if possible.
   void Cancel();
 
-  // FileReaderLoaderClient implementaton.
-  void DidStartLoading() override;
-  void DidReceiveDataForClient(const char* data, unsigned data_length) override;
+  // FileReaderClient implementation.
+  FileErrorCode DidStartLoading(uint64_t, uint64_t) override;
+  FileErrorCode DidReceiveData(const char* data, unsigned data_length) override;
   void DidFinishLoading() override;
   void DidFail(FileErrorCode) override;
   void Trace(Visitor* visitor) const override {
-    FileReaderLoaderClient::Trace(visitor);
+    FileReaderClient::Trace(visitor);
     visitor->Trace(loader_);
   }
 

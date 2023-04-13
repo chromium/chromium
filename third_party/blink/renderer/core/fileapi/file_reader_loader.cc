@@ -34,6 +34,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -42,7 +43,7 @@
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
-#include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
+#include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -50,25 +51,36 @@
 namespace blink {
 
 FileReaderLoader::FileReaderLoader(
-    FileReadType read_type,
-    FileReaderLoaderClient* client,
+    FileReaderClient* client,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : read_type_(read_type),
-      client_(client),
+    : client_(client),
       handle_watcher_(FROM_HERE,
                       mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC,
                       task_runner),
       task_runner_(std::move(task_runner)) {
+  CHECK(client);
   DCHECK(task_runner_);
 }
 
 FileReaderLoader::~FileReaderLoader() = default;
 
 void FileReaderLoader::Start(scoped_refptr<BlobDataHandle> blob_data) {
+  StartInternal(std::move(blob_data), /*is_sync=*/false);
+}
+
+void FileReaderLoader::StartSync(scoped_refptr<BlobDataHandle> blob_data) {
+  StartInternal(std::move(blob_data), /*is_sync=*/true);
+}
+
+void FileReaderLoader::StartInternal(scoped_refptr<BlobDataHandle> blob_data,
+                                     bool is_sync) {
 #if DCHECK_IS_ON()
   DCHECK(!started_loading_) << "FileReaderLoader can only be used once";
   started_loading_ = true;
 #endif  // DCHECK_IS_ON()
+
+  // This sets up the `IsSyncLoad` mechanism for the lifetime of this method.
+  base::AutoReset<bool> scoped_is_sync(&is_sync_, is_sync);
 
   MojoCreateDataPipeOptions options;
   options.struct_size = sizeof(MojoCreateDataPipeOptions);
@@ -111,25 +123,10 @@ void FileReaderLoader::Cancel() {
   Cleanup();
 }
 
-FileReaderData FileReaderLoader::TakeContents() {
-  // Let's prevent any API misusage here. Clients are definitely not supposed to
-  // extract some contents in case an error occurred. For partial contents,
-  // clients should be using FileReadType::kReadByClient.
-  CHECK(raw_data_.IsValid() && error_code_ == FileErrorCode::kOK &&
-        finished_loading_);
-
-  return FileReaderData(std::move(raw_data_));
-}
-
 void FileReaderLoader::Cleanup() {
   handle_watcher_.Cancel();
   consumer_handle_.reset();
   receiver_.reset();
-
-  // If we get any error, we do not need to keep a buffer around.
-  if (error_code_ != FileErrorCode::kOK) {
-    raw_data_.Reset();
-  }
 }
 
 void FileReaderLoader::Failed(FileErrorCode error_code) {
@@ -138,92 +135,24 @@ void FileReaderLoader::Failed(FileErrorCode error_code) {
     return;
   error_code_ = error_code;
   Cleanup();
-  if (client_)
-    client_->DidFail(error_code_);
-}
-
-void FileReaderLoader::OnStartLoading(uint64_t total_bytes) {
-  total_bytes_ = total_bytes;
-
-  DCHECK(!raw_data_.IsValid());
-
-  if (read_type_ != FileReadType::kReadByClient) {
-    // Check that we can cast to unsigned since we have to do
-    // so to call ArrayBuffer's create function.
-    // FIXME: Support reading more than the current size limit of ArrayBuffer.
-    if (total_bytes > std::numeric_limits<unsigned>::max()) {
-      Failed(FileErrorCode::kNotReadableErr);
-      return;
-    }
-
-    raw_data_ = ArrayBufferContents(static_cast<unsigned>(total_bytes), 1,
-                                    ArrayBufferContents::kNotShared,
-                                    ArrayBufferContents::kDontInitialize);
-    if (!raw_data_.IsValid()) {
-      Failed(FileErrorCode::kNotReadableErr);
-      return;
-    }
-  }
-
-  if (client_)
-    client_->DidStartLoading();
-}
-
-void FileReaderLoader::OnReceivedData(const char* data, unsigned data_length) {
-  DCHECK(data);
-
-  // Bail out if we already encountered an error.
-  if (error_code_ != FileErrorCode::kOK)
-    return;
-
-  if (read_type_ == FileReadType::kReadByClient) {
-    bytes_loaded_ += data_length;
-
-    if (client_)
-      client_->DidReceiveDataForClient(data, data_length);
-    return;
-  }
-
-  // Receiving more data than expected would indicate a bug in the
-  // implementation of the mojom Blob interface. However there is no guarantee
-  // that the Blob is actually backed by a "real" blob, so to
-  // defend against compromised renderer processes we still need to carefully
-  // validate anything received. So return an error if we received too much
-  // data.
-  if (bytes_loaded_ + data_length > raw_data_.DataLength()) {
-    raw_data_.Reset();
-    bytes_loaded_ = 0;
-    Failed(FileErrorCode::kNotReadableErr);
-    return;
-  }
-  memcpy(static_cast<char*>(raw_data_.Data()) + bytes_loaded_, data,
-         data_length);
-  bytes_loaded_ += data_length;
-
-  if (client_)
-    client_->DidReceiveData();
+  client_->DidFail(error_code_);
 }
 
 void FileReaderLoader::OnFinishLoading() {
-  if (read_type_ != FileReadType::kReadByClient && raw_data_.IsValid()) {
-    DCHECK_EQ(bytes_loaded_, raw_data_.DataLength());
-  }
-
   finished_loading_ = true;
-
   Cleanup();
-  if (client_)
-    client_->DidFinishLoading();
+  client_->DidFinishLoading();
 }
 
 void FileReaderLoader::OnCalculatedSize(uint64_t total_size,
                                         uint64_t expected_content_size) {
-  auto weak_this = WrapWeakPersistent(this);
-  OnStartLoading(expected_content_size);
-  // OnStartLoading calls out to our client, which could delete |this|, so bail
-  // out if that happened.
-  if (!weak_this)
+  total_bytes_ = expected_content_size;
+
+  if (auto err = client_->DidStartLoading(total_size, expected_content_size);
+      err != FileErrorCode::kOK) {
+    Failed(err);
     return;
+  }
 
   if (expected_content_size == 0) {
     received_all_data_ = true;
@@ -291,12 +220,17 @@ void FileReaderLoader::OnDataPipeReadable(MojoResult result) {
       return;
     }
 
-    auto weak_this = WrapWeakPersistent(this);
-    OnReceivedData(static_cast<const char*>(buffer), num_bytes);
-    // OnReceivedData calls out to our client, which could delete |this|, so
-    // bail out if that happened.
-    if (!weak_this)
+    const char* data = static_cast<const char*>(buffer);
+    DCHECK(data);
+    DCHECK_EQ(error_code_, FileErrorCode::kOK);
+
+    bytes_loaded_ += num_bytes;
+
+    if (auto err = client_->DidReceiveData(data, num_bytes);
+        err != FileErrorCode::kOK) {
+      Failed(err);
       return;
+    }
 
     consumer_handle_->EndReadData(num_bytes);
     if (BytesLoaded() >= total_bytes_) {
