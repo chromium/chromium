@@ -58,6 +58,9 @@ const float kModuleMinimizedVerticalSpacing = 14.0f;
 // The horizontal spacing between trending query views.
 const float kTrendingQueryViewHorizontalSpacing = 12.0f;
 
+// The bottom padding for the vertical stack view.
+const float kBottomStackViewPadding = 6.0f;
+
 // Returns the module width depending on the horizontal trait collection.
 CGFloat GetModuleWidthForHorizontalTraitCollection(
     UITraitCollection* traitCollection) {
@@ -169,26 +172,32 @@ CGFloat ModuleVerticalSpacing() {
   // height/width configurations for each row.
   self.verticalStackView.distribution = UIStackViewDistributionFill;
   [self.view addSubview:self.verticalStackView];
+  // Add bottom spacing to last module by applying it after
+  // `_verticalStackView`. If ShouldMinimizeSpacingForModuleRefresh() is YES,
+  // then no space is added after the last module.
+
+  // Add bottom spacing to the last module by applying it after
+  // `_verticalStackView`. If `IsContentSuggestionsUIModuleRefreshEnabled()` is
+  // YES, and ShouldMinimizeSpacingForModuleRefresh() is YES, then no space is
+  // added after the last module. Otherwise we add kModuleVerticalSpacing. If
+  // `IsContentSuggestionsUIModuleRefreshEnabled()` is NO, then we add
+  // `kBottomStackViewPadding`
+  CGFloat bottomSpacing = kBottomStackViewPadding;
   if (IsContentSuggestionsUIModuleRefreshEnabled()) {
-    // Add bottom spacing to last module by applying it after
-    // `_verticalStackView`. If ShouldMinimizeSpacingForModuleRefresh() is YES,
-    // then no space is added after the last module.
-    CGFloat bottomSpacing =
+    bottomSpacing =
         ShouldMinimizeSpacingForModuleRefresh() ? 0 : kModuleVerticalSpacing;
-    [NSLayoutConstraint activateConstraints:@[
-      [self.verticalStackView.leadingAnchor
-          constraintEqualToAnchor:self.view.leadingAnchor],
-      [self.verticalStackView.trailingAnchor
-          constraintEqualToAnchor:self.view.trailingAnchor],
-      [self.verticalStackView.topAnchor
-          constraintEqualToAnchor:self.view.topAnchor],
-      [self.verticalStackView.bottomAnchor
-          constraintEqualToAnchor:self.view.bottomAnchor
-                         constant:-bottomSpacing]
-    ]];
-  } else {
-    AddSameConstraints(self.view, self.verticalStackView);
   }
+  [NSLayoutConstraint activateConstraints:@[
+    [self.verticalStackView.leadingAnchor
+        constraintEqualToAnchor:self.view.leadingAnchor],
+    [self.verticalStackView.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+    [self.verticalStackView.topAnchor
+        constraintEqualToAnchor:self.view.topAnchor],
+    [self.verticalStackView.bottomAnchor
+        constraintEqualToAnchor:self.view.bottomAnchor
+                       constant:-bottomSpacing]
+  ]];
 
   CGFloat horizontalSpacing =
       ContentSuggestionsTilesHorizontalSpacing(self.traitCollection);
