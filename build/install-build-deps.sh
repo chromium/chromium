@@ -112,7 +112,9 @@ supported_ids="(Debian)"
 if [ 0 -eq "${do_unsupported-0}" ] && [ 0 -eq "${do_quick_check-0}" ] ; then
   if [[ ! $distro_codename =~ $supported_codenames &&
         ! $distro_id =~ $supported_ids ]]; then
-    echo -e "ERROR: The only supported distros are\n" \
+    echo -e "WARNING: The following distributions are supported,
+    but distributions not in the list below can also try to install
+    dependencies by passing the `--unsupported` parameter\n" \
       "\tUbuntu 18.04 LTS (bionic with EoL April 2028)\n" \
       "\tUbuntu 20.04 LTS (focal with EoL April 2030)\n" \
       "\tUbuntu 22.04 LTS (jammy with EoL April 2032)\n" \
