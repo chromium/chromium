@@ -520,10 +520,6 @@ static void SwitchEncoding(xmlParserCtxtPtr ctxt, bool is_8bit) {
   if ((ctxt->errNo != XML_ERR_OK) && (ctxt->disableSAX == 1))
     return;
 
-  // Hack around libxml2's lack of encoding overide support by manually
-  // resetting the encoding to UTF-16 before every chunk. Otherwise libxml
-  // will detect <?xml version="1.0" encoding="<encoding name>"?> blocks and
-  // switch encodings, causing the parse to fail.
   if (is_8bit) {
     xmlSwitchEncoding(ctxt, XML_CHAR_ENCODING_8859_1);
     return;
@@ -538,6 +534,7 @@ static void SwitchEncoding(xmlParserCtxtPtr ctxt, bool is_8bit) {
 
 static void ParseChunk(xmlParserCtxtPtr ctxt, const String& chunk) {
   bool is_8bit = chunk.Is8Bit();
+  // Reset the encoding for each chunk to reflect if it is Latin-1 or UTF-16.
   SwitchEncoding(ctxt, is_8bit);
   if (is_8bit)
     xmlParseChunk(ctxt, reinterpret_cast<const char*>(chunk.Characters8()),
@@ -1500,6 +1497,11 @@ static xmlEntityPtr GetEntityHandler(void* closure, const xmlChar* name) {
 static void StartDocumentHandler(void* closure) {
   xmlParserCtxt* ctxt = static_cast<xmlParserCtxt*>(closure);
   XMLDocumentParser* parser = GetParser(closure);
+  // Reset the encoding back to match that of the current data block (Latin-1 /
+  // UTF-16), since libxml may switch encoding based on the XML declaration -
+  // which it has now seen - causing the parse to fail. We could use the
+  // XML_PARSE_IGNORE_ENC option to avoid this, but we're relying on populating
+  // the 'xmlEncoding' property with the value it yields.
   SwitchEncoding(ctxt, parser->IsCurrentlyParsing8BitChunk());
   parser->StartDocument(ToString(ctxt->version), ToString(ctxt->encoding),
                         ctxt->standalone);
