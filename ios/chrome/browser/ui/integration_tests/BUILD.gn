@@ -10,6 +10,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "pdf_egtest.mm" ]
   deps = [
+    "//ios/chrome/browser/snapshots:features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",

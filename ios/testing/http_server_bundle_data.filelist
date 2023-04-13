@@ -16,6 +16,7 @@ data/http_server_files/destination.html
 data/http_server_files/download_test_page.html
 data/http_server_files/fullscreen.html
 data/http_server_files/generic.pkpass
+data/http_server_files/green.pdf
 data/http_server_files/history.html
 data/http_server_files/history.js
 data/http_server_files/history_go.html
