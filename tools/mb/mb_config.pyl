@@ -517,8 +517,8 @@
 
       'Chromium iOS Goma RBE ToT': 'ios_device_release_compile_only',
 
-      'chromeos-amd64-generic-rel-goma-rbe-staging': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized',
-      'chromeos-amd64-generic-rel-goma-rbe-tot': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized',
+      'chromeos-amd64-generic-rel-goma-rbe-staging': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_goma',
+      'chromeos-amd64-generic-rel-goma-rbe-tot': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_goma',
     },
 
     'chromium.goma.fyi': {
@@ -544,8 +544,8 @@
       'android-archive-dbg-goma-rbe-canary': 'android_without_codecs_debug_bot',
       'android-archive-dbg-goma-rbe-latest': 'android_without_codecs_debug_bot',
 
-      'chromeos-amd64-generic-rel-goma-rbe-canary': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized',
-      'chromeos-amd64-generic-rel-goma-rbe-latest': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized',
+      'chromeos-amd64-generic-rel-goma-rbe-canary': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_goma',
+      'chromeos-amd64-generic-rel-goma-rbe-latest': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_goma',
 
       'ios-device-goma-rbe-canary-clobber': 'ios_device_release_compile_only',
       'ios-device-goma-rbe-latest-clobber': 'ios_device_release_compile_only',
@@ -2047,7 +2047,7 @@
     ],
 
     'chromeos_amd64-generic_lacros_official': [
-      'chromeos_amd64-generic-crostoolchain', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
+      'chromeos_amd64-generic-crostoolchain', 'lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'no_reclient', 'goma',
     ],
 
     # This is the same as chromeos_amd64-generic_lacros_official except
@@ -2095,13 +2095,13 @@
       'chromeos_amd64-generic-crostoolchain_reclient', 'lacros', 'release', 'is_skylab',
     ],
 
-    'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized': [
-      'chromeos_amd64-generic-vm', 'use_fake_dbus_clients', 'also_build_lacros_chrome_for_architecture_amd64',
-    ],
-
     'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks_reclient': [
       'chromeos_amd64-generic-vm_reclient', 'use_fake_dbus_clients', 'dcheck_always_on',
       'also_build_lacros_chrome_for_architecture_amd64',
+    ],
+
+    'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_goma': [
+      'chromeos_amd64-generic-vm', 'use_fake_dbus_clients', 'also_build_lacros_chrome_for_architecture_amd64', 'goma', 'no_reclient',
     ],
 
     'chromeos_arm-generic_cfi_thin_lto_official': [
@@ -4033,7 +4033,7 @@
 
     'chromeos_device': {
       'gn_args': 'is_chromeos_device=true ozone_platform_headless=true',
-      'mixins': ['dcheck_off', 'goma'],
+      'mixins': ['dcheck_off', 'reclient'],
     },
 
     'chromeos_device_reclient': {

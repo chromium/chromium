@@ -203,7 +203,8 @@
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
       "use_goma": true,
-      "use_real_dbus_clients": false
+      "use_real_dbus_clients": false,
+      "use_remoteexec": false
     }
   },
   "chromeos-amd64-generic-rel-goma-rbe-tot": {
@@ -214,7 +215,8 @@
       "is_chromeos_device": true,
       "ozone_platform_headless": true,
       "use_goma": true,
-      "use_real_dbus_clients": false
+      "use_real_dbus_clients": false,
+      "use_remoteexec": false
     }
   }
 }
