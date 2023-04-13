@@ -5,7 +5,7 @@
 #import <UIKit/UIKit.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
-#import "ios/chrome/browser/ui/image_util/image_util.h"
+#import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ui/gfx/color_analysis.h"
 #import "ui/gfx/image/image.h"
 
@@ -22,7 +22,7 @@ NSString* kImageExtensionGIF = @"gif";
 NSString* kImageExtensionICO = @"ico";
 NSString* kImageExtensionWebP = @"webp";
 
-}
+}  // namespace
 
 UIColor* DominantColorForImage(const gfx::Image& image, CGFloat opacity) {
   SkColor color = color_utils::CalculateKMeanColorOfBitmap(*image.ToSkBitmap());
@@ -35,8 +35,9 @@ UIColor* DominantColorForImage(const gfx::Image& image, CGFloat opacity) {
 
 UIImage* StretchableImageNamed(NSString* name) {
   UIImage* image = [UIImage imageNamed:name];
-  if (!image)
+  if (!image) {
     return nil;
+  }
   // Returns a copy of `image` configured to stretch at the center pixel.
   CGFloat half_width = floor(image.size.width / 2.0);
   CGFloat half_height = floor(image.size.height / 2.0);
@@ -47,8 +48,9 @@ UIImage* StretchableImageNamed(NSString* name) {
 
 // https://en.wikipedia.org/wiki/List_of_file_signatures
 NSString* GetImageExtensionFromData(NSData* data) {
-  if (!data || data.length < 16)
+  if (!data || data.length < 16) {
     return nil;
+  }
 
   const char* pdata = static_cast<const char*>(data.bytes);
   switch (pdata[0]) {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_IMAGE_UTIL_IMAGE_SAVER_H_
-#define IOS_CHROME_BROWSER_UI_IMAGE_UTIL_IMAGE_SAVER_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_UI_UTIL_IMAGE_IMAGE_SAVER_H_
+#define IOS_CHROME_BROWSER_SHARED_UI_UTIL_IMAGE_IMAGE_SAVER_H_
 
 #import <UIKit/UIKit.h>
 
@@ -14,7 +14,7 @@ class GURL;
 namespace web {
 class WebState;
 struct Referrer;
-}
+}  // namespace web
 
 // Object saving images to the system's album.
 @interface ImageSaver : NSObject
@@ -32,4 +32,4 @@ struct Referrer;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_IMAGE_UTIL_IMAGE_SAVER_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_IMAGE_IMAGE_SAVER_H_

@@ -14,7 +14,7 @@ source_set("accessory") {
     "//base",
     "//base:i18n",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/image_util",
+    "//ios/chrome/browser/shared/ui/util/image",
     "//ios/chrome/browser/ui/presenters",
     "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/common/ui/colors",

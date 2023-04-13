@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("image_util") {
+source_set("image") {
   sources = [
     "image_util.h",
     "image_util.mm",
@@ -20,7 +20,7 @@ source_set("web") {
     "image_saver.mm",
   ]
   deps = [
-    ":image_util",
+    ":image",
     "//base",
     "//components/image_fetcher/core",
     "//components/image_fetcher/ios",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_IMAGE_UTIL_IMAGE_UTIL_H_
-#define IOS_CHROME_BROWSER_UI_IMAGE_UTIL_IMAGE_UTIL_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_UI_UTIL_IMAGE_IMAGE_UTIL_H_
+#define IOS_CHROME_BROWSER_SHARED_UI_UTIL_IMAGE_IMAGE_UTIL_H_
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <Foundation/Foundation.h>
@@ -31,4 +31,4 @@ NSString* GetImageExtensionFromData(NSData* data);
 // is nil, empty, or cannot be recognized, nil will be returned.
 NSString* GetImageUTIFromData(NSData* data);
 
-#endif  // IOS_CHROME_BROWSER_UI_IMAGE_UTIL_IMAGE_UTIL_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_IMAGE_IMAGE_UTIL_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/image_util/image_saver.h"
+#import "ios/chrome/browser/shared/ui/util/image/image_saver.h"
 
 #import <Photos/Photos.h>
 
@@ -17,7 +17,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
-#import "ios/chrome/browser/ui/image_util/image_util.h"
+#import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/web/image_fetch/image_fetch_tab_helper.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -58,8 +58,9 @@
   __weak ImageSaver* weakSelf = self;
   tabHelper->GetImageData(url, referrer, ^(NSData* data) {
     ImageSaver* strongSelf = weakSelf;
-    if (!strongSelf)
+    if (!strongSelf) {
       return;
+    }
 
     if (data.length == 0) {
       [strongSelf displayPrivacyErrorAlertOnMainQueue:

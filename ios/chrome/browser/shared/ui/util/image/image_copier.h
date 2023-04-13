@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_IMAGE_UTIL_IMAGE_COPIER_H_
-#define IOS_CHROME_BROWSER_UI_IMAGE_UTIL_IMAGE_COPIER_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_UI_UTIL_IMAGE_IMAGE_COPIER_H_
+#define IOS_CHROME_BROWSER_SHARED_UI_UTIL_IMAGE_IMAGE_COPIER_H_
 
 #import <UIKit/UIKit.h>
 
@@ -13,7 +13,7 @@ class GURL;
 namespace web {
 struct Referrer;
 class WebState;
-}
+}  // namespace web
 
 // Object copying images to the system's pasteboard.
 @interface ImageCopier : NSObject
@@ -31,4 +31,4 @@ class WebState;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_IMAGE_UTIL_IMAGE_COPIER_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_IMAGE_IMAGE_COPIER_H_
