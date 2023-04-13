@@ -89,9 +89,16 @@ void RecursivelyGenerateFrameEntries(
 
   if (!entry) {
     absl::optional<GURL> initiator_base_url;
-    if (state.initiator_base_url_string) {
-      initiator_base_url =
+    if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
+        state.initiator_base_url_string) {
+      GURL initiator_base_url_from_state =
           GURL(UTF16ToUTF8(state.initiator_base_url_string.value()));
+      if (!initiator_base_url_from_state.is_empty()) {
+        // TODO(crbug.com/1356658): refactor the uses of
+        // `state.initiator_base_url_string` so they store nullopt instead of
+        // empty strings.
+        initiator_base_url = initiator_base_url_from_state;
+      }
     }
     entry = base::MakeRefCounted<FrameNavigationEntry>(
         UTF16ToUTF8(state.target.value_or(std::u16string())),
