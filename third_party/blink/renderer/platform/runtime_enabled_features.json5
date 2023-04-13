@@ -462,7 +462,6 @@
     },
     {
       name: "BlinkLifecycleScriptForbidden",
-      status: "experimental",
     },
     {
       name: "BlinkRuntimeCallStats",
