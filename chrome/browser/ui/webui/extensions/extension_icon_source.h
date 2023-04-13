@@ -147,7 +147,7 @@ class ExtensionIconSource : public content::URLDataSource {
   // Removes temporary data associated with |request_id|.
   void ClearData(int request_id);
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // Maps tracker ids to request ids.
   std::map<int, int> tracker_map_;

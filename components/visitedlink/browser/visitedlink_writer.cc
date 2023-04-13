@@ -204,7 +204,7 @@ class VisitedLinkWriter::TableBuilder
   void OnCompleteMainThread();
 
   // Owner of this object. MAY ONLY BE ACCESSED ON THE MAIN THREAD!
-  raw_ptr<VisitedLinkWriter> writer_;
+  raw_ptr<VisitedLinkWriter, DanglingUntriaged> writer_;
 
   // Indicates whether the operation has failed or not.
   bool success_;

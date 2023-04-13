@@ -120,7 +120,7 @@ class ExternalPrefLoader : public ExternalLoader {
 
   // Profile that loads these external prefs.
   // Needed for waiting for waiting priority sync.
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // User type determined by |profile_|. Used to filter extensions. In some unit
   // tests may not be set.

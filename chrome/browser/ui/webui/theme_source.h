@@ -60,7 +60,7 @@ class ThemeSource : public content::URLDataSource {
                      content::URLDataSource::GotDataCallback callback);
 
   // The profile this object was initialized with.
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // Whether this source services chrome-unstrusted://theme.
   bool serve_untrusted_;

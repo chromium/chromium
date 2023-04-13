@@ -84,7 +84,7 @@ class GetLoginsWithAffiliationsRequestHandler
 
   base::WeakPtr<PasswordStoreConsumer> consumer_;
 
-  raw_ptr<PasswordStoreInterface> store_;
+  raw_ptr<PasswordStoreInterface, DanglingUntriaged> store_;
 
   // Closure which is released after being called 2 times.
   base::RepeatingClosure forms_received_;

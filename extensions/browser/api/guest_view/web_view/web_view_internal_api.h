@@ -35,7 +35,7 @@ class WebViewInternalExtensionFunction : public ExtensionFunction {
   ~WebViewInternalExtensionFunction() override {}
   bool PreRunValidation(std::string* error) override;
 
-  raw_ptr<WebViewGuest> guest_ = nullptr;
+  raw_ptr<WebViewGuest, DanglingUntriaged> guest_ = nullptr;
 };
 
 class WebViewInternalCaptureVisibleRegionFunction

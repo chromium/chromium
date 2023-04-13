@@ -637,7 +637,7 @@ class GpuImageDecodeTaskImpl : public TileTask {
   ~GpuImageDecodeTaskImpl() override = default;
 
  private:
-  raw_ptr<GpuImageDecodeCache> cache_;
+  raw_ptr<GpuImageDecodeCache, DanglingUntriaged> cache_;
   DrawImage image_;
   const ImageDecodeCache::TracingInfo tracing_info_;
   const GpuImageDecodeCache::DecodeTaskType task_type_;

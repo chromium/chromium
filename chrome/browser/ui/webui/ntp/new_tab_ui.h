@@ -71,7 +71,7 @@ class NewTabUI : public content::WebUIController {
 
    private:
     // Pointer back to the original profile.
-    raw_ptr<Profile> profile_;
+    raw_ptr<Profile, DanglingUntriaged> profile_;
   };
 
   void OnShowBookmarkBarChanged();

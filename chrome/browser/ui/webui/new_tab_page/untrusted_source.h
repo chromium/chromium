@@ -85,7 +85,7 @@ class UntrustedSource : public content::URLDataSource,
   base::ScopedObservation<OneGoogleBarService, OneGoogleBarServiceObserver>
       one_google_bar_service_observation_{this};
   absl::optional<base::TimeTicks> one_google_bar_load_start_time_;
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_UNTRUSTED_SOURCE_H_

@@ -77,8 +77,8 @@ class ShellDevToolsBindings : public WebContentsObserver,
   void SendMessageAck(int request_id, const base::Value::Dict arg);
   void AttachInternal();
 
-  raw_ptr<WebContents> inspected_contents_;
-  raw_ptr<ShellDevToolsDelegate> delegate_;
+  raw_ptr<WebContents, DanglingUntriaged> inspected_contents_;
+  raw_ptr<ShellDevToolsDelegate, DanglingUntriaged> delegate_;
   scoped_refptr<DevToolsAgentHost> agent_host_;
   int inspect_element_at_x_;
   int inspect_element_at_y_;

@@ -234,7 +234,7 @@ class BackgroundContentsService
   // Delay (in ms) before restarting a force-installed extension that crashed.
   static int restart_delay_in_ms_;
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   base::ObserverList<BackgroundContentsServiceObserver> observers_;
 

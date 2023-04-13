@@ -44,7 +44,7 @@ class FencedFrameTask : public RendererTask {
   //    the task. At that point the RFH is still alive.
   const raw_ptr<content::SiteInstance> site_instance_;
   // Allows us to focus on the embedder's tab.
-  const raw_ptr<RendererTask> embedder_task_;
+  const raw_ptr<RendererTask, DanglingUntriaged> embedder_task_;
 };
 
 }  // namespace task_manager

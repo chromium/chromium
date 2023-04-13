@@ -52,7 +52,7 @@ class SyncMixingGraphInput final : public MixingGraph::Input {
   void Render(int fifo_frame_delay, media::AudioBus* audio_bus);
 
   // Pointer to the mixing graph to which the input belongs.
-  const raw_ptr<MixingGraph> graph_;
+  const raw_ptr<MixingGraph, DanglingUntriaged> graph_;
 
   // Channel layout, sample rate and number of frames of the input.
   const media::AudioParameters params_;
