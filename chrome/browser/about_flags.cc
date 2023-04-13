@@ -4606,6 +4606,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOsIntegrationSubManagersConfigVariations,
                                     "OsIntegrationSubManagers")},
 
+    {"access-code-cast-freeze-ui",
+     flag_descriptions::kAccessCodeCastFreezeUiName,
+     flag_descriptions::kAccessCodeCastFreezeUiDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kAccessCodeCastFreezeUI)},
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -10234,6 +10239,14 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
             channel != version_info::Channel::UNKNOWN);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Only show the Access Code Cast Freeze UI flag if the Access Code Cast
+  // policy is enabled.
+  if (!strcmp("access-code-cast-freeze-ui", entry.internal_name)) {
+    return !media_router::IsAccessCodeCastEnabled();
+  }
+#endif  // !BUILDFALG(IS_ANDROID)
 
   // enable-unsafe-webgpu is only available on Dev/Canary channels.
   if (!strcmp("enable-unsafe-webgpu", entry.internal_name) &&

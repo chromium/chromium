@@ -2502,6 +2502,9 @@ extern const char kXsurfaceMetricsReportingDescription[];
 
 #else  // !BUILDFLAG(IS_ANDROID)
 
+extern const char kAccessCodeCastFreezeUiName[];
+extern const char kAccessCodeCastFreezeUiDescription[];
+
 extern const char kAppManagementAppDetailsName[];
 extern const char kAppManagementAppDetailsDescription[];
 

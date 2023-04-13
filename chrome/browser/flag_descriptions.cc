@@ -4362,6 +4362,12 @@ const char kCormorantDescription[] = "Enables the experimental Cormorant UI.";
 
 #else  // BUILDFLAG(IS_ANDROID)
 
+const char kAccessCodeCastFreezeUiName[] =
+    "Pause Cast sessions (Access Code Cast users only)";
+const char kAccessCodeCastFreezeUiDescription[] =
+    "When enabled, adds controls to pause Cast sessions when sharing tab or "
+    "screen, if using Access Code Casting.";
+
 const char kAppManagementAppDetailsName[] =
     "Enable App Details in App Management.";
 const char kAppManagementAppDetailsDescription[] =

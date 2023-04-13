@@ -58732,6 +58732,7 @@ from previous Chrome versions.
   <int value="-1752853388"
       label="OmniboxUIExperimentElideToRegistrableDomain:enabled"/>
   <int value="-1752118355" label="DesktopDetailedLanguageSettings:enabled"/>
+  <int value="-1752055359" label="AccessCodeCastFreezeUI:enabled"/>
   <int value="-1751928267" label="disable-icon-ntp"/>
   <int value="-1751562448" label="OmniboxExpandedStateColors:disabled"/>
   <int value="-1751492305" label="SupportTool:enabled"/>
@@ -65751,6 +65752,7 @@ from previous Chrome versions.
   <int value="2058425230" label="LauncherNudgeSessionReset:enabled"/>
   <int value="2058439723" label="CalculateNativeWinOcclusion:disabled"/>
   <int value="2059322877" label="new-avatar-menu"/>
+  <int value="2062051946" label="AccessCodeCastFreezeUI:disabled"/>
   <int value="2062752242" label="ApnRevamp:enabled"/>
   <int value="2063091429" label="OfflinePagesSharing:enabled"/>
   <int value="2063238104" label="ContextMenuPopupForAllScreenSizes:enabled"/>
