@@ -228,6 +228,8 @@ void VideoCaptureDeviceMac::TakePhoto(TakePhotoCallback callback) {
 }
 
 void VideoCaptureDeviceMac::GetPhotoState(GetPhotoStateCallback callback) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceMac::GetPhotoState");
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   auto photo_state = mojo::CreateEmptyPhotoState();
@@ -338,6 +340,8 @@ void VideoCaptureDeviceMac::GetPhotoState(GetPhotoStateCallback callback) {
 
 void VideoCaptureDeviceMac::SetPhotoOptions(mojom::PhotoSettingsPtr settings,
                                             SetPhotoOptionsCallback callback) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceMac::SetPhotoOptions");
   DCHECK(task_runner_->BelongsToCurrentThread());
   // Drop |callback| and return if there are any unsupported |settings|.
   // TODO(mcasas): centralise checks elsewhere, https://crbug.com/724285.
@@ -587,6 +591,8 @@ std::string VideoCaptureDeviceMac::GetDeviceModelId(
 // static
 VideoCaptureControlSupport VideoCaptureDeviceMac::GetControlSupport(
     const std::string& device_model) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceMac::GetControlSupport");
   VideoCaptureControlSupport control_support;
 
   UvcControl uvc(device_model, uvc::kVcInputTerminal);
