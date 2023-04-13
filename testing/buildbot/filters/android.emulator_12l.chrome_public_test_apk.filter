@@ -85,3 +85,9 @@
 
 # crbug.com/1432049
 -org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSelectionEditorPosition
+
+# crbug.com/1195129
+-org.chromium.chrome.browser.omnibox.suggestions.SwitchToTabTest.testSwitchToTabSuggestion
+
+# crbug.com/1432785
+-org.chromium.chrome.browser.ContentViewFocusTest.testHideSelectionOnPhoneTabSwiping

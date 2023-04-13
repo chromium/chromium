@@ -61,3 +61,6 @@
 -org.chromium.chrome.browser.tabmodel.UndoTabModelTest.testOpenRecentlyClosedTabMultiWindow
 -org.chromium.chrome.browser.tabmodel.UndoTabModelTest.testOpenRecentlyClosedTabMultiWindowFallback
 -org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMultiWindowTest.*
+
+# crbug.com/1195129
+-org.chromium.chrome.browser.omnibox.suggestions.SwitchToTabTest.testSwitchToTabSuggestion
