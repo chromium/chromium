@@ -5,6 +5,7 @@
 #ifndef SERVICES_DEVICE_COMPUTE_PRESSURE_PRESSURE_MANAGER_IMPL_H_
 #define SERVICES_DEVICE_COMPUTE_PRESSURE_PRESSURE_MANAGER_IMPL_H_
 
+#include <map>
 #include <memory>
 
 #include "base/sequence_checker.h"
@@ -15,6 +16,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/device/public/mojom/pressure_manager.mojom.h"
+#include "services/device/public/mojom/pressure_update.mojom.h"
 
 namespace device {
 
@@ -22,10 +24,10 @@ class CpuProbe;
 
 // Handles the communication between the renderer process and services.
 //
-// This class owns one instance of CpuProbe. The CpuProbe
+// This class owns one instance of probe for each PressureSource. The probe
 // instance keeps collecting compute pressure information from the
-// underlying operating system when `clients_` is not empty and stops
-// collecting when `clients_` becomes empty.
+// underlying operating system when its `clients_` is not empty and stops
+// collecting when its `clients_` becomes empty.
 //
 // DeviceService owns one instance of this class.
 //
@@ -48,6 +50,7 @@ class PressureManagerImpl : public mojom::PressureManager {
 
   // device::mojom::PressureManager implementation.
   void AddClient(mojo::PendingRemote<mojom::PressureClient> client,
+                 mojom::PressureSource source,
                  AddClientCallback callback) override;
 
   void SetCpuProbeForTesting(std::unique_ptr<CpuProbe>);
@@ -57,11 +60,12 @@ class PressureManagerImpl : public mojom::PressureManager {
 
   explicit PressureManagerImpl(base::TimeDelta sampling_interval);
 
-  // Called periodically by PlatformCollector.
-  void UpdateClients(mojom::PressureState state);
+  // Called periodically by probe for each PressureSource.
+  void UpdateClients(mojom::PressureSource source, mojom::PressureState state);
 
-  // Stop `cpu_probe_` once there is no client.
-  void OnClientRemoteDisconnected(mojo::RemoteSetElementId /*id*/);
+  // Stop corresponding probe once there is no client.
+  void OnClientRemoteDisconnected(mojom::PressureSource source,
+                                  mojo::RemoteSetElementId /*id*/);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -70,8 +74,8 @@ class PressureManagerImpl : public mojom::PressureManager {
 
   mojo::ReceiverSet<mojom::PressureManager> receivers_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  mojo::RemoteSet<mojom::PressureClient> clients_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::map<mojom::PressureSource, mojo::RemoteSet<mojom::PressureClient>>
+      clients_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace device

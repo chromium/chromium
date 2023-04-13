@@ -17,13 +17,14 @@ enum PressureStatus {
 
 // This interface is used to subscribe to notification about OnPressureUpdated.
 //
-// This interface is implemented by PressureServiceImpl in content/browser and
-// PressureManagerImpl in services/device. PressureObserverManager in Blink
-// uses this interface to make a PressureClient subscribe to notification
-// about OnPressureUpdated.
+// This interface is implemented by PressureManagerImpl in services/device.
+// PressureObserverManager in Blink uses this interface to make a
+// PressureClient subscribe to notification about OnPressureUpdated.
 interface PressureManager {
-  // Add a client that will be notified when a new PressureUpdate is obtained.
-  AddClient(pending_remote<PressureClient> client) => (PressureStatus status);
+  // Add a client that will be notified when a new PressureUpdate for `source`
+  // is obtained.
+  AddClient(pending_remote<PressureClient> client, PressureSource source)
+    => (PressureStatus status);
 };
 
 // Interface that client of the PressureManager interface must

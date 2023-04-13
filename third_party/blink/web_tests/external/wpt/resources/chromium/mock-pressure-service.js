@@ -1,5 +1,5 @@
 import {PressureManager, PressureManagerReceiver, PressureStatus} from '/gen/services/device/public/mojom/pressure_manager.mojom.m.js'
-import {PressureFactor, PressureState} from '/gen/services/device/public/mojom/pressure_update.mojom.m.js'
+import {PressureFactor, PressureSource, PressureState} from '/gen/services/device/public/mojom/pressure_update.mojom.m.js'
 
 class MockPressureService {
   constructor() {
@@ -14,6 +14,7 @@ class MockPressureService {
       this.observer_ = null;
     });
     this.reset();
+    this.mojomSourceType_ = new Map([['cpu', PressureSource.kCpu]]);
     this.mojomStateType_ = new Map([
       ['nominal', PressureState.kNominal], ['fair', PressureState.kFair],
       ['serious', PressureState.kSerious], ['critical', PressureState.kCritical]
@@ -47,9 +48,14 @@ class MockPressureService {
     this.updatesDelivered_ = 0;
   }
 
-  async addClient(observer) {
+  async addClient(observer, source) {
     if (this.observer_ !== null)
-      throw new Error('BindObserver() has already been called');
+      throw new Error('addClient() has already been called');
+
+    // TODO(crbug.com/1342184): Consider other sources.
+    // For now, "cpu" is the only source.
+    if (source !== PressureSource.kCpu)
+      throw new Error('Call addClient() with a wrong PressureSource');
 
     this.observer_ = observer;
     this.observer_.onConnectionError.addListener(() => {
@@ -106,7 +112,10 @@ class MockPressureService {
     return this.updatesDelivered_;
   }
 
-  setPressureUpdate(state, factors) {
+  setPressureUpdate(source, state, factors) {
+    if (!this.mojomSourceType_.has(source))
+      throw new Error(`PressureSource '${source}' is invalid`);
+
     if (!this.mojomStateType_.has(state))
       throw new Error(`PressureState '${state}' is invalid`);
 
@@ -120,6 +129,7 @@ class MockPressureService {
     }
 
     this.pressureUpdate_ = {
+      source: this.mojomSourceType_.get(source),
       state: this.mojomStateType_.get(state),
       factors: pressureFactors,
     };

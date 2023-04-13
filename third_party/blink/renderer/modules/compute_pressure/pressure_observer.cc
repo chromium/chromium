@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_observer.h"
 
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -50,8 +51,8 @@ PressureObserver* PressureObserver::Create(V8PressureUpdateCallback* callback,
 }
 
 // static
-size_t PressureObserver::ToSourceIndex(V8PressureSource::Enum source) {
-  size_t index = static_cast<size_t>(source);
+wtf_size_t PressureObserver::ToSourceIndex(V8PressureSource::Enum source) {
+  wtf_size_t index = static_cast<wtf_size_t>(source);
   DCHECK_LT(index, V8PressureSource::kEnumSize);
   return index;
 }
@@ -105,11 +106,11 @@ void PressureObserver::unobserve(V8PressureSource source) {
   // Reject all pending promises for `source`.
   RejectPendingResolvers(source.AsEnum(), DOMExceptionCode::kNotSupportedError,
                          "Called unobserve method.");
-  switch (source.AsEnum()) {
-    case V8PressureSource::Enum::kCpu:
-      records_.clear();
-      break;
-  }
+  records_.erase(base::ranges::remove_if(records_,
+                                         [source](const auto& record) {
+                                           return record->source() == source;
+                                         }),
+                 records_.end());
 }
 
 void PressureObserver::disconnect() {

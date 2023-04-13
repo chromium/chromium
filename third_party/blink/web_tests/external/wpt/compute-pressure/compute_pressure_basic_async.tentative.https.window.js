@@ -18,7 +18,7 @@ pressure_test(async (t, mockPressureService) => {
   const changes = await new Promise(resolve => {
     const observer = new PressureObserver(resolve);
     observer.observe('cpu');
-    mockPressureService.setPressureUpdate('critical');
+    mockPressureService.setPressureUpdate('cpu', 'critical');
     mockPressureService.startPlatformCollector(/*sampleRate=*/ 1.0);
   });
   assert_true(changes.length === 1);
@@ -34,7 +34,7 @@ pressure_test((t, mockPressureService) => {
 
   const promise = observer.observe('cpu');
   observer.unobserve('cpu');
-  mockPressureService.setPressureUpdate('critical');
+  mockPressureService.setPressureUpdate('cpu', 'critical');
   mockPressureService.startPlatformCollector(/*sampleRate=*/ 1.0);
 
   return promise_rejects_dom(t, 'NotSupportedError', promise);
@@ -53,7 +53,7 @@ pressure_test(async (t, mockPressureService) => {
 
   await Promise.all(observePromises);
 
-  mockPressureService.setPressureUpdate('critical');
+  mockPressureService.setPressureUpdate('cpu', 'critical');
   mockPressureService.startPlatformCollector(/*sampleRate=*/ 1.0);
 
   return Promise.all(callbackPromises);
@@ -68,10 +68,11 @@ pressure_test(async (t, mockPressureService) => {
     });
     t.add_cleanup(() => observer1.disconnect());
     observer1.observe('cpu');
-    mockPressureService.setPressureUpdate('critical');
+    mockPressureService.setPressureUpdate('cpu', 'critical');
     mockPressureService.startPlatformCollector(/*sampleRate=*/ 1.0);
   });
   assert_true(observer1_changes.length === 1);
+  assert_equals(observer1_changes[0][0].source, 'cpu');
   assert_equals(observer1_changes[0][0].state, 'critical');
 
   const observer2_changes = [];
@@ -84,5 +85,6 @@ pressure_test(async (t, mockPressureService) => {
     observer2.observe('cpu');
   });
   assert_true(observer2_changes.length === 1);
+  assert_equals(observer2_changes[0][0].source, 'cpu');
   assert_equals(observer2_changes[0][0].state, 'critical');
 }, 'Starting a new observer after an observer has started works');

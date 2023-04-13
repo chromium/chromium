@@ -21,7 +21,8 @@ pressure_test(async (t, mockPressureService) => {
     // cause the actual timer used by mockPressureService to deliver readings
     // to be a bit slower or faster than requested.
     while (observerChanges.length < 4) {
-      mockPressureService.setPressureUpdate(readings[i++ % readings.length]);
+      mockPressureService.setPressureUpdate(
+          'cpu', readings[i++ % readings.length]);
       await t.step_wait(
           () => mockPressureService.updatesDelivered() >= i,
           `At least ${i} readings have been delivered`);
@@ -51,7 +52,7 @@ pressure_test(async (t, mockPressureService) => {
 
   await new Promise(async resolve => {
     observer.observe('cpu');
-    mockPressureService.setPressureUpdate('critical');
+    mockPressureService.setPressureUpdate('cpu', 'critical');
     mockPressureService.startPlatformCollector(sampleRate);
     await t.step_wait(() => pressureChanges.length == 1);
     observer.disconnect();
@@ -60,7 +61,7 @@ pressure_test(async (t, mockPressureService) => {
 
   await new Promise(async resolve => {
     observer.observe('cpu');
-    mockPressureService.setPressureUpdate('serious');
+    mockPressureService.setPressureUpdate('cpu', 'serious');
     mockPressureService.startPlatformCollector(sampleRate * 4);
     await t.step_wait(() => pressureChanges.length == 2);
     observer.disconnect();
