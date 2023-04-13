@@ -22,6 +22,9 @@ api::os_events::AudioJackEventInfo UncheckedConvertPtr(
 api::os_events::AudioJackEvent Convert(
     crosapi::mojom::TelemetryAudioJackEventInfo::State state);
 
+crosapi::mojom::TelemetryEventCategoryEnum Convert(
+    api::os_events::EventCategory input);
+
 template <class OutputT, class InputT>
 OutputT ConvertEventPtr(InputT input) {
   return (!input.is_null()) ? unchecked::UncheckedConvertPtr(std::move(input))

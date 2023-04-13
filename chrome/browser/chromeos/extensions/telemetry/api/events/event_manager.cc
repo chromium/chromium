@@ -159,7 +159,8 @@ EventManager::RegisterEventResult EventManager::RegisterExtensionForEvent(
     return kPwaClosed;
   }
   if (event_router_.IsExtensionObservingForCategory(extension_id, category)) {
-    return kEventAlreadyObserved;
+    // Early return in case the category is already observed by the extension.
+    return kSuccess;
   }
 
   open_pwas_.emplace(extension_id, is_related_pwa_open);

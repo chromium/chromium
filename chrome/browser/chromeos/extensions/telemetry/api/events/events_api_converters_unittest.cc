@@ -23,6 +23,14 @@ TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertAudioJackState) {
       api::os_events::AudioJackEvent::kDisconnected);
 }
 
+TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertEventCategoryEnum) {
+  EXPECT_EQ(Convert(api::os_events::EventCategory::kNone),
+            crosapi::mojom::TelemetryEventCategoryEnum::kUnmappedEnumField);
+
+  EXPECT_EQ(Convert(api::os_events::EventCategory::kAudioJack),
+            crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack);
+}
+
 TEST(TelemetryExtensionEventsApiConvertersUnitTest, ConvertAudioJackEventInfo) {
   auto input = crosapi::mojom::TelemetryAudioJackEventInfo::New();
   input->state = crosapi::mojom::TelemetryAudioJackEventInfo::State::kAdd;

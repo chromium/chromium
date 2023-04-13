@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "chrome/common/chromeos/extensions/api/events.h"
+#include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 
 namespace chromeos::converters {
 
@@ -31,6 +32,17 @@ api::os_events::AudioJackEvent Convert(
       return api::os_events::AudioJackEvent::kConnected;
     case crosapi::mojom::TelemetryAudioJackEventInfo_State::kRemove:
       return api::os_events::AudioJackEvent::kDisconnected;
+  }
+  NOTREACHED();
+}
+
+crosapi::mojom::TelemetryEventCategoryEnum Convert(
+    api::os_events::EventCategory input) {
+  switch (input) {
+    case api::os_events::EventCategory::kNone:
+      return crosapi::mojom::TelemetryEventCategoryEnum::kUnmappedEnumField;
+    case api::os_events::EventCategory::kAudioJack:
+      return crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack;
   }
   NOTREACHED();
 }
