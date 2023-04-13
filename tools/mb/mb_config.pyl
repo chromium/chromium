@@ -403,12 +403,15 @@
       'android-backuprefptr-arm64-fyi-rel': 'release_trybot_backuprefptr_arm64_reclient',
       'android-fieldtrial-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
       'android-perfetto-rel': 'perfetto_release_bot_reclient_android',
-      # Keep in sync with android-pie-arm64-rel, but with reclient.
-      'build-perf-android': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_reclient',
-      # Keep in sync with linux-rel, but with reclient.
+      # Keep in sync with android-pie-arm64-rel
+      'build-perf-android': 'android_release_bot_minimal_symbols_arm64_webview_monochrome_reclient',
+      'build-perf-android-siso': 'android_release_bot_minimal_symbols_arm64_webview_monochrome_siso',
+      # Keep in sync with linux-rel
       'build-perf-linux': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
-      # Keep in sync with win10_chromium_x64_rel_ng, but with reclient.
+      'build-perf-linux-siso': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_siso',
+      # Keep in sync with win10_chromium_x64_rel_ng
       'build-perf-windows': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
+      'build-perf-windows-siso': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_siso',
       # TODO(crbug.com/1235218): remove after the migration.
       'chromeos-amd64-generic-rel (reclient compare)': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
       'chromeos-amd64-generic-rel (reclient)': 'chromeos_amd64-generic-vm_use_fake_dbus_clients_reclient',
@@ -883,19 +886,6 @@
       'linux-finch-smoke-chrome': 'official_reclient',
       'lorenz-graph-dbg': 'android_debug_bot_reclient_external_fastbuild',
       'mac-arm64-finch-smoke-chrome': 'official_reclient_mac_arm',
-      # b/248132996: for siso experiments.
-      'siso-comparison-android': {
-        'reclient': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_reclient',
-        'siso': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_siso',
-      },
-      'siso-comparison-linux': {
-        'reclient': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_reclient',
-        'siso': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_siso',
-      },
-      'siso-comparison-win10': {
-        'reclient': 'gpu_tests_release_trybot_resource_allowlisting_no_precompiled_headers_reclient',
-        'siso': 'gpu_tests_release_trybot_resource_allowlisting_no_precompiled_headers_siso',
-      },
       'win-arm64-dbg': 'chrome_branded_arm64_debug_reclient',
       'win-arm64-rel': 'chrome_branded_arm64_release_reclient',
       'win-celab-rel': 'official_celab_release_bot_reclient',
@@ -1698,6 +1688,11 @@
       'strip_debug_info', 'webview_monochrome',
     ],
 
+    'android_release_bot_minimal_symbols_arm64_webview_monochrome_siso': [
+      'android', 'release_bot', 'minimal_symbols', 'arm64',
+      'strip_debug_info', 'webview_monochrome', 'no_goma', 'no_reclient',
+    ],
+
     'android_release_bot_minimal_symbols_reclient': [
       'android', 'release_bot_reclient', 'minimal_symbols', 'strip_debug_info',
     ],
@@ -1753,18 +1748,6 @@
       'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
       'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
       'no_secondary_abi', 'use_clang_coverage', 'partial_code_coverage_instrumentation',
-    ],
-
-    'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_reclient': [
-      'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
-      'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
-      'no_secondary_abi',
-    ],
-
-    'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_siso': [
-      'android', 'release_trybot', 'arm64', 'strip_debug_info',
-      'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
-      'no_secondary_abi', 'no_goma', 'no_reclient',
     ],
 
     'android_release_trybot_arm64_webview_monochrome_reclient': [
@@ -2846,6 +2829,14 @@
       "enable_backup_ref_ptr_feature_flag",
     ],
 
+    'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_siso': [
+      'gpu_tests', 'release_trybot', 'no_symbols', 'use_dummy_lastchange',
+      'use_clang_coverage', 'partial_code_coverage_instrumentation', 'devtools_do_typecheck',
+      'enable_dangling_raw_ptr_feature_flag',
+      "enable_backup_ref_ptr_feature_flag",
+      "no_goma", "no_reclient",
+    ],
+
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_chrome_for_testing_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
       'devtools_do_typecheck', 'chrome_for_testing',
@@ -2854,10 +2845,6 @@
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_reclient': [
       'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
       'devtools_do_typecheck',
-    ],
-    'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_siso': [
-      'gpu_tests', 'release_trybot', 'no_symbols', 'use_dummy_lastchange',
-      'devtools_do_typecheck', 'no_goma', 'no_reclient',
     ],
 
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials_reclient': [
@@ -2892,17 +2879,15 @@
       'enable_dangling_raw_ptr_feature_flag',
     ],
 
+    'gpu_tests_release_trybot_resource_allowlisting_code_coverage_siso': [
+      'gpu_tests', 'release_trybot', 'no_resource_allowlisting',
+      'use_clang_coverage', 'partial_code_coverage_instrumentation',
+      'enable_dangling_raw_ptr_feature_flag',
+      'no_goma', 'no_reclient',
+    ],
+
     'gpu_tests_release_trybot_resource_allowlisting_invert_fieldtrials': [
       'gpu_tests', 'release_trybot_reclient', 'resource_allowlisting', 'invert_fieldtrials',
-    ],
-
-    'gpu_tests_release_trybot_resource_allowlisting_no_precompiled_headers_reclient': [
-      'gpu_tests', 'release_trybot_reclient', 'no_resource_allowlisting', 'no_precompiled_headers',
-    ],
-
-    'gpu_tests_release_trybot_resource_allowlisting_no_precompiled_headers_siso': [
-      'gpu_tests', 'release_trybot', 'no_resource_allowlisting', 'no_precompiled_headers',
-      'no_goma', 'no_reclient',
     ],
 
     'gpu_tests_release_trybot_resource_allowlisting_reclient': [
@@ -4521,10 +4506,6 @@
 
     'no_lld': {
       'gn_args': 'use_lld=false',
-    },
-
-    'no_precompiled_headers': {
-      'gn_args': 'enable_precompiled_headers=false',
     },
 
     'no_reclient': {
