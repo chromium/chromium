@@ -104,12 +104,18 @@ void AutofillImageFetcherImpl::OnCardArtImageFetched(
   auto credit_card_art_image =
       std::make_unique<CreditCardArtImage>(card_art_url, gfx::Image());
   if (!card_art_image.IsEmpty()) {
-    credit_card_art_image->card_art_image =
-        base::FeatureList::IsEnabled(
-            features::kAutofillEnableNewCardArtAndNetworkImages)
-            ? gfx::Image(gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
-                  kCardArtImageRadius, card_art_image.AsImageSkia()))
-            : AutofillImageFetcherImpl::ApplyGreyOverlay(card_art_image);
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableNewCardArtAndNetworkImages)) {
+      credit_card_art_image->card_art_image =
+          gfx::Image(gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
+              kCardArtImageRadius,
+              gfx::ImageSkiaOperations::CreateResizedImage(
+                  card_art_image.AsImageSkia(),
+                  skia::ImageOperations::RESIZE_BEST, gfx::Size(40, 24))));
+    } else {
+      credit_card_art_image->card_art_image =
+          AutofillImageFetcherImpl::ApplyGreyOverlay(card_art_image);
+    }
   }
 
   std::move(barrier_callback).Run(std::move(credit_card_art_image));
@@ -156,10 +162,11 @@ void AutofillImageFetcherImpl::FetchImageForURL(
     // A FIFE image fetching param suffix is appended to the URL. The image
     // should be center cropped and of Size(32, 20) unless the
     // kAutofillEnableNewCardArtAndNetworkImages feature is enabled, in which
-    // case the image is of Size(40, 24).
+    // case we take the image at its raw size and resize it to Size(40, 24)
+    // later.
     url = base::FeatureList::IsEnabled(
               features::kAutofillEnableNewCardArtAndNetworkImages)
-              ? GURL(card_art_url.spec() + "=w40-h24-n")
+              ? card_art_url
               : GURL(card_art_url.spec() + "=w32-h20-n");
   }
 
