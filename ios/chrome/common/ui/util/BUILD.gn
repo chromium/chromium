@@ -17,6 +17,7 @@ source_set("util") {
     "device_util.mm",
     "pointer_interaction_util.h",
     "pointer_interaction_util.mm",
+    "sdk_forward_declares.h",
     "text_view_util.h",
     "text_view_util.mm",
     "ui_util.h",
