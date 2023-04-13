@@ -272,6 +272,33 @@ class CC_EXPORT GpuImageDecodeCache
     UsageStats usage_stats_;
   };
 
+  // Stores the CPU-side decoded bits and SkImage representation of a single
+  // image (either the default or gainmap image).
+  struct DecodedAuxImageData {
+    // Initialize `data` and make `images` point to `rgba_pixmap` or
+    // `yuva_pixmaps`, which must be backed by `data`.
+    DecodedAuxImageData();
+    DecodedAuxImageData(const SkPixmap& rgba_pixmap,
+                        std::unique_ptr<base::DiscardableMemory> data);
+    DecodedAuxImageData(const SkYUVAPixmaps& yuva_pixmaps,
+                        std::unique_ptr<base::DiscardableMemory> data);
+    DecodedAuxImageData(const DecodedAuxImageData&) = delete;
+    DecodedAuxImageData(DecodedAuxImageData&&);
+    DecodedAuxImageData& operator=(const DecodedAuxImageData&) = delete;
+    DecodedAuxImageData& operator=(DecodedAuxImageData&&);
+    ~DecodedAuxImageData();
+
+    // Return true if all members are reset.
+    bool IsEmpty() const;
+
+    // Release `data` and all entries in `images` and `pixmaps`.
+    void ResetData();
+
+    std::unique_ptr<base::DiscardableMemory> data;
+    sk_sp<SkImage> images[SkYUVAInfo::kMaxPlanes];
+    SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes];
+  };
+
   // Stores the CPU-side decoded bits of an image and supporting fields.
   struct DecodedImageData : public ImageDataBase {
     explicit DecodedImageData(bool is_bitmap_backed,
@@ -282,19 +309,22 @@ class CC_EXPORT GpuImageDecodeCache
     bool Lock();
     void Unlock();
 
-    void SetLockedData(std::unique_ptr<base::DiscardableMemory> data,
-                       sk_sp<SkImage> images[SkYUVAInfo::kMaxPlanes],
-                       bool out_of_raster);
+    void SetLockedData(DecodedAuxImageData aux_image_data, bool out_of_raster);
     void ResetData();
-    base::DiscardableMemory* data() const { return data_.get(); }
+    base::DiscardableMemory* data() const { return aux_image_data_.data.get(); }
 
     void SetBitmapImage(sk_sp<SkImage> image);
     void ResetBitmapImage();
 
-    sk_sp<SkImage> image(int i = 0) const {
+    sk_sp<SkImage> image(int plane = 0) const {
       DCHECK(is_locked() || is_bitmap_backed_);
-      DCHECK_LT(i, SkYUVAInfo::kMaxPlanes);
-      return images_[i];
+      DCHECK_LT(plane, SkYUVAInfo::kMaxPlanes);
+      return aux_image_data_.images[plane];
+    }
+
+    const SkPixmap* pixmaps() const {
+      DCHECK(is_locked() || is_bitmap_backed_);
+      return aux_image_data_.pixmaps;
     }
 
     bool can_do_hardware_accelerated_decode() const {
@@ -306,7 +336,7 @@ class CC_EXPORT GpuImageDecodeCache
     }
 
     // Test-only functions.
-    sk_sp<SkImage> ImageForTesting() const { return images_[0]; }
+    sk_sp<SkImage> ImageForTesting() const { return aux_image_data_.images[0]; }
 
     bool decode_failure = false;
     // Similar to |task|, but only is generated if there is no associated upload
@@ -328,8 +358,7 @@ class CC_EXPORT GpuImageDecodeCache
     void ReportUsageStats() const;
 
     const bool is_bitmap_backed_;
-    std::unique_ptr<base::DiscardableMemory> data_;
-    sk_sp<SkImage> images_[SkYUVAInfo::kMaxPlanes];
+    DecodedAuxImageData aux_image_data_;
 
     // Keeps tracks of images that could go through hardware decode acceleration
     // though they're possibly prevented from doing so because of a disabled
@@ -498,10 +527,27 @@ class CC_EXPORT GpuImageDecodeCache
     absl::optional<YUVSkImages> unmipped_yuv_images_;
   };
 
+  // A structure to represent either an RGBA or a YUVA image info.
+  struct ImageInfo {
+    // Initialize `rgba` or `yuva`, and compute `size`.
+    ImageInfo();
+    explicit ImageInfo(const SkImageInfo& rgba);
+    explicit ImageInfo(const SkYUVAPixmapInfo& yuva);
+    ImageInfo(const ImageInfo&);
+    ImageInfo& operator=(const ImageInfo&);
+    ~ImageInfo();
+
+    // At most one of `rgba` or `yuva` may be valid.
+    absl::optional<SkImageInfo> rgba;
+    absl::optional<SkYUVAPixmapInfo> yuva;
+
+    // The number of bytes used by this image.
+    size_t size = 0;
+  };
+
   struct ImageData : public base::RefCountedThreadSafe<ImageData> {
     ImageData(PaintImage::Id paint_image_id,
               DecodedDataMode mode,
-              size_t size,
               const TargetColorParams& target_color_params,
               PaintFlags::FilterQuality quality,
               int upload_scale_mip_level,
@@ -509,16 +555,20 @@ class CC_EXPORT GpuImageDecodeCache
               bool is_bitmap_backed,
               bool can_do_hardware_accelerated_decode,
               bool do_hardware_accelerated_decode,
-              const SkImageInfo& image_info,
-              absl::optional<SkYUVAPixmapInfo> yuva_pixmap_info);
+              const ImageInfo& info);
 
     bool IsGpuOrTransferCache() const;
     bool HasUploadedData() const;
     void ValidateBudgeted() const;
 
+    // Return the memory that is used by this image when decoded. This should
+    // also equal the memory that is used on the GPU when this is uploaded.
+    // In some circumstances the GPU memory usage is slightly different (e.g,
+    // when a gainmap or HDR tonemapping is applied).
+    size_t GetSize() const;
+
     const PaintImage::Id paint_image_id;
     const DecodedDataMode mode;
-    const size_t size;
     TargetColorParams target_color_params;
     PaintFlags::FilterQuality quality;
     int upload_scale_mip_level;
@@ -527,14 +577,9 @@ class CC_EXPORT GpuImageDecodeCache
     bool is_budgeted = false;
     base::TimeTicks last_use;
 
-    // The RGBA image info for the decoded image. The dimensions may be smaller
-    // than the original size if the image needs to be downscaled.
-    SkImageInfo image_info;
-
-    // The YUVA image info for the image, if the image is to be decoded to YUVA.
-    // The dimensions may be smaller than the original size if the image needs
-    // to be downscaled.
-    absl::optional<SkYUVAPixmapInfo> yuva_pixmap_info;
+    // The RGBA or YUVA image info for the decoded image. The dimensions may be
+    // smaller than the original size if the image needs to be downscaled.
+    const ImageInfo info;
 
     // If true, this image is no longer in our |persistent_cache_| and will be
     // deleted as soon as its ref count reaches zero.
