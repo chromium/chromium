@@ -71,45 +71,6 @@ chrome_test_apk_tmpl("chrome_java_test_pagecontroller_tests") {
   ]
 }
 
-android_test_apk("baseline_profile_test_apk") {
-  apk_name = "ChromeStartupBenchmark"
-  android_manifest =
-      "javatests/src/org/chromium/chrome/browser/perf/AndroidManifest.xml"
-  never_incremental = true
-  sources = [
-    "javatests/src/org/chromium/chrome/browser/perf/BaselineProfileTest.java",
-  ]
-
-  if (!is_java_debug) {
-    proguard_enabled = true
-    proguard_configs = [ "//chrome/android/proguard/apk_for_test.flags" ]
-  }
-
-  deps = [
-    ":chrome_java_test_pagecontroller",
-    "//base:base_java_test_support",
-    "//third_party/androidx:androidx_benchmark_benchmark_junit4_java",
-    "//third_party/androidx:androidx_benchmark_benchmark_macro_java",
-    "//third_party/androidx:androidx_benchmark_benchmark_macro_junit4_java",
-    "//third_party/androidx:androidx_test_core_java",
-    "//third_party/androidx:androidx_test_ext_junit_java",
-    "//third_party/androidx:androidx_test_monitor_java",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit",
-    "//third_party/kotlin_stdlib:kotlin_stdlib_java",
-  ]
-}
-
-instrumentation_test_runner("chrome_public_apk_baseline_profile_generator") {
-  android_test_apk = ":baseline_profile_test_apk"
-  apk_under_test = "//chrome/android:chrome_public_apk"
-  never_incremental = true
-  extra_args = [
-    "--use-apk-under-test-flags-file",
-    "--disable-fre",
-  ]
-}
-
 chrome_test_apk_tmpl("chrome_java_test_wpr_tests") {
   apk_name = "ChromeWPRTests"
   sources = [ "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/network_fetch/FeedNewTabPageCardInstrumentationTest.java" ]
