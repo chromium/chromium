@@ -8,29 +8,24 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/supervised_user/chrome_web_content_handler_base.h"
 #include "components/supervised_user/core/browser/web_content_handler.h"
 
 enum class AndroidLocalWebApprovalFlowOutcome;
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 // Android specific implementation of web content handler.
-class WebContentHandlerImpl : public supervised_user::WebContentHandler {
+class WebContentHandlerImpl : public ChromeWebContentHandlerBase {
  public:
-  explicit WebContentHandlerImpl(content::WebContents* web_contents);
+  WebContentHandlerImpl(content::WebContents* web_contents, int frame_id);
 
   WebContentHandlerImpl(const WebContentHandlerImpl&) = delete;
   WebContentHandlerImpl& operator=(const WebContentHandlerImpl&) = delete;
   ~WebContentHandlerImpl() override;
 
-  // supervised_user::WebContentHandler:
+  // ChromeWebContentHandlerBase implementaion:
   void RequestLocalApproval(const GURL& url,
                             const std::u16string& child_display_name,
                             ApprovalRequestInitiatedCallback callback) override;
-  bool IsMainFrame(int frame_id) override;
-  void CleanUpInfoBarOnMainFrame(int frame_id) override;
   void ShowFeedback(GURL url, std::u16string reason) override;
 
  private:
@@ -48,7 +43,6 @@ class WebContentHandlerImpl : public supervised_user::WebContentHandler {
   FRIEND_TEST_ALL_PREFIXES(WebContentHandlerImplTest,
                            LocalWebApprovalDurationHistogramCancellationTest);
 
-  const raw_ptr<content::WebContents> web_contents_;
   base::WeakPtrFactory<WebContentHandlerImpl> weak_ptr_factory_{this};
 };
 

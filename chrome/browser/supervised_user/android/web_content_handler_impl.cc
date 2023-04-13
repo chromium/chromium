@@ -36,10 +36,9 @@ AndroidOutcomeToLocalApprovalResult(
 
 }  // namespace
 
-WebContentHandlerImpl::WebContentHandlerImpl(content::WebContents* web_contents)
-    : supervised_user::WebContentHandler(), web_contents_(web_contents) {
-  CHECK(web_contents_);
-}
+WebContentHandlerImpl::WebContentHandlerImpl(content::WebContents* web_contents,
+                                             int frame_id)
+    : ChromeWebContentHandlerBase(web_contents, frame_id) {}
 
 WebContentHandlerImpl::~WebContentHandlerImpl() = default;
 
@@ -61,16 +60,6 @@ void WebContentHandlerImpl::RequestLocalApproval(
   // Runs the `callback` to inform the caller that the flow initiation was
   // successful.
   std::move(callback).Run(true);
-}
-
-bool WebContentHandlerImpl::IsMainFrame(int frame_id) {
-  return web_contents_->GetPrimaryMainFrame()->GetFrameTreeNodeId() == frame_id;
-}
-
-void WebContentHandlerImpl::CleanUpInfoBarOnMainFrame(int frame_id) {
-  if (IsMainFrame(frame_id)) {
-    supervised_user::CleanUpInfoBarForContent(web_contents_.get());
-  }
 }
 
 void WebContentHandlerImpl::ShowFeedback(GURL url, std::u16string reason) {

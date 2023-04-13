@@ -70,7 +70,7 @@ TEST_F(WebContentHandlerImplTest,
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
   WebContentHandlerImpl web_content_handler =
-      WebContentHandlerImpl(web_contents.get());
+      WebContentHandlerImpl(web_contents.get(), /*frame_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time,
@@ -104,7 +104,7 @@ TEST_F(WebContentHandlerImplTest,
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
   WebContentHandlerImpl web_content_handler =
-      WebContentHandlerImpl(web_contents.get());
+      WebContentHandlerImpl(web_contents.get(), /*frame_id=*/0);
 
   // Receive a request canceled by the parent.
   // Check that no duration metric is recorded for incomplete requests.
@@ -136,7 +136,7 @@ TEST_F(WebContentHandlerImplTest,
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
   WebContentHandlerImpl web_content_handler =
-      WebContentHandlerImpl(web_contents.get());
+      WebContentHandlerImpl(web_contents.get(), /*frame_id=*/0);
 
   // Receive a request accepted by the parent with a total duration of 5
   // minutes. Check that duration metric is recorded.

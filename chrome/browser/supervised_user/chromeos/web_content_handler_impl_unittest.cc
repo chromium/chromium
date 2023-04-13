@@ -84,8 +84,8 @@ TEST_F(WebContentHandlerImplTest, LocalWebApprovalApprovedChromeOSTest) {
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
-  WebContentHandlerImpl web_content_handler(web_contents.get(), url,
-                                            large_icon_service());
+  WebContentHandlerImpl web_content_handler(
+      web_contents.get(), url, large_icon_service(), /*frame_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time, std::move(result));
@@ -125,8 +125,8 @@ TEST_F(WebContentHandlerImplTest, LocalWebApprovalDeclinedChromeOSTest) {
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
-  WebContentHandlerImpl web_content_handler(web_contents.get(), url,
-                                            large_icon_service());
+  WebContentHandlerImpl web_content_handler(
+      web_contents.get(), url, large_icon_service(), /*frame_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time, std::move(result));
@@ -166,8 +166,8 @@ TEST_F(WebContentHandlerImplTest, LocalWebApprovalCanceledChromeOSTest) {
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
-  WebContentHandlerImpl web_content_handler(web_contents.get(), url,
-                                            large_icon_service());
+  WebContentHandlerImpl web_content_handler(
+      web_contents.get(), url, large_icon_service(), /*frame_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time, std::move(result));
@@ -205,8 +205,8 @@ TEST_F(WebContentHandlerImplTest, LocalWebApprovalErrorChromeOSTest) {
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
-  WebContentHandlerImpl web_content_handler(web_contents.get(), url,
-                                            large_icon_service());
+  WebContentHandlerImpl web_content_handler(
+      web_contents.get(), url, large_icon_service(), /*frame_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time, std::move(result));

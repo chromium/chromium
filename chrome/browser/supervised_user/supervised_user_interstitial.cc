@@ -125,7 +125,7 @@ std::unique_ptr<SupervisedUserInterstitial> SupervisedUserInterstitial::Create(
           web_contents, std::move(web_content_handler), supervised_user_service,
           url, reason, frame_id, interstitial_navigation_id));
 
-  interstitial->web_content_handler()->CleanUpInfoBarOnMainFrame(frame_id);
+  interstitial->web_content_handler()->CleanUpInfoBarOnMainFrame();
 
   // Caller is responsible for deleting the interstitial.
   return interstitial;
@@ -250,7 +250,7 @@ void SupervisedUserInterstitial::OnInterstitialDone() {
 
 void SupervisedUserInterstitial::OutputRequestPermissionSourceMetric() {
   RequestPermissionSource source;
-  if (web_content_handler_->IsMainFrame(frame_id_)) {
+  if (web_content_handler_->IsMainFrame()) {
     source = RequestPermissionSource::MAIN_FRAME;
   } else {
     source = RequestPermissionSource::SUB_FRAME;

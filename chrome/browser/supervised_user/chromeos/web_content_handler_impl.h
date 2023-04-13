@@ -10,15 +10,11 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "components/supervised_user/core/browser/web_content_handler.h"
+#include "chrome/browser/supervised_user/chrome_web_content_handler_base.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 class Profile;
-
-namespace content {
-class WebContents;
-}  // namespace content
 
 namespace favicon {
 class LargeIconService;
@@ -27,22 +23,21 @@ class LargeIconService;
 class SupervisedUserFaviconRequestHandler;
 
 // Chrome Ash specific implementation of web content handler.
-class WebContentHandlerImpl : public supervised_user::WebContentHandler {
+class WebContentHandlerImpl : public ChromeWebContentHandlerBase {
  public:
   WebContentHandlerImpl(content::WebContents* web_contents,
                         const GURL& url,
-                        favicon::LargeIconService& large_icon_service);
+                        favicon::LargeIconService& large_icon_service,
+                        int frame_id);
 
   WebContentHandlerImpl(const WebContentHandlerImpl&) = delete;
   WebContentHandlerImpl& operator=(const WebContentHandlerImpl&) = delete;
   ~WebContentHandlerImpl() override;
 
-  // supervised_user::WebContentHandler:
+  // ChromeWebContentHandlerBase implementation:
   void RequestLocalApproval(const GURL& url,
                             const std::u16string& child_display_name,
                             ApprovalRequestInitiatedCallback callback) override;
-  bool IsMainFrame(int frame_id) override;
-  void CleanUpInfoBarOnMainFrame(int frame_id) override;
   void ShowFeedback(GURL url, std::u16string reason) override;
 
  private:
@@ -62,7 +57,6 @@ class WebContentHandlerImpl : public supervised_user::WebContentHandler {
   FRIEND_TEST_ALL_PREFIXES(WebContentHandlerImplTest,
                            LocalWebApprovalErrorChromeOSTest);
 
-  const raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<SupervisedUserFaviconRequestHandler> favicon_handler_;
   const raw_ref<Profile> profile_;
   base::WeakPtrFactory<WebContentHandlerImpl> weak_ptr_factory_{this};

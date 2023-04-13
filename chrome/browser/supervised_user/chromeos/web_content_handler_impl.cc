@@ -69,8 +69,9 @@ void HandleChromeOSErrorResult(
 WebContentHandlerImpl::WebContentHandlerImpl(
     content::WebContents* web_contents,
     const GURL& url,
-    favicon::LargeIconService& large_icon_service)
-    : web_contents_(web_contents),
+    favicon::LargeIconService& large_icon_service,
+    int frame_id)
+    : ChromeWebContentHandlerBase(web_contents, frame_id),
       favicon_handler_(std::make_unique<SupervisedUserFaviconRequestHandler>(
           url.GetWithEmptyPath(),
           &large_icon_service)),
@@ -109,16 +110,6 @@ void WebContentHandlerImpl::RequestLocalApproval(
                      weak_ptr_factory_.GetWeakPtr(),
                      std::ref(*settings_service), url, base::TimeTicks::Now()));
   std::move(callback).Run(true);
-}
-
-bool WebContentHandlerImpl::IsMainFrame(int frame_id) {
-  return web_contents_->GetPrimaryMainFrame()->GetFrameTreeNodeId() == frame_id;
-}
-
-void WebContentHandlerImpl::CleanUpInfoBarOnMainFrame(int frame_id) {
-  if (IsMainFrame(frame_id)) {
-    supervised_user::CleanUpInfoBarForContent(web_contents_.get());
-  }
 }
 
 void WebContentHandlerImpl::ShowFeedback(GURL url, std::u16string reason) {
