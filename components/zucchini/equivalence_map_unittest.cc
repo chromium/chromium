@@ -276,6 +276,10 @@ TEST(EquivalenceMapTest, PruneEquivalencesAndSortBySource) {
   EXPECT_EQ(std::deque<Equivalence>({{0, 10, 3}, {3, 16, 2}}),
             PruneEquivalencesAndSortBySourceTest(
                 {{0, 10, 3}, {1, 13, 3}, {3, 16, 2}}));  // Pruning is greedy
+  // Test for crbug.com/1432457.
+  EXPECT_EQ(std::deque<Equivalence>({{0, 10, +6}, {6, 23, +2}}),
+            PruneEquivalencesAndSortBySourceTest(
+                {{0, 10, +6}, {3, 20, +5}, {3, 30, +1}}));
 
   // Consider following pattern that may cause O(n^2) behavior if not handled
   // properly.
