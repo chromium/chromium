@@ -336,6 +336,7 @@ class AppShimManager : public AppShimHostBootstrap::Client,
       LoadAndLaunchAppCallback* launch_callback);
   void LoadAndLaunchApp_OnProfilesAndAppReady(
       const std::vector<base::FilePath>& profile_paths_to_launch,
+      bool first_profile_is_from_bootstrap,
       const LoadAndLaunchAppParams& params,
       LoadAndLaunchAppCallback launch_callback);
   void LoadAndLaunchApp_LaunchIfAppropriate(

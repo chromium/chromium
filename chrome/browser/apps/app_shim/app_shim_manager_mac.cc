@@ -621,6 +621,7 @@ void AppShimManager::LoadAndLaunchApp(
   base::OnceClosure callback =
       base::BindOnce(&AppShimManager::LoadAndLaunchApp_OnProfilesAndAppReady,
                      weak_factory_.GetWeakPtr(), profile_paths_to_launch,
+                     /*first_profile_is_from_bootstrap=*/!profile_path.empty(),
                      params, std::move(launch_callback));
   {
     // This will update |callback| to be a chain of callbacks that load the
@@ -708,6 +709,7 @@ bool AppShimManager::LoadAndLaunchApp_TryExistingProfileStates(
 
 void AppShimManager::LoadAndLaunchApp_OnProfilesAndAppReady(
     const std::vector<base::FilePath>& profile_paths_to_launch,
+    bool first_profile_is_from_bootstrap,
     const LoadAndLaunchAppParams& params,
     LoadAndLaunchAppCallback launch_callback) {
   // Launch all of the profiles in |profile_paths_to_launch|. Record the most
@@ -753,10 +755,10 @@ void AppShimManager::LoadAndLaunchApp_OnProfilesAndAppReady(
     if (params.HasFilesOrURLs())
       break;
 
-    // If this was the first profile in |profile_paths_to_launch|, then this
-    // was the profile specified in the bootstrap, so stop here.
-    if (iter == 0)
+    // If this was the profile specified in the bootstrap, stop here.
+    if (first_profile_is_from_bootstrap && iter == 0) {
       break;
+    }
   }
 
   // If we launched any profile, report success.
