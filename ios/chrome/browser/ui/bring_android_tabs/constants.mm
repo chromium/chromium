@@ -13,3 +13,10 @@ NSString* const kBringAndroidTabsPromptConfirmationAlertAXId =
 
 NSString* const kBringAndroidTabsPromptBottomMessageAXId =
     @"kBringAndroidTabsPromptBottomMessageAccessibilityIdentifier";
+
+NSString* const kBringAndroidTabsPromptTabListAXId =
+    @"kBringAndroidTabsPromptTabListAccessibilityIdentifier";
+
+CGFloat const kBringAndroidTabsFaviconSize = 48;
+
+CGFloat const kTabListFromAndroidCellHeight = 78.0;

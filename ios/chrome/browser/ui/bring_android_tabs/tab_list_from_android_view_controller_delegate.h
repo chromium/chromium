@@ -10,10 +10,11 @@
 @protocol TabListFromAndroidViewControllerDelegate
 
 // Called when the user dismisses the prompt. If the dismissal is done using a
-// modal swipe, the parameter `swiped` is YES. `count` is the number of tabs the
-// user deselected before dismissal.
+// modal swipe, the parameter `swiped` is YES. `countDeselected` is the number
+// of tabs the user deselected before dismissal.
 - (void)tabListFromAndroidViewControllerDidDismissWithSwipe:(BOOL)swiped
-                                     numberOfDeselectedTabs:(int)count;
+                                     numberOfDeselectedTabs:
+                                         (int)countDeselected;
 
 // Called when the user taps the "open" button. Values in `tabIndices`
 // correspond to the indices of the tabs the user wants to open in the
