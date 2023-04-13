@@ -16773,6 +16773,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManagedUsers_OpenProfile">
+  <obsolete>Deprecated as of 04/2023.</obsolete>
   <owner>pam@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <description>Supervised user profile activated.</description>
@@ -16785,6 +16786,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ManagedUsers_SwitchProfile">
+  <obsolete>Deprecated as of 04/2023.</obsolete>
   <owner>pam@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <description>Supervised user switched to another profile.</description>

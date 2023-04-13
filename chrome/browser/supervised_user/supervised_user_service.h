@@ -33,14 +33,6 @@
 #include "extensions/browser/management_policy.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/browser_list_observer.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS)
-class Browser;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 class PrefService;
 class Profile;
 class SupervisedUserServiceObserver;
@@ -84,9 +76,6 @@ class SupervisedUserService
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       public extensions::ExtensionRegistryObserver,
       public extensions::ManagementPolicy::Provider,
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
-      public BrowserListObserver,
 #endif
       public supervised_user::SupervisedUserURLFilter::Observer {
  public:
@@ -194,11 +183,6 @@ class SupervisedUserService
 
   // ProfileKeyedService override:
   void Shutdown() override;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // BrowserListObserver implementation:
-  void OnBrowserSetLastActive(Browser* browser) override;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // SupervisedUserURLFilter::Observer implementation:
   void OnSiteListUpdated() override;
@@ -395,8 +379,6 @@ class SupervisedUserService
   raw_ptr<Delegate> delegate_;
 
   PrefChangeRegistrar pref_change_registrar_;
-
-  bool is_profile_active_ = false;
 
   // True only when |Init()| method has been called.
   bool did_init_ = false;

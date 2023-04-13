@@ -421,10 +421,6 @@ void SupervisedUserService::SetActive(bool active) {
     RefreshApprovedExtensionsFromPrefs();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if BUILDFLAG(IS_CHROMEOS)
-    // TODO(b/270535171): Remove platform-specific #ifdef.
-    BrowserList::AddObserver(this);
-#endif
   } else {
     remote_web_approvals_manager_.ClearApprovalRequestsCreators();
 
@@ -443,11 +439,6 @@ void SupervisedUserService::SetActive(bool active) {
     url_filter_.Clear();
     for (SupervisedUserServiceObserver& observer : observer_list_)
       observer.OnURLFilterChanged();
-
-#if BUILDFLAG(IS_CHROMEOS)
-    // TODO(b/270535171): Remove platform-specific #ifdef.
-    BrowserList::RemoveObserver(this);
-#endif
   }
 }
 
@@ -919,18 +910,6 @@ void SupervisedUserService::SetExtensionsActive() {
   }
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-#if BUILDFLAG(IS_CHROMEOS)
-void SupervisedUserService::OnBrowserSetLastActive(Browser* browser) {
-  bool profile_became_active = profile_->IsSameOrParent(browser->profile());
-  if (!is_profile_active_ && profile_became_active)
-    base::RecordAction(UserMetricsAction("ManagedUsers_OpenProfile"));
-  else if (is_profile_active_ && !profile_became_active)
-    base::RecordAction(UserMetricsAction("ManagedUsers_SwitchProfile"));
-
-  is_profile_active_ = profile_became_active;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void SupervisedUserService::OnSiteListUpdated() {
   for (SupervisedUserServiceObserver& observer : observer_list_)
