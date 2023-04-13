@@ -534,7 +534,6 @@ def BuildLLVMLibraries(skip_build, build_mac_arm, gcc_toolchain):
         sys.executable,
         os.path.join(CLANG_SCRIPTS_DIR, 'build.py'),
         '--disable-asserts',
-        # TODO(danakj): '--no-clang',
         '--no-tools',
         '--with-ml-inliner-model=',
     ]
