@@ -1191,6 +1191,10 @@ crbug.com/1284251 external/wpt/css/css-ui/compute-kind-widget-generated/kind-of-
 
 crbug.com/807497 external/wpt/css/css-flexbox/anonymous-flex-item-005.html [ Failure ]
 crbug.com/1311206 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-038.html [ Failure ]
+crbug.com/1228023 external/wpt/css/css-flexbox/justify-content-007.html [ Failure ]
+crbug.com/1306037 external/wpt/css/css-flexbox/abspos/dynamic-align-self-001.html [ Failure ]
+
+
 crbug.com/1299946 [ Mac10.14 Release ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Pass Timeout ]
 crbug.com/1299946 [ Mac10.15 Release ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Pass Timeout ]
 crbug.com/1299946 [ Mac11 Release ] external/wpt/css/css-sizing/min-content-negative-margin-crash.html [ Pass Timeout ]
