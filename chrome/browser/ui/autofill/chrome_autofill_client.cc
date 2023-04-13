@@ -777,9 +777,10 @@ bool ChromeAutofillClient::TryToShowFastCheckout(
     const FormFieldData& field,
     base::WeakPtr<AutofillManager> autofill_manager) {
 #if BUILDFLAG(IS_ANDROID)
-  const GURL& url = web_contents()->GetLastCommittedURL();
-  return GetFastCheckoutClient()->TryToStart(url, form, field,
-                                             autofill_manager);
+  return base::FeatureList::IsEnabled(::features::kFastCheckout) &&
+         GetFastCheckoutClient()->TryToStart(
+             web_contents()->GetLastCommittedURL(), form, field,
+             autofill_manager);
 #else
   return false;
 #endif
@@ -807,7 +808,8 @@ bool ChromeAutofillClient::IsFastCheckoutSupported(
 
 bool ChromeAutofillClient::IsShowingFastCheckoutUI() {
 #if BUILDFLAG(IS_ANDROID)
-  return GetFastCheckoutClient()->IsShowing();
+  return base::FeatureList::IsEnabled(::features::kFastCheckout) &&
+         GetFastCheckoutClient()->IsShowing();
 #else
   return false;
 #endif
