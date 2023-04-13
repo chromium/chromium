@@ -31,7 +31,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
-#include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -55,14 +54,6 @@ class MockStateKeyBroker : public ServerBackedStateKeysBroker {
   ~MockStateKeyBroker() override = default;
 
   MOCK_METHOD(void, RequestStateKeys, (StateKeysCallback), (override));
-};
-
-class MockDeviceSettingsService : public ash::DeviceSettingsService {
- public:
-  MOCK_METHOD(void,
-              GetOwnershipStatusAsync,
-              (OwnershipStatusCallback callback),
-              (override));
 };
 
 std::unique_ptr<EnrollmentStateFetcher::RlweClient> CreateRlweClientForTesting(
@@ -169,18 +160,12 @@ class EnrollmentStateFetcherTest : public testing::Test {
         future.GetCallback(), &local_state_,
         base::BindRepeating(&CreateRlweClientForTesting, psm_test_case_),
         fake_dm_service_.get(), shared_url_loader_factory_, &system_clock_,
-        &state_key_broker_, &device_settings_service_);
+        &state_key_broker_, nullptr);
     fetcher->Start();
     return future.Get();
   }
 
  protected:
-  void ExpectOwnershipCheck() {
-    EXPECT_CALL(device_settings_service_, GetOwnershipStatusAsync)
-        .WillOnce(base::test::RunOnceCallback<0>(
-            ash::DeviceSettingsService::OWNERSHIP_NONE));
-  }
-
   void ExpectStateKeysRequest() {
     EXPECT_CALL(state_key_broker_, RequestStateKeys)
         .WillOnce(base::test::RunOnceCallback<0>(
@@ -206,14 +191,12 @@ class EnrollmentStateFetcherTest : public testing::Test {
         .WillOnce(fake_dm_service_->SendJobOKAsync(response));
   }
 
-  content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedCommandLine command_line_;
   TestingPrefServiceSimple local_state_;
   ash::FakeSystemClockClient system_clock_;
   ash::system::FakeStatisticsProvider statistics_provider_;
   ash::ScopedStubInstallAttributes install_attributes_;
   MockStateKeyBroker state_key_broker_;
-  MockDeviceSettingsService device_settings_service_;
   psm::testing::RlweTestCase psm_test_case_;
 
   // Fake URL loader factories.
@@ -221,6 +204,7 @@ class EnrollmentStateFetcherTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
 
   // Fake DMService.
+  base::test::SingleThreadTaskEnvironment task_environment_;
   MockJobCreationHandler job_creation_handler_;
   std::unique_ptr<FakeDeviceManagementService> fake_dm_service_;
 };
@@ -293,28 +277,7 @@ TEST_F(EnrollmentStateFetcherTest, SerialNumberMissing) {
   EXPECT_EQ(state, AutoEnrollmentState::kNoEnrollment);
 }
 
-TEST_F(EnrollmentStateFetcherTest, OwnershipTaken) {
-  EXPECT_CALL(device_settings_service_, GetOwnershipStatusAsync)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          ash::DeviceSettingsService::OWNERSHIP_TAKEN));
-
-  AutoEnrollmentState state = FetchEnrollmentState();
-
-  EXPECT_EQ(state, AutoEnrollmentState::kNoEnrollment);
-}
-
-TEST_F(EnrollmentStateFetcherTest, OwnershipUnknown) {
-  EXPECT_CALL(device_settings_service_, GetOwnershipStatusAsync)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          ash::DeviceSettingsService::OWNERSHIP_UNKNOWN));
-
-  AutoEnrollmentState state = FetchEnrollmentState();
-
-  EXPECT_EQ(state, AutoEnrollmentState::kNoEnrollment);
-}
-
 TEST_F(EnrollmentStateFetcherTest, StateKeysMissing) {
-  ExpectOwnershipCheck();
   EXPECT_CALL(state_key_broker_, RequestStateKeys)
       .WillRepeatedly(
           base::test::RunOnceCallback<0>(std::vector<std::string>{}));
@@ -325,7 +288,6 @@ TEST_F(EnrollmentStateFetcherTest, StateKeysMissing) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, EmptyOprfResponse) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   EXPECT_CALL(
       job_creation_handler_,
@@ -338,7 +300,6 @@ TEST_F(EnrollmentStateFetcherTest, EmptyOprfResponse) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, ConnectionErrorOnOprfRequest) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   EXPECT_CALL(
       job_creation_handler_,
@@ -351,7 +312,6 @@ TEST_F(EnrollmentStateFetcherTest, ConnectionErrorOnOprfRequest) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, ServerErrorOnOprfRequest) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   EXPECT_CALL(
       job_creation_handler_,
@@ -365,7 +325,6 @@ TEST_F(EnrollmentStateFetcherTest, ServerErrorOnOprfRequest) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, FailToCreateQueryRequest) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest(/*any=*/true);
   base::test::TestFuture<AutoEnrollmentState> future;
@@ -384,7 +343,7 @@ TEST_F(EnrollmentStateFetcherTest, FailToCreateQueryRequest) {
                     .value();
           }),
       fake_dm_service_.get(), shared_url_loader_factory_, &system_clock_,
-      &state_key_broker_, &device_settings_service_);
+      &state_key_broker_, nullptr);
 
   fetcher->Start();
   AutoEnrollmentState state = future.Get();
@@ -393,7 +352,6 @@ TEST_F(EnrollmentStateFetcherTest, FailToCreateQueryRequest) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, EmptyQueryResponse) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   EXPECT_CALL(job_creation_handler_, OnJobCreation(JobWithPsmRlweRequest(
@@ -406,7 +364,6 @@ TEST_F(EnrollmentStateFetcherTest, EmptyQueryResponse) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, ConnectionErrorOnQueryRequest) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   EXPECT_CALL(job_creation_handler_, OnJobCreation(JobWithPsmRlweRequest(
@@ -419,7 +376,6 @@ TEST_F(EnrollmentStateFetcherTest, ConnectionErrorOnQueryRequest) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, ServerErrorOnQueryRequest) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   EXPECT_CALL(job_creation_handler_, OnJobCreation(JobWithPsmRlweRequest(
@@ -433,7 +389,6 @@ TEST_F(EnrollmentStateFetcherTest, ServerErrorOnQueryRequest) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, EmptyEnrollmentStateResponse) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -449,7 +404,6 @@ TEST_F(EnrollmentStateFetcherTest, EmptyEnrollmentStateResponse) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, ConnectionErrorOnEnrollmentStateRequest) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -464,7 +418,6 @@ TEST_F(EnrollmentStateFetcherTest, ConnectionErrorOnEnrollmentStateRequest) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, ServerErrorOnEnrollmentStateRequest) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -480,7 +433,6 @@ TEST_F(EnrollmentStateFetcherTest, ServerErrorOnEnrollmentStateRequest) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, NoEnrollment) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -500,7 +452,6 @@ TEST_F(EnrollmentStateFetcherTest, NoEnrollment) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, InitialEnrollmentEnforced) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -534,7 +485,6 @@ TEST_F(EnrollmentStateFetcherTest, InitialEnrollmentEnforced) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, InitialEnrollmentDisabled) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -564,7 +514,6 @@ TEST_F(EnrollmentStateFetcherTest, InitialEnrollmentDisabled) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, ZTEWithPackagedEnterpriseLicense) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -599,7 +548,6 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithPackagedEnterpriseLicense) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, ZTEWithEducationLicense) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -631,7 +579,6 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithEducationLicense) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, ZTEWithTerminalLicense) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -660,7 +607,6 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithTerminalLicense) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, ZTEWithUnspecifiedUpgrade) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -689,7 +635,6 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithUnspecifiedUpgrade) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, ZTEWithChromeEnterpriseUpgrade) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -718,7 +663,6 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithChromeEnterpriseUpgrade) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, ZTEWithKioskAndSignageUpgrade) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -747,7 +691,6 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithKioskAndSignageUpgrade) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, ReEnrollmentRequested) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -779,7 +722,6 @@ TEST_F(EnrollmentStateFetcherTest, ReEnrollmentRequested) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, ReEnrollmentEnforced) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -803,7 +745,6 @@ TEST_F(EnrollmentStateFetcherTest, ReEnrollmentEnforced) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, ReEnrollmentDisabled) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -831,7 +772,6 @@ TEST_F(EnrollmentStateFetcherTest, ReEnrollmentDisabled) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, AutoREWithPerpetualLicense) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -860,7 +800,6 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithPerpetualLicense) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, AutoREWithUndefinedLicense) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -885,7 +824,6 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithUndefinedLicense) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, AutoREWithAnnualLicense) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -911,7 +849,6 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithAnnualLicense) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, AutoREWithKioskLicense) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -937,7 +874,6 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithKioskLicense) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, AutoREWithPackagedLicense) {
-  ExpectOwnershipCheck();
   ExpectStateKeysRequest();
   ExpectOprfRequest();
   ExpectQueryRequest();

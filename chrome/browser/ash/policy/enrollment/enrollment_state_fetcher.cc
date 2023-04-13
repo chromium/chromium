@@ -89,10 +89,6 @@ struct DeterminationContext {
   // Must be set before sequence starts.
   ServerBackedStateKeysBroker* state_key_broker;
 
-  // Interface for checking ownership.
-  // Must be set before sequence starts.
-  ash::DeviceSettingsService* device_settings_service;
-
   // RLZ brand code and serial numbers retrieved using `statistics_provider`.
   // Used for state availability determination (PSM) and state retrieval
   // requests. Computed by DeviceIdentifiers step.
@@ -119,17 +115,11 @@ void StorePsmError(PrefService* local_state) {
 }
 
 // Class to synchronize the system clock.
-//
-// This is a step in enrollment state fetch (see Sequence class below).
 class SystemClock {
   static constexpr base::TimeDelta kSystemClockSyncWaitTimeout =
       base::Seconds(45);
 
  public:
-  SystemClock() = default;
-  SystemClock(const SystemClock&) = delete;
-  SystemClock& operator=(const SystemClock&) = delete;
-
   // This will attempt to synchronize the system clock within up to
   // `kSystemClockSyncWaitTimeout`.
   // It will report success (`true`) or failure (`false`) via the
@@ -147,37 +137,11 @@ class SystemClock {
       system_clock_sync_observation_;
 };
 
-// Class to check device ownership.
-//
-// This is a step in enrollment state fetch (see Sequence class below).
-class Ownership {
- public:
-  Ownership() = default;
-  Ownership(const Ownership&) = delete;
-  Ownership& operator=(const Ownership&) = delete;
-
-  // This will attempt to check device ownership. It will report the result via
-  // the `completion_callback`.
-  void Check(
-      ash::DeviceSettingsService* device_settings_service,
-      base::OnceCallback<void(ash::DeviceSettingsService::OwnershipStatus)>
-          completion_callback) {
-    // TODO(b/278056625): Skip state fetch when install attributes are locked.
-    device_settings_service->GetOwnershipStatusAsync(
-        std::move(completion_callback));
-  }
-};
-
 // Class to check whether embargo date has passed.
 //
 // Must be used only after system clock has been synchronized.
-// This is a step in enrollment state fetch (see Sequence class below).
 class EmbargoDate {
  public:
-  EmbargoDate() = default;
-  EmbargoDate(const EmbargoDate&) = delete;
-  EmbargoDate& operator=(const EmbargoDate&) = delete;
-
   bool Passed(DeterminationContext& context) {
     const ash::system::FactoryPingEmbargoState embargo_state =
         ash::system::GetEnterpriseManagementPingEmbargoState(
@@ -193,14 +157,8 @@ class EmbargoDate {
 };
 
 // Class to obtain brand code and serial number.
-//
-// This is a step in enrollment state fetch (see Sequence class below).
 class DeviceIdentifiers {
  public:
-  DeviceIdentifiers() = default;
-  DeviceIdentifiers(const DeviceIdentifiers&) = delete;
-  DeviceIdentifiers& operator=(const DeviceIdentifiers&) = delete;
-
   // Retrieves brand code and serial numbers.
   //
   // On success, stores retrieved identifiers in `rlz_brand_code` and
@@ -218,16 +176,10 @@ class DeviceIdentifiers {
 };
 
 // Class to obtain state keys.
-//
-// This is a step in enrollment state fetch (see Sequence class below).
 class StateKeys {
   static constexpr int kMaxAttempts = 10;
 
  public:
-  StateKeys() = default;
-  StateKeys(const StateKeys&) = delete;
-  StateKeys& operator=(const StateKeys&) = delete;
-
   using CompletionCallback =
       base::OnceCallback<void(absl::optional<std::string>)>;
 
@@ -260,18 +212,11 @@ class StateKeys {
   base::WeakPtrFactory<StateKeys> weak_factory_{this};
 };
 
-// Class to send RLWE OPRF request as part of PSM protocol.
-//
-// This is a step in enrollment state fetch (see Sequence class below).
 class RlweOprf {
  public:
   using Response = private_membership::rlwe::PrivateMembershipRlweOprfResponse;
   using Result = base::expected<Response, AutoEnrollmentState>;
   using CompletionCallback = base::OnceCallback<void(Result)>;
-
-  RlweOprf() = default;
-  RlweOprf(const RlweOprf&) = delete;
-  RlweOprf& operator=(const RlweOprf&) = delete;
 
   void Request(DeterminationContext& context,
                CompletionCallback completion_callback) {
@@ -348,15 +293,8 @@ class RlweOprf {
   base::WeakPtrFactory<RlweOprf> weak_factory_{this};
 };
 
-// Class to send RLWE Query request as part of PSM protocol.
-//
-// This is a step in enrollment state fetch (see Sequence class below).
 class RlweQuery {
  public:
-  RlweQuery() = default;
-  RlweQuery(const RlweQuery&) = delete;
-  RlweQuery& operator=(const RlweQuery&) = delete;
-
   using Result = base::expected<bool, AutoEnrollmentState>;
   using CompletionCallback =
       base::OnceCallback<void(base::expected<bool, AutoEnrollmentState>)>;
@@ -471,9 +409,6 @@ class RlweQuery {
   base::WeakPtrFactory<RlweQuery> weak_factory_{this};
 };
 
-// Class to send state request to DMServer.
-//
-// This is a step in enrollment state fetch (see Sequence class below).
 class EnrollmentState {
  public:
   struct Response {
@@ -482,10 +417,6 @@ class EnrollmentState {
   };
   using Result = base::expected<Response, AutoEnrollmentState>;
   using CompletionCallback = base::OnceCallback<void(Result)>;
-
-  EnrollmentState() = default;
-  EnrollmentState(const EnrollmentState&) = delete;
-  EnrollmentState& operator=(const EnrollmentState&) = delete;
 
   void Request(DeterminationContext& context,
                CompletionCallback completion_callback) {
@@ -751,15 +682,15 @@ class EnrollmentStateFetcherImpl : public EnrollmentStateFetcher {
     DCHECK(url_loader_factory);
     DCHECK(system_clock_client);
     DCHECK(state_key_broker);
-    DCHECK(device_settings_service);
+    // TODO(b/265923216): Implement ownership check using
+    // device_settings_service.
 
     call_sequence_ = std::make_unique<Sequence>(
         std::move(report_result), local_state,
         DeterminationContext{std::move(rlwe_client_factory),
                              ash::system::StatisticsProvider::GetInstance(),
                              device_management_service, url_loader_factory,
-                             system_clock_client, state_key_broker,
-                             device_settings_service});
+                             system_clock_client, state_key_broker});
   }
 
   void Start() override;
@@ -822,22 +753,6 @@ class EnrollmentStateFetcherImpl::Sequence {
     }
 
     if (!embargo_date_.Passed(context_)) {
-      return std::move(report_result_).Run(AutoEnrollmentState::kNoEnrollment);
-    }
-
-    ownership_.Check(context_.device_settings_service,
-                     base::BindOnce(&Sequence::OnOwnershipChecked,
-                                    weak_factory_.GetWeakPtr()));
-  }
-
-  void OnOwnershipChecked(ash::DeviceSettingsService::OwnershipStatus status) {
-    if (status == ash::DeviceSettingsService::OWNERSHIP_UNKNOWN) {
-      LOG(ERROR) << "Device ownership is unknown. Skipping enrollment";
-      return std::move(report_result_).Run(AutoEnrollmentState::kNoEnrollment);
-    }
-
-    if (status == ash::DeviceSettingsService::OWNERSHIP_TAKEN) {
-      VLOG(1) << "Device ownership is already taken. Skipping enrollment";
       return std::move(report_result_).Run(AutoEnrollmentState::kNoEnrollment);
     }
 
@@ -908,7 +823,6 @@ class EnrollmentStateFetcherImpl::Sequence {
 
   DeviceIdentifiers device_identifiers_;
   SystemClock system_clock_;
-  Ownership ownership_;
   EmbargoDate embargo_date_;
   StateKeys state_keys_;
   RlweOprf oprf_;
