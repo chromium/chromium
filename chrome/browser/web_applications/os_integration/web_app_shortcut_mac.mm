@@ -460,6 +460,14 @@ void LaunchApplicationWithRetry(const base::FilePath& app_bundle_path,
               return;
             }
 
+            if (@available(macOS 12.0, *)) {
+              // In newer Mac OS versions this workaround isn't needed, and in
+              // fact can itself cause flaky tests by launching the app twice
+              // when only one launch is expected.
+              std::move(callback).Run(std::move(result));
+              return;
+            }
+
             LOG(ERROR) << "Failed to open application with path: "
                        << app_bundle_path << ", retrying in 100ms";
             internals::GetShortcutIOTaskRunner()->PostDelayedTask(
