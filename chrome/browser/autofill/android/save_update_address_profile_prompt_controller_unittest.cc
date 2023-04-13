@@ -40,6 +40,8 @@ class MockSaveUpdateAddressProfilePromptView
               (override));
 };
 
+// TODO(crbug.com/1432561): remove test parameters to avoid conditionals in
+// tests.
 class SaveUpdateAddressProfilePromptControllerTest
     : public ChromeRenderViewHostTestHarness,
       public ::testing::WithParamInterface<
@@ -87,7 +89,7 @@ class SaveUpdateAddressProfilePromptControllerTest
   bool is_migration_to_account() const { return std::get<1>(GetParam()); }
 
  protected:
-  bool ShouldShowFooter() const;
+  bool ShouldShowSourceNotice() const;
   std::u16string GetExpectedNegativeButtonText() const;
   void SetUpController(bool is_update);
 
@@ -106,7 +108,8 @@ class SaveUpdateAddressProfilePromptControllerTest
   base::android::JavaParamRef<jobject> mock_caller_{nullptr};
 };
 
-bool SaveUpdateAddressProfilePromptControllerTest::ShouldShowFooter() const {
+bool SaveUpdateAddressProfilePromptControllerTest::ShouldShowSourceNotice()
+    const {
   return is_migration_to_account() ||
          profile_source() == AutofillProfile::Source::kAccount;
 }
@@ -256,10 +259,12 @@ TEST_P(SaveUpdateAddressProfilePromptControllerTest,
   EXPECT_EQ(GetExpectedNegativeButtonText(),
             controller_->GetNegativeButtonText());
 
-  if (ShouldShowFooter()) {
+  if (ShouldShowSourceNotice()) {
     EXPECT_EQ(
         l10n_util::GetStringFUTF16(
-            IDS_AUTOFILL_ADDRESS_WILL_BE_SAVED_IN_ACCOUNT_SOURCE_NOTICE,
+            is_migration_to_account()
+                ? IDS_AUTOFILL_ADDRESS_WILL_BE_MIGRATED_TO_ACCOUNT_SOURCE_NOTICE
+                : IDS_AUTOFILL_ADDRESS_WILL_BE_SAVED_IN_ACCOUNT_SOURCE_NOTICE,
             base::ASCIIToUTF16(kUserEmail)),
         controller_->GetSourceNotice(identity_test_env_.identity_manager()));
   } else {
@@ -284,10 +289,12 @@ TEST_P(SaveUpdateAddressProfilePromptControllerTest,
   EXPECT_EQ(GetExpectedNegativeButtonText(),
             controller_->GetNegativeButtonText());
 
-  if (ShouldShowFooter()) {
+  if (ShouldShowSourceNotice()) {
     EXPECT_EQ(
         l10n_util::GetStringFUTF16(
-            IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_SOURCE_NOTICE,
+            is_migration_to_account()
+                ? IDS_AUTOFILL_ADDRESS_WILL_BE_MIGRATED_TO_ACCOUNT_SOURCE_NOTICE
+                : IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_SOURCE_NOTICE,
             base::ASCIIToUTF16(kUserEmail)),
         controller_->GetSourceNotice(identity_test_env_.identity_manager()));
   } else {
@@ -315,10 +322,12 @@ TEST_P(SaveUpdateAddressProfilePromptControllerTest,
       u"Underworld\n666 Erebus St.\nApt 8\nElysium, CA 91111\nUnited "
       u"States\n\n16502111111",
       differences.second);
-  if (ShouldShowFooter()) {
+  if (ShouldShowSourceNotice()) {
     EXPECT_EQ(
         l10n_util::GetStringFUTF16(
-            IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_SOURCE_NOTICE,
+            is_migration_to_account()
+                ? IDS_AUTOFILL_ADDRESS_WILL_BE_MIGRATED_TO_ACCOUNT_SOURCE_NOTICE
+                : IDS_AUTOFILL_ADDRESS_ALREADY_SAVED_IN_ACCOUNT_SOURCE_NOTICE,
             base::ASCIIToUTF16(kUserEmail)),
         controller_->GetSourceNotice(identity_test_env_.identity_manager()));
   } else {

@@ -470,7 +470,8 @@ public class AddressEditorTest {
                         .replace("$1", USER_EMAIL);
         final String sourceNotice =
                 mActivity
-                        .getString(R.string.autofill_address_will_be_saved_in_account_source_notice)
+                        .getString(
+                                R.string.autofill_address_will_be_migrated_to_account_source_notice)
                         .replace("$1", USER_EMAIL);
 
         checkUiStringsHaveExpectedValues(

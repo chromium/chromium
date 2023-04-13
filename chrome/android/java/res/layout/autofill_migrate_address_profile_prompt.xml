@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Copyright 2021 The Chromium Authors
+Copyright 2023 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
+
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -15,8 +16,15 @@ found in the LICENSE file.
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:focusable="true"
-      android:focusableInTouchMode="true"
-      android:importantForAccessibility="no">
+      android:focusableInTouchMode="true">
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/address_prompt_end_margin"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        layout="@layout/autofill_address_profile_prompt_source_notice" />
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/edit_button"
@@ -24,6 +32,8 @@ found in the LICENSE file.
         android:layout_height="@dimen/address_prompt_edit_button_size"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="@dimen/address_prompt_end_margin"
+        android:layout_marginTop="8dp"
+        android:layout_below="@+id/autofill_address_profile_prompt_source_notice"
         android:padding="@dimen/address_prompt_edit_button_padding"
         android:background="?attr/selectableItemBackground"
         android:contentDescription="@string/autofill_save_address_prompt_edit_button_tooltip"
@@ -35,8 +45,9 @@ found in the LICENSE file.
         android:id="@+id/address_data"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/autofill_address_profile_prompt_source_notice"
         android:layout_toStartOf="@id/edit_button"
-        android:paddingTop="@dimen/dialog_padding_top"
+        android:paddingTop="12dp"
         android:paddingStart="@dimen/dialog_padding_sides"
         android:orientation="vertical">
 
@@ -47,7 +58,7 @@ found in the LICENSE file.
           android:layout_marginBottom="12dp"
           android:textAppearance="@style/TextAppearance.TextLarge.Secondary"
           app:leading="@dimen/text_size_large_leading"
-          tools:text="John Doe\n1600 Amphitheatre Parkway\nMountain View, CA, 94043\nUnited States" />
+          tools:text="John Doe\n1600 Amphitheatre Parkway\nMountain View,, CA, 94043\nUnited States" />
 
       <TextView
           android:id="@+id/email"
@@ -64,40 +75,5 @@ found in the LICENSE file.
           tools:text="+1 111 111 0000" />
 
     </LinearLayout>
-
-    <!-- TODO(crbug.com/1167061): Use localized strings. -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/nickname_input_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="6dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginStart="21dp"
-        android:layout_marginEnd="21dp"
-        android:layout_below="@id/address_data"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:hint="Add a label"
-        app:placeholderText="Home, Work, etc."
-        app:placeholderTextAppearance="@style/TextAppearance.TextMedium.Secondary"
-        tools:ignore="HardcodedText">
-
-      <com.google.android.material.textfield.TextInputEditText
-          android:id="@+id/nickname_input"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:imeOptions="flagNoExtractUi"
-          android:minHeight="48dp"
-          android:singleLine="true"
-          android:textAppearance="@style/TextAppearance.TextLarge.Secondary" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <include
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/address_prompt_end_margin"
-        android:layout_marginTop="20dp"
-        android:layout_below="@+id/nickname_input_layout"
-        layout="@layout/autofill_address_profile_prompt_source_notice" />
   </RelativeLayout>
 </ScrollView>
