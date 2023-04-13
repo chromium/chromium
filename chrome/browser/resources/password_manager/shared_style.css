@@ -71,3 +71,9 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.text-elide {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

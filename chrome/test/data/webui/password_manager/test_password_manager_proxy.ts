@@ -56,6 +56,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'getPasswordCheckStatus',
       'getSavedPasswordList',
       'getUrlCollection',
+      'movePasswordsToAccount',
       'muteInsecureCredential',
       'optInForAccountStorage',
       'recordPasswordCheckInteraction',
@@ -315,5 +316,9 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   isAccountStoreDefault() {
     this.methodCalled('isAccountStoreDefault');
     return Promise.resolve(this.data.isAccountStorageDefault);
+  }
+
+  movePasswordsToAccount(ids: number[]) {
+    this.methodCalled('movePasswordsToAccount', ids);
   }
 }

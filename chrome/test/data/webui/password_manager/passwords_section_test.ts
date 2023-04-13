@@ -446,9 +446,15 @@ suite('PasswordsSectionTest', function() {
     passwordManager.data.isOptedInAccountStorage = true;
     passwordManager.data.groups = [createCredentialGroup({
       name: 'test.com',
-      credentials: [createPasswordEntry(
-          {username: 'user', id: 0, inProfileStore: true})],
+      credentials: [createPasswordEntry({
+        username: 'user',
+        id: 0,
+        inProfileStore: true,
+        affiliatedDomains: [createAffiliatedDomain('test.com')],
+      })],
     })];
+    passwordManager.setRequestCredentialsDetailsResponse(
+        passwordManager.data.groups[0]!.entries);
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
     };

@@ -6,12 +6,14 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import '../shared_style.css.js';
 import '../user_utils_mixin.js';
+import './password_preview_item.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PasswordManagerImpl} from '../password_manager_proxy.js';
 import {UserUtilMixin} from '../user_utils_mixin.js';
 
 import {getTemplate} from './move_passwords_dialog.html.js';
@@ -46,19 +48,54 @@ export class MovePasswordsDialogElement extends MovePasswordsDialogElementBase {
         type: Array,
         value: () => [],
       },
+
+      selectedPasswordIds_: {
+        type: Array,
+        valie: () => [],
+      },
     };
   }
 
   passwords: chrome.passwordsPrivate.PasswordUiEntry[];
+  private selectedPasswordIds_: number[];
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.selectedPasswordIds_ = this.passwords.map(item => item.id);
+    PasswordManagerImpl.getInstance()
+        .requestCredentialsDetails(this.selectedPasswordIds_)
+        .then(entries => {
+          this.passwords = entries;
+          this.$.dialog.showModal();
+        })
+        .catch(() => {
+          this.$.dialog.close();
+        });
+  }
 
   private onCancel_() {
-    this.$.dialog.close();
+    this.$.dialog.cancel();
   }
 
   private onMoveButtonClick_() {
     assert(this.isOptedInForAccountStorage);
-    // TODO(crbug.com/1420919): Implement password moving.
+    PasswordManagerImpl.getInstance().movePasswordsToAccount(
+        this.selectedPasswordIds_);
     this.$.dialog.close();
+  }
+
+  private getUrl_(password: chrome.passwordsPrivate.PasswordUiEntry): string {
+    assert(password.affiliatedDomains);
+    assert(password.affiliatedDomains.length > 0);
+    return password.affiliatedDomains[0].name;
+  }
+
+  private passwordSelected_() {
+    this.selectedPasswordIds_ =
+        Array.from(this.shadowRoot!.querySelectorAll('password-preview-item'))
+            .filter(item => item.checked)
+            .map(item => item.passwordId);
   }
 }
 

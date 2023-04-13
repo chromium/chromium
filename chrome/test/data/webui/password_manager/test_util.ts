@@ -31,6 +31,7 @@ export interface PasswordEntryParams {
   inProfileStore?: boolean;
   isAndroidCredential?: boolean;
   note?: string;
+  affiliatedDomains?: chrome.passwordsPrivate.DomainInfo[];
 }
 
 /**
@@ -73,6 +74,7 @@ export function createPasswordEntry(params?: PasswordEntryParams):
     isAndroidCredential: params.isAndroidCredential || false,
     note: note,
     password: params.password || '',
+    affiliatedDomains: params.affiliatedDomains,
   };
 }
 
