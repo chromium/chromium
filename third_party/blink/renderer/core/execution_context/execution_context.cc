@@ -68,7 +68,9 @@
 
 namespace blink {
 
-ExecutionContext::ExecutionContext(v8::Isolate* isolate, Agent* agent)
+ExecutionContext::ExecutionContext(v8::Isolate* isolate,
+                                   Agent* agent,
+                                   bool is_window)
     : isolate_(isolate),
       security_context_(this),
       agent_(agent),
@@ -78,8 +80,14 @@ ExecutionContext::ExecutionContext(v8::Isolate* isolate, Agent* agent)
       csp_delegate_(MakeGarbageCollected<ExecutionContextCSPDelegate>(*this)),
       window_interaction_tokens_(0),
       origin_trial_context_(MakeGarbageCollected<OriginTrialContext>(this)),
+      // RuntimeFeatureStateOverrideContext shouldn't attempt to communcate back
+      // to browser for ExecutionContexts that aren't windows.
+      // TODO(https://crbug.com/1410817): Add support for workers/non-frames.
       runtime_feature_state_override_context_(
-          MakeGarbageCollected<RuntimeFeatureStateOverrideContext>(this)) {
+          MakeGarbageCollected<RuntimeFeatureStateOverrideContext>(
+              this,
+              this,
+              /*send_runtime_features_to_browser=*/is_window)) {
   DCHECK(agent_);
 }
 

@@ -62,7 +62,7 @@ void RuntimeFeatureStateOverrideContext::
 bool RuntimeFeatureStateOverrideContext::
     Set{{feature.name}}Enabled(const WTF::Vector<WTF::String>& tokens) {
 {% if (feature.name)|string == 'DisableThirdPartyStoragePartitioning' %}
-  UseCounter::Count(execution_context_,
+  UseCounter::Count(use_counter_,
                           WebFeature::kDisableThirdPartyStoragePartitioning);
   // If the base::Feature for the deprecation trial is disabled, we should
   // not send any overrides to the browser, so we return false immediately,
@@ -83,7 +83,8 @@ bool RuntimeFeatureStateOverrideContext::
       [mojom::RuntimeFeatureState::k{{feature.name}}] = true;
     // Add successful overrides to the list of features we sent back
     // to the browser process.
-    mojom::blink::FeatureValuePtr value = mojom::blink::FeatureValue::New(true, tokens);
+    mojom::blink::FeatureValuePtr value =
+          mojom::blink::FeatureValue::New(true, tokens);
     origin_trial_overrides_[
       mojom::RuntimeFeatureState::k{{feature.name}}] =
       std::move(value);
@@ -132,26 +133,29 @@ void RuntimeFeatureStateOverrideContext::ApplyOriginTrialOverride(
 }
 
 void RuntimeFeatureStateOverrideContext::EnablePersistentTrial(
-    const WTF::String& raw_token,
-    const WTF::Vector<scoped_refptr<const blink::SecurityOrigin>>& script_origins) {
-  GetOrBindRuntimeFeatureStateController()->
-      EnablePersistentTrial(raw_token, script_origins);
-}
+      const WTF::String& raw_token,
+      const WTF::Vector<scoped_refptr<const blink::SecurityOrigin>>&
+          script_origins) {
+    GetOrBindRuntimeFeatureStateController()->EnablePersistentTrial(
+        raw_token, script_origins);
+  }
 
 mojom::blink::RuntimeFeatureStateController*
   RuntimeFeatureStateOverrideContext::GetOrBindRuntimeFeatureStateController(){
   // TODO(https://crbug.com/1410817): add support for workers/non-frames that
   // are enabling origin trials to send their information to the browser too.
-  if(!runtime_feature_state_controller_remote_.is_bound()){
-    CHECK(execution_context_->IsWindow());
-    execution_context_->GetBrowserInterfaceBroker().GetInterface(
-      runtime_feature_state_controller_remote_.BindNewPipeAndPassReceiver(execution_context_->GetTaskRunner(TaskType::kInternalDefault)));
-  }
+  if (!runtime_feature_state_controller_remote_.is_bound()) {
+      CHECK(send_runtime_features_to_browser_);
+      binding_context_->GetBrowserInterfaceBroker().GetInterface(
+          runtime_feature_state_controller_remote_.BindNewPipeAndPassReceiver(
+              binding_context_->GetTaskRunner(TaskType::kInternalDefault)));
+    }
   return runtime_feature_state_controller_remote_.get();
 }
 
 void RuntimeFeatureStateOverrideContext::Trace(Visitor* visitor) const{
-  visitor->Trace(execution_context_);
+  visitor->Trace(binding_context_);
+  visitor->Trace(use_counter_);
   visitor->Trace(runtime_feature_state_controller_remote_);
 }
 
