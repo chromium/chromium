@@ -408,12 +408,17 @@ std::unique_ptr<OverlayImageRepresentation::ScopedReadAccess>
 OverlayImageRepresentation::BeginScopedReadAccess() {
   if (!IsCleared()) {
     LOG(ERROR) << "Attempt to read from an uninitialized SharedImage";
+    // TODO(crbug.com/1430941): Remove after fixing overlay access crash.
+    base::debug::DumpWithoutCrashing();
     return nullptr;
   }
 
   gfx::GpuFenceHandle acquire_fence;
-  if (!BeginReadAccess(acquire_fence))
+  if (!BeginReadAccess(acquire_fence)) {
+    // TODO(crbug.com/1430941): Remove after fixing overlay access crash.
+    base::debug::DumpWithoutCrashing();
     return nullptr;
+  }
 
   backing()->OnReadSucceeded();
 
