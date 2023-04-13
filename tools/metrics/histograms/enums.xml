@@ -104816,10 +104816,6 @@ Full version information for the fingerprint enum values:
   <int value="4" label="TestExtension"/>
 </enum>
 
-<enum name="UsedOmnibox">
-  <int value="0" label="Used Omnibox"/>
-</enum>
-
 <enum name="UserActivationFrameResultEnum">
   <obsolete>
     This was added to assess possible impact of UserActivationV2, by comparing
