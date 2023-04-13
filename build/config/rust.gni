@@ -190,7 +190,7 @@ if (enable_rust) {
 # (see '*_toolchain_supports_platform above') to enable experimentation with
 # other toolchains.
 rust_abi_target = ""
-if (is_linux) {
+if (is_linux || is_chromeos) {
   cpu = current_cpu
   if (cpu == "arm64") {
     cpu = "aarch64"
