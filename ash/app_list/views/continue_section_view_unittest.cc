@@ -25,6 +25,7 @@
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/session/session_controller_impl.h"
@@ -32,6 +33,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -380,6 +382,22 @@ TEST_P(ContinueSectionViewTest, VerifyAddedViewsOrder) {
   EXPECT_EQ(GetResultViewAt(0)->result()->id(), "id1");
   EXPECT_EQ(GetResultViewAt(1)->result()->id(), "id2");
   EXPECT_EQ(GetResultViewAt(2)->result()->id(), "id3");
+}
+
+// Tests that the continue section view will be visible once we have a admin
+// template.
+TEST_P(ContinueSectionViewTest, ShowContinueSectionWhenAdminTemplateAvailable) {
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndEnableFeature(features::kAppLaunchAutomation);
+
+  AddSearchResult("id", AppListSearchResultType::kDesksAdminTemplate);
+
+  EnsureLauncherShown();
+  VerifyResultViewsUpdated();
+
+  ContinueSectionView* view = GetContinueSectionView();
+  ASSERT_EQ(view->GetTasksSuggestionsCount(), 1u);
+  EXPECT_TRUE(GetContinueSectionView()->GetVisible());
 }
 
 TEST_P(ContinueSectionViewTest, ShowsHelpAppResults) {
