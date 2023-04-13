@@ -83,45 +83,6 @@ constexpr char kUIDataKeyUserSettings[] = "user_settings";
 constexpr char kOncRecommendedFieldsWorkaroundActionHistogram[] =
     "Network.Ethernet.Policy.OncRecommendedFieldsWorkaroundAction";
 
-// A utility to wait until a FakeShillServiceClient's service has been
-// connected.
-// Usage:
-// (1) Construct a ServiceConnectedWaiter, specifying the shill service path
-//     that is expected to connect.
-// (2) Call ServiceConnectedWaiter::Wait
-// Wait will return when the service passed to (1) connects. If the service has
-// connected between (1) and (2), Wait returns immediately. Note that this class
-// does not evaluate whether the service was connected before (1).
-class ServiceConnectedWaiter {
- public:
-  ServiceConnectedWaiter(
-      ash::ShillServiceClient::TestInterface* shill_service_client_test,
-      const std::string& service_path)
-      : shill_service_client_test_(shill_service_client_test),
-        service_path_(service_path) {
-    shill_service_client_test_->SetConnectBehavior(service_path_,
-                                                   run_loop_.QuitClosure());
-  }
-
-  ServiceConnectedWaiter(const ServiceConnectedWaiter&) = delete;
-  ServiceConnectedWaiter& operator=(const ServiceConnectedWaiter&) = delete;
-
-  // Waits until the |service_path| passed to the constructor has connected.
-  // If it has connected since the constructor has run, will return immediately.
-  void Wait() {
-    run_loop_.Run();
-    shill_service_client_test_->SetServiceProperty(
-        service_path_, shill::kStateProperty, base::Value(shill::kStateOnline));
-    shill_service_client_test_->SetConnectBehavior(service_path_,
-                                                   base::RepeatingClosure());
-  }
-
- private:
-  ash::ShillServiceClient::TestInterface* shill_service_client_test_;
-  std::string service_path_;
-  base::RunLoop run_loop_;
-};
-
 // Records all values that shill service property had during the lifetime of
 // ServicePropertyValueWatcher. Only supports string properties at the moment.
 class ServicePropertyValueWatcher : public ash::ShillPropertyChangedObserver {
@@ -221,6 +182,28 @@ class ServicePropertyValueWatcher : public ash::ShillPropertyChangedObserver {
 
   std::vector<std::string> values_;
   absl::optional<WaitForValueState> wait_for_value_state_;
+};
+
+// Shorthand for ServicePropertyValueWatcher that allows waiting for a specific
+// shill::kStateProperty value.
+class ServiceStateWaiter {
+ public:
+  ServiceStateWaiter(
+      ash::ShillServiceClient::TestInterface* shill_service_client_test,
+      const std::string& service_path)
+      : property_value_watcher_(shill_service_client_test,
+                                service_path,
+                                shill::kStateProperty) {}
+
+  ServiceStateWaiter(const ServiceStateWaiter&) = delete;
+  ServiceStateWaiter& operator=(const ServiceStateWaiter&) = delete;
+
+  void Wait(const std::string& expected_state) {
+    property_value_watcher_.WaitForValue(expected_state);
+  }
+
+ private:
+  ServicePropertyValueWatcher property_value_watcher_;
 };
 
 // Registers itself as ash::NetworkPolicyObserver and records events for
@@ -848,11 +831,11 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
         }
       ]
     })";
-  ServiceConnectedWaiter wifi_one_connected_waiter(shill_service_client_test_,
-                                                   kServiceWifi1);
+  ServiceStateWaiter wifi_one_connected_waiter(shill_service_client_test_,
+                                               kServiceWifi1);
   shill_manager_client_test_->SetBestServiceToConnect(kServiceWifi1);
   SetDeviceOpenNetworkConfiguration(kDeviceONC, /*wait_applied=*/true);
-  wifi_one_connected_waiter.Wait();
+  wifi_one_connected_waiter.Wait(shill::kStateOnline);
 
   EXPECT_THAT(
       network_policy_application_observer.policy_applied_to_network_events(),
@@ -1051,11 +1034,10 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
           ]
         })";
 
-    ServiceConnectedWaiter wifi_one_connected_waiter(shill_client,
-                                                     kServiceWifi1);
+    ServiceStateWaiter wifi_one_connected_waiter(shill_client, kServiceWifi1);
     shill_manager_client_test_->SetBestServiceToConnect(kServiceWifi1);
     SetDeviceOpenNetworkConfiguration(kDeviceONC, /*wait_applied=*/true);
-    wifi_one_connected_waiter.Wait();
+    wifi_one_connected_waiter.Wait(shill::kStateOnline);
   }
 
   // Check before login that device can connect to any available network.
@@ -1310,12 +1292,12 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
     absl::optional<std::string> user_policy_wifi_service_path =
         shill_service_client_test_->FindServiceMatchingGUID("wifi_policy_2");
     ASSERT_TRUE(user_policy_wifi_service_path);
-    ServiceConnectedWaiter wifi_connected_waiter(
+    ServiceStateWaiter wifi_connected_waiter(
         shill_service_client_test_, user_policy_wifi_service_path.value());
     SetServiceVisibility("wifi_policy_2", true);
     SimulateWifiScanCompleted();
 
-    wifi_connected_waiter.Wait();
+    wifi_connected_waiter.Wait(shill::kStateOnline);
   }
 
   // Expects that the non-policy WiFi services are now prohibited.
@@ -1409,8 +1391,8 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
     absl::optional<std::string> policy_wifi_service_path =
         shill_service_client_test_->FindServiceMatchingGUID("wifi_policy_1");
     ASSERT_TRUE(policy_wifi_service_path);
-    ServiceConnectedWaiter wifi_connected_waiter(
-        shill_service_client_test_, policy_wifi_service_path.value());
+    ServiceStateWaiter wifi_connected_waiter(shill_service_client_test_,
+                                             policy_wifi_service_path.value());
 
     shill_manager_client_test_->SetBestServiceToConnect(
         policy_wifi_service_path.value());
@@ -1418,7 +1400,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
     const std::string user_hash = GetTestUserHash();
     shill_profile_client_test_->AddProfile(kUserProfilePath, user_hash);
 
-    wifi_connected_waiter.Wait();
+    wifi_connected_waiter.Wait(shill::kStateOnline);
   }
 
   // Expects that the non-policy WiFi services are now prohibited.
