@@ -1382,8 +1382,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.Subresource.Fallbacked.Type" enum="ResourceType"
-    expires_after="2023-10-01">
+<histogram name="ServiceWorker.Subresource.Fallbacked.Type2"
+    enum="ResourceType" expires_after="2023-10-01">
   <owner>yyanagisawa@google.com</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1392,13 +1392,10 @@ chromium-metrics-reviews@google.com.
     metric is taken every time a subresource load finishes.
 
     See ServiceWorker.Subresource.Handled.Type for handled cases.
-
-    Warning: an unexpected reorder happened in Apr 2021
-    (https://crrev.com/c/2798954). Please do not trust older reports.
   </summary>
 </histogram>
 
-<histogram name="ServiceWorker.Subresource.Handled.Type" enum="ResourceType"
+<histogram name="ServiceWorker.Subresource.Handled.Type2" enum="ResourceType"
     expires_after="2023-10-01">
   <owner>yyanagisawa@google.com</owner>
   <owner>chrome-worker@google.com</owner>
@@ -1408,9 +1405,6 @@ chromium-metrics-reviews@google.com.
     every time a subresource load finishes.
 
     See ServiceWorker.Subresource.Fallbacked.Type for fallbacked cases.
-
-    Warning: an unexpected reorder happened in Apr 2021
-    (https://crrev.com/c/2798954). Please do not trust older reports.
   </summary>
 </histogram>
 

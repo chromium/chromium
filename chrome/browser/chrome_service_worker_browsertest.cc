@@ -509,14 +509,14 @@ IN_PROC_BROWSER_TEST_F(ChromeServiceWorkerTest, MAYBE_SubresourceCountUMA) {
 
   // Sync the histogram data between the renderer and browser processes.
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  histogram_tester.ExpectTotalCount("ServiceWorker.Subresource.Handled.Type",
+  histogram_tester.ExpectTotalCount("ServiceWorker.Subresource.Handled.Type2",
                                     1);
-  histogram_tester.ExpectUniqueSample("ServiceWorker.Subresource.Handled.Type",
+  histogram_tester.ExpectUniqueSample("ServiceWorker.Subresource.Handled.Type2",
                                       2 /* kCSSStyleSheet */, 1);
-  histogram_tester.ExpectTotalCount("ServiceWorker.Subresource.Fallbacked.Type",
-                                    1);
+  histogram_tester.ExpectTotalCount(
+      "ServiceWorker.Subresource.Fallbacked.Type2", 1);
   histogram_tester.ExpectUniqueSample(
-      "ServiceWorker.Subresource.Fallbacked.Type", 2 /* kCSSStyleSheet */, 1);
+      "ServiceWorker.Subresource.Fallbacked.Type2", 2 /* kCSSStyleSheet */, 1);
 }
 
 class ChromeServiceWorkerFetchTest : public ChromeServiceWorkerTest {
