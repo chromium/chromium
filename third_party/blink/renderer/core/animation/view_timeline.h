@@ -47,7 +47,10 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   // IDL API implementation.
   Element* subject() const;
 
-  bool Matches(Element* subject, ScrollAxis, const TimelineInset&) const;
+  bool Matches(TimelineAttachment,
+               Element* subject,
+               ScrollAxis,
+               const TimelineInset&) const;
 
   const TimelineInset& GetInset() const;
 

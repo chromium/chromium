@@ -425,26 +425,31 @@ Element* ViewTimeline::subject() const {
                              : nullptr;
 }
 
-bool ViewTimeline::Matches(Element* subject,
+bool ViewTimeline::Matches(TimelineAttachment attachment_type,
+                           Element* subject,
                            ScrollAxis axis,
                            const TimelineInset& inset) const {
+  if (!ScrollTimeline::Matches(attachment_type, ReferenceType::kNearestAncestor,
+                               /* reference_element */ subject, axis)) {
+    return false;
+  }
+  if (GetTimelineAttachment() == TimelineAttachment::kDefer) {
+    return attachment_type == TimelineAttachment::kDefer;
+  }
   const auto* attachment =
       DynamicTo<ViewTimelineAttachment>(CurrentAttachment());
-  // TODO(crbug.com/1425939): When attachments other than kLocal
-  // are supported, attachment may be nullptr.
   DCHECK(attachment);
-  return ScrollTimeline::Matches(ReferenceType::kNearestAncestor,
-                                 /* reference_element */ subject, axis) &&
-         (attachment->GetInset() == inset);
+  return attachment->GetInset() == inset;
 }
 
 const TimelineInset& ViewTimeline::GetInset() const {
-  const auto* attachment =
-      DynamicTo<ViewTimelineAttachment>(CurrentAttachment());
-  // TODO(crbug.com/1425939): When attachments other than kLocal
-  // are supported, attachment may be nullptr.
-  DCHECK(attachment);
-  return attachment->GetInset();
+  if (const auto* attachment =
+          DynamicTo<ViewTimelineAttachment>(CurrentAttachment())) {
+    return attachment->GetInset();
+  }
+
+  DEFINE_STATIC_LOCAL(TimelineInset, default_inset, ());
+  return default_inset;
 }
 
 double ViewTimeline::ToFractionalOffset(

@@ -202,6 +202,10 @@ class CORE_EXPORT CSSAnimationUpdate final {
     changed_view_timelines_ = std::move(timelines);
   }
 
+  void SetChangedAttachingTimelines(AttachingTimelineMap timelines) {
+    changed_attaching_timelines_ = std::move(timelines);
+  }
+
   const HeapVector<NewCSSAnimation>& NewAnimations() const {
     return new_animations_;
   }
@@ -254,6 +258,10 @@ class CORE_EXPORT CSSAnimationUpdate final {
   const CSSViewTimelineMap& ChangedViewTimelines() const {
     return changed_view_timelines_;
   }
+  const AttachingTimelineMap& ChangedAttachingTimelines() const {
+    return changed_attaching_timelines_;
+  }
+
   void AdoptActiveInterpolationsForAnimations(
       ActiveInterpolationsMap& new_map) {
     new_map.swap(active_interpolations_for_animations_);
@@ -282,7 +290,8 @@ class CORE_EXPORT CSSAnimationUpdate final {
            !cancelled_transitions_.empty() || !finished_transitions_.empty() ||
            !updated_compositor_keyframes_.empty() ||
            !changed_scroll_timelines_.empty() ||
-           !changed_view_timelines_.empty();
+           !changed_view_timelines_.empty() ||
+           !changed_attaching_timelines_.empty();
   }
 
   void Trace(Visitor* visitor) const {
@@ -295,6 +304,7 @@ class CORE_EXPORT CSSAnimationUpdate final {
     visitor->Trace(active_interpolations_for_transitions_);
     visitor->Trace(changed_scroll_timelines_);
     visitor->Trace(changed_view_timelines_);
+    visitor->Trace(changed_attaching_timelines_);
   }
 
  private:
@@ -320,6 +330,7 @@ class CORE_EXPORT CSSAnimationUpdate final {
 
   CSSScrollTimelineMap changed_scroll_timelines_;
   CSSViewTimelineMap changed_view_timelines_;
+  AttachingTimelineMap changed_attaching_timelines_;
 
   ActiveInterpolationsMap active_interpolations_for_animations_;
   ActiveInterpolationsMap active_interpolations_for_transitions_;

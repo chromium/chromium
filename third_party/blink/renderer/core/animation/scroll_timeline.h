@@ -102,7 +102,10 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   // timeline is inactive.
   absl::optional<ScrollOffsets> GetResolvedScrollOffsets() const;
 
-  bool Matches(ReferenceType, Element* reference_element, ScrollAxis) const;
+  bool Matches(TimelineAttachment,
+               ReferenceType,
+               Element* reference_element,
+               ScrollAxis) const;
 
   ScrollAxis GetAxis() const;
 
@@ -137,6 +140,8 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   // the resolved source so that timeline offsets can be properly computed.
   virtual void FlushStyleUpdate();
 
+  TimelineAttachment GetTimelineAttachment() const { return attachment_type_; }
+
   ScrollTimelineAttachment* CurrentAttachment() {
     return (attachments_.size() == 1u) ? attachments_.back().Get() : nullptr;
   }
@@ -144,6 +149,9 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   const ScrollTimelineAttachment* CurrentAttachment() const {
     return const_cast<ScrollTimeline*>(this)->CurrentAttachment();
   }
+
+  void AddAttachment(ScrollTimelineAttachment*);
+  void RemoveAttachment(ScrollTimelineAttachment*);
 
  protected:
   ScrollTimeline(Document*, TimelineAttachment, ScrollTimelineAttachment*);
