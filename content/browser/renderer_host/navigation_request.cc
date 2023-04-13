@@ -4191,18 +4191,23 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
     // If the current navigation is being restarted, it should not try to make
     // any further progress.
     CHECK(!restarting_back_forward_cached_navigation_);
-    if (!rfh_restored_from_back_forward_cache_) {
-      // The RenderFrameHost to restore has been evicted and deleted. We should
-      // stop processing this back/forward cache restore navigation, as the
-      // navigation will soon be restarted as a normal history navigation.
-      return;
-    }
     NavigationControllerImpl* controller = GetNavigationController();
     auto entry =
         controller->GetBackForwardCache().GetOrEvictEntry(nav_entry_id_);
-    // TODO(crbug.com/1430653): Cancel the NavigationRequest to avoid
-    // use-after-free if we know that it will be restarted.
-    CHECK(entry.has_value());
+    if (!rfh_restored_from_back_forward_cache_ ||
+        (!entry.has_value() &&
+         entry.error() == BackForwardCacheImpl::kEntryIneligibleAndEvicted)) {
+      // If the RenderFrameHost to restore has been evicted and deleted, or the
+      // current navigation is being restarted due to the `GetOrEvictEntry`
+      // call, we should stop processing this back/forward cache restore
+      // navigation, as the navigation will soon be restarted as a normal
+      // history navigation.
+
+      // TODO(crbug.com/1430653): Cancel the NavigationRequest to avoid
+      // use-after-free if we know that it will be restarted.
+      return;
+    }
+    CHECK(entry.has_value() && entry.value());
     CHECK(entry.value()->render_frame_host());
     render_frame_host_ = entry.value()->render_frame_host()->GetSafeRef();
   } else if (IsPrerenderedPageActivation()) {

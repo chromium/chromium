@@ -1378,10 +1378,15 @@ IN_PROC_BROWSER_TEST_F(
 
 // Test that a page with `Cache-control: no-store` header gets evicted without
 // crashes if some cookie is modified immediately before the back navigation.
-// TODO(crbug.com/1429151): Re-enable after fixing the race condition.
+// TODO: this test could be potentially flaky if the notification to
+// CookieChangeListener is only received after the entire back navigation
+// completes. If any flaky case is reported in the future, we should fix that by
+// ensuring the eviction to happen after the NavigationRequest starts to process
+// response but before it finishes committing the navigation.
+// See discussion from https://crrev.com/c/4408607.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange,
-    DISABLED_PagesWithCacheControlNoStoreNotBFCachedWithCookieSetImmediatelyBeforeNavigateBack) {
+    PagesWithCacheControlNoStoreNotBFCachedWithCookieSetImmediatelyBeforeNavigateBack) {
   CreateHttpsServer();
   net::test_server::ControllableHttpResponse response(https_server(),
                                                       "/title1.html");
