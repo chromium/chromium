@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/storage_area_test_util.h"
@@ -25,6 +26,7 @@
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -706,10 +708,17 @@ TEST_F(LocalStorageImplTest, DeleteStorageWithPendingWrites) {
 }
 
 TEST_F(LocalStorageImplTest, ShutdownClearsData) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kThirdPartyStoragePartitioning);
   blink::StorageKey storage_key1 =
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
   blink::StorageKey storage_key2 =
       blink::StorageKey::CreateFromStringForTesting("http://example.com");
+  blink::StorageKey storage_key1_third_party = blink::StorageKey::Create(
+      url::Origin::Create(GURL("http://example1.com")),
+      net::SchemefulSite(GURL("http://foobar.com")),
+      blink::mojom::AncestorChainBit::kCrossSite);
   auto key1 = StdStringToUint8Vector("key1");
   auto key2 = StdStringToUint8Vector("key");
   auto value = StdStringToUint8Vector("value");
@@ -725,6 +734,10 @@ TEST_F(LocalStorageImplTest, ShutdownClearsData) {
   area->Put(key2, value, absl::nullopt, "source", base::DoNothing());
   area.reset();
 
+  context()->BindStorageArea(storage_key1_third_party,
+                             area.BindNewPipeAndPassReceiver());
+  area->Put(key1, value, absl::nullopt, "source", base::DoNothing());
+
   // Make sure all data gets committed to the DB.
   RunUntilIdle();
 
@@ -735,6 +748,9 @@ TEST_F(LocalStorageImplTest, ShutdownClearsData) {
 
   // Data from storage_key2 should exist, including meta-data, but nothing
   // should exist for storage_key1.
+  // Data from storage_key1_third_party should also be erased, since it is
+  // a third party storage key, and its top_level_site matches the origin
+  // of storage_key1, which is set to purge on shutdown.
   ResetStorage(storage_path());
   auto contents = GetDatabaseContents();
   EXPECT_EQ(3u, contents.size());
@@ -743,6 +759,8 @@ TEST_F(LocalStorageImplTest, ShutdownClearsData) {
       continue;
     EXPECT_EQ(std::string::npos,
               entry.first.find(storage_key1.origin().Serialize()));
+    EXPECT_EQ(std::string::npos,
+              entry.first.find(storage_key1_third_party.origin().Serialize()));
     EXPECT_NE(std::string::npos,
               entry.first.find(storage_key2.origin().Serialize()));
   }
