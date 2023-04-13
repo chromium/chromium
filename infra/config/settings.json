@@ -5,10 +5,6 @@
     "chrome_project": "chrome-m109",
     "is_main": false,
     "platforms": {
-        "cros": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
         "windows": {
             "description": "long-term support for Windows pre-10: crbug.com/1406951",
             "sheriff_rotation": "chrome_browser_release"
