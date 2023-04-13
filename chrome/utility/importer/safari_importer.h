@@ -17,14 +17,6 @@
 #include "chrome/utility/importer/importer.h"
 #include "components/favicon_base/favicon_usage_data.h"
 
-#if __OBJC__
-@class NSDictionary;
-@class NSString;
-#else
-class NSDictionary;
-class NSString;
-#endif
-
 class GURL;
 struct ImportedBookmarkEntry;
 
@@ -66,18 +58,6 @@ class SafariImporter : public Importer {
   // Parse Safari's stored bookmarks.
   void ParseBookmarks(const std::u16string& toolbar_name,
                       std::vector<ImportedBookmarkEntry>* bookmarks);
-
-  // Function to recursively read Bookmarks out of Safari plist.
-  // |bookmark_folder| The dictionary containing a folder to parse.
-  // |parent_path_elements| Path elements up to this point.
-  // |is_in_toolbar| Is this folder in the toolbar.
-  // |out_bookmarks| BookMark element array to write into.
-  void RecursiveReadBookmarksFolder(
-      NSDictionary* bookmark_folder,
-      const std::vector<std::u16string>& parent_path_elements,
-      bool is_in_toolbar,
-      const std::u16string& toolbar_name,
-      std::vector<ImportedBookmarkEntry>* out_bookmarks);
 
   // Opens the favicon database file.
   bool OpenDatabase(sql::Database* db);

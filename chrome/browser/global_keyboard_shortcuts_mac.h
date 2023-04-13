@@ -11,8 +11,6 @@
 
 #if defined(__OBJC__)
 @class NSEvent;
-#else   // __OBJC__
-class NSEvent;
 #endif  // __OBJC__
 
 namespace ui {
@@ -42,6 +40,8 @@ struct CommandForKeyEventResult {
   bool from_main_menu;
 };
 
+#if defined(__OBJC__)
+
 // macOS applications are supposed to put all keyEquivalents [hotkeys] in the
 // menu bar. For legacy reasons, Chrome does not. There are around 30 hotkeys
 // that are explicitly coded to virtual keycodes. This has the following
@@ -68,6 +68,8 @@ int DelayedWebContentsCommandForKeyEvent(NSEvent* event);
 // Whether the event goes through the performKeyEquivalent: path and is handled
 // by CommandDispatcher.
 bool EventUsesPerformKeyEquivalent(NSEvent* event);
+
+#endif  // __OBJC__
 
 // On macOS, most accelerators are defined in MainMenu.xib and are user
 // configurable. Furthermore, their values and enabled state depends on the key

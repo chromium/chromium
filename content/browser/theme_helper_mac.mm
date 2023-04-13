@@ -254,6 +254,11 @@ SkColor NSColorToSkColor(NSColor* color) {
 
 namespace content {
 
+struct ThemeHelperMac::ObjCStorage {
+  // ObjC object that observes notifications from the system.
+  base::scoped_nsobject<SystemThemeObserver> theme_observer_;
+};
+
 // static
 ThemeHelperMac* ThemeHelperMac::GetInstance() {
   static ThemeHelperMac* instance = new ThemeHelperMac();
@@ -265,27 +270,29 @@ ThemeHelperMac::DuplicateReadOnlyColorMapRegion() {
   return read_only_color_map_.Duplicate();
 }
 
-ThemeHelperMac::ThemeHelperMac() {
+ThemeHelperMac::ThemeHelperMac()
+    : objc_storage_(std::make_unique<ObjCStorage>()) {
   // Allocate a region for the SkColor value table and map it.
   auto writable_region = base::WritableSharedMemoryRegion::Create(
       sizeof(SkColor) * blink::kMacSystemColorIDCount *
       blink::kMacSystemColorSchemeCount);
   writable_color_map_ = writable_region.Map();
+
   // Downgrade the region to read-only after it has been mapped.
   read_only_color_map_ = base::WritableSharedMemoryRegion::ConvertToReadOnly(
       std::move(writable_region));
+
   // Store the current color scheme into the table.
   LoadSystemColors();
 
-  theme_observer_ = [[SystemThemeObserver alloc]
+  // Start observing for changes.
+  objc_storage_->theme_observer_.reset([[SystemThemeObserver alloc]
       initWithColorsChangedCallback:base::BindRepeating(
                                         &ThemeHelperMac::LoadSystemColors,
-                                        base::Unretained(this))];
+                                        base::Unretained(this))]);
 }
 
-ThemeHelperMac::~ThemeHelperMac() {
-  [theme_observer_ release];
-}
+ThemeHelperMac::~ThemeHelperMac() = default;
 
 void ThemeHelperMac::LoadSystemColorsForCurrentAppearance(
     base::span<SkColor> values) {
