@@ -10,6 +10,7 @@
 #include "base/observer_list.h"
 #include "net/base/net_export.h"
 #include "net/ssl/ssl_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -52,16 +53,9 @@ struct NET_EXPORT SSLContextConfig {
   // ECH is enabled, use `EncryptedClientHelloEnabled` instead.
   bool ech_enabled = true;
 
-  // If kEnabled, allows insecure hashes in TLS handshakes. If kDisabled,
-  // disallows insecure hashes in TLS handshakes. If kUnset use hashes
-  // determined by feature flags.
-  enum class insecure_hash_enabled_value {
-    kUnset,
-    kEnabled,
-    kDisabled,
-  };
-  insecure_hash_enabled_value insecure_hash_enabled =
-      insecure_hash_enabled_value::kUnset;
+  // If specified, controls whether insecure hashes are allowed in TLS
+  // handshakes. If `absl::nullopt`, this is determined by feature flags.
+  absl::optional<bool> insecure_hash_override;
 
   // ADDING MORE HERE? Don't forget to update `SSLContextConfigsAreEqual`.
 };

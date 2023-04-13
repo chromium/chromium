@@ -249,13 +249,11 @@ network::mojom::SSLConfigPtr SSLConfigServiceManager::GetSSLConfigFromPrefs()
   config->ech_enabled = ech_enabled_.GetValue();
 
   if (insecure_hash_enabled_.IsManaged()) {
-    config->insecure_hash_enabled =
-        insecure_hash_enabled_.GetValue()
-            ? network::mojom::insecure_hash_enabled_value::kEnabled
-            : network::mojom::insecure_hash_enabled_value::kDisabled;
+    config->insecure_hash_override = insecure_hash_enabled_.GetValue()
+                                         ? network::mojom::OptionalBool::kTrue
+                                         : network::mojom::OptionalBool::kFalse;
   } else {
-    config->insecure_hash_enabled =
-        network::mojom::insecure_hash_enabled_value::kUnset;
+    config->insecure_hash_override = network::mojom::OptionalBool::kUnset;
   }
 
   return config;

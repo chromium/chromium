@@ -6,8 +6,23 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
+
+namespace {
+absl::optional<bool> OptionalBoolFromMojo(network::mojom::OptionalBool v) {
+  switch (v) {
+    case network::mojom::OptionalBool::kTrue:
+      return absl::make_optional(true);
+    case network::mojom::OptionalBool::kFalse:
+      return absl::make_optional(false);
+    case network::mojom::OptionalBool::kUnset:
+      return absl::nullopt;
+  }
+  NOTREACHED_NORETURN();
+}
+}  // namespace
 
 int MojoSSLVersionToNetSSLVersion(network::mojom::SSLVersion mojo_version) {
   switch (mojo_version) {
@@ -33,20 +48,8 @@ net::SSLContextConfig MojoSSLConfigToSSLContextConfig(
   net_config.disabled_cipher_suites = mojo_config->disabled_cipher_suites;
   net_config.post_quantum_enabled = mojo_config->post_quantum_enabled;
   net_config.ech_enabled = mojo_config->ech_enabled;
-  switch (mojo_config->insecure_hash_enabled) {
-    case network::mojom::insecure_hash_enabled_value::kUnset:
-      net_config.insecure_hash_enabled =
-          net::SSLContextConfig::insecure_hash_enabled_value::kUnset;
-      break;
-    case network::mojom::insecure_hash_enabled_value::kEnabled:
-      net_config.insecure_hash_enabled =
-          net::SSLContextConfig::insecure_hash_enabled_value::kEnabled;
-      break;
-    case network::mojom::insecure_hash_enabled_value::kDisabled:
-      net_config.insecure_hash_enabled =
-          net::SSLContextConfig::insecure_hash_enabled_value::kDisabled;
-      break;
-  }
+  net_config.insecure_hash_override =
+      OptionalBoolFromMojo(mojo_config->insecure_hash_override);
   return net_config;
 }
 

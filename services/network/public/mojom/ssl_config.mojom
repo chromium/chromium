@@ -4,15 +4,11 @@
 
 module network.mojom;
 
+import "services/network/public/mojom/optional_bool.mojom";
+
 enum SSLVersion {
   kTLS12,
   kTLS13,
-};
-
-enum insecure_hash_enabled_value {
- kUnset,
- kEnabled,
- kDisabled,
 };
 
 // This is a combination of net::SSLContextConfig and
@@ -51,10 +47,9 @@ struct SSLConfig {
   // may be enabled or disabled, depending on feature flags.
   bool ech_enabled = true;
 
-  // If kEnabled, allows insecure hashes in TLS handshakes. If kDisabled,
-  // disallows insecure hashes in TLS handshakes. If kUnset use hashes
-  // determined by feature flags.
-  insecure_hash_enabled_value insecure_hash_enabled = kUnset;
+  // If specified, controls whether insecure hashes are allowed in TLS
+  // handshakes. If kUnset, this is determined by feature flags.
+  OptionalBool insecure_hash_override = kUnset;
 };
 
 // Receives SSL configuration updates.
