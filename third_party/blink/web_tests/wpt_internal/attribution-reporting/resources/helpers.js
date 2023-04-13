@@ -65,7 +65,7 @@ const getFetchParams = (origin, cookie) => {
     });
     headers.push({
       name: allowHeadersHeader,
-      value: 'Attribution-Reporting-Eligible, Attribution-Reporting-Support',
+      value: `${eligibleHeader}, ${supportHeader}`,
     })
   } else {
     headers.push({
@@ -211,10 +211,6 @@ const registerAttributionSrc = async (t, {
       const headers = {};
       if (eligible !== null) {
         headers[eligibleHeader] = eligible;
-      }
-      const support = searchParams.get('support');
-      if (support !== null) {
-        headers[supportHeader] = support;
       }
       await fetch(url, {headers, credentials});
       return 'event';
