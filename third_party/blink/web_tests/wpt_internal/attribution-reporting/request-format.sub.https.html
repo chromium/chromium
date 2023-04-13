@@ -9,13 +9,30 @@
 <meta name=variant content="?method=script&eligible&expected-eligible=event-source, trigger&expected-support=web">
 <meta name=variant content="?method=fetch">
 <meta name=variant content="?method=fetch&eligible=event-source&expected-eligible=event-source&expected-support=web">
+<meta name=variant content="?method=xhr">
+<meta name=variant content="?method=xhr&eligible=event-source&expected-eligible=event-source&expected-support=web">
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
 <script src="resources/helpers.js"></script>
+<body>
 <script>
+const waitForRequest = async () => {
+  const url = blankURL();
+  url.searchParams.set('get-requests', 'true');
+
+  for (let i = 0; i < 20; i++) {
+    const resp = await fetch(url);
+    const payload = await resp.json();
+    if (payload !== null && payload.length > 0) {
+      return payload;
+    }
+    await delay(100);
+  }
+  throw new Error('Timeout polling requests');
+};
+
 const searchParams = new URLSearchParams(location.search);
 const expected_eligible =
     searchParams.get('expected-eligible') === null ? undefined : searchParams.get('expected-eligible');
@@ -23,35 +40,25 @@ const expected_support =
     searchParams.get('expected-support') === null ? undefined : searchParams.get('expected-support');
 
 promise_test(async t => {
-  const reg = await navigator.serviceWorker.register(
-    'resources/attributionsrc-worker.js', {scope: './'});
-  t.add_cleanup(() => reg.unregister());
-
-  const sw = reg.installing || reg.waiting || reg.active;
-  await wait_for_state(t, sw, 'activated');
-
-  const p = new Promise(resolve => {
-    navigator.serviceWorker.addEventListener('message',
-      e => resolve(e.data), {once: true});
-  });
-
   // Set mixed-case query params to ensure that they are propagated correctly.
   await registerAttributionSrc(t, {
     method: 'variant',
-    extraQueryParams: {'aB': 'Cd'},
+    extraQueryParams: {'aB': 'Cd', 'store-request': 'true'},
   });
 
-  const message = await p;
-  assert_equals(message.method, 'GET');
-  assert_equals(message.headers['attribution-reporting-eligible'], expected_eligible);
-  assert_equals(message.headers['attribution-reporting-support'], expected_support);
-  assert_equals(message.referrer, location.toString());
+  const requests = await waitForRequest();
+  assert_equals(requests.length, 1);
+  assert_equals(requests[0].method, 'GET');
+  assert_equals(requests[0]['attribution-reporting-eligible'], expected_eligible);
+  assert_equals(requests[0]['attribution-reporting-support'], expected_support);
+  assert_equals(requests[0].referer, location.toString());
 
   // TODO(apaseltiner): Test various referrer policies.
   // TODO(apaseltiner): Test cookie propagation.
 
   const expectedURL = blankURL();
   expectedURL.searchParams.set('aB', 'Cd');
-  assert_equals(message.url, expectedURL.toString());
+  expectedURL.searchParams.set('store-request', 'true');
+  assert_equals(requests[0].url, expectedURL.toString());
 }, 'attributionsrc request has the proper format.');
 </script>

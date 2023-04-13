@@ -263,20 +263,18 @@ const pollAttributionReports = async (url, origin = location.origin, interval = 
  * the source is not done registering after 2 seconds, it times out and throws
  * an error.
  */
-const waitForSourceToBeRegistered = async (
-  sourceId,
-  attempt = 0
-) => {
-  if (attempt > 20) {
-    throw new Error(`Timeout polling source ${sourceId} registration`);
-  }
+const waitForSourceToBeRegistered = async (sourceId) => {
   const url = blankURL();
   url.searchParams.set("check-source-id", sourceId);
-  const { status } = await fetch(url);
-  if (status === 404) {
+
+  for (let i = 0; i < 20; i++) {
+    const {status} = await fetch(url);
+    if (status !== 404) {
+      return;
+    }
     await delay(100);
-    return waitForSourceToBeRegistered(sourceId, attempt + 1);
   }
+  throw new Error(`Timeout polling source ${sourceId} registration`);
 };
 
 const pollEventLevelReports = (origin, interval) =>
