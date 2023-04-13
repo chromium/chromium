@@ -300,6 +300,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.BrowserThrottle.RedirectedOriginalUrlScheme"
+    enum="SafeBrowsingUrlScheme" expires_after="2023-07-12">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the scheme of the original URL that is redirected. Logged each time
+    browser URL loader throttle receives a redirect request. This histogram can
+    help us determine what scheme is safe to skip when the request starts.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.BrowserThrottle.TotalDelay" units="ms"
     expires_after="2023-09-17">
   <owner>xinghuilu@chromium.org</owner>

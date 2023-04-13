@@ -389,6 +389,10 @@ void BrowserURLLoaderThrottle::WillRedirectRequest(
       "WillRedirectRequestAfterWillProcessResponse",
       will_process_response_count_ > 0);
 
+  safe_browsing::scheme_logger::LogScheme(
+      original_url_,
+      "SafeBrowsing.BrowserThrottle.RedirectedOriginalUrlScheme");
+
   if (blocked_) {
     // OnCheckUrlResult() has set |blocked_| to true and called
     // |delegate_->CancelWithError|, but this method is called before the
