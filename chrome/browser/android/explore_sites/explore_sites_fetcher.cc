@@ -209,7 +209,6 @@ void ExploreSitesFetcher::OnSimpleLoaderComplete(
 ExploreSitesRequestStatus ExploreSitesFetcher::HandleResponseCode() {
   int response_code = -1;
   int net_error = url_loader_->NetError();
-  base::UmaHistogramSparse("ExploreSites.FetcherNetErrorCode", -net_error);
 
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
     response_code = url_loader_->ResponseInfo()->headers->response_code();
@@ -220,9 +219,6 @@ ExploreSitesRequestStatus ExploreSitesFetcher::HandleResponseCode() {
                ? ExploreSitesRequestStatus::kShouldSuspendBlockedByAdministrator
                : ExploreSitesRequestStatus::kFailure;
   }
-
-  base::UmaHistogramSparse("ExploreSites.FetcherHttpResponseCode",
-                           response_code);
 
   if (response_code < 200 || response_code > 299) {
     DVLOG(1) << "HTTP status: " << response_code;

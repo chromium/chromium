@@ -5667,25 +5667,6 @@ chromium-metrics-reviews@google.com.
   <summary>Counts when the explore sites store is opened or closed.</summary>
 </histogram>
 
-<histogram name="ExploreSites.FetcherHttpResponseCode" enum="HttpResponseCode"
-    expires_after="M85">
-  <owner>dimich@chromium.org</owner>
-  <summary>
-    Http response code from ExploreSitesFetcher. Recorded every time the fetcher
-    is finishing without network error and actually has HTTP response code. 2XX
-    codes also included.
-  </summary>
-</histogram>
-
-<histogram name="ExploreSites.FetcherNetErrorCode" enum="NetErrorCodes"
-    expires_after="M85">
-  <owner>dimich@chromium.org</owner>
-  <summary>
-    Net error results from ExploreSitesFetcher. Recorded every time the fetcher
-    is finishing. OK and ABORTED are included.
-  </summary>
-</histogram>
-
 <histogram name="ExploreSites.ImageDecoded" enum="Boolean"
     expires_after="2020-06-30">
   <owner>freedjm@chromium.org</owner>
