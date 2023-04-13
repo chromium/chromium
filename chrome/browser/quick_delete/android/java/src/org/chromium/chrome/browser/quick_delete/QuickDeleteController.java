@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.MutableFlagWithSafeDefault;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -41,16 +42,19 @@ public class QuickDeleteController {
      * @param modalDialogManager A {@link ModalDialogManager} to show the quick delete modal dialog.
      * @param snackbarManager A {@link SnackbarManager} to show the quick delete snackbar.
      * @param layoutManager {@link LayoutManager} to use for showing the regular overview mode.
+     * @param tabModelSelector {@link TabModelSelector} to use for opening the links in search
+     *         history disambiguation notice.
      */
     public QuickDeleteController(@NonNull Context context, @NonNull QuickDeleteDelegate delegate,
             @NonNull ModalDialogManager modalDialogManager,
-            @NonNull SnackbarManager snackbarManager, @NonNull LayoutManager layoutManager) {
+            @NonNull SnackbarManager snackbarManager, @NonNull LayoutManager layoutManager,
+            @NonNull TabModelSelector tabModelSelector) {
         mContext = context;
         mDelegate = delegate;
         mSnackbarManager = snackbarManager;
         mLayoutManager = layoutManager;
-        mDialogDelegate =
-                new QuickDeleteDialogDelegate(context, modalDialogManager, this::onDialogDismissed);
+        mDialogDelegate = new QuickDeleteDialogDelegate(
+                context, modalDialogManager, this::onDialogDismissed, tabModelSelector);
     }
 
     /**
