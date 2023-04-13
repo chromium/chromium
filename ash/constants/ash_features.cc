@@ -1540,6 +1540,12 @@ BASE_FEATURE(kOnDeviceSpeechRecognition,
 // If enabled, CHOBOE Screen will be shown during the new user onboarding flow.
 BASE_FEATURE(kOobeChoobe, "OobeChoobe", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Drive Offline Screen will be shown during the new user onboarding
+// flow.
+BASE_FEATURE(kOobeDriveOffline,
+             "OobeDriveOffline",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, TouchPadScreen will be shown in CHOOBE.
 // enabling this without enabling OobeChoobe flag will have no effect
 BASE_FEATURE(kOobeTouchpadScroll,
@@ -3076,6 +3082,10 @@ bool IsOobeNetworkScreenSkipEnabled() {
 
 bool IsOobeChoobeEnabled() {
   return base::FeatureList::IsEnabled(kOobeChoobe);
+}
+
+bool IsOobeDriveOfflineEnabled() {
+  return base::FeatureList::IsEnabled(kOobeDriveOffline);
 }
 
 bool IsOobeConsolidatedConsentEnabled() {
