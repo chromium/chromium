@@ -72,6 +72,10 @@ using media::mojom::AudioInputStreamObserver;
 // Default resolution constraint.
 constexpr gfx::Size kMaxResolution(1920, 1080);
 
+// The delay before calling PauseVideoCaptureHostOnIO. This allows us to ensure
+// UI elements are hidden before we stop sending frames.
+constexpr base::TimeDelta kPauseDelay = base::Milliseconds(500);
+
 // Command line arguments that should be passed to the mirroring service.
 static const char* kPassthroughSwitches[]{
     switches::kCastStreamingForceEnableHardwareH264,
@@ -612,9 +616,11 @@ void CastMirroringServiceHost::OpenOffscreenTab(
 void CastMirroringServiceHost::Pause() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (freeze_ui_enabled_ && video_capture_host_) {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&PauseVideoCaptureHostOnIO,
-                                  video_capture_host_->impl(), ignored_token_));
+    content::GetIOThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&PauseVideoCaptureHostOnIO, video_capture_host_->impl(),
+                       ignored_token_),
+        kPauseDelay);
   }
 }
 
