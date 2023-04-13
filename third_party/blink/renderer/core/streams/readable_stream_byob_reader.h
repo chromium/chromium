@@ -59,6 +59,7 @@ class CORE_EXPORT ReadableStreamBYOBReader
 
  private:
   friend class ByteStreamTeeEngine;
+  friend class PipeToEngine;
   friend class ReadableByteStreamController;
   friend class ReadableStream;
 

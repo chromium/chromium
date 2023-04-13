@@ -21,9 +21,9 @@
 
 namespace blink {
 
-class AbortSignal;
 class ExceptionState;
 class MessagePort;
+class PipeOptions;
 class ReadableByteStreamController;
 class ReadableStreamBYOBReader;
 class ReadableStreamController;
@@ -49,30 +49,6 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  class PipeOptions : public GarbageCollected<PipeOptions> {
-   public:
-    PipeOptions();
-    explicit PipeOptions(const StreamPipeOptions* options);
-
-    bool PreventClose() const { return prevent_close_; }
-    bool PreventAbort() const { return prevent_abort_; }
-    bool PreventCancel() const { return prevent_cancel_; }
-    AbortSignal* Signal() const { return signal_; }
-
-    void Trace(Visitor*) const;
-
-   private:
-    bool GetBoolean(ScriptState* script_state,
-                    v8::Local<v8::Object> dictionary,
-                    const char* property_name,
-                    ExceptionState& exception_state);
-
-    bool prevent_close_ = false;
-    bool prevent_abort_ = false;
-    bool prevent_cancel_ = false;
-    Member<AbortSignal> signal_;
-  };
-
   enum State : uint8_t { kReadable, kClosed, kErrored };
 
   // Zero-argument form of the constructor called from JavaScript.
@@ -302,6 +278,7 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
 
  private:
   friend class ByteStreamTeeEngine;
+  friend class PipeToEngine;
   friend class ReadableByteStreamController;
   friend class ReadableStreamBYOBReader;
   friend class ReadableStreamDefaultController;
@@ -311,7 +288,6 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
 
   class PullAlgorithm;
   class CancelAlgorithm;
-  class PipeToEngine;
   class ReadHandleImpl;
 
   // https://streams.spec.whatwg.org/#rs-constructor
