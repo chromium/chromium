@@ -566,9 +566,15 @@ std::set<std::string> DIPSBounceDetector::GetRedirectors(
     redirectors.insert(GetSiteForDIPS(*it));
   }
 
-  // Since redirectors that are the same as the start page won't be acted on,
-  // we don't report on them.
+  // Since redirectors that are the same as the start or final page won't be
+  // acted on, we don't report on them.
+  //
+  // NOTE: This is not exactly right since the end of this navigation may not
+  // necessarily be the end of the chain, if a client redirect happens. However,
+  // this is better for developer experience than waiting until then, since
+  // notifications come faster.
   redirectors.erase(initial_site);
+  redirectors.erase(GetSiteForDIPS(redirect_chain.back()));
 
   return redirectors;
 }
