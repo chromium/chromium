@@ -609,8 +609,7 @@ const ProfileCodecMap& GetProfileCodecMap() {
 }
 
 // Maps a VideoCodecProfile |profile| to a VAProfile, or VAProfileNone.
-VAProfile ProfileToVAProfile(VideoCodecProfile profile,
-                             VaapiWrapper::CodecMode mode) {
+VAProfile ProfileToVAProfile(VideoCodecProfile profile) {
   const auto& profiles = GetProfileCodecMap();
   const auto& maybe_profile = profiles.find(profile);
   if (maybe_profile == profiles.end())
@@ -618,15 +617,29 @@ VAProfile ProfileToVAProfile(VideoCodecProfile profile,
   return maybe_profile->second;
 }
 
-bool IsVAProfileSupported(VAProfile va_profile) {
-  const auto& profiles = GetProfileCodecMap();
+bool IsVAProfileSupported(VAProfile va_profile, bool is_encoding) {
   // VAProfileJPEGBaseline and VAProfileProtected are always recognized but are
   // not video codecs per se.
-  return va_profile == VAProfileJPEGBaseline ||
+  if (va_profile == VAProfileJPEGBaseline) {
+    return true;
+  }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-         va_profile == VAProfileProtected ||
+  if (va_profile == VAProfileProtected) {
+    return true;
+  }
 #endif
-         base::Contains(profiles, va_profile,
+  if (is_encoding) {
+    constexpr VAProfile kSupportableEncoderProfiles[] = {
+        VAProfileH264ConstrainedBaseline,
+        VAProfileH264Main,
+        VAProfileH264High,
+        VAProfileVP8Version0_3,
+        VAProfileVP9Profile0,
+        VAProfileAV1Profile0,
+    };
+    return base::Contains(kSupportableEncoderProfiles, va_profile);
+  }
+  return base::Contains(GetProfileCodecMap(), va_profile,
                         &ProfileCodecMap::value_type::second);
 }
 
@@ -1248,7 +1261,7 @@ void VASupportedProfiles::FillSupportedProfileInfos(
         continue;
 
       if ((mode != VaapiWrapper::kVideoProcess) &&
-          !IsVAProfileSupported(va_profile)) {
+          !IsVAProfileSupported(va_profile, IsModeEncoding(mode))) {
         continue;
       }
 
@@ -1591,7 +1604,6 @@ bool IsLowPowerEncSupported(VAProfile va_profile) {
       VAProfileH264Main,
       VAProfileH264High,
       VAProfileVP9Profile0,
-      VAProfileVP9Profile2,
       VAProfileAV1Profile0,
   };
   if (!base::Contains(kSupportedLowPowerEncodeProfiles, va_profile))
@@ -1677,7 +1689,7 @@ scoped_refptr<VaapiWrapper> VaapiWrapper::CreateForVideoCodec(
     EncryptionScheme encryption_scheme,
     const ReportErrorToUMACB& report_error_to_uma_cb,
     bool enforce_sequence_affinity) {
-  const VAProfile va_profile = ProfileToVAProfile(profile, mode);
+  const VAProfile va_profile = ProfileToVAProfile(profile);
   return Create(mode, va_profile, encryption_scheme, report_error_to_uma_cb,
                 enforce_sequence_affinity);
 }
@@ -2936,8 +2948,7 @@ bool VaapiWrapper::GetVAEncMaxNumOfRefFrames(VideoCodecProfile profile,
                                              size_t* max_ref_frames) {
   CHECK(!enforce_sequence_affinity_ ||
         sequence_checker_.CalledOnValidSequence());
-  const VAProfile va_profile =
-      ProfileToVAProfile(profile, CodecMode::kEncodeConstantBitrate);
+  const VAProfile va_profile = ProfileToVAProfile(profile);
   VAConfigAttrib attrib;
   attrib.type = VAConfigAttribEncMaxRefFrames;
 
@@ -2956,8 +2967,7 @@ bool VaapiWrapper::GetSupportedPackedHeaders(VideoCodecProfile profile,
                                              bool& packed_slice) {
   CHECK(!enforce_sequence_affinity_ ||
         sequence_checker_.CalledOnValidSequence());
-  const VAProfile va_profile =
-      ProfileToVAProfile(profile, CodecMode::kEncodeConstantBitrate);
+  const VAProfile va_profile = ProfileToVAProfile(profile);
   VAConfigAttrib attrib{};
   attrib.type = VAConfigAttribEncPackedHeaders;
   base::AutoLockMaybe auto_lock(va_lock_.get());
