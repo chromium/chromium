@@ -147,6 +147,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_switches.h"
 #include "device/bluetooth/floss/floss_features.h"
+#include "media/base/media_switches.h"
 #include "media/capture/mojom/video_capture.mojom.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "printing/buildflags/buildflags.h"
@@ -530,7 +531,9 @@ void InjectBrowserInitParams(
   // lacros for runtime handling instead.
   std::vector<crosapi::mojom::BuildFlag> build_flags;
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-  build_flags.emplace_back(crosapi::mojom::BuildFlag::kEnablePlatformHevc);
+  if (base::FeatureList::IsEnabled(media::kPlatformHEVCDecoderSupport)) {
+    build_flags.emplace_back(crosapi::mojom::BuildFlag::kEnablePlatformHevc);
+  }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   build_flags.emplace_back(

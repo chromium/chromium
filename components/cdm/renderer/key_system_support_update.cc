@@ -86,6 +86,11 @@ SupportedCodecs GetHevcCodecs(
     return media::EME_CODEC_NONE;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!base::FeatureList::IsEnabled(media::kPlatformHEVCDecoderSupport)) {
+    return media::EME_CODEC_NONE;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // If no profiles are specified, then all are supported.
   if (profiles.empty()) {
