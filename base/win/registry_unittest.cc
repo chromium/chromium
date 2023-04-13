@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include <shlobj.h>
 #include <stdint.h>
 
 #include <cstring>
@@ -469,14 +470,28 @@ class RegistryTestHKLM : public ::testing::Test {
   const std::wstring foo_software_key_;
 };
 
+class RegistryTestHKLMAdmin : public RegistryTestHKLM {
+ protected:
+  void SetUp() override {
+    if (!IsRedirectorPresent()) {
+      GTEST_SKIP();
+    }
+    if (!::IsUserAnAdmin()) {
+      GTEST_SKIP();
+    }
+    // Clean up any stale registry keys.
+    for (const REGSAM mask : {kNativeViewMask, kRedirectedViewMask}) {
+      RegKey key;
+      key.Open(HKEY_LOCAL_MACHINE, L"Software", KEY_SET_VALUE | mask);
+      key.DeleteKey(kRootKey);
+    }
+  }
+};
+
 // This test requires running as an Administrator as it tests redirected
 // registry writes to HKLM\Software
 // http://msdn.microsoft.com/en-us/library/windows/desktop/aa384253.aspx
-// TODO(wfh): flaky test on Vista.  See http://crbug.com/377917
-TEST_F(RegistryTestHKLM, DISABLED_Wow64RedirectedFromNative) {
-  if (!IsRedirectorPresent())
-    return;
-
+TEST_F(RegistryTestHKLMAdmin, Wow64RedirectedFromNative) {
   RegKey key;
 
   // Test redirected key access from non-redirected.
@@ -516,10 +531,7 @@ TEST_F(RegistryTestHKLM, SameWowFlags) {
   ASSERT_EQ(ERROR_SUCCESS, key.OpenKey(L"Windows", KEY_READ | KEY_WOW64_64KEY));
 }
 
-// TODO(wfh): flaky test on Vista.  See http://crbug.com/377917
-TEST_F(RegistryTestHKLM, DISABLED_Wow64NativeFromRedirected) {
-  if (!IsRedirectorPresent())
-    return;
+TEST_F(RegistryTestHKLMAdmin, Wow64NativeFromRedirected) {
   RegKey key;
 
   // Test non-redirected key access from redirected.
