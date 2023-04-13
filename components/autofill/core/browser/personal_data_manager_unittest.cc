@@ -906,11 +906,11 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveProfiles) {
 TEST_F(PersonalDataManagerTest, NoIBANsAddedIfDisabled) {
   prefs::SetAutofillIBANEnabled(prefs_.get(), false);
   IBAN iban0(base::GenerateUuid());
-  iban0.set_value(u"IE12 BOFI 9000 0112 3456 78");
+  iban0.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
   iban0.set_nickname(u"Nickname 0");
 
   IBAN iban1(base::GenerateUuid());
-  iban1.set_value(u"DE91 1000 0000 0123 4567 89");
+  iban0.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue_1)));
   iban1.set_nickname(u"Nickname 1");
 
   personal_data_->AddIBAN(iban0);
@@ -934,18 +934,18 @@ TEST_F(PersonalDataManagerTest, AddingIbanUpdatesPref) {
 TEST_F(PersonalDataManagerTest, AddUpdateRemoveIBANs) {
   prefs::SetAutofillIBANEnabled(prefs_.get(), true);
   IBAN iban0(base::GenerateUuid());
-  iban0.set_value(u"IE12 BOFI 9000 0112 3456 78");
+  iban0.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
   iban0.set_nickname(u"Nickname 0");
 
   IBAN iban1(base::GenerateUuid());
-  iban1.set_value(u"DE91 1000 0000 0123 4567 89");
+  iban0.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue_1)));
   iban1.set_nickname(u"Nickname 1");
 
   IBAN iban1_1 = iban1;
   iban1_1.set_nickname(u"Nickname 1_1");
 
   IBAN iban2(base::GenerateUuid());
-  iban2.set_value(u"ES79 2100 0813 6101 2345 6789");
+  iban0.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue_2)));
   iban2.set_nickname(u"Nickname 2");
 
   // Add two test IBANs to the database. `iban1_1` has the same value
@@ -1010,7 +1010,7 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave) {
 
   // Start with a new IBAN.
   IBAN iban0(base::GenerateUuid());
-  iban0.set_value(u"FR76 3000 6000 0112 3456 7890 189");
+  iban0.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
   iban0.set_nickname(u"Nickname 0");
   // Add the IBAN to the database.
   personal_data_->OnAcceptedLocalIBANSave(iban0);
@@ -1022,7 +1022,7 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave) {
   // Creates a new IBAN and call `OnAcceptedLocalIBANSave()` and verify that
   // the new IBAN is saved.
   IBAN iban1(base::GenerateUuid());
-  iban1.set_value(u"DE91 1000 0000 0123 4567 89");
+  iban1.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue_1)));
   iban1.set_nickname(u"Nickname 1");
   personal_data_->OnAcceptedLocalIBANSave(iban1);
   WaitForOnPersonalDataChanged();
@@ -1039,7 +1039,7 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave) {
   // Creates a new `iban2` which has the same value as `iban0` but with
   // different nickname and call `OnAcceptedLocalIBANSave()`.
   IBAN iban2(base::GenerateUuid());
-  iban2.set_value(u"FR76 3000 6000 0112 3456 7890 189");
+  iban2.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
   iban2.set_nickname(u"Nickname 2");
   personal_data_->OnAcceptedLocalIBANSave(iban2);
   WaitForOnPersonalDataChanged();
@@ -1077,7 +1077,7 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave_IsOffTheRecordTrue) {
 
   // Start with a new IBAN.
   IBAN iban0(base::GenerateUuid());
-  iban0.set_value(u"FR76 3000 6000 0112 3456 7890 189");
+  iban0.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
   iban0.set_nickname(u"Nickname 0");
 
   // Add the IBAN to the database.
@@ -1089,7 +1089,7 @@ TEST_F(PersonalDataManagerTest, OnAcceptedLocalIBANSave_IsOffTheRecordTrue) {
   // Creates a new IBAN and call `OnAcceptedLocalIBANSave()` and verify that
   // the new IBAN is not saved.
   IBAN iban1(base::GenerateUuid());
-  iban1.set_value(u"DE91 1000 0000 0123 4567 89");
+  iban1.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue_1)));
   iban1.set_nickname(u"Nickname 1");
   personal_data_->OnAcceptedLocalIBANSave(iban1);
 

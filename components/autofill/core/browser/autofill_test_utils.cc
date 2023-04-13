@@ -569,9 +569,16 @@ void SetProfileCategory(
   }
 }
 
+std::string GetStrippedValue(const char* value) {
+  std::u16string stripped_value;
+  base::RemoveChars(base::UTF8ToUTF16(value), base::kWhitespaceUTF16,
+                    &stripped_value);
+  return base::UTF16ToUTF8(stripped_value);
+}
+
 IBAN GetIBAN() {
   IBAN iban(base::GenerateUuid());
-  iban.set_value(u"DE91 1000 0000 0123 4567 89");
+  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
   iban.set_nickname(u"Nickname for Iban");
   return iban;
 }
