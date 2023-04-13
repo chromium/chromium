@@ -343,7 +343,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
 
   internal::ControlMessageProxy control_message_proxy_{this};
   internal::ControlMessageHandler control_message_handler_;
-  const char* interface_name_;
+  const char* const interface_name_;
   const MessageToMethodInfoCallback method_info_callback_;
   const MessageToMethodNameCallback method_name_callback_;
 
