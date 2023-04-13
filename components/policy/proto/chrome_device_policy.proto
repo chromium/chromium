@@ -166,6 +166,7 @@ message DeviceReportingProto {
   optional bool report_security_status = 31 [default = false];
   optional bool report_crd_sessions = 36 [default = false];
   optional bool report_peripherals = 37 [default = false];
+  optional bool report_network_events = 41 [default = false];
 
   // Frequency to report device status, default to 3 hours.
   // If changed, the default value has to be updated in

@@ -1095,6 +1095,7 @@ policies:
   1094: AppLaunchAutomation
   1095: InsecureHashesInTLSHandshakesEnabled
   1096: DeviceLoginScreenGeolocationAccessLevel
+  1097: DeviceReportNetworkEvents
 
 atomic_groups:
   1: Homepage

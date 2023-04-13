@@ -400,6 +400,20 @@ TEST_F(DevicePolicyDecoderTest,
       base::Value(std::move(signal_strength_telemetry_list)));
 }
 
+TEST_F(DevicePolicyDecoderTest, DeviceReportNetworkEvents) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(device_policy,
+                                    key::kDeviceReportNetworkEvents);
+
+  base::Value report_network_events_value(true);
+  device_policy.mutable_device_reporting()->set_report_network_events(
+      report_network_events_value.GetBool());
+
+  DecodeDevicePolicyTestHelper(device_policy, key::kDeviceReportNetworkEvents,
+                               std::move(report_network_events_value));
+}
+
 TEST_F(DevicePolicyDecoderTest, DecodeServiceUUIDListSuccess) {
   std::string error;
   absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(

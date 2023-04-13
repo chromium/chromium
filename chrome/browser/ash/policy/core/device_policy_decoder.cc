@@ -921,6 +921,11 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
           policies, key::kDeviceActivityHeartbeatCollectionRateMs,
           container.device_activity_heartbeat_collection_rate_ms());
     }
+    if (container.has_report_network_events()) {
+      policies->Set(key::kDeviceReportNetworkEvents, POLICY_LEVEL_MANDATORY,
+                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                    base::Value(container.report_network_events()), nullptr);
+    }
   }
 
   if (policy.has_device_heartbeat_settings()) {
