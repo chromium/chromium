@@ -84,8 +84,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesInteractiveUiTest,
       WaitForStateChange(kNewTabPageElementId,
                          std::move(main_history_cluster_tile_loaded)),
       // 3. Scroll to tile. Modules may sometimes load below the fold.
-      ExecuteJsAt(kNewTabPageElementId, kMainHistoryClusterTileLink,
-                  "(el) => { el.scrollIntoView({ behavior: 'instant' }); }"),
+      ScrollIntoView(kNewTabPageElementId, kMainHistoryClusterTileLink),
       // 4. Click the tile.
       MoveMouseTo(kNewTabPageElementId, kMainHistoryClusterTileLink),
       ClickMouse(),
