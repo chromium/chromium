@@ -14,12 +14,21 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+
+const std::string kUserEmail = "test.tester@gmail.com";
+const std::string kCanocalizedUserEmail = "testtester@gmail.com";
+
+}  // namespace
+
 namespace ash::nearby::presence {
 
 class LocalDeviceDataProviderImplTest : public testing::Test {
  public:
   void SetUp() override {
     RegisterNearbyPresenceCredentialPrefs(pref_service_.registry());
+    identity_test_env_.MakePrimaryAccountAvailable(
+        kUserEmail, signin::ConsentLevel::kSignin);
   }
 
   void CreateDataProvider() {
@@ -51,6 +60,12 @@ TEST_F(LocalDeviceDataProviderImplTest, DeviceId) {
   DestroyDataProvider();
   CreateDataProvider();
   EXPECT_EQ(id, local_device_data_provider_->GetDeviceId());
+}
+
+TEST_F(LocalDeviceDataProviderImplTest, AccountName) {
+  CreateDataProvider();
+  EXPECT_EQ(kCanocalizedUserEmail,
+            local_device_data_provider_->GetAccountName());
 }
 
 }  // namespace ash::nearby::presence

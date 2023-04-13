@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CREDENTIALS_LOCAL_DEVICE_DATA_PROVIDER_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_CREDENTIALS_LOCAL_DEVICE_DATA_PROVIDER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/nearby/presence/credentials/local_device_data_provider.h"
 #include "third_party/nearby/internal/proto/credential.pb.h"
 #include "third_party/nearby/internal/proto/metadata.pb.h"
@@ -41,6 +42,7 @@ class LocalDeviceDataProviderImpl : public LocalDeviceDataProvider {
 
  private:
   PrefService* pref_service_ = nullptr;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 };
 
 }  // namespace ash::nearby::presence

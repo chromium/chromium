@@ -9,6 +9,7 @@
 #include "chromeos/ash/components/nearby/presence/credentials/proto_conversions.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 namespace {
 
@@ -32,8 +33,8 @@ namespace ash::nearby::presence {
 LocalDeviceDataProviderImpl::LocalDeviceDataProviderImpl(
     PrefService* pref_service,
     signin::IdentityManager* identity_manager)
-    : pref_service_(pref_service) {
-  CHECK(identity_manager);
+    : pref_service_(pref_service), identity_manager_(identity_manager) {
+  CHECK(identity_manager_);
   CHECK(pref_service_);
 }
 
@@ -83,9 +84,10 @@ std::string LocalDeviceDataProviderImpl::GetDeviceId() {
 }
 
 std::string LocalDeviceDataProviderImpl::GetAccountName() {
-  // TODO (b/276307539): Implement `GetAccountName`, this
-  // default implementation is to get the skeleton class to compile.
-  return kPlaceHolderString;
+  const std::string& email =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .email;
+  return gaia::CanonicalizeEmail(email);
 }
 
 void LocalDeviceDataProviderImpl::SaveUserRegistrationInfo(
