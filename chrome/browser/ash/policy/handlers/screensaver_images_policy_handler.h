@@ -11,6 +11,7 @@
 #include "ash/public/cpp/ambient/ambient_managed_photo_source.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -48,7 +49,10 @@ class ASH_EXPORT ScreensaverImagesPolicyHandler
   void OnAmbientModeManagedScreensaverImagesPrefChanged();
 
   // Download completion handler.
-  void OnScreensaverImagesDownloaded();
+  void OnDownloadJobCompleted(ScreensaverImageDownloadResult result,
+                              absl::optional<base::FilePath> path);
+
+  base::flat_set<base::FilePath> downloaded_images_;
 
   base::raw_ptr<PrefService> user_pref_service_ = nullptr;
 
