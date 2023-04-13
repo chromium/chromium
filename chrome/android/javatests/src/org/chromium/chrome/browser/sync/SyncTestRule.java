@@ -191,7 +191,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     private void ruleTearDown() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSyncService.setSyncRequested(false);
             mFakeServerHelper = null;
             FakeServerHelper.destroyInstance();
             SyncService.resetForTests();
@@ -279,20 +278,6 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                 /* syncService= */ null);
         SyncTestUtil.waitForSyncTransportActive();
         return accountInfo;
-    }
-
-    public void startSync() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mSyncService.setSyncRequested(true); });
-    }
-
-    public void startSyncAndWait() {
-        startSync();
-        SyncTestUtil.waitForSyncFeatureActive();
-    }
-
-    public void stopSync() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mSyncService.setSyncRequested(false); });
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
     public void signinAndEnableSync(final CoreAccountInfo accountInfo) {
