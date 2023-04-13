@@ -17,6 +17,7 @@ import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './languages.js';
 import '../../settings_shared.css.js';
 
+import {LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
 import {CrSearchFieldElement} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
@@ -24,7 +25,6 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 
 import {getTemplate} from './change_device_language_dialog.html.js';

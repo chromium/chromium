@@ -4,6 +4,7 @@
 
 import './settings_ui/settings_ui.js';
 
+export {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.js';
 export {prefToString, stringToPrefValue} from 'chrome://resources/cr_components/settings_prefs/pref_util.js';
 export {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
 export {PrefsMixin, PrefsMixinInterface} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
@@ -45,7 +46,6 @@ export {SettingsDefaultBrowserPageElement} from './default_browser_page/default_
 export {ExtensionControlBrowserProxy, ExtensionControlBrowserProxyImpl} from './extension_control_browser_proxy.js';
 export {HatsBrowserProxy, HatsBrowserProxyImpl, TrustSafetyInteraction} from './hats_browser_proxy.js';
 export {loadTimeData} from './i18n_setup.js';
-export {LifetimeBrowserProxy, LifetimeBrowserProxyImpl} from './lifetime_browser_proxy.js';
 export {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions} from './metrics_browser_proxy.js';
 export {NtpExtension, OnStartupBrowserProxy, OnStartupBrowserProxyImpl} from './on_startup_page/on_startup_browser_proxy.js';
 export {SettingsOnStartupPageElement} from './on_startup_page/on_startup_page.js';

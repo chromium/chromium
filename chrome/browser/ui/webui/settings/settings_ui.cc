@@ -94,6 +94,11 @@
 #include "services/network/public/cpp/features.h"
 #include "ui/base/interaction/element_identifier.h"
 
+#if !BUILDFLAG(OPTIMIZE_WEBUI)
+#include "chrome/grit/settings_shared_resources.h"
+#include "chrome/grit/settings_shared_resources_map.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
@@ -450,6 +455,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(
       html_source, base::make_span(kSettingsResources, kSettingsResourcesSize),
       IDR_SETTINGS_SETTINGS_HTML);
+
+#if !BUILDFLAG(OPTIMIZE_WEBUI)
+  html_source->AddResourcePaths(
+      base::make_span(kSettingsSharedResources, kSettingsSharedResourcesSize));
+#endif
 
   AddLocalizedStrings(html_source, profile, web_ui->GetWebContents());
 

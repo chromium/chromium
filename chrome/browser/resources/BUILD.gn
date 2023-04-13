@@ -44,6 +44,7 @@ group("resources") {
       "privacy_sandbox:resources",
       "profile_internals:resources",
       "settings:resources",
+      "settings_shared:resources",
       "side_panel/bookmarks:resources",
       "side_panel/companion:resources",
       "side_panel/customize_chrome:resources",

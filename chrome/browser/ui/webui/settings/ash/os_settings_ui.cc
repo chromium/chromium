@@ -52,6 +52,11 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
+#if !BUILDFLAG(OPTIMIZE_WEBUI)
+#include "chrome/grit/settings_shared_resources.h"
+#include "chrome/grit/settings_shared_resources_map.h"
+#endif
+
 namespace {
 
 class AppManagementDelegate : public AppManagementPageHandler::Delegate {
@@ -98,6 +103,12 @@ OSSettingsUI::OSSettingsUI(content::WebUI* web_ui)
       html_source,
       base::make_span(kOsSettingsResources, kOsSettingsResourcesSize),
       IDR_OS_SETTINGS_OS_SETTINGS_V3_HTML);
+
+#if !BUILDFLAG(OPTIMIZE_WEBUI)
+  html_source->AddResourcePaths(
+      base::make_span(kSettingsSharedResources, kSettingsSharedResourcesSize));
+#endif
+
   html_source->DisableTrustedTypesCSP();
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc,

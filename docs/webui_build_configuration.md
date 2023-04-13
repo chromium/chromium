@@ -505,6 +505,8 @@ optimize: Specifies whether any optimization steps will be used, defaults to
           |optimize_webui_host| must be specified if |optimize_webui_in_files|
           is provided.
 optimize_webui_excludes: See |excludes| in optimize_webui(). Optional.
+optimize_webui_external_paths: See |external_paths| in optimize_webui().
+                               Optional.
 optimize_webui_host: See |host| in optimize_webui().
 optimize_webui_in_files: See |in_files| in optimize_webui().
 

@@ -376,6 +376,10 @@ template("build_webui") {
         excludes = invoker.optimize_webui_excludes
       }
 
+      if (defined(invoker.optimize_webui_external_paths)) {
+        external_paths = invoker.optimize_webui_external_paths
+      }
+
       deps = [ ":build_ts" ]
     }
   }

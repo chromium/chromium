@@ -99,10 +99,10 @@ import './os_files_page/smb_shares_page.js';
 import '../privacy_page/secure_dns.js';
 import '../privacy_page/secure_dns_input.js';
 
+export {LifetimeBrowserProxyImpl} from '/shared/settings/lifetime_browser_proxy.js';
 export {AddSmbShareDialogElement} from 'chrome://resources/ash/common/smb_shares/add_smb_share_dialog.js';
 export {SmbBrowserProxy, SmbBrowserProxyImpl, SmbMountResult} from 'chrome://resources/ash/common/smb_shares/smb_browser_proxy.js';
 export {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
-export {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 export {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_page/crostini_browser_proxy.js';
 export {TimeZoneAutoDetectMethod} from './date_time_page/date_time_types.js';
 export {TimeZoneBrowserProxyImpl} from './date_time_page/timezone_browser_proxy.js';

@@ -417,7 +417,6 @@ non_web_component_files = [
   "controls/settings_boolean_control_mixin.ts",
   "extension_control_browser_proxy.ts",
   "i18n_setup.ts",
-  "lifetime_browser_proxy.ts",
   "people_page/profile_info_browser_proxy.ts",
   "people_page/sync_browser_proxy.ts",
   "privacy_page/privacy_page_browser_proxy.ts",

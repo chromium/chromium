@@ -345,6 +345,10 @@
     "META": {"sizes": {"includes": [500],}},
     "includes": [1960],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/settings_shared/resources.grd": {
+    "META": {"sizes": {"includes": [20],}},
+    "includes": [1970],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/signin/profile_picker/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
     "includes": [1980],

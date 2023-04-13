@@ -12,6 +12,7 @@ import("//extensions/buildflags/buildflags.gni")
 import("//headless/headless.gni")
 import("//pdf/features.gni")
 import("//ui/base/ui_features.gni")
+import("//ui/webui/webui_features.gni")
 import("chrome_repack_locales.gni")
 
 # Generates a rule to repack a set of resources, substituting a given string
@@ -245,6 +246,12 @@ template("chrome_extra_paks") {
           "//chrome/browser/resources/lens:untrusted_resources",
           "//chrome/browser/resources/media_router/cast_feedback:resources",
         ]
+      }
+      if (!optimize_webui) {
+        # Only add when optimize_webui=false, since in other cases the same
+        # resources are already bundled within the UIs that use them.
+        sources += [ "$root_gen_dir/chrome/settings_shared_resources.pak" ]
+        deps += [ "//chrome/browser/resources/settings_shared:resources" ]
       }
     }
     if (is_chromeos_ash) {
