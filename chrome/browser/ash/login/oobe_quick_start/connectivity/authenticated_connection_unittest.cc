@@ -9,6 +9,7 @@
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_quick_start_decoder.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
@@ -18,6 +19,8 @@
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 #include "chromeos/ash/components/quick_start/quick_start_message.h"
 #include "chromeos/ash/components/quick_start/quick_start_requests.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
@@ -85,10 +88,6 @@ class AuthenticatedConnectionTest : public testing::Test {
     assertion_info_ = assertion_info;
   }
 
-  void VerifyWifiCredentials(absl::optional<WifiCredentials> credentials) {
-    // TODO: Verify Wifi Credentials once parsed
-  }
-
  protected:
   RandomSessionId session_id_ = RandomSessionId(kRandomSessionId);
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -103,10 +102,15 @@ TEST_F(AuthenticatedConnectionTest, RequestWifiCredentials) {
   // Random Session ID for testing
   int32_t session_id = 1;
 
-  authenticated_connection_->RequestWifiCredentials(
-      session_id,
-      base::BindOnce(&AuthenticatedConnectionTest::VerifyWifiCredentials,
-                     base::Unretained(this)));
+  fake_quick_start_decoder_->SetWifiCredentialsResponse(
+      mojom::GetWifiCredentialsResponse::NewCredentials(
+          mojom::WifiCredentials::New("ssid", mojom::WifiSecurityType::kPSK,
+                                      true, "password")));
+
+  base::test::TestFuture<absl::optional<WifiCredentials>> future;
+
+  authenticated_connection_->RequestWifiCredentials(session_id,
+                                                    future.GetCallback());
 
   fake_nearby_connection_->AppendReadableData({0x00, 0x01, 0x02});
   std::vector<uint8_t> wifi_request = fake_nearby_connection_->GetWrittenData();
@@ -142,6 +146,33 @@ TEST_F(AuthenticatedConnectionTest, RequestWifiCredentials) {
   // TODO(b/234655072): Create kSecondarySharedSecret const and check value
   // equals after AuthenticatedConnection refactor is merged.
   EXPECT_TRUE(wifi_request_payload.FindString("shared_secret"));
+
+  const absl::optional<WifiCredentials>& credentials = future.Get();
+  EXPECT_TRUE(credentials.has_value());
+  EXPECT_EQ(credentials->ssid, "ssid");
+  EXPECT_EQ(credentials->password, "password");
+  EXPECT_EQ(credentials->security_type,
+            ash::quick_start::mojom::WifiSecurityType::kPSK);
+  EXPECT_TRUE(credentials->is_hidden);
+}
+
+TEST_F(AuthenticatedConnectionTest,
+       RequestWifiCredentialsReturnsEmptyOnFailure) {
+  // Random Session ID for testing
+  int32_t session_id = 1;
+  fake_quick_start_decoder_->SetWifiCredentialsResponse(
+      mojom::GetWifiCredentialsResponse::NewFailureReason(
+          mojom::GetWifiCredentialsFailureReason::kMissingWifiHiddenStatus));
+
+  base::test::TestFuture<absl::optional<WifiCredentials>> future;
+
+  authenticated_connection_->RequestWifiCredentials(session_id,
+                                                    future.GetCallback());
+
+  fake_nearby_connection_->AppendReadableData({0x00, 0x01, 0x02});
+
+  absl::optional<WifiCredentials> credentials = future.Get();
+  EXPECT_FALSE(future.Get().has_value());
 }
 
 TEST_F(AuthenticatedConnectionTest, RequestAccountTransferAssertion) {

@@ -10,6 +10,8 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/ash/components/quick_start/quick_start_message.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-forward.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -32,6 +34,23 @@ constexpr uint8_t kCtap2ErrInvalidCBOR = 0x12;
 constexpr int kCborDecoderErrorInvalidUtf8 = 6;
 constexpr int kCborDecoderNoError = 0;
 constexpr int kCborDecoderUnknownError = 14;
+
+// Key in Wifi Information response containing information about the wifi
+// network as a JSON Dictionary.
+constexpr char kWifiNetworkInformationKey[] = "wifi_network";
+
+// Key in wifi_network dictionary containing the SSID of the wifi network.
+constexpr char kWifiNetworkSsidKey[] = "wifi_ssid";
+
+// Key in wifi_network dictionary containing the password of the wifi network.
+constexpr char kWifiNetworkPasswordKey[] = "pre_shared_key";
+
+// Key in wifi_network dictionary containing the security type of the wifi
+// network.
+constexpr char kWifiNetworkSecurityTypeKey[] = "wifi_security_type";
+
+// Key in wifi_network dictionary containing if the wifi network is hidden.
+constexpr char kWifiNetworkIsHiddenKey[] = "wifi_hidden_ssid";
 
 const std::vector<uint8_t> kValidCredentialId = {0x01, 0x02, 0x03};
 const std::vector<uint8_t> kValidAuthData = {0x02, 0x03, 0x04};
@@ -82,6 +101,12 @@ class QuickStartDecoderTest : public testing::Test {
   mojom::BootstrapConfigurationsPtr DoDecodeBootstrapConfigurations(
       const std::vector<uint8_t>& data) {
     return decoder_->DoDecodeBootstrapConfigurations(data);
+  }
+
+  mojom::GetWifiCredentialsResponsePtr DoDecodeWifiCredentialsResponse(
+      QuickStartMessage* message) {
+    return decoder_->DoDecodeWifiCredentialsResponse(
+        ConvertMessageToBytes(message));
   }
 
   absl::optional<std::vector<uint8_t>> ExtractFidoDataFromJsonResponse(
@@ -367,6 +392,154 @@ TEST_F(QuickStartDecoderTest,
   absl::optional<std::vector<uint8_t>> result =
       ExtractFidoDataFromJsonResponse(random_payload);
   EXPECT_FALSE(result.has_value());
+}
+
+TEST_F(QuickStartDecoderTest, ExtractWifiInformationPassesOnValidResponse) {
+  base::Value::Dict wifi_information;
+  wifi_information.Set(kWifiNetworkSsidKey, "ssid");
+  wifi_information.Set(kWifiNetworkPasswordKey, "password");
+  wifi_information.Set(kWifiNetworkSecurityTypeKey, "PSK");
+  wifi_information.Set(kWifiNetworkIsHiddenKey, true);
+
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+  message.GetPayload()->Set(kWifiNetworkInformationKey,
+                            std::move(wifi_information));
+
+  mojom::GetWifiCredentialsResponsePtr response =
+      DoDecodeWifiCredentialsResponse(&message);
+
+  EXPECT_TRUE(response->is_credentials());
+
+  EXPECT_EQ(response->get_credentials()->ssid, "ssid");
+  EXPECT_EQ(response->get_credentials()->password, "password");
+  EXPECT_EQ(response->get_credentials()->security_type,
+            mojom::WifiSecurityType::kPSK);
+  EXPECT_TRUE(response->get_credentials()->is_hidden);
+}
+
+TEST_F(QuickStartDecoderTest, ExtractWifiInformationFailsIfSSIDLengthIsZero) {
+  base::Value::Dict wifi_information;
+  wifi_information.Set(kWifiNetworkSsidKey, "");
+  wifi_information.Set(kWifiNetworkPasswordKey, "password");
+  wifi_information.Set(kWifiNetworkSecurityTypeKey, "PSK");
+  wifi_information.Set(kWifiNetworkIsHiddenKey, true);
+
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+  message.GetPayload()->Set(kWifiNetworkInformationKey,
+                            std::move(wifi_information));
+
+  mojom::GetWifiCredentialsResponsePtr response =
+      DoDecodeWifiCredentialsResponse(&message);
+
+  EXPECT_TRUE(response->is_failure_reason());
+  EXPECT_EQ(response->get_failure_reason(),
+            mojom::GetWifiCredentialsFailureReason::kEmptyWifiSSID);
+}
+
+TEST_F(QuickStartDecoderTest, ExtractWifiInformationFailsWhenMissingSSID) {
+  base::Value::Dict wifi_information;
+  wifi_information.Set(kWifiNetworkPasswordKey, "password");
+  wifi_information.Set(kWifiNetworkSecurityTypeKey, "PSK");
+  wifi_information.Set(kWifiNetworkIsHiddenKey, true);
+
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+  message.GetPayload()->Set(kWifiNetworkInformationKey,
+                            std::move(wifi_information));
+
+  mojom::GetWifiCredentialsResponsePtr response =
+      DoDecodeWifiCredentialsResponse(&message);
+
+  EXPECT_TRUE(response->is_failure_reason());
+  EXPECT_EQ(response->get_failure_reason(),
+            mojom::GetWifiCredentialsFailureReason::kMissingWifiSSID);
+}
+
+TEST_F(QuickStartDecoderTest, ExtractWifiInformationFailsWhenMissingPassword) {
+  base::Value::Dict wifi_information;
+  wifi_information.Set(kWifiNetworkSsidKey, "ssid");
+  wifi_information.Set(kWifiNetworkSecurityTypeKey, "PSK");
+  wifi_information.Set(kWifiNetworkIsHiddenKey, true);
+
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+  message.GetPayload()->Set(kWifiNetworkInformationKey,
+                            std::move(wifi_information));
+
+  mojom::GetWifiCredentialsResponsePtr response =
+      DoDecodeWifiCredentialsResponse(&message);
+
+  EXPECT_TRUE(response->is_failure_reason());
+  EXPECT_EQ(response->get_failure_reason(),
+            mojom::GetWifiCredentialsFailureReason::kMissingWifiPassword);
+}
+
+TEST_F(QuickStartDecoderTest,
+       ExtractWifiInformationFailsWhenMissingSecurityType) {
+  base::Value::Dict wifi_information;
+  wifi_information.Set(kWifiNetworkSsidKey, "ssid");
+  wifi_information.Set(kWifiNetworkPasswordKey, "password");
+  wifi_information.Set(kWifiNetworkIsHiddenKey, true);
+
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+  message.GetPayload()->Set(kWifiNetworkInformationKey,
+                            std::move(wifi_information));
+
+  mojom::GetWifiCredentialsResponsePtr response =
+      DoDecodeWifiCredentialsResponse(&message);
+
+  EXPECT_TRUE(response->is_failure_reason());
+  EXPECT_EQ(response->get_failure_reason(),
+            mojom::GetWifiCredentialsFailureReason::kMissingWifiSecurityType);
+}
+
+TEST_F(QuickStartDecoderTest,
+       ExtractWifiInformationFailsOnInvalidSecurityType) {
+  base::Value::Dict wifi_information;
+  wifi_information.Set(kWifiNetworkSsidKey, "ssid");
+  wifi_information.Set(kWifiNetworkPasswordKey, "password");
+  wifi_information.Set(kWifiNetworkSecurityTypeKey, "invalid");
+  wifi_information.Set(kWifiNetworkIsHiddenKey, true);
+
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+  message.GetPayload()->Set(kWifiNetworkInformationKey,
+                            std::move(wifi_information));
+
+  mojom::GetWifiCredentialsResponsePtr response =
+      DoDecodeWifiCredentialsResponse(&message);
+
+  EXPECT_TRUE(response->is_failure_reason());
+  EXPECT_EQ(response->get_failure_reason(),
+            mojom::GetWifiCredentialsFailureReason::kInvalidWifiSecurityType);
+}
+
+TEST_F(QuickStartDecoderTest,
+       ExtractWifiInformationFailsWhenMissingHiddenStatus) {
+  base::Value::Dict wifi_information;
+  wifi_information.Set(kWifiNetworkSsidKey, "ssid");
+  wifi_information.Set(kWifiNetworkPasswordKey, "password");
+  wifi_information.Set(kWifiNetworkSecurityTypeKey, "PSK");
+
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+  message.GetPayload()->Set(kWifiNetworkInformationKey,
+                            std::move(wifi_information));
+
+  mojom::GetWifiCredentialsResponsePtr response =
+      DoDecodeWifiCredentialsResponse(&message);
+
+  EXPECT_TRUE(response->is_failure_reason());
+  EXPECT_EQ(response->get_failure_reason(),
+            mojom::GetWifiCredentialsFailureReason::kMissingWifiHiddenStatus);
+}
+
+TEST_F(QuickStartDecoderTest,
+       ExtractWifiInformationFailsWhenMissingWifiInformation) {
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+
+  mojom::GetWifiCredentialsResponsePtr response =
+      DoDecodeWifiCredentialsResponse(&message);
+
+  EXPECT_TRUE(response->is_failure_reason());
+  EXPECT_EQ(response->get_failure_reason(),
+            mojom::GetWifiCredentialsFailureReason::kMissingWifiInformation);
 }
 
 }  // namespace ash::quick_start

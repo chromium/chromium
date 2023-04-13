@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -32,16 +33,22 @@ class QuickStartDecoder : public mojom::QuickStartDecoder {
       const std::vector<uint8_t>& data,
       DecodeBootstrapConfigurationsCallback callback) override;
 
-  // mojom::QuickStartDecoder;
   void DecodeGetAssertionResponse(
       const std::vector<uint8_t>& data,
       DecodeGetAssertionResponseCallback callback) override;
+
+  void DecodeWifiCredentialsResponse(
+      const std::vector<uint8_t>& data,
+      DecodeWifiCredentialsResponseCallback callback) override;
+  // mojom::QuickStartDecoder:
 
  private:
   friend class QuickStartDecoderTest;
   mojom::BootstrapConfigurationsPtr DoDecodeBootstrapConfigurations(
       const std::vector<uint8_t>& data);
   mojom::GetAssertionResponsePtr DoDecodeGetAssertionResponse(
+      const std::vector<uint8_t>& data);
+  mojom::GetWifiCredentialsResponsePtr DoDecodeWifiCredentialsResponse(
       const std::vector<uint8_t>& data);
   absl::optional<std::vector<uint8_t>> ExtractFidoDataFromJsonResponse(
       const std::vector<uint8_t>& data);

@@ -9,6 +9,43 @@ struct BootstrapConfigurations {
   string cryptauth_device_id;
 };
 
+enum WifiSecurityType {
+  kPSK = 0,
+  kWEP = 1,
+  kEAP = 2,
+  kOpen = 3,
+  kOWE = 4,
+  kSAE = 5,
+};
+
+enum GetWifiCredentialsFailureReason {
+  kFailedToDecodeMessage = 1,
+  kMissingWifiInformation = 2,
+  kMissingWifiSSID = 3,
+  kMissingWifiPassword = 4,
+  kMissingWifiSecurityType = 5,
+  kMissingWifiHiddenStatus = 6,
+  kInvalidWifiSecurityType = 7,
+  kEmptyWifiSSID = 8,
+};
+
+struct WifiCredentials {
+  string ssid;
+  WifiSecurityType security_type;
+  bool is_hidden;
+  string password;
+};
+
+union GetWifiCredentialsResponse {
+
+  // Success - return credentials
+  WifiCredentials credentials;
+
+  // Failure - return error reason
+  GetWifiCredentialsFailureReason failure_reason;
+
+};
+
 struct GetAssertionResponse {
   enum GetAssertionStatus {
     kSuccess = 0,

@@ -66,7 +66,6 @@ std::unique_ptr<QuickStartMessage> QuickStartMessage::ReadMessage(
   if (enable_sandbox_checks_) {
     CHECK(sandbox::policy::Sandbox::IsProcessSandboxed());
   }
-
   std::string str_data(data.begin(), data.end());
   absl::optional<base::Value> data_value = base::JSONReader::Read(str_data);
   if (!data_value.has_value()) {

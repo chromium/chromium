@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "wifi_credentials.h"
+#include "base/notreached.h"
+
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 
 namespace ash::quick_start {
 
