@@ -8,8 +8,10 @@
 
 #include "base/bits.h"
 #include "base/logging.h"
+#include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
+#include "third_party/libaom/source/libaom/av1/ratectrl_rtc.h"
 #include "third_party/libgav1/src/src/utils/constants.h"
 
 namespace media {
@@ -17,11 +19,16 @@ namespace {
 
 // Values from
 // third_party/webrtc/modules/video_coding/codecs/av1/libaom_av1_encoder.cc
-// TODO(b/267521747): We might need to adjust these when we actually implement
-// rate control.
 constexpr int kKFPeriod = 3000;
+// Quantization parameters for AV1. Between 0 and 255.
+constexpr int kMinQIndex = 145;
+constexpr int kMaxQIndex = 205;
+
+// From //third_party/webrtc/media/engine/webrtc_video_engine.h
+// These are also quantization parameters, but these are in different units than
+// above. These are used in AV1 rate control and are between 0 and 63.
 constexpr int kMinQP = 10;
-constexpr int kMaxQP = 205;
+constexpr int kMaxQP = 56;
 
 // This needs to be 64, not 16, because of superblocks.
 // TODO: Look into whether or not we can reduce alignment to 16.
@@ -264,8 +271,6 @@ AV1VaapiVideoEncoderDelegate::AV1VaapiVideoEncoderDelegate(
 bool AV1VaapiVideoEncoderDelegate::Initialize(
     const VideoEncodeAccelerator::Config& config,
     const VaapiVideoEncoderDelegate::Config& ave_config) {
-  // TODO(b/267521747): Implement rate control
-
   if (config.output_profile != VideoCodecProfile::AV1PROFILE_PROFILE_MAIN) {
     LOG(ERROR) << "Invalid profile: " << GetProfileName(config.output_profile);
     return false;
@@ -283,6 +288,8 @@ bool AV1VaapiVideoEncoderDelegate::Initialize(
 
   current_params_.framerate = config.initial_framerate.value_or(
       VideoEncodeAccelerator::kDefaultFramerate);
+  current_params_.bitrate_allocation.SetBitrate(0, 0,
+                                                config.bitrate.target_bps());
 
   level_idx_ = ComputeLevel(coded_size_, current_params_.framerate);
   if (level_idx_ < 0) {
@@ -292,7 +299,8 @@ bool AV1VaapiVideoEncoderDelegate::Initialize(
 
   frame_num_ = current_params_.intra_period;
 
-  return true;
+  return UpdateRates(current_params_.bitrate_allocation,
+                     current_params_.framerate);
 }
 
 AV1VaapiVideoEncoderDelegate::~AV1VaapiVideoEncoderDelegate() = default;
@@ -302,8 +310,42 @@ bool AV1VaapiVideoEncoderDelegate::UpdateRates(
     uint32_t framerate) {
   // TODO(b/267521747): Implement rate control
 
+  current_params_.bitrate_allocation = bitrate_allocation;
   current_params_.framerate = framerate;
 
+  aom::AV1RateControlRtcConfig rc_config;
+  rc_config.width = coded_size_.width();
+  rc_config.height = coded_size_.height();
+  // third_party/webrtc/modules/video_coding/codecs/av1/libaom_av1_encoder.cc
+  rc_config.max_quantizer = kMaxQP;
+  rc_config.min_quantizer = kMinQP;
+  rc_config.target_bandwidth =
+      current_params_.bitrate_allocation.GetSumBps() / 1000;
+  rc_config.buf_initial_sz = 600;
+  rc_config.buf_optimal_sz = 600;
+  rc_config.buf_sz = 1000;
+  rc_config.undershoot_pct = 50;
+  rc_config.overshoot_pct = 50;
+  rc_config.max_intra_bitrate_pct = 300;
+  rc_config.max_inter_bitrate_pct = 0;
+  rc_config.framerate = current_params_.framerate;
+  rc_config.layer_target_bitrate[0] =
+      current_params_.bitrate_allocation.GetSumBps() / 1000;
+  rc_config.ts_rate_decimator[0] = 1;
+  rc_config.aq_mode = 0;
+  rc_config.ss_number_layers = 1;
+  rc_config.ts_number_layers = 1;
+  rc_config.max_quantizers[0] = kMaxQP;
+  rc_config.min_quantizers[0] = kMinQP;
+  rc_config.scaling_factor_num[0] = 1;
+  rc_config.scaling_factor_den[0] = 1;
+
+  if (!rate_ctrl_) {
+    rate_ctrl_ = AV1RateControl::Create(rc_config);
+    return !!rate_ctrl_;
+  }
+
+  rate_ctrl_->UpdateRateControl(rc_config);
   return true;
 }
 
@@ -375,7 +417,14 @@ bool AV1VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
 
 void AV1VaapiVideoEncoderDelegate::BitrateControlUpdate(
     const BitstreamBufferMetadata& metadata) {
-  // TODO(b:267521747): Implement proper bitrate control.
+  DVLOGF(4) << "encoded chunk size=" << metadata.payload_size_bytes;
+
+  aom::AV1FrameParamsRTC frame_params;
+  frame_params.frame_type =
+      metadata.key_frame ? aom::kKeyFrame : aom::kInterFrame;
+  frame_params.spatial_layer_id = 0;
+  frame_params.temporal_layer_id = 0;
+  rate_ctrl_->PostEncodeUpdate(metadata.payload_size_bytes, frame_params);
 }
 
 // See section 5.6 of the AV1 specification.
@@ -648,16 +697,23 @@ bool AV1VaapiVideoEncoderDelegate::FillPictureParam(
   pic_param.mode_deltas[0] = 0;
   pic_param.mode_deltas[0] = 0;
 
-  pic_param.base_qindex = 128;  // TODO(b/267521747): replace this fake value
-                                // with real rate control logic.
+  aom::AV1FrameParamsRTC frame_params;
+  frame_params.frame_type = is_keyframe ? aom::kKeyFrame : aom::kInterFrame;
+  frame_params.spatial_layer_id = 0;
+  frame_params.temporal_layer_id = 0;
+  // This method name is a misnomer, GetQP() actually returns the QP in QIndex
+  // form.
+  pic_param.base_qindex = rate_ctrl_->ComputeQP(frame_params);
+  DVLOGF(4) << "qp=" << pic_param.base_qindex
+            << (is_keyframe ? " (keyframe)" : "");
   pic_param.y_dc_delta_q = 0;
   pic_param.u_dc_delta_q = 0;
   pic_param.u_ac_delta_q = 0;
   pic_param.v_dc_delta_q = 0;
   pic_param.v_ac_delta_q = 0;
 
-  pic_param.min_base_qindex = kMinQP;
-  pic_param.max_base_qindex = kMaxQP;
+  pic_param.min_base_qindex = kMinQIndex;
+  pic_param.max_base_qindex = kMaxQIndex;
 
   pic_param.qmatrix_flags.bits.using_qmatrix = 0;
   pic_param.qmatrix_flags.bits.qm_y = 0;

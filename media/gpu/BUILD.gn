@@ -372,7 +372,10 @@ source_set("common") {
       "vp9_svc_layers.h",
     ]
     configs += [ "//third_party/libvpx:libvpx_config" ]
-    deps += [ "//third_party/libvpx:libvpxrc" ]
+    deps += [
+      "//third_party/libaom:libaomrc",
+      "//third_party/libvpx:libvpxrc",
+    ]
   }
   if (use_libgav1_parser) {
     sources += [
