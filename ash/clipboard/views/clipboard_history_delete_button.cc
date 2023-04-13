@@ -6,11 +6,11 @@
 
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_item_view.h"
-#include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
 #include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/ink_drop.h"
@@ -27,8 +27,8 @@ ClipboardHistoryDeleteButton::ClipboardHistoryDeleteButton(
               base::Unretained(listener)),
           CloseButton::Type::kSmall,
           /*icon=*/nullptr,
-          kColorAshShieldAndBase80Light,
-          kColorAshButtonIconColorLight),
+          cros_tokens::kCrosSysSurface,
+          cros_tokens::kCrosSysSecondary),
       listener_(listener) {
   SetID(clipboard_history_util::kDeleteButtonViewID);
   SetAccessibleName(
