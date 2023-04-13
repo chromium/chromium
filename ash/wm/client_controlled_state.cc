@@ -24,6 +24,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/wm/core/window_util.h"
@@ -188,12 +189,19 @@ void ClientControlledState::HandleBoundsEvents(WindowState* window_state,
                                                const WMEvent* event) {
   if (!delegate_)
     return;
+  auto* const window = window_state->window();
   switch (event->type()) {
     case WM_EVENT_SET_BOUNDS: {
       const auto* set_bounds_event =
           static_cast<const SetBoundsWMEvent*>(event);
       const gfx::Rect& bounds = set_bounds_event->requested_bounds();
       if (set_bounds_locally_) {
+        // Don’t preempt on-going animation (e.g. tucking) for floated windows.
+        if (window_state->IsFloated() && window->layer() &&
+            window->layer()->GetAnimator()->is_animating()) {
+          return;
+        }
+
         switch (next_bounds_change_animation_type_) {
           case WindowState::BoundsChangeAnimationType::kNone:
             window_state->SetBoundsDirect(bounds);
@@ -221,7 +229,6 @@ void ClientControlledState::HandleBoundsEvents(WindowState* window_state,
         // TODO(oshima): Define behavior for pinned app.
         bounds_change_animation_duration_ = set_bounds_event->duration();
         int64_t display_id = set_bounds_event->display_id();
-        auto* window = window_state->window();
         if (display_id == display::kInvalidDisplayId) {
           display_id = display::Screen::GetScreen()
                            ->GetDisplayNearestWindow(window)
