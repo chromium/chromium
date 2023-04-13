@@ -37,7 +37,11 @@ SyntheticTouchscreenPinchGesture::~SyntheticTouchscreenPinchGesture() {}
 SyntheticGesture::Result SyntheticTouchscreenPinchGesture::ForwardInputEvents(
     const base::TimeTicks& timestamp,
     SyntheticGestureTarget* target) {
-  DCHECK(dispatching_controller_);
+  CHECK(dispatching_controller_);
+  // Keep this on the stack so we can check if the forwarded event caused the
+  // deletion of the controller (which owns `this`).
+  base::WeakPtr<SyntheticGestureController> weak_controller =
+      dispatching_controller_;
   if (state_ == SETUP) {
     gesture_source_type_ = params_.gesture_source_type;
     if (gesture_source_type_ ==
@@ -58,7 +62,7 @@ SyntheticGesture::Result SyntheticTouchscreenPinchGesture::ForwardInputEvents(
   if (gesture_source_type_ == content::mojom::GestureSourceType::kTouchInput) {
     ForwardTouchInputEvents(timestamp, target);
     // A pinch gesture cannot cause `this` to be destroyed.
-    DCHECK(dispatching_controller_);
+    CHECK(weak_controller);
   } else {
     return SyntheticGesture::GESTURE_SOURCE_TYPE_NOT_IMPLEMENTED;
   }

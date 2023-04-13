@@ -1360,6 +1360,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
                              1] = {false};
   bool is_in_touchpad_gesture_fling_ = false;
 
+  // TODO(crbug.com/1432355): The gesture controller can cause synchronous
+  // destruction of the page (sending a click to the tab close button). Since
+  // that'll destroy the RenderWidgetHostImpl, having it own the controller is
+  // awkward.
   std::unique_ptr<SyntheticGestureController> synthetic_gesture_controller_;
 
   // Must be declared before `input_router_`. The latter is constructed by

@@ -57,7 +57,13 @@ SyntheticSmoothMoveGesture::~SyntheticSmoothMoveGesture() {}
 SyntheticGesture::Result SyntheticSmoothMoveGesture::ForwardInputEvents(
     const base::TimeTicks& timestamp,
     SyntheticGestureTarget* target) {
-  DCHECK(dispatching_controller_);
+  CHECK(dispatching_controller_);
+
+  // Keep this on the stack so we can check if the forwarded event caused the
+  // deletion of the controller (which owns `this`).
+  base::WeakPtr<SyntheticGestureController> weak_controller =
+      dispatching_controller_;
+
   if (state_ == SETUP) {
     state_ = STARTED;
     current_move_segment_ = -1;
@@ -82,12 +88,12 @@ SyntheticGesture::Result SyntheticSmoothMoveGesture::ForwardInputEvents(
     case SyntheticSmoothMoveGestureParams::MOUSE_WHEEL_INPUT:
       ForwardMouseWheelInputEvents(timestamp, target);
       // A mousewheel should not be able to close the WebContents.
-      DCHECK(dispatching_controller_);
+      CHECK(weak_controller);
       break;
     default:
       return SyntheticGesture::GESTURE_SOURCE_TYPE_NOT_IMPLEMENTED;
   }
-  if (!dispatching_controller_) {
+  if (!weak_controller) {
     // A pointer gesture can cause the controller (and therefore `this`) to be
     // synchronously deleted (e.g. clicking tab-close). Return immediately in
     // this case.
@@ -108,6 +114,10 @@ SyntheticGesture::Result SyntheticSmoothMoveGesture::ForwardInputEvents(
 void SyntheticSmoothMoveGesture::ForwardTouchInputEvents(
     const base::TimeTicks& timestamp,
     SyntheticGestureTarget* target) {
+  // Keep this on the stack so we can check if the forwarded event caused the
+  // deletion of the controller (which owns `this`).
+  base::WeakPtr<SyntheticGestureController> weak_controller =
+      dispatching_controller_;
   switch (state_) {
     case STARTED:
       if (MoveIsNoOp()) {
@@ -118,7 +128,7 @@ void SyntheticSmoothMoveGesture::ForwardTouchInputEvents(
         AddTouchSlopToFirstDistance(target);
       ComputeNextMoveSegment();
       PressPoint(target, timestamp);
-      if (!dispatching_controller_) {
+      if (!weak_controller) {
         return;
       }
       state_ = MOVING;
@@ -127,6 +137,8 @@ void SyntheticSmoothMoveGesture::ForwardTouchInputEvents(
       base::TimeTicks event_timestamp = ClampTimestamp(timestamp);
       gfx::Vector2dF delta = GetPositionDeltaAtTime(event_timestamp);
       MovePoint(target, delta, event_timestamp);
+      // A move should never be able to cause deletion of the controller.
+      CHECK(weak_controller);
 
       if (FinishedCurrentMoveSegment(event_timestamp)) {
         if (!IsLastMoveSegment()) {
@@ -137,7 +149,7 @@ void SyntheticSmoothMoveGesture::ForwardTouchInputEvents(
           state_ = STOPPING;
         } else {
           ReleasePoint(target, event_timestamp);
-          if (!dispatching_controller_) {
+          if (!weak_controller) {
             return;
           }
           state_ = DONE;
@@ -150,7 +162,7 @@ void SyntheticSmoothMoveGesture::ForwardTouchInputEvents(
         base::TimeTicks event_timestamp = current_move_segment_stop_time_ +
                                           target->PointerAssumedStoppedTime();
         ReleasePoint(target, event_timestamp);
-        if (!dispatching_controller_) {
+        if (!weak_controller) {
           return;
         }
         state_ = DONE;
@@ -234,6 +246,10 @@ void SyntheticSmoothMoveGesture::ForwardMouseWheelInputEvents(
 void SyntheticSmoothMoveGesture::ForwardMouseClickInputEvents(
     const base::TimeTicks& timestamp,
     SyntheticGestureTarget* target) {
+  // Keep this on the stack so we can check if the forwarded event caused the
+  // deletion of the controller (which owns `this`).
+  base::WeakPtr<SyntheticGestureController> weak_controller =
+      dispatching_controller_;
   switch (state_) {
     case STARTED:
       if (MoveIsNoOp()) {
@@ -242,7 +258,7 @@ void SyntheticSmoothMoveGesture::ForwardMouseClickInputEvents(
       }
       ComputeNextMoveSegment();
       PressPoint(target, timestamp);
-      if (!dispatching_controller_) {
+      if (!weak_controller) {
         return;
       }
       state_ = MOVING;
@@ -259,7 +275,7 @@ void SyntheticSmoothMoveGesture::ForwardMouseClickInputEvents(
           ComputeNextMoveSegment();
         } else {
           ReleasePoint(target, event_timestamp);
-          if (!dispatching_controller_) {
+          if (!weak_controller) {
             return;
           }
           state_ = DONE;

@@ -63,7 +63,7 @@ void SyntheticGesture::WaitForTargetAck(base::OnceClosure callback,
 
 void SyntheticGesture::DidQueue(
     base::WeakPtr<SyntheticGestureController> controller) {
-  DCHECK(controller);
+  CHECK(controller);
   dispatching_controller_ = controller;
 }
 
