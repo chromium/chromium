@@ -94505,29 +94505,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Fail to create shortcut"/>
 </enum>
 
-<enum name="ShortcutsMenuRegistrationWinResult">
-  <obsolete>
-    Removed January 2021.
-  </obsolete>
-  <summary>
-    Result of registering app icon shortcuts menu for PWA on Windows
-  </summary>
+<enum name="ShortcutsMenuWinRegistrationResult">
   <int value="0" label="Success"/>
-  <int value="1" label="Failed to write ico files to disk"/>
-  <int value="2" label="Failed to BeginUpdate"/>
-  <int value="3" label="Failed to AddTasks"/>
-  <int value="4" label="Failed to CommitUpdate"/>
-</enum>
-
-<enum name="ShortcutsMenuUnregistrationWinResult">
-  <obsolete>
-    Removed January 2021.
-  </obsolete>
-  <summary>
-    Result of registering app icon shortcuts menu for PWA on Windows
-  </summary>
-  <int value="0" label="Success"/>
-  <int value="1" label="Failed to DeleteJumpList"/>
+  <int value="1" label="Failed to create shortcuts menu icons directory"/>
+  <int value="2" label="Failed to create icon from image family"/>
+  <int value="3" label="Failed to begin jump list update"/>
+  <int value="4" label="Failed to add link items to jump list"/>
+  <int value="5" label="Failed to commit update to jump list"/>
 </enum>
 
 <enum name="ShortProcessType">

@@ -1384,6 +1384,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.ShortcutsMenu.Win.Results"
+    enum="ShortcutsMenuWinRegistrationResult" expires_after="2024-04-10">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the different results (both failure and success) that contributes to
+    shortcuts menu registration on Windows.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.ShortcutsMenuRegistration.Result" enum="BooleanSuccess"
     expires_after="2023-09-10">
   <owner>dibyapal@chromium.org</owner>

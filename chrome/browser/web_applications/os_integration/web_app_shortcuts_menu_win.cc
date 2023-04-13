@@ -17,6 +17,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -39,6 +40,26 @@ namespace web_app {
 namespace {
 
 constexpr int kMaxJumpListItems = 10;
+
+constexpr const char* kShortcutsMenuRegistrationHistogram =
+    "WebApp.ShortcutsMenu.Win.Results";
+
+// This should be kept in sync with ShortcutsMenuWinRegistrationResult inside
+// tools/metrics/histograms/enums.xml
+enum class ShortcutsMenuRegistrationResult {
+  kSuccess = 0,
+  kFailedToCreateShortcutMenuIconsDirectory = 1,
+  kFailedToCreateIconFromImageFamily = 2,
+  kFailedToBeginJumplistUpdate = 3,
+  kFailedToAddLinkItemsToJumplist = 4,
+  kFailedToCommitJumplistUpdate = 5,
+  kMaxValue = kFailedToCommitJumplistUpdate
+};
+
+// Records the result of registering shortcuts menu on Win to UMA.
+void RecordShortcutsMenuResult(ShortcutsMenuRegistrationResult result) {
+  base::UmaHistogramEnumeration(kShortcutsMenuRegistrationHistogram, result);
+}
 
 // Testing hook for shell_integration_linux
 UpdateJumpListForTesting& GetUpdateJumpListForTesting() {
@@ -65,6 +86,8 @@ bool WriteShortcutsMenuIconsToIcoFiles(
     const ShortcutsMenuIconBitmaps& shortcut_icons) {
   if (!base::CreateDirectory(
           GetShortcutsMenuIconsDirectory(shortcut_data_dir))) {
+    RecordShortcutsMenuResult(ShortcutsMenuRegistrationResult::
+                                  kFailedToCreateShortcutMenuIconsDirectory);
     return false;
   }
   int icon_index = -1;
@@ -81,6 +104,8 @@ bool WriteShortcutsMenuIconsToIcoFiles(
       image_family.Add(gfx::Image::CreateFrom1xBitmap(item.second));
     }
     if (!IconUtil::CreateIconFileFromImageFamily(image_family, icon_file)) {
+      RecordShortcutsMenuResult(
+          ShortcutsMenuRegistrationResult::kFailedToCreateIconFromImageFamily);
       return false;
     }
   }
@@ -102,13 +127,24 @@ bool UpdateJumpList(
   }
 
   JumpListUpdater jumplist_updater(app_user_model_id);
-  if (!jumplist_updater.BeginUpdate())
+  if (!jumplist_updater.BeginUpdate()) {
+    RecordShortcutsMenuResult(
+        ShortcutsMenuRegistrationResult::kFailedToBeginJumplistUpdate);
     return false;
+  }
 
-  if (!jumplist_updater.AddTasks(link_items))
+  if (!jumplist_updater.AddTasks(link_items)) {
+    RecordShortcutsMenuResult(
+        ShortcutsMenuRegistrationResult::kFailedToAddLinkItemsToJumplist);
     return false;
+  }
 
-  return jumplist_updater.CommitUpdate();
+  bool success = jumplist_updater.CommitUpdate();
+  if (!success) {
+    RecordShortcutsMenuResult(
+        ShortcutsMenuRegistrationResult::kFailedToCommitJumplistUpdate);
+  }
+  return success;
 }
 
 }  // namespace
@@ -181,6 +217,9 @@ bool RegisterShortcutsMenuWithOsTask(
 
 void OnShortcutsMenuRegistrationComplete(RegisterShortcutsMenuCallback callback,
                                          bool registration_successful) {
+  if (registration_successful) {
+    RecordShortcutsMenuResult(ShortcutsMenuRegistrationResult::kSuccess);
+  }
   std::move(callback).Run(registration_successful ? Result::kOk
                                                   : Result::kError);
 }
