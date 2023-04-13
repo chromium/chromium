@@ -485,8 +485,8 @@
   'CROS_HANA_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'hana',
-      'cros_chrome_version': '114.0.5692.0',
-      'cros_img': 'hana-release/R114-15410.0.0',
+      'cros_chrome_version': '114.0.5703.0',
+      'cros_img': 'hana-release/R114-15416.0.0',
     },
     'enabled': True,
     'identifier': 'HANA_RELEASE_DEV',
@@ -548,8 +548,8 @@
   'CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_LKGM': {
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_chrome_version': '114.0.5692.0',
-      'cros_img': 'jacuzzi-release/R114-15410.0.0',
+      'cros_chrome_version': '114.0.5707.0',
+      'cros_img': 'jacuzzi-release/R114-15419.0.0',
       'tast_expr': '("group:mainline" && !informational)',
       'autotest_name': 'tast.chrome-from-tls',
       'shards': 10,
