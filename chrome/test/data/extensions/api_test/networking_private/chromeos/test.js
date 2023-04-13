@@ -20,32 +20,58 @@ var kDefaultPin = '1111';
 var kDefaultPuk = '12345678';
 
 var privateHelpers = {
-  // Watches for the states |expectedStates| in reverse order. If all states
-  // were observed in the right order, succeeds and calls |done|. If any
+  // networkToExpectedStatesMap is a Map string (network GUID) -> array of
+  // strings (expected states).
+  // For each network specified there, watches for onNetworksChanged events with
+  // the specified states, in reverse order.
+  // If all states were observed (in the right order), succeeds and calls
+  // |done|. If any
   // unexpected state is observed, fails.
-  watchForStateChanges: function(network, expectedStates, done) {
-    var self = this;
-    var collectProperties = function(properties) {
-      var finishTest = function() {
+  watchForStateChanges: function(networkToExpectedStatesMap, done) {
+    const networkToLastSeenState = new Map();
+    const self = this;
+    const collectProperties = function(network, properties) {
+      const finishTest = function() {
         chrome.networkingPrivate.onNetworksChanged.removeListener(
             self.onNetworkChange);
         done();
       };
+      const currentState = properties.ConnectionState;
+
+      // Ignore if the state has not changed.
+      const lastSeenState = networkToLastSeenState.get(network);
+      if (lastSeenState && lastSeenState === currentState) {
+        return;
+      }
+      networkToLastSeenState.set(network, currentState);
+
+      const expectedStates = networkToExpectedStatesMap.get(network);
+      if (!expectedStates) {
+        chrome.test.fail(
+            'Unexpected state change for network ' + network + ' (' + +')');
+      }
       if (expectedStates.length > 0) {
-        var expectedState = expectedStates.pop();
-        assertEq(expectedState, properties.ConnectionState);
-        if (expectedStates.length == 0)
-          finishTest();
+        const expectedState = expectedStates.pop();
+        assertEq(expectedState, currentState);
+        if (expectedStates.length == 0) {
+          networkToExpectedStatesMap.delete(network);
+        }
+      }
+      if (networkToExpectedStatesMap.size == 0) {
+        finishTest();
       }
     };
     this.onNetworkChange = function(changes) {
-      assertEq([network], changes);
-      chrome.networkingPrivate.getProperties(
-          network,
-          callbackPass(collectProperties));
+      for (let network of changes) {
+        assertTrue(networkToExpectedStatesMap.has(network));
+        chrome.networkingPrivate.getProperties(
+            network, callbackPass(function(properties) {
+              collectProperties(network, properties);
+            }));
+      }
     };
     chrome.networkingPrivate.onNetworksChanged.addListener(
-        this.onNetworkChange);
+        self.onNetworkChange);
   },
   networkListChangedListener: function(expected, done) {
     function listener(list) {
@@ -831,17 +857,19 @@ var availableTests = [
   function onNetworksChangedEventConnect() {
     var network = 'stub_wifi2_guid';
     var done = chrome.test.callbackAdded();
-    var expectedStates = [ConnectionStateType.CONNECTED];
-    var listener =
-        new privateHelpers.watchForStateChanges(network, expectedStates, done);
+    var listener = new privateHelpers.watchForStateChanges(
+        new Map([
+          ['stub_wifi1_guid', [ConnectionStateType.NOT_CONNECTED]],
+          [network, [ConnectionStateType.CONNECTED]]
+        ]),
+        done);
     chrome.networkingPrivate.startConnect(network, networkCallbackPass());
   },
   function onNetworksChangedEventDisconnect() {
     var network = 'stub_wifi1_guid';
     var done = chrome.test.callbackAdded();
-    var expectedStates = [ConnectionStateType.NOT_CONNECTED];
-    var listener =
-        new privateHelpers.watchForStateChanges(network, expectedStates, done);
+    var listener = new privateHelpers.watchForStateChanges(
+        new Map([[network, [ConnectionStateType.NOT_CONNECTED]]]), done);
     chrome.networkingPrivate.startDisconnect(network, networkCallbackPass());
   },
   function onNetworkListChangedEvent() {

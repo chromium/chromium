@@ -861,12 +861,40 @@ void FakeShillServiceClient::ContinueConnect(const std::string& service_path) {
             base::IgnoreResult(&FakeShillServiceClient::SetServiceProperty),
             weak_ptr_factory_.GetWeakPtr(), service_path, shill::kErrorProperty,
             base::Value(shill::kErrorBadPassphrase)));
-  } else {
-    // Set Online.
-    VLOG(1) << "Setting state to Online " << service_path;
-    SetServiceProperty(service_path, shill::kStateProperty,
-                       base::Value(shill::kStateOnline));
+    return;
   }
+
+  // Set other services of the same type that were previously not "idle" to
+  // "idle".
+  const std::string* service_type =
+      service_properties->FindString(shill::kTypeProperty);
+  for (const auto service_pair : stub_services_) {
+    const auto& other_service_path = service_pair.first;
+    if (other_service_path == service_path) {
+      continue;
+    }
+
+    const base::Value::Dict& other_service_properties =
+        service_pair.second.GetDict();
+    const std::string* other_service_type =
+        other_service_properties.FindString(shill::kTypeProperty);
+    if (!service_type || !other_service_type ||
+        *other_service_type != *service_type) {
+      continue;
+    }
+    const std::string* other_service_state =
+        other_service_properties.FindString(shill::kStateProperty);
+    if (!other_service_state || *other_service_type == shill::kStateIdle) {
+      continue;
+    }
+    SetServiceProperty(other_service_path, shill::kStateProperty,
+                       base::Value(shill::kStateIdle));
+  }
+
+  // Set the connected service to "online".
+  VLOG(1) << "Setting state to Online " << service_path;
+  SetServiceProperty(service_path, shill::kStateProperty,
+                     base::Value(shill::kStateOnline));
 }
 
 void FakeShillServiceClient::SetDefaultFakeTrafficCounters() {
