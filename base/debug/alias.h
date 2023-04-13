@@ -72,15 +72,16 @@ void BASE_EXPORT Alias(const void* var);
 
 }  // namespace debug
 
-// The canonical definitions/declarations for `strlcpy()` and `u16cstrlcpy()`
-// are in //base/strings/string_util.{cc,h}. These prototypes are forward
-// declared here to avoid having to include string_utils.h and its transitive
-// tree of headers in an otherwise small header (which is itself included in
-// some very popular headers).
+// The canonical definitions/declarations for `strlcpy()`, `u16cstrlcpy()`,
+// and `wcslcpy()` are in //base/strings/string_util.{cc,h}. These prototypes
+// are forward declared here to avoid having to include string_utils.h and its
+// transitive tree of headers in an otherwise small header (which is itself
+// included in some very popular headers).
 BASE_EXPORT size_t strlcpy(char* dst, const char* src, size_t dst_size);
 BASE_EXPORT size_t u16cstrlcpy(char16_t* dst,
                                const char16_t* src,
                                size_t dst_size);
+BASE_EXPORT size_t wcslcpy(wchar_t* dst, const wchar_t* src, size_t dst_size);
 
 }  // namespace base
 
@@ -95,6 +96,11 @@ BASE_EXPORT size_t u16cstrlcpy(char16_t* dst,
 #define DEBUG_ALIAS_FOR_U16CSTR(var_name, c_str, char_count)   \
   char16_t var_name[char_count];                               \
   ::base::u16cstrlcpy(var_name, (c_str), std::size(var_name)); \
+  ::base::debug::Alias(var_name)
+
+#define DEBUG_ALIAS_FOR_WCHARCSTR(var_name, c_str, char_count) \
+  wchar_t var_name[char_count];                                \
+  ::base::wcslcpy(var_name, (c_str), std::size(var_name));     \
   ::base::debug::Alias(var_name)
 
 // Code folding is a linker optimization whereby the linker identifies functions
