@@ -193,6 +193,9 @@ HTMLSelectMenuElement::HTMLSelectMenuElement(Document& document)
   select_mutation_callback_ =
       MakeGarbageCollected<HTMLSelectMenuElement::SelectMutationCallback>(
           *this);
+
+  // A selectmenu is the implicit anchor of its listbox.
+  IncrementImplicitlyAnchoredElementCount();
 }
 
 // static

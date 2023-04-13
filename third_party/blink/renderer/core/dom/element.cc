@@ -8688,11 +8688,7 @@ void Element::DecrementImplicitlyAnchoredElementCount() {
   GetElementRareData()->DecrementImplicitlyAnchoredElementCount();
 }
 bool Element::HasImplicitlyAnchoredElement() const {
-  // TODO(xiaochengh): <selectmenu> should also use the implicitly anchored
-  // element count on element rare data.
-  return (HasRareData() &&
-          GetElementRareData()->HasImplicitlyAnchoredElement()) ||
-         IsA<HTMLSelectMenuElement>(this);
+  return HasRareData() && GetElementRareData()->HasImplicitlyAnchoredElement();
 }
 
 AnchorElementObserver* Element::GetAnchorElementObserver() const {
