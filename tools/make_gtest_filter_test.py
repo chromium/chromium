@@ -44,10 +44,12 @@ class Foo(unittest.TestCase):
 
   def testGetFiltersForTests(self):
     tests = ["TestSuite.TestName"]
-    self.assertEqual(list(GetFiltersForTests(tests, class_only=True)),
-                     ["TestSuite.*", "*/TestSuite.*/*", "TestSuite.*/*"])
+    self.assertEqual(
+        list(GetFiltersForTests(tests, class_only=True)),
+        ["TestSuite.*", "*/TestSuite.*/*", "TestSuite.*/*", "TestSuite/*.*"])
     self.assertEqual(list(GetFiltersForTests(tests, class_only=False)), [
-        "TestSuite.TestName", "*/TestSuite.TestName/*", "TestSuite.TestName/*"
+        "TestSuite.TestName", "*/TestSuite.TestName/*", "TestSuite.TestName/*",
+        "TestSuite/*.TestName"
     ])
 
 

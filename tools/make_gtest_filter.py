@@ -163,19 +163,23 @@ def GetFailedTestsFromTestLauncherSummary(summary):
 def GetFiltersForTests(tests, class_only):
   # Note: Test names have the following structures:
   #  * FixtureName.TestName
-  #  * InstantiationName/FixtureName.TestName/##
+  #  * InstantiationName/FixtureName.TestName/## (for TEST_P)
   #  * FixtureName.TestName/##
+  #  * FixtureName/##.TestName (for TYPED_TEST)
   # Since this script doesn't parse instantiations, we generate filters to
   # match either regular tests or instantiated tests.
   if class_only:
     fixtures = set([t.split('.')[0] for t in tests])
     return [c + '.*' for c in fixtures] + \
           ['*/' + c + '.*/*' for c in fixtures] + \
-          [c + '.*/*' for c in fixtures]
+          [c + '.*/*' for c in fixtures] + \
+          [c + '/*.*' for c in fixtures]
   else:
+    fixtures_and_tcs = [test.split('.', 1) for test in tests]
     return [c for c in tests] + \
         ['*/' + c + '/*' for c in tests] + \
-        [c + '/*' for c in tests]
+        [c + '/*' for c in tests] + \
+        [fixture + '/*.' + tc for fixture, tc in fixtures_and_tcs]
 
 
 def main():
