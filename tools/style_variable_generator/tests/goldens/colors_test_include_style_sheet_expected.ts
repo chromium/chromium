@@ -16,6 +16,7 @@ export interface GetColorsCSSOptions {
    * mode values and ignores the documents prefers-color-scheme.
    */
   lockTheme?: 'light' | 'dark';
+  useDynamicColors?: boolean;
 }
 
 // Use a ternary expression that can only be evaluated at runtime here to force
@@ -56,6 +57,10 @@ const UNTYPED_CSS = window ? `` : '';
 
 const TYPOGRAPHY_CSS = window ? `` : '';
 
+const LEGACY_MAPPINGS_CSS = window ? `
+  --legacy_color: var(--cros-text-color-primary);
+` : '';
+
 /**
  * Returns a string containing all semantic colors exported in this file as
  * css variables. This string an be used to construct a stylesheet which can be
@@ -65,6 +70,8 @@ const TYPOGRAPHY_CSS = window ? `` : '';
  * that all TS constant references resolve correctly.
  */
 export function getColorsCSS(options?: GetColorsCSSOptions) {
+  const legacyMappings = options?.useDynamicColors ? LEGACY_MAPPINGS_CSS : '';
+
   let cssString;
   if (options?.lockTheme === 'light') {
     // Tag strings which are safe with a special comment so copybara can add
@@ -74,6 +81,7 @@ export function getColorsCSS(options?: GetColorsCSSOptions) {
         ${DEFAULT_CSS}
         ${UNTYPED_CSS}
         ${TYPOGRAPHY_CSS}
+        ${legacyMappings}
       }
       :host([inverted-colors]) {
         ${DARK_MODE_OVERRIDES_CSS}
@@ -86,6 +94,7 @@ export function getColorsCSS(options?: GetColorsCSSOptions) {
         ${UNTYPED_CSS}
         ${TYPOGRAPHY_CSS}
         ${DARK_MODE_OVERRIDES_CSS}
+        ${legacyMappings}
       }
       :host([inverted-colors]) {
         ${DEFAULT_CSS}
@@ -97,6 +106,7 @@ export function getColorsCSS(options?: GetColorsCSSOptions) {
         ${DEFAULT_CSS}
         ${UNTYPED_CSS}
         ${TYPOGRAPHY_CSS}
+        ${legacyMappings}
       }
       :host([inverted-colors]) {
         ${DARK_MODE_OVERRIDES_CSS}
