@@ -109,9 +109,16 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
       std::unique_ptr<PrintSettings> job_settings);
 #endif
 
+  // Sets the print settings to `settings`.
+  void SetPrintSettings(const PrintSettings& settings);
+
   // Applies the print settings to this context.  Intended to be used only by
   // the Print Backend service process.
   void ApplyPrintSettings(const PrintSettings& settings);
+
+  // Set the printable area in print settings to be the default printable area.
+  // Intended to be used only for virtual printers.
+  void SetDefaultPrintableAreaForVirtualPrinters();
 
   // Does platform specific setup of the printer before the printing. Signal the
   // printer that a document is about to be spooled.
@@ -201,8 +208,6 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
 
   // Does bookkeeping when an error occurs.
   virtual mojom::ResultCode OnError();
-
-  void SetDefaultPrintableAreaForVirtualPrinters();
 
   // Complete print context settings.
   std::unique_ptr<PrintSettings> settings_;

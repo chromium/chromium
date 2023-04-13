@@ -634,6 +634,17 @@ void PrintViewManagerBase::UpdatePrintSettings(
     return;
   }
 
+  bool open_in_external_preview =
+      job_settings.contains(kSettingOpenPDFInPreview);
+  if (!open_in_external_preview &&
+      (printer_type == mojom::PrinterType::kPdf ||
+       printer_type == mojom::PrinterType::kExtension)) {
+    if (print_settings->page_setup_device_units().printable_area().IsEmpty()) {
+      PrinterQuery::ApplyDefaultPrintableAreaToVirtualPrinterPrintSettings(
+          *print_settings);
+    }
+  }
+
 #if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1424368):  Remove this if the printable areas can be made
   // fully available from `PrintBackend::GetPrinterSemanticCapsAndDefaults()`

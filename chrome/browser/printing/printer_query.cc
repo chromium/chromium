@@ -19,6 +19,7 @@
 #include "components/crash/core/common/crash_keys.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "printing/backend/print_backend.h"
 #include "printing/buildflags/buildflags.h"
@@ -281,6 +282,20 @@ bool PrinterQuery::UpdatePrintableArea(PrintSettings& print_settings) {
   return true;
 }
 #endif
+
+// static
+void PrinterQuery::ApplyDefaultPrintableAreaToVirtualPrinterPrintSettings(
+    PrintSettings& print_settings) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // The purpose of `print_context` is to set the default printable area. To do
+  // so, it doesn't need a RFH, so just default initialize the RFH id.
+  PrintingContextDelegate delegate((content::GlobalRenderFrameHostId()));
+  std::unique_ptr<PrintingContext> print_context =
+      PrintingContext::Create(&delegate, /*skip_system_calls=*/false);
+  print_context->SetPrintSettings(print_settings);
+  print_context->SetDefaultPrintableAreaForVirtualPrinters();
+  print_settings = print_context->settings();
+}
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 void PrinterQuery::SetClientId(PrintBackendServiceManager::ClientId client_id) {

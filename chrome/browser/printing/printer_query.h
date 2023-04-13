@@ -95,6 +95,12 @@ class PrinterQuery {
   static bool UpdatePrintableArea(PrintSettings& print_settings);
 #endif
 
+  // Sets the printable area in `print_settings` to be the default printable
+  // area. Intended to be used only for virtual printers. Does not communicate
+  // with printer drivers, so it does not require special OOPPD handling.
+  static void ApplyDefaultPrintableAreaToVirtualPrinterPrintSettings(
+      PrintSettings& print_settings);
+
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   // Provide the client ID when the caller has registered with the
   // `PrintBackendServiceManager` for getting settings for system print.
