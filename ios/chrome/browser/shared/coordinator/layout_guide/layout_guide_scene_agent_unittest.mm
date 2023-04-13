@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/main/layout_guide_scene_agent.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 
 #import "testing/platform_test.h"
 

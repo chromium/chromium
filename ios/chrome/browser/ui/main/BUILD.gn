@@ -38,34 +38,6 @@ source_set("incognito_blocker_scene_agent") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("layout_guide_scene_agent") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "layout_guide_scene_agent.h",
-    "layout_guide_scene_agent.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
-    "//ios/chrome/browser/shared/ui/util:util_swift",
-  ]
-  frameworks = [ "UIKit.framework" ]
-}
-
-source_set("layout_guide_util") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "layout_guide_util.h",
-    "layout_guide_util.mm",
-  ]
-  deps = [
-    ":layout_guide_scene_agent",
-    "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
-    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-  ]
-}
-
 source_set("scene") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -176,12 +148,10 @@ source_set("unit_tests") {
     "browser_view_wrangler_unittest.mm",
     "default_browser_scene_agent_unittest.mm",
     "incognito_blocker_scene_agent_unittest.mm",
-    "layout_guide_scene_agent_unittest.mm",
   ]
   deps = [
     ":default_browser_scene_agent",
     ":incognito_blocker_scene_agent",
-    ":layout_guide_scene_agent",
     ":main",
     "//base",
     "//base/test:test_support",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_MAIN_LAYOUT_GUIDE_SCENE_AGENT_H_
-#define IOS_CHROME_BROWSER_UI_MAIN_LAYOUT_GUIDE_SCENE_AGENT_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_COORDINATOR_LAYOUT_GUIDE_LAYOUT_GUIDE_SCENE_AGENT_H_
+#define IOS_CHROME_BROWSER_SHARED_COORDINATOR_LAYOUT_GUIDE_LAYOUT_GUIDE_SCENE_AGENT_H_
 
 #import "ios/chrome/browser/shared/coordinator/scene/observing_scene_state_agent.h"
 
@@ -20,4 +20,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_MAIN_LAYOUT_GUIDE_SCENE_AGENT_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_COORDINATOR_LAYOUT_GUIDE_LAYOUT_GUIDE_SCENE_AGENT_H_
