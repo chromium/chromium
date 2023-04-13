@@ -25,6 +25,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/layout/flex_layout.h"
 
 namespace arc::input_overlay {
@@ -105,6 +106,13 @@ int GetTitleFontSize(bool portrait_mode) {
   return portrait_mode ? kTitleFontSizePortrait : kTitleFontSizeLandscape;
 }
 
+void SetBanner(views::ImageView& image) {
+  image.SetImage(ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+      ash::DarkLightModeController::Get()->IsDarkModeEnabled()
+          ? IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_DARK_JSON
+          : IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_LIGHT_JSON));
+}
+
 }  // namespace
 
 // static
@@ -129,6 +137,12 @@ EducationalView::EducationalView(
 
 EducationalView::~EducationalView() {}
 
+void EducationalView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  DCHECK(banner_);
+  SetBanner(*banner_);
+}
+
 void EducationalView::Init(const gfx::Size& parent_size) {
   DCHECK(display_overlay_controller_);
 
@@ -144,9 +158,7 @@ void EducationalView::Init(const gfx::Size& parent_size) {
   {
     // UI's banner.
     auto banner = std::make_unique<views::ImageView>();
-    banner->SetImage(ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-        is_dark ? IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_DARK_JSON
-                : IDS_ARC_INPUT_OVERLAY_ONBOARDING_ILLUSTRATION_LIGHT_JSON));
+    SetBanner(*banner);
 
     if (portrait_mode_) {
       // Resize the banner image size proportionally.
@@ -156,7 +168,7 @@ void EducationalView::Init(const gfx::Size& parent_size) {
       float ratio = 1.0 * width / size.width();
       banner->SetImageSize(gfx::Size(width, size.height() * ratio));
     }
-    AddChildView(std::move(banner));
+    banner_ = AddChildView(std::move(banner));
   }
   {
     // |Game controls [Alpha]| title tag.

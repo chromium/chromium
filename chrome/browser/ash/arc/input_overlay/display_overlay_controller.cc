@@ -71,10 +71,6 @@ DisplayOverlayController::DisplayOverlayController(
 
   AddOverlay(first_launch ? DisplayMode::kEducation : DisplayMode::kView);
   ash::Shell::Get()->AddPreTargetHandler(this);
-  if (auto* dark_light_mode_controller =
-          ash::DarkLightModeControllerImpl::Get()) {
-    dark_light_mode_controller->AddObserver(this);
-  }
 }
 
 DisplayOverlayController::~DisplayOverlayController() {
@@ -85,10 +81,6 @@ DisplayOverlayController::~DisplayOverlayController() {
     return;
   }
 
-  if (auto* dark_light_mode_controller =
-          ash::DarkLightModeControllerImpl::Get()) {
-    dark_light_mode_controller->RemoveObserver(this);
-  }
   ash::Shell::Get()->RemovePreTargetHandler(this);
   RemoveOverlayIfAny();
 }
@@ -726,20 +718,6 @@ void DisplayOverlayController::OnTouchEvent(ui::TouchEvent* event) {
     return;
   }
   ProcessPressedEvent(*event);
-}
-
-void DisplayOverlayController::OnColorModeChanged(bool dark_mode_enabled) {
-  // Only make the color mode change responsive when in
-  // |DisplayMode::kEducation| because:
-  // 1. Other modes like |DisplayMode::kEdit| and |DisplayMode::kView| only have
-  // one color mode.
-  // 2. When in |DisplayMode::kMenu| and changing the color mode, the menu is
-  // closed and it becomes |DisplayMode::kView| so no need to update color mode.
-  if (display_mode_ != DisplayMode::kEducation) {
-    return;
-  }
-  SetDisplayMode(DisplayMode::kNone);
-  SetDisplayMode(DisplayMode::kEducation);
 }
 
 void DisplayOverlayController::OnWidgetBoundsChanged(
