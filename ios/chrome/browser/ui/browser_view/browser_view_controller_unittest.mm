@@ -11,9 +11,7 @@
 #import <memory>
 
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
-#import "components/reading_list/core/reading_list_model.h"
 #import "components/search_engines/template_url_service.h"
-#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
@@ -24,7 +22,6 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/prerender/fake_prerender_service.h"
-#import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
@@ -42,7 +39,6 @@
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/tabs/tab_helper_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
@@ -284,8 +280,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.layoutGuideCenter =
         LayoutGuideCenterForBrowser(browser_.get());
     dependencies.webStateList = browser_->GetWebStateList()->AsWeakPtr();
-    dependencies.readingModel = ReadingListModelFactory::GetForBrowserState(
-        browser_.get()->GetBrowserState());
     dependencies.secondaryToolbarContainerCoordinator =
         [[ToolbarContainerCoordinator alloc]
             initWithBrowser:browser_.get()

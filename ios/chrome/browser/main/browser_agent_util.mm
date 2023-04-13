@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/policy/policy_watcher_browser_agent.h"
+#import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
 #import "ios/chrome/browser/send_tab_to_self/send_tab_to_self_browser_agent.h"
 #import "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
@@ -112,6 +113,8 @@ void AttachBrowserAgents(Browser* browser) {
 
   UpgradeCenterBrowserAgent::CreateForBrowser(browser,
                                               [UpgradeCenter sharedInstance]);
+  WebStateUpdateBrowserAgent::CreateForBrowser(browser);
+  ReadingListBrowserAgent::CreateForBrowser(browser);
 
   WebStateUpdateBrowserAgent::CreateForBrowser(browser);
   PagePlaceholderBrowserAgent::CreateForBrowser(browser);

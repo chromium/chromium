@@ -33,6 +33,7 @@ source_set("reading_list") {
     "//components/reading_list/features:flags",
     "//components/reading_list/ios",
     "//components/signin/public/identity_manager/objc",
+    "//components/ukm/ios:ukm_url_recorder",
     "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
@@ -51,6 +52,7 @@ source_set("reading_list") {
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/tabs",
@@ -71,14 +73,17 @@ source_set("reading_list") {
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/favicon:favicon_constants",
     "//ios/chrome/common/ui/table_view",
+    "//ios/third_party/material_components_ios",
     "//ios/web",
     "//ios/web/common",
     "//ios/web/public",
+    "//services/metrics/public/cpp:ukm_builders",
     "//ui/base",
     "//ui/strings",
     "//url",
   ]
   allow_circular_includes_from = [ "//ios/chrome/browser/ui/side_swipe" ]
+  public_deps = [ "//ios/third_party/material_components_ios" ]
   frameworks = [ "UIKit.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }

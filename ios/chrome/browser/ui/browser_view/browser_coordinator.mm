@@ -13,7 +13,6 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/profile_metrics/browser_profile_type.h"
-#import "components/reading_list/core/reading_list_model.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/signin/ios/browser/active_state_manager.h"
 #import "components/translate/core/browser/translate_manager.h"
@@ -42,7 +41,7 @@
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/promos_manager/features.h"
-#import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/alert/repost_form_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -68,7 +67,6 @@
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/shared/public/commands/share_highlight_command.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
-#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
@@ -665,6 +663,8 @@ enum class ToolbarKind {
                         dependencies:_viewControllerDependencies];
   self.tabLifecycleMediator.baseViewController = self.viewController;
   self.tabLifecycleMediator.delegate = self.viewController;
+  _viewController.readingListBrowserAgent =
+      ReadingListBrowserAgent::FromBrowser(self.browser);
 
   WebNavigationBrowserAgent::FromBrowser(self.browser)->SetDelegate(self);
 
@@ -871,19 +871,12 @@ enum class ToolbarKind {
       HandlerForProtocol(_dispatcher, HelpCommands);
   _viewControllerDependencies.popupMenuCommandsHandler =
       HandlerForProtocol(_dispatcher, PopupMenuCommands);
-  // TODO(crbug.com/1413769) SnackbarCoordinator is not created yet and
-  // therefore not dispatching SnackbarCommands. Typecast should be performed
-  // using HandlerForProtocol method.
-  _viewControllerDependencies.snackbarCommandsHandler =
-      static_cast<id<SnackbarCommands>>(_dispatcher);
   _viewControllerDependencies.applicationCommandsHandler =
       HandlerForProtocol(_dispatcher, ApplicationCommands);
   _viewControllerDependencies.browserCoordinatorCommandsHandler =
       HandlerForProtocol(_dispatcher, BrowserCoordinatorCommands);
   _viewControllerDependencies.findInPageCommandsHandler =
       HandlerForProtocol(_dispatcher, FindInPageCommands);
-  _viewControllerDependencies.toolbarCommandsHandler =
-      HandlerForProtocol(_dispatcher, ToolbarCommands);
   _viewControllerDependencies.loadQueryCommandsHandler =
       _loadQueryCommandsHandler;
   // TODO(crbug.com/1413769) Typecast should be performed using
@@ -904,9 +897,6 @@ enum class ToolbarKind {
       LayoutGuideCenterForBrowser(self.browser);
   _viewControllerDependencies.webStateList =
       self.browser->GetWebStateList()->AsWeakPtr();
-  _viewControllerDependencies.readingModel =
-      ReadingListModelFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
   _viewControllerDependencies.voiceSearchController = _voiceSearchController;
   _viewControllerDependencies.secondaryToolbarContainerCoordinator =
       [[ToolbarContainerCoordinator alloc]
@@ -966,14 +956,11 @@ enum class ToolbarKind {
   _viewControllerDependencies.textZoomHandler = nil;
   _viewControllerDependencies.helpHandler = nil;
   _viewControllerDependencies.popupMenuCommandsHandler = nil;
-  _viewControllerDependencies.snackbarCommandsHandler = nil;
   _viewControllerDependencies.applicationCommandsHandler = nil;
   _viewControllerDependencies.browserCoordinatorCommandsHandler = nil;
   _viewControllerDependencies.findInPageCommandsHandler = nil;
-  _viewControllerDependencies.toolbarCommandsHandler = nil;
   _viewControllerDependencies.loadQueryCommandsHandler = nil;
   _viewControllerDependencies.omniboxCommandsHandler = nil;
-  _viewControllerDependencies.readingModel = nil;
   _viewControllerDependencies.voiceSearchController = nil;
   _viewControllerDependencies.secondaryToolbarContainerCoordinator = nil;
   _viewControllerDependencies.safeAreaProvider = nil;
