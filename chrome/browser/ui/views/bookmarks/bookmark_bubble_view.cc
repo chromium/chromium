@@ -75,6 +75,9 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBookmarkFolder);
 void FetchImageForUrl(const GURL& url, Profile* profile) {
   page_image_service::ImageService* image_service =
       page_image_service::ImageServiceFactory::GetForBrowserContext(profile);
+  if (!image_service) {
+    return;
+  }
   page_image_service::mojom::Options options;
   options.suggest_images = true;
   options.optimization_guide_images = true;
