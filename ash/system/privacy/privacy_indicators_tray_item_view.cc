@@ -291,6 +291,32 @@ std::u16string PrivacyIndicatorsTrayItemView::GetTooltipText(
                                     {cam_and_mic_status, screen_share_status},
                                     /*offsets=*/nullptr);
 }
+
+void PrivacyIndicatorsTrayItemView::UpdateVisibility() {
+  // We only hide the view when nothing is in use.
+  const bool visible = PrivacyIndicatorsController::Get()->IsCameraUsed() ||
+                       PrivacyIndicatorsController::Get()->IsMicrophoneUsed() ||
+                       is_screen_sharing_;
+
+  if (GetVisible() == visible) {
+    return;
+  }
+
+  SetVisible(visible);
+
+  if (!visible) {
+    return;
+  }
+
+  ++count_visible_per_session_;
+
+  // Keep incrementing the count to track the number of times the view flickers.
+  // When the delay of `kRepeatedShowTimerInterval` has reached, record that
+  // count.
+  ++count_repeated_shows_;
+  repeated_shows_timer_.Reset();
+}
+
 void PrivacyIndicatorsTrayItemView::PerformVisibilityAnimation(bool visible) {
   // This view will not perform `TrayItemView`'s visibility animation since it
   // has its own animation. We need to create our own function to trigger the
@@ -520,31 +546,6 @@ int PrivacyIndicatorsTrayItemView::GetLongerSideLengthInExpandedMode() const {
                  is_screen_sharing_
              ? kPrivacyIndicatorsViewExpandedWithScreenShareSize
              : kPrivacyIndicatorsViewExpandedLongerSideSize;
-}
-
-void PrivacyIndicatorsTrayItemView::UpdateVisibility() {
-  // We only hide the view when nothing is in use.
-  const bool visible = PrivacyIndicatorsController::Get()->IsCameraUsed() ||
-                       PrivacyIndicatorsController::Get()->IsMicrophoneUsed() ||
-                       is_screen_sharing_;
-
-  if (GetVisible() == visible) {
-    return;
-  }
-
-  SetVisible(visible);
-
-  if (!visible) {
-    return;
-  }
-
-  ++count_visible_per_session_;
-
-  // Keeps increment the count to track the number of times the view flickers.
-  // When the delay of `kRepeatedShowTimerInterval` has reached, record that
-  // count.
-  ++count_repeated_shows_;
-  repeated_shows_timer_.Reset();
 }
 
 void PrivacyIndicatorsTrayItemView::EndAllAnimations() {

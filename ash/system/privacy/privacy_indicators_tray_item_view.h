@@ -96,6 +96,10 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
   // TrayItemView:
   std::u16string GetTooltipText(const gfx::Point& point) const override;
 
+  // Update the view's visibility based on camera/mic access and screen sharing
+  // state.
+  void UpdateVisibility();
+
  private:
   friend class PrivacyIndicatorsTrayItemViewTest;
   friend class CaptureModePrivacyIndicatorsTest;
@@ -132,10 +136,6 @@ class ASH_EXPORT PrivacyIndicatorsTrayItemView : public TrayItemView,
 
   // Calculate the length of the longer size, based on `is_screen_sharing_`.
   int GetLongerSideLengthInExpandedMode() const;
-
-  // Update the view's visibility based on camera/mic access and screen sharing
-  // state.
-  void UpdateVisibility();
 
   // End all 3 animations contained in this class.
   void EndAllAnimations();

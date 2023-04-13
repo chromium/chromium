@@ -19,6 +19,8 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/message_center.h"
@@ -159,18 +161,44 @@ void UpdatePrivacyIndicatorsView(bool is_camera_used,
   }
 }
 
-// Updates the access status of `app_id` for the given `access_set`.
-void UpdateAccessStatus(const std::string& app_id,
-                        bool is_accessed,
-                        base::flat_set<std::string>& access_set) {
-  if (access_set.contains(app_id) == is_accessed) {
+// Updates the access status of `app_id` for the given `access_map`.
+void UpdateAccessStatus(
+    const std::string& app_id,
+    bool is_accessed,
+    std::map<std::string, ash::PrivacyIndicatorsAppInfo>& access_map,
+    absl::optional<std::u16string> app_name,
+    scoped_refptr<ash::PrivacyIndicatorsNotificationDelegate> delegate) {
+  if (access_map.contains(app_id) == is_accessed) {
     return;
   }
 
   if (is_accessed) {
-    access_set.insert(app_id);
+    ash::PrivacyIndicatorsAppInfo info;
+    info.app_name = app_name;
+    info.delegate = delegate;
+    access_map[app_id] = std::move(info);
   } else {
-    access_set.erase(app_id);
+    access_map.erase(app_id);
+  }
+}
+
+void UpdatePrivacyIndicatorsVisibility() {
+  DCHECK(Shell::HasInstance());
+  for (auto* root_window_controller :
+       Shell::Get()->GetAllRootWindowControllers()) {
+    CHECK(root_window_controller);
+    auto* status_area_widget = root_window_controller->GetStatusAreaWidget();
+    CHECK(status_area_widget);
+
+    auto* privacy_indicators_view =
+        features::IsQsRevampEnabled()
+            ? status_area_widget->notification_center_tray()
+                  ->privacy_indicators_view()
+            : status_area_widget->unified_system_tray()
+                  ->privacy_indicators_view();
+    CHECK(privacy_indicators_view);
+
+    privacy_indicators_view->UpdateVisibility();
   }
 }
 
@@ -234,14 +262,26 @@ std::string GetPrivacyIndicatorsNotificationId(const std::string& app_id) {
   return kPrivacyIndicatorsNotificationIdPrefix + app_id;
 }
 
+PrivacyIndicatorsAppInfo::PrivacyIndicatorsAppInfo() = default;
+
+PrivacyIndicatorsAppInfo::~PrivacyIndicatorsAppInfo() = default;
+
 PrivacyIndicatorsController::PrivacyIndicatorsController() {
   DCHECK(!g_controller_instance);
   g_controller_instance = this;
+
+  CrasAudioHandler::Get()->AddAudioObserver(this);
+  media::CameraHalDispatcherImpl::GetInstance()->AddCameraPrivacySwitchObserver(
+      this);
 }
 
 PrivacyIndicatorsController::~PrivacyIndicatorsController() {
   DCHECK_EQ(this, g_controller_instance);
   g_controller_instance = nullptr;
+
+  CrasAudioHandler::Get()->RemoveAudioObserver(this);
+  media::CameraHalDispatcherImpl::GetInstance()
+      ->RemoveCameraPrivacySwitchObserver(this);
 }
 
 // static
@@ -262,10 +302,15 @@ void PrivacyIndicatorsController::UpdatePrivacyIndicators(
   const bool was_microphone_in_use = IsMicrophoneUsed();
 
   UpdateAccessStatus(app_id, /*is_accessed=*/is_camera_used,
-                     /*access_set=*/apps_using_camera_);
+                     /*access_map=*/apps_using_camera_, app_name, delegate);
   UpdateAccessStatus(app_id,
                      /*is_accessed=*/is_microphone_used,
-                     /*access_set=*/apps_using_microphone_);
+                     /*access_map=*/apps_using_microphone_, app_name, delegate);
+
+  is_camera_used = is_camera_used && !camera_muted_by_hardware_switch_ &&
+                   !camera_muted_by_software_switch_;
+  is_microphone_used =
+      is_microphone_used && !CrasAudioHandler::Get()->IsInputMuted();
 
   ModifyPrivacyIndicatorsNotification(app_id, app_name, is_camera_used,
                                       is_microphone_used, delegate);
@@ -275,12 +320,68 @@ void PrivacyIndicatorsController::UpdatePrivacyIndicators(
   base::UmaHistogramEnumeration("Ash.PrivacyIndicators.Source", source);
 }
 
+void PrivacyIndicatorsController::OnCameraHWPrivacySwitchStateChanged(
+    const std::string& device_id,
+    cros::mojom::CameraPrivacySwitchState state) {
+  camera_muted_by_hardware_switch_ =
+      state == cros::mojom::CameraPrivacySwitchState::ON;
+
+  UpdateForCameraMuteStateChanged();
+}
+
+void PrivacyIndicatorsController::OnCameraSWPrivacySwitchStateChanged(
+    cros::mojom::CameraPrivacySwitchState state) {
+  camera_muted_by_software_switch_ =
+      state == cros::mojom::CameraPrivacySwitchState::ON;
+
+  UpdateForCameraMuteStateChanged();
+}
+
+void PrivacyIndicatorsController::OnInputMuteChanged(
+    bool mute_on,
+    CrasAudioHandler::InputMuteChangeMethod method) {
+  // Iterate through all the apps that are tracked as using the microphone, then
+  // modify the notification according to the mute state of the microphone.
+  for (const auto& [app_id, app_info] : apps_using_microphone_) {
+    // Retrieve camera usage state for each individual app to update in the
+    // notification.
+    bool is_camera_used = apps_using_camera_.contains(app_id) &&
+                          !camera_muted_by_hardware_switch_ &&
+                          !camera_muted_by_software_switch_;
+    ModifyPrivacyIndicatorsNotification(
+        app_id, app_info.app_name, is_camera_used,
+        /*is_microphone_used=*/!mute_on, app_info.delegate);
+  }
+
+  UpdatePrivacyIndicatorsVisibility();
+}
+
+void PrivacyIndicatorsController::UpdateForCameraMuteStateChanged() {
+  // Iterate through all the apps that are tracked as using the camera, then
+  // modify the notification according to the mute state of camera.
+  for (const auto& [app_id, app_info] : apps_using_camera_) {
+    // Retrieve microphone usage state for each individual app to update in the
+    // notification.
+    bool is_camera_used =
+        !camera_muted_by_hardware_switch_ && !camera_muted_by_software_switch_;
+    bool is_microphone_used = apps_using_microphone_.contains(app_id) &&
+                              !CrasAudioHandler::Get()->IsInputMuted();
+    ModifyPrivacyIndicatorsNotification(app_id, app_info.app_name,
+                                        is_camera_used, is_microphone_used,
+                                        app_info.delegate);
+  }
+
+  UpdatePrivacyIndicatorsVisibility();
+}
+
 bool PrivacyIndicatorsController::IsCameraUsed() const {
-  return !apps_using_camera_.empty();
+  return !apps_using_camera_.empty() && !camera_muted_by_hardware_switch_ &&
+         !camera_muted_by_software_switch_;
 }
 
 bool PrivacyIndicatorsController::IsMicrophoneUsed() const {
-  return !apps_using_microphone_.empty();
+  return !apps_using_microphone_.empty() &&
+         !CrasAudioHandler::Get()->IsInputMuted();
 }
 
 void UpdatePrivacyIndicatorsScreenShareStatus(bool is_screen_sharing) {

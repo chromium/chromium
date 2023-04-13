@@ -27,6 +27,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
@@ -385,6 +386,280 @@ TEST_F(PrivacyIndicatorsControllerTest, SourceMetricsCollection) {
       PrivacyIndicatorsSource::kLinuxVm);
   histogram_tester.ExpectBucketCount(histogram_name,
                                      PrivacyIndicatorsSource::kLinuxVm, 1);
+}
+
+TEST_F(PrivacyIndicatorsControllerTest, CameraDisabledWithOneApp) {
+  auto* controller = PrivacyIndicatorsController::Get();
+
+  std::string app_id = "test_app_id";
+  scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>();
+  controller->UpdatePrivacyIndicators(app_id, u"test_app_name",
+                                      /*is_camera_used=*/true,
+                                      /*is_microphone_used=*/false, delegate,
+                                      PrivacyIndicatorsSource::kApps);
+
+  std::string notification_id = GetPrivacyIndicatorsNotificationId(app_id);
+  ASSERT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id));
+  ASSERT_TRUE(GetPrimaryDisplayPrivacyIndicatorsView()->GetVisible());
+
+  // Camera is in use, but if the camera is being hardware muted, the
+  // notification and indicator view should not show.
+  controller->OnCameraHWPrivacySwitchStateChanged(
+      "test_device_id", cros::mojom::CameraPrivacySwitchState::ON);
+  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id));
+  EXPECT_FALSE(GetPrimaryDisplayPrivacyIndicatorsView()->GetVisible());
+
+  // Flip back the switch. Indicators should show again.
+  controller->OnCameraHWPrivacySwitchStateChanged(
+      "test_device_id", cros::mojom::CameraPrivacySwitchState::OFF);
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id));
+  EXPECT_TRUE(GetPrimaryDisplayPrivacyIndicatorsView()->GetVisible());
+
+  // Camera is in use, but if the camera is being software muted, the
+  // notification and indicator view should not show.
+  controller->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::ON);
+  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id));
+  EXPECT_FALSE(GetPrimaryDisplayPrivacyIndicatorsView()->GetVisible());
+  // Flip back the switch. Indicators should show again.
+  controller->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::OFF);
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id));
+  EXPECT_TRUE(GetPrimaryDisplayPrivacyIndicatorsView()->GetVisible());
+
+  // If both camera and microphone is in use, but the camera is muted. The
+  // notification content (i.e. the title) should reflect that only mic is being
+  // in used.
+  controller->UpdatePrivacyIndicators(app_id, u"test_app_name",
+                                      /*is_camera_used=*/true,
+                                      /*is_microphone_used=*/true, delegate,
+                                      PrivacyIndicatorsSource::kApps);
+  controller->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::ON);
+  auto* notification =
+      message_center::MessageCenter::Get()->FindNotificationById(
+          notification_id);
+  EXPECT_TRUE(notification);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_MIC),
+            notification->title());
+
+  // Flip back.
+  controller->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::OFF);
+  notification = message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id);
+  EXPECT_TRUE(notification);
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA_AND_MIC),
+      notification->title());
+}
+
+TEST_F(PrivacyIndicatorsControllerTest, MicrophoneDisabledWithOneApp) {
+  auto* controller = PrivacyIndicatorsController::Get();
+
+  std::string app_id = "test_app_id";
+  scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>();
+  controller->UpdatePrivacyIndicators(app_id, u"test_app_name",
+                                      /*is_camera_used=*/false,
+                                      /*is_microphone_used=*/true, delegate,
+                                      PrivacyIndicatorsSource::kApps);
+
+  std::string notification_id = GetPrivacyIndicatorsNotificationId(app_id);
+  ASSERT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id));
+  ASSERT_TRUE(GetPrimaryDisplayPrivacyIndicatorsView()->GetVisible());
+
+  // Microphone is in use, but if the microphone is being muted, the
+  // notification and indicator view should not show.
+  CrasAudioHandler::Get()->SetInputMute(
+      /*mute_on=*/true,
+      CrasAudioHandler::InputMuteChangeMethod::kKeyboardButton);
+  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id));
+  EXPECT_FALSE(GetPrimaryDisplayPrivacyIndicatorsView()->GetVisible());
+
+  // Flip back the switch. Indicators should show again.
+  CrasAudioHandler::Get()->SetInputMute(
+      /*mute_on=*/false,
+      CrasAudioHandler::InputMuteChangeMethod::kKeyboardButton);
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id));
+  EXPECT_TRUE(GetPrimaryDisplayPrivacyIndicatorsView()->GetVisible());
+
+  // If both camera and microphone is in use, but the camera is muted. The
+  // notification content (i.e. the title) should reflect that only mic is being
+  // in used.
+  controller->UpdatePrivacyIndicators(app_id, u"test_app_name",
+                                      /*is_camera_used=*/true,
+                                      /*is_microphone_used=*/true, delegate,
+                                      PrivacyIndicatorsSource::kApps);
+  CrasAudioHandler::Get()->SetInputMute(
+      /*mute_on=*/true,
+      CrasAudioHandler::InputMuteChangeMethod::kKeyboardButton);
+  auto* notification =
+      message_center::MessageCenter::Get()->FindNotificationById(
+          notification_id);
+  EXPECT_TRUE(notification);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA),
+            notification->title());
+
+  // Flip back.
+  CrasAudioHandler::Get()->SetInputMute(
+      /*mute_on=*/false,
+      CrasAudioHandler::InputMuteChangeMethod::kKeyboardButton);
+  notification = message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id);
+  EXPECT_TRUE(notification);
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_TITLE_CAMERA_AND_MIC),
+      notification->title());
+}
+
+// When both microphone and camera is disabled, no privacy indicators should
+// show for camera/microphone usage.
+TEST_F(PrivacyIndicatorsControllerTest, CameraAndMicrophoneDisabledWithOneApp) {
+  auto* controller = PrivacyIndicatorsController::Get();
+
+  std::string app_id = "test_app_id";
+  scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>();
+  controller->UpdatePrivacyIndicators(app_id, u"test_app_name",
+                                      /*is_camera_used=*/true,
+                                      /*is_microphone_used=*/true, delegate,
+                                      PrivacyIndicatorsSource::kApps);
+
+  std::string notification_id = GetPrivacyIndicatorsNotificationId(app_id);
+  ASSERT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id));
+  ASSERT_TRUE(GetPrimaryDisplayPrivacyIndicatorsView()->GetVisible());
+
+  CrasAudioHandler::Get()->SetInputMute(
+      /*mute_on=*/true,
+      CrasAudioHandler::InputMuteChangeMethod::kKeyboardButton);
+  controller->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::ON);
+
+  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id));
+  EXPECT_FALSE(GetPrimaryDisplayPrivacyIndicatorsView()->GetVisible());
+
+  CrasAudioHandler::Get()->SetInputMute(
+      /*mute_on=*/true,
+      CrasAudioHandler::InputMuteChangeMethod::kKeyboardButton);
+  controller->OnCameraHWPrivacySwitchStateChanged(
+      "test_device_id", cros::mojom::CameraPrivacySwitchState::ON);
+
+  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id));
+  EXPECT_FALSE(GetPrimaryDisplayPrivacyIndicatorsView()->GetVisible());
+}
+
+TEST_F(PrivacyIndicatorsControllerTest, CameraDisabledWithMultipleApps) {
+  auto* controller = PrivacyIndicatorsController::Get();
+
+  std::string app_id1 = "test_app_id1";
+  std::string app_id2 = "test_app_id2";
+  std::string app_id3 = "test_app_id3";
+  scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>();
+  controller->UpdatePrivacyIndicators(app_id1, u"test_app_name",
+                                      /*is_camera_used=*/true,
+                                      /*is_microphone_used=*/false, delegate,
+                                      PrivacyIndicatorsSource::kApps);
+  controller->UpdatePrivacyIndicators(app_id2, u"test_app_name",
+                                      /*is_camera_used=*/true,
+                                      /*is_microphone_used=*/false, delegate,
+                                      PrivacyIndicatorsSource::kApps);
+  controller->UpdatePrivacyIndicators(app_id3, u"test_app_name",
+                                      /*is_camera_used=*/false,
+                                      /*is_microphone_used=*/true, delegate,
+                                      PrivacyIndicatorsSource::kApps);
+
+  std::string notification_id1 = GetPrivacyIndicatorsNotificationId(app_id1);
+  std::string notification_id2 = GetPrivacyIndicatorsNotificationId(app_id2);
+  std::string notification_id3 = GetPrivacyIndicatorsNotificationId(app_id3);
+  ASSERT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id1));
+  ASSERT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id2));
+  ASSERT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id3));
+
+  controller->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::ON);
+  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id1));
+  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id2));
+
+  // The app that uses microphone should not be affected.
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id3));
+
+  // When flip back, all old notification should be re-created.
+  controller->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::OFF);
+
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id1));
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id2));
+}
+
+TEST_F(PrivacyIndicatorsControllerTest, MicrophoneDisabledWithMultipleApps) {
+  auto* controller = PrivacyIndicatorsController::Get();
+
+  std::string app_id1 = "test_app_id1";
+  std::string app_id2 = "test_app_id2";
+  std::string app_id3 = "test_app_id3";
+  scoped_refptr<TestDelegate> delegate = base::MakeRefCounted<TestDelegate>();
+  controller->UpdatePrivacyIndicators(app_id1, u"test_app_name",
+                                      /*is_camera_used=*/false,
+                                      /*is_microphone_used=*/true, delegate,
+                                      PrivacyIndicatorsSource::kApps);
+  controller->UpdatePrivacyIndicators(app_id2, u"test_app_name",
+                                      /*is_camera_used=*/false,
+                                      /*is_microphone_used=*/true, delegate,
+                                      PrivacyIndicatorsSource::kApps);
+  controller->UpdatePrivacyIndicators(app_id3, u"test_app_name",
+                                      /*is_camera_used=*/true,
+                                      /*is_microphone_used=*/false, delegate,
+                                      PrivacyIndicatorsSource::kApps);
+
+  std::string notification_id1 = GetPrivacyIndicatorsNotificationId(app_id1);
+  std::string notification_id2 = GetPrivacyIndicatorsNotificationId(app_id2);
+  std::string notification_id3 = GetPrivacyIndicatorsNotificationId(app_id3);
+  ASSERT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id1));
+  ASSERT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id2));
+  ASSERT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id3));
+
+  CrasAudioHandler::Get()->SetInputMute(
+      /*mute_on=*/true,
+      CrasAudioHandler::InputMuteChangeMethod::kKeyboardButton);
+  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id1));
+  EXPECT_FALSE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id2));
+
+  // The app that uses camera should not be affected.
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id3));
+
+  // When flip back, all old notification should be re-created.
+  CrasAudioHandler::Get()->SetInputMute(
+      /*mute_on=*/false,
+      CrasAudioHandler::InputMuteChangeMethod::kKeyboardButton);
+
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id1));
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindNotificationById(
+      notification_id2));
 }
 
 // Tests enabling both `kPrivacyIndicators` and `kVideoConference`,
