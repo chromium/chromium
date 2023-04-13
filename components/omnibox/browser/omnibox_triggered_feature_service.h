@@ -8,30 +8,13 @@
 #include <set>
 
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 
 // Tracks the features that trigger during an omnibox session and records them
 // to the logs. This is used for counterfactual slicing metrics by feature.
 class OmniboxTriggeredFeatureService {
  public:
-  // The list of features used for counterfactual slicing.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused. When adding an entry here, a
-  // corresponding entry should be added in the UMA histograms.
-  enum class Feature {
-    kRichAutocompletion = 0,
-    // kBookmarkPaths = 1,  // Obsolete, launched and logging code removed.
-    kShortBookmarkSuggestionsByTotalInputLength = 2,
-    kFuzzyUrlSuggestions = 3,
-    kHistoryClusterSuggestion = 4,
-    kDomainSuggestions = 5,
-    // Whether the `SearchProvider` response included:
-    // '"google:fieldtrialtriggered":true'.
-    kRemoteSearchFeature = 6,
-    // Like `kRemoteSearchFeature`, but for the `ZeroSearchProvider`.
-    kRemoteZeroSuggestFeature = 7,
-    kShortcutBoost = 8,
-    kMaxValue = kShortcutBoost,
-  };
+  using Feature = metrics::OmniboxEventProto_Feature;
   using Features = std::set<Feature>;
 
   OmniboxTriggeredFeatureService();

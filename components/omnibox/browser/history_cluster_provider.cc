@@ -14,6 +14,8 @@
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
+
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/strings/grit/components_strings.h"
@@ -133,7 +135,7 @@ bool HistoryClusterProvider::CreateMatches() {
             base::UTF16ToUTF8(search_match.contents));
     if (matched_keyword_data) {
       client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
-          OmniboxTriggeredFeatureService::Feature::kHistoryClusterSuggestion);
+          metrics::OmniboxEventProto_Feature_HISTORY_CLUSTER_SUGGESTION);
       if (!history_clusters::GetConfig()
                .omnibox_history_cluster_provider_counterfactual) {
         matches_.push_back(

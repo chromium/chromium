@@ -33,6 +33,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 
 using base::ASCIIToUTF16;
@@ -1067,12 +1068,11 @@ TEST_F(HQPDomainSuggestionsTest, DomainSuggestions) {
         [](const auto& match) { return match.description; });
     EXPECT_THAT(match_titles, testing::ElementsAreArray(expected_matches));
 
-    EXPECT_EQ(
-        client()
-            .GetOmniboxTriggeredFeatureService()
-            ->GetFeatureTriggeredInSession(
-                OmniboxTriggeredFeatureService::Feature::kDomainSuggestions),
-        expected_triggered);
+    EXPECT_EQ(client()
+                  .GetOmniboxTriggeredFeatureService()
+                  ->GetFeatureTriggeredInSession(
+                      metrics::OmniboxEventProto_Feature_DOMAIN_SUGGESTIONS),
+              expected_triggered);
   };
 
   // When matching a popular domain, its top 3 suggestions should be suggested

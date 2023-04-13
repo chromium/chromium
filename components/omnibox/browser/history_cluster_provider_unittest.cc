@@ -25,6 +25,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 
 AutocompleteMatch CreateMatch(std::u16string contents,
@@ -99,11 +100,11 @@ class HistoryClustersProviderTest : public testing::Test,
   }
 
   void VerifyFeatureTriggered(bool expected) {
-    EXPECT_EQ(autocomplete_provider_client_->GetOmniboxTriggeredFeatureService()
-                  ->GetFeatureTriggeredInSession(
-                      OmniboxTriggeredFeatureService::Feature::
-                          kHistoryClusterSuggestion),
-              expected);
+    EXPECT_EQ(
+        autocomplete_provider_client_->GetOmniboxTriggeredFeatureService()
+            ->GetFeatureTriggeredInSession(
+                metrics::OmniboxEventProto_Feature_HISTORY_CLUSTER_SUGGESTION),
+        expected);
   }
 
   // Tracks `OnProviderUpdate()` invocations.

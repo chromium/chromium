@@ -36,6 +36,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/url_formatter/elide_url.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "url/gurl.h"
 
@@ -545,7 +546,7 @@ void HistoryFuzzyProvider::Start(const AutocompleteInput& input,
         });
     if (met_threshold) {
       client()->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
-          OmniboxTriggeredFeatureService::Feature::kFuzzyUrlSuggestions);
+          metrics::OmniboxEventProto_Feature_FUZZY_URL_SUGGESTIONS);
     }
 
     // When in the counterfactual group, we do all the work of finding fuzzy

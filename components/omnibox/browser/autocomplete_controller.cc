@@ -69,6 +69,7 @@
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 #include "ui/base/device_form_factor.h"
@@ -746,11 +747,10 @@ void AutocompleteController::
   bool search_feature_triggered =
       provider_client_->GetOmniboxTriggeredFeatureService()
           ->GetFeatureTriggeredInSession(
-              OmniboxTriggeredFeatureService::Feature::kRemoteSearchFeature) ||
+              metrics::OmniboxEventProto_Feature_REMOTE_SEARCH_FEATURE) ||
       provider_client_->GetOmniboxTriggeredFeatureService()
           ->GetFeatureTriggeredInSession(
-              OmniboxTriggeredFeatureService::Feature::
-                  kRemoteZeroSuggestFeature);
+              metrics::OmniboxEventProto_Feature_REMOTE_ZERO_SUGGEST_FEATURE);
   const std::string experiment_stats = base::StringPrintf(
       "%" PRId64 "j%dj%d", query_formulation_time.InMilliseconds(),
       search_feature_triggered, input_.current_page_classification());
@@ -1103,7 +1103,7 @@ void AutocompleteController::AnnotateResultAndNotifyChanged(
   if (top_match_rich_autocompletion_type !=
       AutocompleteMatch::RichAutocompletionType::kNone) {
     provider_client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
-        OmniboxTriggeredFeatureService::Feature::kRichAutocompletion);
+        metrics::OmniboxEventProto_Feature_RICH_AUTOCOMPLETION);
   }
 
   DelayedNotifyChanged(force_notify_default_match_changed ||

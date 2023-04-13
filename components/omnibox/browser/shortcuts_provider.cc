@@ -40,6 +40,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_fixer.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
@@ -313,7 +314,7 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
                           : OmniboxFieldTrial::kShortcutBoostUrlScore.Get();
     if (boost_score > best_match->relevance) {
       client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
-          OmniboxTriggeredFeatureService::Feature::kShortcutBoost);
+          metrics::OmniboxEventProto_Feature_SHORTCUT_BOOST);
       if (!OmniboxFieldTrial::kShortcutBoostCounterfactual.Get()) {
         max_relevance = boost_score;
         best_match->relevance = max_relevance;

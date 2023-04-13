@@ -457,7 +457,7 @@ void SearchProvider::OnURLLoadComplete(
       if (results_updated) {
         if (results->field_trial_triggered) {
           client()->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
-              OmniboxTriggeredFeatureService::Feature::kRemoteSearchFeature);
+              metrics::OmniboxEventProto_Feature_REMOTE_SEARCH_FEATURE);
         }
         SortResults(is_keyword, results);
         PrefetchImages(results);

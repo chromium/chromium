@@ -547,8 +547,8 @@ TEST_F(BookmarkProviderTest, ShortBookmarks) {
   // be allowed to prefix match. These tests are trying to match the mock
   // bookmark "testing short bookmarks".
 
-  auto short_feature = OmniboxTriggeredFeatureService::Feature::
-      kShortBookmarkSuggestionsByTotalInputLength;
+  auto short_feature = metrics::
+      OmniboxEventProto_Feature_SHORT_BOOKMARK_SUGGESTIONS_BY_TOTAL_INPUT_LENGTH;
 
   {
     SCOPED_TRACE("Default.");
@@ -725,8 +725,8 @@ TEST_F(BookmarkProviderTest, GetMatchesWithBookmarkPaths) {
   base::test::ScopedFeatureList enable_short_bookmarks(
       omnibox::kShortBookmarkSuggestionsByTotalInputLength);
 
-  auto short_feature = OmniboxTriggeredFeatureService::Feature::
-      kShortBookmarkSuggestionsByTotalInputLength;
+  auto short_feature = metrics::
+      OmniboxEventProto_Feature_SHORT_BOOKMARK_SUGGESTIONS_BY_TOTAL_INPUT_LENGTH;
 
   // Should return path matched bookmark.
   SCOPED_TRACE("feature enabled without counterfactual");

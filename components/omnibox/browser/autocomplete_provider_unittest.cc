@@ -400,7 +400,7 @@ class AutocompleteProviderTest : public testing::Test {
     client_->GetOmniboxTriggeredFeatureService()->ResetSession();
     if (value) {
       client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
-          OmniboxTriggeredFeatureService::Feature::kRemoteSearchFeature);
+          metrics::OmniboxEventProto_Feature_REMOTE_SEARCH_FEATURE);
     }
   }
 

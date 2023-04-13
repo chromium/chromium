@@ -23,6 +23,7 @@
 #include "components/omnibox/browser/scoring_functor.h"
 #include "components/omnibox/browser/titled_url_match_utils.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "ui/base/page_transition_types.h"
@@ -164,8 +165,8 @@ query_parser::MatchingAlgorithm BookmarkProvider::GetMatchingAlgorithm(
           OmniboxFieldTrial::
               ShortBookmarkSuggestionsByTotalInputLengthThreshold()) {
     client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
-        OmniboxTriggeredFeatureService::Feature::
-            kShortBookmarkSuggestionsByTotalInputLength);
+        metrics::
+            OmniboxEventProto_Feature_SHORT_BOOKMARK_SUGGESTIONS_BY_TOTAL_INPUT_LENGTH);
     return OmniboxFieldTrial::
                    kShortBookmarkSuggestionsByTotalInputLengthCounterfactual
                        .Get()

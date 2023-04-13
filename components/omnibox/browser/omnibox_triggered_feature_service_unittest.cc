@@ -8,6 +8,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 
 class OmniboxTriggeredFeatureServiceTest : public testing::Test {
  public:
@@ -45,13 +46,14 @@ TEST_F(OmniboxTriggeredFeatureServiceTest, NoFeaturesTriggered) {
 
 TEST_F(OmniboxTriggeredFeatureServiceTest, TwoFeaturesTriggered) {
   service_.FeatureTriggered(
-      OmniboxTriggeredFeatureService::Feature::kRemoteSearchFeature);
-  service_.FeatureTriggered(OmniboxTriggeredFeatureService::Feature::
-                                kShortBookmarkSuggestionsByTotalInputLength);
+      metrics::OmniboxEventProto_Feature_REMOTE_SEARCH_FEATURE);
+  service_.FeatureTriggered(
+      metrics::
+          OmniboxEventProto_Feature_SHORT_BOOKMARK_SUGGESTIONS_BY_TOTAL_INPUT_LENGTH);
   RecordAndExpectFeatures(
-      {OmniboxTriggeredFeatureService::Feature::kRemoteSearchFeature,
-       OmniboxTriggeredFeatureService::Feature::
-           kShortBookmarkSuggestionsByTotalInputLength});
+      {metrics::OmniboxEventProto_Feature_REMOTE_SEARCH_FEATURE,
+       metrics::
+           OmniboxEventProto_Feature_SHORT_BOOKMARK_SUGGESTIONS_BY_TOTAL_INPUT_LENGTH});
 
   histogram_.ExpectTotalCount("Omnibox.RichAutocompletion.Triggered", 0);
   histogram_.ExpectUniqueSample("Omnibox.RichAutocompletion.Triggered.Any",
@@ -92,7 +94,7 @@ TEST_F(OmniboxTriggeredFeatureServiceTest, RichAutocompletionTypeTriggered) {
   // Simulate 4 updates in the session, 3 of which had rich
   // autocompletion, of 2 different types.
   service_.FeatureTriggered(
-      OmniboxTriggeredFeatureService::Feature::kRichAutocompletion);
+      metrics::OmniboxEventProto_Feature_RICH_AUTOCOMPLETION);
   service_.RichAutocompletionTypeTriggered(
       AutocompleteMatch::RichAutocompletionType::kTitleNonPrefix);
   service_.RichAutocompletionTypeTriggered(
@@ -103,7 +105,7 @@ TEST_F(OmniboxTriggeredFeatureServiceTest, RichAutocompletionTypeTriggered) {
       AutocompleteMatch::RichAutocompletionType::kNone);
 
   RecordAndExpectFeatures(
-      {OmniboxTriggeredFeatureService::Feature::kRichAutocompletion});
+      {metrics::OmniboxEventProto_Feature_RICH_AUTOCOMPLETION});
 
   histogram_.ExpectTotalCount("Omnibox.RichAutocompletion.Triggered", 3);
   histogram_.ExpectBucketCount(
@@ -131,14 +133,15 @@ TEST_F(OmniboxTriggeredFeatureServiceTest, RichAutocompletionTypeTriggered) {
 
 TEST_F(OmniboxTriggeredFeatureServiceTest, ResetInput) {
   service_.FeatureTriggered(
-      OmniboxTriggeredFeatureService::Feature::kRemoteSearchFeature);
+      metrics::OmniboxEventProto_Feature_REMOTE_SEARCH_FEATURE);
   service_.ResetInput();
-  service_.FeatureTriggered(OmniboxTriggeredFeatureService::Feature::
-                                kShortBookmarkSuggestionsByTotalInputLength);
+  service_.FeatureTriggered(
+      metrics::
+          OmniboxEventProto_Feature_SHORT_BOOKMARK_SUGGESTIONS_BY_TOTAL_INPUT_LENGTH);
   RecordAndExpectFeatures(
-      {OmniboxTriggeredFeatureService::Feature::
-           kShortBookmarkSuggestionsByTotalInputLength},
-      {OmniboxTriggeredFeatureService::Feature::kRemoteSearchFeature,
-       OmniboxTriggeredFeatureService::Feature::
-           kShortBookmarkSuggestionsByTotalInputLength});
+      {metrics::
+           OmniboxEventProto_Feature_SHORT_BOOKMARK_SUGGESTIONS_BY_TOTAL_INPUT_LENGTH},
+      {metrics::OmniboxEventProto_Feature_REMOTE_SEARCH_FEATURE,
+       metrics::
+           OmniboxEventProto_Feature_SHORT_BOOKMARK_SUGGESTIONS_BY_TOTAL_INPUT_LENGTH});
 }
