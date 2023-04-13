@@ -1036,6 +1036,10 @@ void MediaStreamVideoTrack::NotifyConstraintsConfigurationComplete() {
     sink->OnVideoConstraintsChanged(min_frame_rate_,
                                     adapter_settings_.max_frame_rate());
   }
+
+  if (is_screencast_) {
+    StartTimerForRequestingFrames();
+  }
 }
 
 media::VideoCaptureFormat MediaStreamVideoTrack::GetComputedSourceFormat() {
