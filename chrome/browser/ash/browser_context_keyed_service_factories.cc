@@ -92,6 +92,7 @@
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/ash/secure_channel/nearby_connector_factory.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
+#include "chrome/browser/ash/sync/sync_appsync_service_factory.h"
 #include "chrome/browser/ash/sync/sync_error_notifier_factory.h"
 #include "chrome/browser/ash/sync/sync_mojo_service_factory_ash.h"
 #include "chrome/browser/ash/tether/tether_service_factory.h"
@@ -190,6 +191,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   file_manager::VolumeManagerFactory::GetInstance();
   file_system_provider::ServiceFactory::GetInstance();
   full_restore::FullRestoreServiceFactory::GetInstance();
+  GlanceablesKeyedServiceFactory::GetInstance();
   guest_os::GuestOsMimeTypesServiceFactory::GetInstance();
   guest_os::GuestOsRegistryServiceFactory::GetInstance();
   guest_os::GuestOsServiceFactory::GetInstance();
@@ -220,11 +222,11 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   secure_channel::NearbyConnectorFactory::GetInstance();
   sharesheet::SharesheetServiceFactory::GetInstance();
   smb_client::SmbServiceFactory::GetInstance();
+  SyncAppsyncServiceFactory::GetInstance();
   SyncedPrintersManagerFactory::GetInstance();
   SyncMojoServiceFactoryAsh::GetInstance();
   tether::TetherServiceFactory::GetInstance();
   TtsEngineExtensionObserverChromeOS::EnsureFactoryBuilt();
-  GlanceablesKeyedServiceFactory::GetInstance();
 }
 
 }  // namespace ash
