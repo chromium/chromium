@@ -1300,16 +1300,17 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
     wifi_connected_waiter.Wait(shill::kStateOnline);
   }
 
-  // Expects that the non-policy WiFi services are now prohibited.
+  // Expects that the non-policy WiFi services are now prohibited and that the
+  // policy-provided network has connected.
   EXPECT_TRUE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi1));
   EXPECT_TRUE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi2));
   EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig("wifi_policy_1"));
   EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig("wifi_policy_2"));
 
-  // Note that we're intentionally not verifying the service state because fake
-  // shill does not reset the service state to idle when a disconnect would
-  // happen in real life due to connecting to another service.
-  // TODO(b/276358423): Change the default connect behavior to do that.
+  EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi1), shill::kStateIdle);
+  EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi2), shill::kStateIdle);
+  EXPECT_EQ(GetWifiStateFromShillClient("wifi_policy_1"), shill::kStateIdle);
+  EXPECT_EQ(GetWifiStateFromShillClient("wifi_policy_2"), shill::kStateOnline);
 
   // Now the policy-provided network becomes invisible again, and no network is
   // prohibited anymore.
