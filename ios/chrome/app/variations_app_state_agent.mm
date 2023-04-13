@@ -293,7 +293,7 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 
 #pragma mark - IOSChromeVariationsSeedFetcherDelegate
 
-- (void)didFetchSeedSuccess:(BOOL)succeeded {
+- (void)variationsSeedFetcherDidCompleteFetchWithSuccess:(BOOL)success {
   DCHECK_EQ(_group, IOSChromeVariationsGroup::kEnabled);
   DCHECK_LE(self.appState.initStage, InitStageVariationsSeed);
   _seedFetchCompleted = YES;

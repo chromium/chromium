@@ -112,7 +112,8 @@ class VariationsAppStateAgentTest : public PlatformTest {
 
   // Simulate that the fetcher has completed fetching.
   void SimulateFetchCompletion(VariationsAppStateAgent* agent) {
-    [mock_fetcher_.delegate didFetchSeedSuccess:NO];
+    [mock_fetcher_.delegate
+        variationsSeedFetcherDidCompleteFetchWithSuccess:NO];
   }
 
   // Setter of the current stage of the mock app state. This also invokes
