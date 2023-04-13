@@ -1205,7 +1205,7 @@ message DeviceScreensaverLoginScreenImagesProto {
 };
 
 message DeviceScreensaverLoginScreenEnabledProto {
-  optional bool device_screensaver_login_screen_mode = 1;
+  optional bool device_screensaver_login_screen_enabled = 1;
 };
 
 message DeviceSystemAecEnabledProto {
