@@ -190,7 +190,8 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
 #if BUILDFLAG(IS_ANDROID)
       client_data_header,
 #endif
-      ChromeRenderThreadObserver::GetDynamicParams()));
+      chrome_content_renderer_client_->GetChromeObserver()
+          ->GetDynamicParams()));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   throttles.emplace_back(std::make_unique<AshMergeSessionLoaderThrottle>(
