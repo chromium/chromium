@@ -93,7 +93,6 @@ class DummyCVServiceClient : public mojom::CertVerifierServiceClient {
   mojo::Receiver<mojom::CertVerifierServiceClient> client_;
 };
 
-// TODO(mattm): update the pre-existing tests to use Verify() helper.
 std::tuple<int, net::CertVerifyResult> Verify(
     const mojo::Remote<mojom::CertVerifierService>& cv_service_remote,
     scoped_refptr<net::X509Certificate> cert,
@@ -168,26 +167,10 @@ TEST(CertVerifierServiceFactoryTest, GetNewCertVerifier) {
       cv_service_client.InitWithNewPipeAndPassRemote(),
       std::move(cv_creation_params));
 
-  base::RunLoop request_completed_run_loop;
-  DummyCVServiceRequest dummy_cv_service_req(
-      request_completed_run_loop.QuitClosure());
-  mojo::Receiver<mojom::CertVerifierRequest> dummy_cv_service_req_receiver(
-      &dummy_cv_service_req);
-
-  auto net_log(net::NetLogWithSource::Make(
-      net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
-  cv_service_remote->Verify(
-      net::CertVerifier::RequestParams(test_cert, "www.example.com", 0,
-                                       /*ocsp_response=*/std::string(),
-                                       /*sct_list=*/std::string()),
-      static_cast<uint32_t>(net_log.source().type), net_log.source().id,
-      net_log.source().start_time,
-      dummy_cv_service_req_receiver.BindNewPipeAndPassRemote());
-
-  request_completed_run_loop.Run();
-  ASSERT_EQ(dummy_cv_service_req.net_error, net::ERR_CERT_AUTHORITY_INVALID);
-  ASSERT_TRUE(dummy_cv_service_req.result.cert_status &
-              net::CERT_STATUS_AUTHORITY_INVALID);
+  auto [net_error, result] =
+      Verify(cv_service_remote, test_cert, "www.example.com");
+  ASSERT_EQ(net_error, net::ERR_CERT_AUTHORITY_INVALID);
+  ASSERT_TRUE(result.cert_status & net::CERT_STATUS_AUTHORITY_INVALID);
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -236,25 +219,9 @@ TEST(CertVerifierServiceFactoryTest, GetNewCertVerifierWithUpdatedRootStore) {
       cv_service_client.client_.BindNewPipeAndPassRemote(),
       std::move(cv_creation_params));
 
-  base::RunLoop request_completed_run_loop;
-  DummyCVServiceRequest dummy_cv_service_req(
-      request_completed_run_loop.QuitClosure());
-  mojo::Receiver<mojom::CertVerifierRequest> dummy_cv_service_req_receiver(
-      &dummy_cv_service_req);
-
-  auto net_log(net::NetLogWithSource::Make(
-      net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
-  cv_service_remote->Verify(
-      net::CertVerifier::RequestParams(leaf->GetX509Certificate(),
-                                       "www.example.com", 0,
-                                       /*ocsp_response=*/std::string(),
-                                       /*sct_list=*/std::string()),
-      static_cast<uint32_t>(net_log.source().type), net_log.source().id,
-      net_log.source().start_time,
-      dummy_cv_service_req_receiver.BindNewPipeAndPassRemote());
-
-  request_completed_run_loop.Run();
-  ASSERT_EQ(dummy_cv_service_req.net_error, net::OK);
+  auto [net_error, result] =
+      Verify(cv_service_remote, leaf->GetX509Certificate(), "www.example.com");
+  ASSERT_EQ(net_error, net::OK);
   // Update happened before the CertVerifier was created, no change observers
   // should have been notified.
   EXPECT_EQ(cv_service_client.changed_count_, 0u);
@@ -288,27 +255,10 @@ TEST(CertVerifierServiceFactoryTest, UpdateExistingCertVerifierWithRootStore) {
 
   // Try request, it should fail because we haven't updated the Root Store yet.
   {
-    base::RunLoop request_completed_run_loop;
-    DummyCVServiceRequest dummy_cv_service_req(
-        request_completed_run_loop.QuitClosure());
-    mojo::Receiver<mojom::CertVerifierRequest> dummy_cv_service_req_receiver(
-        &dummy_cv_service_req);
-
-    auto net_log(net::NetLogWithSource::Make(
-        net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
-    cv_service_remote->Verify(
-        net::CertVerifier::RequestParams(leaf->GetX509Certificate(),
-                                         "www.example.com", 0,
-                                         /*ocsp_response=*/std::string(),
-                                         /*sct_list=*/std::string()),
-        static_cast<uint32_t>(net_log.source().type), net_log.source().id,
-        net_log.source().start_time,
-        dummy_cv_service_req_receiver.BindNewPipeAndPassRemote());
-
-    request_completed_run_loop.Run();
-    ASSERT_EQ(dummy_cv_service_req.net_error, net::ERR_CERT_AUTHORITY_INVALID);
-    ASSERT_TRUE(dummy_cv_service_req.result.cert_status &
-                net::CERT_STATUS_AUTHORITY_INVALID);
+    auto [net_error, result] = Verify(
+        cv_service_remote, leaf->GetX509Certificate(), "www.example.com");
+    ASSERT_EQ(net_error, net::ERR_CERT_AUTHORITY_INVALID);
+    ASSERT_TRUE(result.cert_status & net::CERT_STATUS_AUTHORITY_INVALID);
   }
   // No updates should have happened yet.
   EXPECT_EQ(cv_service_client.changed_count_, 0u);
@@ -334,24 +284,9 @@ TEST(CertVerifierServiceFactoryTest, UpdateExistingCertVerifierWithRootStore) {
 
   // Try request, it should succeed.
   {
-    base::RunLoop request_completed_run_loop;
-    DummyCVServiceRequest dummy_cv_service_req(
-        request_completed_run_loop.QuitClosure());
-    mojo::Receiver<mojom::CertVerifierRequest> dummy_cv_service_req_receiver(
-        &dummy_cv_service_req);
-    auto net_log(net::NetLogWithSource::Make(
-        net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
-    cv_service_remote->Verify(
-        net::CertVerifier::RequestParams(leaf->GetX509Certificate(),
-                                         "www.example.com", 0,
-                                         /*ocsp_response=*/std::string(),
-                                         /*sct_list=*/std::string()),
-        static_cast<uint32_t>(net_log.source().type), net_log.source().id,
-        net_log.source().start_time,
-        dummy_cv_service_req_receiver.BindNewPipeAndPassRemote());
-
-    request_completed_run_loop.Run();
-    ASSERT_EQ(dummy_cv_service_req.net_error, net::OK);
+    auto [net_error, result] = Verify(
+        cv_service_remote, leaf->GetX509Certificate(), "www.example.com");
+    ASSERT_EQ(net_error, net::OK);
   }
 
   // Update should have been notified.
@@ -402,28 +337,11 @@ TEST(CertVerifierServiceFactoryTest, OldRootStoreUpdateIgnored) {
       cv_service_client.client_.BindNewPipeAndPassRemote(),
       std::move(cv_creation_params));
 
-  base::RunLoop request_completed_run_loop;
-  DummyCVServiceRequest dummy_cv_service_req(
-      request_completed_run_loop.QuitClosure());
-  mojo::Receiver<mojom::CertVerifierRequest> dummy_cv_service_req_receiver(
-      &dummy_cv_service_req);
-
-  auto net_log(net::NetLogWithSource::Make(
-      net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
-  cv_service_remote->Verify(
-      net::CertVerifier::RequestParams(leaf->GetX509Certificate(),
-                                       "www.example.com", 0,
-                                       /*ocsp_response=*/std::string(),
-                                       /*sct_list=*/std::string()),
-      static_cast<uint32_t>(net_log.source().type), net_log.source().id,
-      net_log.source().start_time,
-      dummy_cv_service_req_receiver.BindNewPipeAndPassRemote());
-
-  request_completed_run_loop.Run();
+  auto [net_error, result] =
+      Verify(cv_service_remote, leaf->GetX509Certificate(), "www.example.com");
   // Request should result in error because root store update was ignored.
-  ASSERT_EQ(dummy_cv_service_req.net_error, net::ERR_CERT_AUTHORITY_INVALID);
-  ASSERT_TRUE(dummy_cv_service_req.result.cert_status &
-              net::CERT_STATUS_AUTHORITY_INVALID);
+  ASSERT_EQ(net_error, net::ERR_CERT_AUTHORITY_INVALID);
+  ASSERT_TRUE(result.cert_status & net::CERT_STATUS_AUTHORITY_INVALID);
   // Update was ignored, so no change observers should have been notified.
   EXPECT_EQ(cv_service_client.changed_count_, 0u);
 }
@@ -473,26 +391,10 @@ TEST(CertVerifierServiceFactoryTest, BadRootStoreUpdateIgnored) {
 
   // Initial request should succeed.
   {
-    base::RunLoop request_completed_run_loop;
-    DummyCVServiceRequest dummy_cv_service_req(
-        request_completed_run_loop.QuitClosure());
-    mojo::Receiver<mojom::CertVerifierRequest> dummy_cv_service_req_receiver(
-        &dummy_cv_service_req);
-
-    auto net_log(net::NetLogWithSource::Make(
-        net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
-    cv_service_remote->Verify(
-        net::CertVerifier::RequestParams(leaf->GetX509Certificate(),
-                                         "www.example.com", 0,
-                                         /*ocsp_response=*/std::string(),
-                                         /*sct_list=*/std::string()),
-        static_cast<uint32_t>(net_log.source().type), net_log.source().id,
-        net_log.source().start_time,
-        dummy_cv_service_req_receiver.BindNewPipeAndPassRemote());
-
-    request_completed_run_loop.Run();
+    auto [net_error, result] = Verify(
+        cv_service_remote, leaf->GetX509Certificate(), "www.example.com");
     // Request should be OK.
-    ASSERT_EQ(dummy_cv_service_req.net_error, net::OK);
+    ASSERT_EQ(net_error, net::OK);
   }
 
   // Create updated Chrome Root Store with an invalid cert; update should be
@@ -517,26 +419,10 @@ TEST(CertVerifierServiceFactoryTest, BadRootStoreUpdateIgnored) {
   }
 
   {
-    base::RunLoop request_completed_run_loop;
-    DummyCVServiceRequest dummy_cv_service_req(
-        request_completed_run_loop.QuitClosure());
-    mojo::Receiver<mojom::CertVerifierRequest> dummy_cv_service_req_receiver(
-        &dummy_cv_service_req);
-
-    auto net_log(net::NetLogWithSource::Make(
-        net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
-    cv_service_remote->Verify(
-        net::CertVerifier::RequestParams(leaf->GetX509Certificate(),
-                                         "www.example.com", 0,
-                                         /*ocsp_response=*/std::string(),
-                                         /*sct_list=*/std::string()),
-        static_cast<uint32_t>(net_log.source().type), net_log.source().id,
-        net_log.source().start_time,
-        dummy_cv_service_req_receiver.BindNewPipeAndPassRemote());
-
-    request_completed_run_loop.Run();
+    auto [net_error, result] = Verify(
+        cv_service_remote, leaf->GetX509Certificate(), "www.example.com");
     // Request should be OK because root store update was ignored.
-    ASSERT_EQ(dummy_cv_service_req.net_error, net::OK);
+    ASSERT_EQ(net_error, net::OK);
   }
 
   // Clear all certs from the proto
@@ -555,26 +441,10 @@ TEST(CertVerifierServiceFactoryTest, BadRootStoreUpdateIgnored) {
   }
 
   {
-    base::RunLoop request_completed_run_loop;
-    DummyCVServiceRequest dummy_cv_service_req(
-        request_completed_run_loop.QuitClosure());
-    mojo::Receiver<mojom::CertVerifierRequest> dummy_cv_service_req_receiver(
-        &dummy_cv_service_req);
-
-    auto net_log(net::NetLogWithSource::Make(
-        net::NetLog::Get(), net::NetLogSourceType::CERT_VERIFIER_JOB));
-    cv_service_remote->Verify(
-        net::CertVerifier::RequestParams(leaf->GetX509Certificate(),
-                                         "www.example.com", 0,
-                                         /*ocsp_response=*/std::string(),
-                                         /*sct_list=*/std::string()),
-        static_cast<uint32_t>(net_log.source().type), net_log.source().id,
-        net_log.source().start_time,
-        dummy_cv_service_req_receiver.BindNewPipeAndPassRemote());
-
-    request_completed_run_loop.Run();
+    auto [net_error, result] = Verify(
+        cv_service_remote, leaf->GetX509Certificate(), "www.example.com");
     // Request should be OK because root store update was ignored.
-    ASSERT_EQ(dummy_cv_service_req.net_error, net::OK);
+    ASSERT_EQ(net_error, net::OK);
   }
   // Update was ignored, so no change observers should have been notified.
   EXPECT_EQ(cv_service_client.changed_count_, 0u);
