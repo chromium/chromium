@@ -163,11 +163,9 @@ void NotificationCenterView::SetMaxHeight(int max_height) {
     return;
   }
 
-  int max_scroller_height = max_height;
-  if (notification_bar_->GetVisible()) {
-    max_scroller_height -= notification_bar_->GetPreferredSize().height() +
-                           2 * kMessageCenterPadding;
-  }
+  int max_scroller_height = max_height -
+                            notification_bar_->GetPreferredSize().height() -
+                            2 * kMessageCenterPadding;
   scroller_->ClipHeightTo(0, max_scroller_height);
 }
 
@@ -188,12 +186,6 @@ void NotificationCenterView::SetExpanded() {
 
 void NotificationCenterView::SetCollapsed(bool animate) {
   if (!GetVisible() || collapsed_) {
-    return;
-  }
-
-  // Do not collapse the message center if notification bar is not visible.
-  // i.e. there is only one notification.
-  if (!notification_bar_->GetVisible()) {
     return;
   }
 
@@ -223,21 +215,12 @@ void NotificationCenterView::ExpandMessageCenter() {
   message_center_bubble_->ExpandMessageCenter();
 }
 
-bool NotificationCenterView::IsNotificationBarVisible() const {
-  return notification_bar_->GetVisible();
-}
-
 bool NotificationCenterView::IsScrollBarVisible() const {
   return scroll_bar_->GetVisible();
 }
 
 void NotificationCenterView::OnNotificationSlidOut() {
-  if (notification_bar_->GetVisible()) {
-    UpdateNotificationBar();
-    if (!notification_bar_->GetVisible()) {
-      StartHideStackingBarAnimation();
-    }
-  }
+  UpdateNotificationBar();
 
   if (!notification_list_view_->GetTotalNotificationCount()) {
     StartCollapseAnimation();
@@ -530,10 +513,8 @@ NotificationCenterView::GetNonVisibleNotificationIdsInViewHierarchy() const {
     return notification_list_view_->GetAllNotificationIds();
   }
 
-  const int notification_bar_height =
-      IsNotificationBarVisible() ? kStackedNotificationBarHeight : 0;
   const int y_offset_above = scroller_->GetVisibleRect().y() - scroller_->y() +
-                             notification_bar_height;
+                             kStackedNotificationBarHeight;
   auto above_id_list =
       notification_list_view_->GetNotificationIdsAboveY(y_offset_above);
   const int y_offset_below =

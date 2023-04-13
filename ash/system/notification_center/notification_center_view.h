@@ -139,9 +139,6 @@ class ASH_EXPORT NotificationCenterView
   // Called when user clicks the see all notifications button.
   void ExpandMessageCenter();
 
-  // Returns true if the notification bar is visible.
-  bool IsNotificationBarVisible() const;
-
   // Returns true if the scroll bar is visible.
   bool IsScrollBarVisible() const;
 

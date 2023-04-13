@@ -163,7 +163,7 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   // InstallRoundRectHighlightPathGenerator for the button only if
   // `rounded_highlight_path` is true. This is special handlings for buttons
   // inside the old notifications UI, might can be removed once
-  // `kNotificationsRefresh` is fully launched.
+  // `kNotificationsRefresh` is fully launched. See b/257291597
   explicit PillButton(
       PressedCallback callback = PressedCallback(),
       const std::u16string& text = std::u16string(),
