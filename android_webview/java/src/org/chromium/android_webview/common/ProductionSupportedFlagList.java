@@ -27,6 +27,7 @@ import org.chromium.net.NetFeatures;
 import org.chromium.services.network.NetworkServiceFeatures;
 import org.chromium.services.tracing.TracingServiceFeatures;
 import org.chromium.ui.accessibility.AccessibilityFeatures;
+import org.chromium.ui.base.UiAndroidFeatures;
 
 /**
  * List of experimental features/flags supported for user devices. Add features/flags to this list
@@ -411,6 +412,10 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AwFeatures.WEBVIEW_SAFE_BROWSING_SAFE_MODE,
                     "Enable doing a JNI call to check safe browsing safe mode status "
                             + "before doing a safe browsing check."),
+            Flag.baseFeature(UiAndroidFeatures.CONVERT_TRACKPAD_EVENTS_TO_MOUSE,
+                    "Enables converting trackpad click gestures to mouse events"
+                            + " in order for them to be interpreted similar to a desktop"
+                            + " experience (i.e. double-click to select word.)"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

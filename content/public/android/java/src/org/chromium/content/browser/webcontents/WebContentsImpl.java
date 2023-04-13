@@ -223,8 +223,8 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @CalledByNative
-    @VisibleForTesting
-    static WebContentsImpl create(
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public static WebContentsImpl create(
             long nativeWebContentsAndroid, NavigationController navigationController) {
         return new WebContentsImpl(nativeWebContentsAndroid, navigationController);
     }
@@ -1010,6 +1010,35 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         return key.cast(data);
     }
 
+    /**
+     * Convenience method to initialize test state. Only use for testing.
+     */
+    @VisibleForTesting
+    public void initializeForTesting() {
+        if (mInternalsHolder == null) {
+            mInternalsHolder = WebContents.createDefaultInternalsHolder();
+        }
+        WebContentsInternalsImpl internals = (WebContentsInternalsImpl) mInternalsHolder.get();
+        if (internals == null) {
+            internals = new WebContentsInternalsImpl();
+            internals.userDataHost = new UserDataHost();
+        }
+        mInternalsHolder.set(internals);
+        mInitialized = true;
+    }
+
+    /**
+     * Convenience method to set user data. Only use for testing.
+     */
+    @VisibleForTesting
+    public <T extends UserData> void setUserDataForTesting(Class<T> key, T userData) {
+        // Be sure to call initializeForTesting() first.
+        assert mInitialized;
+
+        WebContentsInternalsImpl internals = (WebContentsInternalsImpl) mInternalsHolder.get();
+        internals.userDataHost.setUserData(key, userData);
+    }
+
     public <T extends UserData> void removeUserData(Class<T> key) {
         UserDataHost userDataHost = getUserDataHost();
         if (userDataHost == null) return;
@@ -1125,8 +1154,9 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
                 "Native WebContents already destroyed", mNativeDestroyThrowable);
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         // This is static to avoid exposing a public destroy method on the native side of this
         // class.
         void destroyWebContents(long webContentsAndroidPtr);
