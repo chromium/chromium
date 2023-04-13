@@ -2312,10 +2312,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Chrome is Signed Out
       </message>
       <message name="IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_MESSAGE_IPHONE" desc="The message text of the alert post restore sign-in promo. [iOS only]">
-        You were signed out of your account <ph name="USER_NAME">$1<ex>example@gmail.com</ex></ph> as part of your iPhone reset. Tap continue below to sign in.
+        You were signed out of your account, <ph name="USER_NAME">$1<ex>example@gmail.com</ex></ph>, as part of your iPhone reset. To sign back in, tap "Continue" below.
       </message>
       <message name="IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_MESSAGE_IPAD" desc="The message text of the alert post restore sign-in promo. [iOS only]">
-        You were signed out of your account <ph name="USER_NAME">$1<ex>example@gmail.com</ex></ph> as part of your iPad reset. Tap continue below to sign in.
+        You were signed out of your account, <ph name="USER_NAME">$1<ex>example@gmail.com</ex></ph>, as part of your iPad reset. To sign back in, tap "Continue" below.
       </message>
       <message name="IDS_IOS_POST_RESTORE_SIGN_IN_ALERT_PROMO_CANCEL_ACTION" desc="The cancel action text of the alert post restore sign-in promo. [iOS only]">
         Ignore
