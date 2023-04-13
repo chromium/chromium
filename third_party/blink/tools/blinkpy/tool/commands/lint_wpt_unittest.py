@@ -15,6 +15,9 @@ from blinkpy.tool.mock_tool import MockBlinkTool
 from blinkpy.tool.commands.lint_wpt import LintError, LintWPT
 from blinkpy.common.system.log_testing import LoggingTestCase
 
+path_finder.bootstrap_wpt_imports()
+from wptrunner import metadata
+
 
 class LintWPTTest(LoggingTestCase):
     def setUp(self):
@@ -23,7 +26,28 @@ class LintWPTTest(LoggingTestCase):
         self.tool = MockBlinkTool()
         self.fs = self.tool.filesystem
         self.finder = path_finder.PathFinder(self.fs)
-        self.command = LintWPT(self.tool)
+        configs = [{
+            'os': 'mac',
+            'flag_specific': None,
+            'product': 'content_shell',
+        }, {
+            'os': 'win',
+            'flag_specific': None,
+            'product': 'content_shell',
+        }, {
+            'os': 'linux',
+            'flag_specific': None,
+            'product': 'content_shell',
+        }, {
+            'os': 'linux',
+            'flag_specific': None,
+            'product': 'chrome',
+        }, {
+            'os': 'linux',
+            'flag_specific': 'fake-flag',
+            'product': 'content_shell',
+        }]
+        self.command = LintWPT(self.tool, set(map(metadata.RunInfo, configs)))
         self.fs.write_text_file(self.finder.path_from_wpt_tests('lint.ignore'),
                                 '')
         self.fs.write_text_file(
@@ -101,7 +125,10 @@ class LintWPTTest(LoggingTestCase):
             """\
             [variant.html?foo=bar/abc]
               bug: crbug.com/12
-              expected: ERROR
+              expected:
+                if os == "linux" and product == "chrome": [ERROR, TIMEOUT]
+                if os == "linux": ERROR
+                OK
             [variant.html?foo=baz]
               disabled: never completes
               expected: TIMEOUT
@@ -334,29 +361,100 @@ class LintWPTTest(LoggingTestCase):
         self.assertEqual(description,
                          "Subtest key 'expected' has invalid value 'CRASH'")
 
-    def test_metadata_unnecessary_conditions(self):
-        exp_error, fuzzy_error = self._check_metadata("""\
+    def test_metadata_conditions_unnecessary(self):
+        exp_error, fuzzy_error, restart_error = self._check_metadata("""\
             [reftest.html]
               disabled:
+                # Does not partition all configurations ('linux' falls through).
                 if os == "mac": flaky
-                if os == "win": @False
-                flaky
+                if os == "win": flaky
               expected:
+                # Partition all configurations, but without using a default.
                 if os == "mac": FAIL
-                FAIL
+                if os == "win": FAIL
+                if os == "linux": FAIL
               fuzzy:
+                # Partition all configurations using a default.
                 if os == "win": [0-1;0-2, reftest-ref.html:20;200-300]
                 [0-1;0-2, reftest-ref.html:20;200-300]
+              restart-after:
+                # Captures all configurations, but not using an unconditional
+                # value.
+                if os == "mac" or os != "mac": @True
             """)
-        # Note that `disabled` is not an error because of `os == "win"`.
         name, description, path, _ = exp_error
-        self.assertEqual(name, 'META-UNNECESSARY-CONDITION')
+        self.assertEqual(name, 'META-CONDITIONS-UNNECESSARY')
         self.assertEqual(path, 'reftest.html.ini')
         self.assertEqual(description,
                          "Test key 'expected' always has value 'FAIL'")
         name, description, path, _ = fuzzy_error
-        self.assertEqual(name, 'META-UNNECESSARY-CONDITION')
+        self.assertEqual(name, 'META-CONDITIONS-UNNECESSARY')
         self.assertEqual(path, 'reftest.html.ini')
         self.assertEqual(
             description, "Test key 'fuzzy' always has value "
             "'[0-1;0-2, reftest-ref.html:20;200-300]'")
+        name, description, path, _ = restart_error
+        self.assertEqual(name, 'META-CONDITIONS-UNNECESSARY')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(description,
+                         "Test key 'restart-after' always has value '@True'")
+
+    def test_metadata_condition_checks_exclusive(self):
+        conds_unnecessary, unreachable_value = self._check_metadata("""\
+            [reftest.html]
+              disabled:
+                if os == "win": flaky
+                if os == "win": flaky
+                flaky
+              expected:
+                if os == "win": FAIL
+                if os == "win": [FAIL, PASS]
+                FAIL
+            """)
+        # Since the author should rewrite this key unconditionally as
+        # `disabled: flaky` anyway, there's no need to say that the second
+        # condition is unreachable.
+        name, description, path, _ = conds_unnecessary
+        self.assertEqual(name, 'META-CONDITIONS-UNNECESSARY')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(description,
+                         "Test key 'disabled' always has value 'flaky'")
+        # `META-CONDITIONS-UNNECESSARY` should determine necessity using all
+        # values, even unreachable ones, as unreachable values may become
+        # reachable if fixed.
+        name, description, path, _ = unreachable_value
+        self.assertEqual(name, 'META-UNREACHABLE-VALUE')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(
+            description,
+            "Test key 'expected' has an unused condition 'if os == \"win\"'")
+
+    def test_metadata_unreachable_value(self):
+        shadowed_narrow, always_false, unused_default = self._check_metadata(
+            """\
+            [reftest.html]
+              expected:
+                if os == "win" and os == "mac": FAIL  # Meant to say `or`.
+                # This branch shadows the next one, which is narrower.
+                if os == "linux": FAIL
+                if os == "linux" and product == "chrome": PASS
+                if os != "linux": FAIL
+                FAIL
+            """)
+        name, description, path, _ = always_false
+        self.assertEqual(name, 'META-UNREACHABLE-VALUE')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(
+            description, "Test key 'expected' has an unused condition "
+            "'if (os == \"win\") and (os == \"mac\")'")
+        name, description, path, _ = shadowed_narrow
+        self.assertEqual(name, 'META-UNREACHABLE-VALUE')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(
+            description, "Test key 'expected' has an unused condition "
+            "'if (os == \"linux\") and (product == \"chrome\")'")
+        name, description, path, _ = unused_default
+        self.assertEqual(name, 'META-UNREACHABLE-VALUE')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(
+            description, "Test key 'expected' has an unused default condition")

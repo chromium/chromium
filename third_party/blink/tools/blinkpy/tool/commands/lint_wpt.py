@@ -11,18 +11,18 @@ import logging
 import optparse
 import pathlib
 import urllib.parse
-from typing import List, Optional, Set, Tuple, Type, Union
+from typing import Collection, List, Optional, Set, Tuple, Type, Union
 
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
 from blinkpy.tool.commands.command import Command
 from blinkpy.w3c.wpt_manifest import WPTManifest
-from blinkpy.tool.commands.update_metadata import BUG_PATTERN
+from blinkpy.tool.commands.update_metadata import BUG_PATTERN, generate_configs
 
 path_finder.bootstrap_wpt_imports()
 from tools.lint import lint as wptlint
 from tools.lint import rules
-from wptrunner import wptmanifest
+from wptrunner import metadata, wptmanifest
 from wptrunner.manifestexpected import fuzzy_prop
 from wptrunner.wptmanifest import node as wptnode
 from wptrunner.wptmanifest.backends.static import Compiler
@@ -161,14 +161,24 @@ class MetadataBadValue(MetadataRule):
 
 
 class MetadataUnnecessaryCondition(MetadataRule):
-    name = 'META-UNNECESSARY-CONDITION'
+    name = 'META-CONDITIONS-UNNECESSARY'
     description = '%(section_type)s key %(key)r always has value %(value)r'
     to_fix = """
     Express the key as an unconditional expression without `if`.
     """
 
 
+class MetadataUnreachableValue(MetadataRule):
+    name = 'META-UNREACHABLE-VALUE'
+    description = '%(section_type)s key %(key)r has an unused %(condition)s'
+    to_fix = """
+    Check that at least one test configuration takes the condition branch.
+    """
+
+
 LintError = Tuple[str, str, str, Optional[int]]
+ValueNode = Union[wptnode.ValueNode, wptnode.AtomNode, wptnode.ListNode]
+Condition = Optional[wptnode.Node]
 
 
 class LintWPT(Command):
@@ -177,12 +187,15 @@ class LintWPT(Command):
     help_text = __doc__.strip().splitlines()[0]
     long_help = __doc__
 
-    def __init__(self, tool: Host):
+    def __init__(self,
+                 tool: Host,
+                 configs: Optional[Collection[metadata.RunInfo]] = None):
         super().__init__()
         self._tool = tool
         self._fs = self._tool.filesystem
         self._default_port = self._tool.port_factory.get()
         self._finder = path_finder.PathFinder(self._fs)
+        self._configs = configs or generate_configs(self._tool)
 
     def parse_args(self, args: List[str]) -> Tuple[optparse.Values, List[str]]:
         # TODO(crbug.com/1431070): Migrate `blink_tool.py` to stdlib's
@@ -226,7 +239,7 @@ class LintWPT(Command):
             return [MetadataBadSyntax.error(path, context, error.line)]
 
         test_type = manifest.get_test_type(test_path) if test_path else None
-        linter = MetadataLinter(path, test_type, manifest)
+        linter = MetadataLinter(path, test_type, manifest, self._configs)
         return linter.find_errors(ast)
 
     def _manifest(self, repo_root: str) -> WPTManifest:
@@ -246,10 +259,12 @@ class LintWPT(Command):
 
 
 class MetadataLinter(Compiler):
-    def __init__(self, path: str, test_type: str, manifest: WPTManifest):
+    def __init__(self, path: str, test_type: str, manifest: WPTManifest,
+                 configs: Collection[metadata.RunInfo]):
         self.path = path
         self.test_type = test_type
         self.manifest = manifest
+        self.configs = configs
         # `context` contains information about the current section type,
         # heading, and key as it becomes available during the traversal. It's
         # also provided to the error message formatter.
@@ -324,20 +339,61 @@ class MetadataLinter(Compiler):
             else:
                 self._check_conditions(node)
 
-    def _check_conditions(self, key_value_node: wptnode.KeyValueNode):
-        conditions = []
+    def _get_conditional_values(
+        self,
+        key_value_node: wptnode.KeyValueNode,
+    ) -> Tuple[List[Condition], List[ValueNode]]:
+        conditions, values = [], []
         for i, child in enumerate(key_value_node.children):
             if isinstance(child, wptnode.ConditionalNode):
-                cond_expr, value = child.children
+                condition, value = child.children
             else:
                 assert i == len(key_value_node.children) - 1
-                cond_expr, value = None, child
-            conditions.append((cond_expr, value))
-        values = {self.visit(value) for _, value in conditions}
-        if len(conditions) > 1 and len(values) == 1:
-            (_, value), *_ = conditions
+                condition, value = None, child
+            conditions.append(condition)
+            values.append(value)
+        return conditions, values
+
+    def _check_conditions(self, key_value_node: wptnode.KeyValueNode):
+        conditions, values = self._get_conditional_values(key_value_node)
+        # Reference conditions by index because they are not hashable.
+        conditions_not_taken = set(range(len(conditions)))
+        unique_values = set(map(self.visit, values))
+        # Simulate conditional value resolution for each test configuration.
+        for config in self.configs:
+            for i, condition in enumerate(conditions):
+                if self._eval_condition_taken(condition, config):
+                    # Mark this condition as having been exercised.
+                    conditions_not_taken.discard(i)
+                    break
+            else:
+                # Add a sentinel object to simulate no default (an empty value).
+                # This unique value forces `META-CONDITIONS-UNNECESSARY` to
+                # pass because at least one configuration falls through to the
+                # end.
+                #
+                # TODO(crbug.com/1406669): Add a special rule when
+                # `unique_values` is `expected: (PASS|OK)`, which can just be
+                # removed.
+                unique_values.add(object())
+
+        if (len([condition for condition in conditions if condition]) > 0
+                and len(unique_values) == 1):
             self._error(MetadataUnnecessaryCondition,
-                        value=_format_node(value))
+                        value=_format_node(values[0]))
+        else:
+            # No need to show that condition branches are unreachable if no
+            # conditions are necessary in the first place.
+            for i in conditions_not_taken:
+                self._error(MetadataUnreachableValue,
+                            condition=_format_condition(conditions[i]))
+
+    def _eval_condition_taken(self, condition: Condition,
+                              run_info: metadata.RunInfo) -> bool:
+        if not condition:
+            return True
+        self.expr_data = run_info.data
+        return self.visit(condition)
 
     def visit_ListNode(self,
                        node: wptnode.ListNode) -> Tuple[Union[bool, str]]:
@@ -405,6 +461,13 @@ class MetadataLinter(Compiler):
         if self.test_type == 'testharness':
             return MetadataBadValue.harness_statuses
         return MetadataBadValue.test_statuses
+
+
+def _format_condition(condition: Condition) -> str:
+    if not condition:
+        return 'default condition'
+    formatted_expr = f'if {_format_node(condition)}'
+    return f'condition {formatted_expr!r}'
 
 
 def _format_node(node: wptnode.Node) -> str:

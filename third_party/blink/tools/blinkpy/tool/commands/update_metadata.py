@@ -170,7 +170,7 @@ class UpdateMetadata(Command):
         manifests = load_and_update_manifests(self._path_finder)
         updater = MetadataUpdater.from_manifests(
             manifests,
-            self.generate_configs(),
+            generate_configs(self._tool),
             self._tool.filesystem,
             self._explicit_include_patterns(options, args),
             options.exclude,
@@ -473,49 +473,47 @@ class UpdateMetadata(Command):
                 '%r is neither a regular file nor a directory' % value)
         setattr(parser.values, option.dest, reports)
 
-    def generate_configs(self) -> Dict[metadata.RunInfo, Port]:
-        """Construct run info representing all Chromium test environments.
 
-        Each property in a config represents a value that metadata keys can be
-        conditioned on (e.g., 'os').
-        """
-        configs = {}
-        wptrunner_builders = {
-            builder
-            for builder in self._tool.builders.all_builder_names()
-            if self._tool.builders.uses_wptrunner(builder)
-        }
+def generate_configs(host: Host) -> Dict[metadata.RunInfo, Port]:
+    """Construct run info representing all Chromium test environments.
 
-        for builder in wptrunner_builders:
-            port_name = self._tool.builders.port_name_for_builder_name(builder)
-            _, build_config, *_ = self._tool.builders.specifiers_for_builder(
-                builder)
+    Each property in a config represents a value that metadata keys can be
+    conditioned on (e.g., 'os').
+    """
+    configs = {}
+    wptrunner_builders = {
+        builder
+        for builder in host.builders.all_builder_names()
+        if host.builders.uses_wptrunner(builder)
+    }
 
-            for step in self._tool.builders.step_names_for_builder(builder):
-                flag_specific = self._tool.builders.flag_specific_option(
-                    builder, step)
-                port = self._tool.port_factory.get(
-                    port_name,
-                    optparse.Values({
-                        'configuration': build_config,
-                        'flag_specific': flag_specific,
-                    }))
-                product = self._tool.builders.product_for_build_step(
-                    builder, step)
-                config = metadata.RunInfo({
-                    'product':
-                    product,
-                    'os':
-                    port.operating_system(),
-                    'port':
-                    port.version(),
-                    'debug':
-                    port.get_option('configuration') == 'Debug',
-                    'flag_specific':
-                    flag_specific or '',
-                })
-                configs[config] = port
-        return configs
+    for builder in wptrunner_builders:
+        port_name = host.builders.port_name_for_builder_name(builder)
+        _, build_config, *_ = host.builders.specifiers_for_builder(builder)
+
+        for step in host.builders.step_names_for_builder(builder):
+            flag_specific = host.builders.flag_specific_option(builder, step)
+            port = host.port_factory.get(
+                port_name,
+                optparse.Values({
+                    'configuration': build_config,
+                    'flag_specific': flag_specific,
+                }))
+            product = host.builders.product_for_build_step(builder, step)
+            config = metadata.RunInfo({
+                'product':
+                product,
+                'os':
+                port.operating_system(),
+                'port':
+                port.version(),
+                'debug':
+                port.get_option('configuration') == 'Debug',
+                'flag_specific':
+                flag_specific or '',
+            })
+            configs[config] = port
+    return configs
 
 
 class UpdateAbortError(Exception):

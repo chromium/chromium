@@ -18,6 +18,7 @@ from blinkpy.tool.mock_tool import MockBlinkTool
 from blinkpy.tool.commands.update_metadata import (
     UpdateMetadata,
     MetadataUpdater,
+    generate_configs,
     load_and_update_manifests,
     sort_metadata_ast,
 )
@@ -561,7 +562,7 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
 
     def test_generate_configs(self):
         linux, linux_highdpi, mac = sorted(
-            self.command.generate_configs(),
+            generate_configs(self.tool),
             key=lambda config: (config['os'], config['flag_specific']))
 
         self.assertEqual(linux['os'], 'linux')
