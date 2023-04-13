@@ -899,7 +899,9 @@ void PrerenderHostRegistry::BackNavigationLikely(
   CHECK(back_entry);
   const GURL& back_url = back_entry->GetURL();
 
-  if (controller.GetBackForwardCache().GetEntry(back_entry->GetUniqueID())) {
+  if (controller.GetBackForwardCache()
+          .GetOrEvictEntry(back_entry->GetUniqueID())
+          .has_value()) {
     RecordPrerenderBackNavigationEligibility(
         predictor, PrerenderBackNavigationEligibility::kBfcacheEntryExists,
         nullptr);

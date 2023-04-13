@@ -1229,15 +1229,18 @@ std::unique_ptr<NavigationRequest> NavigationRequest::Create(
   base::WeakPtr<RenderFrameHostImpl> rfh_restored_from_back_forward_cache =
       nullptr;
   if (entry) {
-    BackForwardCacheImpl::Entry* restored_entry =
-        frame_tree_node->navigator()
-            .controller()
-            .GetBackForwardCache()
-            .GetEntry(entry->GetUniqueID());
-    if (restored_entry) {
+    auto restored_entry = frame_tree_node->navigator()
+                              .controller()
+                              .GetBackForwardCache()
+                              .GetOrEvictEntry(entry->GetUniqueID());
+    // TODO(crbug.com/1430653): Check the
+    // `BackForwardCacheImpl::GetEntryFailureCase` in the return value and
+    // cancel the NavigationRequest to avoid use-after-free if we know that it
+    // will be restarted.
+    if (restored_entry.has_value()) {
       if (frame_tree_node->IsMainFrame()) {
         rfh_restored_from_back_forward_cache =
-            restored_entry->render_frame_host()->GetWeakPtr();
+            restored_entry.value()->render_frame_host()->GetWeakPtr();
       } else {
         // We have a matching BFCache entry for a subframe navigation. This
         // shouldn't happen as we should've triggered deletion of BFCache
@@ -2167,22 +2170,25 @@ NavigationRequest::~NavigationRequest() {
     }
 
     if (IsServedFromBackForwardCache()) {
-      BackForwardCacheImpl::Entry* bfcache_entry =
-          GetNavigationController()->GetBackForwardCache().GetEntry(
+      auto bfcache_entry =
+          GetNavigationController()->GetBackForwardCache().GetOrEvictEntry(
               nav_entry_id());
-      if (!bfcache_entry)
-        return;
-
-      RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(
-          bfcache_entry->render_frame_host()->GetGlobalId());
-      // RFH could have been deleted. E.g. eviction timer fired
-      if (rfh && rfh->IsInBackForwardCache()) {
-        // rfh is still in the cache so the navigation must have failed. But we
-        // have already disabled eviction so the safest thing to do here to
-        // recover is to evict.
-        rfh->EvictFromBackForwardCacheWithReason(
-            BackForwardCacheMetrics::NotRestoredReason::
-                kNavigationCancelledWhileRestoring);
+      // TODO(crbug.com/1430653): Check the
+      // `BackForwardCacheImpl::GetEntryFailureCase` in the return value and
+      // cancel the NavigationRequest to avoid use-after-free if we know that it
+      // will be restarted.
+      if (bfcache_entry.has_value()) {
+        RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(
+            bfcache_entry.value()->render_frame_host()->GetGlobalId());
+        // RFH could have been deleted. E.g. eviction timer fired
+        if (rfh && rfh->IsInBackForwardCache()) {
+          // rfh is still in the cache so the navigation must have failed. But
+          // we have already disabled eviction so the safest thing to do here to
+          // recover is to evict.
+          rfh->EvictFromBackForwardCacheWithReason(
+              BackForwardCacheMetrics::NotRestoredReason::
+                  kNavigationCancelledWhileRestoring);
+        }
       }
     }
   }
@@ -4192,11 +4198,13 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
       return;
     }
     NavigationControllerImpl* controller = GetNavigationController();
-    BackForwardCacheImpl::Entry* entry =
-        controller->GetBackForwardCache().GetEntry(nav_entry_id_);
-    CHECK(entry);
-    CHECK(entry->render_frame_host());
-    render_frame_host_ = entry->render_frame_host()->GetSafeRef();
+    auto entry =
+        controller->GetBackForwardCache().GetOrEvictEntry(nav_entry_id_);
+    // TODO(crbug.com/1430653): Cancel the NavigationRequest to avoid
+    // use-after-free if we know that it will be restarted.
+    CHECK(entry.has_value());
+    CHECK(entry.value()->render_frame_host());
+    render_frame_host_ = entry.value()->render_frame_host()->GetSafeRef();
   } else if (IsPrerenderedPageActivation()) {
     // Prerendering requires changing pages starting at the root node.
     DCHECK(IsInMainFrame());
