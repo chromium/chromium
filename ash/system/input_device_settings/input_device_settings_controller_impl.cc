@@ -603,9 +603,11 @@ void InputDeviceSettingsControllerImpl::SetTouchpadSettings(
   // TODO(dpad): Validate incoming settings to make sure the settings can
   // apply to the given device.
   auto& found_touchpad = *found_touchpad_iter->second;
+  const auto old_settings = std::move(found_touchpad.settings);
   found_touchpad.settings = settings.Clone();
   touchpad_pref_handler_->UpdateTouchpadSettings(active_pref_service_,
                                                  found_touchpad);
+  metrics_manager_->RecordTouchpadChangedMetrics(found_touchpad, *old_settings);
   DispatchTouchpadSettingsChanged(id);
   // Check the list of touchpads to see if any have the same |device_key|.
   // If so, their settings need to also be updated.
@@ -634,9 +636,11 @@ void InputDeviceSettingsControllerImpl::SetMouseSettings(
   RecordSetMouseSetttingsValidMetric(/*is_valid=*/true);
 
   auto& found_mouse = *found_mouse_iter->second;
+  const auto old_settings = std::move(found_mouse.settings);
   found_mouse.settings = settings.Clone();
   mouse_pref_handler_->UpdateMouseSettings(
       active_pref_service_, policy_handler_->mouse_policies(), found_mouse);
+  metrics_manager_->RecordMouseChangedMetrics(found_mouse, *old_settings);
   DispatchMouseSettingsChanged(id);
   // Check the list of mice to see if any have the same |device_key|.
   // If so, their settings need to also be updated.
@@ -664,9 +668,12 @@ void InputDeviceSettingsControllerImpl::SetPointingStickSettings(
   RecordSetPointingStickSetttingsValidMetric(/*is_valid=*/true);
 
   auto& found_pointing_stick = *found_pointing_stick_iter->second;
+  const auto old_settings = std::move(found_pointing_stick.settings);
   found_pointing_stick.settings = settings.Clone();
   pointing_stick_pref_handler_->UpdatePointingStickSettings(
       active_pref_service_, found_pointing_stick);
+  metrics_manager_->RecordPointingStickChangedMetrics(found_pointing_stick,
+                                                      *old_settings);
   DispatchPointingStickSettingsChanged(id);
   // Check the list of pointing sticks to see if any have the same
   // |device_key|. If so, their settings need to also be updated.

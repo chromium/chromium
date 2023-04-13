@@ -67,8 +67,14 @@ const ui::InputDevice kSampleKeyboardUsb2 = {20,
                                              0x1111,
                                              0x3333,
                                              0};
-const ui::InputDevice kSampleTouchpadInternal = {1, ui::INPUT_DEVICE_INTERNAL,
-                                                 "kSampleTouchpadInternal"};
+const ui::InputDevice kSampleTouchpadInternal = {1,
+                                                 ui::INPUT_DEVICE_INTERNAL,
+                                                 "kSampleTouchpadInternal",
+                                                 "",
+                                                 base::FilePath(),
+                                                 0x1111,
+                                                 0x4444,
+                                                 0};
 const ui::InputDevice kSamplePointingStickInternal = {
     2, ui::INPUT_DEVICE_INTERNAL, "kSamplePointingStickInternal"};
 const ui::InputDevice kSampleMouseInternal = {3, ui::INPUT_DEVICE_INTERNAL,
@@ -533,22 +539,8 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdateMultiple) {
 TEST_F(InputDeviceSettingsControllerTest, RecordsMetricsSettings) {
   // Initially expect no user preferences recorded.
   base::HistogramTester histogram_tester;
-
-  // Metrics identifies different devices with device_key, which is constructed
-  // from vendor_id and product_id.
-  ui::InputDevice kKeyboardUsbWithDeviceKey =
-      ui::InputDevice(kSampleKeyboardUsb);
-  kKeyboardUsbWithDeviceKey.vendor_id = 0;
-  kKeyboardUsbWithDeviceKey.product_id = 0;
-
-  ui::InputDevice kKeyboardBluetoothWithDeviceKey =
-      ui::InputDevice(kSampleKeyboardBluetooth);
-  kKeyboardBluetoothWithDeviceKey.vendor_id = 0;
-  kKeyboardBluetoothWithDeviceKey.product_id = 1;
-
-  controller_->OnKeyboardListUpdated(
-      {kKeyboardUsbWithDeviceKey, kKeyboardBluetoothWithDeviceKey}, {});
-
+  controller_->OnKeyboardListUpdated({kSampleKeyboardUsb, kSampleKeyboardUsb2},
+                                     {});
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Keyboard.ExternalChromeOS.TopRowAreFKeys."
       "Initial",
@@ -564,8 +556,7 @@ TEST_F(InputDeviceSettingsControllerTest, RecordsMetricsSettings) {
   // Test Metrics Updates when setKeyboardSettings is called.
   auto updated_settings = mojom::KeyboardSettings::New();
   updated_settings.get()->top_row_are_fkeys = true;
-
-  controller_->SetKeyboardSettings(kKeyboardUsbWithDeviceKey.id,
+  controller_->SetKeyboardSettings(kSampleKeyboardUsb.id,
                                    std::move(updated_settings));
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Keyboard.ExternalChromeOS.TopRowAreFKeys."
@@ -575,6 +566,14 @@ TEST_F(InputDeviceSettingsControllerTest, RecordsMetricsSettings) {
       "ChromeOS.Settings.Device.Keyboard.ExternalChromeOS."
       "BlockMetaFKeyRewrites.Changed",
       /*expected_count=*/0);
+
+  // Test Metrics Updates when setTouchpadSettings is called.
+  controller_->OnTouchpadListUpdated({kSampleTouchpadInternal}, {});
+  controller_->SetTouchpadSettings(kSampleTouchpadInternal.id,
+                                   mojom::TouchpadSettings::New());
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Touchpad.Internal.AccelerationEnabled.Changed",
+      /*expected_count=*/1u);
 }
 
 TEST_F(InputDeviceSettingsControllerTest, GetGeneralizedTopRowAreFKeys) {

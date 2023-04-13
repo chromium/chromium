@@ -27,9 +27,17 @@ class ASH_EXPORT InputDeviceSettingsMetricsManager {
       const mojom::Keyboard& keyboard,
       const mojom::KeyboardSettings& old_settings);
   void RecordMouseInitialMetrics(const mojom::Mouse& mouse);
+  void RecordMouseChangedMetrics(const mojom::Mouse& mouse,
+                                 const mojom::MouseSettings& old_settings);
   void RecordPointingStickInitialMetrics(
       const mojom::PointingStick& pointingStick);
+  void RecordPointingStickChangedMetrics(
+      const mojom::PointingStick& pointing_stick,
+      const mojom::PointingStickSettings& old_settings);
   void RecordTouchpadInitialMetrics(const mojom::Touchpad& touchpad);
+  void RecordTouchpadChangedMetrics(
+      const mojom::Touchpad& touchpad,
+      const mojom::TouchpadSettings& old_settings);
 
  private:
   base::flat_map<AccountId, base::flat_set<std::string>> recorded_keyboards_;

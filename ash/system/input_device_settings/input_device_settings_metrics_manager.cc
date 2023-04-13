@@ -118,6 +118,34 @@ void InputDeviceSettingsMetricsManager::RecordMouseInitialMetrics(
   // TODO(yyhyyh@): Add scroll settings metrics.
 }
 
+void InputDeviceSettingsMetricsManager::RecordMouseChangedMetrics(
+    const mojom::Mouse& mouse,
+    const mojom::MouseSettings& old_settings) {
+  if (mouse.settings->acceleration_enabled !=
+      old_settings.acceleration_enabled) {
+    base::UmaHistogramBoolean(
+        "ChromeOS.Settings.Device.Mouse.AccelerationEnabled.Changed",
+        mouse.settings->acceleration_enabled);
+  }
+  if (mouse.settings->reverse_scrolling != old_settings.reverse_scrolling) {
+    base::UmaHistogramBoolean(
+        "ChromeOS.Settings.Device.Mouse.ReverseScrolling.Changed",
+        mouse.settings->reverse_scrolling);
+  }
+  if (mouse.settings->sensitivity != old_settings.sensitivity) {
+    PointerSensitivity sensitivity =
+        static_cast<PointerSensitivity>(mouse.settings->sensitivity);
+    base::UmaHistogramEnumeration(
+        "ChromeOS.Settings.Device.Mouse.Sensitivity.Changed", sensitivity);
+  }
+  if (mouse.settings->swap_right != old_settings.swap_right) {
+    base::UmaHistogramBoolean(
+        "ChromeOS.Settings.Device.Mouse.SwapPrimaryButtons.Changed",
+        mouse.settings->swap_right);
+  }
+  // TODO(yyhyyh@): Add scroll settings metrics.
+}
+
 void InputDeviceSettingsMetricsManager::RecordPointingStickInitialMetrics(
     const mojom::PointingStick& pointing_stick) {
   // Only record the metrics once for each pointing stick.
@@ -143,6 +171,29 @@ void InputDeviceSettingsMetricsManager::RecordPointingStickInitialMetrics(
   base::UmaHistogramBoolean(
       "ChromeOS.Settings.Device.PointingStick.SwapPrimaryButtons.Initial",
       pointing_stick.settings->swap_right);
+}
+
+void InputDeviceSettingsMetricsManager::RecordPointingStickChangedMetrics(
+    const mojom::PointingStick& pointing_stick,
+    const mojom::PointingStickSettings& old_settings) {
+  if (pointing_stick.settings->acceleration_enabled !=
+      old_settings.acceleration_enabled) {
+    base::UmaHistogramBoolean(
+        "ChromeOS.Settings.Device.PointingStick.AccelerationEnabled.Changed",
+        pointing_stick.settings->acceleration_enabled);
+  }
+  if (pointing_stick.settings->sensitivity != old_settings.sensitivity) {
+    PointerSensitivity sensitivity =
+        static_cast<PointerSensitivity>(pointing_stick.settings->sensitivity);
+    base::UmaHistogramEnumeration(
+        "ChromeOS.Settings.Device.PointingStick.Sensitivity.Changed",
+        sensitivity);
+  }
+  if (pointing_stick.settings->swap_right != old_settings.swap_right) {
+    base::UmaHistogramBoolean(
+        "ChromeOS.Settings.Device.PointingStick.SwapPrimaryButtons.Changed",
+        pointing_stick.settings->swap_right);
+  }
 }
 
 void InputDeviceSettingsMetricsManager::RecordTouchpadInitialMetrics(
@@ -176,6 +227,42 @@ void InputDeviceSettingsMetricsManager::RecordTouchpadInitialMetrics(
                             touchpad.settings->tap_dragging_enabled);
   base::UmaHistogramBoolean(touchpad_metrics_prefix + "TapToClick.Initial",
                             touchpad.settings->tap_to_click_enabled);
+  // TODO(yyhyyh@): Add haptic settings metrics.
+}
+
+void InputDeviceSettingsMetricsManager::RecordTouchpadChangedMetrics(
+    const mojom::Touchpad& touchpad,
+    const mojom::TouchpadSettings& old_settings) {
+  const std::string touchpad_metrics_prefix =
+      touchpad.is_external ? "ChromeOS.Settings.Device.Touchpad.External."
+                           : "ChromeOS.Settings.Device.Touchpad.Internal.";
+  if (touchpad.settings->acceleration_enabled !=
+      old_settings.acceleration_enabled) {
+    base::UmaHistogramBoolean(
+        touchpad_metrics_prefix + "AccelerationEnabled.Changed",
+        touchpad.settings->acceleration_enabled);
+  }
+  if (touchpad.settings->reverse_scrolling != old_settings.reverse_scrolling) {
+    base::UmaHistogramBoolean(
+        touchpad_metrics_prefix + "ReverseScrolling.Changed",
+        touchpad.settings->reverse_scrolling);
+  }
+  if (touchpad.settings->sensitivity != old_settings.sensitivity) {
+    PointerSensitivity sensitivity =
+        static_cast<PointerSensitivity>(touchpad.settings->sensitivity);
+    base::UmaHistogramEnumeration(
+        touchpad_metrics_prefix + "Sensitivity.Changed", sensitivity);
+  }
+  if (touchpad.settings->tap_dragging_enabled !=
+      old_settings.tap_dragging_enabled) {
+    base::UmaHistogramBoolean(touchpad_metrics_prefix + "TapDragging.Changed",
+                              touchpad.settings->tap_dragging_enabled);
+  }
+  if (touchpad.settings->tap_to_click_enabled !=
+      old_settings.tap_to_click_enabled) {
+    base::UmaHistogramBoolean(touchpad_metrics_prefix + "TapToClick.Changed",
+                              touchpad.settings->tap_to_click_enabled);
+  }
   // TODO(yyhyyh@): Add haptic settings metrics.
 }
 

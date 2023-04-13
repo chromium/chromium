@@ -2440,6 +2440,21 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 </histogram>
 
 <histogram
+    name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.Sensitivity.Changed"
+    enum="PointerSensitivity" expires_after="2024-03-22">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the value of the sensitivity setting when the {TouchpadType}
+    touchpad settings are updated.
+  </summary>
+  <token key="TouchpadType">
+    <variant name="External" summary="external touchpad"/>
+    <variant name="Internal" summary="internal touchpad"/>
+  </token>
+</histogram>
+
+<histogram
     name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.Sensitivity.Initial"
     enum="PointerSensitivity" expires_after="2024-03-22">
   <owner>dpad@google.com</owner>
@@ -2451,6 +2466,27 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <token key="TouchpadType">
     <variant name="External" summary="external touchpad"/>
     <variant name="Internal" summary="internal touchpad"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ChromeOS.Settings.Device.Touchpad.{TouchpadType}.{TouchpadSetting}.Changed"
+    enum="Boolean" expires_after="2024-03-22">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the value of the {TouchpadSetting} settings when the {TouchpadType}
+    touchpad settings are updated.
+  </summary>
+  <token key="TouchpadType">
+    <variant name="External" summary="external touchpad"/>
+    <variant name="Internal" summary="internal touchpad"/>
+  </token>
+  <token key="TouchpadSetting">
+    <variant name="AccelerationEnabled"/>
+    <variant name="ReverseScrolling"/>
+    <variant name="TapDragging"/>
+    <variant name="TapToClick"/>
   </token>
 </histogram>
 
@@ -2491,17 +2527,51 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Device.{Peripheral}.Sensitivity.Changed"
+    enum="PointerSensitivity" expires_after="2024-03-22">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the value of the sensitivity setting when the {Peripheral} device
+    settings are updated. The value ranges from 1 to 5.
+  </summary>
+  <token key="Peripheral">
+    <variant name="Mouse"/>
+    <variant name="PointingStick"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Device.{Peripheral}.Sensitivity.Initial"
     enum="PointerSensitivity" expires_after="2024-03-22">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
     Records the value of the sensitivity setting when the {Peripheral} device is
-    first initialized. The value ranges from 1 to 5.
+    is first initialized. The value ranges from 1 to 5.
   </summary>
   <token key="Peripheral">
     <variant name="Mouse"/>
     <variant name="PointingStick"/>
+  </token>
+</histogram>
+
+<histogram
+    name="ChromeOS.Settings.Device.{Peripheral}.{PeripheralSetting}.Changed"
+    enum="Boolean" expires_after="2024-03-22">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the value of the {PeripheralSetting} settings when the {Peripheral}
+    device settings are updated.
+  </summary>
+  <token key="Peripheral">
+    <variant name="Mouse"/>
+    <variant name="PointingStick"/>
+  </token>
+  <token key="PeripheralSetting">
+    <variant name="AccelerationEnabled"/>
+    <variant name="ReverseScrolling"/>
+    <variant name="SwapPrimaryButtons"/>
   </token>
 </histogram>
 
