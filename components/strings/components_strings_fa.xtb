@@ -364,6 +364,7 @@
 <translation id="1801812870656502108">جزئیات کارت مجازی</translation>
 <translation id="1803020234906945288">تغذیه سالم</translation>
 <translation id="1803351196216024260">می‌تواند برای استفاده از میکروفون درخواست دهد</translation>
+<translation id="1806174020048213474">‏این برنامه برای نصب اطلاعات اعتباری Wi-Fi اجازه می‌خواهد. پس‌از راه‌اندازی، <ph name="DEVICE_TYPE" /> به‌طور خودکار به شبکه‌های Wi-Fi شرکت‌کننده متصل خواهد شد. برای حذف این اطلاعات اعتباری، برنامه را حذف نصب کنید.</translation>
 <translation id="1807246157184219062">روشن</translation>
 <translation id="1807528111851433570">صفحه شروع</translation>
 <translation id="180991881384371158">‏کد تأیید کارت (CVC) پشت کارتتان درج شده است. این کد همان ۳ رقم آخر درج‌شده در بالا سمت راست چارگوش امضا است.</translation>
@@ -1069,7 +1070,6 @@
 <translation id="3631244953324577188">زیست‌سنجشی</translation>
 <translation id="3632503704576938756">هم‌رسانی صفحه‌نمایش ازسرگرفته شد</translation>
 <translation id="3632892046558972264">هم‌رسانی صفحه‌نمایش موقتاً متوقف شد</translation>
-<translation id="3633035844150606508">‏نشانی در «حساب Google» شما (<ph name="ACCOUNT" />) ذخیره می‌شود</translation>
 <translation id="3633738897356909127">‏دکمه «به‌روزرسانی Chrome»، برای به‌روزرسانی Chrome ازطریق تنظیمات Chrome، کلید Enter (ورود) را فشار دهید</translation>
 <translation id="3634530185120165534">سینی ۵</translation>
 <translation id="3634567936866541746">‏اخیراً گذرواژه‌تان را در سایتی فریب‌کار وارد کرده‌اید. برای ایمن کردن حسابتان، Chrome توصیه می‌کند گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید.</translation>
@@ -1336,6 +1336,7 @@
 <translation id="4270541775497538019">پشته‌ساز ۶</translation>
 <translation id="4274173425554582601">رایانه و دستگاه الکترونیکی</translation>
 <translation id="4275830172053184480">راه‌اندازی دستگاه خود</translation>
+<translation id="4276974990916607331">نه متشکرم</translation>
 <translation id="4277028893293644418">بازنشانی گذرواژه</translation>
 <translation id="4277937682389409325">نشانی محلی</translation>
 <translation id="4278390842282768270">مجاز است</translation>
@@ -1696,6 +1697,7 @@
 <translation id="5129534298163637277">کادر گفتگوی تأیید</translation>
 <translation id="5135404736266831032">مدیریت نشانی‌ها…</translation>
 <translation id="5136841603454277753">کد صحیح را وارد کنید</translation>
+<translation id="5137761395480718572">‏این برنامه برای نصب اطلاعات اعتباری Wi-Fi اجازه می‌خواهد. پس‌از راه‌اندازی، <ph name="DEVICE_TYPE" /> به‌طور خودکار به شبکه‌های Wi-Fi شرکت‌کننده متصل خواهد شد. برای حذف این اطلاعات اعتباری، برنامه را حذف نصب کنید. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">کارت مجازی درحال‌حاضر دردسترس نیست، لطفاً با بانکتان تماس بگیرید</translation>
 <translation id="5138227688689900538">نمایش کمتر</translation>
 <translation id="5145883236150621069">کد خطا در پاسخ خط‌مشی موجود است</translation>
@@ -1752,6 +1754,7 @@
 <translation id="5273881944177595304">برنامه‌های وب و ابزارهای آنلاین</translation>
 <translation id="5274025349362408263">کتاب و ادبیات</translation>
 <translation id="5279286380302340275">مدیریت بارگیری‌ها</translation>
+<translation id="5279453600310613955">نه متشکرم</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">مشخصات سند</translation>
 <translation id="528468243742722775">پایان</translation>
@@ -2244,6 +2247,7 @@
 <translation id="6529173248185917884">رول هفتم</translation>
 <translation id="6529602333819889595">&amp;انجام مجدد حذف</translation>
 <translation id="6535751101619004418">پول و تبادل ارز</translation>
+<translation id="6536221421038631327">‏حذف اشتراک Passpoint از <ph name="DEVICE_TYPE" /> باعث می‌شود شبکه‌های مرتبط نیز حذف شوند. برای تغییر در طرح اشتراکتان، با «<ph name="FRIENDLY_NAME" />» تماس بگیرید. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">صندوق مشترک سرمایه‌گذاری</translation>
 <translation id="6545864417968258051">اسکن کردن بلوتوث</translation>
 <translation id="6547208576736763147">دو سوراخ در چپ</translation>
@@ -3339,6 +3343,7 @@
 <translation id="9219103736887031265">تصاویر</translation>
 <translation id="922152298093051471">‏سفارشی کردن Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">‏به برنامه <ph name="APP_NAME" /> اجازه می‌دهید شبکه Wi-Fi راه‌اندازی کند؟</translation>
 <translation id="936602727769022409">‏ممکن است دسترسی به حساب Google را از دست بدهید. Chromium توصیه می‌کند اکنون گذرواژه‌تان را تغییر دهید. از شما خواسته می‌شود به سیستم وارد شوید.</translation>
 <translation id="937457230470581909">باغ وحش، آکواریوم، منطقه حفاظت‌شده</translation>
 <translation id="937804173274050966">‏<ph name="BEGIN_BOLD" />از چه داده‌هایی استفاده می‌شود:<ph name="END_BOLD" /> موضوع‌های آگهی شما براساس سابقه مرور اخیرتان و فهرست سایت‌هایی که بااستفاده از Chrome در این دستگاه بازدید کرده‌اید است.</translation>

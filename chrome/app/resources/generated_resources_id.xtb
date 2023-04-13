@@ -1667,7 +1667,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2365507699358342471">Situs ini dapat melihat teks dan gambar yang disalin ke papan klip.</translation>
 <translation id="2367972762794486313">Tampilkan aplikasi</translation>
 <translation id="2369058545741334020">Buka dalam mode baca</translation>
-<translation id="236939127352773362">Saat perangkat berbagi di sekitar</translation>
+<translation id="236939127352773362">Saat perangkat berbagi langsung</translation>
 <translation id="2371076942591664043">Buka setelah &amp;selesai</translation>
 <translation id="2373666622366160481">Paskan dengan kertas</translation>
 <translation id="2375406435414127095">Hubungkan ke ponsel Anda</translation>
@@ -2165,6 +2165,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2804043232879091219">Browser alternatif tidak dapat dibuka</translation>
 <translation id="2804667941345577550">Anda akan logout dari situs ini, termasuk di tab yang terbuka</translation>
 <translation id="2804680522274557040">Kamera dinonaktifkan</translation>
+<translation id="2804742109948581745">Berdampingan</translation>
 <translation id="2805539617243680210">Anda sudah siap.</translation>
 <translation id="2805646850212350655">Microsoft Encrypting File System</translation>
 <translation id="2805756323405976993">Aplikasi</translation>
@@ -2736,6 +2737,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3336855445806447827">Tidak yakin</translation>
 <translation id="3337568642696914359">Jangan izinkan situs menangani protokol</translation>
 <translation id="3340620525920140773">Download selesai: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">setelan</translation>
 <translation id="3341699307020049241">PIN salah. Anda memiliki <ph name="RETRIES" /> kesempatan lagi.</translation>
 <translation id="3341703758641437857">Izinkan akses ke URL file</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" ingin menghapus ekstensi ini.</translation>
@@ -4658,6 +4660,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5056950756634735043">Menghubungkan ke penampung</translation>
 <translation id="5057110919553308744">Saat Anda mengklik ekstensi</translation>
 <translation id="5059241099014281248">Batasi login</translation>
+<translation id="5059429103770496207">Gaya tampilan</translation>
 <translation id="5059526285558225588">Pilih hal yang akan dibagikan</translation>
 <translation id="5060332552815861872">Ada 1 printer yang tersedia untuk disimpan.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Folder ini berisi bookmark. Yakin ingin menghapusnya?}other{Folder ini berisi # bookmark. Yakin ingin menghapusnya?}}</translation>
@@ -5591,6 +5594,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5904614460720589786">Tidak dapat menyiapkan <ph name="APP_NAME" /> karena ada masalah konfigurasi. Harap hubungi administrator Anda. Kode error: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Hampir selesai diperbarui! Mulai ulang perangkat untuk menyelesaikan pembaruan.</translation>
 <translation id="5906732635754427568">Data yang dikaitkan dengan aplikasi ini akan dihapus dari perangkat ini.</translation>
+<translation id="5906974869830879618">Harap masukkan pin</translation>
 <translation id="5908474332780919512">Mulai Aplikasi Saat Login</translation>
 <translation id="5908695239556627796">Kecepatan scroll mouse</translation>
 <translation id="5909379458939060601">Hapus profil dan data penjelajahan ini?</translation>
@@ -6978,6 +6982,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7139627972753429585"><ph name="APP_NAME" /> sedang menggunakan mikrofon Anda</translation>
 <translation id="7141105143012495934">Proses masuk gagal karena detail akun Anda tidak dapat diambil. Hubungi administrator Anda atau coba lagi.</translation>
 <translation id="7141844554192012199">Pemeriksaan</translation>
+<translation id="7143207342074048698">Menghubungkan</translation>
 <translation id="7144878232160441200">Coba lagi</translation>
 <translation id="7148426638542880639">Situs mungkin tidak berfungsi seperti yang Anda harapkan. Pilih opsi ini jika Anda tidak ingin meninggalkan informasi di perangkat tentang situs yang dibuka.</translation>
 <translation id="7149839598364933473">Ubah perangkat ini menjadi perangkat <ph name="DEVICE_OS" />.</translation>
@@ -9381,6 +9386,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="964790508619473209">Pengaturan layar</translation>
 <translation id="965211523698323809">Kirim dan terima SMS dari <ph name="DEVICE_TYPE" /> Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Laporkan masalah terkait Google Cast</translation>
+<translation id="966588271015727539">Pilih penampil braille bluetooth</translation>
 <translation id="967398046773905967">Jangan izinkan situs apa pun mengakses perangkat HID</translation>
 <translation id="967624055006145463">Data disimpan</translation>
 <translation id="96774243435178359">Printer terkelola</translation>

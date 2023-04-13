@@ -46,6 +46,7 @@
 <translation id="1038462104119736705">‏يُنصَح بتوفير <ph name="INSTALL_SIZE" /> على الأقل من المساحة لنظام التشغيل Linux. ولزيادة المساحة الخالية، يجب حذف ملفات من جهازك.</translation>
 <translation id="1038643060055067718">الأسطر:</translation>
 <translation id="1039337018183941703">ملف تالف أو غير صالح</translation>
+<translation id="1040761927998636252">إشارة مرجعية بدون اسم للموقع الإلكتروني <ph name="URL" /></translation>
 <translation id="1041175011127912238">الصفحة لا تستجيب.</translation>
 <translation id="1041263367839475438">الأجهزة المتوفِّرة</translation>
 <translation id="1042174272890264476">‏يأتي جهاز الكمبيوتر أيضًا مزودًا بمكتبة RLZ مضمنة للمنتج <ph name="SHORT_PRODUCT_NAME" />. تعيّن RLZ علامة غير فريدة وغير متعلقة بتحديد الشخصية من أجل قياس عمليات البحث ومعدل استخدام <ph name="SHORT_PRODUCT_NAME" /> الذي تؤثر فيه حملة ترويجية محددة. تظهر هذه التصنيفات أحيانًا في طلبات بحث Google في <ph name="PRODUCT_NAME" />.</translation>
@@ -2727,6 +2728,7 @@
 <translation id="3336855445806447827">غير متأكّد</translation>
 <translation id="3337568642696914359">عدم السماح للمواقع الإلكترونية بمعالجة البروتوكولات</translation>
 <translation id="3340620525920140773">اكتمل التنزيل: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">الإعدادات</translation>
 <translation id="3341699307020049241">رقم التعريف الشخصي غير صحيح. عدد المحاولات المتبقية لديك هو <ph name="RETRIES" /></translation>
 <translation id="3341703758641437857">‏السماح بالدخول إلى عناوين URL للملفات</translation>
 <translation id="3342361181740736773">يرغب "<ph name="TRIGGERING_EXTENSION_NAME" />" في إزالة هذه الإضافة.</translation>
@@ -4097,6 +4099,7 @@
 <translation id="4545759655004063573">لا يمكن الحفظ نظرًا لأن الأذونات غير كافية. يُرجى الحفظ في مكان آخر.</translation>
 <translation id="4546308221697447294">‏استمتع بالتصفح السريع باستخدام Google Chrome</translation>
 <translation id="4546345569117159016">زر الماوس الأيمن</translation>
+<translation id="4546509872654834602">‫"<ph name="SUPERVISED_USER_NAME" />" بحاجة إلى استخدام هذه الإضافة</translation>
 <translation id="4546692474302123343">‏الإدخال الصوتي في "مساعد Google"</translation>
 <translation id="4547659257713117923">ليست هناك علامات تبويب من أجهزة أخرى</translation>
 <translation id="4547672827276975204">ضبط المنطقة الزمنية تلقائيًا</translation>
@@ -5578,6 +5581,7 @@
 <translation id="5904614460720589786">تعذّر إعداد <ph name="APP_NAME" /> بسبب مشكلة في الضبط. يُرجى التواصل مع مشرفك. رمز الخطأ: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">أوشك التحديث على الانتهاء! أعِد تشغيل الجهاز لإنهاء التحديث.</translation>
 <translation id="5906732635754427568">ستتم إزالة البيانات المقترنة بهذا التطبيق من هذا الجهاز.</translation>
+<translation id="5906974869830879618">يُرجى إدخال رقم تعريف شخصي</translation>
 <translation id="5908474332780919512">تشغيل التطبيق تلقائيًا عند تسجيل الدخول</translation>
 <translation id="5908695239556627796">سرعة تمرير الماوس</translation>
 <translation id="5909379458939060601">هل تريد حذف هذا الملف الشخصي وبيانات التصفّح؟</translation>
@@ -6974,6 +6978,7 @@
 <translation id="7139627972753429585">يستخدم تطبيق <ph name="APP_NAME" /> الميكروفون.</translation>
 <translation id="7141105143012495934">فشل تسجيل الدخول، نظرًا لعدم القدرة على استرداد تفاصيل حسابك، يُرجى الاتصال بالمسؤول أو إعادة المحاولة.</translation>
 <translation id="7141844554192012199">عمليات التحقّق من كلمات المرور</translation>
+<translation id="7143207342074048698">اتصال</translation>
 <translation id="7144878232160441200">إعادة المحاولة</translation>
 <translation id="7148426638542880639">قد لا تعمل المواقع الإلكترونية على النحو المتوقَّع. حدِّد هذا الخيار إذا كنت لا تريد حفظ المعلومات الخاصة بالمواقع الإلكترونية التي تزورها على جهازك.</translation>
 <translation id="7149839598364933473">تحويل هذا الجهاز إلى جهاز متوافق مع نظام التشغيل <ph name="DEVICE_OS" /></translation>
@@ -7898,7 +7903,7 @@
 <translation id="7952904276017482715">رقم التعريف المتوقَّع "<ph name="EXPECTED_ID" />"، ولكن رقم التعريف كان "<ph name="NEW_ID" />".</translation>
 <translation id="7953669802889559161">أساليب الإدخال</translation>
 <translation id="7953955868932471628">إدارة لإختصارات</translation>
-<translation id="7955105108888461311">طلب الوصول شخصيًا</translation>
+<translation id="7955105108888461311">الطلب شخصيًا</translation>
 <translation id="7955177647836564772">‏في حال تفعيل مجموعة ميزات Smart Lock وكان هاتفك غير مقفل، لن تحتاج إلى إدخال كلمة مرور أو رقم تعريف شخصي.</translation>
 <translation id="7956373551960864128">الطابعات المحفوظة</translation>
 <translation id="7957074856830851026">الاطّلاع على معلومات الجهاز، مثل الرقم التسلسلي أو رقم تعريف مادة العرض</translation>
@@ -9382,6 +9387,7 @@
 <translation id="964790508619473209">ترتيب موضع الشاشة</translation>
 <translation id="965211523698323809">إرسال رسائل نصية واستلامها من جهاز <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">‏الإبلاغ عن مشكلة في Google Cast</translation>
+<translation id="966588271015727539">اختيار عرض البلوتوث بلغة برايل</translation>
 <translation id="967398046773905967">‏عدم السماح لأي موقع إلكتروني بالوصول إلى أجهزة HID</translation>
 <translation id="967624055006145463">البيانات المُخزَّنة</translation>
 <translation id="96774243435178359">الطابعات المُدارة</translation>

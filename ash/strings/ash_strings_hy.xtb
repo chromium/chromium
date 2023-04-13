@@ -148,6 +148,7 @@
 <translation id="1651914502370159744">Բացել պատմության էջը</translation>
 <translation id="1654477262762802994">Հնչեցնել հարցում</translation>
 <translation id="1668469839109562275">Ներկառուցված VPN</translation>
+<translation id="1675844249244994876">Թարմացնել աջ պատուհանը</translation>
 <translation id="1677472565718498478">Մնացել է <ph name="TIME" /></translation>
 <translation id="1677507110654891115">«<ph name="FEATURE_NAME" />» գործառույթը միացված չէ։</translation>
 <translation id="1677582821739292812">Ինչ-որ մեկը նայում է ձեր էկրանին</translation>
@@ -367,7 +368,6 @@
 <translation id="2726420622004325180">Թեժ կետն ակտիվացնելու համար հեռախոսում պետք է միացված լինի բջջային ինտերնետը</translation>
 <translation id="2727175239389218057">Պատասխանել</translation>
 <translation id="2727977024730340865">Միացված է թույլ լիցքավորիչի: Մարտկոցի լիցքավորումը կարող է հուսալի չլինել:</translation>
-<translation id="2740531572673183784">Եղավ</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">«Delete» (Ջնջել)</translation>
 <translation id="2750941250130734256">Ակտիվ պատուհանն ապամրացված է։</translation>
@@ -847,6 +847,7 @@
 <translation id="493076006037866439">Փոքրացնել էկրանի մասշտաբը</translation>
 <translation id="4936329710968938986">Բոլորը, անջատված է</translation>
 <translation id="4938176435186993759">Թաքցնել բոլոր առաջարկները</translation>
+<translation id="4943007472417128747">Թեժ կետն անջատվել է՝ Wi-Fi-ն օգտագործելու համար։ Թեժ կետն օգտագործելու համար անջատեք Wi-Fi-ը։</translation>
 <translation id="4945196315133970626">Անջատել ծանուցումները</translation>
 <translation id="4946376291507881335">Լուսանկարել</translation>
 <translation id="495046168593986294">Ոլորել վեր</translation>
@@ -1390,6 +1391,7 @@
 Սրաքն անջատելու համար նորից սեղմեք և պահեք սնուցման կոճակը։</translation>
 <translation id="7526573455193969409">Ցանցը կարող է վերահսկվել</translation>
 <translation id="7536035074519304529">IP հասցե՝ <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Թարմացնել ձախ պատուհանը</translation>
 <translation id="7543399541175347147">Լինուքսի հավելվածներն ու ինկոգնիտո պատուհանները ներկայումս չեն աջակցվում։ Մյուս հավելվածները կպահվեն։</translation>
 <translation id="7544300628205093162">Ստեղնաշարի հետնալույսը միացված է</translation>
 <translation id="7548434653388805669">Քնելու ժամն է</translation>
@@ -1470,6 +1472,7 @@
 <translation id="7893503627044934815">Չեմ ուզում, որ այս ֆայլը ցուցադրվի</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Դուք սեղմել եք էկրանի պտտման դյուրանցման ստեղները: Ուզում եք պտտե՞լ էկրանը:</translation>
+<translation id="7901190436359881020">Տեղերով փոխել պատուհանները</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Հպեք մատնահետքի սկաներին</translation>
 <translation id="7904094684485781019">Այս հաշվի ադմինիստրատորը բազմակի մուտք չի թույլատրել:</translation>

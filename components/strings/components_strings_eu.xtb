@@ -1063,7 +1063,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3631244953324577188">Sistema biometrikoak</translation>
 <translation id="3632503704576938756">Pantaila-partekatzeari berrekin zaio</translation>
 <translation id="3632892046558972264">Pantaila-partekatzea pausatu da</translation>
-<translation id="3633035844150606508">Gorde helbidea zure Google-ko kontuan (<ph name="ACCOUNT" />)</translation>
 <translation id="3633738897356909127">"Eguneratu Chrome" botoia: sakatu "Sartu" Chrome eguneratzeko Chrome-ren ezarpenetan</translation>
 <translation id="3634530185120165534">5. erretilua</translation>
 <translation id="3634567936866541746">Webgune engainagarri batean idatzi duzu pasahitza. Kontuak babesteko, gordetako pasahitzei begiratu bat ematea gomendatzen du Chrome-k.</translation>
@@ -1730,6 +1729,8 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5234764350956374838">Baztertu</translation>
 <translation id="5239623327352565343">Eman da kokapena erabiltzeko baimena</translation>
 <translation id="5242889659037569123">Ekipajea eta bidaia-osagarriak</translation>
+<translation id="5244732203286792411">Kargatzen…
+    Minutu bat beharko da.</translation>
 <translation id="5250209940322997802">"Konektatu sarera"</translation>
 <translation id="52517543715119994">Lortu informazio gehiago Chrome-ren eginbideei buruz</translation>
 <translation id="5251803541071282808">Hodeia</translation>

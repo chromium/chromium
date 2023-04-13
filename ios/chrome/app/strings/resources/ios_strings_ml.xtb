@@ -219,7 +219,6 @@
 <translation id="2482878487686419369">അറിയിപ്പുകൾ</translation>
 <translation id="2496626742194544812">ആദ്യ ടാബിലേക്ക് പോകുക</translation>
 <translation id="2500374554657206846">പാസ്‌വേഡ് സംരക്ഷിക്കാനുള്ള ഓപ്‌ഷനുകൾ</translation>
-<translation id="2502415369140591438">ആവർത്തിച്ച് ഉപയോഗിക്കുന്ന <ph name="COUNT" /> പാസ്‌വേഡുകൾ</translation>
 <translation id="2523363575747517183">മറ്റൊരു ആപ്പ് തുറക്കാൻ ഈ വെബ്‌സൈറ്റ് ആവർത്തിച്ച് ശ്രമിക്കുന്നു.</translation>
 <translation id="2529021024822217800">എല്ലാം തുറക്കുക</translation>
 <translation id="2547458583188611426">സമന്വയിപ്പിക്കൽ പ്രവർത്തിക്കുന്നില്ല. സമന്വയിപ്പിക്കാൻ തുടങ്ങുന്നതിന് നിങ്ങളുടെ പാസ്‌ഫ്രെയ്‌സ് നൽകുക.</translation>
@@ -391,7 +390,6 @@
 <translation id="3581564640715911333">പേജുകൾ മറ്റ് ഭാഷകളിലേക്ക് വിവർത്തനം ചെയ്യാനുള്ള ഓഫർ</translation>
 <translation id="3588820906588687999">ചിത്രം പുതിയ ടാബിൽ തുറക്കുക</translation>
 <translation id="3595252146048399851">എന്തൊക്കെ സമന്വയിപ്പിക്കണമെന്ന് നിങ്ങൾക്ക് എല്ലായ്‌പ്പോഴും <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> തിരഞ്ഞെടുക്കാം. നിങ്ങളുടെ ചരിത്രത്തെ അടിസ്ഥാനമാക്കി, Search, മറ്റ് സേവനങ്ങൾ എന്നിവ Google വ്യക്തിപരമാക്കിയേക്കാം.</translation>
-<translation id="3595588371156514964">{COUNT,plural, =1{ദുർബലമായ {COUNT} പാസ്‌വേഡ്}other{ദുർബലമായ {COUNT} പാസ്‌വേഡുകൾ}}</translation>
 <translation id="3603009562372709545">ലിങ്ക് URL പകർത്തുക</translation>
 <translation id="3607167657931203000">സ്വയമേവ പൂരിപ്പിക്കൽ ഡാറ്റ</translation>
 <translation id="3608008480985212611">നിങ്ങളുടെ മുൻഗണനകൾ മാനേജ് ചെയ്യാൻ സൈൻ ഇൻ ചെയ്യുക.</translation>
@@ -437,7 +435,6 @@
 <translation id="3928666092801078803">എന്റെ വിവരങ്ങൾ സംയോജിപ്പിക്കുക</translation>
 <translation id="3929457972718048006">വിലാസങ്ങള്‍</translation>
 <translation id="3943492037546055397">പാസ്‌വേഡുകൾ</translation>
-<translation id="3951717558054674026">{count,plural, =1{ദുർബലമായ {count} പാസ്‌വേഡ്}other{ദുർബലമായ {count} പാസ്‌വേഡുകൾ}}</translation>
 <translation id="3959736869653157332">മെനു → പുതിയ അദൃശ്യ ടാബ്</translation>
 <translation id="3967822245660637423">ഡൗൺലോഡ് പൂർത്തിയായി</translation>
 <translation id="3968505803272650567">താൽപ്പര്യങ്ങൾ മാനേജ് ചെയ്യുക</translation>
@@ -774,7 +771,6 @@
 <translation id="6184086493125982861">ടാബുകൾ കാണിക്കുക</translation>
 <translation id="6187302354554850004">അവസാനം സമന്വയിപ്പിച്ചത്: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">വായിക്കാത്തവ</translation>
-<translation id="6193424046394092997">{count,plural, =1{{title} എന്നതിലേക്ക് ബുക്ക്‌മാർക്ക് ചെയ്‌തു}other{{title} എന്നതിലേക്ക് ബുക്ക്‌മാർക്ക് ചെയ്‌തു}}</translation>
 <translation id="6196207969502475924">ശബ്ദ തിരയൽ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ടാബ് അടയ്‌ക്കുക}other{{COUNT} ടാബുകൾ അടയ്‌ക്കുക}}</translation>
 <translation id="6210079381482819663"><ph name="THRESHOLD" /> ദിവസമോ അതിൽ കൂടുതലോ ഉപയോഗിക്കാത്ത ടാബുകൾ ഇങ്ങോട്ട് നീക്കും. <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> ഏതുസമയത്തും നിങ്ങൾക്കിത് മാറ്റാം.</translation>
@@ -824,7 +820,6 @@
 
 <ph name="TIME" />-ന് നിങ്ങളുടെ സമന്വയ പാസ്‌ഫ്രെയ്‌സ് ഉപയോഗിച്ച് ഡാറ്റ എൻക്രിപ്‌റ്റ് ചെയ്‌തു. സമന്വയം ആരംഭിക്കുന്നതിന് പാസ്ഫ്രേസ് നൽകുക.</translation>
 <translation id="6418346271604475326">PDF തയ്യാറാക്കുന്നു</translation>
-<translation id="6421095165635308">{count,plural, =1{{email} എന്ന നിങ്ങളുടെ അക്കൗണ്ടിലെ {title} എന്നതിലേക്ക് ബുക്ക്‌മാർക്ക് സംരക്ഷിച്ചു}other{{email} എന്ന നിങ്ങളുടെ അക്കൗണ്ടിലെ {title} എന്നതിലേക്ക് ബുക്ക്‌മാർക്കുകൾ സംരക്ഷിച്ചു}}</translation>
 <translation id="6429213933892582367">പാസ്‌വേഡ് ഓപ്ഷനുകൾ തുറക്കുക</translation>
 <translation id="6434591244308415567">ഒരു പിശകുണ്ടായി. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="6435236283694032571">വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിൽ ചേർക്കുക</translation>
@@ -1213,7 +1208,6 @@
 <translation id="8974714402877957201">1. iPad ക്രമീകരണം തുറക്കുക</translation>
 <translation id="8976382372951310360">സഹായം</translation>
 <translation id="8976414606286374109">കാർഡുകൾ Google അക്കൗണ്ടിലേക്ക് സംരക്ഷിച്ചു.</translation>
-<translation id="8978059030508051916">{count,plural, =0{അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകൾ ഒന്നുമില്ല}=1{അപഹരിക്കപ്പെട്ട {count} പാസ്‌വേഡ്}other{അപഹരിക്കപ്പെട്ട {count} പാസ്‌വേഡുകൾ}}</translation>
 <translation id="8981454092730389528">Google പ്രവർത്തന നിയന്ത്രണങ്ങൾ</translation>
 <translation id="8985320356172329008">ഇനിപ്പറയുന്ന പേരിൽ Google-ലേക്ക് സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്നു</translation>
 <translation id="8986567980592931173">നിങ്ങളുടെ പാസ്‌വേഡുകളും ചരിത്രവും മറ്റും സമന്വയിപ്പിക്കാൻ നിങ്ങളുടെ Google Account ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക.</translation>

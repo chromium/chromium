@@ -1066,7 +1066,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3631244953324577188">Biometria</translation>
 <translation id="3632503704576938756">Zdieľanie obrazovky bolo obnovené</translation>
 <translation id="3632892046558972264">Zdieľanie obrazovky je pozastavené</translation>
-<translation id="3633035844150606508">Uloženie adresy v účte Google <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Tlačidlo Aktualizovať Chrome. Stlačením tlačidla Enter aktualizujete Chrome v jeho nastaveniach.</translation>
 <translation id="3634530185120165534">Priehradka č. 5</translation>
 <translation id="3634567936866541746">Práve ste zadali svoje heslo na podvodnom webe. Chrome odporúča skontrolovať uložené heslá, aby ste zabezpečili svoje účty.</translation>
@@ -1735,6 +1734,8 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5234764350956374838">Ignorovať</translation>
 <translation id="5239623327352565343">Poloha je povolená</translation>
 <translation id="5242889659037569123">Batožina a doplnky na cestovanie</translation>
+<translation id="5244732203286792411">Načítava sa…
+    Môže to chvíľu trvať.</translation>
 <translation id="5250209940322997802">„Pripojte sa k sieti“</translation>
 <translation id="52517543715119994">Informácie o funkciách Chromu</translation>
 <translation id="5251803541071282808">Cloud</translation>

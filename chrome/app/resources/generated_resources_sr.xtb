@@ -2721,6 +2721,7 @@
 <translation id="3336855445806447827">Не знам</translation>
 <translation id="3337568642696914359">Не дозвољавај сајтовима да управљају протоколима</translation>
 <translation id="3340620525920140773">Преузимање је завршено: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">подешавања</translation>
 <translation id="3341699307020049241">Нетачан PIN. Имате још <ph name="RETRIES" /> покушаја.</translation>
 <translation id="3341703758641437857">Дозволи приступ URL адресама датотека</translation>
 <translation id="3342361181740736773">„<ph name="TRIGGERING_EXTENSION_NAME" />“ жели да уклони овај додатак.</translation>
@@ -5576,6 +5577,7 @@
 <translation id="5904614460720589786">Подешавање апликације <ph name="APP_NAME" /> није успело због проблема са конфигурацијом. Обратите се администратору. Кôд грешке: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Ажурирање је скоро готово! Поново покрените уређај да бисте довршили ажурирање.</translation>
 <translation id="5906732635754427568">Подаци повезани са овом апликацијом ће бити уклоњени са овог уређаја.</translation>
+<translation id="5906974869830879618">Унесите PIN</translation>
 <translation id="5908474332780919512">Покрени апликацију када се пријавим</translation>
 <translation id="5908695239556627796">Брзина померања мишем</translation>
 <translation id="5909379458939060601">Желите да избришете овај профил и податке прегледања?</translation>
@@ -6967,6 +6969,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> користи микрофон</translation>
 <translation id="7141105143012495934">Пријављивање није успело јер нисмо успели да преузмемо детаље о налогу. Контактирајте администратора или покушајте поново.</translation>
 <translation id="7141844554192012199">Провери</translation>
+<translation id="7143207342074048698">Повезивање</translation>
 <translation id="7144878232160441200">Пробај поново</translation>
 <translation id="7148426638542880639">Сајтови можда неће радити на очекивани начин. Одаберите ову опцију ако на уређају не желите да остављате информације о сајтовима које посећујете.</translation>
 <translation id="7149839598364933473">Претворите овај уређај у <ph name="DEVICE_OS" /> уређај.</translation>
@@ -9373,6 +9376,7 @@
 <translation id="964790508619473209">Распоред на екрану</translation>
 <translation id="965211523698323809">Шаљите и примајте SMS-ове са уређаја <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Пријавите проблем са Google Cast-ом</translation>
+<translation id="966588271015727539">Изаберите Bluetooth Брајев екран</translation>
 <translation id="967398046773905967">Не дозвољавај сајтовима да приступају уређајима са интерфејсом</translation>
 <translation id="967624055006145463">Сачувани подаци</translation>
 <translation id="96774243435178359">Управљани штампачи</translation>

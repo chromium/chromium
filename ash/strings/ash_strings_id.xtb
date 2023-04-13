@@ -368,7 +368,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2726420622004325180">Ponsel harus memiliki data seluler agar dapat mengaktifkan hotspot</translation>
 <translation id="2727175239389218057">Balas</translation>
 <translation id="2727977024730340865">Dipasang ke pengisi daya rendah. Pengisian daya baterai mungkin tidak dapat diandalkan.</translation>
-<translation id="2740531572673183784">Oke</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Hapus"</translation>
 <translation id="2750941250130734256">Jendela yang aktif dilepas kaitannya.</translation>
@@ -1073,6 +1072,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="5976112937189445008">Tekan Enter untuk merekam jendela</translation>
 <translation id="5978382165065462689">Berbagi kontrol layar via Remote Assistance.</translation>
 <translation id="5980301590375426705">Hentikan sesi tamu</translation>
+<translation id="5983567367406220847">Karena tidak ada aktivitas, hotspot telah dinonaktifkan.</translation>
 <translation id="598407983968395253">Gunakan template</translation>
 <translation id="598882571027504733">Untuk mendapatkan update, nyalakan ulang Chromebook dengan keyboard dalam keadaan terhubung.</translation>
 <translation id="6002179289567220515">Anda menggunakan tombol fisik untuk menonaktifkan 1 kamera. Anda juga dapat menonaktifkan akses untuk semua kamera.</translation>
@@ -1375,6 +1375,7 @@ Baru diinstal</translation>
 <translation id="7452560014878697800">Aplikasi sedang menggunakan kamera Anda</translation>
 <translation id="7453330308669753048">Hasil histori penelusuran dihapus</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> hingga penuh</translation>
+<translation id="7459485586006128091">Karena error internal, hotspot telah dinonaktifkan. Coba hubungkan kembali dalam beberapa menit.</translation>
 <translation id="7461924472993315131">Sematkan</translation>
 <translation id="746232733191930409">Mode perekaman layar</translation>
 <translation id="7466449121337984263">Sentuh sensor</translation>
@@ -1448,6 +1449,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="776344839111254542">Klik untuk melihat detail update</translation>
 <translation id="7768784765476638775">Klik untuk diucapkan</translation>
 <translation id="7769299611924763557">GIF Anda akan segera siap</translation>
+<translation id="7773536009433685931">Aktifkan Wi-Fi</translation>
 <translation id="7780094051999721182">pintasan</translation>
 <translation id="7780159184141939021">Memutar Layar</translation>
 <translation id="7796735576426975947">Notifikasi baru disembunyikan</translation>

@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Před 1 dnem}few{Před # dny}many{Před # dne}other{Před # dny}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{před minutou}few{před # minutami}many{před # minuty}other{před # minutami}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 min}few{# min}many{# min}other{# min}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{Před 1 dnem}few{Před # dny}many{Před # dne}other{Před # dny}}</translation>
 <translation id="1181037720776840403">Odebrat</translation>
 <translation id="1243314992276662751">Nahrát</translation>
 <translation id="1266864766717917324">Sdílení obsahu typu <ph name="CONTENT_TYPE" /> se nezdařilo</translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">Zleva doprava</translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1398853756734560583">Maximalizovat</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{Před 1 minutou}few{Před # minutami}many{Před # minuty}other{Před # minutami}}</translation>
 <translation id="1450753235335490080">Sdílení obsahu typu <ph name="CONTENT_TYPE" /> se nezdařilo</translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{Před měsícem}few{Před # měsíci}many{Před # měsíce}other{Před # měsíci}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minuta a  }few{# minuty a  }many{# minuty a  }other{# minut a  }}</translation>
 <translation id="1643823602425662293">Oznámení</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">Obrázek</translation>
 <translation id="4565377596337484307">Skrýt heslo</translation>
 <translation id="4588090240171750605">Posuv doprava</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{Před rokem}few{Před # lety}many{Před # roku}other{Před # lety}}</translation>
 <translation id="4724120544754982507">Centrum oznámení – nepřečtená oznámení: <ph name="UNREAD_NOTIFICATION_COUNT" /></translation>
 <translation id="4729257764711776855">číslo</translation>
 <translation id="4746179598275229723">Rozšíření bylo uvolněno</translation>
@@ -212,10 +216,12 @@
 <translation id="8867568208303837180">Odesílání...</translation>
 <translation id="8876215549894133151">Formát:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{Před hodinou}few{Před # hodinami}many{Před # hodiny}other{Před # hodinami}}</translation>
 <translation id="8996630695507351249">Zkontrolujte, zda je zařízení <ph name="TARGET_DEVICE_NAME" /> připojené k internetu.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 s}few{# s}many{# s}other{# s}}</translation>
 <translation id="9059834730836941392">Sbalit oznámení</translation>
 <translation id="9170848237812810038">Z&amp;pět</translation>
 <translation id="932327136139879170">Domovská stránka</translation>
 <translation id="944069440740578670">Nepřečtená oznámení</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{Před 1 sekundou}few{Před # sekundami}many{Před # sekundy}other{Před # sekundami}}</translation>
 </translationbundle>

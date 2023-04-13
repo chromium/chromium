@@ -107,6 +107,7 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="1493287004536771723">Jūs sekojat vietnei <ph name="SITE_NAME" />.</translation>
 <translation id="1502010315804028179">Lai pārvaldītu paroles, atjauniniet Google Play pakalpojumus.</translation>
 <translation id="1506061864768559482">Meklētājprogramma</translation>
+<translation id="1508960385613684700">Konfidencialitātes ceļvedis <ph name="BEGIN_NEW" />Jaunums<ph name="END_NEW" /></translation>
 <translation id="1513352483775369820">Grāmatzīmes un tīmekļa vēsture</translation>
 <translation id="1513814250881909472">Veiciet sinhronizāciju, lai iegūtu cilnes no savām pārējām ierīcēm</translation>
 <translation id="1513858653616922153">Dzēst paroli</translation>
@@ -161,6 +162,7 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="1910950723001426294">Kopīgošanas opciju saraksts ir aizvērts.</translation>
 <translation id="1919130412786645364">Atļaut pierakstīties pārlūkā Chrome</translation>
 <translation id="1922362554271624559">Ieteiktās valodas</translation>
+<translation id="1924255092154549435">Cilne ir izvērsta</translation>
 <translation id="1925021887439448749">Ievadiet pielāgotu tīmekļa adresi</translation>
 <translation id="1928696683969751773">Atjaunināšana</translation>
 <translation id="19288952978244135">Atkārtoti atveriet pārlūku Chrome.</translation>
@@ -769,6 +771,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="5161254044473106830">Jānorāda nosaukums</translation>
 <translation id="5170568018924773124">Rādīt mapē</translation>
 <translation id="5171045022955879922">Meklējiet vai ievadiet URL.</translation>
+<translation id="5174700554036517242">Cilne ir sakļauta sākotnējā augstumā</translation>
 <translation id="5184329579814168207">Atvērt pārlūkā Chrome</translation>
 <translation id="5191251636205085390">Uzziniet par jaunām tehnoloģijām, kas izstrādātas, lai aizstātu trešo pušu sīkfailus, un pārvaldiet tās.</translation>
 <translation id="5193988420012215838">Kopēts jūsu starpliktuvē</translation>
@@ -1251,6 +1254,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7686086654630106285">Vairāk par vietnēs ieteiktajām reklāmām</translation>
 <translation id="768618399695552958">Dažas no jūsu apmeklētajām lapām ir ielādētas iepriekš. Lapas var tikt ielādētas iepriekš, izmantojot Google serverus, ja novirzīšana tiek veikta no Google vietnes.</translation>
 <translation id="7691043218961417207">Izpētiet saturu, kam sekot</translation>
+<translation id="7697383401610880082">Vilkšanas turis</translation>
 <translation id="7698359219371678927">Izveidojiet e-pasta ziņojumu lietotnē <ph name="APP_NAME" />.</translation>
 <translation id="7707922173985738739">Izmantot mobilos datus</translation>
 <translation id="7709094866268987903">Šeit būs redzamas jūsu noņemtās intereses.</translation>

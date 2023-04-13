@@ -4,7 +4,7 @@
 <translation id="1012876632442809908">USB-C uređaj (prednji priključak)</translation>
 <translation id="1013598600051641573">Rezolucija uređaja <ph name="DISPLAY_NAME" /> je promijenjena na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) Kliknite Potvrdi da zadržite promjene. Prethodne postavke će se vratiti za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth uređaj "<ph name="DEVICE_NAME" />" traži odobrenje za uparivanje. Unesite ovaj PIN kôd na taj uređaj: <ph name="PINCODE" /></translation>
-<translation id="1014722676793506285">To omogućuje da <ph name="APP_NAME" /> i sve aplikacije i web-lokacije s dopuštenjem za lokaciju i ChromeOS-om upotrebljavaju lokaciju Wi-Fija i mobilnih mreža.</translation>
+<translation id="1014722676793506285">Ovo omogućava aplikaciji <ph name="APP_NAME" /> i svim aplikacijama i web lokacijama s odobrenjem za lokaciju te ChromeOS-u da koriste lokacije WiFi-ja i mobilnih mreža.</translation>
 <translation id="1017556409696559990">Minimiziranje gornjeg prozora kada u Chromeu nema historije vraćanja</translation>
 <translation id="1024364763893396229">Sačuvajte uređaj <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Baterija pisaljke je slaba</translation>
@@ -301,7 +301,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2390318262976603432">Postavke jezika/zemlje</translation>
 <translation id="2397416548179033562">Prikaz Chrome menija</translation>
 <translation id="240006516586367791">Kontrole medija</translation>
-<translation id="2402411679569069051">Da otključate Chromebook, koristite otisak prsta ili otključate telefon</translation>
+<translation id="2402411679569069051">Da otključate Chromebook, koristite otisak prsta ili otključajte telefon</translation>
 <translation id="2405664212338326887">Nije povezano</translation>
 <translation id="2408955596600435184">Unesite svoj PIN</translation>
 <translation id="2412593942846481727">Ažuriranje je dostupno</translation>
@@ -368,7 +368,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2726420622004325180">Telefon mora imati prijenos podataka na mobilnoj mreži kako bi mogao pružiti pristupnu tačku</translation>
 <translation id="2727175239389218057">Odgovori</translation>
 <translation id="2727977024730340865">Priključeno na niskonaponski punjač. Punjenje baterije može biti nepouzdano.</translation>
-<translation id="2740531572673183784">Uredu</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Izbrišite"</translation>
 <translation id="2750941250130734256">Aktivni prozor je odvojen.</translation>
@@ -471,7 +470,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3255483164551725916">Šta sve možete uraditi?</translation>
 <translation id="3256109297135787951">Uklonite oznaku sa stavke na polici</translation>
 <translation id="3260969790895726815">Govor se obrađuje lokalno i diktiranje funkcionira offline, ali neke glasovne komande neće funkcionirati.</translation>
-<translation id="3265032511221679826">Želite li uključiti pristup točnoj lokaciji?</translation>
+<translation id="3265032511221679826">Uključiti pristup tačnoj lokaciji?</translation>
 <translation id="3269597722229482060">Desni klik</translation>
 <translation id="3289364673986435196">Meni napajanja</translation>
 <translation id="3289544412142055976">Linux aplikacije trenutno nisu podržane</translation>
@@ -582,7 +581,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="366222428570480733">Korisnik kojim upravlja <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Prevucite da sakrijete plutajući prozor</translation>
 <translation id="367531336287639526">Odaberite prvu ikonu s lijeve strane trake za adresu</translation>
-<translation id="3677931086890821290">To svim aplikacijama i web-lokacijama s dopuštenjem za lokaciju i ChromeOS-om omogućuje upotrebu lokacije Wi-Fija i mobilnih mreža.</translation>
+<translation id="3677931086890821290">Ovo omogućava svim aplikacijama i web lokacijama s odobrenjem za lokaciju te ChromeOS-u da koriste lokacije WiFi-ja i mobilnih mreža.</translation>
 <translation id="3679827876008292680">Odlazak na posljednju karticu u prozoru</translation>
 <translation id="36813544980941320">WiFi mreže će se dijeliti između vašeg telefona i uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Web lokacije</translation>
@@ -1754,7 +1753,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="9198992156681343238">Rezolucija uređaja <ph name="DISPLAY_NAME" /> je promijenjena na <ph name="RESOLUTION" />. Kliknite Potvrdi da zadržite promjene. Prethodne postavke će se vratiti za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Povežite uređaj <ph name="NAME" /> s ovim Chromebookom</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, upravlja vaš administrator</translation>
-<translation id="9207682216934703221">To omogućuje da <ph name="APP_NAME" />, <ph name="APP2_NAME" /> te sve aplikacije i web-lokacije s dopuštenjem za lokaciju i ChromeOS-om upotrebljavaju lokaciju Wi-Fija i mobilnih mreža.</translation>
+<translation id="9207682216934703221">Ovo omogućava aplikaciji <ph name="APP_NAME" />, <ph name="APP2_NAME" /> i svim aplikacijama i web lokacijama s odobrenjem za lokaciju te ChromeOS-u da koriste lokacije WiFi-ja i mobilnih mreža.</translation>
 <translation id="9210037371811586452">Izlaz iz unificiranog načina rada na računaru</translation>
 <translation id="9211490828691860325">Sve radne površine</translation>
 <translation id="9211681782751733685">Preostalo je još <ph name="TIME_REMAINING" /> do potpune napunjenosti baterije</translation>

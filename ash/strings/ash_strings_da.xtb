@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C-enhed (port foran)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> blev ændret til <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik på Bekræft for at gemme ændringerne. De tidligere indstillinger gendannes om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth-enheden "<ph name="DEVICE_NAME" />" vil gerne have parringstilladelse. Angiv denne pinkode på den pågældende enhed: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">Dette giver <ph name="APP_NAME" />, alle apps og websites med adgangstilladelse til lokation og ChromeOS tilladelse til at bruge lokation baseret på Wi-Fi- og mobilnetværk.</translation>
 <translation id="1017556409696559990">Minimer det øverste vindue, når der ikke er noget at gå tilbage til i Chrome</translation>
 <translation id="1024364763893396229">Gem dine <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Styluspennen er ved at løbe tør for batteri</translation>
@@ -147,6 +148,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1651914502370159744">Åbn siden Historik</translation>
 <translation id="1654477262762802994">Start en stemmeforespørgsel</translation>
 <translation id="1668469839109562275">Indbygget VPN</translation>
+<translation id="1675844249244994876">Opdater vinduet til højre</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> tilbage</translation>
 <translation id="1677507110654891115">Der er ikke forbindelse til <ph name="FEATURE_NAME" />.</translation>
 <translation id="1677582821739292812">Nogen kigger med på din skærm</translation>
@@ -191,6 +193,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Aktivér lokationsadgang</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> blev frigjort</translation>
 <translation id="1838895407229022812">Nattelys er slået fra.</translation>
 <translation id="1854180393107901205">Stop cast</translation>
@@ -365,7 +368,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2726420622004325180">Din telefon skal have mobildata for at fungere som hotspot</translation>
 <translation id="2727175239389218057">Svar</translation>
 <translation id="2727977024730340865">Tilsluttet en oplader med lav kraft. Batteriopladningen er muligvis ikke pålidelig.</translation>
-<translation id="2740531572673183784">OK</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Slet"</translation>
 <translation id="2750941250130734256">Det aktive vindue er frigjort.</translation>
@@ -468,6 +470,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3255483164551725916">Hvad kan du gøre?</translation>
 <translation id="3256109297135787951">Fjern fremhævningen af et element på din hylde</translation>
 <translation id="3260969790895726815">Tale behandles lokalt, og diktering fungerer offline, men visse stemmekommandoer fungerer ikke.</translation>
+<translation id="3265032511221679826">Vil du aktivere præcis lokationsadgang?</translation>
 <translation id="3269597722229482060">Højreklik</translation>
 <translation id="3289364673986435196">Menu for afbryderknappen</translation>
 <translation id="3289544412142055976">Linux-apps understøttes ikke i øjeblikket</translation>
@@ -578,6 +581,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Administreret bruger</translation>
 <translation id="3666266999138159418">Stryg for at skjule det svævende vindue</translation>
 <translation id="367531336287639526">Vælg det første ikon til venstre for adresselinjen</translation>
+<translation id="3677931086890821290">Dette giver alle apps og websites med adgangstilladelse til lokation og ChromeOS tilladelse til at bruge lokation baseret på Wi-Fi- og mobilnetværk.</translation>
 <translation id="3679827876008292680">Gå til den sidste fane i vinduet</translation>
 <translation id="36813544980941320">Wi-Fi-netværk deles mellem din telefon og <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Websites</translation>
@@ -771,7 +775,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4585337515783392668">Stop cast på en ukendt modtager</translation>
 <translation id="4596144739579517758">Mørkt tema er deaktiveret</translation>
 <translation id="4611292653554630842">Log ind</translation>
-<translation id="4623167406982293031">Bekræft konto</translation>
+<translation id="4623167406982293031">Verificer konto</translation>
 <translation id="4628757576491864469">Enheder</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, antal stjerner <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Skift til en tidligere version af enheden inden for en dag}one{Skift til en tidligere version af enheden inden for # dag}other{Skift til en tidligere version af enheden inden for # dage}}</translation>
@@ -844,6 +848,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="493076006037866439">Zoom ud på skærmen</translation>
 <translation id="4936329710968938986">Alle, deaktiveret</translation>
 <translation id="4938176435186993759">Skjul alle forslag</translation>
+<translation id="4943007472417128747">Hotspot er blevet deaktiveret, så der kan bruges Wi-Fi. Deaktiver Wi-Fi for at bruge hotspot.</translation>
 <translation id="4945196315133970626">Deaktiver notifikationer</translation>
 <translation id="4946376291507881335">Tag billeder</translation>
 <translation id="495046168593986294">Rul op</translation>
@@ -1067,6 +1072,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5976112937189445008">Tryk på Enter for at optage vinduet</translation>
 <translation id="5978382165065462689">Skærmdeling via Fjernsupport.</translation>
 <translation id="5980301590375426705">Afslut gæst</translation>
+<translation id="5983567367406220847">Hotspottet er blevet deaktiveret på grund af inaktivitet.</translation>
 <translation id="598407983968395253">Brug skabelon</translation>
 <translation id="598882571027504733">Genstart din Chromebook med det tilsluttede tastatur for at hente opdateringen.</translation>
 <translation id="6002179289567220515">Du brugte den fysiske kontakt til at slukke 1 kamera. Du kan også deaktivere adgang for alle kameraer.</translation>
@@ -1369,6 +1375,7 @@ Installeret for nylig</translation>
 <translation id="7452560014878697800">Dit kamera anvendes af en app</translation>
 <translation id="7453330308669753048">Resultatet fra søgehistorikken er fjernet</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> til batteriet er fuldt opladet</translation>
+<translation id="7459485586006128091">Hotspottet er blevet deaktiveret på grund af en intern fejl. Prøv at genoprette forbindelsen om et par minutter.</translation>
 <translation id="7461924472993315131">Fastgør</translation>
 <translation id="746232733191930409">Tilstanden Skærmoptagelse</translation>
 <translation id="7466449121337984263">Placer fingeren på sensoren</translation>
@@ -1388,6 +1395,7 @@ Installeret for nylig</translation>
 Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</translation>
 <translation id="7526573455193969409">Netværket kan være overvåget</translation>
 <translation id="7536035074519304529">IP-adresse: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Opdater vinduet til venstre</translation>
 <translation id="7543399541175347147">Linux-apps og inkognitovinduer understøttes ikke i øjeblikket. Andre apps gemmes.</translation>
 <translation id="7544300628205093162">Baggrundslyset på tastaturet er tændt</translation>
 <translation id="7548434653388805669">Det er sengetid</translation>
@@ -1441,6 +1449,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="776344839111254542">Klik for at se opdateringsoplysninger</translation>
 <translation id="7768784765476638775">Tekstoplæsning</translation>
 <translation id="7769299611924763557">Din gif er klar om et øjeblik</translation>
+<translation id="7773536009433685931">Aktivér Wi-Fi i stedet</translation>
 <translation id="7780094051999721182">genveje</translation>
 <translation id="7780159184141939021">Roter skærm</translation>
 <translation id="7796735576426975947">Nye notifikationer er skjult</translation>
@@ -1468,6 +1477,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7893503627044934815">Jeg vil ikke have, at denne fil vises</translation>
 <translation id="7895348134893321514">Transportkasse</translation>
 <translation id="7897375687985782769">Du trykkede på tastaturgenvejen for skærmrotation. Vil du rotere skærmen?</translation>
+<translation id="7901190436359881020">Byt vinduerne</translation>
 <translation id="7901405293566323524">Telefonstyring</translation>
 <translation id="7902625623987030061">Sæt finger på fingeraftrykslæser</translation>
 <translation id="7904094684485781019">Administratoren for denne konto tillader ikke samlet login fra flere konti.</translation>
@@ -1743,6 +1753,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="9198992156681343238">Opløsningen for <ph name="DISPLAY_NAME" /> er blevet ændret til <ph name="RESOLUTION" />. Klik på Bekræft for at gemme ændringerne. De tidligere indstillinger gendannes om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Opret forbindelse mellem <ph name="NAME" /> og denne Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, administreret af din administrator</translation>
+<translation id="9207682216934703221">Dette giver <ph name="APP_NAME" />, <ph name="APP2_NAME" />, alle apps og websites med adgangstilladelse til lokation og ChromeOS tilladelse til at bruge lokation baseret på Wi-Fi- og mobilnetværk.</translation>
 <translation id="9210037371811586452">Lukker tilstanden Kombineret skrivebord</translation>
 <translation id="9211490828691860325">Alle skriveborde</translation>
 <translation id="9211681782751733685"><ph name="TIME_REMAINING" /> til batteriet er fuldt opladet.</translation>

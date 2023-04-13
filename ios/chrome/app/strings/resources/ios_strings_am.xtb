@@ -178,6 +178,7 @@
 <translation id="2218443599109088993">አሳንስ</translation>
 <translation id="2230173723195178503">ድረ-ገጽ ተጭኗል</translation>
 <translation id="2239626343334228536">የአሰሳ ውሂብን በማጽዳት ላይ...</translation>
+<translation id="2242467532204595597">በመልዕክቶች፣ ሰነዶች እና ሌሎች መተግበሪያዎች ውስጥ አገናኞች ላይ መታ በሚያደርጉበት በማንኛውም ጊዜ Chromeን ይጠቀሙ።</translation>
 <translation id="22508856139286506">የተሰናበቱ ማስጠንቀቂያዎች (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">ምናሌ → ታሪክ</translation>
 <translation id="2256933947031277845">በተወሰኑ መለያዎች አማካኝነት ብቻ እንዲገቡ ድርጅትዎ ይፈቅድልዎታል።</translation>
@@ -206,6 +207,7 @@
 <translation id="2411749908844615428">{count,plural, =1{{count} የተቀመጠ አድራሻ ከቁልፍ ሰሌዳዎ በላይ ይገኛል።}one{{count} የተቀመጠ አድራሻ ከቁልፍ ሰሌዳዎ በላይ ይገኛል።}other{{count} የተቀመጡ አድራሻዎች ከቁልፍ ሰሌዳዎ በላይ ይገኛሉ።}}</translation>
 <translation id="2421004566762153674">የሶስተኛ ወገን ኩኪዎችን ማገድ</translation>
 <translation id="2421044535038393232">አርትዖቱን ቀጥል</translation>
+<translation id="2423077901494354337">አሁን በመሣሪያዎ ላይ ከChrome ምርጡን ያገኛሉ።</translation>
 <translation id="2434405374328098816"><ph name="WEBSITE" /> ላይ ለ«<ph name="USERNAME" />» የይለፍ ቃል አስቀድመው አስቀምጠዋል</translation>
 <translation id="2435457462613246316">የይለፍ ቃል አሳይ</translation>
 <translation id="2451654228769116489">ትርን ሰካ</translation>
@@ -217,7 +219,6 @@
 <translation id="2482878487686419369">ማስታወቂያዎች</translation>
 <translation id="2496626742194544812">ወደ መጀመሪያ ትር ሂድ</translation>
 <translation id="2500374554657206846">የይለፍ ቃል የሚቀመጡባቸው አማራጮች</translation>
-<translation id="2502415369140591438"><ph name="COUNT" /> ዳግም ጥቅም ላይ የዋሉ የይለፍ ቃላት</translation>
 <translation id="2523363575747517183">ይህ ድር ጣቢያ በተደጋጋሚነት ሌላ መተግበሪያ ለመክፈት እየሞከረ ነው።</translation>
 <translation id="2529021024822217800">ሁሉንም ክፈት</translation>
 <translation id="2547458583188611426">ማስመር እየሰራ አይደለም። ማስመር ለመጀመር የይለፍ ሐረግዎን ያስገቡ።</translation>
@@ -227,6 +228,7 @@
 <translation id="2576499762020411840">በGoogle መለያዎ ውስጥ የይለፍ ቃላትን ይጠቀሙ እና ያስቀምጡ</translation>
 <translation id="2578571896248130439">ድረ-ገጽ ይላኩ</translation>
 <translation id="2584132361465095047">መለያ አክል…</translation>
+<translation id="2595587704210555261">{COUNT,plural, =1{ለአንድ ቀን ወይም ከዚያ በላይ ጥቅም ላይ ያልዋሉ ክፍት ትሮች እርስዎ በቀላሉ በጣም የሚጠቀሟቸው ትሮች ላይ እንዲያተኩሩ ወደ ገቢር ያልሆኑ ትሮች ይንቀሳቀሳሉ። ይህን በማንኛውም ጊዜ በቅንብሮች ውስጥ መለወጥ ይችላሉ።}one{ለ{COUNT} ቀን ወይም ከዚያ በላይ ጥቅም ላይ ያልዋሉ ክፍት ትሮች እርስዎ በቀላሉ በጣም የሚጠቀሟቸው ትሮች ላይ እንዲያተኩሩ ወደ ገቢር ያልሆኑ ትሮች ይንቀሳቀሳሉ። ይህን በማንኛውም ጊዜ በቅንብሮች ውስጥ መለወጥ ይችላሉ።}other{ለ{COUNT} ቀናት ወይም ከዚያ በላይ ጥቅም ላይ ያልዋሉ ክፍት ትሮች እርስዎ በቀላሉ በጣም የሚጠቀሟቸው ትሮች ላይ እንዲያተኩሩ ወደ ገቢር ያልሆኑ ትሮች ይንቀሳቀሳሉ። ይህን በማንኛውም ጊዜ በቅንብሮች ውስጥ መለወጥ ይችላሉ።}}</translation>
 <translation id="2600682495497606169">የጣቢያ ኩኪዎችን ያጽዱ</translation>
 <translation id="2609008503159898744">ሁሉም ትሮች ይዘጉ?</translation>
 <translation id="2625189173221582860">የይለፍ ቃል ተቀድቷል።</translation>
@@ -388,7 +390,6 @@
 <translation id="3581564640715911333">በሌሎች ቋንቋዎች ለመተርጎም ሐሳብ አቅርብ</translation>
 <translation id="3588820906588687999">ምስሉን በአዲስ ትር ውስጥ ክፈት</translation>
 <translation id="3595252146048399851"><ph name="BEGIN_LINK" />ቅንብሮች<ph name="END_LINK" /> ውስጥ በማንኛውም ጊዜ ምን እንደሚያሰምሩ መምረጥ ይችላሉ። Google በእርስዎ ታሪክ ላይ በመመስረት ፍለጋን እና ሌሎች አገልግሎቶችን ግላዊነት ሊያላብስ ይችላል።</translation>
-<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} ደካማ የይለፍ ቃል}one{{COUNT} ደካማ የይለፍ ቃል}other{{COUNT} ደካማ የይለፍ ቃላት}}</translation>
 <translation id="3603009562372709545">የአገናኝ ዩአርኤል ገልብጥ</translation>
 <translation id="3607167657931203000">የራስ-ሙላ ውሂብ</translation>
 <translation id="3608008480985212611">አማራጮችዎን ለማስተዳደር በመለያ ይግቡ።</translation>
@@ -434,7 +435,6 @@
 <translation id="3928666092801078803">የእኔን ውሂብ አጣምር</translation>
 <translation id="3929457972718048006">አድራሻዎች</translation>
 <translation id="3943492037546055397">የይለፍ ቃላት</translation>
-<translation id="3951717558054674026">{count,plural, =1{{count} ደካማ የይለፍ ቃል}one{{count} ደካማ የይለፍ ቃል}other{{count} ደካማ የይለፍ ቃላት}}</translation>
 <translation id="3959736869653157332">ምናሌ → አዲስ ማንነት የማያሳውቅ ትር</translation>
 <translation id="3967822245660637423">ማውረድ ተጠናቅቋል</translation>
 <translation id="3968505803272650567">ፍላጎቶችን አቀናብር</translation>
@@ -575,6 +575,7 @@
 <translation id="4844899002472726590">የሚፈልጓቸውን ርዕሶች ይመልከቱ እና ያርትዑ</translation>
 <translation id="4848999860252535517">የ<ph name="WEBSITE" /> የይለፍ ቃል ይሰረዝ?</translation>
 <translation id="4854345657858711387">የይለፍ ኮድ ያዘጋጁ</translation>
+<translation id="4856498338299082007">በእርስዎ የGoogle መለያ ውስጥ</translation>
 <translation id="4858786880085262208">ሲቻል ወደ ኤችቲቲፒኤስ ያሳድጉ። ደህንነታቸው የተጠበቁ ጣቢያዎች ደህንነቱ ያልተጠበቀ ይዘትን ሊያካትቱ ይችላሉ።</translation>
 <translation id="4860895144060829044">ደውል</translation>
 <translation id="4872323082491632254">የይለፍ ቃላትዎን ይፈትሹ</translation>
@@ -609,6 +610,7 @@
 <translation id="5118764316110575523">ጠፍቷል</translation>
 <translation id="5119391094379141756">Chromeን ይምረጡ</translation>
 <translation id="5121618895923301719">ይህን ምርት አስቀድመው እየተከታተሉት ነው። ይህ ገጽ በ<ph name="BEGIN_LINK" />ተንቀሳቃሽ እልባቶች<ph name="END_LINK" /> ውስጥ ተቀምጧል።</translation>
+<translation id="5126465625664020024">በመለያ ይግቡ እና ያስምሩ</translation>
 <translation id="5132942445612118989">የእርስዎን የይለፍ ቃላት፣ ታሪክ እና ተጨማሪ ነገሮች በሁሉም መሣሪያዎች ላይ ያስምሩ</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} ደካማ የይለፍ ቃል}one{{COUNT} ደካማ የይለፍ ቃል}other{{COUNT} ደካማ የይለፍ ቃላት}}</translation>
 <translation id="5149188072385105201">የይለፍ ቃል አክል…</translation>
@@ -769,7 +771,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6184086493125982861">ትሮችን አሳይ</translation>
 <translation id="6187302354554850004">ለመጨረሻ ጊዜ የተመሳሰለው፦ <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">ያልተነበበ</translation>
-<translation id="6193424046394092997">{count,plural, =1{{title} ላይ ዕልባት ተደርጓል}one{{title} ላይ ዕልባት ተደርጓል}other{{title} ላይ ዕልባት ተደርጓል}}</translation>
 <translation id="6196207969502475924">የድምጽ ፍለጋ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} ትር ዝጋ}one{{COUNT} ትሮችን ዝጋ}other{{COUNT} ትሮችን ዝጋ}}</translation>
 <translation id="6210079381482819663">ለ<ph name="THRESHOLD" /> ቀናት ወይም ከዚያ በላይ ጥቅም ላይ ያልዋሉ ትሮች እዚህ ተንቀሳቅሰዋል። ይህን በማንኛውም ጊዜ በ<ph name="BEGIN_LINK" />ቅንብሮች<ph name="END_LINK" /> ውስጥ መለወጥ ይችላሉ።</translation>
@@ -799,6 +800,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6346549652287021269">አዲስ ውርድ ይጀመር?</translation>
 <translation id="6347953390226388422">{count,plural, =1{ይህ አድራሻ ከGoogle መለያዎ (<ph name="USER_EMAIL" />) እና ከዚህ መሣሪያ ይሰረዛል።}one{ይህ አድራሻ ከGoogle መለያዎ (<ph name="USER_EMAIL" />) እና ከዚህ መሣሪያ ይሰረዛል።}other{እነዚህ አድራሻዎች ከGoogle መለያዎ (<ph name="USER_EMAIL" />) እና ከዚህ መሣሪያ ይሰረዛሉ።}}</translation>
 <translation id="634878792104344809">የእርስዎን የይለፍ ቃላት፣ ታሪክ እና ተጨማሪ ነገሮች በሁሉም መሣሪያዎችዎ ላይ ያስምሩ</translation>
+<translation id="6348855835728304880">የእርስዎን የChrome የይለፍ ቃላት እና ሌሎችም በዚህ መሣሪያ ላይ ባሉ ሌሎች መተግበሪያዎች ላይ ይድረሱ።</translation>
 <translation id="6355820205320395730">ደካማ የይለፍ ቃላት ለመገመት ቀላል ናቸው። ጠንካራ የይለፍ ቃላትን እየፈጠሩ መሆንዎን ያረጋግጡ። <ph name="BEGIN_LINK" />ተጨማሪ ጠቃሚ የደህንነት ምክሮችን ይመልከቱ።<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243"><ph name="DOMAIN_NAME" />ን ይከተሉ</translation>
 <translation id="6362362396625799311">ምንም ማንነት የማያሳውቁ ትሮች የሉም</translation>
@@ -818,7 +820,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 
 የእርስዎ ውሂብ <ph name="TIME" /> ላይ በእርስዎ የስምረት የይለፍ ቃል ተመስጥሯል። ስምረትን ለመጀመር ያስገቡት።</translation>
 <translation id="6418346271604475326">ፒዲኤፍ በመዘጋጀት ላይ</translation>
-<translation id="6421095165635308">{count,plural, =1{በመለያዎ ውስጥ ዕልባት ወደ {title} ተቀምጧል፣ {email}}one{በመለያዎ ውስጥ ዕልባት ወደ {title} ተቀምጧል፣ {email}}other{በመለያዎ ውስጥ ዕልባቶች ወደ {title} ተቀምጠዋል፣ {email}}}</translation>
 <translation id="6429213933892582367">የይለፍ ቃል አማራጮችን ይክፈቱ</translation>
 <translation id="6434591244308415567">አንድ ስህተት አጋጥሟል። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="6435236283694032571">ወደ የንባብ ዝርዝር አክል</translation>
@@ -951,6 +952,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7221173315674413369">ምን አዲስ ነገር አለ ውስጥ አዳዲስ ባህሪያት እና ጠቃሚ ምክሮችን ያስሱ</translation>
 <translation id="7223102419539744003">ትር ዝጋ</translation>
 <translation id="722454870747268814">አዲስ ማንነት የማያሳውቅ ትር</translation>
+<translation id="723787869754590019">ለራስ-ሙላ Chromeን ይጠቀሙ</translation>
 <translation id="7265758999917665941">ለዚህ ጣቢያ በጭራሽ</translation>
 <translation id="7272437679830969316">የእርስዎን ማንነት ማረጋገጥ አልተቻለም። የይለፍ ቃል አልተቀዳም።</translation>
 <translation id="7291368939935408496">የይለፍ ቃላትን በማዘጋጀት ላይ...</translation>
@@ -1022,6 +1024,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7781011649027948662">ገጽ ይተርጎም?</translation>
 <translation id="7781069478569868053">የአዲስ ትር ገጽ</translation>
 <translation id="7781829728241885113">ትናንት</translation>
+<translation id="7786246662347093005">{COUNT,plural, =1{ከ1 ቀን በኋላ}one{ከ{COUNT} ቀን በኋላ}other{ከ{COUNT} ቀናት በኋላ}}</translation>
 <translation id="778855399387580014">በአዲስ የChrome ትር ውስጥ ፍለጋ ጀምር።</translation>
 <translation id="7791543448312431591">ያክሉ</translation>
 <translation id="7807060072011926525">በGoogle የቀረበ</translation>
@@ -1086,6 +1089,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8136856065410661948">ይህ ከChrome እና Google ሌንስ በእርስዎ Apple ቀን መቁጠሪያ ውስጥ ክስተቶችን ለመፍጠር ሥራ ላይ ይውላል።</translation>
 <translation id="8156478151976189188">የይለፍ ቃል ስምረት እየሠራ አይደለም</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> መለያዎች</translation>
+<translation id="8159358225423560600">ልክ አሁን</translation>
 <translation id="8179976553408161302">አስገባ</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />የእርስዎ መሣሪያዎች<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">ገጽን ተርጉም</translation>
@@ -1094,6 +1098,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="821809831108207540">የእርስዎን የምርምር ምግብ እና Chrome ግላዊነት ለማላበስ በመለያ ይግቡ እና አስምርን ያብሩ።</translation>
 <translation id="8225985093977202398">የተሸጎጡ ምስሎች እና ፋይሎች</translation>
 <translation id="8237382152611443140">የይለፍ ቃላትን በራስ-ሙላ ቅንብሮችን ይክፈቱ</translation>
+<translation id="8248969482078657578">ገቢር ያልሆኑ ትሮች ትኩረት እንዲያደርጉ ያግዙዎታል</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>
 <translation id="8264966119170358612">ከእርስዎ የተቀመጡ የይለፍ ቃላት መካከል አንዳንዶቹ የGoogle ባልሆነ የውሂብ ጥሰት ተጋልጠው ነበረ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="8265018477030547118">በዚህ መሣሪያ ላይ ብቻ</translation>
@@ -1115,6 +1120,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8393889347136007944">ትሮች ለ<ph name="THRESHOLD" /> ቀናት ጥቅም ላይ አልዋሉም</translation>
 <translation id="8407669440184693619">ለዚህ ጣቢያ ምንም የይለፍ ቃላት አልተገኙም</translation>
 <translation id="842017693807136194">በሚከተለው በመለያ ተገብቷል፦</translation>
+<translation id="8423121072346537366">ልክ አሁን</translation>
 <translation id="8425693829365242963">የእርስዎ የይለፍ ቃላት ልዩ ናቸው</translation>
 <translation id="8428045167754449968">ከተማ / መለስተኛ ከተማ</translation>
 <translation id="8428213095426709021">ቅንብሮች</translation>
@@ -1148,12 +1154,14 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8663764600409216912">ሲታዩ ለመገመት ከባድ የሚመስሉ የይለፍ ቃላትን እየተጠቀሙ ነው</translation>
 <translation id="8668210798914567634">ይህ ገጽ ወደ የእርስዎ ንባብ ዝርዝር ተቀምጧል።</translation>
 <translation id="8680787084697685621">የመለያ መግቢያ ዝርዝሮች ጊዜ ያለፈባቸው ናቸው።</translation>
+<translation id="868773710103052534">ጨርሰዋል</translation>
 <translation id="8693663554456874301">{count,plural, =1{ትርን ዝጋ}one{ትሮችን ዝጋ}other{ትሮችን ዝጋ}}</translation>
 <translation id="8703536910991780768">ሲታዩ የእርስዎ የይለፍ ቃላት ጠንካራ ይመስላሉ</translation>
 <translation id="8706588385081740091">የይለፍ ቃላት</translation>
 <translation id="8717864919010420084">አገናኝ ቅዳ</translation>
 <translation id="8721297211384281569">የመሣሪያዎች ምናሌ</translation>
 <translation id="8725066075913043281">እንደገና ይሞክሩ</translation>
+<translation id="8727043961453758442">ከChrome ምርጡን ያግኙ</translation>
 <translation id="8730621377337864115">ተከናውኗል</translation>
 <translation id="8731388423028622182">እንደ የእርስዎ iPhone ዳግም ማስጀምር አንድ አካል ከመለያዎ <ph name="USER_NAME" /> ዘግተው ወጥተዋል። በመለያ ለመግባት ከታች ያለውን ቀጥልን መታ ያድርጉ።</translation>
 <translation id="87371078663613140">በምናሌ አሞሌው ውስጥ ያሉትን አማራጮች ያስሱ</translation>
@@ -1200,9 +1208,9 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8974714402877957201">1. የiPad ቅንብሮችን ይክፈቱ</translation>
 <translation id="8976382372951310360">እገዛ</translation>
 <translation id="8976414606286374109">ካርዶች ወደ የእርስዎ Google መለያ ተቀምጠዋል።</translation>
-<translation id="8978059030508051916">{count,plural, =0{ምንም የተጠለፈ የይለፍ ቃል የለም}=1{{count} የተጠለፈ የይለፍ ቃል}one{{count} የተጠለፈ የይለፍ ቃል}other{{count} የተጠለፉ የይለፍ ቃላት}}</translation>
 <translation id="8981454092730389528">የGoogle እንቅስቃሴ መቆጣጠሪያዎች</translation>
 <translation id="8985320356172329008">እንደሚከተለው ሆነው ወደ Google በመለያ ገብተዋል፦</translation>
+<translation id="8986567980592931173">የእርስዎን የይለፍ ቃላት፣ ታሪክ እና ሌሎችንም ለማመሳሰል በGoogle መለያዎ ይግቡ።</translation>
 <translation id="8998289560386111590">መሣሪያዎ ላይ አይገኝም</translation>
 <translation id="9000089900434778519">የእርስዎ የፍለጋ ፕሮግራም <ph name="DSE_NAME" /> ነው። መተግበር የሚችል ከሆነ የፍለጋ ታሪክዎን ለመሰረዝ መመሪያዎቻቸውን ይመልከቱ።</translation>
 <translation id="9008201768610948239">ችላ በል</translation>

@@ -148,6 +148,7 @@
 <translation id="1651914502370159744">Az Előzmények oldal megnyitása</translation>
 <translation id="1654477262762802994">Hangalapú lekérdezés indítása</translation>
 <translation id="1668469839109562275">Beépített VPN</translation>
+<translation id="1675844249244994876">A jobb oldali ablak frissítése</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> van hátra</translation>
 <translation id="1677507110654891115">A(z) <ph name="FEATURE_NAME" /> nem csatlakozik.</translation>
 <translation id="1677582821739292812">Valaki az Ön képernyőjét nézi</translation>
@@ -367,7 +368,6 @@
 <translation id="2726420622004325180">Hotspot biztosításához telefonján engedélyeznie kell a mobiladat-használatot</translation>
 <translation id="2727175239389218057">Válasz</translation>
 <translation id="2727977024730340865">Kis teljesítményű töltőt csatlakoztatott. Az akkumulátor töltése nem megbízható.</translation>
-<translation id="2740531572673183784">OK</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">„Delete” (Törlés)</translation>
 <translation id="2750941250130734256">Az aktív ablak nincs dokkolva.</translation>
@@ -849,6 +849,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="493076006037866439">A képernyő kicsinyítése</translation>
 <translation id="4936329710968938986">Mindenki, kikapcsolva</translation>
 <translation id="4938176435186993759">Összes javaslat elrejtése</translation>
+<translation id="4943007472417128747">A hotspot ki lett kapcsolva, hogy használni lehessen a Wi-Fi-t. A hotspot használatához kapcsolja ki a Wi-Fi-t.</translation>
 <translation id="4945196315133970626">Az értesítések kikapcsolása</translation>
 <translation id="4946376291507881335">Rögzítés</translation>
 <translation id="495046168593986294">Görgetés felfelé</translation>
@@ -1072,6 +1073,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5976112937189445008">Nyomja le az Entert az ablak tartalmának rögzítéséhez</translation>
 <translation id="5978382165065462689">A képernyő irányításának megosztása a Távsegítség szolgáltatás keretein belül.</translation>
 <translation id="5980301590375426705">Kilépés vendégként</translation>
+<translation id="5983567367406220847">Tétlenség miatt a hotspot ki lett kapcsolva.</translation>
 <translation id="598407983968395253">Sablon használata</translation>
 <translation id="598882571027504733">A frissítés lekéréséhez indítsa újra a Chromebookot a csatlakoztatott billentyűzet segítségével.</translation>
 <translation id="6002179289567220515">Kikapcsolt egy kamerát a fizikai kapcsolóval. A összes kamerához való hozzáférést is kikapcsolhatja.</translation>
@@ -1374,6 +1376,7 @@ Frissen telepítve</translation>
 <translation id="7452560014878697800">Egy alkalmazás használja az Ön kameráját</translation>
 <translation id="7453330308669753048">Keresésielőzmény-találat eltávolítva</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> a teljes töltöttségig</translation>
+<translation id="7459485586006128091">Belső hiba miatt a hotspot ki lett kapcsolva. Néhány perc múlva próbáljon meg újra csatlakozni.</translation>
 <translation id="7461924472993315131">Rögzítés</translation>
 <translation id="746232733191930409">Képernyőfelvétel mód</translation>
 <translation id="7466449121337984263">Érintse meg az érzékelőt</translation>
@@ -1393,6 +1396,7 @@ Frissen telepítve</translation>
 Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját.</translation>
 <translation id="7526573455193969409">Elképzelhető, hogy figyelik a hálózatot</translation>
 <translation id="7536035074519304529">IP-cím: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">A bal oldali ablak frissítése</translation>
 <translation id="7543399541175347147">A Linux-alkalmazások és az inkognitó ablakok jelenleg nem támogatottak. Az egyéb alkalmazásokat menti a rendszer.</translation>
 <translation id="7544300628205093162">Billentyűzet háttérvilágítása bekapcsolva</translation>
 <translation id="7548434653388805669">Ideje aludni</translation>
@@ -1446,6 +1450,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="776344839111254542">Kattintson a frissítés részleteinek megtekintéséhez</translation>
 <translation id="7768784765476638775">Felolvasás</translation>
 <translation id="7769299611924763557">A GIF hamarosan elkészül.</translation>
+<translation id="7773536009433685931">Helyette Wi-Fi bekapcsolása</translation>
 <translation id="7780094051999721182">billentyűparancsok</translation>
 <translation id="7780159184141939021">Képernyő elforgatása</translation>
 <translation id="7796735576426975947">Új értesítés elrejtve</translation>
@@ -1473,6 +1478,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7893503627044934815">Nem szeretném látni a fájlt</translation>
 <translation id="7895348134893321514">Tároló</translation>
 <translation id="7897375687985782769">Lenyomta a képernyő elforgatásának billentyűparancsát. Biztosan elforgatja a képernyőt?</translation>
+<translation id="7901190436359881020">Az ablakok felcserélése</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Érintse meg az ujjlenyomat-érzékelőt</translation>
 <translation id="7904094684485781019">A fiók rendszergazdája letiltotta a többfiókos bejelentkezést.</translation>

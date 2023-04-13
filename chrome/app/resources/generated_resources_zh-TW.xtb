@@ -46,6 +46,7 @@
 <translation id="1038462104119736705">建議你至少為 Linux 保留 <ph name="INSTALL_SIZE" /> 的空間。如要增加可用空間，請刪除裝置中的檔案。</translation>
 <translation id="1038643060055067718">行數：</translation>
 <translation id="1039337018183941703">檔案無效或毀損</translation>
+<translation id="1040761927998636252"><ph name="URL" /> 的未命名書籤</translation>
 <translation id="1041175011127912238">這個網頁沒有回應</translation>
 <translation id="1041263367839475438">可用的裝置</translation>
 <translation id="1042174272890264476">你的電腦也內建了 <ph name="SHORT_PRODUCT_NAME" /> 的 RLZ 程式庫。RLZ 可指定非重複、非個人的可辨識標記，以評估特定宣傳廣告活動所提升的搜尋數與 <ph name="SHORT_PRODUCT_NAME" /> 使用量。這些標籤有時也會顯示在 <ph name="PRODUCT_NAME" /> 的 Google 搜尋查詢中。</translation>
@@ -2722,6 +2723,7 @@
 <translation id="3336855445806447827">不確定</translation>
 <translation id="3337568642696914359">禁止網站處理通訊協定</translation>
 <translation id="3340620525920140773">下載完成：<ph name="FILE_NAME" />。</translation>
+<translation id="3340978935015468852">設定</translation>
 <translation id="3341699307020049241">PIN 碼不正確。你還可以再試 <ph name="RETRIES" /> 次。</translation>
 <translation id="3341703758641437857">允許存取檔案網址</translation>
 <translation id="3342361181740736773">「<ph name="TRIGGERING_EXTENSION_NAME" />」要求移除這個擴充功能。</translation>
@@ -5574,6 +5576,7 @@
 <translation id="5904614460720589786">配置作業發生問題，因此無法設定「<ph name="APP_NAME" />」。請與系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="5906655207909574370">即將更新為最新版本！重新啟動您的裝置即可完成更新程序。</translation>
 <translation id="5906732635754427568">與這個應用程式相關聯的資料會從這個裝置上移除。</translation>
+<translation id="5906974869830879618">請輸入 PIN 碼</translation>
 <translation id="5908474332780919512">當你登入時啟動應用程式</translation>
 <translation id="5908695239556627796">滑鼠捲動速度</translation>
 <translation id="5909379458939060601">要刪除這個設定檔和瀏覽資料嗎？</translation>
@@ -6960,6 +6963,7 @@
 <translation id="7139627972753429585">「<ph name="APP_NAME" />」正在使用麥克風</translation>
 <translation id="7141105143012495934">無法擷取您的帳戶詳細資料，導致登入失敗。請與您的管理員聯絡或再試一次。</translation>
 <translation id="7141844554192012199">安全檢查</translation>
+<translation id="7143207342074048698">連線中</translation>
 <translation id="7144878232160441200">重試</translation>
 <translation id="7148426638542880639">網站可能無法正常運作。如果你不希望在裝置留下網站造訪資訊，請選擇這個選項。</translation>
 <translation id="7149839598364933473">在這部裝置上安裝 <ph name="DEVICE_OS" />。</translation>
@@ -9364,6 +9368,7 @@
 <translation id="964790508619473209">螢幕排列位置</translation>
 <translation id="965211523698323809">透過你的 <ph name="DEVICE_TYPE" /> 收發簡訊。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">回報 Google Cast 的問題</translation>
+<translation id="966588271015727539">選取藍牙點字顯示器</translation>
 <translation id="967398046773905967">不允許任何網站存取 HID 裝置</translation>
 <translation id="967624055006145463">已儲存的資料</translation>
 <translation id="96774243435178359">受管理的印表機</translation>

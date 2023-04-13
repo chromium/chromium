@@ -2718,6 +2718,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3336855445806447827">No lo sé</translation>
 <translation id="3337568642696914359">No permitir que los sitios procesen protocolos</translation>
 <translation id="3340620525920140773">Se completó la descarga: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">configuración</translation>
 <translation id="3341699307020049241">El PIN es incorrecto. Te quedan <ph name="RETRIES" /> intentos.</translation>
 <translation id="3341703758641437857">Permitir el acceso a las URL del archivo</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" desea quitar esta extensión.</translation>
@@ -4090,6 +4091,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4545759655004063573">No es posible guardar porque no tienes los permisos adecuados. Guarda en otra ubicación.</translation>
 <translation id="4546308221697447294">Navega de forma rápida con Google Chrome</translation>
 <translation id="4546345569117159016">Botón derecho</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> quiere usar esta extensión:</translation>
 <translation id="4546692474302123343">Entrada de voz del Asistente de Google</translation>
 <translation id="4547659257713117923">No hay pestañas de otros dispositivos</translation>
 <translation id="4547672827276975204">Establecer automáticamente</translation>
@@ -4947,6 +4949,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5338503421962489998">Almacenamiento local</translation>
 <translation id="5339031667684712858">Sitios que quitaste</translation>
 <translation id="5340638867532133571">Permitir que los sitios instalen controladores de pago (recomendado)</translation>
+<translation id="5340787663756381836">&amp;Buscar y editar</translation>
 <translation id="5341793073192892252">Se bloquearon las siguientes cookies (las cookies de terceros se bloquean sin excepción)</translation>
 <translation id="5342091991439452114">El PIN debe tener al menos <ph name="MINIMUM" /> dígitos</translation>
 <translation id="5344036115151554031">Restaurando Linux</translation>
@@ -5570,6 +5573,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5904614460720589786">No se pudo instalar <ph name="APP_NAME" /> debido a un problema de configuración. Comunícate con el administrador. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">El dispositivo está casi actualizado. Reinícialo para completar la actualización.</translation>
 <translation id="5906732635754427568">Los datos asociados a esta app se quitarán de este dispositivo.</translation>
+<translation id="5906974869830879618">Ingresa un PIN</translation>
 <translation id="5908474332780919512">Iniciar la app al acceder</translation>
 <translation id="5908695239556627796">Velocidad de desplazamiento del mouse</translation>
 <translation id="5909379458939060601">¿Quieres borrar este perfil y los datos de navegación?</translation>
@@ -6957,6 +6961,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7139627972753429585"><ph name="APP_NAME" /> está usando el micrófono</translation>
 <translation id="7141105143012495934">Se produjo un error de acceso porque no se pudieron recuperar los datos de tu cuenta. Comunícate con el administrador o vuelve a intentarlo.</translation>
 <translation id="7141844554192012199">Revisión</translation>
+<translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Volver a intentar</translation>
 <translation id="7148426638542880639">Es posible que los sitios no funcionen como esperas. Elige esta opción si no quieres que se guarde información sobre los sitios que visitas en tu dispositivo.</translation>
 <translation id="7149839598364933473">Convierte este dispositivo en un dispositivo <ph name="DEVICE_OS" />.</translation>
@@ -9339,6 +9344,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="939401694733344652">En este momento, estas cuentas no se usan con apps para Android. Si eliges una cuenta para usar con esta app para Android, también la puedes usar con otras apps para Android. Puedes cambiar el acceso de las apps para Android en <ph name="LINK_BEGIN" />Configuración &gt; Cuentas<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Ingresar frase de contraseña</translation>
 <translation id="939736085109172342">Nueva carpeta</translation>
+<translation id="940212040923880623">&amp;Buscar y editar</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> comparte una pestaña de Chrome y audio.</translation>
 <translation id="944799160843436808">Se produjo un error al configurar Steam en la Chromebook</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
@@ -9360,6 +9366,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="964790508619473209">Disposición de la pantalla</translation>
 <translation id="965211523698323809">Usa tu <ph name="DEVICE_TYPE" /> para enviar o recibir mensajes de texto. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Informar un problema con Google Cast</translation>
+<translation id="966588271015727539">Seleccionar una pantalla de braille mediante Bluetooth</translation>
 <translation id="967398046773905967">No permitir que ningún sitio acceda a dispositivos HID</translation>
 <translation id="967624055006145463">Datos almacenados</translation>
 <translation id="96774243435178359">Impresoras administradas</translation>

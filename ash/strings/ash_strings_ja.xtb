@@ -368,7 +368,6 @@
 <translation id="2726420622004325180">ホットスポットを提供するにはスマートフォンにモバイルデータが必要です</translation>
 <translation id="2727175239389218057">返信</translation>
 <translation id="2727977024730340865">低電力の充電器に接続しています。バッテリーが充電されない可能性があります。</translation>
-<translation id="2740531572673183784">OK</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />、<ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"削除"</translation>
 <translation id="2750941250130734256">アクティブなウィンドウの固定を解除しました。</translation>
@@ -1073,6 +1072,7 @@
 <translation id="5976112937189445008">ウィンドウを録画するには Enter キーを押してください</translation>
 <translation id="5978382165065462689">リモート サポート経由で画面の制御を共有しています。</translation>
 <translation id="5980301590375426705">ゲストを終了</translation>
+<translation id="5983567367406220847">アクティビティがないため、アクセス ポイントはオフになっています。</translation>
 <translation id="598407983968395253">テンプレートを使用</translation>
 <translation id="598882571027504733">アップデートを取得するには、キーボードを接続した状態で Chromebook を再起動してください。</translation>
 <translation id="6002179289567220515">物理的なスイッチを使ってカメラを 1 つオフにしました。すべてのカメラに対してアクセスをオフにすることもできます。</translation>
@@ -1376,6 +1376,7 @@
 <translation id="7452560014878697800">アプリケーションがカメラを使用しています</translation>
 <translation id="7453330308669753048">検索履歴の結果が削除されました</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | あと <ph name="TIME" /> で充電完了</translation>
+<translation id="7459485586006128091">内部エラーにより、アクセス ポイントはオフになっています。数分後にもう一度接続してみてください。</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746232733191930409">画面の録画モード</translation>
 <translation id="7466449121337984263">センサーをタッチしてください</translation>
@@ -1449,6 +1450,7 @@
 <translation id="776344839111254542">クリックしてアップデートの詳細を表示する</translation>
 <translation id="7768784765476638775">選択して読み上げ</translation>
 <translation id="7769299611924763557">GIF の作成はまもなく完了します</translation>
+<translation id="7773536009433685931">代わりに Wi-Fi をオンにする</translation>
 <translation id="7780094051999721182">ショートカット</translation>
 <translation id="7780159184141939021">画面の回転</translation>
 <translation id="7796735576426975947">新しい通知は表示されません</translation>

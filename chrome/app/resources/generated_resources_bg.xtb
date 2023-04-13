@@ -2162,6 +2162,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2804043232879091219">Алтернативният браузър не можа да се отвори</translation>
 <translation id="2804667941345577550">Ще излезете от профила си в този сайт, включително в отворените раздели</translation>
 <translation id="2804680522274557040">Камерата е изключена</translation>
+<translation id="2804742109948581745">Паралелно</translation>
 <translation id="2805539617243680210">Всичко е готово!</translation>
 <translation id="2805646850212350655">Шифроване на файлова система от Microsoft</translation>
 <translation id="2805756323405976993">Приложения</translation>
@@ -2733,6 +2734,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3336855445806447827">Не знам със сигурност</translation>
 <translation id="3337568642696914359">Да не се разрешава на сайтовете да обработват протоколи</translation>
 <translation id="3340620525920140773">Изтеглянето завърши: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">настройките</translation>
 <translation id="3341699307020049241">Неправилен ПИН код. Остават ви <ph name="RETRIES" /> опита.</translation>
 <translation id="3341703758641437857">Да се разреши достъп до URL адресите на файловете</translation>
 <translation id="3342361181740736773"><ph name="TRIGGERING_EXTENSION_NAME" /> иска да премахне това разширение.</translation>
@@ -4656,6 +4658,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5056950756634735043">Установява се връзка с контейнера</translation>
 <translation id="5057110919553308744">При кликване върху разширението</translation>
 <translation id="5059241099014281248">Ограничаване на влизането в профил</translation>
+<translation id="5059429103770496207">Стил на показване</translation>
 <translation id="5059526285558225588">Изберете какво да споделите</translation>
 <translation id="5060332552815861872">За запазване е налице 1 принтер.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Тази папка съдържа отметка. Наистина ли искате да я изтриете?}other{Тази папка съдържа # отметки. Наистина ли искате да я изтриете?}}</translation>
@@ -5590,6 +5593,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5904614460720589786">Настройването на <ph name="APP_NAME" /> не бе успешно поради проблем с конфигурирането. Моля, обърнете се към администратора си. Код на грешката: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Актуализирането почти завърши! Остава само да рестартирате устройството си.</translation>
 <translation id="5906732635754427568">Данните, свързани с това приложение, ще бъдат премахнати от устройството.</translation>
+<translation id="5906974869830879618">Моля, въведете ПИН код</translation>
 <translation id="5908474332780919512">Стартиране на приложението, когато влезете в профила си</translation>
 <translation id="5908695239556627796">Скорост на превъртане с мишката</translation>
 <translation id="5909379458939060601">Този потребителски профил и данните за сърфирането да се изтрият ли?</translation>
@@ -6977,6 +6981,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7139627972753429585"><ph name="APP_NAME" /> използва микрофона ви</translation>
 <translation id="7141105143012495934">Влизането не бе успешно, тъй като данните за профила ви не можаха да се извлекат. Моля, свържете се с администратора си или опитайте отново.</translation>
 <translation id="7141844554192012199">Проверка</translation>
+<translation id="7143207342074048698">Свързва се</translation>
 <translation id="7144878232160441200">Повторен опит</translation>
 <translation id="7148426638542880639">Сайтовете може да не работят по очаквания начин. Изберете тази опция, ако не искате на устройството ви да остава информация за сайтовете, които посещавате.</translation>
 <translation id="7149839598364933473">Преобразуване на това устройство в такова с <ph name="DEVICE_OS" />.</translation>
@@ -9381,6 +9386,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="964790508619473209">Позициониране на екраните</translation>
 <translation id="965211523698323809">Изпращайте и получавайте SMS съобщения от своя <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Подаване на сигнал за проблем с Google Cast</translation>
+<translation id="966588271015727539">Избиране на екран за брайлово писмо с Bluetooth</translation>
 <translation id="967398046773905967">Забраняване на сайтовете да осъществяват достъп до HID устройства</translation>
 <translation id="967624055006145463">Съхранени данни</translation>
 <translation id="96774243435178359">Управлявани принтери</translation>

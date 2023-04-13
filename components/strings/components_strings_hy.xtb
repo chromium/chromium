@@ -1069,7 +1069,6 @@
 <translation id="3631244953324577188">Կենսաչափական համակարգեր</translation>
 <translation id="3632503704576938756">էկրանի ցուցադրումը նորից միացված է</translation>
 <translation id="3632892046558972264">էկրանի ցուցադրումը դադարեցված է</translation>
-<translation id="3633035844150606508">Հասցեի պահում ձեր <ph name="ACCOUNT" /> Google հաշվում</translation>
 <translation id="3633738897356909127">«Թարմացնել Chrome-ը» կոճակ։ Սեղմեք Enter՝ Chrome-ը թարմացելու համար։</translation>
 <translation id="3634530185120165534">Դարակ 5</translation>
 <translation id="3634567936866541746">Դուք հենց նոր մուտքագրեցիք ձեր գաղտնաբառը կասկածելի կայքում։ Ձեր հաշիվների պաշտպանության նկատառումներով՝ Chrome-ը խորհուրդ է տալիս անհապաղ ստուգել պահված գաղտնաբառերի անվտանգությունը։</translation>
@@ -1737,6 +1736,8 @@
 <translation id="5234764350956374838">Փակել</translation>
 <translation id="5239623327352565343">Տեղադրության տվյալների օգտագործումը թույլատրված է</translation>
 <translation id="5242889659037569123">Ճամպրուկներ և ճամփորդական պարագաներ</translation>
+<translation id="5244732203286792411">Բեռնում...
+    Սա կարող է մեկ րոպե տևել։</translation>
 <translation id="5250209940322997802">«Միացեք ցանցին»</translation>
 <translation id="52517543715119994">Տեղեկանալ Chrome-ի գործառույթների մասին</translation>
 <translation id="5251803541071282808">Ամպ</translation>

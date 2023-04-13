@@ -2147,6 +2147,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2804043232879091219">Der alternative Browser konnte nicht geöffnet werden</translation>
 <translation id="2804667941345577550">Du wirst von dieser Website abgemeldet, auch in offenen Tabs</translation>
 <translation id="2804680522274557040">Kamera ausgeschaltet</translation>
+<translation id="2804742109948581745">Nebeneinander</translation>
 <translation id="2805539617243680210">Fertig!</translation>
 <translation id="2805646850212350655">Verschlüsselndes Microsoft-Dateisystem</translation>
 <translation id="2805756323405976993">Apps</translation>
@@ -2718,6 +2719,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3336855445806447827">Weiß nicht</translation>
 <translation id="3337568642696914359">Websites dürfen keine Protokolle verarbeiten</translation>
 <translation id="3340620525920140773">Download abgeschlossen: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">Einstellungen</translation>
 <translation id="3341699307020049241">Falsche PIN. Du hast noch <ph name="RETRIES" /> Versuche.</translation>
 <translation id="3341703758641437857">Zugriff auf Datei-URLs zulassen</translation>
 <translation id="3342361181740736773"><ph name="TRIGGERING_EXTENSION_NAME" /> möchte diese Erweiterung entfernen.</translation>
@@ -4090,6 +4092,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4545759655004063573">Speichern aufgrund unzureichender Berechtigungen nicht möglich. Wähle bitte einen anderen Speicherort aus.</translation>
 <translation id="4546308221697447294">Schnell surfen mit Google Chrome</translation>
 <translation id="4546345569117159016">Rechte Taste</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> möchte diese Erweiterung verwenden:</translation>
 <translation id="4546692474302123343">Google Assistant-Spracheingabe</translation>
 <translation id="4547659257713117923">Keine Tabs von anderen Geräten</translation>
 <translation id="4547672827276975204">Automatisch festlegen</translation>
@@ -4638,6 +4641,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5056950756634735043">Verbindung zum Container wird hergestellt</translation>
 <translation id="5057110919553308744">Wenn die Erweiterung angeklickt wird</translation>
 <translation id="5059241099014281248">Anmeldung beschränken</translation>
+<translation id="5059429103770496207">Anzeigestil</translation>
 <translation id="5059526285558225588">Auswählen, was geteilt werden soll</translation>
 <translation id="5060332552815861872">Es ist 1 Drucker verfügbar, der gespeichert werden kann.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Dieser Ordner enthält ein Lesezeichen. Möchtest du ihn wirklich löschen?}other{Dieser Ordner enthält # Lesezeichen. Möchtest du ihn wirklich löschen?}}</translation>
@@ -5569,6 +5573,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5904614460720589786"><ph name="APP_NAME" /> konnte aufgrund eines Konfigurationsproblems nicht eingerichtet werden. Bitte wende dich an deinen Administrator. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Fast fertig! Starte dein Gerät neu, um die Aktualisierung abzuschließen.</translation>
 <translation id="5906732635754427568">Daten, die dieser App zugewiesen sind, werden von diesem Gerät entfernt.</translation>
+<translation id="5906974869830879618">Bitte gib eine PIN ein</translation>
 <translation id="5908474332780919512">App beim Anmelden starten</translation>
 <translation id="5908695239556627796">Scroll-Geschwindigkeit mit der Maus</translation>
 <translation id="5909379458939060601">Dieses Profil und diese Browserdaten löschen?</translation>
@@ -6955,6 +6960,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7139627972753429585"><ph name="APP_NAME" /> verwendet dein Mikrofon</translation>
 <translation id="7141105143012495934">Du konntest nicht angemeldet werden, weil deine Kontodetails nicht abgerufen werden konnten. Bitte wende dich an deinen Administrator oder versuche es noch einmal.</translation>
 <translation id="7141844554192012199">Überprüfung</translation>
+<translation id="7143207342074048698">Verbindung...</translation>
 <translation id="7144878232160441200">Wiederholen</translation>
 <translation id="7148426638542880639">Websites funktionieren möglicherweise nicht erwartungsgemäß. Wähle diese Option aus, wenn du keine Daten zu besuchten Websites auf deinem Gerät speichern möchtest.</translation>
 <translation id="7149839598364933473">Mache aus diesem Gerät ein <ph name="DEVICE_OS" />-Gerät.</translation>
@@ -9359,6 +9365,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="964790508619473209">Bildschirmanordnung</translation>
 <translation id="965211523698323809">SMS auf <ph name="DEVICE_TYPE" /> senden und empfangen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Problem mit Google Cast melden</translation>
+<translation id="966588271015727539">Wähle eine Bluetooth-Braillezeile aus</translation>
 <translation id="967398046773905967">Websites nicht erlauben, auf HID-Geräte zuzugreifen</translation>
 <translation id="967624055006145463">Gespeicherte Daten</translation>
 <translation id="96774243435178359">Verwaltete Drucker</translation>

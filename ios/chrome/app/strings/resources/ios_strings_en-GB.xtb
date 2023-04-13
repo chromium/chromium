@@ -219,7 +219,6 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2496626742194544812">Go to first tab</translation>
 <translation id="2500374554657206846">Options to save password</translation>
-<translation id="2502415369140591438"><ph name="COUNT" /> reused passwords</translation>
 <translation id="2523363575747517183">This website is repeatedly trying to open another application.</translation>
 <translation id="2529021024822217800">Open All</translation>
 <translation id="2547458583188611426">Sync is not working. To start sync, enter your passphrase.</translation>
@@ -391,7 +390,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3581564640715911333">Offer to translate pages in other languages</translation>
 <translation id="3588820906588687999">Open Image in New Tab</translation>
 <translation id="3595252146048399851">You can always choose what to sync in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />. Google may personalise Search and other services based on your history.</translation>
-<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} weak password}other{{COUNT} weak passwords}}</translation>
 <translation id="3603009562372709545">Copy link URL</translation>
 <translation id="3607167657931203000">Auto-fill Data</translation>
 <translation id="3608008480985212611">Sign in to manage your preferences</translation>
@@ -437,7 +435,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3928666092801078803">Combine my data</translation>
 <translation id="3929457972718048006">Addresses</translation>
 <translation id="3943492037546055397">Passwords</translation>
-<translation id="3951717558054674026">{count,plural, =1{{count} weak password}other{{count} weak passwords}}</translation>
 <translation id="3959736869653157332">Menu → New incognito tab</translation>
 <translation id="3967822245660637423">Download complete</translation>
 <translation id="3968505803272650567">Manage interests</translation>
@@ -774,7 +771,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6184086493125982861">Show Tabs</translation>
 <translation id="6187302354554850004">Last synced: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Unread</translation>
-<translation id="6193424046394092997">{count,plural, =1{Bookmarked to {title}}other{Bookmarked to {title}}}</translation>
 <translation id="6196207969502475924">Voice Search</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Close {COUNT} tab}other{Close {COUNT} tabs}}</translation>
 <translation id="6210079381482819663">Tabs not used for <ph name="THRESHOLD" /> days or more are moved here. You can change this at any time in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
@@ -824,7 +820,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 
 Your data was encrypted with your sync passphrase on <ph name="TIME" />. Enter it to start sync.</translation>
 <translation id="6418346271604475326">Preparing PDF</translation>
-<translation id="6421095165635308">{count,plural, =1{Bookmark saved to {title} in your account, {email}}other{Bookmarks saved to {title} in your account, {email}}}</translation>
 <translation id="6429213933892582367">Open password options</translation>
 <translation id="6434591244308415567">An error occurred. Try again later.</translation>
 <translation id="6435236283694032571">Add to reading list</translation>
@@ -1213,7 +1208,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8974714402877957201">1. Open iPad settings</translation>
 <translation id="8976382372951310360">Help</translation>
 <translation id="8976414606286374109">Cards are saved to your Google Account.</translation>
-<translation id="8978059030508051916">{count,plural, =0{No compromised passwords}=1{{count} compromised password}other{{count} compromised passwords}}</translation>
 <translation id="8981454092730389528">Google Activity Controls</translation>
 <translation id="8985320356172329008">Signed In to Google as</translation>
 <translation id="8986567980592931173">Sign in with your Google Account to sync your passwords, history and more.</translation>

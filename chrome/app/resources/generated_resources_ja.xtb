@@ -2144,6 +2144,7 @@
 <translation id="2804043232879091219">代替ブラウザを開けませんでした</translation>
 <translation id="2804667941345577550">開いているすべてのタブで、このサイトからログアウトします</translation>
 <translation id="2804680522274557040">カメラがオフになっています</translation>
+<translation id="2804742109948581745">横並び</translation>
 <translation id="2805539617243680210">これで準備完了です。</translation>
 <translation id="2805646850212350655">Microsoft 暗号化ファイル システム</translation>
 <translation id="2805756323405976993">アプリ</translation>
@@ -2715,6 +2716,7 @@
 <translation id="3336855445806447827">わからない</translation>
 <translation id="3337568642696914359">サイトにプロトコルの処理を許可しない</translation>
 <translation id="3340620525920140773"><ph name="FILE_NAME" /> のダウンロードが完了しました。</translation>
+<translation id="3340978935015468852">設定</translation>
 <translation id="3341699307020049241">PIN が正しくありません。あと <ph name="RETRIES" /> 回試行できます。</translation>
 <translation id="3341703758641437857">ファイルの URL へのアクセスを許可する</translation>
 <translation id="3342361181740736773">「<ph name="TRIGGERING_EXTENSION_NAME" />」によってこの拡張機能が削除されます。</translation>
@@ -4634,6 +4636,7 @@
 <translation id="5056950756634735043">コンテナに接続しています</translation>
 <translation id="5057110919553308744">拡張機能をクリックしたとき</translation>
 <translation id="5059241099014281248">ログイン制限</translation>
+<translation id="5059429103770496207">表示スタイル</translation>
 <translation id="5059526285558225588">共有する内容を選択</translation>
 <translation id="5060332552815861872">保存できるプリンタが 1 件あります。</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{このフォルダにはブックマークが含まれています。削除してもよろしいですか？}other{このフォルダには # 件のブックマークが含まれています。削除してもよろしいですか？}}</translation>
@@ -5565,6 +5568,7 @@
 <translation id="5904614460720589786">設定に問題があったため、<ph name="APP_NAME" /> をセットアップできませんでした。管理者にお問い合わせください。エラーコード: <ph name="ERROR_CODE" />。</translation>
 <translation id="5906655207909574370">デバイスを再起動して更新を完了してください。</translation>
 <translation id="5906732635754427568">このアプリに関連付けられているデータはこのデバイスから削除されます。</translation>
+<translation id="5906974869830879618">PIN を入力してください</translation>
 <translation id="5908474332780919512">ログイン時にアプリを開く</translation>
 <translation id="5908695239556627796">マウスのスクロール速度</translation>
 <translation id="5909379458939060601">このプロフィールと閲覧データを削除しますか？</translation>
@@ -6950,6 +6954,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> がマイクを使用しています</translation>
 <translation id="7141105143012495934">アカウントの詳細を取得できなかったためログインできませんでした。管理者に問い合わせるか、もう一度お試しください。</translation>
 <translation id="7141844554192012199">チェックアップ</translation>
+<translation id="7143207342074048698">接続中</translation>
 <translation id="7144878232160441200">再読み込み</translation>
 <translation id="7148426638542880639">サイトが想定どおりに機能しない可能性があります。アクセスしたサイトに関する情報をデバイスに残したくない場合は、このオプションを選択します。</translation>
 <translation id="7149839598364933473">このデバイスを <ph name="DEVICE_OS" /> デバイスに変換します。</translation>
@@ -9352,6 +9357,7 @@
 <translation id="964790508619473209">画面の配置</translation>
 <translation id="965211523698323809"><ph name="DEVICE_TYPE" /> でテキスト メッセージを送受信します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast の問題を報告</translation>
+<translation id="966588271015727539">Bluetooth 点字ディスプレイを選択してください</translation>
 <translation id="967398046773905967">HID デバイスへのアクセスをどのサイトにも許可しない</translation>
 <translation id="967624055006145463">保存データ</translation>
 <translation id="96774243435178359">管理対象プリンタ</translation>

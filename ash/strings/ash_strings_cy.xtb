@@ -368,7 +368,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2726420622004325180">Rhaid bod gan eich ffôn ddata symudol i ddarparu poethfan</translation>
 <translation id="2727175239389218057">Ateb</translation>
 <translation id="2727977024730340865">Wedi'i blygio i mewn i wefrydd pŵer isel. Mae'n bosib na fydd gwefru'r batri yn ddibynadwy.</translation>
-<translation id="2740531572673183784">Iawn</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Dileu"</translation>
 <translation id="2750941250130734256">Mae'r ffenestr weithredol wedi'i rhyddhau.</translation>
@@ -1073,6 +1072,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5976112937189445008">Pwyswch Enter i recordio'r ffenestr</translation>
 <translation id="5978382165065462689">Rhannu rheolaeth o'ch sgrîn drwy Gymorth o Bell.</translation>
 <translation id="5980301590375426705">Gadael gwestai</translation>
+<translation id="5983567367406220847">Oherwydd anweithgarwch, mae'r boethfan wedi'i diffodd.</translation>
 <translation id="598407983968395253">Defnyddio templed</translation>
 <translation id="598882571027504733">I gael y diweddariad, ailgychwynnwch eich Chromebook gyda'r bysellfwrdd wedi'i atodi.</translation>
 <translation id="6002179289567220515">Defnyddioch y switsh corfforol i ddiffodd 1 camera. Gallwch hefyd ddiffodd mynediad ar gyfer pob camera.</translation>
@@ -1375,6 +1375,7 @@ Gosodiad newydd</translation>
 <translation id="7452560014878697800">Mae ap yn defnyddio'ch camera</translation>
 <translation id="7453330308669753048">Canlyniad hanes chwilio wedi'i dynnu</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> nes ei fod yn llawn</translation>
+<translation id="7459485586006128091">Oherwydd gwall mewnol, mae'r boethfan wedi'i diffodd. Rhowch gynnig ar ailgysylltu mewn ychydig funudau.</translation>
 <translation id="7461924472993315131">Pinio</translation>
 <translation id="746232733191930409">Modd recordio'r sgrîn</translation>
 <translation id="7466449121337984263">Cyffyrddwch â'r synhwyrydd</translation>
@@ -1448,6 +1449,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="776344839111254542">Cliciwch i weld manylion y diweddariad</translation>
 <translation id="7768784765476638775">Dewis i siarad</translation>
 <translation id="7769299611924763557">Bydd eich GIF yn barod yn fuan</translation>
+<translation id="7773536009433685931">Trowch y Wi-Fi ymlaen yn lle hynny</translation>
 <translation id="7780094051999721182">llwybrau byr</translation>
 <translation id="7780159184141939021">Cylchdroi'r Sgrîn</translation>
 <translation id="7796735576426975947">Hysbysiad newydd wedi'i guddio</translation>

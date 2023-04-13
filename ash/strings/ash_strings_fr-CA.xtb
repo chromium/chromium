@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">Appareil USB-C (port avant)</translation>
 <translation id="1013598600051641573">La résolution de <ph name="DISPLAY_NAME" /> est passée à <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Cliquez sur Confirmer pour conserver les changements. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">L'appareil Bluetooth « <ph name="DEVICE_NAME" /> » demande l'autorisation de s'associer. Veuillez entrer le NIP suivant sur cet appareil : <ph name="PINCODE" />.</translation>
+<translation id="1014722676793506285"><ph name="APP_NAME" />, toutes les applications et tous les sites Web disposant de l'autorisation de localisation ainsi que ChromeOS peuvent utiliser la localisation sur les réseaux Wi-Fi et mobiles.</translation>
 <translation id="1017556409696559990">Réduire la fenêtre supérieure lorsqu'il n'y a pas d'historique dans Chrome</translation>
 <translation id="1024364763893396229">Enregistrez votre <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Le niveau de la pile du stylet est faible</translation>
@@ -147,6 +148,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1651914502370159744">Ouvrir la page Historique</translation>
 <translation id="1654477262762802994">Démarrer une requête vocale</translation>
 <translation id="1668469839109562275">RPV intégré</translation>
+<translation id="1675844249244994876">Mettre à jour la fenêtre de droite</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> d'autonomie restante</translation>
 <translation id="1677507110654891115">La fonctionnalité <ph name="FEATURE_NAME" /> n'est pas connectée.</translation>
 <translation id="1677582821739292812">Quelqu'un regarde votre écran</translation>
@@ -191,6 +193,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet : <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Activer l'accès aux données de localisation</translation>
 <translation id="1830308660060964064">L'épinglage de <ph name="ITEM_TITLE" /> été annulé</translation>
 <translation id="1838895407229022812">Le mode Éclairage nocturne est désactivé.</translation>
 <translation id="1854180393107901205">Arrêter l'envoi de contenu</translation>
@@ -365,7 +368,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2726420622004325180">Les données cellulaires doivent être activées sur votre téléphone pour que celui-ci puisse offrir un point d'accès sans fil</translation>
 <translation id="2727175239389218057">Répondre</translation>
 <translation id="2727977024730340865">L'appareil est branché à un chargeur de faible puissance. Il se peut que la recharge de la batterie ne soit pas fiable.</translation>
-<translation id="2740531572673183784">OK</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">« Supprimer »</translation>
 <translation id="2750941250130734256">Fenêtre active désancrée.</translation>
@@ -468,6 +470,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="3255483164551725916">Que peux-tu faire?</translation>
 <translation id="3256109297135787951">Supprimer la mise en évidence d'un élément sur votre étagère</translation>
 <translation id="3260969790895726815">La voix est traitée localement et la dictée fonctionne hors ligne, mais certaines commandes vocales ne fonctionneront pas.</translation>
+<translation id="3265032511221679826">Activer l'accès à la position exacte?</translation>
 <translation id="3269597722229482060">Clic droit</translation>
 <translation id="3289364673986435196">Menu de l'interrupteur</translation>
 <translation id="3289544412142055976">Les applications Linux ne sont pas prises en charge actuellement</translation>
@@ -578,6 +581,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="366222428570480733">Utilisateur géré : <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Balayez pour masquer votre fenêtre flottante</translation>
 <translation id="367531336287639526">Sélectionner la première icône à gauche de la barre d'adresse</translation>
+<translation id="3677931086890821290">Toutes les applications et tous les sites Web disposant de l'autorisation de localisation ainsi que ChromeOS peuvent utiliser la localisation sur les réseaux Wi-Fi et mobiles.</translation>
 <translation id="3679827876008292680">Aller au dernier onglet de la fenêtre</translation>
 <translation id="36813544980941320">Les réseaux Wi-Fi seront partagés entre votre téléphone et votre <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Sites Web</translation>
@@ -844,6 +848,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="493076006037866439">Zoom arrière de l'écran</translation>
 <translation id="4936329710968938986">Tous les utilisateurs, désactiver</translation>
 <translation id="4938176435186993759">Masquer toutes les suggestions</translation>
+<translation id="4943007472417128747">Le point d'accès sans fil a été désactivé pour utiliser le WiFi. Pour utiliser le point d'accès sans fil, désactivez le Wi-Fi.</translation>
 <translation id="4945196315133970626">Désactiver les notifications</translation>
 <translation id="4946376291507881335">Capturer</translation>
 <translation id="495046168593986294">Faire défiler vers le haut</translation>
@@ -1388,6 +1393,7 @@ Nouvelle installation</translation>
 Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'appareil et maintenez-le enfoncé.</translation>
 <translation id="7526573455193969409">Le réseau peut être surveillé</translation>
 <translation id="7536035074519304529">Adresse IP : <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Mettre à jour la fenêtre de gauche</translation>
 <translation id="7543399541175347147">Les applications Linux et les fenêtres de navigation privée ne sont pas prises en charge actuellement. Les autres applications seront enregistrées.</translation>
 <translation id="7544300628205093162">Le rétroéclairage du clavier est activé</translation>
 <translation id="7548434653388805669">C'est l'heure du dodo</translation>
@@ -1468,6 +1474,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="7893503627044934815">Ne pas afficher ce fichier</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Vous avez appuyé sur le raccourci-clavier de rotation d'écran. Voulez-vous faire pivoter l'écran?</translation>
+<translation id="7901190436359881020">Basculez les fenêtres</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Touchez le capteur d'empreintes digitales</translation>
 <translation id="7904094684485781019">L'administrateur de ce compte a désactivé la connexion multicompte.</translation>
@@ -1742,6 +1749,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="9198992156681343238">La résolution de l'écran <ph name="DISPLAY_NAME" /> est maintenant de <ph name="RESOLUTION" />. Cliquez sur Confirmer pour garder les changements. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Connectez <ph name="NAME" /> à ce Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, géré par votre administrateur</translation>
+<translation id="9207682216934703221"><ph name="APP_NAME" />, <ph name="APP2_NAME" /> et toutes les applications et tous les sites Web disposant de l'autorisation de localisation ainsi que ChromeOS peuvent utiliser la localisation sur les réseaux Wi-Fi et mobiles.</translation>
 <translation id="9210037371811586452">Fermeture du mode Bureau unifié</translation>
 <translation id="9211490828691860325">Tous les bureaux</translation>
 <translation id="9211681782751733685">Il reste <ph name="TIME_REMAINING" /> avant que la pile soit complètement rechargée.</translation>

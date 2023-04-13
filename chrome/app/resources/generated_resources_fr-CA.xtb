@@ -2723,6 +2723,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3336855445806447827">Incertain</translation>
 <translation id="3337568642696914359">Ne pas autoriser les sites à gérer des protocoles</translation>
 <translation id="3340620525920140773">Téléchargement terminé : <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">paramètres</translation>
 <translation id="3341699307020049241">NIP incorrect. Il vous reste <ph name="RETRIES" /> tentatives.</translation>
 <translation id="3341703758641437857">Autoriser l'accès aux URL de fichier</translation>
 <translation id="3342361181740736773">« <ph name="TRIGGERING_EXTENSION_NAME" /> » souhaite désinstaller cette extension.</translation>
@@ -4095,6 +4096,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4545759655004063573">Impossible d'enregistrer en raison d'autorisations insuffisantes. Veuillez faire l'enregistrement à un autre endroit.</translation>
 <translation id="4546308221697447294">Naviguez rapidement avec Google Chrome</translation>
 <translation id="4546345569117159016">Bouton droit</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> demande l'autorisation cette extension :</translation>
 <translation id="4546692474302123343">Entrée vocale pour l'Assistant Google</translation>
 <translation id="4547659257713117923">Pas d'onglets provenant d'autres appareils</translation>
 <translation id="4547672827276975204">Définir automatiquement</translation>
@@ -4952,6 +4954,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5338503421962489998">Stockage local</translation>
 <translation id="5339031667684712858">Sites que vous avez retirés</translation>
 <translation id="5340638867532133571">Autoriser les sites à installer des modules de traitement des paiements (recommandé)</translation>
+<translation id="5340787663756381836">et Rechercher et modifier</translation>
 <translation id="5341793073192892252">Les témoins suivants ont été bloqués (tous les témoins de tiers sont bloqués, sans exception)</translation>
 <translation id="5342091991439452114">Le NIP doit comporter au moins <ph name="MINIMUM" /> chiffres</translation>
 <translation id="5344036115151554031">Restauration de Linux en cours…</translation>
@@ -5575,6 +5578,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5904614460720589786">Impossible de configurer <ph name="APP_NAME" /> en raison d'une erreur de configuration. Veuillez communiquer avec votre administrateur. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">La mise à jour est presque terminée! Pour la compléter, veuillez redémarrer votre appareil.</translation>
 <translation id="5906732635754427568">Les données associées à cette application seront supprimées de cet appareil.</translation>
+<translation id="5906974869830879618">Veuillez entrer un NIP</translation>
 <translation id="5908474332780919512">Démarrer l'application lorsque vous vous connectez</translation>
 <translation id="5908695239556627796">Vitesse de défilement de la souris</translation>
 <translation id="5909379458939060601">Supprimer ce profil et les données de navigation?</translation>
@@ -6964,6 +6968,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7139627972753429585"><ph name="APP_NAME" /> utilise votre microphone</translation>
 <translation id="7141105143012495934">La connexion a échoué, car les détails de votre compte n'ont pas pu être récupérés. Veuillez communiquer avec votre administrateur ou réessayer.</translation>
 <translation id="7141844554192012199">Vérification</translation>
+<translation id="7143207342074048698">Connexion…</translation>
 <translation id="7144878232160441200">Réessayer</translation>
 <translation id="7148426638542880639">Les sites pourraient ne pas fonctionner comme prévu. Choisissez cette option si vous ne souhaitez pas que les données relatives aux sites que vous visitez soient enregistrées sur votre appareil.</translation>
 <translation id="7149839598364933473">Convertissez cet appareil en un appareil <ph name="DEVICE_OS" />.</translation>
@@ -9346,6 +9351,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="939401694733344652">Ces comptes ne sont pas actuellement utilisés avec des applications Android. Si vous sélectionnez un compte à utiliser avec cette application Android, celui-ci peut également être utilisé avec d'autres applications Android. Vous pouvez modifier l'accès à l'application Android dans <ph name="LINK_BEGIN" />Paramètres &gt; Comptes<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Entrer la phrase de passe</translation>
 <translation id="939736085109172342">Nouveau dossier</translation>
+<translation id="940212040923880623">et Rechercher et modifier</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> partage un onglet Chrome et le son.</translation>
 <translation id="944799160843436808">Un problème est survenu lors de la configuration de Steam pour Chromebook</translation>
 <translation id="945522503751344254">Envoyer un commentaire à Google</translation>
@@ -9367,6 +9373,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="964790508619473209">Position des écrans</translation>
 <translation id="965211523698323809">Envoyez et recevez des messages texte à partir de votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Signaler un problème avec Google Cast</translation>
+<translation id="966588271015727539">Sélectionnez un afficheur braille Bluetooth</translation>
 <translation id="967398046773905967">N'autoriser aucun site à accéder à des appareils HID</translation>
 <translation id="967624055006145463">Données stockées</translation>
 <translation id="96774243435178359">Imprimantes gérées</translation>

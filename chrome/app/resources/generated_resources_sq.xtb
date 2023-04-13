@@ -2719,6 +2719,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3336855445806447827">Nuk jam i sigurt</translation>
 <translation id="3337568642696914359">Mos lejo që sajtet të menaxhojnë protokollet</translation>
 <translation id="3340620525920140773">Shkarkimi përfundoi: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">cilësimet</translation>
 <translation id="3341699307020049241">Kodi PIN është i pasaktë. Të kanë mbetur <ph name="RETRIES" /> përpjekje.</translation>
 <translation id="3341703758641437857">Lejo qasjen te URL-të e skedarëve</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" dëshiron që ta heqë këtë shtesë.</translation>
@@ -4091,6 +4092,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4545759655004063573">Nuk mund ta ruajë për shkak të lejeve të pamjaftueshme. Ruaje në një vendndodhje tjetër.</translation>
 <translation id="4546308221697447294">Shfleto me shpejtësi me Google Chrome</translation>
 <translation id="4546345569117159016">Butoni i djathtë</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> dëshiron të përdorë këtë shtesë:</translation>
 <translation id="4546692474302123343">Hyrja zanore e "Asistentit të Google"</translation>
 <translation id="4547659257713117923">Asnjë skedë nga pajisjet e tjera</translation>
 <translation id="4547672827276975204">Cakto automatikisht</translation>
@@ -4948,6 +4950,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5338503421962489998">Hapësira ruajtëse lokale</translation>
 <translation id="5339031667684712858">Sajtet që hoqe</translation>
 <translation id="5340638867532133571">Lejo që sajtet të instalojnë përpunues të pagesave (rekomandohet)</translation>
+<translation id="5340787663756381836">&amp;Gjej dhe modifiko</translation>
 <translation id="5341793073192892252">Kukit e mëposhtme u bllokuan (kukit e palëve të treta po bllokohen pa përjashtim)</translation>
 <translation id="5342091991439452114">Kodi PIN duhet të ketë të paktën <ph name="MINIMUM" /> shifra</translation>
 <translation id="5344036115151554031">Linux po restaurohet</translation>
@@ -5571,6 +5574,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5904614460720589786"><ph name="APP_NAME" /> nuk mund të konfigurohej për shkak të një problemi në konfigurim. Kontakto me administratorin tënd. Kodi i gabimit: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Pothuajse i përditësuar! Rinise pajisjen për të përfunduar përditësimin.</translation>
 <translation id="5906732635754427568">Të dhënat e lidhura me këtë aplikacion do të hiqen nga kjo pajisje.</translation>
+<translation id="5906974869830879618">Fut një kod PIN</translation>
 <translation id="5908474332780919512">Nis aplikacionin kur identifikohesh</translation>
 <translation id="5908695239556627796">Shpejtësia e lëvizjes së miut</translation>
 <translation id="5909379458939060601">Të fshihet ky profil dhe këto të dhëna të shfletimit?</translation>
@@ -6958,6 +6962,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7139627972753429585"><ph name="APP_NAME" /> po përdor mikrofonin tënd</translation>
 <translation id="7141105143012495934">Identifikimi dështoi pasi detajet e llogarisë tënde nuk mund të verifikoheshin. Kontakto me administratorin ose provo përsëri.</translation>
 <translation id="7141844554192012199">Përfundimi i blerjes</translation>
+<translation id="7143207342074048698">Po lidhet</translation>
 <translation id="7144878232160441200">Provo sërish</translation>
 <translation id="7148426638542880639">Sajtet mund të mos funksionojnë siç pritet. Zgjidh këtë opsion nëse nuk dëshiron të lësh informacione në pajisjen tënde për sajtet që viziton.</translation>
 <translation id="7149839598364933473">Konvertoje këtë pajisje në një pajisje <ph name="DEVICE_OS" />.</translation>
@@ -9338,6 +9343,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="939401694733344652">Aktualisht, këto llogari nuk po përdoren me aplikacione për Android. Nëse zgjedh një llogari për ta përdorur me këtë aplikacion për Android, ajo mund të përdoret edhe me aplikacione të tjera për Android. Qasjen e aplikacionit për Android mund ta ndryshosh te <ph name="LINK_BEGIN" />Cilësimet &gt; Llogaritë<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Fut frazën e kalimit</translation>
 <translation id="939736085109172342">Dosje e re</translation>
+<translation id="940212040923880623">&amp;Gjej dhe modifiko</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> po ndan një skedë të Chrome dhe audion.</translation>
 <translation id="944799160843436808">Pati një problem me konfigurimin e Steam në Chromebook</translation>
 <translation id="945522503751344254">Dërgo komente</translation>
@@ -9359,6 +9365,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="964790508619473209">Sistemimi i ekranit</translation>
 <translation id="965211523698323809">Dërgo dhe merr mesazhe me tekst nga pajisja jote <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Raporto një problem me Google Cast</translation>
+<translation id="966588271015727539">Zgjidh një ekran breil me Bluetooth</translation>
 <translation id="967398046773905967">Mos lejo asnjë sajt të ketë qasje në pajisjet HID</translation>
 <translation id="967624055006145463">Të dhënat e ruajtura</translation>
 <translation id="96774243435178359">Printerët e menaxhuar</translation>

@@ -123,7 +123,7 @@
 <translation id="1904932688895783618">Evo još nekih korisnih izvora:</translation>
 <translation id="1905710495812624430">Prekoračen je maksimalan broj dozvoljenih pokušaja.</translation>
 <translation id="1908234395526491708">Greške UDP zahtjeva</translation>
-<translation id="1923388006036088459">Boje isticanja</translation>
+<translation id="1923388006036088459">Boje naglašavanja</translation>
 <translation id="1947737735496445907">Odštampano</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1962550982027027473">Potreban je zadani APN</translation>
@@ -333,7 +333,7 @@
 <translation id="3967822245660637423">Preuzimanje je završeno</translation>
 <translation id="3969602104473960991">Lozinka za ChromeOS je ažurirana</translation>
 <translation id="397105322502079400">Računanje…</translation>
-<translation id="3974175076798940554">Sada su dostupni ekskluzivni elementi za Chromebook Plus</translation>
+<translation id="3974175076798940554">Ekskluzivni materijali za Chromebook Plus su sada dostupni</translation>
 <translation id="39823212440917567">Zadaci za štampanje stariji od <ph name="NUMBER_OF_DAYS" /> dana će se ukloniti</translation>
 <translation id="3993704782688964914">Vaš uređaj <ph name="DEVICE_NAME" /> je sada ažuriran</translation>
 <translation id="4003384961948020559">Nije uspjelo – izlaz je pun</translation>
@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">Aktivirano</translation>
 <translation id="5430931332414098647">Trenutno dijeljenje internetske veze</translation>
 <translation id="5431318178759467895">Boja</translation>
+<translation id="5456936324019847994">Povezivanje s omogućenim prilagođenim APN-ovima nije moguće. Za više informacije obratite se mobilnom operateru.</translation>
 <translation id="5457599981699367932">Pregledajte kao gost</translation>
 <translation id="54609108002486618">Upravljani</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Preostao je još {0} pokušaj}one{Preostao je još {0} pokušaj}few{Preostala su još {0} pokušaja}other{Preostalo je još {0} pokušaja}}</translation>
@@ -847,7 +848,7 @@
 <translation id="8352772353338965963">Dodajte račun za višestruku prijavu. Svim računima na kojima je izvršena prijava je moguće pristupiti bez lozinke. Ovu funkciju treba koristiti isključivo s pouzdanim računima.</translation>
 <translation id="8364946094152050673">Prazni serveri naziva</translation>
 <translation id="8372477600026034341">Dodatni host računari</translation>
-<translation id="8373046809163484087">Upotreba skupova boja koji odgovaraju pozadini</translation>
+<translation id="8373046809163484087">Koristite skupove boja koji odgovaraju pozadinskoj slici</translation>
 <translation id="8380114448424469341">Priključivanje prozora na <ph name="DIRECTION" /> polovini ekrana</translation>
 <translation id="8395584934117017006">Ovim uređajem <ph name="DEVICE_TYPE" /> upravlja preduzeće</translation>
 <translation id="8398927464629426868">Brzina kojom se uređaj trenutno puni ili prazni</translation>
@@ -867,7 +868,7 @@
 <translation id="8503813439785031346">Korisničko ime</translation>
 <translation id="8503836310948963452">Još samo nekoliko minuta...</translation>
 <translation id="8508640263392900755">Detalji APN-a</translation>
-<translation id="8522687886059337719">Sada imate pristup novim <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />pozadinama<ph name="END_LINK_WALLPAPER_SUBPAGE" /> i <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />čuvaru zaslona<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
+<translation id="8522687886059337719">Sada imate pristup novim <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />pozadinskim slikama<ph name="END_LINK_WALLPAPER_SUBPAGE" /> i <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />čuvaru ekrana<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Mobilni operater može zahtijevati ovu opciju radi povezivanja s njegovom mrežom. Za detalje se obratite mobilnom operateru.</translation>

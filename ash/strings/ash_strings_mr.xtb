@@ -368,7 +368,6 @@
 <translation id="2726420622004325180">हॉटस्पॉट पुरवण्यासाठी तुमच्या फोनमध्ये मोबाइल डेटा असणे आवश्यक आहे</translation>
 <translation id="2727175239389218057">उत्तर द्या</translation>
 <translation id="2727977024730340865">एका निम्न-उर्जेच्या चार्जरवर प्लग इन केले. बॅटरी चार्जिंग विश्वसनीय असू शकत नाही.</translation>
-<translation id="2740531572673183784">ठीक आहे</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"हटवा"</translation>
 <translation id="2750941250130734256">अ‍ॅक्टिव्ह विंडो अनडॉक केली आहे.</translation>
@@ -1073,6 +1072,7 @@
 <translation id="5976112937189445008">विंडो रेकॉर्ड करण्यासाठी एंटर प्रेस करा</translation>
 <translation id="5978382165065462689">दूरस्थ सहाय्याद्वारे आपल्या स्क्रीनचे नियंत्रण शेअर करत आहे.</translation>
 <translation id="5980301590375426705">अतिथी निर्गमन करा</translation>
+<translation id="5983567367406220847">इनॅक्टिव्हिटीमुळे हॉटस्पॉट बंद करण्यात आला आहे.</translation>
 <translation id="598407983968395253">टेंप्लेट वापरा</translation>
 <translation id="598882571027504733">अपडेट करण्यासाठी, संलग्न केलेल्या कीबोर्डसह तुमचे Chromebook रीस्टार्ट करा.</translation>
 <translation id="6002179289567220515">तुम्ही एक कॅमेरा बंद करण्यासाठी प्रत्यक्ष स्विच वापरले. तुम्ही सर्व कॅमेराचा अ‍ॅक्सेसदेखील बंद करू शकता.</translation>
@@ -1375,6 +1375,7 @@
 <translation id="7452560014878697800">अ‍ॅप्लिकेशन तुमचा कॅमेरा वापरत आहे</translation>
 <translation id="7453330308669753048">शोध इतिहासाचे परिणाम काढून टाकले</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | पूर्ण होण्यासाठी <ph name="TIME" /></translation>
+<translation id="7459485586006128091">अंतर्गत एररमुळे हॉटस्पॉट बंद करण्यात आला आहे. काही मिनिटांमध्ये पुन्हा कनेक्ट करण्याचा प्रयत्न करा.</translation>
 <translation id="7461924472993315131">पिन</translation>
 <translation id="746232733191930409">स्क्रीन रेकॉर्डिंग मोड</translation>
 <translation id="7466449121337984263">कृपया सेन्सरला स्पर्श करा</translation>
@@ -1448,6 +1449,7 @@
 <translation id="776344839111254542">अपडेट तपशील पाहण्यासाठी क्लिक करा</translation>
 <translation id="7768784765476638775">बोलण्यासाठी निवडा</translation>
 <translation id="7769299611924763557">तुमची GIF लवकरच तयार होईल</translation>
+<translation id="7773536009433685931">त्याऐवजी वायफाय सुरू करा</translation>
 <translation id="7780094051999721182">शॉर्टकट</translation>
 <translation id="7780159184141939021">स्क्रीन फिरवा</translation>
 <translation id="7796735576426975947">नवीन सूचना लपवलेल्या आहेत</translation>

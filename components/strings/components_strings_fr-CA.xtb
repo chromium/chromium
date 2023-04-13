@@ -1069,7 +1069,6 @@
 <translation id="3631244953324577188">Données biométriques</translation>
 <translation id="3632503704576938756">Partage d'écran repris</translation>
 <translation id="3632892046558972264">Partage d'écran interrompu</translation>
-<translation id="3633035844150606508">Enregistrer l'adresse dans votre compte Google, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Bouton Mise à jour de Chrome, appuyez sur la touche Entrée pour mettre à jour Chrome dans les paramètres de Chrome</translation>
 <translation id="3634530185120165534">Bac 5</translation>
 <translation id="3634567936866541746">Vous venez d'entrer votre mot de passe sur un site trompeur. Pour sécuriser vos comptes, Chrome vous recommande de vérifier vos mots de passe enregistrés.</translation>
@@ -1736,6 +1735,8 @@
 <translation id="5234764350956374838">Fermer</translation>
 <translation id="5239623327352565343">Accès à la position autorisé</translation>
 <translation id="5242889659037569123">Bagages et accessoires de voyage</translation>
+<translation id="5244732203286792411">Chargement en cours…
+    Cette opération peut prendre une minute.</translation>
 <translation id="5250209940322997802">« Se connecter au réseau »</translation>
 <translation id="52517543715119994">En savoir plus sur les fonctionnalités de Chrome</translation>
 <translation id="5251803541071282808">Politique provenant du nuage</translation>

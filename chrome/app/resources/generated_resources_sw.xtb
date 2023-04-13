@@ -2733,6 +2733,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3336855445806447827">Sina uhakika</translation>
 <translation id="3337568642696914359">Usiruhusu tovuti zishughulikie itifaki</translation>
 <translation id="3340620525920140773">Imemaliza kupakua: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">mipangilio</translation>
 <translation id="3341699307020049241">PIN si Sahihi. Umebakisha mara <ph name="RETRIES" /> za kujaribu.</translation>
 <translation id="3341703758641437857">Ruhusu kufikia URL za faili</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" ingependa kuondoa kiendelezi hiki.</translation>
@@ -4962,6 +4963,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5338503421962489998">Hifadhi ya ndani</translation>
 <translation id="5339031667684712858">Tovuti ulizoondoa</translation>
 <translation id="5340638867532133571">Ruhusu tovuti zisakinishe vidhibiti vya malipo (inapendekezwa)</translation>
+<translation id="5340787663756381836">&amp;Tafuta na ubadilishe</translation>
 <translation id="5341793073192892252">Vidakuzi vifuatavyo vilizuiwa (vidakuzi vyote vya washirika wengine vinazuiwa)</translation>
 <translation id="5342091991439452114">Lazima PIN iwe na angalau tarakimu <ph name="MINIMUM" /></translation>
 <translation id="5344036115151554031">Inarejesha Linux</translation>
@@ -5585,6 +5587,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5904614460720589786">Imeshindwa kusakinisha <ph name="APP_NAME" /> kwa sababu ya tatizo la mipangilio. Tafadhali wasiliana na msimamizi wako. Msimbo wa hitilafu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Inakaribia kukamilisha kusasishwa! Zima na uwashe kifaa chako ili ukamilishe kusasisha.</translation>
 <translation id="5906732635754427568">Data inayohusishwa na programu hii itaondolewa kwenye kifaa hiki.</translation>
+<translation id="5906974869830879618">Tafadhali weka PIN</translation>
 <translation id="5908474332780919512">Fungua Programu Unapoingia Katika Akaunti</translation>
 <translation id="5908695239556627796">Kasi ya kusogeza kipanya</translation>
 <translation id="5909379458939060601">Ungependa kufuta wasifu huu na data ya kuvinjari?</translation>
@@ -6972,6 +6975,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7139627972753429585"><ph name="APP_NAME" /> inatumia maikrofoni yako</translation>
 <translation id="7141105143012495934">Haikufaulu kuingia katika akaunti kwa sababu maelezo ya akaunti yako hayakupatikana. Tafadhali wasiliana na msimamizi wako au jaribu tena.</translation>
 <translation id="7141844554192012199">Kagua</translation>
+<translation id="7143207342074048698">Inaunganisha</translation>
 <translation id="7144878232160441200">Jaribu tena</translation>
 <translation id="7148426638542880639">Huenda tovuti zisifanye kazi kama unavyotarajia. Teua chaguo hili iwapo usingependa taarifa zinazohusiana na tovuti unazotembelea zisalie kwenye kifaa chako.</translation>
 <translation id="7149839598364933473">Geuza kifaa hiki kiwe kifaa kinachotumia <ph name="DEVICE_OS" />.</translation>
@@ -9355,6 +9359,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="939401694733344652">Akaunti hizi hazitumiki kwenye programu za Android kwa sasa. Iwapo utachagua akaunti ya kutumia kwenye programu hii ya Android, akaunti hiyo inaweza pia kutumiwa pamoja na programu nyingine za Android. Unaweza kubadilisha uwezo wa kufikia wa programu ya Android kwenye <ph name="LINK_BEGIN" />Mipangilio &gt; Akaunti<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Ingiza kaulisiri</translation>
 <translation id="939736085109172342">Folda mpya</translation>
+<translation id="940212040923880623">&amp;Tafuta na Ubadilishe</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> inashiriki kichupo cha Chrome na sauti.</translation>
 <translation id="944799160843436808">Kulikuwa na hitilafu katika kuweka mipangilio ya programu ya Steam kwenye Chromebook</translation>
 <translation id="945522503751344254">Tuma maoni</translation>
@@ -9376,6 +9381,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="964790508619473209">Mpangilio wa skrini</translation>
 <translation id="965211523698323809">Tuma na upokee SMS kupitia <ph name="DEVICE_TYPE" /> yako. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Ripoti tatizo la Google Cast</translation>
+<translation id="966588271015727539">Chagua onyesho la braille ya bluetooth</translation>
 <translation id="967398046773905967">Usiruhusu tovuti zozote zifikie vifaa vya HID</translation>
 <translation id="967624055006145463">Data iliyohifadhiwa</translation>
 <translation id="96774243435178359">Printa zinazodhibitiwa</translation>

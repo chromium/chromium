@@ -1065,7 +1065,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3631244953324577188">Biometrické systémy</translation>
 <translation id="3632503704576938756">Sdílení obrazovky bylo obnoveno</translation>
 <translation id="3632892046558972264">Sdílení obrazovky je pozastaveno</translation>
-<translation id="3633035844150606508">Adresa se uloží do vašeho účtu Google, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Tlačítko Aktualizovat Chrome, stisknutím klávesy Enter aktualizujete Chrome v nastavení Chromu</translation>
 <translation id="3634530185120165534">Přihrádka 5</translation>
 <translation id="3634567936866541746">Právě jste své heslo zadali na klamavém webu. Pokud chcete zabezpečit své účty, Chrome vám doporučuje zkontrolovat uložená hesla.</translation>
@@ -1732,6 +1731,8 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5234764350956374838">Zavřít</translation>
 <translation id="5239623327352565343">Poloha je povolena</translation>
 <translation id="5242889659037569123">Zavazadla a cestovní příslušenství</translation>
+<translation id="5244732203286792411">Načítání…
+    Může to chvíli trvat.</translation>
 <translation id="5250209940322997802">Připojit k síti</translation>
 <translation id="52517543715119994">Informace o funkcích Chromu</translation>
 <translation id="5251803541071282808">Cloud</translation>

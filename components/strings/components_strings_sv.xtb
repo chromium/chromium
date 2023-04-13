@@ -364,6 +364,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1801812870656502108">Virtuella kortuppgifter</translation>
 <translation id="1803020234906945288">Hälsosam kost</translation>
 <translation id="1803351196216024260">Får begära åtkomst till mikrofonen</translation>
+<translation id="1806174020048213474">Den här appen begär behörighet att installera wifi-användaruppgifter. Efter konfigureringen ansluter <ph name="DEVICE_TYPE" /> automatiskt till deltagande wifi-nätverk. Avinstallera appen om du vill ta bort dessa användaruppgifter.</translation>
 <translation id="1807246157184219062">Ljus</translation>
 <translation id="1807528111851433570">Första ark</translation>
 <translation id="180991881384371158">CVC-koden finns på baksidan av kortet. Det är de sista tre siffrorna uppe till höger i signaturrutan.</translation>
@@ -1069,7 +1070,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3631244953324577188">Biometri</translation>
 <translation id="3632503704576938756">Skärmdelningen återupptogs</translation>
 <translation id="3632892046558972264">Skärmdelningen pausades</translation>
-<translation id="3633035844150606508">Spara adressen i ditt Google-konto, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Knappen Uppdatera Chrome, tryck på retur om du vill uppdatera Chrome i inställningarna för Chrome</translation>
 <translation id="3634530185120165534">Fack 5</translation>
 <translation id="3634567936866541746">Du angav just ditt lösenord på en bedräglig webbplats. Du rekommenderas att kontrollera dina sparade lösenord i Chrome nu för att skydda dina konton.</translation>
@@ -1336,6 +1336,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4270541775497538019">Utmatningsfack 6</translation>
 <translation id="4274173425554582601">Datorer och elektronik</translation>
 <translation id="4275830172053184480">Starta om enheten</translation>
+<translation id="4276974990916607331">Nej tack</translation>
 <translation id="4277028893293644418">Återställ lösenord</translation>
 <translation id="4277937682389409325">Lokal adress</translation>
 <translation id="4278390842282768270">Tillåts</translation>
@@ -1696,6 +1697,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5129534298163637277">Bekräftelseruta</translation>
 <translation id="5135404736266831032">Hantera adresser …</translation>
 <translation id="5136841603454277753">Ange rätt kod</translation>
+<translation id="5137761395480718572">Den här appen begär behörighet att installera wifi-användaruppgifter. Efter konfigureringen ansluter <ph name="DEVICE_TYPE" /> automatiskt till deltagande wifi-nätverk. Avinstallera appen om du vill ta bort dessa användaruppgifter. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Virtuella kort är inte tillgängliga just nu. Kontakta banken</translation>
 <translation id="5138227688689900538">Visa färre</translation>
 <translation id="5145883236150621069">Felkoden ingår i policysvaret</translation>
@@ -1752,6 +1754,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5273881944177595304">Webbapplikationer och onlineverktyg</translation>
 <translation id="5274025349362408263">Böcker och litteratur</translation>
 <translation id="5279286380302340275">Hantera nedladdningar</translation>
+<translation id="5279453600310613955">Nej tack</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Dokumentegenskaper</translation>
 <translation id="528468243742722775">Avsluta</translation>
@@ -2245,6 +2248,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6529173248185917884">Sjunde rullen</translation>
 <translation id="6529602333819889595">&amp;Gör om Ta bort</translation>
 <translation id="6535751101619004418">Valutor och valutaväxling</translation>
+<translation id="6536221421038631327">Om du tar bort en Passpoint-prenumeration från <ph name="DEVICE_TYPE" /> tas kopplade nätverk också bort. Kontakta <ph name="FRIENDLY_NAME" /> om du vill göra ändringar i prenumerationen. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">Aktiefonder</translation>
 <translation id="6545864417968258051">Bluetooth-sökning</translation>
 <translation id="6547208576736763147">Två hål till vänster</translation>
@@ -3341,6 +3345,7 @@ Mer information:
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="922152298093051471">Anpassa Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">Vill du ge <ph name="APP_NAME" />-appen behörighet att konfigurera wifi-nätverk?</translation>
 <translation id="936602727769022409">Du kan förlora tillgången till Google-kontot. Du rekommenderas att ändra lösenordet nu. Du blir uppmanad att logga in.</translation>
 <translation id="937457230470581909">Djurparker, akvarier och djurreservat</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Vilken data som används:<ph name="END_BOLD" /> Dina annonsämnen baseras på din senaste webbhistorik, en lista över webbplatser du har besökt i Chrome på den här enheten.</translation>

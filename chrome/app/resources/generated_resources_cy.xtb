@@ -2168,6 +2168,7 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2804043232879091219">Ni ellid agor y porwr amgen</translation>
 <translation id="2804667941345577550">Byddwch yn cael eich allgofnodi o'r wefan hon, gan gynnwys mewn tabiau sydd ar agor.</translation>
 <translation id="2804680522274557040">Diffoddwyd y camera</translation>
+<translation id="2804742109948581745">Ochr yn ochr</translation>
 <translation id="2805539617243680210">Rydych yn barod i fynd!</translation>
 <translation id="2805646850212350655">System Ffeil Amgryptio Microsoft</translation>
 <translation id="2805756323405976993">Apiau</translation>
@@ -2739,6 +2740,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3336855445806447827">Ddim yn siŵr</translation>
 <translation id="3337568642696914359">Peidio â chaniatáu i wefannau drin protocolau</translation>
 <translation id="3340620525920140773">Lawrlwytho wedi'i gwblhau: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">gosodiadau</translation>
 <translation id="3341699307020049241">PIN anghywir. Mae gennych <ph name="RETRIES" /> ymgais ar ôl.</translation>
 <translation id="3341703758641437857">Caniatáu mynediad at URL ffeiliau</translation>
 <translation id="3342361181740736773">Hoffai "<ph name="TRIGGERING_EXTENSION_NAME" />" dynnu'r estyniad hwn.</translation>
@@ -4661,6 +4663,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5056950756634735043">Wrthi'n cysylltu â'r cynhwysydd</translation>
 <translation id="5057110919553308744">Pan fyddwch yn clicio'r estyniad</translation>
 <translation id="5059241099014281248">Cyfyngu mewngofnodi</translation>
+<translation id="5059429103770496207">Arddull arddangos</translation>
 <translation id="5059526285558225588">Dewis beth i'w rannu</translation>
 <translation id="5060332552815861872">Mae 1 argraffydd ar gael i'w gadw.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Mae'r ffolder hon yn cynnwys nod tudalen. Ydych chi'n siŵr eich bod am ei dileu?}zero{Mae'r ffolder hon yn cynnwys # nod tudalen. Ydych chi'n siŵr eich bod am ei dileu?}two{Mae'r ffolder hon yn cynnwys # nod tudalen. Ydych chi'n siŵr eich bod am ei dileu?}few{Mae'r ffolder hon yn cynnwys # nod tudalen. Ydych chi'n siŵr eich bod am ei dileu?}many{Mae'r ffolder hon yn cynnwys # nod tudalen. Ydych chi'n siŵr eich bod am ei dileu?}other{Mae'r ffolder hon yn cynnwys # nod tudalen. Ydych chi'n siŵr eich bod am ei dileu?}}</translation>
@@ -5594,6 +5597,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5904614460720589786">Doedd dim modd gosod <ph name="APP_NAME" /> oherwydd problem ffurfweddu. Cysylltwch â'ch gweinyddwr. Cod gwall: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Bron yn gyfoes! Ailgychwyn eich dyfais i orffen diweddaru.</translation>
 <translation id="5906732635754427568">Bydd data sy'n gysylltiedig â'r ap hwn yn cael eu tynnu o'r ddyfais hon.</translation>
+<translation id="5906974869830879618">Rhowch PIN</translation>
 <translation id="5908474332780919512">Dechrau'r Ap Pan Fyddwch yn Mewngofnodi</translation>
 <translation id="5908695239556627796">Cyflymder sgrolio'r llygoden</translation>
 <translation id="5909379458939060601">Dileu'r proffil hwn a'i ddata pori?</translation>
@@ -5728,6 +5732,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6019851026059441029">Gwych - HD</translation>
 <translation id="6020431688553761150">Ni wnaeth y gweinydd eich awdurdodi i gael mynediad at yr adnodd hwn.</translation>
 <translation id="6021293122504240352">Nid yw <ph name="APPS" /> ap yn cael eu cefnogi bellach</translation>
+<translation id="6021969570711251331">Cydblethu</translation>
 <translation id="6022526133015258832">Agor Sgrîn Lawn</translation>
 <translation id="6022659036123304283">Personoleiddio Chrome</translation>
 <translation id="6023643151125006053">Cafodd y ddyfais hon (SN: <ph name="SERIAL_NUMBER" />) ei chloi gan y gweinyddwr <ph name="SAML_DOMAIN" /></translation>
@@ -6988,6 +6993,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7139627972753429585">Mae <ph name="APP_NAME" /> yn defnyddio eich meicroffon</translation>
 <translation id="7141105143012495934">Wedi methu â mewngofnodi oherwydd na ellid adfer manylion eich cyfrif. Cysylltwch â'ch gweinyddwr neu rhowch gynnig arall arni.</translation>
 <translation id="7141844554192012199">Gwirio</translation>
+<translation id="7143207342074048698">Wrthi'n cysylltu</translation>
 <translation id="7144878232160441200">Ceisio eto</translation>
 <translation id="7148426638542880639">Mae'n bosib na fydd gwefannau yn gweithio fel y byddech yn ei ddisgwyl. Dewiswch yr opsiwn hwn os nad ydych chi am adael gwybodaeth ar eich dyfais am wefannau rydych yn ymweld â nhw.</translation>
 <translation id="7149839598364933473">Trosi'r ddyfais hon i ddyfais <ph name="DEVICE_OS" />.</translation>
@@ -9395,6 +9401,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="964790508619473209">Trefniant sgriniau</translation>
 <translation id="965211523698323809">Gallwch anfon a chael negeseuon testun o'ch <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Adrodd am broblem gyda Google Cast</translation>
+<translation id="966588271015727539">Dewiswch sgrîn braille bluetooth</translation>
 <translation id="967398046773905967">Peidio â gadael i unrhyw wefannau gael mynediad at ddyfeisiau HID</translation>
 <translation id="967624055006145463">Data a storiwyd</translation>
 <translation id="96774243435178359">Argraffwyr a reolir</translation>

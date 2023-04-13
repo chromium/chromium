@@ -46,6 +46,7 @@
 <translation id="1038462104119736705">Er wordt ten minste <ph name="INSTALL_SIZE" /> vrije opslagruimte aanbevolen voor Linux. Verwijder bestanden op het apparaat om opslagruimte vrij te maken.</translation>
 <translation id="1038643060055067718">Regels:</translation>
 <translation id="1039337018183941703">Ongeldig of beschadigd bestand</translation>
+<translation id="1040761927998636252">Naamloze bookmark voor <ph name="URL" /></translation>
 <translation id="1041175011127912238">Deze pagina reageert niet</translation>
 <translation id="1041263367839475438">Beschikbare apparaten</translation>
 <translation id="1042174272890264476">Je computer is ook uitgerust met de RLZ-bibliotheek van <ph name="SHORT_PRODUCT_NAME" />. RLZ wijst een niet-unieke, niet-persoonlijke tag toe om de zoekopdrachten en het gebruik van <ph name="SHORT_PRODUCT_NAME" /> te meten als gevolg van een bepaalde promotiecampagne. Deze labels worden soms weergegeven in Google-zoekopdrachten in <ph name="PRODUCT_NAME" />.</translation>
@@ -2722,6 +2723,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3336855445806447827">Weet niet</translation>
 <translation id="3337568642696914359">Niet toestaan dat sites protocollen verwerken</translation>
 <translation id="3340620525920140773">Download voltooid: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">instellingen</translation>
 <translation id="3341699307020049241">Onjuiste pincode. Je hebt nog <ph name="RETRIES" /> pogingen over.</translation>
 <translation id="3341703758641437857">Toegang tot bestand-URL's toestaan</translation>
 <translation id="3342361181740736773">'<ph name="TRIGGERING_EXTENSION_NAME" />' wil deze extensie verwijderen.</translation>
@@ -5573,6 +5575,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5904614460720589786">Kan <ph name="APP_NAME" /> niet instellen vanwege een configuratieprobleem. Neem contact op met je beheerder. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Updaten bijna voltooid. Start je apparaat opnieuw op om de update te voltooien.</translation>
 <translation id="5906732635754427568">Gegevens die zijn gekoppeld aan deze app, worden verwijderd van dit apparaat.</translation>
+<translation id="5906974869830879618">Geef een pincode op</translation>
 <translation id="5908474332780919512">App starten als je inlogt</translation>
 <translation id="5908695239556627796">Scrollsnelheid voor muis</translation>
 <translation id="5909379458939060601">Dit profiel en bijbehorende browsegegevens verwijderen?</translation>
@@ -6957,6 +6960,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7139627972753429585"><ph name="APP_NAME" /> gebruikt je microfoon</translation>
 <translation id="7141105143012495934">Inloggen is mislukt omdat je accountgegevens niet kunnen worden opgevraagd. Neem contact op met je beheerder of probeer het opnieuw.</translation>
 <translation id="7141844554192012199">Checken</translation>
+<translation id="7143207342074048698">Verbinden</translation>
 <translation id="7144878232160441200">Opnieuw proberen</translation>
 <translation id="7148426638542880639">Sites werken misschien niet zoals verwacht. Kies deze optie als je geen informatie op je apparaat wilt achterlaten over sites die je bezoekt.</translation>
 <translation id="7149839598364933473">Zet dit apparaat om in een <ph name="DEVICE_OS" />-apparaat.</translation>
@@ -9359,6 +9363,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="964790508619473209">Schermindeling</translation>
 <translation id="965211523698323809">Sms'jes verzenden en ontvangen op je <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Een probleem met Google Cast melden</translation>
+<translation id="966588271015727539">Een Bluetooth-brailleleesregel selecteren</translation>
 <translation id="967398046773905967">Sites geen toegang tot HID-apparaten geven</translation>
 <translation id="967624055006145463">Opgeslagen gegevens</translation>
 <translation id="96774243435178359">Beheerde printers</translation>

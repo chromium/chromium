@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">Aktivirano</translation>
 <translation id="5430931332414098647">Automatsko modemsko povezivanje</translation>
 <translation id="5431318178759467895">Boja</translation>
+<translation id="5456936324019847994">Povezivanje s omogućenim prilagođenim APN-ovima nije moguće. Za više informacije obratite se mobilnom operateru.</translation>
 <translation id="5457599981699367932">Pregledavaj kao gost</translation>
 <translation id="54609108002486618">Upravljani</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Preostao je {0} pokušaj.}one{Preostao je {0} pokušaj.}few{Preostala su {0} pokušaja.}other{Preostalo je {0} pokušaja.}}</translation>

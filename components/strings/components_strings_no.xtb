@@ -1070,7 +1070,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3631244953324577188">Biometri</translation>
 <translation id="3632503704576938756">Skjermdelingen er gjenopptatt</translation>
 <translation id="3632892046558972264">Skjermdelingen er satt på pause</translation>
-<translation id="3633035844150606508">Lagre adressen i Google-kontoen din, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Knappen «Oppdater Chrome» – trykk på Enter for å oppdatere Chrome fra Chrome-innstillingene</translation>
 <translation id="3634530185120165534">Skuff 5</translation>
 <translation id="3634567936866541746">Du har nettopp skrevet inn passordet ditt på et villedende nettsted. Chrome anbefaler at du sikrer kontoene dine ved å sjekke de lagrede passordene dine.</translation>
@@ -1794,6 +1793,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5344579389779391559">Denne siden kan prøve å belaste deg for penger</translation>
 <translation id="5347645913823149105">«Tilpass skrifttyper i Chrome»-knappen – trykk på Enter for å tilpasse skriftstørrelser og -typer i Chrome</translation>
 <translation id="5355557959165512791">Du kan ikke gå til <ph name="SITE" /> akkurat nå, siden sertifikatet for nettstedet er trukket tilbake. Nettverksfeil- og angrep er vanligvis midlertidige, så denne siden fungerer sannsynligvis senere.</translation>
+<translation id="5356345925629253198">Du kan bruke lagrede adresser i flere Google-produkter. Denne adressen lagres i Google-kontoen din (<ph name="ACCOUNT" />).</translation>
 <translation id="5357848622083956825">Visuell kunst og design</translation>
 <translation id="536296301121032821">Kunne ikke lagre angivelsen for enhetsinnstillinger</translation>
 <translation id="5363309033720083897">Den serielle porten tillates av administratoren din</translation>

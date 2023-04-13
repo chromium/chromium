@@ -368,7 +368,6 @@
 <translation id="2726420622004325180">핫스팟을 제공하려면 휴대전화에서 모바일 데이터를 이용할 수 있어야 합니다.</translation>
 <translation id="2727175239389218057">답장</translation>
 <translation id="2727977024730340865">저출력 충전기에 연결되었습니다. 배터리 충전 상태가 불안정합니다.</translation>
-<translation id="2740531572673183784">확인</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"삭제"</translation>
 <translation id="2750941250130734256">활성 창이 고정 해제되었습니다.</translation>
@@ -1073,6 +1072,7 @@
 <translation id="5976112937189445008">창을 녹화하려면 Enter를 누르세요</translation>
 <translation id="5978382165065462689">원격 지원을 통해 화면 제어 공유</translation>
 <translation id="5980301590375426705">게스트 세션 종료</translation>
+<translation id="5983567367406220847">활동이 없어 핫스팟이 사용 중지되었습니다.</translation>
 <translation id="598407983968395253">템플릿 사용</translation>
 <translation id="598882571027504733">업데이트하려면 키보드가 연결된 상태로 Chromebook을 다시 시작하세요.</translation>
 <translation id="6002179289567220515">물리적 스위치를 사용하여 카메라 1개를 사용 중지했습니다. 모든 카메라의 액세스를 사용 중지할 수도 있습니다.</translation>
@@ -1375,6 +1375,7 @@
 <translation id="7452560014878697800">다른 애플리케이션에서 카메라를 사용 중입니다.</translation>
 <translation id="7453330308669753048">검색 기록 결과 삭제됨</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> 후 충전 완료</translation>
+<translation id="7459485586006128091">내부 오류로 인해 핫스팟이 사용 중지되었습니다. 몇 분 후에 다시 연결해 보세요.</translation>
 <translation id="7461924472993315131">고정</translation>
 <translation id="746232733191930409">화면 녹화 모드</translation>
 <translation id="7466449121337984263">센서를 터치하세요.</translation>
@@ -1448,6 +1449,7 @@
 <translation id="776344839111254542">업데이트 세부정보를 보려면 클릭하세요.</translation>
 <translation id="7768784765476638775">텍스트 읽어주기</translation>
 <translation id="7769299611924763557">곧 GIF가 준비됩니다</translation>
+<translation id="7773536009433685931">대신 Wi-Fi 사용 설정하기</translation>
 <translation id="7780094051999721182">바로가기</translation>
 <translation id="7780159184141939021">화면 회전</translation>
 <translation id="7796735576426975947">새로운 알림 숨겨짐</translation>

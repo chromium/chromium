@@ -2724,6 +2724,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3336855445806447827">Aniq bilmayman</translation>
 <translation id="3337568642696914359">Saytlarga protokollarga ishlov berishni taqiqlash</translation>
 <translation id="3340620525920140773"><ph name="FILE_NAME" /> fayli yuklab olindi.</translation>
+<translation id="3340978935015468852">sozlamalar</translation>
 <translation id="3341699307020049241">PIN kod xato. Yana <ph name="RETRIES" /> marta urinishingiz mumkin.</translation>
 <translation id="3341703758641437857">URL manzillardagi fayllarni o‘chishga ruxsat berish</translation>
 <translation id="3342361181740736773">“<ph name="TRIGGERING_EXTENSION_NAME" />” bu kengaytmani o‘chirib yubormoqchi.</translation>
@@ -4097,6 +4098,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4545759655004063573">Ruxsat yo‘qligi tufayli saqlab bo‘lmadi. Boshqa jildni tanlang.</translation>
 <translation id="4546308221697447294">Google Chrome yordamida internet tezligi oshadi</translation>
 <translation id="4546345569117159016">Oʻng tugma</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> bu kengaytmani ishlatmoqchi:</translation>
 <translation id="4546692474302123343">Google Assistentda ovoz bilan yozish</translation>
 <translation id="4547659257713117923">Boshqa qurilmalarda ochilgan tablar yo‘q</translation>
 <translation id="4547672827276975204">Avtomatik aniqlansin</translation>
@@ -4955,6 +4957,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5338503421962489998">Mahalliy ombor</translation>
 <translation id="5339031667684712858">Olib tashlangan saytlar</translation>
 <translation id="5340638867532133571">Saytlarga to‘lov vositalarini o‘rnatishga ruxsat berish (tavsiya etiladi)</translation>
+<translation id="5340787663756381836">&amp;Topish va tahrirlash</translation>
 <translation id="5341793073192892252">Quyidagi cookie fayllari bloklandi (tashqi cookie fayllari istisnolarsiz bloklanadi):</translation>
 <translation id="5342091991439452114">PIN kod kamida <ph name="MINIMUM" /> ta raqamdan iborat bo‘lishi lozim</translation>
 <translation id="5344036115151554031">Linux tiklanmoqda</translation>
@@ -5578,6 +5581,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5904614460720589786">Sozlashda muammo yuz bergani uchun <ph name="APP_NAME" /> sozlanmadi Administratorga murojaat qiling. Xatolik kodi: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Yangilanish deyarli yakunlandi. Qurilmani qayta ishga tushiring.</translation>
 <translation id="5906732635754427568">Bu ilovaga aloqador ma’lumotlar ushbu qurilmadan o‘chiriladi.</translation>
+<translation id="5906974869830879618">PIN kodni kiriting</translation>
 <translation id="5908474332780919512">Ilova tizim bilan birga ishga tushsin</translation>
 <translation id="5908695239556627796">Sichqonchada varaqlash tezligi</translation>
 <translation id="5909379458939060601">Bu profil va brauzerning ishlashi haqida axborot oʻchirib tashlansinmi?</translation>
@@ -6965,6 +6969,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7139627972753429585"><ph name="APP_NAME" /> mikrofoningizni ishlatmoqda</translation>
 <translation id="7141105143012495934">Hisobga kirishda xatolik yuz berdi, chunki hisob ma’lumotlarini yuklab bo‘lmadi. Administrator bilan bog‘laning yoki qaytadan urinib ko‘ring.</translation>
 <translation id="7141844554192012199">Tekshiruvlar</translation>
+<translation id="7143207342074048698">Ulanmoqda</translation>
 <translation id="7144878232160441200">Qayta urinish</translation>
 <translation id="7148426638542880639">Saytlar kutilganidek ishlamasligi mumkin. Ochilgan saytlar haqida qurilmangizda maʼlumot qoldirishni xohlamasangiz, ushbu parametrni tanlang.</translation>
 <translation id="7149839598364933473">Bu qurilmani <ph name="DEVICE_OS" /> qurilmasiga aylantiring.</translation>
@@ -9345,6 +9350,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="939401694733344652">Hozirda bur hisoblardan Android ilovalarida foydalanish imkonsiz. Bu Android ilovasidan foydalanish uchun hisob tanlasangiz, undan boshqa Android ilovalarida ham foydalanish mumkin. Android ilovasiga ruxsatni <ph name="LINK_BEGIN" />Sozlamalar &gt; Hisoblar<ph name="LINK_END" /> orqali oʻzgartirish mumkin.</translation>
 <translation id="939598580284253335">Kodli iborani kiriting</translation>
 <translation id="939736085109172342">Yangi jild</translation>
+<translation id="940212040923880623">&amp;Topish va tahrirlash</translation>
 <translation id="942532530371314860">“<ph name="APP_NAME" />” ilovasi Chrome sahifasi va audioga kirishda ruxsat berdi.</translation>
 <translation id="944799160843436808">Chromebook uchun Steamni sozlashda muammo yuz berdi</translation>
 <translation id="945522503751344254">Fikr-mulohaza</translation>
@@ -9366,6 +9372,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="964790508619473209">Ekran joylashuv tartibi</translation>
 <translation id="965211523698323809"><ph name="DEVICE_TYPE" /> orqali SMS yuborish va qabul qilish. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast muammosi haqida xabar berish</translation>
+<translation id="966588271015727539">Bluetooth brayl displeyini tanlang</translation>
 <translation id="967398046773905967">Saytlarga HID qurilmalardan foydalanishni taqiqlash</translation>
 <translation id="967624055006145463">Ishlatilgan joy</translation>
 <translation id="96774243435178359">Boshqariladigan printerlar</translation>

@@ -1070,7 +1070,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3631244953324577188">Biometria</translation>
 <translation id="3632503704576938756">Wznowiono udostępnianie ekranu</translation>
 <translation id="3632892046558972264">Wstrzymano udostępnianie ekranu</translation>
-<translation id="3633035844150606508">Zapisz adres na koncie Google <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Przycisk aktualizacji Chrome. Naciśnij Enter, by zaktualizować przeglądarkę Chrome z poziomu jej ustawień.</translation>
 <translation id="3634530185120165534">Taca 5</translation>
 <translation id="3634567936866541746">Przed chwilą wpisano hasło na stronie wprowadzającej w błąd. Dla bezpieczeństwa Twoich kont Chrome zaleca sprawdzenie zapisanych haseł.</translation>
@@ -1794,6 +1793,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5344579389779391559">Ta strona może próbować obciążyć Cię płatnością</translation>
 <translation id="5347645913823149105">Przycisk dostosowania czcionek w Chrome; aby dostosować rozmiary i kroje czcionek w Chrome, naciśnij Enter</translation>
 <translation id="5355557959165512791">Nie możesz teraz otworzyć strony <ph name="SITE" />, bo jej certyfikat został unieważniony. Błędy sieci i ataki są zazwyczaj przejściowe, więc prawdopodobnie strona będzie wkrótce działać.</translation>
+<translation id="5356345925629253198">Zapisanych adresów możesz używać w różnych usługach Google. Ten adres zostanie zapisany na Twoim koncie Google <ph name="ACCOUNT" />.</translation>
 <translation id="5357848622083956825">Sztuki wizualne i projektowanie</translation>
 <translation id="536296301121032821">Zapisanie ustawień zasady nie powiodło się</translation>
 <translation id="5363309033720083897">Port szeregowy, na który zezwala administrator</translation>

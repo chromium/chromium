@@ -2724,6 +2724,7 @@
 <translation id="3336855445806447827">Не знаю</translation>
 <translation id="3337568642696914359">Запретить сайтам обрабатывать протоколы</translation>
 <translation id="3340620525920140773">Скачивание файла <ph name="FILE_NAME" /> завершено</translation>
+<translation id="3340978935015468852">настройки</translation>
 <translation id="3341699307020049241">Неверный PIN-код. Осталось попыток: <ph name="RETRIES" />.</translation>
 <translation id="3341703758641437857">Разрешить открывать локальные файлы по ссылкам</translation>
 <translation id="3342361181740736773">Программа "<ph name="TRIGGERING_EXTENSION_NAME" />" пытается удалить это расширение.</translation>
@@ -5579,6 +5580,7 @@
 <translation id="5904614460720589786">Не удалось настроить <ph name="APP_NAME" /> из-за проблем с конфигурацией. Обратитесь к администратору. Код ошибки: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Чтобы завершить обновление, перезапустите устройство.</translation>
 <translation id="5906732635754427568">Данные, связанные с этим приложением, будут удалены с устройства.</translation>
+<translation id="5906974869830879618">Введите PIN-код</translation>
 <translation id="5908474332780919512">Запускать при входе</translation>
 <translation id="5908695239556627796">Скорость прокрутки (для мыши)</translation>
 <translation id="5909379458939060601">Удалить этот профиль и данные о работе в браузере?</translation>
@@ -6972,6 +6974,7 @@
 <translation id="7139627972753429585">Приложение "<ph name="APP_NAME" />" использует микрофон</translation>
 <translation id="7141105143012495934">Ошибка входа: не удалось получить данные аккаунта. Обратитесь к администратору или повторите попытку.</translation>
 <translation id="7141844554192012199">Проверка паролей</translation>
+<translation id="7143207342074048698">Подключение</translation>
 <translation id="7144878232160441200">Повторить</translation>
 <translation id="7148426638542880639">Сайты могут работать не так, как вы ожидаете. Выберите этот вариант, если не хотите, чтобы на вашем устройстве сохранялась информация о посещенных сайтах.</translation>
 <translation id="7149839598364933473">Установить <ph name="DEVICE_OS" /> на устройстве</translation>
@@ -9378,6 +9381,7 @@
 <translation id="964790508619473209">Расположение экранов</translation>
 <translation id="965211523698323809">Отправлять и получать SMS на устройстве <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Сообщить о проблеме с Google Cast</translation>
+<translation id="966588271015727539">Выберите дисплей Брайля с технологией Bluetooth</translation>
 <translation id="967398046773905967">Запретить сайтам доступ к HID-устройствам</translation>
 <translation id="967624055006145463">Объем памяти</translation>
 <translation id="96774243435178359">Управляемые принтеры</translation>

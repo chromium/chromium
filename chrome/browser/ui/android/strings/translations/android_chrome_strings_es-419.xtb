@@ -107,6 +107,7 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="1493287004536771723">Sigues a <ph name="SITE_NAME" /></translation>
 <translation id="1502010315804028179">Para administrar tus contraseñas, actualiza los Servicios de Google Play.</translation>
 <translation id="1506061864768559482">Motor de búsqueda</translation>
+<translation id="1508960385613684700">Guía de privacidad <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="1513352483775369820">Favoritos e historial web</translation>
 <translation id="1513814250881909472">Utiliza la función de sincronización para acceder a tus pestañas desde otros dispositivos</translation>
 <translation id="1513858653616922153">Borrar contraseña</translation>
@@ -161,6 +162,7 @@ Si borras el historial de navegación por completo o de un sitio específico, ta
 <translation id="1910950723001426294">La lista de opciones para compartir está cerrada.</translation>
 <translation id="1919130412786645364">Permitir el acceso a Chrome</translation>
 <translation id="1922362554271624559">Idiomas sugeridos</translation>
+<translation id="1924255092154549435">La pestaña está expandida</translation>
 <translation id="1925021887439448749">Ingresa una dirección web personalizada</translation>
 <translation id="1928696683969751773">Actualizaciones</translation>
 <translation id="19288952978244135">Vuelve a abrir Chrome.</translation>
@@ -769,6 +771,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5161254044473106830">Se requiere un título</translation>
 <translation id="5170568018924773124">Mostrar en carpeta</translation>
 <translation id="5171045022955879922">Buscar o escribir URL</translation>
+<translation id="5174700554036517242">La pestaña regresó a la altura inicial</translation>
 <translation id="5184329579814168207">Abrir en Chrome</translation>
 <translation id="5191251636205085390">Conoce y domina nuevas tecnologías diseñadas para reemplazar cookies de terceros.</translation>
 <translation id="5193988420012215838">Se copió en tu portapapeles</translation>
@@ -1251,6 +1254,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7686086654630106285">Obtén más información sobre los anuncios sugeridos por sitios</translation>
 <translation id="768618399695552958">Algunas de las páginas que visitas están precargadas. Las páginas pueden precargarse por medio de servidores de Google cuando están vinculadas desde un sitio de Google.</translation>
 <translation id="7691043218961417207">Explorar contenido para seguir</translation>
+<translation id="7697383401610880082">Controlador de arrastre</translation>
 <translation id="7698359219371678927">Crear correo electrónico en <ph name="APP_NAME" /></translation>
 <translation id="7707922173985738739">Usa los datos móviles.</translation>
 <translation id="7709094866268987903">Los intereses que quitaste aparecerán aquí.</translation>

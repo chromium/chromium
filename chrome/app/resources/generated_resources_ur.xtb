@@ -46,6 +46,7 @@
 <translation id="1038462104119736705">‏کم از کم <ph name="INSTALL_SIZE" /> جگہ Linux کے لیے تجویز کی جاتی ہے۔ خالی جگہ میں اضافہ کرنے کے لیے، اپنے آلہ سے فائلز حذف کریں۔</translation>
 <translation id="1038643060055067718">لکیریں:</translation>
 <translation id="1039337018183941703">غلط یا خراب فائل</translation>
+<translation id="1040761927998636252"><ph name="URL" /> کے لیے بے نام بُک مارک</translation>
 <translation id="1041175011127912238">یہ صفحہ نہیں کھل رہا ہے</translation>
 <translation id="1041263367839475438">دستیاب آلات</translation>
 <translation id="1042174272890264476">‏آپ کا کمپیوٹر <ph name="SHORT_PRODUCT_NAME" /> کی پہلے سے شامل RLZ لائبریری کے ساتھ بھی آتا ہے۔ RLZ ایک غیر منفرد، ذاتی طور پر ناقابل شناخت ٹیگ کو تفویض کرتا ہے تاکہ تلاشوں اور ایک خاص پروموشنل مہم کے ذریعہ چلائے گئے <ph name="SHORT_PRODUCT_NAME" /> استعمال کی پیمائش کر سکے۔ یہ لیبلز کبھی کبھی Google تلاش استفسارات میں <ph name="PRODUCT_NAME" /> میں ظاہر ہوتے ہیں۔</translation>
@@ -2152,6 +2153,7 @@
 <translation id="2804043232879091219">متبادل براؤزر نہیں کھل سکا</translation>
 <translation id="2804667941345577550">اوپن ٹیبز سمیت، آپ اس سائٹ سے سائن آؤٹ ہو جائیں گے</translation>
 <translation id="2804680522274557040">کیمرا آف ہے</translation>
+<translation id="2804742109948581745">سمت بہ سمت</translation>
 <translation id="2805539617243680210">آپ پوری طرح تیار ہیں!</translation>
 <translation id="2805646850212350655">‏Microsoft مرموزکاری فائل سسٹم</translation>
 <translation id="2805756323405976993">اطلاقات</translation>
@@ -2723,6 +2725,7 @@
 <translation id="3336855445806447827">پتہ نہیں</translation>
 <translation id="3337568642696914359">سائٹس کو پروٹوکولز ہینڈل کرنے کی اجازت نہ دیں</translation>
 <translation id="3340620525920140773">ڈاؤن لوڈ مکمل ہو گیا: <ph name="FILE_NAME" />۔</translation>
+<translation id="3340978935015468852">ترتیبات</translation>
 <translation id="3341699307020049241">‏غلط PIN۔ آپ کے پاس <ph name="RETRIES" /> کوششیں باقی ہیں۔</translation>
 <translation id="3341703758641437857">‏فائل URLs تک رسائی کی اجازت دیں</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" اس ایکسٹینشن کو ہٹانا چاہے گا۔</translation>
@@ -4644,6 +4647,7 @@
 <translation id="5056950756634735043">کنٹینر سے منسلک ہو رہا ہے</translation>
 <translation id="5057110919553308744">جب آپ ایکسٹینشن پر کلک کرتے ہیں</translation>
 <translation id="5059241099014281248">سائن ان کو محدود کریں</translation>
+<translation id="5059429103770496207">ڈسپلے کی طرز</translation>
 <translation id="5059526285558225588">منتخب کریں کہ کیا اشتراک کرنا ہے</translation>
 <translation id="5060332552815861872">محفوظ کرنے کے لیے 1 پرنٹر دستیاب ہے۔</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{اس فولڈر میں ایک بُک مارک شامل ہے۔ کیا آپ واقعی اسے حذف کرنا چاہتے ہیں؟}other{اس فولڈر میں # بُک مارکس شامل ہیں۔ کیا آپ واقعی اسے حذف کرنا چاہتے ہیں؟}}</translation>
@@ -5576,6 +5580,7 @@
 <translation id="5904614460720589786">کنفیگریشن میں مسئلہ پیش آنے کی وجہ سے <ph name="APP_NAME" /> کو سیٹ اپ نہیں کیا جا سکا۔ براہ کرم اپنے منتظم سے رابطہ کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="5906655207909574370">تقریباً اپ ٹو ڈیٹ! اپ ڈیٹ کرنے کو مکمل کرنے کیلئے اپنا آلہ دوبارہ شروع کریں۔</translation>
 <translation id="5906732635754427568">اس ایپ سے وابستہ ڈیٹا کو اس آلہ سے ہٹا دیا جائے گا۔</translation>
+<translation id="5906974869830879618">براہ کرم پِن درج کریں</translation>
 <translation id="5908474332780919512">اپنے سائن ان کرتے وقت ایپ شروع کریں</translation>
 <translation id="5908695239556627796">ماؤس کے اسکرول کی رفتار</translation>
 <translation id="5909379458939060601">اس پروفائل اور براؤزنگ ڈیٹا کو حذف کریں؟</translation>
@@ -6963,6 +6968,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> ایپ آپ کا مائیکروفون استعمال کر رہی ہے</translation>
 <translation id="7141105143012495934">سائن ان ناکام ہو گیا کیونکہ آپ کے اکاؤنٹ کی تفصیلات کی بازیافت نہيں ہو سکی۔ براہ کرم اپنے منتظم سے رابطہ کریں یا دوبارہ کوشش کریں۔</translation>
 <translation id="7141844554192012199">چیک اپ</translation>
+<translation id="7143207342074048698">منسلک ہو رہا ہے</translation>
 <translation id="7144878232160441200">دوبارہ کوشش کریں</translation>
 <translation id="7148426638542880639">ہو سکتا ہے سائٹس اس طرح کام نہ کریں جیسا آپ کی توقع ہے۔ اس اختیار کو منتخب کریں اگر آپ اپنے آلے پر ان سائٹس کے بارے میں معلومات نہیں چھوڑنا چاہتے جنہیں آپ دیکھتے ہیں۔</translation>
 <translation id="7149839598364933473">اس آلے کو ایک <ph name="DEVICE_OS" /> آلے میں تبدیل کریں۔</translation>
@@ -9366,6 +9372,7 @@
 <translation id="964790508619473209">اسکرین کا انتظام</translation>
 <translation id="965211523698323809">اپنے <ph name="DEVICE_TYPE" /> سے متنی پیغامات بھیجیں اور وصول کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">‏Google Cast سے ایک مسئلے کی اطلاع دیں</translation>
+<translation id="966588271015727539">بلوٹوتھ بریل ڈسپلے منتخب کریں</translation>
 <translation id="967398046773905967">‏کسی بھی سائٹ کو HID آلات تک رسائی کی اجازت نہ دیں</translation>
 <translation id="967624055006145463">اسٹور کردہ ڈیٹا</translation>
 <translation id="96774243435178359">نظم کردہ پرنٹز</translation>

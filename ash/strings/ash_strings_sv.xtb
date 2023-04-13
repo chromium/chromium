@@ -368,7 +368,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2726420622004325180">Telefonen måste ha mobildata för att användas som surfzon</translation>
 <translation id="2727175239389218057">Svara</translation>
 <translation id="2727977024730340865">Ansluten till en laddare med låg effekt. Batteriet kanske inte laddas ordentligt.</translation>
-<translation id="2740531572673183784">OK</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">”Radera”</translation>
 <translation id="2750941250130734256">Det aktiva fönstret är inte längre dockat.</translation>
@@ -1073,6 +1072,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5976112937189445008">Tryck på retur för att spela in fönstret</translation>
 <translation id="5978382165065462689">Dela kontroll över skärmen via Fjärrhjälp.</translation>
 <translation id="5980301590375426705">Avsluta gästsession</translation>
+<translation id="5983567367406220847">Surfzonen har inaktiverats på grund av inaktivitet.</translation>
 <translation id="598407983968395253">Använd mall</translation>
 <translation id="598882571027504733">Starta om Chromebook-enheten med tangentbordet tillkopplat för att uppdatera.</translation>
 <translation id="6002179289567220515">Du inaktiverade en kamera med det fysiska reglaget. Du kan även inaktivera åtkomsten för alla kameror.</translation>
@@ -1375,6 +1375,7 @@ Nyligen installerad</translation>
 <translation id="7452560014878697800">Kameran används av en app</translation>
 <translation id="7453330308669753048">Sökresultat från sökhistoriken borttaget</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> tills fulladdat</translation>
+<translation id="7459485586006128091">Surfzonen har inaktiverats på grund av ett internt fel. Testa att återansluta om några minuter.</translation>
 <translation id="7461924472993315131">Fäst</translation>
 <translation id="746232733191930409">Skärminspelningsläge</translation>
 <translation id="7466449121337984263">Tryck på sensorn</translation>
@@ -1448,6 +1449,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="776344839111254542">Klicka här om du vill se mer information om uppdateringen</translation>
 <translation id="7768784765476638775">Textuppläsning</translation>
 <translation id="7769299611924763557">Giffen är snart redo</translation>
+<translation id="7773536009433685931">Aktivera wifi i stället</translation>
 <translation id="7780094051999721182">genvägar</translation>
 <translation id="7780159184141939021">Rotera skärmen</translation>
 <translation id="7796735576426975947">En ny avisering har dolts</translation>

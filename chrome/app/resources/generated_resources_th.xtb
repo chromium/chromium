@@ -2151,6 +2151,7 @@
 <translation id="2804043232879091219">เปิดเบราว์เซอร์สำรองไม่ได้</translation>
 <translation id="2804667941345577550">คุณจะออกจากระบบของเว็บไซต์นี้ รวมถึงในแท็บที่เปิดอยู่</translation>
 <translation id="2804680522274557040">ปิดกล้องอยู่</translation>
+<translation id="2804742109948581745">แสดงคู่กัน</translation>
 <translation id="2805539617243680210">คุณพร้อมแล้ว</translation>
 <translation id="2805646850212350655">ระบบไฟล์การเข้ารหัสของ Microsoft</translation>
 <translation id="2805756323405976993">แอป</translation>
@@ -2722,6 +2723,7 @@
 <translation id="3336855445806447827">ไม่แน่ใจ</translation>
 <translation id="3337568642696914359">ไม่อนุญาตให้เว็บไซต์จัดการโปรโตคอล</translation>
 <translation id="3340620525920140773">ดาวน์โหลดเสร็จสมบูรณ์: <ph name="FILE_NAME" /></translation>
+<translation id="3340978935015468852">การตั้งค่า</translation>
 <translation id="3341699307020049241">PIN ไม่ถูกต้อง คุณป้อน PIN ได้อีก <ph name="RETRIES" /> ครั้ง</translation>
 <translation id="3341703758641437857">อนุญาตให้เข้าถึงไฟล์ URL</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" ต้องการนำส่วนขยายนี้ออก</translation>
@@ -4643,6 +4645,7 @@
 <translation id="5056950756634735043">กำลังเชื่อมต่อกับคอนเทนเนอร์</translation>
 <translation id="5057110919553308744">เมื่อคุณคลิกส่วนขยาย</translation>
 <translation id="5059241099014281248">จำกัดการลงชื่อเข้าใช้</translation>
+<translation id="5059429103770496207">รูปแบบการแสดง</translation>
 <translation id="5059526285558225588">เลือกสิ่งที่จะแชร์</translation>
 <translation id="5060332552815861872">มีเครื่องพิมพ์ 1 เครื่องให้บันทึก</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{โฟลเดอร์นี้มีบุ๊กมาร์ก คุณแน่ใจไหมว่าต้องการลบโฟลเดอร์}other{โฟลเดอร์นี้มี # บุ๊กมาร์ก คุณแน่ใจไหมว่าต้องการลบโฟลเดอร์}}</translation>
@@ -5574,6 +5577,7 @@
 <translation id="5904614460720589786">ตั้งค่า <ph name="APP_NAME" /> ไม่ได้เนื่องจากมีปัญหาเกี่ยวกับการกำหนดค่า โปรดติดต่อผู้ดูแลระบบ รหัสข้อผิดพลาด: <ph name="ERROR_CODE" /></translation>
 <translation id="5906655207909574370">การอัปเดตใกล้จะเสร็จเรียบร้อยแล้ว รีสตาร์ทอุปกรณ์เพื่อให้การอัปเดตเสร็จสิ้น</translation>
 <translation id="5906732635754427568">ระบบจะนำข้อมูลที่เชื่อมโยงกับแอปนี้ออกจากอุปกรณ์เครื่องนี้</translation>
+<translation id="5906974869830879618">โปรดป้อน PIN</translation>
 <translation id="5908474332780919512">เริ่มต้นแอปเมื่อคุณลงชื่อเข้าใช้</translation>
 <translation id="5908695239556627796">ความเร็วในการเลื่อนเมาส์</translation>
 <translation id="5909379458939060601">ลบโปรไฟล์นี้และข้อมูลการท่องเว็บใช่ไหม</translation>
@@ -6960,6 +6964,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> กำลังใช้ไมโครโฟน</translation>
 <translation id="7141105143012495934">การลงชื่อเข้าใช้ล้มเหลวเนื่องจากไม่สามารถเรียกคืนรายละเอียดบัญชีของคุณได้ โปรดติดต่อผู้ดูแลระบบของคุณหรือลองอีกครั้ง</translation>
 <translation id="7141844554192012199">การตรวจสอบ</translation>
+<translation id="7143207342074048698">กำลังเชื่อมต่อ</translation>
 <translation id="7144878232160441200">ลองอีกครั้ง</translation>
 <translation id="7148426638542880639">เว็บไซต์อาจไม่ทำงานตามที่ต้องการ เลือกตัวเลือกนี้หากคุณไม่ต้องการให้มีข้อมูลเว็บไซต์ที่เข้าชมบนอุปกรณ์</translation>
 <translation id="7149839598364933473">เปลี่ยนอุปกรณ์นี้เป็นอุปกรณ์ <ph name="DEVICE_OS" /></translation>
@@ -9363,6 +9368,7 @@
 <translation id="964790508619473209">การจัดตำแหน่งหน้าจอ</translation>
 <translation id="965211523698323809">ส่งและรับ SMS จาก <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">รายงานปัญหาเกี่ยวกับ Google Cast</translation>
+<translation id="966588271015727539">เลือกอุปกรณ์แสดงผลอักษรเบรลล์ผ่านบลูทูธ</translation>
 <translation id="967398046773905967">ไม่อนุญาตให้เว็บไซต์ใดก็ตามเข้าถึงอุปกรณ์ HID</translation>
 <translation id="967624055006145463">ข้อมูลที่จัดเก็บ</translation>
 <translation id="96774243435178359">เครื่องพิมพ์ที่จัดการ</translation>

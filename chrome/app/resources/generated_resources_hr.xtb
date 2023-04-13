@@ -118,6 +118,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1090541560108055381">Prije uparivanja provjerite je li ovaj kôd isti na oba uređaja</translation>
 <translation id="1091767800771861448">Pritisnite tipku ESCAPE za preskakanje (samo neslužbene međuverzije).</translation>
 <translation id="1093457606523402488">Vidljive mreže:</translation>
+<translation id="1094219634413363886">Ako snimanje počne na ovom upravljanom uređaju, prikazat će se obavijest</translation>
 <translation id="1095761715416917775">Pobrinite se da uvijek možete pristupiti sinkroniziranim podacima</translation>
 <translation id="1095879482467973146">Google upravitelj zaporki na webu</translation>
 <translation id="109647177154844434">Deinstaliranjem Parallels Desktopa izbrisat će se slika za Windows. To uključuje njegove aplikacije, postavke i podatke. Jeste li sigurni da želite nastaviti?</translation>
@@ -2726,6 +2727,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3336855445806447827">Nisam siguran/sigurna</translation>
 <translation id="3337568642696914359">Ne dopuštaj web-lokacijama upravljanje protokolima</translation>
 <translation id="3340620525920140773">Preuzimanje dovršeno: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">postavke</translation>
 <translation id="3341699307020049241">PIN nije točan. Preostalo pokušaja: <ph name="RETRIES" />.</translation>
 <translation id="3341703758641437857">Dozvoli pristup URL-ovima datoteke</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" želi ukloniti to proširenje.</translation>
@@ -3855,6 +3857,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4340125850502689798">Nevažeće korisničko ime</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> želi komunicirati s aplikacijom "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4340799661701629185">Ne dopuštaj web-lokacijama slanje obavijesti</translation>
+<translation id="4341280816303414009">Vaš će se zaslon možda snimiti</translation>
 <translation id="4341577178275615435">Da biste uključili ili isključili pregledavanje kursorom, upotrijebite prečac F7</translation>
 <translation id="4341905082470253054">Provjeravanje statusa TPM-a...</translation>
 <translation id="434198521554309404">Brz. Siguran. Jednostavan.</translation>
@@ -5579,6 +5582,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5904614460720589786">Postavljanje aplikacije <ph name="APP_NAME" /> nije uspjelo zbog problema s konfiguracijom. Obratite se administratoru. Kôd pogreške: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Ažuriranje će uskoro biti gotovo. Za dovršetak ponovo pokrenite uređaj.</translation>
 <translation id="5906732635754427568">Podaci povezani s tom aplikacijom uklonit će se s uređaja.</translation>
+<translation id="5906974869830879618">Unesite PIN</translation>
 <translation id="5908474332780919512">Pokrenite aplikaciju kad se prijavite</translation>
 <translation id="5908695239556627796">Brzina pomicanja mišem</translation>
 <translation id="5909379458939060601">Izbrisati ovaj profil i podatke o pregledavanju?</translation>
@@ -5674,6 +5678,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5979421442488174909">&amp;Prevedi na <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Da biste označili stranice, kliknite zvjezdicu u adresnoj traci</translation>
 <translation id="5981362776161841923">Da biste dopustili proširenje, promijenite zadanu postavku u nastavku.</translation>
+<translation id="5982578203375898585">Prikaži preuzimanja nakon dovršetka</translation>
 <translation id="5984222099446776634">Nedavno posjećeno</translation>
 <translation id="5985458664595100876">Format URL-a nije važeći. Podržani su formati \\server\share i smb://server/share.</translation>
 <translation id="598810097218913399">Ukloni zadatak</translation>
@@ -6388,7 +6393,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6630117778953264026">Snažnija zaštita</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> traži trajan pristup certifikatu za samostalnu autentifikaciju u vaše ime.</translation>
 <translation id="6633126565486451781">Datoteka je možda pročitana ili uređena jer web-lokacija ne upotrebljava sigurnu vezu</translation>
-<translation id="6635362468090274700">Nitko ne može dijeliti s vama dok ne postavite uređaj kao vidljiv.<ph name="BR" /><ph name="BR" />Da biste uređaj privremeno postavili kao vidljiv, otvorite područje statusa, a zatim uključite vidljivost uređaja.</translation>
+<translation id="6635362468090274700">Nitko ne može dijeliti s vama dok uređaj ne postavite kao vidljiv.<ph name="BR" /><ph name="BR" />Da biste uređaj privremeno postavili kao vidljiv, otvorite područje statusa, a zatim uključite vidljivost uređaja.</translation>
 <translation id="6635674640674343739">Mrežna veza ne može se uspostaviti. Provjerite mrežnu vezu i pokušajte ponovo.</translation>
 <translation id="6635944431854494329">Vlasnik može upravljati tom značajkom putem Postavki &gt; Napredno &gt; Automatsko slanje dijagnostike i podataka o upotrebi Googleu.</translation>
 <translation id="6636623428211296678">Istražite više postavki u nastavku ili završite odmah</translation>
@@ -6969,6 +6974,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7139627972753429585">Aplikacija <ph name="APP_NAME" /> upotrebljava vaš mikrofon</translation>
 <translation id="7141105143012495934">Prijava nije uspjela jer nisu dohvaćeni podaci o vašem računu. Obratite se administratoru ili pokušajte ponovo.</translation>
 <translation id="7141844554192012199">Provjera</translation>
+<translation id="7143207342074048698">Povezivanje</translation>
 <translation id="7144878232160441200">Pokušaj ponovno</translation>
 <translation id="7148426638542880639">Web-lokacije možda neće funkcionirati kao što očekujete. Odaberite tu opciju ako na uređaju ne želite ostavljati podatke o web-lokacijama koje posjećujete.</translation>
 <translation id="7149839598364933473">Konvertirajte ovaj uređaj u <ph name="DEVICE_OS" /> uređaj.</translation>
@@ -9375,6 +9381,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="964790508619473209">Raspored na zaslonu</translation>
 <translation id="965211523698323809">Šaljite i primajte tekstne poruke na uređaju <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Prijavite poteškoću s Google Castom</translation>
+<translation id="966588271015727539">Odaberite Bluetooth brajev redak</translation>
 <translation id="967398046773905967">Onemogući svim web-lokacijama pristup HID uređajima</translation>
 <translation id="967624055006145463">Pohranjeni podaci</translation>
 <translation id="96774243435178359">Upravljani pisači</translation>

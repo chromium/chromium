@@ -364,6 +364,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1801812870656502108">Oplysninger om virtuelt kort</translation>
 <translation id="1803020234906945288">Sund kost</translation>
 <translation id="1803351196216024260">Websitet kan anmode om tilladelse til at bruge din mikrofon</translation>
+<translation id="1806174020048213474">Denne app anmoder om tilladelse til at installere loginoplysninger til Wi-Fi. Efter konfigurationen opretter din <ph name="DEVICE_TYPE" /> automatisk forbindelse til deltagende Wi-Fi-netværk. Afinstaller appen for at fjerne disse loginoplysninger.</translation>
 <translation id="1807246157184219062">Lys</translation>
 <translation id="1807528111851433570">Startark</translation>
 <translation id="180991881384371158">Din CVC er på bagsiden af dit kort. Det er de sidste 3 cifre øverst til højre i signaturfeltet.</translation>
@@ -1069,7 +1070,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3631244953324577188">Biometri</translation>
 <translation id="3632503704576938756">Skærmdeling er genoptaget</translation>
 <translation id="3632892046558972264">Skærmdeling er sat på pause</translation>
-<translation id="3633035844150606508">Gem adressen på din Google-konto, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Knappen Opdater Chrome – tryk på Enter for at opdatere Chrome i dine Chrome-indstillinger</translation>
 <translation id="3634530185120165534">Bakke 5</translation>
 <translation id="3634567936866541746">Du har lige angivet din adgangskode på et vildledende website. Chrome anbefaler, at du tjekker dine gemte adgangskoder for at sikre dine konti.</translation>
@@ -1336,6 +1336,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4270541775497538019">Stabler 6</translation>
 <translation id="4274173425554582601">Computere og elektronik</translation>
 <translation id="4275830172053184480">Genstart din enhed</translation>
+<translation id="4276974990916607331">Nej tak</translation>
 <translation id="4277028893293644418">Nulstil adgangskoden</translation>
 <translation id="4277937682389409325">Lokal adresse</translation>
 <translation id="4278390842282768270">Tilladt</translation>
@@ -1690,12 +1691,13 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5125751979347152379">Ugyldig webadresse.</translation>
 <translation id="512592033764059484">Fodbold</translation>
-<translation id="5126510351761255129">Bekræft dit kort</translation>
+<translation id="5126510351761255129">Verificer dit kort</translation>
 <translation id="512670116361803001">Størrelsen på <ph name="APP_NAME" /> kan muligvis ikke tilpasses uden problemer. Brug forindstillede vinduestørrelser for at sikre, at appen fungerer korrekt.</translation>
 <translation id="5127934926273826089">Blomster</translation>
 <translation id="5129534298163637277">Dialogboks til bekræftelse</translation>
 <translation id="5135404736266831032">Administrer adresser...</translation>
 <translation id="5136841603454277753">Angiv den korrekte kode</translation>
+<translation id="5137761395480718572">Denne app anmoder om tilladelse til at installere loginoplysninger til Wi-Fi. Efter konfigurationen opretter din <ph name="DEVICE_TYPE" /> automatisk forbindelse til deltagende Wi-Fi-netværk. Afinstaller appen for at fjerne disse loginoplysninger. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Det virtuelle kort er ikke tilgængeligt lige nu. Du bedes kontakte din bank.</translation>
 <translation id="5138227688689900538">Vis færre</translation>
 <translation id="5145883236150621069">Fejlkode til stede i politiksvar</translation>
@@ -1736,6 +1738,8 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5234764350956374838">Luk</translation>
 <translation id="5239623327352565343">Adgang til lokation er tilladt</translation>
 <translation id="5242889659037569123">Bagagetasker og rejsetilbehør</translation>
+<translation id="5244732203286792411">Indlæser…
+    Dette kan tage et øjeblik.</translation>
 <translation id="5250209940322997802">"Opret forbindelse til netværk"</translation>
 <translation id="52517543715119994">Få flere oplysninger om Chrome-funktioner</translation>
 <translation id="5251803541071282808">Skyen</translation>
@@ -1750,6 +1754,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5273881944177595304">Webapps og onlineværktøjer</translation>
 <translation id="5274025349362408263">Bøger og litteratur</translation>
 <translation id="5279286380302340275">Administrer downloads</translation>
+<translation id="5279453600310613955">Nej tak</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Dokumentegenskaber</translation>
 <translation id="528468243742722775">Afslut</translation>
@@ -2242,6 +2247,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6529173248185917884">Syvende papirrulle</translation>
 <translation id="6529602333819889595">&amp;Annuller fortryd slet</translation>
 <translation id="6535751101619004418">Valutaer og veksling</translation>
+<translation id="6536221421038631327">Hvis du fjerner et Passpoint-abonnement fra din <ph name="DEVICE_TYPE" />, fjernes de tilknyttede netværk. Kontakt "<ph name="FRIENDLY_NAME" />" for at ændre dit abonnement. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">Investeringsforeninger</translation>
 <translation id="6545864417968258051">Bluetooth-scanning</translation>
 <translation id="6547208576736763147">To huller i venstre side</translation>
@@ -3338,6 +3344,7 @@ Yderligere oplysninger:
 <translation id="9219103736887031265">Billeder</translation>
 <translation id="922152298093051471">Tilpas Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">Vil du give appen <ph name="APP_NAME" /> tilladelse til at konfigurere Wi-Fi-netværk?</translation>
 <translation id="936602727769022409">Du kan miste adgangen til din Google-konto. Chromium anbefaler, at du skifter din adgangskode nu. Du bliver bedt om at logge ind.</translation>
 <translation id="937457230470581909">Zoologiske haver, akvarier og reservater</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Følgende data bruges:<ph name="END_BOLD" /> Dine annonceemner er baseret på din seneste browserhistorik, som er en liste over websites, du har besøgt i Chrome på denne enhed.</translation>

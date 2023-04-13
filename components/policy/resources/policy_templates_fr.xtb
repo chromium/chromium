@@ -1174,6 +1174,13 @@ Cette règle n'a aucune incidence lorsque la règle <ph name="DEVICE_SCREENSAVER
 
       Si elle est activée ou si elle n'est pas configurée, la définition pour Réponses rapides sera activée.
       Si elle est désactivée, la définition pour Réponses rapides sera désactivée.</translation>
+<translation id="2095778449451007308">Cette règle détermine si les utilisateurs peuvent activer ou non le mode HTTPS uniquement (toujours utiliser une connexion sécurisée) dans les paramètres. Ce mode fait passer toutes les navigations en HTTPS.
+      Si ce paramètre n'est pas défini ou s'il est défini sur "Autorisé", les utilisateurs seront autorisés à activer le mode HTTPS uniquement.
+      Si ce paramètre est défini sur "Interdit", les utilisateurs ne seront pas autorisés à activer le mode HTTPS uniquement.
+      Si ce paramètre est défini sur "force_enabled", le mode HTTPS uniquement sera activé et les utilisateurs ne pourront pas le désactiver.
+      L'activation forcée du mode HTTPS uniquement est disponible à partir de M112.
+
+La règle <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> distincte permet d'éviter que cette fonctionnalité mette à niveau des noms d'hôte ou des modèles du nom d'hôte spécifiques vers HTTPS.</translation>
 <translation id="209586405398070749">Version stable</translation>
 <translation id="2096932573113293941">Demander à l'utilisateur l'autorisation d'exécuter les plug-ins qui nécessitent une autorisation</translation>
 <translation id="2098658257603918882">Autoriser l'envoi de statistiques d'utilisation et de rapports d'erreur</translation>

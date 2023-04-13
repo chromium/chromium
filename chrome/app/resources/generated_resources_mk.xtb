@@ -2737,6 +2737,7 @@
 <translation id="3336855445806447827">Не знам</translation>
 <translation id="3337568642696914359">Не им дозволувај на сајтовите да ракуваат со протоколи</translation>
 <translation id="3340620525920140773">Преземањето заврши: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">поставки</translation>
 <translation id="3341699307020049241">Погрешен PIN. Имате уште <ph name="RETRIES" /> обиди.</translation>
 <translation id="3341703758641437857">Дозволи пристап до URL на датотеките</translation>
 <translation id="3342361181740736773">„<ph name="TRIGGERING_EXTENSION_NAME" />“ сака да ја отстрани екстензијата.</translation>
@@ -4110,6 +4111,7 @@
 <translation id="4545759655004063573">Не може да се зачува поради недоволно дозволи. Зачувајте на друга локација.</translation>
 <translation id="4546308221697447294">Прелистувајте брзо со Google Chrome</translation>
 <translation id="4546345569117159016">Десно копче</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> сака да ја користи екстензијава:</translation>
 <translation id="4546692474302123343">Гласовно внесување на „Помошникот на Google“</translation>
 <translation id="4547659257713117923">Нема картички од други уреди</translation>
 <translation id="4547672827276975204">Постави автоматски</translation>
@@ -4967,6 +4969,7 @@
 <translation id="5338503421962489998">Локално складирање</translation>
 <translation id="5339031667684712858">Сајтови што ги отстранивте</translation>
 <translation id="5340638867532133571">Дозволи сајтовите да инсталираат ракувачи со плаќања (препорачано)</translation>
+<translation id="5340787663756381836">&amp;Најдете и изменете</translation>
 <translation id="5341793073192892252">Следниве колачиња се блокирани (колачињата од трети лица се блокираат без исклучок)</translation>
 <translation id="5342091991439452114">PIN-кодот мора да содржи најмалку <ph name="MINIMUM" /> цифри</translation>
 <translation id="5344036115151554031">Се враќа Linux</translation>
@@ -5590,6 +5593,7 @@
 <translation id="5904614460720589786">Не може да се постави <ph name="APP_NAME" /> поради конфигурациски проблем. Контактирајте со администраторот. Код за грешка: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Речиси ажурирано! Рестартирајте го уредот за да се заврши ажурирањето.</translation>
 <translation id="5906732635754427568">Податоците поврзани со оваа апликација ќе бидат отстранети од уредов.</translation>
+<translation id="5906974869830879618">Внесете PIN</translation>
 <translation id="5908474332780919512">Стартувај ја апликацијата кога ќе се најавам</translation>
 <translation id="5908695239556627796">Брзина на лизгање на глувчето</translation>
 <translation id="5909379458939060601">Да се избрише профилов и податоците од прелистувањето?</translation>
@@ -6900,7 +6904,7 @@
 <translation id="7056526158851679338">&amp;Провери уреди</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Безбедносната проверка беше извршена пред 1 минута}one{Безбедносната проверка беше извршена пред {NUM_MINS} минута}other{Безбедносната проверка беше извршена пред {NUM_MINS} минути}}</translation>
 <translation id="7057767408836081338">Не успеавме да добиеме податоци од апликацијата, но сепак се обидуваме да ја стартуваме…</translation>
-<translation id="7058024590501568315">Сокриена мрежа</translation>
+<translation id="7058024590501568315">Скриена мрежа</translation>
 <translation id="7059858479264779982">Постави на автоматско стартување</translation>
 <translation id="7062222374113411376">Дозволи неодамна затворените сајтови да завршат со испраќањето и примањето податоци (препорачано)</translation>
 <translation id="7063129466199351735">Обработување кратенки...</translation>
@@ -6979,6 +6983,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> го користи микрофонот</translation>
 <translation id="7141105143012495934">Најавувањето не успеа бидејќи не можеа да се вчитаат деталите за вашата сметка. Контактирајте со администраторот или обидете се повторно.</translation>
 <translation id="7141844554192012199">Проверка</translation>
+<translation id="7143207342074048698">Се поврзува</translation>
 <translation id="7144878232160441200">Обиди се повторно</translation>
 <translation id="7148426638542880639">Сајтовите може да не функционираат според вашите очекувања. Изберете ја опцијава ако не сакате да оставате податоци на вашиот уред за сајтовите што ги посетувате.</translation>
 <translation id="7149839598364933473">Конвертирајте го уредов во уред со <ph name="DEVICE_OS" />.</translation>
@@ -9364,6 +9369,7 @@
 <translation id="939401694733344652">Сметкиве не се користат со апликации на Android во моментов. Ако изберете сметка што ќе ја користите со апликацијава на Android, ќе може да се користи и со други апликации на Android. Може да го промените пристапот на апликација на Android во <ph name="LINK_BEGIN" />Поставки &gt; Сметки<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Внеси пристапна фраза</translation>
 <translation id="939736085109172342">Нова папка</translation>
+<translation id="940212040923880623">&amp;Најдете и изменете</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> споделува картичка на Chrome и аудио.</translation>
 <translation id="944799160843436808">Имаше проблем при поставувањето на Steam на Chromebook</translation>
 <translation id="945522503751344254">Испратете повратни информации</translation>
@@ -9385,6 +9391,7 @@
 <translation id="964790508619473209">Подредување на екранот</translation>
 <translation id="965211523698323809">Испраќајте и примајте SMS-пораки од вашиот <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Пријавете проблем во Google Cast</translation>
+<translation id="966588271015727539">Изберете екран за брајово писмо со Bluetooth</translation>
 <translation id="967398046773905967">Не дозволувај ниту еден сајт да пристапува до HID-уредите</translation>
 <translation id="967624055006145463">Складирани податоци</translation>
 <translation id="96774243435178359">Управувани печатачи</translation>

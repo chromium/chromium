@@ -368,7 +368,6 @@
 <translation id="2726420622004325180">ہاٹ سپاٹ فراہم کرنے کے لیے آپ کے فون میں موبائل ڈیٹا کا ہونا ضروری ہے</translation>
 <translation id="2727175239389218057">جواب دیں</translation>
 <translation id="2727977024730340865">ایک کم پاور کے چارجر میں پلگ ان ہے۔ بیٹری چارجنگ ممکن ہے بھروسہ مند نہ ہو۔</translation>
-<translation id="2740531572673183784">ٹھیک ہے</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />، <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"حذف کریں"</translation>
 <translation id="2750941250130734256">فعال ونڈو کو غیر مقفل کیا گیا۔</translation>
@@ -1073,6 +1072,7 @@
 <translation id="5976112937189445008">ونڈو ریکارڈ کرنے کے لیے اینٹر دبائیں</translation>
 <translation id="5978382165065462689">ریموٹ اسسٹنس کے ذریعے آپ کی اسکرین کے کنٹرول کا اشتراک کیا جا رہا ہے۔</translation>
 <translation id="5980301590375426705">مہمان سیشن ختم کریں</translation>
+<translation id="5983567367406220847">غیرفعالیت کی وجہ سے ہاٹ اسپاٹ کو آف کر دیا گیا ہے۔</translation>
 <translation id="598407983968395253">تمثیل استعمال کریں</translation>
 <translation id="598882571027504733">‏اپ ڈیٹ حاصل کرنے کیلئے، منسلک شدہ کی بورڈ سے اپنا Chromebook دوبارہ شروع کریں۔</translation>
 <translation id="6002179289567220515">آپ نے 1 کیمرا آف کرنے کے لیے فزیکل سوئچ کا استعمال کیا۔ آپ تمام کیمروں کے لیے رسائی آف بھی کر سکتے ہیں۔</translation>
@@ -1374,6 +1374,7 @@
 <translation id="7452560014878697800">ایک ایپلیکیشن آپ کا کیمرا استعمال کر رہی ہے</translation>
 <translation id="7453330308669753048">تلاش کی سرگزشت کا نتیجہ ہٹا دیا گیا</translation>
 <translation id="7455047553373871740">%<ph name="BATTERY_PERCENTAGE" /> | مکمل ہونے میں <ph name="TIME" /> باقی</translation>
+<translation id="7459485586006128091">داخلی خرابی کی وجہ سے ہاٹ اسپاٹ کو آف کر دیا گیا ہے۔ چند منٹوں میں دوبارہ منسلک ہونے کی کوشش کریں۔</translation>
 <translation id="7461924472993315131">پن کریں</translation>
 <translation id="746232733191930409">اسکرین ریکارڈنگ کی وضع</translation>
 <translation id="7466449121337984263">براہ کرم سینسر کو ٹچ کریں</translation>
@@ -1447,6 +1448,7 @@
 <translation id="776344839111254542">اپ ڈیٹ کی تفصیلات ملاحظہ کرنے کیلئے کلک کریں</translation>
 <translation id="7768784765476638775">سننے کیلئے منتخب کریں</translation>
 <translation id="7769299611924763557">‏آپ کا GIF جلد ہی تیار ہو جائے گا</translation>
+<translation id="7773536009433685931">‏اس کے بجائے WiFi آن کریں</translation>
 <translation id="7780094051999721182">شارٹ کٹس</translation>
 <translation id="7780159184141939021">اسکرین کو گھمائیں</translation>
 <translation id="7796735576426975947">نئی اطلاع پوشیدہ ہے</translation>

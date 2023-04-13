@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C መሣሪያ (የፊት ወደብ)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> ወደ <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> ኸ) ተቀይሯል። ለውጦችን ለማቆየት አረጋግጥን ጠቅ ያድርጉ። ቀዳሚ ቅንብሮቹ በ<ph name="TIMEOUT_SECONDS" /> ውስጥ ወደነበሩበት ይመለሳሉ።</translation>
 <translation id="1013923882670373915">የብሉቱዝ መሣሪያ «<ph name="DEVICE_NAME" />» ለመጣመር ፍቃድ ይፈልጋል። እባክዎ ይህን የፒን ኮድ በዚህ መሣሪያ ላይ ያስገቡ፦ <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">ይህ <ph name="APP_NAME" />ን እና የአካባቢ ፈቃድ እና ChromeOS ያላቸው ሁሉም መተግበሪያዎች እና ድር ጣቢያዎች Wi-Fi እና የተንቀሳቃሽ ስልክ አውታረ መረቦች አካባቢን እንዲጠቀሙ ያስችላቸዋል።</translation>
 <translation id="1017556409696559990">በChrome ውስጥ ምንም የጀርባ ታሪክ ሳይኖር ሲቀር የላይ መስኮትን ያሳንሱ</translation>
 <translation id="1024364763893396229">የእርስዎን <ph name="NAME" /> ያስቀምጡ</translation>
 <translation id="1032891413405719768">የStylus ባትሪ ዝቅተኛ ነው</translation>
@@ -147,6 +148,7 @@
 <translation id="1651914502370159744">የታሪክ ገጽን ይክፈቱ</translation>
 <translation id="1654477262762802994">የድምጽ መጠይቅ ይጀምሩ</translation>
 <translation id="1668469839109562275">አብሮገነብ VPN</translation>
+<translation id="1675844249244994876">የቀኝ መስኮቱን ያዘምኑ</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> ቀርቷል</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> አልተገናኘም።</translation>
 <translation id="1677582821739292812">አንድ ሰው የእርስዎን ማያ ገጽ እየተመለከቱ ነው።</translation>
@@ -191,6 +193,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ኤተርኔት፦ <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">የመገኛ አካባቢ መዳረሻን አብራ</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ተላቋል</translation>
 <translation id="1838895407229022812">የምሽት ብርሃን ጠፍቷል።</translation>
 <translation id="1854180393107901205">መውሰድ አቁም</translation>
@@ -365,7 +368,6 @@
 <translation id="2726420622004325180">የእርስዎ ስልክ ሆትስፖት ማቅረብ እንዲችል ሞባይል ውሂብ ሊኖረው ይገባል</translation>
 <translation id="2727175239389218057">ምላሽ ስጥ</translation>
 <translation id="2727977024730340865">አነስተኛ ኃይል ወዳለው ባትሪ መሙያ ተሰክቷል። የባትሪ መሙላት አስተማማኝ ላይሆን ይችላል።</translation>
-<translation id="2740531572673183784">እሺ</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />፣ <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">«ሰርዝ»</translation>
 <translation id="2750941250130734256">ገባሪ መስኮት ተነቅሏል።</translation>
@@ -468,6 +470,7 @@
 <translation id="3255483164551725916">ምን ማድረግ ይችላሉ?</translation>
 <translation id="3256109297135787951">በእርስዎ መደርደሪያ ላይ በንጥሉ ላይ ያለውን ማድመቂያ ያስወግዱ</translation>
 <translation id="3260969790895726815">ንግግር የሚሰናዳው በአካባቢ ሲሆን በቃል ማስጻፍ ከመስመር ውጭ ይሰራል ነገር ግን አንዳንድ የድምጽ ትዕዛዞች አይሰሩም።</translation>
+<translation id="3265032511221679826">የትክክለኛ አካባቢ መዳረሻ ይብራ?</translation>
 <translation id="3269597722229482060">የቀኝ ጠቅታ</translation>
 <translation id="3289364673986435196">የኃይል ምናሌ</translation>
 <translation id="3289544412142055976">የሊኑክስ መተግበሪያዎች በአሁኑ ጊዜ አይደገፉም</translation>
@@ -578,6 +581,7 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> የሚተዳደር ተጠቃሚ</translation>
 <translation id="3666266999138159418">ተንሳፋፊ መስኮትዎን ለመደበቅ ያንሸራትቱ</translation>
 <translation id="367531336287639526">ከአድራሻ አሞሌ በስተግራ በኩል ያለውን የመጀመሪያ አዶ ምረጥ</translation>
+<translation id="3677931086890821290">ይህ የአካባቢ ፈቃድ እና ChromeOS ያላቸው ሁሉም መተግበሪያዎች እና ድር ጣቢያዎች Wi-Fi እና የተንቀሳቃሽ ስልክ አውታረ መረቦች አካባቢን እንዲጠቀሙ ያስችላቸዋል።</translation>
 <translation id="3679827876008292680">በመስኮት ውስጥ ወደ መጨረሻው ትር ይሂዱ</translation>
 <translation id="36813544980941320">የWi-Fi አውታረ መረቦች በስልክዎ እና በ<ph name="DEVICE_NAME" /> መካከል ይጋራሉ</translation>
 <translation id="3694122362646626770">ድር ጣቢያዎች</translation>
@@ -844,6 +848,7 @@
 <translation id="493076006037866439">ከማያ ገጽ ላይ አሳንስ</translation>
 <translation id="4936329710968938986">ሁሉም ሰው፣ ጠፍቷል</translation>
 <translation id="4938176435186993759">ሁሉንም የአስተያየት ጥቆማዎች ደብቅ</translation>
+<translation id="4943007472417128747">WiFi ለመጠቀም መገናኛ ነጥብ ጠፍቷል። መገናኛ ነጥብን ለመጠቀም Wi-Fiን ያጥፉ።</translation>
 <translation id="4945196315133970626">ማሳወቂያዎችን አጥፋ</translation>
 <translation id="4946376291507881335">አንሳ</translation>
 <translation id="495046168593986294">ወደ ላይ ይሸብልሉ</translation>
@@ -1067,6 +1072,7 @@
 <translation id="5976112937189445008">መስኮት ለመቅዳት አስገባን ይጫኑ</translation>
 <translation id="5978382165065462689">የማያ ገጽዎን ቁጥጥር በርቀት እርዳታ በኩል በማጋራት ላይ።</translation>
 <translation id="5980301590375426705">ከእንግዳ ውጣ</translation>
+<translation id="5983567367406220847">በእንቅስቃሴ አልባነት ምክንያት መገናኛ ነጥብ ጠፍቷል።</translation>
 <translation id="598407983968395253">ቅንብር ደንብን ተጠቀም</translation>
 <translation id="598882571027504733">ዝማኔውን ለማግኘት፣ ከተያያዘው የቁልፍ ሰሌዳ ጋር የእርስዎን Chromebook ዳግም ያስጀምሩ።</translation>
 <translation id="6002179289567220515">1 ካሜራን ለማጥፋት አካላዊ መቀያየሪያን ተጠቅመዋል። እንዲሁም ለሁሉም ካሜራዎች መዳረሻን ማጥፋት ይችላሉ።</translation>
@@ -1220,6 +1226,7 @@
 <translation id="6683022854667115063">የራስ ላይ ማዳመጫዎች</translation>
 <translation id="6696025732084565524">የእርስዎ ተነቃይ የቁልፍ ሰሌዳ ወሳኝ የሆነ ዝማኔ ያስፈልገዋል</translation>
 <translation id="6700713906295497288">የIME ምናሌ አዝራር</translation>
+<translation id="6705577071209924099">ብርሃንን ያስተካክሉ</translation>
 <translation id="6707693040195709527">የመሣሪያ ወደ ቀዳሚው ስሪት መቀየር ጊዜ አልፎበታል</translation>
 <translation id="6710213216561001401">ቀዳሚ</translation>
 <translation id="6723839937902243910">ኃይል</translation>
@@ -1368,6 +1375,7 @@
 <translation id="7452560014878697800">አንድ መተግበሪያ ካሜራዎን እየተጠቀመበት ነው</translation>
 <translation id="7453330308669753048">የታሪክ ፈልግ ውጤት ተወግዷል</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> እስከሚሞላ ድረስ</translation>
+<translation id="7459485586006128091">በውስጣዊ ስህተት ምክንያት መገናኛ ነጥብ ጠፍቷል። ከጥቂት ደቂቃዎች በኋላ እንደገና ለማገናኘት ይሞክሩ።</translation>
 <translation id="7461924472993315131">ሰካ</translation>
 <translation id="746232733191930409">የማያ ገጽ ቀረጻ ሁነታ</translation>
 <translation id="7466449121337984263">እባክዎ ዳሳሹን ይንኩ</translation>
@@ -1387,6 +1395,7 @@
 መሣሪያ ለመዝጋት በድጋሚ የማብሪያ/ማጥፊያ ቁልፉን በመሣሪያው ላይ ተጭነው ይያዙ።</translation>
 <translation id="7526573455193969409">አውታረ መረብ ክትትል የሚደረግበት ሊሆን ይችላል</translation>
 <translation id="7536035074519304529">የአይፒ አድራሻ፦ <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">የግራ መስኮቱን ያዘምኑ</translation>
 <translation id="7543399541175347147">የሊኑክስ መተግበሪያዎች እና ማንነት የማያሳውቁ መስኮቶች በአሁኑ ጊዜ አይደገፉም። ሌሎች መተግበሪያዎች ይቀመጣሉ።</translation>
 <translation id="7544300628205093162">የቁልፍ ሰሌዳ የኋላ ብርሃን በርቷል</translation>
 <translation id="7548434653388805669">የመኝታ ጊዜ</translation>
@@ -1440,6 +1449,7 @@
 <translation id="776344839111254542">የዝማኔ ዝርዝሮችን ለማየት ጠቅ ያድርጉ</translation>
 <translation id="7768784765476638775">ለመናገር-ይምረጡ</translation>
 <translation id="7769299611924763557">የእርስዎ GIF በቅርቡ ዝግጁ ይሆናል</translation>
+<translation id="7773536009433685931">በምትኩ WiFiን ያብሩ</translation>
 <translation id="7780094051999721182">አቋራጮች</translation>
 <translation id="7780159184141939021">ማያ ገጹን አሽከርክር</translation>
 <translation id="7796735576426975947">አዲስ ማሳወቂያ ተደብቋል</translation>
@@ -1467,6 +1477,7 @@
 <translation id="7893503627044934815">ይህ ፋይል እንዲታይ አልፈልግም</translation>
 <translation id="7895348134893321514">ማስታወሻ</translation>
 <translation id="7897375687985782769">የማያ ገጽ ማሽከርከሪያ የቁልፍ ሰሌዳ አቋራጩን ተጭነውታል። ማያ ገጹን ማሽከርከር ይፈልጋሉ?</translation>
+<translation id="7901190436359881020">መስኮቶቹን ይለዋውጡ</translation>
 <translation id="7901405293566323524">የስልክ መገናኛ</translation>
 <translation id="7902625623987030061">የጣት አሻራ ዳሳሹን ይንኩ</translation>
 <translation id="7904094684485781019">የዚህ መለያ አስተዳዳሪ ባለብዙ መለያ መግባትን ከልክሏል።</translation>
@@ -1742,6 +1753,7 @@
 <translation id="9198992156681343238">የ<ph name="DISPLAY_NAME" /> ጥራት ወደ <ph name="RESOLUTION" /> ተቀይሯል። ለውጦችን ለማቆየት አረጋግጥን ጠቅ ያድርጉ። ቀዳሚ ቅንብሮቹ በ<ph name="TIMEOUT_SECONDS" /> ውስጥ ወደነበሩበት ይመለሳሉ።</translation>
 <translation id="9201044636667689546"><ph name="NAME" />ን ከዚህ Chromebook ጋር ያገናኙ</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />፣ በእርስዎ አስተዳዳሪ የሚቀናበር</translation>
+<translation id="9207682216934703221">ይህ <ph name="APP_NAME" />ን፣ <ph name="APP2_NAME" />ን እና የአካባቢ ፈቃድ እና ChromeOS ያላቸው ሁሉም መተግበሪያዎች እና ድር ጣቢያዎች Wi-Fi እና የተንቀሳቃሽ ስልክ አውታረ መረቦች አካባቢን እንዲጠቀሙ ያስችላቸዋል።</translation>
 <translation id="9210037371811586452">ከተዋሃደ የዴስክቶፕ ሁነታ በመውጣት ላይ</translation>
 <translation id="9211490828691860325">ሁሉም ዴስኮች</translation>
 <translation id="9211681782751733685">ባትሪ ሙሉ በሙሉ ኃይል እስኪሞላ ድረስ <ph name="TIME_REMAINING" /> ይቀራል።</translation>

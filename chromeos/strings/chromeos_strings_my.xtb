@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">အခြားအသုံးဝင်မည့် ရင်းမြစ်အချို့ကို ဤနေရာတွင် ဖော်ပြထားသည်-</translation>
 <translation id="1905710495812624430">အများဆုံးခွင့်ပြုပေးထားသည့် အခေါက်အရေအတွက်ထက် ကျော်လွန်သွားပါပြီ။</translation>
 <translation id="1908234395526491708">UDP တောင်းဆိုချက် ချွတ်ယွင်းမှုများ</translation>
+<translation id="1923388006036088459">အထူးပြုအရောင်များ</translation>
 <translation id="1947737735496445907">ပုံနှိပ်ထုတ်ပြီးပြီ</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">မူရင်း APN လိုအပ်သည်</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">ဒေါင်းလုဒ်လုပ်ခြင်း ပြည့်စုံပါပြီ</translation>
 <translation id="3969602104473960991">ChromeOS စကားဝှက် အပ်ဒိတ်လုပ်ထားသည်</translation>
 <translation id="397105322502079400">တွက်ချက်နေ...</translation>
+<translation id="3974175076798940554">အထူး Chromebook Plus အစိတ်အပိုင်းများကို ယခု ရနိုင်ပြီ</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ရက်အထက် ပရင့်ထုတ်ရန်ဖိုင်များကို ဖယ်ရှားပါမည်</translation>
 <translation id="3993704782688964914">ယခု သင့် <ph name="DEVICE_NAME" /> အပ်ဒိတ်ဖြစ်နေပါပြီ</translation>
 <translation id="4003384961948020559">မအောင်မြင်ပါ - စာရွက်ထုတ်သည့်နေရာ ပြည့်နေသည်</translation>
@@ -513,7 +515,7 @@
 <translation id="5400907029458559844">ကိရိယာ ချိတ်ဆက်နေသည်။</translation>
 <translation id="5401938042319910061">'ပုံမှန်အစီအစဉ်" အားလုံး အသုံးပြုရန်</translation>
 <translation id="5423849171846380976">အသက်သွင်းပြီး</translation>
-<translation id="5430931332414098647">အမြန်ချိတ်ဆက်မျှဝေခြင်း</translation>
+<translation id="5430931332414098647">အလိုအလျောက် ချိတ်ဆက်မျှဝေခြင်း</translation>
 <translation id="5431318178759467895">အရောင်</translation>
 <translation id="5457599981699367932">ဧည့်သည့် အဖြစ် ရှာကြည့်ရန်</translation>
 <translation id="54609108002486618">ကြီးကြပ်ထားသည်</translation>
@@ -570,6 +572,7 @@
 <translation id="5931523347251946569">ဖိုင်ကို ရှာမတွေ့ပါ</translation>
 <translation id="5939518447894949180">ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="594552776027197022">ကျပန်းကီးအတွဲ ထုတ်ရန်</translation>
+<translation id="5946538341867151940">သင်မချိတ်ဆက်ရသေးပါဘူး။ သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီက စိတ်ကြိုက် APN ကို အကြံပြုလျှင် “+ APN အသစ်” ကိုရွေးပြီး APN အချက်အလက်ထည့်ပါ</translation>
 <translation id="5972388717451707488">အင်ဂျင် အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="5984145644188835034">မူရင်း နောက်ခံ</translation>
 <translation id="6017514345406065928">အစိမ်းရောင်</translation>
@@ -845,6 +848,7 @@
 <translation id="8352772353338965963">အရာ အများအပြားထဲသို့ လက်မှတ်ထိုး ဝင်နိုင်ရန် အတွက် အကောင့် တစ်ခုကို ထည့်ပါ။ လက်မှတ်ထိုး ဝင်ထားသည့် အကောင့်များ အားလုံးကို စကားဝှက် မသုံးရဘဲ သုံးနိုင်မည် ဖြစ်ရာ၊ ဒီအင်္ဂါရပ်ကို ယုံကြည်ရသည့် အကောင့်များ အတွက်သာ အသုံးပြသင့်သည်။</translation>
 <translation id="8364946094152050673">အမည်ဆာဗာအလွတ်များ</translation>
 <translation id="8372477600026034341">အပို ဆာဗာပင်ရင်းများ</translation>
+<translation id="8373046809163484087">သင့်နောက်ခံပုံနှင့် ကိုက်ညီသော အရောင်စုများကို သုံးနိုင်သည်</translation>
 <translation id="8380114448424469341">စခရင်၏ <ph name="DIRECTION" /> အခြမ်းတွင် ဝင်းဒိုးနေရာချရန်</translation>
 <translation id="8395584934117017006">ဤ <ph name="DEVICE_TYPE" /> ကို လုပ်ငန်းက စီမံပါသည်</translation>
 <translation id="8398927464629426868">စက်ပစ္စည်း၏ လက်ရှိအားသွင်းနှုန်း (သို့) အားလျော့နှုန်း</translation>
@@ -864,6 +868,7 @@
 <translation id="8503813439785031346">အသုံးပြုသူအမည်</translation>
 <translation id="8503836310948963452">နောက်ထပ် မိနစ်အနည်းငယ်သာ လိုသည်…</translation>
 <translation id="8508640263392900755">APN အသေးစိတ်</translation>
+<translation id="8522687886059337719">ယခု သင်သည် <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />နောက်ခံပုံ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> အသစ်များနှင့် <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />စခရင်နားချိန်ပုံ<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> တို့ကို သုံးနိုင်ပြီ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီသည် ၎င်း၏ကွန်ရက်သို့ ချိတ်ဆက်ရန် ဤရွေးချယ်စရာကို သတ်မှတ်ထားနိုင်သည်။ အသေးစိတ်အတွက် သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီကို ဆက်သွယ်ပါ။</translation>

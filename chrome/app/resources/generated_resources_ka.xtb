@@ -2721,6 +2721,7 @@
 <translation id="3336855445806447827">დარწმუნებული არ ვარ</translation>
 <translation id="3337568642696914359">საიტებისთვის პროტოკოლების დამუშავების აკრძალვა</translation>
 <translation id="3340620525920140773">ჩამოტვირთვა დასრულდა: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">პარამეტრები</translation>
 <translation id="3341699307020049241">PIN-კოდი არასწორია. დაგრჩათ <ph name="RETRIES" /> მცდელობა.</translation>
 <translation id="3341703758641437857">ფაილის URL-ებზე წვდომის დაშვება</translation>
 <translation id="3342361181740736773">„<ph name="TRIGGERING_EXTENSION_NAME" />“-ს სურს, ამოშალოს ეს გაფართოება.</translation>
@@ -5575,6 +5576,7 @@
 <translation id="5904614460720589786"><ph name="APP_NAME" />-ის დაყენება ვერ მოხერხდა კონფიგურაციის პრობლემის გამო. გთხოვთ, დაუკავშირდეთ ადმინისტრატორს. შეცდომის კოდი: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">განახლება თითქმის მზად არის! დასასრულებლად, გადატვირთეთ თქვენი მოწყობილობა.</translation>
 <translation id="5906732635754427568">ამ აპთან დაკავშირებული მონაცემები ამ მოწყობილობიდან ამოიშლება.</translation>
+<translation id="5906974869830879618">გთხოვთ, შეიყვანოთ PIN-კოდი</translation>
 <translation id="5908474332780919512">აპის გაშვება სისტემაში შესვლისას</translation>
 <translation id="5908695239556627796">მაუსით გადაადგილების სიჩქარე</translation>
 <translation id="5909379458939060601">გსურთ, წაშალოთ ეს პროფილი და დათვალიერების მონაცემები?</translation>
@@ -6962,6 +6964,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> იყენებს თქვენს მიკროფონს</translation>
 <translation id="7141105143012495934">შესვლა ვერ მოხერხდა, რადგან თქვენი ანგარიშის შესახებ დეტალების მიღება შეუძლებელია. გთხოვთ, დაუკავშირდეთ ადმინისტრატორს ან სცადოთ ხელახლა.</translation>
 <translation id="7141844554192012199">შემოწმება</translation>
+<translation id="7143207342074048698">დაკავშირება</translation>
 <translation id="7144878232160441200">გაიმეორეთ</translation>
 <translation id="7148426638542880639">საიტებმა, შესაძლოა, არ იმუშაოს მოლოდინისამებრ. აირჩიეთ ეს ვარიანტი, თუ არ გსურთ, თქვენს მოწყობილობაზე დარჩეს ინფორმაცია თქვენ მიერ მონახულებული საიტების შესახებ.</translation>
 <translation id="7149839598364933473">გარდაქმენით ეს მოწყობილობა <ph name="DEVICE_OS" /> მოწყობილობად.</translation>
@@ -9364,6 +9367,7 @@
 <translation id="964790508619473209">ეკრანის მოწყობა</translation>
 <translation id="965211523698323809">გაგზავნეთ და მიიღეთ ტექსტური შეტყობინებები თქვენს <ph name="DEVICE_TYPE" />-ზე. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast-ის შესახებ შეტყობინება</translation>
+<translation id="966588271015727539">აირჩიეთ ბრაილის Bluetooth ეკრანი</translation>
 <translation id="967398046773905967">საიტებისთვის HID მოწყობილობებზე წვდომის აკრძალვა</translation>
 <translation id="967624055006145463">შენახული მონაცემები</translation>
 <translation id="96774243435178359">მართული პრინტერები</translation>

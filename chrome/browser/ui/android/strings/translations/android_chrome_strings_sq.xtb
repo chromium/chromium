@@ -107,6 +107,7 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="1493287004536771723">Po ndjek <ph name="SITE_NAME" /></translation>
 <translation id="1502010315804028179">Për të menaxhuar fjalëkalimet e tua, përditëso shërbimet e Google Play</translation>
 <translation id="1506061864768559482">Motori i kërkimit</translation>
+<translation id="1508960385613684700">Udhëzuesi i privatësisë <ph name="BEGIN_NEW" />E re<ph name="END_NEW" /></translation>
 <translation id="1513352483775369820">Faqeshënuesit dhe historiku i uebit</translation>
 <translation id="1513814250881909472">Sinkronizoje për të marrë skedat nga pajisjet e tua të tjera</translation>
 <translation id="1513858653616922153">Fshi fjalëkalimin</translation>
@@ -161,6 +162,7 @@ Kur ti fshin historikun tënd të shfletimit — të gjithë ose për një sajt 
 <translation id="1910950723001426294">Lista e opsioneve të shpërndarjes është e mbyllur.</translation>
 <translation id="1919130412786645364">Lejo identifikimin në Chrome</translation>
 <translation id="1922362554271624559">Gjuhët e sugjeruara</translation>
+<translation id="1924255092154549435">Skeda është zgjeruar</translation>
 <translation id="1925021887439448749">Fut adresën e personalizuar të uebit</translation>
 <translation id="1928696683969751773">Përditësimet</translation>
 <translation id="19288952978244135">Rihap Chrome.</translation>
@@ -769,6 +771,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5161254044473106830">Kërkohet titulli</translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
 <translation id="5171045022955879922">Kërko ose shkruaj URL-në</translation>
+<translation id="5174700554036517242">Skeda është kthyer përsëri në lartësinë fillestare</translation>
 <translation id="5184329579814168207">Hape në Chrome</translation>
 <translation id="5191251636205085390">Mëso dhe kontrollo teknologjitë e reja që synojnë të zëvendësojnë kukit e palëve të treta</translation>
 <translation id="5193988420012215838">Kopjuar te kujtesa e fragmenteve</translation>
@@ -1251,6 +1254,7 @@ Për shembull, disa sajte uebi mund t'i përgjigjen kësaj kërkese duke të tre
 <translation id="7686086654630106285">Më shumë rreth reklamave të sugjeruara nga sajtet</translation>
 <translation id="768618399695552958">Disa nga faqet që ti viziton janë të ngarkuara paraprakisht. Faqet mund të ngarkohen paraprakisht nëpërmjet serverëve të Google kur lidhen nga një sajt i Google.</translation>
 <translation id="7691043218961417207">Eksploro përmbajtje për t'i ndjekur</translation>
+<translation id="7697383401610880082">Doreza e zvarritjes</translation>
 <translation id="7698359219371678927">Krijo mail në <ph name="APP_NAME" /></translation>
 <translation id="7707922173985738739">Përdor të dhënat celulare</translation>
 <translation id="7709094866268987903">Interesat që hoqe do të shfaqen këtu</translation>

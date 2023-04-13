@@ -219,7 +219,6 @@
 <translation id="2482878487686419369">Уведомления</translation>
 <translation id="2496626742194544812">Перейти к первой вкладке</translation>
 <translation id="2500374554657206846">Параметры сохранения пароля</translation>
-<translation id="2502415369140591438">Повторяющихся паролей: <ph name="COUNT" /></translation>
 <translation id="2523363575747517183">Этот сайт часто пытается открыть другое приложение.</translation>
 <translation id="2529021024822217800">Открыть все</translation>
 <translation id="2547458583188611426">Синхронизация не выполняется. Чтобы запустить ее, введите кодовую фразу.</translation>
@@ -391,7 +390,6 @@
 <translation id="3581564640715911333">Предлагать перевести страницы на других языках.</translation>
 <translation id="3588820906588687999">Открыть изображение в новой вкладке</translation>
 <translation id="3595252146048399851">Вы всегда можете выбрать, что синхронизировать, в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />. Google может персонально настраивать Поиск и другие сервисы на основе вашей истории.</translation>
-<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} простой пароль}one{{COUNT} простой пароль}few{{COUNT} простых пароля}many{{COUNT} простых паролей}other{{COUNT} простого пароля}}</translation>
 <translation id="3603009562372709545">Копировать URL</translation>
 <translation id="3607167657931203000">Данные автозаполнения</translation>
 <translation id="3608008480985212611">Войдите в аккаунт, чтобы задать настройки.</translation>
@@ -437,7 +435,6 @@
 <translation id="3928666092801078803">Объединить данные</translation>
 <translation id="3929457972718048006">Адреса</translation>
 <translation id="3943492037546055397">Пароли</translation>
-<translation id="3951717558054674026">{count,plural, =1{{count} простой пароль}one{{count} простой пароль}few{{count} простых пароля}many{{count} простых паролей}other{{count} простого пароля}}</translation>
 <translation id="3959736869653157332">Меню → Новая вкладка инкогнито</translation>
 <translation id="3967822245660637423">Скачивание завершено.</translation>
 <translation id="3968505803272650567">Настроить интересы</translation>
@@ -774,7 +771,6 @@
 <translation id="6184086493125982861">Показать вкладки</translation>
 <translation id="6187302354554850004">Послед. синхр.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Непрочитанные</translation>
-<translation id="6193424046394092997">{count,plural, =1{Закладка добавлена в папку "{title}".}one{Закладки добавлены в папку "{title}".}few{Закладки добавлены в папку "{title}".}many{Закладки добавлены в папку "{title}".}other{Закладки добавлены в папку "{title}".}}</translation>
 <translation id="6196207969502475924">Голосовой поиск</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Закрыть {COUNT} вкладку}one{Закрыть {COUNT} вкладку}few{Закрыть {COUNT} вкладки}many{Закрыть {COUNT} вкладок}other{Закрыть {COUNT} вкладки}}</translation>
 <translation id="6210079381482819663">Вкладки, которые не использовались в течение нескольких дней (<ph name="THRESHOLD" />), перемещаются сюда. Это поведение можно в любой момент изменить в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
@@ -824,7 +820,6 @@
 
 Данные были зашифрованы с помощью кодовой фразы <ph name="TIME" />. Введите ее, чтобы начать синхронизацию.</translation>
 <translation id="6418346271604475326">Подготовка PDF</translation>
-<translation id="6421095165635308">{count,plural, =1{Закладка добавлена в папку "{title}" в вашем аккаунте ({email}).}one{Закладки добавлены в папку "{title}" в вашем аккаунте ({email}).}few{Закладки добавлены в папку "{title}" в вашем аккаунте ({email}).}many{Закладки добавлены в папку "{title}" в вашем аккаунте ({email}).}other{Закладки добавлены в папку "{title}" в вашем аккаунте ({email}).}}</translation>
 <translation id="6429213933892582367">Откройте раздел "Настройки паролей".</translation>
 <translation id="6434591244308415567">Произошла ошибка. Повторите попытку позже.</translation>
 <translation id="6435236283694032571">Добавить в список для чтения</translation>
@@ -1213,7 +1208,6 @@
 <translation id="8974714402877957201">1. Откройте настройки устройства iPad.</translation>
 <translation id="8976382372951310360">Справка</translation>
 <translation id="8976414606286374109">Карты сохраняются в аккаунте Google.</translation>
-<translation id="8978059030508051916">{count,plural, =0{Нет раскрытых паролей}=1{{count} раскрытый пароль}one{{count} раскрытый пароль}few{{count} раскрытых пароля}many{{count} раскрытых паролей}other{{count} раскрытого пароля}}</translation>
 <translation id="8981454092730389528">Отслеживание действий в Google</translation>
 <translation id="8985320356172329008">Вы вошли в аккаунт</translation>
 <translation id="8986567980592931173">Чтобы синхронизировать пароли, историю и другие данные, достаточно войти в аккаунт Google.</translation>

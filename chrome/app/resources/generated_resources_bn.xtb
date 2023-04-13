@@ -46,6 +46,7 @@
 <translation id="1038462104119736705">Linux-এর জন্য কমপক্ষে <ph name="INSTALL_SIZE" /> জায়গা খালি রাখার জন্য সাজেস্ট করা হচ্ছে। খালি জায়গা বাড়াতে, আপনার ডিভাইস থেকে ফাইল মুছে দিন।</translation>
 <translation id="1038643060055067718">লাইনের সংখ্যা:</translation>
 <translation id="1039337018183941703">ভুল বা দূষিত ফাইল</translation>
+<translation id="1040761927998636252"><ph name="URL" />-এর জন্য নামহীন বুকমার্ক</translation>
 <translation id="1041175011127912238">এই পৃষ্ঠা সাড়া দিচ্ছে না</translation>
 <translation id="1041263367839475438">উপলভ্য ডিভাইস</translation>
 <translation id="1042174272890264476">আপনার কম্পিউটারও <ph name="SHORT_PRODUCT_NAME" /> এর RLZ লাইব্রেরি বিল্ট ইনের সাথে আসে৷ RLZ সার্চগুলি পরিমাপ করার জন্য একটি সাধারণ, ব্যক্তিগতভাবে সনাক্তকরণযোগ্য নয় এমন ট্যাগ নির্ধারণ করে এবং <ph name="SHORT_PRODUCT_NAME" /> এর ব্যবহার একটি নির্দিষ্ট প্রচারাভিযানের মাধ্যমে চালিত হয়৷ এই লেবেলগুলি কখনো কখনো <ph name="PRODUCT_NAME" /> এ Google সার্চ ক্যোয়ারিগুলিতে প্রদর্শিত হয়৷</translation>
@@ -2737,6 +2738,7 @@
 <translation id="3336855445806447827">নিশ্চিত নই</translation>
 <translation id="3337568642696914359">প্রোটোকল ব্যবহার করার অনুমতি দেয় না</translation>
 <translation id="3340620525920140773">ডাউনলোড সম্পূর্ণ হয়েছে: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">সেটিংস</translation>
 <translation id="3341699307020049241">ভুল পিন। আপনি আর <ph name="RETRIES" /> বার চেষ্টা করতে পারবেন।</translation>
 <translation id="3341703758641437857">ফাইল URLগুলিতে অ্যাক্সেস মঞ্জুর করুন</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" এই এক্সটেনশনটি সরিয়ে দিতে চাইছে।</translation>
@@ -4110,6 +4112,7 @@
 <translation id="4545759655004063573">অপর্যাপ্ত অনুমতির কারণে সংরক্ষণ করতে পারবেন না৷ দয়া করে অন্য কোনো স্থানে সংরক্ষণ করুন৷</translation>
 <translation id="4546308221697447294">Google Chrome দিয়ে দ্রুত ব্রাউজ করুন</translation>
 <translation id="4546345569117159016">ডানদিকের বোতাম</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> এই এক্সটেনশন ব্যবহার করতে চান:</translation>
 <translation id="4546692474302123343">Google Assistant-এর ভয়েস ইনপুট</translation>
 <translation id="4547659257713117923">অন্য ডিভাইসগুলি থেকে কোনো ট্যাব নেই</translation>
 <translation id="4547672827276975204">অটোমেটিক সেট হবে</translation>
@@ -5593,6 +5596,7 @@
 <translation id="5904614460720589786">কনফিগার করার সময় সমস্যা হওয়ার জন্য <ph name="APP_NAME" /> সেট-আপ করা যায়নি। আপনার অ্যাডমিনের সাথে যোগাযোগ করুন। সমস্যার কোড: <ph name="ERROR_CODE" />।</translation>
 <translation id="5906655207909574370">প্রায় আপ-টু-ডেট হয়েছে! আপডেট শেষ করতে আপনার ডিভাইস আবার চালু করুন।</translation>
 <translation id="5906732635754427568">এই অ্যাপ্লিকেশান সংশ্লিষ্ট ডেটা এই ডিভাইস থেকে সরিয়ে ফেলা হবে।</translation>
+<translation id="5906974869830879618">পিন নম্বর লিখুন</translation>
 <translation id="5908474332780919512">সাইন-ইন করলেই অ্যাপ চালু হয়ে যাবে</translation>
 <translation id="5908695239556627796">মাউসের মাধ্যমে স্ক্রল করার স্পিড</translation>
 <translation id="5909379458939060601">এই প্রোফাইল এবং ব্রাউজিং ডেটা মুছে ফেলতে চান?</translation>
@@ -6983,6 +6987,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> আপনার মাইক্রোফোন ব্যবহার করছে</translation>
 <translation id="7141105143012495934">আপনার অ্যাকাউন্টের বিশদ বিবরণ পুনরুদ্ধার করতে না পারায় সাইন-ইন ব্যর্থ হয়েছে। অনুগ্রহ করে আপনার প্রশাসকের সাথে যোগাযোগ করুন অথবা আবার চেষ্টা করুন।</translation>
 <translation id="7141844554192012199">পরীক্ষা</translation>
+<translation id="7143207342074048698">সংযুক্ত হচ্ছে</translation>
 <translation id="7144878232160441200">আবার চেষ্টা করুন</translation>
 <translation id="7148426638542880639">আপনার প্রত্যাশা অনুযায়ী সাইটগুলি কাজ নাও করতে পারে। আপনি যে সাইটগুলিতে যান সেই সম্পর্কে আপনার ডিভাইসে তথ্য রাখতে না চাইলে এই বিকল্পটি বেছে নিন।</translation>
 <translation id="7149839598364933473">এই ডিভাইসকে <ph name="DEVICE_OS" /> ডিভাইসে রূপান্তরিত করুন।</translation>
@@ -9387,6 +9392,7 @@
 <translation id="964790508619473209">স্ক্রিন সাজানো</translation>
 <translation id="965211523698323809"><ph name="DEVICE_TYPE" /> থেকে টেক্সট মেসেজ পাঠান ও পান। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast ব্যবহার করে সমস্যার বিষয়ে অভিযোগ জানান</translation>
+<translation id="966588271015727539">ব্লুটুথ ব্রেইল ডিসপ্লে বেছে নিন</translation>
 <translation id="967398046773905967">কোনও সাইটকে HID ডিভাইস অ্যাক্সেস করার অনুমতি দেবেন না</translation>
 <translation id="967624055006145463">ডেটা স্টোর করা হয়েছে</translation>
 <translation id="96774243435178359">ম্যানেজ করা প্রিন্টার</translation>

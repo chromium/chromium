@@ -1069,7 +1069,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3631244953324577188">Autenticación biométrica</translation>
 <translation id="3632503704576938756">Retomouse a pantalla compartida</translation>
 <translation id="3632892046558972264">Púxose en pausa a pantalla compartida</translation>
-<translation id="3633035844150606508">O enderezo gardarase na túa Conta de Google, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Botón Actualizar Chrome. Preme Intro para actualizar Chrome desde a configuración do navegador</translation>
 <translation id="3634530185120165534">Bandexa 5</translation>
 <translation id="3634567936866541746">Acabas de escribir o teu contrasinal nun sitio enganoso. Para protexer as túas contas, Chrome recoméndache que comprobes os contrasinais que tes gardados.</translation>
@@ -1736,6 +1735,8 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5234764350956374838">Rexeitar</translation>
 <translation id="5239623327352565343">O acceso á localización está permitido</translation>
 <translation id="5242889659037569123">Maletas e accesorios de viaxe</translation>
+<translation id="5244732203286792411">Cargando...
+    Esta acción pode tardar un minuto.</translation>
 <translation id="5250209940322997802">"Conectarse á rede"</translation>
 <translation id="52517543715119994">Máis información sobre as funcións de Chrome</translation>
 <translation id="5251803541071282808">Nube</translation>

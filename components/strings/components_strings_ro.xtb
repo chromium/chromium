@@ -364,6 +364,7 @@
 <translation id="1801812870656502108">Detaliile cardului virtual</translation>
 <translation id="1803020234906945288">Alimentație sănătoasă</translation>
 <translation id="1803351196216024260">Poate solicita permisiunea de a folosi microfonul</translation>
+<translation id="1806174020048213474">Aplicația solicită permisiunea de a instala date de conectare la Wi-Fi. După configurare, dispozitivul <ph name="DEVICE_TYPE" /> se va conecta automat la rețelele Wi-Fi participante. Pentru a elimina aceste date de conectare, dezinstalează aplicația.</translation>
 <translation id="1807246157184219062">Luminos</translation>
 <translation id="1807528111851433570">Foaia inițială</translation>
 <translation id="180991881384371158">Codul CVC se află pe spatele cardului. Constă din ultimele trei cifre din partea dreaptă sus a bandei de semnătură.</translation>
@@ -1069,7 +1070,6 @@
 <translation id="3631244953324577188">Sisteme biometrice</translation>
 <translation id="3632503704576938756">Permiterea accesului a fost reluată</translation>
 <translation id="3632892046558972264">Permiterea accesului a fost întreruptă</translation>
-<translation id="3633035844150606508">Salvează adresa în Contul Google <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Butonul Actualizează Chrome, apasă pe Enter pentru a actualiza Chrome din setările Chrome</translation>
 <translation id="3634530185120165534">Tava 5</translation>
 <translation id="3634567936866541746">Ai introdus parola pe un site înșelător. Pentru a-ți proteja conturile, Chrome recomandă să verifici parolele salvate.</translation>
@@ -1336,6 +1336,7 @@
 <translation id="4270541775497538019">Receptorul de hârtie 6</translation>
 <translation id="4274173425554582601">Computere și electronice</translation>
 <translation id="4275830172053184480">Reporniți gadgetul</translation>
+<translation id="4276974990916607331">Nu, mulțumesc</translation>
 <translation id="4277028893293644418">Resetează parola</translation>
 <translation id="4277937682389409325">Adresa locală</translation>
 <translation id="4278390842282768270">Se permite</translation>
@@ -1696,6 +1697,7 @@
 <translation id="5129534298163637277">Dialog de confirmare</translation>
 <translation id="5135404736266831032">Gestionează adresele...</translation>
 <translation id="5136841603454277753">Introdu codul corect</translation>
+<translation id="5137761395480718572">Aplicația solicită permisiunea de a instala date de conectare la Wi-Fi. După configurare, dispozitivul <ph name="DEVICE_TYPE" /> se va conecta automat la rețelele Wi-Fi participante. Pentru a elimina aceste date de conectare, dezinstalează aplicația. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Momentan, cardul virtual nu este disponibil. Contactează banca.</translation>
 <translation id="5138227688689900538">Afișează mai puțin</translation>
 <translation id="5145883236150621069">Răspunsul pentru politică include un cod de eroare</translation>
@@ -1752,6 +1754,7 @@
 <translation id="5273881944177595304">Aplicații web și instrumente online</translation>
 <translation id="5274025349362408263">Cărți și literatură</translation>
 <translation id="5279286380302340275">Gestionează descărcările</translation>
+<translation id="5279453600310613955">Nu, mulțumesc</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Proprietățile documentului</translation>
 <translation id="528468243742722775">Oprește</translation>
@@ -2244,6 +2247,7 @@
 <translation id="6529173248185917884">A șaptea rolă</translation>
 <translation id="6529602333819889595">&amp;Repetați ștergerea</translation>
 <translation id="6535751101619004418">Valute și schimb valutar</translation>
+<translation id="6536221421038631327">Dacă elimini un abonament Passpoint din <ph name="DEVICE_TYPE" />, rețelele asociate se vor elimina. Contactează <ph name="FRIENDLY_NAME" /> pentru a modifica planul de abonament. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">Fonduri mutuale</translation>
 <translation id="6545864417968258051">Căutare Bluetooth</translation>
 <translation id="6547208576736763147">Perforare dublă în stânga</translation>
@@ -3340,6 +3344,7 @@ Detalii suplimentare:
 <translation id="9219103736887031265">Imagini</translation>
 <translation id="922152298093051471">Personalizează Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">Permiți aplicației <ph name="APP_NAME" /> să configureze rețelele Wi-Fi?</translation>
 <translation id="936602727769022409">Este posibil să pierzi accesul la Contul Google. Chromium îți recomandă să îți schimbi parola acum. Ți se va cere să te conectezi.</translation>
 <translation id="937457230470581909">Grădini zoologice, acvarii și rezervații</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Ce date se folosesc:<ph name="END_BOLD" /> subiectele anunțurilor se bazează pe istoricul de navigare recent, o listă a site-urilor pe care le-ai accesat folosind Chrome pe acest dispozitiv.</translation>

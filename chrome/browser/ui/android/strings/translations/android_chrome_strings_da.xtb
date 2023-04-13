@@ -107,6 +107,7 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="1493287004536771723">Du følger <ph name="SITE_NAME" /></translation>
 <translation id="1502010315804028179">Opdater Google Play-tjenester for at administrere dine adgangskoder</translation>
 <translation id="1506061864768559482">Søgemaskine</translation>
+<translation id="1508960385613684700">Privatlivsguide <ph name="BEGIN_NEW" />Nyhed<ph name="END_NEW" /></translation>
 <translation id="1513352483775369820">Bogmærker og webhistorik</translation>
 <translation id="1513814250881909472">Synkroniser for at få dine faner fra dine andre enheder</translation>
 <translation id="1513858653616922153">Slet adgangskoden</translation>
@@ -161,6 +162,7 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="1910950723001426294">Listen over delingsindstillinger er lukket.</translation>
 <translation id="1919130412786645364">Tillad login i Chrome</translation>
 <translation id="1922362554271624559">Foreslåede sprog</translation>
+<translation id="1924255092154549435">Fanen er udvidet</translation>
 <translation id="1925021887439448749">Angiv tilpasset webadresse</translation>
 <translation id="1928696683969751773">Opdateringer</translation>
 <translation id="19288952978244135">Åbn Chrome igen.</translation>
@@ -761,7 +763,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5118713593561876160">Interesser</translation>
 <translation id="5122378528687922675">Spørg en af dine forældre, (<ph name="PARENT_NAME_1" /> eller <ph name="PARENT_NAME_2" />), hvis du har brug for hjælp</translation>
 <translation id="5123685120097942451">Inkognitofane</translation>
-<translation id="5126510351761255129">Bekræft dit kort</translation>
+<translation id="5126510351761255129">Verificer dit kort</translation>
 <translation id="5132942445612118989">Synkroniser dine adgangskoder, din historik og meget mere på alle enheder</translation>
 <translation id="5139940364318403933">Få oplysninger om, hvordan du bruger Google Drev</translation>
 <translation id="5142281402488957685">Hvis du vil se nye historier, skal du trække nedad for at opdatere</translation>
@@ -769,6 +771,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5161254044473106830">Der skal angives en titel</translation>
 <translation id="5170568018924773124">Vis i mappe</translation>
 <translation id="5171045022955879922">Søg, eller angiv webadresse</translation>
+<translation id="5174700554036517242">Fanen er tilbage til den oprindelige højde</translation>
 <translation id="5184329579814168207">Åbn i Chrome</translation>
 <translation id="5191251636205085390">Få indblik i og styr nye teknologier, der har til formål at erstatte tredjepartscookies</translation>
 <translation id="5193988420012215838">Kopieret til din udklipsholder</translation>
@@ -1251,6 +1254,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7686086654630106285">Mere om foreslåede annoncer fra websites</translation>
 <translation id="768618399695552958">Nogle af de sider, du besøger, forudindlæses. Nogle sider forudindlæses muligvis via Google-servere, når de er linket fra et Google-website.</translation>
 <translation id="7691043218961417207">Gennemse indhold, du vil følge</translation>
+<translation id="7697383401610880082">Håndtag</translation>
 <translation id="7698359219371678927">Opret mail i <ph name="APP_NAME" /></translation>
 <translation id="7707922173985738739">Brug mobildata</translation>
 <translation id="7709094866268987903">Interesser, du har fjernet, vises her</translation>

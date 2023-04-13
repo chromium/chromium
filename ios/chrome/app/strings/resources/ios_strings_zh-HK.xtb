@@ -178,7 +178,7 @@
 <translation id="2218443599109088993">縮小</translation>
 <translation id="2230173723195178503">已載入網頁</translation>
 <translation id="2239626343334228536">正在清除瀏覽資料…</translation>
-<translation id="2242467532204595597">隨時可以使用 Chrome 開啟訊息、文件和其他應用程式中的連結。</translation>
+<translation id="2242467532204595597">隨時使用 Chrome 開啟訊息、文件和其他應用程式中的連結。</translation>
 <translation id="22508856139286506">已關閉的警告 (<ph name="COUNT" /> 個)</translation>
 <translation id="2251686759395008410">「選單」→「記錄」</translation>
 <translation id="2256933947031277845">您的機構只允許您透過特定帳戶登入。</translation>
@@ -207,7 +207,7 @@
 <translation id="2411749908844615428">{count,plural, =1{有 {count} 個可以用嘅地址儲存咗喺鍵盤上面。}other{有 {count} 個可以用嘅地址儲存咗喺鍵盤上面。}}</translation>
 <translation id="2421004566762153674">封鎖第三方 Cookie</translation>
 <translation id="2421044535038393232">繼續編輯</translation>
-<translation id="2423077901494354337">你現在可以在裝置上充分運用 Chrome 的各項功能。</translation>
+<translation id="2423077901494354337">您現可在裝置上充分運用 Chrome 的功能。</translation>
 <translation id="2434405374328098816">您已儲存「<ph name="USERNAME" />」在 <ph name="WEBSITE" /> 使用的密碼</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="2451654228769116489">固定分頁</translation>
@@ -219,7 +219,6 @@
 <translation id="2482878487686419369">通知</translation>
 <translation id="2496626742194544812">前往第一個分頁</translation>
 <translation id="2500374554657206846">儲存密碼選項</translation>
-<translation id="2502415369140591438"><ph name="COUNT" /> 個重用密碼</translation>
 <translation id="2523363575747517183">這個網站嘗試重覆開啟另一個應用程式。</translation>
 <translation id="2529021024822217800">全部開啟</translation>
 <translation id="2547458583188611426">同步處理無法運作。如要開始同步處理，請輸入密碼短語。</translation>
@@ -391,7 +390,6 @@
 <translation id="3581564640715911333">詢問是否將網頁內容翻譯成其他語言</translation>
 <translation id="3588820906588687999">在新分頁中開啟圖片</translation>
 <translation id="3595252146048399851">您隨時可在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步的資料。Google 可能會根據您的記錄，提供個人化「搜尋」和其他服務。</translation>
-<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} 個安全度低的密碼}other{{COUNT} 個安全度低的密碼}}</translation>
 <translation id="3603009562372709545">複製連結網址</translation>
 <translation id="3607167657931203000">自動填入資料</translation>
 <translation id="3608008480985212611">登入即可管理偏好設定。</translation>
@@ -437,7 +435,6 @@
 <translation id="3928666092801078803">合併我的資料</translation>
 <translation id="3929457972718048006">地址</translation>
 <translation id="3943492037546055397">密碼</translation>
-<translation id="3951717558054674026">{count,plural, =1{{count} 個安全度低的密碼}other{{count} 個安全度低的密碼}}</translation>
 <translation id="3959736869653157332">「選單」→「新無痕式分頁」</translation>
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3968505803272650567">管理興趣</translation>
@@ -774,7 +771,6 @@
 <translation id="6184086493125982861">顯示分頁</translation>
 <translation id="6187302354554850004">上次同步時間：<ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">未讀</translation>
-<translation id="6193424046394092997">{count,plural, =1{已將書籤加入「{title}」}other{已將書籤加入「{title}」}}</translation>
 <translation id="6196207969502475924">語音搜尋</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{關閉 {COUNT} 個分頁}other{關閉 {COUNT} 個分頁}}</translation>
 <translation id="6210079381482819663">已有 <ph name="THRESHOLD" /> 天或以上未使用的分頁會移到此處。您可隨時在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中變更此設定。</translation>
@@ -804,7 +800,7 @@
 <translation id="6346549652287021269">要開始新的下載嗎？</translation>
 <translation id="6347953390226388422">{count,plural, =1{此地址將會從您的 Google 帳戶 (<ph name="USER_EMAIL" />) 及此裝置上刪除。}other{這些地址將會從您的 Google 帳戶 (<ph name="USER_EMAIL" />) 及此裝置上刪除。}}</translation>
 <translation id="634878792104344809">將所有裝置上的密碼、記錄及其他設定保持同步</translation>
-<translation id="6348855835728304880">這部裝置的其他應用程式也能使用儲存在 Chrome 中的密碼和其他資訊。</translation>
+<translation id="6348855835728304880">此裝置的其他應用程式亦可使用儲存在 Chrome 中的密碼和其他資料。</translation>
 <translation id="6355820205320395730">安全性弱的密碼很容易被猜到。請務必設定安全度高的密碼。<ph name="BEGIN_LINK" />查看更多安全提示。<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">追蹤 <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">沒有已開啟的無痕式分頁</translation>
@@ -824,7 +820,6 @@
 
 您已於 <ph name="TIME" />使用同步密碼短語加密資料，請輸入密碼短語開始同步資料。</translation>
 <translation id="6418346271604475326">正在準備 PDF</translation>
-<translation id="6421095165635308">{count,plural, =1{書籤已儲存至帳戶 ({email}) 中的「{title}」}other{書籤已儲存至帳戶 ({email}) 中的「{title}」}}</translation>
 <translation id="6429213933892582367">開啟 [密碼選項]</translation>
 <translation id="6434591244308415567">發生錯誤，請稍後再試。</translation>
 <translation id="6435236283694032571">加入閱讀清單</translation>
@@ -1164,7 +1159,7 @@
 <translation id="8717864919010420084">複製連結</translation>
 <translation id="8721297211384281569">工具選單</translation>
 <translation id="8725066075913043281">再試一次</translation>
-<translation id="8727043961453758442">充分運用 Chrome 的各項功能</translation>
+<translation id="8727043961453758442">充分運用 Chrome 的功能</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8731388423028622182">您已在重設 iPhone 時登出帳戶 (<ph name="USER_NAME" />)，輕按下方的 [繼續] 即可登入。</translation>
 <translation id="87371078663613140">瀏覽選單列中的選項</translation>
@@ -1211,10 +1206,9 @@
 <translation id="8974714402877957201">1. 開啟 iPad 的「設定」</translation>
 <translation id="8976382372951310360">說明</translation>
 <translation id="8976414606286374109">信用卡會儲存至您的 Google 帳戶。</translation>
-<translation id="8978059030508051916">{count,plural, =0{沒有被盜用的密碼}=1{{count} 個被盜用的密碼}other{{count} 個被盜用的密碼}}</translation>
 <translation id="8981454092730389528">Google 活動控制項</translation>
 <translation id="8985320356172329008">已使用下列帳戶登入 Google：</translation>
-<translation id="8986567980592931173">登入 Google 帳戶就能同步處理密碼、歷史記錄等等。</translation>
+<translation id="8986567980592931173">登入 Google 帳戶便可同步處理密碼、記錄等等。</translation>
 <translation id="8998289560386111590">此功能無法在您的裝置上使用</translation>
 <translation id="9000089900434778519">您的搜尋引擎是「<ph name="DSE_NAME" />」。建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>
 <translation id="9008201768610948239">略過</translation>

@@ -217,7 +217,6 @@
 <translation id="2482878487686419369">දැනුම්දීම්</translation>
 <translation id="2496626742194544812">පළමු පටිත්ත වෙත යන්න</translation>
 <translation id="2500374554657206846">මුරපදය සුරැකීමට විකල්ප</translation>
-<translation id="2502415369140591438">යළි භාවිතා කළ මුරපද <ph name="COUNT" />ක්</translation>
 <translation id="2523363575747517183">මෙම වෙබ් අඩවිය තවත් යෙදුමක් විවෘත කිරීමට නැවත නැවතත් උත්සාහ කරයි.</translation>
 <translation id="2529021024822217800">සියල්ල විවෘත කරන්න</translation>
 <translation id="2547458583188611426">සමමුහුර්ත කිරීම ක්‍රියා නොකරයි. සමමුහුර්ත කිරීම ආරම්භ කිරීමට, ඔබේ මුර-වැකිකඩ ඇතුළු කරන්න.</translation>
@@ -389,7 +388,6 @@
 <translation id="3581564640715911333">වෙනත් භාෂාවල පිටු පරිවර්තනයට පිරිනමන්න</translation>
 <translation id="3588820906588687999">රූපය නව පටිත්තක විවෘත කරන්න</translation>
 <translation id="3595252146048399851">ඔබට සැම විට <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ සමමුහුර්ත කළ යුතු දේ තෝරා ගත හැක. Google ඔබේ ඉතිහාසය මත පදනම්ව සෙවීම් සහ අනෙකුත් සේවාවන් පෞද්ගලීකරණය කිරීමට ඉඩ ඇත.</translation>
-<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} දුර්වල මුරපදයක්}one{දුර්වල මුරපද {COUNT}ක්}other{දුර්වල මුරපද {COUNT}ක්}}</translation>
 <translation id="3603009562372709545">සබැඳි URL පිටපත් කරන්න</translation>
 <translation id="3607167657931203000">ස්වයං පිරවුම් දත්ත</translation>
 <translation id="3608008480985212611">ඔබේ මනාප කළමනාකරණය කිරීමට පුරන්න.</translation>
@@ -435,7 +433,6 @@
 <translation id="3928666092801078803">මගේ දත්ත ඒකාබද්ධ කරන්න</translation>
 <translation id="3929457972718048006">ලිපින</translation>
 <translation id="3943492037546055397">මුරපද</translation>
-<translation id="3951717558054674026">{count,plural, =1{{count} දුර්වල මුරපදයක්}one{දුර්වල මුරපද {count}ක්}other{දුර්වල මුරපද {count}ක්}}</translation>
 <translation id="3959736869653157332">මෙනුව → නව අප්‍රකට ටැබය</translation>
 <translation id="3967822245660637423">බාගැනීම සම්පූර්ණයි</translation>
 <translation id="3968505803272650567">රුචිකත්ව කළමනාකරණය කරන්න</translation>
@@ -771,7 +768,6 @@
 <translation id="6184086493125982861">පටිති පෙන්වන්න</translation>
 <translation id="6187302354554850004">අවසන් වරට සමමුහුර්ත කළේ: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">නොකියවූ</translation>
-<translation id="6193424046394092997">{count,plural, =1{{title} වෙත පිටුසන් කර ඇත}one{{title} වෙත පිටුසන් කර ඇත}other{{title} වෙත පිටුසන් කර ඇත}}</translation>
 <translation id="6196207969502475924">හඬ සෙවීම</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{ටැබ {COUNT}ක් වසන්න}one{ටැබ {COUNT}ක් වසන්න}other{ටැබ {COUNT}ක් වසන්න}}</translation>
 <translation id="6210079381482819663">දින <ph name="THRESHOLD" />ක් හෝ ඊට වැඩි කාලයක් භාවිතා නොකළ පටිති මෙතැනට ගෙන යනු ලැබේ. ඔබට <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ මෙය ඕනෑම වේලාවක වෙනස් කළ හැක.</translation>
@@ -820,7 +816,6 @@
 
 ඔබේ දත්ත <ph name="TIME" /> විට ඔබේ සමමුහුර්ත මුරවදන සමඟ සංකේතනය කර ඇත. සමමුහුර්ත කිරීම ආරම්භ කිරීමට ඇතුළු කරන්න.</translation>
 <translation id="6418346271604475326">PDF සූදානම් කිරීම</translation>
-<translation id="6421095165635308">{count,plural, =1{පිටුසන ඔබේ ගිණුමේ {email}, {title} වෙත සුරකින ලදි}one{පිටුසන ඔබේ ගිණුමේ {email}, {title} වෙත සුරකින ලදි}other{පිටුසන ඔබේ ගිණුමේ {email}, {title} වෙත සුරකින ලදි}}</translation>
 <translation id="6429213933892582367">මුරපද විකල්ප විවෘත කරන්න</translation>
 <translation id="6434591244308415567">දෝෂයක් සිදු විය. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="6435236283694032571">කියවීම් ලැයිස්තුවට එක් කරන්න</translation>
@@ -1089,6 +1084,7 @@
 <translation id="8136856065410661948">Chrome සහ Google Lens වෙතින් ඔබේ Apple දින දර්ශනයේ සිදුවීම් තැනීමට මෙය භාවිතා කරනු ඇත.</translation>
 <translation id="8156478151976189188">මුරපද සමමුහුර්තය ක්‍රියා නොකරයි</translation>
 <translation id="8157532349231307196">ගිණුම් <ph name="NUMBER_OF_ACCOUNTS" /></translation>
+<translation id="8159358225423560600">මේ දැන්</translation>
 <translation id="8179976553408161302">ඇතුළු කරන්න</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />ඔබගේ උපාංග<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">පිටුව පරිවර්තන කරන්න</translation>
@@ -1119,6 +1115,7 @@
 <translation id="8393889347136007944">දින <ph name="THRESHOLD" />ක් සඳහා පටිති භාවිතා නොවේ</translation>
 <translation id="8407669440184693619">මෙම වෙබ් අඩවිය සඳහා මුරපද කිසිවක් හමු නොවිය</translation>
 <translation id="842017693807136194">පුරා ඇත</translation>
+<translation id="8423121072346537366">මේ දැන්</translation>
 <translation id="8425693829365242963">ඔබේ මුරපද අනන්‍ය වේ</translation>
 <translation id="8428045167754449968">නගරය / පුරවරය</translation>
 <translation id="8428213095426709021">සැකසුම්</translation>
@@ -1204,7 +1201,6 @@
 <translation id="8974714402877957201">1. iPad සැකසීම් විවෘත කරන්න</translation>
 <translation id="8976382372951310360">උදවු</translation>
 <translation id="8976414606286374109">කාඩ්පත් ඔබගේ Google ගිණුමට සුරැකේ.</translation>
-<translation id="8978059030508051916">{count,plural, =0{අවදානමට පත් වූ මුරපද නැත}=1{අවදානමට පත් වූ {count} මුරපදයක්}one{අවදානමට පත් වූ මුරපද {count}ක්}other{අවදානමට පත් වූ මුරපද {count}ක්}}</translation>
 <translation id="8981454092730389528">Google ක්‍රියාකාරකම් පාලනය</translation>
 <translation id="8985320356172329008">Google වෙත පුරනය වූයේ</translation>
 <translation id="8998289560386111590">ඔබේ උපාංගයෙහි නොමැත</translation>

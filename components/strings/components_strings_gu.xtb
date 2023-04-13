@@ -364,6 +364,7 @@
 <translation id="1801812870656502108">વર્ચ્યુઅલ કાર્ડની વિગતો</translation>
 <translation id="1803020234906945288">આરોગ્યપ્રદ આહાર</translation>
 <translation id="1803351196216024260">તમારા માઇક્રોફોનનો ઉપયોગ કરવાનું પૂછી શકે છે</translation>
+<translation id="1806174020048213474">આ ઍપ વાઇ-ફાઇની લૉગ ઇન વિગતો ઇન્સ્ટૉલ કરવાની પરવાનગી માટે વિનંતી કરી રહી છે. સેટઅપ પછી, તમારું <ph name="DEVICE_TYPE" /> સહભાગી વાઇ-ફાઇ નેટવર્ક સાથે ઑટોમૅટિક રીતે કનેક્ટ થઈ જશે. લૉગ ઇનની આ વિગતો કાઢી નાખવા માટે, ઍપને અનઇન્સ્ટૉલ કરો.</translation>
 <translation id="1807246157184219062">આછું</translation>
 <translation id="1807528111851433570">શરૂઆતની શીટ</translation>
 <translation id="180991881384371158">તમારો CVC તમારા કાર્ડની પાછળના ભાગ પર હોય છે. તે તમારા હસ્તાક્ષર બૉક્સની ઉપર જમણી બાજુએ 3 અંકનો કોડ છે.</translation>
@@ -1069,7 +1070,6 @@
 <translation id="3631244953324577188">બાયોમેટ્રિક્સ</translation>
 <translation id="3632503704576938756">સ્ક્રીન શેર કરવાનું ફરી શરૂ કર્યું છે</translation>
 <translation id="3632892046558972264">સ્ક્રીન શેર કરવાનું થોભાવ્યું છે</translation>
-<translation id="3633035844150606508">તમારા Google એકાઉન્ટ, <ph name="ACCOUNT" />માં ઍડ્રેસ સાચવો</translation>
 <translation id="3633738897356909127">Chrome અપડેટ કરો બટન, તમારા Chrome સેટિંગમાંથી Chrome અપડેટ કરવા માટે Enter દબાવો</translation>
 <translation id="3634530185120165534">ટ્રે 5</translation>
 <translation id="3634567936866541746">હમણાં જ કોઈ છેતરામણી સાઇટ પર તમે તમારો પાસવર્ડ દાખલ કર્યો છે. તમારા એકાઉન્ટ સુરક્ષિત રાખવા માટે, Chrome તમારા સાચવેલા પાસવર્ડ હમણાં જ ચેક કરવાનો સુઝાવ આપે છે.</translation>
@@ -1336,6 +1336,7 @@
 <translation id="4270541775497538019">સ્ટૅકર 6</translation>
 <translation id="4274173425554582601">કમ્પ્યુટર અને ઇલેક્ટ્રોનિક્સ</translation>
 <translation id="4275830172053184480">તમારું ઉપકરણ પુનઃપ્રારંભ કરો</translation>
+<translation id="4276974990916607331">ના, આભાર</translation>
 <translation id="4277028893293644418">પાસવર્ડ રીસેટ કરો</translation>
 <translation id="4277937682389409325">સ્થાનિક સરનામું</translation>
 <translation id="4278390842282768270">મંજૂર</translation>
@@ -1696,6 +1697,7 @@
 <translation id="5129534298163637277">કન્ફર્મેશન માટેનો સંવાદ</translation>
 <translation id="5135404736266831032">સરનામા મેનેજ કરો…</translation>
 <translation id="5136841603454277753">યોગ્ય કોડ દાખલ કરો</translation>
+<translation id="5137761395480718572">આ ઍપ વાઇ-ફાઇની લૉગ ઇન વિગતો ઇન્સ્ટૉલ કરવાની પરવાનગી માટે વિનંતી કરી રહી છે. સેટઅપ પછી, તમારું <ph name="DEVICE_TYPE" /> સહભાગી વાઇ-ફાઇ નેટવર્ક સાથે ઑટોમૅટિક રીતે કનેક્ટ થઈ જશે. લૉગ ઇનની આ વિગતો કાઢી નાખવા માટે, ઍપને અનઇન્સ્ટૉલ કરો. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">હમણાં વર્ચ્યુઅલ કાર્ડ ઉપલબ્ધ નથી, કૃપા કરીને તમારી બેંકનો સંપર્ક કરો</translation>
 <translation id="5138227688689900538">ઓછું બતાવો</translation>
 <translation id="5145883236150621069">પૉલિસી પ્રતિક્રિયામાં ભૂલ કોડ હાજર</translation>
@@ -1752,6 +1754,7 @@
 <translation id="5273881944177595304">વેબ ઍપ અને ઑનલાઇન ટૂલ</translation>
 <translation id="5274025349362408263">પુસ્તકો અને સાહિત્ય</translation>
 <translation id="5279286380302340275">ડાઉનલોડ મેનેજ કરો</translation>
+<translation id="5279453600310613955">ના, આભાર</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">દસ્તાવેજની પ્રોપર્ટી</translation>
 <translation id="528468243742722775">સમાપ્ત</translation>
@@ -2244,6 +2247,7 @@
 <translation id="6529173248185917884">સાતમો રોલ</translation>
 <translation id="6529602333819889595">&amp;ફરી કરો ડિલીટ કરો</translation>
 <translation id="6535751101619004418">ચલણ અને વિદેશ વિનિમય</translation>
+<translation id="6536221421038631327">તમારા <ph name="DEVICE_TYPE" />માંથી કોઈ Passpoint સબ્સ્ક્રિપ્શન કાઢી નાખવાથી, સંકળાયેલા નેટવર્કની માહિતી પણ નીકળી જશે. તમારા સબ્સ્ક્રિપ્શન પ્લાનમાં ફેરફારો કરવા માટે, "<ph name="FRIENDLY_NAME" />"નો સંપર્ક કરો. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">મ્યુચ્યુઅલ ફંડ</translation>
 <translation id="6545864417968258051">બ્લૂટૂથ સ્કૅનિંગ</translation>
 <translation id="6547208576736763147">ડાબી બાજુએ બે ચતુષ્કોણ કાણાં પાડો</translation>
@@ -3339,6 +3343,7 @@
 <translation id="9219103736887031265">છબીઓ</translation>
 <translation id="922152298093051471">Chrome કસ્ટમાઇઝ કરો</translation>
 <translation id="933712198907837967">ડાઇનર્સ ક્લબ</translation>
+<translation id="934634059306213385"><ph name="APP_NAME" /> ઍપને વાઇ-ફાઇ નેટવર્ક સેટઅપ કરવાની મંજૂરી આપીએ?</translation>
 <translation id="936602727769022409">તમે તમારા Google એકાઉન્ટનો ઍક્સેસ ગુમાવી શકો છો. Chromium તમને હમણાં જ તમારો પાસવર્ડ બદલવાનો સુઝાવ આપે છે. તમને સાઇન ઇન કરવા માટે કહેવામાં આવશે.</translation>
 <translation id="937457230470581909">પ્રાણી સંગ્રહાલયો, માછલીઘર અને અભયારણ્યો</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />કયા ડેટાનો ઉપયોગ કરવામાં આવે છે:<ph name="END_BOLD" /> તમારા જાહેરાતના વિષયો તમારા તાજેતરના બ્રાઉઝિંગ ઇતિહાસ પર આધારિત હોય છે, જેમાં આ ડિવાઇસ પર Chrome વડે તમે મુલાકાત લીધેલી સાઇટની સૂચિનો સમાવેશ થાય છે.</translation>

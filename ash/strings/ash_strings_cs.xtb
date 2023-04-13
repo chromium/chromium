@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">Zařízení USB Type-C (přední port)</translation>
 <translation id="1013598600051641573">Rozlišení monitoru <ph name="DISPLAY_NAME" /> bylo změněno na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Chcete-li změny ponechat, potvrďte je. Předchozí nastavení bude obnoveno za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Zařízení Bluetooth „<ph name="DEVICE_NAME" />“ žádá o povolení ke spárování. Zadejte prosím v zařízení tento kód PIN: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">Aplikace <ph name="APP_NAME" />, všechny aplikace a weby s oprávněním pro přístup k poloze a systém Chrome OS budou moci používat polohu Wi-Fi a mobilních sítí.</translation>
 <translation id="1017556409696559990">Minimalizovat horní okno, když v Chromu není žádná zpětná historie</translation>
 <translation id="1024364763893396229">Uložení zařízení <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Baterie dotykového pera je slabá</translation>
@@ -147,6 +148,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1651914502370159744">Otevřít stránku Historie</translation>
 <translation id="1654477262762802994">Zahájit hlasový dotaz</translation>
 <translation id="1668469839109562275">Vestavěná VPN</translation>
+<translation id="1675844249244994876">Aktualizovat pravé okno</translation>
 <translation id="1677472565718498478">zbývající čas: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Funkce <ph name="FEATURE_NAME" /> není připojena.</translation>
 <translation id="1677582821739292812">Někdo se dívá na vaši obrazovku</translation>
@@ -191,6 +193,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Zapnout přístup k poloze</translation>
 <translation id="1830308660060964064">Položka <ph name="ITEM_TITLE" /> byla odepnuta</translation>
 <translation id="1838895407229022812">Noční režim je vypnutý.</translation>
 <translation id="1854180393107901205">Zastavit odesílání</translation>
@@ -365,7 +368,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2726420622004325180">Aby telefon mohl sloužit jako hotspot, musí v něm být zapnutá mobilní data</translation>
 <translation id="2727175239389218057">Odpovědět</translation>
 <translation id="2727977024730340865">Byla připojena nabíječka s nízkým výkonem. Nabíjení baterie nemusí probíhat spolehlivě.</translation>
-<translation id="2740531572673183784">OK</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">„Smazat“</translation>
 <translation id="2750941250130734256">Aktivní okno není zadokováno.</translation>
@@ -468,6 +470,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3255483164551725916">Co umíš?</translation>
 <translation id="3256109297135787951">Odebrat zvýraznění z položky na poličce</translation>
 <translation id="3260969790895726815">Řeč se zpracovává místně a diktování funguje offline, ale některé hlasové příkazy nebudou fungovat.</translation>
+<translation id="3265032511221679826">Zapnout přístup k přesné poloze?</translation>
 <translation id="3269597722229482060">Kliknutí pravým tlačítkem</translation>
 <translation id="3289364673986435196">Nabídka napájení</translation>
 <translation id="3289544412142055976">Linuxové aplikace v současné době nejsou podporovány</translation>
@@ -578,6 +581,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – spravovaný uživatel</translation>
 <translation id="3666266999138159418">Plovoucí okno skryjete přejetím prstem</translation>
 <translation id="367531336287639526">Vybrat první ikonu vlevo od adresního řádku</translation>
+<translation id="3677931086890821290">Všechny aplikace a weby s oprávněním pro přístup k poloze a systém ChromeOS budou moci používat polohu Wi-Fi a mobilních sítí.</translation>
 <translation id="3679827876008292680">Přejít na poslední kartu v okně</translation>
 <translation id="36813544980941320">Sítě Wi-Fi se budou sdílet mezi vaším telefonem a zařízením <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Webové stránky</translation>
@@ -844,6 +848,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="493076006037866439">Oddálit obrazovku</translation>
 <translation id="4936329710968938986">Všichni, vypnuto</translation>
 <translation id="4938176435186993759">Skrýt všechny návrhy</translation>
+<translation id="4943007472417128747">Hotspot byl za účelem použití Wi-Fi vypnut. Pokud ho chcete použít, vypněte Wi-Fi.</translation>
 <translation id="4945196315133970626">Vypnout oznámení</translation>
 <translation id="4946376291507881335">Zachytit</translation>
 <translation id="495046168593986294">Posunout nahoru</translation>
@@ -1388,6 +1393,7 @@ Nová instalace</translation>
 Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zařízení.</translation>
 <translation id="7526573455193969409">Síť může být sledována</translation>
 <translation id="7536035074519304529">IP adresa: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Aktualizovat levé okno</translation>
 <translation id="7543399541175347147">Aplikace pro Linux a anonymní okna v současné době nejsou podporovány. Ostatní aplikace budou uloženy.</translation>
 <translation id="7544300628205093162">Podsvícení klávesnice je zapnuté</translation>
 <translation id="7548434653388805669">Čas jít spát</translation>
@@ -1468,6 +1474,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7893503627044934815">Tento soubor nechci zobrazovat</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Stiskli jste klávesovou zkratku pro otočení obrazovky. Chcete otočit obrazovku?</translation>
+<translation id="7901190436359881020">Zaměnit okna</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Dotkněte se snímače otisků prstů</translation>
 <translation id="7904094684485781019">Správce tohoto účtu zakázal vícenásobné přihlášení.</translation>
@@ -1742,6 +1749,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="9198992156681343238">Rozlišení displeje <ph name="DISPLAY_NAME" /> bylo změněno na <ph name="RESOLUTION" />. Chcete-li změny ponechat, potvrďte je. Předchozí nastavení bude obnoveno za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Připojte <ph name="NAME" /> k tomuto Chromebooku</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, spravováno vaším administrátorem</translation>
+<translation id="9207682216934703221">Aplikace <ph name="APP_NAME" />, <ph name="APP2_NAME" />, všechny aplikace a weby s oprávněním pro přístup k poloze a systém Chrome OS budou moci používat polohu Wi-Fi a mobilních sítí.</translation>
 <translation id="9210037371811586452">Ukončování režimu jednotné plochy</translation>
 <translation id="9211490828691860325">Všechny plochy</translation>
 <translation id="9211681782751733685">Doba zbývající do úplného nabití baterie: <ph name="TIME_REMAINING" />.</translation>

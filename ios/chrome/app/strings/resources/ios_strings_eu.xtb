@@ -431,7 +431,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3928666092801078803">Bateratu nire datuak</translation>
 <translation id="3929457972718048006">Helbideak</translation>
 <translation id="3943492037546055397">Pasahitzak</translation>
-<translation id="3951717558054674026">{count,plural, =1{{count} pasahitz ez da segurua}other{{count} pasahitz ez dira seguruak}}</translation>
 <translation id="3959736869653157332">Menu → Ireki ezkutuko moduko fitxa bat</translation>
 <translation id="3967822245660637423">Deskargatzen amaitu da</translation>
 <translation id="3968505803272650567">Kudeatu interesak</translation>
@@ -764,7 +763,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6184086493125982861">Erakutsi fitxak</translation>
 <translation id="6187302354554850004">Azken sinkronizazioa: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Irakurri gabe</translation>
-<translation id="6193424046394092997">{count,plural, =1{{title} karpetan gehitu da laster-marka}other{{title} karpetan gehitu da laster-marka}}</translation>
 <translation id="6196207969502475924">Ahozko bilaketa</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Itxi {COUNT} fitxa}other{Itxi {COUNT} fitxa}}</translation>
 <translation id="6210079381482819663"><ph name="THRESHOLD" /> egunez edo gehiagoz erabili ez diren fitxak hona ekartzen dira. Hori aldatzeko, joan <ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalera.</translation>
@@ -813,7 +811,6 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 
 Sinkronizatzeko pasaesaldiaren bidez enkriptatu dira datuak (<ph name="TIME" />). Idatz ezazu sinkronizatzen hasteko.</translation>
 <translation id="6418346271604475326">Prestatzen</translation>
-<translation id="6421095165635308">{count,plural, =1{Gorde da laster-marka zure kontuaren ({email}) {title} karpetan}other{Gorde dira laster-markak zure kontuaren ({email}) {title} karpetan}}</translation>
 <translation id="6429213933892582367">Ireki Password Options (pasahitzen aukerak).</translation>
 <translation id="6434591244308415567">Errore bat gertatu da. Saiatu berriro geroago.</translation>
 <translation id="6435236283694032571">Gehitu irakurketa-zerrendan</translation>
@@ -1017,6 +1014,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7781011649027948662">Orria itzuli nahi duzu?</translation>
 <translation id="7781069478569868053">Fitxa berriaren orria</translation>
 <translation id="7781829728241885113">Atzo</translation>
+<translation id="7786246662347093005">{COUNT,plural, =1{1 egun igaro ondoren}other{{COUNT} egun igaro ondoren}}</translation>
 <translation id="778855399387580014">Hasi bilaketa Chrome-ren fitxa berri batean.</translation>
 <translation id="7791543448312431591">Gehitu</translation>
 <translation id="7807060072011926525">Google-k eman du</translation>
@@ -1081,6 +1079,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8136856065410661948">Chrome-ren eta Google Lens-en bidez Apple Calendar-en gertaerak sortzeko erabiliko da hau.</translation>
 <translation id="8156478151976189188">Pasahitzen sinkronizazioa ez dabil</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> kontu</translation>
+<translation id="8159358225423560600">oraintxe</translation>
 <translation id="8179976553408161302">Sartu</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Zure gailuak<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Itzuli orria</translation>
@@ -1110,6 +1109,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8393889347136007944"><ph name="THRESHOLD" /> egunetan erabili ez diren fitxak</translation>
 <translation id="8407669440184693619">Ez da aurkitu webgune honen pasahitzik</translation>
 <translation id="842017693807136194">Honekin hasi da saioa:</translation>
+<translation id="8423121072346537366">Oraintxe</translation>
 <translation id="8425693829365242963">Pasahitz guztiak esklusiboak dira</translation>
 <translation id="8428045167754449968">Hiria/Udalerria</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>
@@ -1195,7 +1195,6 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8974714402877957201">1. Ireki iPad-aren Settings (ezarpenak) atala.</translation>
 <translation id="8976382372951310360">Laguntza</translation>
 <translation id="8976414606286374109">Google-ko kontuan gordetzen dira txartelak.</translation>
-<translation id="8978059030508051916">{count,plural, =0{Ez dago pasahitzik arriskuan}=1{{count} pasahitz dago arriskuan}other{{count} pasahitz daude arriskuan}}</translation>
 <translation id="8981454092730389528">Google-ko jarduerak kontrolatzeko aukerak</translation>
 <translation id="8985320356172329008">Kontu honekin hasi duzu saioa Google-n:</translation>
 <translation id="8998289560386111590">Ez dago erabilgarri zure gailuan</translation>

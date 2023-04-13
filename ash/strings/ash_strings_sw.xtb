@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">Kifaa cha USB-C (mlango wa mbele)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> imebadilika kuwa <ph name="RESOLUTION" /> (Hz <ph name="REFRESH_RATE" />). Bofya 'thibitisha' ili uhifadhi mabadiliko. Mipangilio ya awali itarejeshwa baada ya <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Kifaa cha Bluetooth cha "<ph name="DEVICE_NAME" />" kinaomba idhini ya kuoanisha. Tafadhali weka nambari hii ya PIN kwenye kifaa hicho: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">Hatua hii huruhusu <ph name="APP_NAME" />, programu na tovuti zote zilizo na ruhusa ya mahali na ChromeOS kutumia data ya mahali ya Wi-Fi na mitandao ya simu.</translation>
 <translation id="1017556409696559990">Punguza dirisha la juu kukiwa hakuna historia ya kuvinjari kwenye Chrome</translation>
 <translation id="1024364763893396229">Hifadhi <ph name="NAME" /> yako</translation>
 <translation id="1032891413405719768">Chaji ya betri ya Stylus imepungua</translation>
@@ -192,6 +193,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethaneti: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Washa kipengele cha kufikia data ya mahali</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> imebanduliwa</translation>
 <translation id="1838895407229022812">Umezima Mwanga wa Usiku.</translation>
 <translation id="1854180393107901205">Acha kutuma</translation>
@@ -366,7 +368,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2726420622004325180">Ni lazima simu yako iwe na data ya mtandao wa simu ili utumie kipengele cha mtandao pepe</translation>
 <translation id="2727175239389218057">Jibu</translation>
 <translation id="2727977024730340865">Imechomekwa katika chaja ya kawi ya chini. Huenda kuchaji kwa betri hakutakuwa kuzuri.</translation>
-<translation id="2740531572673183784">Sawa</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Futa"</translation>
 <translation id="2750941250130734256">Dirisha linalotumika limepachuliwa.</translation>
@@ -469,6 +470,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="3255483164551725916">Unaweza kufanya nini?</translation>
 <translation id="3256109297135787951">Acha kuangazia kipengee kwenye rafu yako</translation>
 <translation id="3260969790895726815">Matamshi huchakatwa ndani ya kifaa na kipengele cha kuandika kwa kutamka hufanya kazi nje ya mtandao, lakini baadhi ya amri za sauti hazitafanya kazi.</translation>
+<translation id="3265032511221679826">Je, ungependa kuwasha kipengele cha uwezo wa kufikia eneo mahsusi?</translation>
 <translation id="3269597722229482060">Bofya Kulia</translation>
 <translation id="3289364673986435196">Menyu ya kuzima au kuwasha</translation>
 <translation id="3289544412142055976">Programu za Linux haziwezi kutumika kwa sasa</translation>
@@ -579,6 +581,7 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Mtumiaji anayesimamiwa</translation>
 <translation id="3666266999138159418">Telezesha kidole ili ufiche dirisha lako linaloelea</translation>
 <translation id="367531336287639526">Chagua aikoni ya kwanza kushoto mwa sehemu ya anwani</translation>
+<translation id="3677931086890821290">Hatua hii huruhusu programu na tovuti zote zilizo na ruhusa ya mahali na ChromeOS kutumia data ya mahali ya Wi-Fi na mitandao ya simu.</translation>
 <translation id="3679827876008292680">Nenda hadi kichupo cha mwisho kwenye dirisha</translation>
 <translation id="36813544980941320">Mitandao ya Wi-Fi itashirikiwa kati ya simu yako na <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Tovuti</translation>
@@ -1748,6 +1751,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="9198992156681343238">Ubora wa <ph name="DISPLAY_NAME" /> umebadilika kuwa <ph name="RESOLUTION" />. Bofya thibitisha ili uhifadhi mabadiliko. Mipangilio ya awali itarejeshwa baada ya <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Unganisha <ph name="NAME" /> kwenye Chromebook hii</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, Unadhibitiwa na Msimamizi wako</translation>
+<translation id="9207682216934703221">Hatua hii huruhusu <ph name="APP_NAME" />, <ph name="APP2_NAME" />, programu na tovuti zote zilizo na ruhusa ya mahali na ChromeOS kutumia data ya mahali ya Wi-Fi na mitandao ya simu.</translation>
 <translation id="9210037371811586452">Mfumo unaondoka kwenye hali ya eneo-kazi lililounganishwa</translation>
 <translation id="9211490828691860325">Maeneokazi yote</translation>
 <translation id="9211681782751733685">Zimebaki <ph name="TIME_REMAINING" /> kabla ya chaji ya betri kujaa.</translation>

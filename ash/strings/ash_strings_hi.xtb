@@ -368,7 +368,6 @@
 <translation id="2726420622004325180">आपके फ़ोन में मोबाइल डेटा होना ज़रूरी है, ताकि हॉटस्पॉट की सुविधा दी जा सके</translation>
 <translation id="2727175239389218057">जवाब दें</translation>
 <translation id="2727977024730340865">कम-शक्ति वाले चार्जर में प्लग इन करें. बैटरी चार्ज करना संभवत: विश्वसनीय नहीं होगा.</translation>
-<translation id="2740531572673183784">ठीक है</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"मिटाएं"</translation>
 <translation id="2750941250130734256">चालू विंडो को अनडॉक किया गया है.</translation>
@@ -1074,6 +1073,7 @@
 <translation id="5976112937189445008">विंडो को रिकॉर्ड करने के लिए, Enter दबाएं</translation>
 <translation id="5978382165065462689">आपकी स्‍क्रीन का नियंत्रण दूरस्‍थ सहायका के द्वारा शेयर किया जा रहा है.</translation>
 <translation id="5980301590375426705">मेहमान मोड से निकलें</translation>
+<translation id="5983567367406220847">कोई गतिविधि न होने की वजह से, हॉटस्पॉट बंद कर दिया गया है.</translation>
 <translation id="598407983968395253">टेंप्लेट का इस्तेमाल करें</translation>
 <translation id="598882571027504733">अपडेट पाने के लिए, अटैच किए गए कीबोर्ड से अपने Chromebook को रीस्टार्ट करें.</translation>
 <translation id="6002179289567220515">1 कैमरा बंद करने के लिए, आपने फ़िज़िकल स्विच का इस्तेमाल किया. आपके पास सभी कैमरों का ऐक्सेस बंद करने का विकल्प भी है.</translation>
@@ -1376,6 +1376,7 @@
 <translation id="7452560014878697800">एक ऐप्लिकेशन आपके कैमरे का इस्तेमाल कर रहा है</translation>
 <translation id="7453330308669753048">खोज इतिहास का नतीजा हटा दिया गया</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | पूरा चार्ज होने में <ph name="TIME" /> बाकी</translation>
+<translation id="7459485586006128091">किसी अंदरूनी गड़बड़ी की वजह से, हॉटस्पॉट बंद कर दिया गया है. कुछ मिनट बाद, फिर से कनेक्ट करने की कोशिश करें.</translation>
 <translation id="7461924472993315131">पिन करें</translation>
 <translation id="746232733191930409">स्क्रीन रिकॉर्डिंग मोड</translation>
 <translation id="7466449121337984263">कृपया सेंसर को छुएं</translation>
@@ -1449,6 +1450,7 @@
 <translation id="776344839111254542">अपडेट के विवरण देखने के लिए क्लिक करें</translation>
 <translation id="7768784765476638775">चुनें और सुनें</translation>
 <translation id="7769299611924763557">आपका GIF जल्द ही तैयार हो जाएगा</translation>
+<translation id="7773536009433685931">इसके बजाय, वाई-फ़ाई चालू करें</translation>
 <translation id="7780094051999721182">शॉर्टकट</translation>
 <translation id="7780159184141939021">स्क्रीन घुमाएं</translation>
 <translation id="7796735576426975947">नई सूचना छिपाई गई</translation>

@@ -46,6 +46,7 @@
 <translation id="1038462104119736705">Linuxৰ বাবে অতি কমেও <ph name="INSTALL_SIZE" /> ঠাই থকাটো চুপাৰিছ কৰা হয়। খালী ঠাই বঢ়াবলৈ আপোনাৰ ডিভাইচৰ পৰা ফাইলসমূহ মচক।</translation>
 <translation id="1038643060055067718">শাৰী:</translation>
 <translation id="1039337018183941703">অমান্য বা ব্যৱহাৰৰ অনুপযোগী ফাইল</translation>
+<translation id="1040761927998636252"><ph name="URL" />ৰ নামবিহীন বুকমাৰ্ক</translation>
 <translation id="1041175011127912238">এই পৃষ্ঠাটোৱে সঁহাৰি জনোৱা নাই</translation>
 <translation id="1041263367839475438">উপলব্ধ ডিভাইচসমূ্হ</translation>
 <translation id="1042174272890264476">আপোনাৰ কম্পিউটাৰৰ সৈতে <ph name="SHORT_PRODUCT_NAME" />ৰ RLZ লাইব্ৰেৰী অন্তনিৰ্মিত ভাৱে আছে। কোনো বিশেষ প্ৰচাৰ অভিযানত ব্যৱহাৰ হোৱা সন্ধান আৰু <ph name="SHORT_PRODUCT_NAME" />ৰ ব্যৱহাৰ জুখিবলৈ RLZএ কোনো অদ্বৈত নোহোৱা, ব্যক্তিগতভাৱে চিনাক্ত কৰিব নোৱাৰা টেগ দিয়ে। এই লেবেলসমূহ কেতিয়াবা <ph name="PRODUCT_NAME" />ৰ Google Searchত কৰা সন্ধানত প্ৰদর্শিত হয়।</translation>
@@ -2163,6 +2164,7 @@
 <translation id="2804043232879091219">বিকল্প ব্ৰাউজাৰটো খুলিব পৰা নগ'ল</translation>
 <translation id="2804667941345577550">খোলা থকা টেবসমূহকে ধৰি আপুনি এই ছাইটটোৰ পৰা ছাইন আউট হৈ যাব</translation>
 <translation id="2804680522274557040">কেমেৰা অফ কৰা আছে</translation>
+<translation id="2804742109948581745">ছাইড-বাই-ছাইড</translation>
 <translation id="2805539617243680210">আপুনি সম্পূৰ্ণ সাজু!</translation>
 <translation id="2805646850212350655">Microsoft Encrypting File System</translation>
 <translation id="2805756323405976993">এপ্</translation>
@@ -2734,6 +2736,7 @@
 <translation id="3336855445806447827">নিশ্চিত নহয়</translation>
 <translation id="3337568642696914359">ছাইটক প্ৰট’কল পৰিচালনা কৰাৰ অনুমতি নিদিব</translation>
 <translation id="3340620525920140773">ডাউনল’ড সম্পূর্ণ হ’ল: <ph name="FILE_NAME" />।</translation>
+<translation id="3340978935015468852">ছেটিংসমূহ</translation>
 <translation id="3341699307020049241">ভুল পিন। আপোনাৰ <ph name="RETRIES" />টা প্ৰচেষ্টা বাকী আছে।</translation>
 <translation id="3341703758641437857">ফাইলৰ URL এক্সেছ কৰাৰ অনুমতি দিয়ক</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />"এ এই এক্সটেনশ্বনটো আঁতৰাব খোজে।</translation>
@@ -4655,6 +4658,7 @@
 <translation id="5056950756634735043">কণ্টেইনাৰৰ সৈতে সংযোগ কৰি থকা হৈছে</translation>
 <translation id="5057110919553308744">যেতিয়া আপুনি এক্সটেনশ্বনটো ক্লিক কৰে</translation>
 <translation id="5059241099014281248">ছাইন ইন সীমাবদ্ধ কৰক</translation>
+<translation id="5059429103770496207">ডিছপ্লে’ শৈলী</translation>
 <translation id="5059526285558225588">কি শ্বেয়াৰ কৰিব সেয়া বাছনি কৰক</translation>
 <translation id="5060332552815861872">ছেভ কৰিবলৈ ১ টা প্ৰিণ্টাৰ উপলব্ধ।</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{এই ফ’ল্ডাৰটোত এটা বুকমাৰ্ক আছে। আপুনি এইটো নিশ্চিতভাৱে মচিবলৈ বিচাৰেনে?}one{এই ফ’ল্ডাৰটোত #টা বুকমাৰ্ক আছে। আপুনি এইটো নিশ্চিতভাৱে মচিবলৈ বিচাৰেনে?}other{এই ফ’ল্ডাৰটোত #টা বুকমাৰ্ক আছে। আপুনি এইটো নিশ্চিতভাৱে মচিবলৈ বিচাৰেনে?}}</translation>
@@ -5588,6 +5592,7 @@
 <translation id="5904614460720589786">কনফিগাৰেশ্বন সম্পৰ্কীয় এটা সমস্যাৰ বাবে <ph name="APP_NAME" /> ছেট আপ কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক। আসোঁৱাহ ক’ড: <ph name="ERROR_CODE" />।</translation>
 <translation id="5906655207909574370">প্ৰায় আপ টু ডে’ট! আপডে’ট কৰা সম্পূৰ্ণ কৰিবলৈ আপোনাৰ ডিভাইচটো ৰিষ্টার্ট কৰক।</translation>
 <translation id="5906732635754427568">এই এপ্‌টোৰ সৈতে জড়িত ডেটা এই ডিভাইচটোৰ পৰা আঁতৰোৱা হ’ব।</translation>
+<translation id="5906974869830879618">অনুগ্ৰহ কৰি পিন দিয়ক</translation>
 <translation id="5908474332780919512">আপুনি ছাইন ইন কৰিলে এপ্‌টো আৰম্ভ কৰক</translation>
 <translation id="5908695239556627796">মাউছ স্ক্ৰ’লৰ গতিবেগ</translation>
 <translation id="5909379458939060601">এই প্ৰ’ফাইলটো আৰু ব্ৰাউজিঙৰ ডেটা মচিবনে?</translation>
@@ -6977,6 +6982,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" />এ আপোনাৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰি আছে</translation>
 <translation id="7141105143012495934">আপোনাৰ একাউণ্টৰ সবিশেষ পুনৰুদ্ধাৰ কৰিব নোৱাৰাৰ বাবে ছাইন ইন কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি আপোনাৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক বা আকৌ চেষ্টা কৰক।</translation>
 <translation id="7141844554192012199">চেকআপ</translation>
+<translation id="7143207342074048698">সংযোগ হৈছে</translation>
 <translation id="7144878232160441200">পুনৰ চেষ্টা কৰক</translation>
 <translation id="7148426638542880639">ছাইটসমূহে আপুনি আশা কৰা ধৰণে কাম নকৰিব পাৰে। আপুনি যদি আপোনাৰ ডিভাইচত আপুনি চোৱা ছাইটসমূহৰ তথ্য ৰাখিব নিবিচাৰে, এই বিকল্পটো বাছনি কৰক।</translation>
 <translation id="7149839598364933473">এই ডিভাইচটো এটা <ph name="DEVICE_OS" /> ডিভাইচলৈ ৰূপান্তৰ কৰক।</translation>
@@ -9381,6 +9387,7 @@
 <translation id="964790508619473209">স্ক্ৰীনৰ ব্যৱস্থাপনা</translation>
 <translation id="965211523698323809">আপোনাৰ <ph name="DEVICE_TYPE" />ৰ পৰা পাঠ বাৰ্তা পঠিয়াওক আৰু গ্ৰহণ কৰক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Castত হোৱা সমস্যাৰ অভিযোগ দিয়ক</translation>
+<translation id="966588271015727539">কোনো ব্লুটুথ ব্ৰেইল ডিছপ্লে’ বাছনি কৰক</translation>
 <translation id="967398046773905967">কোনো ছাইটক HID ডিভাইচসমূহ এক্সেছ কৰিবলৈ নিদিব</translation>
 <translation id="967624055006145463">ডেটা ষ্ট’ৰ কৰা হ’ল</translation>
 <translation id="96774243435178359">পৰিচালিত প্ৰিণ্টাৰ</translation>

@@ -364,6 +364,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1801812870656502108">Virtuaalisen kortin tiedot</translation>
 <translation id="1803020234906945288">Terveellinen ruokavalio</translation>
 <translation id="1803351196216024260">Saa pyytää mikrofonin käyttölupaa</translation>
+<translation id="1806174020048213474">Sovellus pyytää lupaa asentaa Wi-Fi-verkon kirjautumistietoja. Käyttöönoton jälkeen <ph name="DEVICE_TYPE" /> muodostaa yhteyden käyttöönotettuihin Wi-Fi-verkkoihin automaattisesti. Voit poistaa kirjautumistiedot poistamalla sovelluksen.</translation>
 <translation id="1807246157184219062">Vaalea</translation>
 <translation id="1807528111851433570">Aloitussivu</translation>
 <translation id="180991881384371158">CVC on kortin takaosassa. Koodi on allekirjoituskentän oikeassa yläkulmassa olevat kolme viimeistä numeroa.</translation>
@@ -1070,7 +1071,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3631244953324577188">Biometriikka</translation>
 <translation id="3632503704576938756">Näytön jakamista jatkettu</translation>
 <translation id="3632892046558972264">Näytön jakaminen keskeytetty</translation>
-<translation id="3633035844150606508">Tallenna osoite Google-tilillesi, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Päivitä Chrome ‑painike, päivitä Chrome sen asetuksista painamalla Enter</translation>
 <translation id="3634530185120165534">Lokero 5</translation>
 <translation id="3634567936866541746">Lisäsit juuri salasanasi petolliselle sivustolle. Chrome suosittelee tarkistamaan tallennetut salasanasi tilisi suojaamiseksi.</translation>
@@ -1337,6 +1337,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4270541775497538019">Pinoaja 6</translation>
 <translation id="4274173425554582601">Tietokoneet ja elektroniikka</translation>
 <translation id="4275830172053184480">Käynnistä laite uudelleen</translation>
+<translation id="4276974990916607331">Ei kiitos</translation>
 <translation id="4277028893293644418">Pyydä uusi salasana</translation>
 <translation id="4277937682389409325">Paikallinen osoite</translation>
 <translation id="4278390842282768270">Sallittu</translation>
@@ -1697,6 +1698,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5129534298163637277">Vahvistusikkuna</translation>
 <translation id="5135404736266831032">Hallinnoi osoitteita…</translation>
 <translation id="5136841603454277753">Lisää oikea koodi</translation>
+<translation id="5137761395480718572">Sovellus pyytää lupaa asentaa Wi-Fi-verkon kirjautumistietoja. Käyttöönoton jälkeen <ph name="DEVICE_TYPE" /> muodostaa yhteyden käyttöönotettuihin Wi-Fi-verkkoihin automaattisesti. Voit poistaa kirjautumistiedot poistamalla sovelluksen. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Virtuaalinen kortti ei ole juuri nyt käytettävissä, ota yhteyttä pankkiin</translation>
 <translation id="5138227688689900538">Näytä vähemmän</translation>
 <translation id="5145883236150621069">Käytäntövastaus sisältää virhekoodin</translation>
@@ -1753,6 +1755,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="5273881944177595304">Verkkosovellukset ja -työkalut</translation>
 <translation id="5274025349362408263">Kirjat ja kirjallisuus</translation>
 <translation id="5279286380302340275">Tarkista lataukset</translation>
+<translation id="5279453600310613955">Ei kiitos</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Asiakirjan ominaisuudet</translation>
 <translation id="528468243742722775">Loppu</translation>
@@ -2245,6 +2248,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6529173248185917884">Seitsemäs rulla</translation>
 <translation id="6529602333819889595">&amp;Toista poisto</translation>
 <translation id="6535751101619004418">Valuutat ja valuutanvaihto</translation>
+<translation id="6536221421038631327">Jos poistat Passpoint-tilauksen laitteelta (<ph name="DEVICE_TYPE" />), siihen liittyvät verkot poistetaan. Jos haluat tehdä muutoksia tilaussopimukseen, ota yhteyttä kumppaniin <ph name="FRIENDLY_NAME" />. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">Sijoitusrahastot</translation>
 <translation id="6545864417968258051">Bluetooth-haku</translation>
 <translation id="6547208576736763147">Kaksi reikää vasemmalla</translation>
@@ -3341,6 +3345,7 @@ Lisätietoja:
 <translation id="9219103736887031265">Kuvat</translation>
 <translation id="922152298093051471">Yksilöi Chromea</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">Saako sovellus (<ph name="APP_NAME" />) ottaa Wi-Fi-verkkoja käyttöön?</translation>
 <translation id="936602727769022409">Saatat menettää Google-tilisi käyttöoikeuden. Chromium suosittelee vaihtamaan salasanan nyt. Sinua pyydetään kirjautumaan sisään.</translation>
 <translation id="937457230470581909">Eläintarhat, akvaariot ja suojelualueet</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Mitä dataa käytetään:<ph name="END_BOLD" /> Mainosaiheet perustuvat viimeaikaiseen selaushistoriaasi, luetteloon sivustoista, joilla olet käynyt Chromella tällä laitteella.</translation>

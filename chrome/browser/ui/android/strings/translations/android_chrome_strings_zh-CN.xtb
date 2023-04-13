@@ -107,6 +107,7 @@
 <translation id="1493287004536771723">您已关注 <ph name="SITE_NAME" /></translation>
 <translation id="1502010315804028179">如需管理您的密码，请更新 Google Play 服务</translation>
 <translation id="1506061864768559482">搜索引擎</translation>
+<translation id="1508960385613684700">隐私保护指南<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="1513352483775369820">书签和网络历史记录</translation>
 <translation id="1513814250881909472">同步即可查看您在其他设备上打开的标签页</translation>
 <translation id="1513858653616922153">删除密码</translation>
@@ -1517,7 +1518,7 @@
 <translation id="9022774213089566801">经常访问</translation>
 <translation id="9022871169049522985">网站和广告主可以衡量其广告的效果</translation>
 <translation id="9041669420854607037">{FILE_COUNT,plural, =1{# 个视频}other{# 个视频}}</translation>
-<translation id="9042893549633094279">隐私设置和安全性</translation>
+<translation id="9042893549633094279">隐私和安全</translation>
 <translation id="9050666287014529139">密码</translation>
 <translation id="9055497320631373736">已将此网站恢复为能够建议广告的潜在网站</translation>
 <translation id="9063523880881406963">关闭“请求切换到桌面版网站”</translation>

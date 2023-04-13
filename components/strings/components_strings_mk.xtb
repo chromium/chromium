@@ -1069,7 +1069,6 @@
 <translation id="3631244953324577188">Биометрика</translation>
 <translation id="3632503704576938756">Споделувањето екран продолжи</translation>
 <translation id="3632892046558972264">Споделувањето екран е паузирано</translation>
-<translation id="3633035844150606508">Адресата ќе се зачува во вашата сметка на Google, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Копче „Ажурирај го Chrome“, притиснете Enter за да го ажурирате Chrome од поставките за Chrome</translation>
 <translation id="3634530185120165534">Фиока 5</translation>
 <translation id="3634567936866541746">Тукушто ја внесовте својата лозинка на измамнички сајт. За да ги заштитите сметките, Chrome ви препорачува да ги проверите зачуваните лозинки.</translation>
@@ -1736,6 +1735,8 @@
 <translation id="5234764350956374838">Отфрли</translation>
 <translation id="5239623327352565343">Локацијата е дозволена</translation>
 <translation id="5242889659037569123">Додатоци за багаж и патување</translation>
+<translation id="5244732203286792411">Се вчитува…
+    Ова може малку да потрае.</translation>
 <translation id="5250209940322997802">„Поврзете се на мрежата“</translation>
 <translation id="52517543715119994">Дознајте за функциите на Chrome</translation>
 <translation id="5251803541071282808">Облак</translation>

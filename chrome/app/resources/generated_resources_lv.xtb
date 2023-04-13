@@ -2723,6 +2723,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3336855445806447827">Neesmu pārliecināts</translation>
 <translation id="3337568642696914359">Neļaut vietnēm apstrādāt protokolus</translation>
 <translation id="3340620525920140773">Lejupielāde pabeigta: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">Iestatījumi</translation>
 <translation id="3341699307020049241">Nepareizs PIN. Atlikušo mēģinājumu skaits: <ph name="RETRIES" />.</translation>
 <translation id="3341703758641437857">Atļaut piekļuvi faila vietrāžiem URL</translation>
 <translation id="3342361181740736773">“<ph name="TRIGGERING_EXTENSION_NAME" />” vēlas noņemt šo paplašinājumu.</translation>
@@ -4095,6 +4096,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4545759655004063573">Nevar saglabāt, jo nav pietiekamu atļauju. Saglabājiet citā atrašanās vietā.</translation>
 <translation id="4546308221697447294">Ātra pārlūkošana ar Google Chrome</translation>
 <translation id="4546345569117159016">Labā poga</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> vēlas izmantot šo paplašinājumu:</translation>
 <translation id="4546692474302123343">Google asistenta balss ievade</translation>
 <translation id="4547659257713117923">Nav ciļņu no citām ierīcēm</translation>
 <translation id="4547672827276975204">Iestatīt automātiski</translation>
@@ -4952,6 +4954,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5338503421962489998">Vietējā krātuve</translation>
 <translation id="5339031667684712858">Jūsu noņemtās vietnes</translation>
 <translation id="5340638867532133571">Atļaut vietnēm instalēt maksājumu apdarinātājus (ieteicams)</translation>
+<translation id="5340787663756381836">&amp;Atrast un rediģēt</translation>
 <translation id="5341793073192892252">Tālāk norādītie sīkfaili tika bloķēti (trešo pušu sīkfaili tiek bloķēti bez izņēmumiem).</translation>
 <translation id="5342091991439452114">PIN kodā ir jābūt vismaz <ph name="MINIMUM" /> cipariem.</translation>
 <translation id="5344036115151554031">Linux atjaunošana</translation>
@@ -5573,6 +5576,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5904614460720589786">Konfigurācijas problēmas dēļ nevarēja iestatīt lietotni <ph name="APP_NAME" />. Lūdzu, sazinieties ar administratoru. Kļūdas kods: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Atjaunināšana ir gandrīz pabeigta. Restartējiet ierīci, lai pabeigtu atjaunināšanu.</translation>
 <translation id="5906732635754427568">Ar šo lietotni saistītie dati tiks noņemti no šīs ierīces.</translation>
+<translation id="5906974869830879618">Lūdzu, ievadiet PIN kodu</translation>
 <translation id="5908474332780919512">Palaist lietotni pierakstoties</translation>
 <translation id="5908695239556627796">Peles ritināšanas ātrums</translation>
 <translation id="5909379458939060601">Vai dzēst šo profilu un pārlūkošanas datus?</translation>
@@ -6963,6 +6967,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="7139627972753429585"><ph name="APP_NAME" /> izmanto jūsu mikrofonu</translation>
 <translation id="7141105143012495934">Neizdevās pierakstīties, jo nevarēja izgūt konta informāciju. Lūdzu, sazinieties ar administratoru vai mēģiniet vēlreiz.</translation>
 <translation id="7141844554192012199">Pārbaude</translation>
+<translation id="7143207342074048698">Notiek savienojuma izveide</translation>
 <translation id="7144878232160441200">Mēģināt vēlreiz</translation>
 <translation id="7148426638542880639">Vietnes var nedarboties pienācīgi. Izvēlieties šo opciju, ja ierīcē nevēlaties saglabāt informāciju par jūsu apmeklētajām vietnēm.</translation>
 <translation id="7149839598364933473">Pārveidojiet šo ierīci par <ph name="DEVICE_OS" /> ierīci.</translation>
@@ -9346,6 +9351,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="939401694733344652">Šie konti pašlaik netiek izmantoti Android lietotnēs. Ja atlasīsiet kādu kontu izmantošanai šajā Android lietotnē, šis konts var tikt izmantots arī citās Android lietotnēs. Varat mainīt Android lietotnes piekļuvi sadaļā <ph name="LINK_BEGIN" />Iestatījumi &gt; Konti<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Ievadiet ieejas frāzi</translation>
 <translation id="939736085109172342">Jauna mape</translation>
+<translation id="940212040923880623">&amp;Atrast un rediģēt</translation>
 <translation id="942532530371314860">Lietotne <ph name="APP_NAME" /> koplieto Chrome cilni un audio.</translation>
 <translation id="944799160843436808">Iestatot Chromebook datoriem paredzēto lietotni Steam, radās problēma</translation>
 <translation id="945522503751344254">Sūtīt atsauksmes</translation>
@@ -9367,6 +9373,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="964790508619473209">Ekrāna izkārtojums</translation>
 <translation id="965211523698323809">Izmantojiet <ph name="DEVICE_TYPE" /> ierīci, lai sūtītu un saņemtu īsziņas. <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Ziņot par problēmu ar Google Cast</translation>
+<translation id="966588271015727539">Atlasīt Bluetooth Braila displeju</translation>
 <translation id="967398046773905967">Neatļaut nevienai vietnei piekļūt HID ierīcēm</translation>
 <translation id="967624055006145463">Saglabātie dati</translation>
 <translation id="96774243435178359">Pārvaldītie printeri</translation>

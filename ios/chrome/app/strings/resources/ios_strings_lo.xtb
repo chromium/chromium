@@ -219,7 +219,6 @@
 <translation id="2482878487686419369">ການແຈ້ງເຕືອນ</translation>
 <translation id="2496626742194544812">ເຂົ້າໄປແຖບທຳອິດ</translation>
 <translation id="2500374554657206846">ຕົວເລືອກເພື່ອບັນທຶກລະຫັດຜ່ານ</translation>
-<translation id="2502415369140591438">ມີລະຫັດຜ່ານທີ່ໃຊ້ຊ້ຳ <ph name="COUNT" /> ລາຍການ</translation>
 <translation id="2523363575747517183">ເວັບໄຊກຳລັງພະຍາຍາມເປີດແອັບພລິເຄຊັນອື່ນຊໍ້າໄປມາຫຼາຍເທື່ອ.</translation>
 <translation id="2529021024822217800">ເປີດທັງຫມົດ</translation>
 <translation id="2547458583188611426">ຊິ້ງບໍ່ເຮັດວຽກ. ເພື່ອເລີ່ມຊິ້ງຂໍ້ມູນ, ໃຫ້ໃສ່ລະຫັດຜ່ານຂອງທ່ານ.</translation>
@@ -391,7 +390,6 @@
 <translation id="3581564640715911333">ໃຫ້ການແປໜ້າຕ່າງໆເປັນພາສາອື່ນ</translation>
 <translation id="3588820906588687999">ຮູບເປີດຢູ່ໃນແຖບໃໝ່</translation>
 <translation id="3595252146048399851">ທ່ານສາມາດເລືອກສິ່ງທີ່ຈະຊິ້ງຂໍ້ມູນໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" />. Google ອາດປັບແຕ່ງການຊອກຫາ ແລະ ບໍລິການອື່ນໆຂອງ Google ໃຫ້ເປັນແບບສ່ວນຕົວໂດຍອ້າງອີງໃສ່ປະຫວັດຂອງທ່ານ.</translation>
-<translation id="3595588371156514964">{COUNT,plural, =1{ມີລະຫັດຜ່ານງ່າຍ {COUNT} ລາຍການ}other{ມີລະຫັດຜ່ານງ່າຍ {COUNT} ລາຍການ}}</translation>
 <translation id="3603009562372709545">ອັດ​ສຳ​ເນົາ URL ຂອງ​ລິ້ງ</translation>
 <translation id="3607167657931203000">ຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
 <translation id="3608008480985212611">ເຂົ້າສູ່ລະບົບເພື່ອຈັດການການຕັ້ງຄ່າຂອງທ່ານ.</translation>
@@ -437,7 +435,6 @@
 <translation id="3928666092801078803">ລວມຂໍ້ມູນຂອງຂ້ອຍເຂົ້າກັນ</translation>
 <translation id="3929457972718048006">ທີ່ຢູ່</translation>
 <translation id="3943492037546055397">ລະຫັດຜ່ານ</translation>
-<translation id="3951717558054674026">{count,plural, =1{{count} ລະຫັດຜ່ານງ່າຍ}other{{count} ລະຫັດຜ່ານງ່າຍ}}</translation>
 <translation id="3959736869653157332">ເມນູ → ແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="3967822245660637423">ດາວ​ໂຫຼດ​ສຳ​ເລັດ</translation>
 <translation id="3968505803272650567">ຈັດການຄວາມສົນໃຈ</translation>
@@ -774,7 +771,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6184086493125982861">ສະ​ແດງ​ແຖບ</translation>
 <translation id="6187302354554850004">ຊິ້ງຂໍ້ມູນຫຼ້າສຸດ: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">ຍັງບໍ່ໄດ້ອ່ານ</translation>
-<translation id="6193424046394092997">{count,plural, =1{ໄດ້ບຸກມາກໃສ່ {title} ແລ້ວ}other{ໄດ້ບຸກມາກໃສ່ {title} ແລ້ວ}}</translation>
 <translation id="6196207969502475924">​ການຄົ້ນຫາ​ສຽງ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{ປິດ {COUNT} ແຖບ}other{ປິດ {COUNT} ແຖບ}}</translation>
 <translation id="6210079381482819663">ແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ເປັນເວລາຢ່າງໜ້ອຍ <ph name="THRESHOLD" /> ຈະຖືກຍ້າຍມາຢູ່ບ່ອນນີ້. ທ່ານສາມາດປ່ຽນສິ່ງນີ້ຕອນໃດກໍໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ<ph name="END_LINK" />.</translation>
@@ -824,7 +820,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 
 ຂໍ້ມູນຂອງທ່ານຖືກເຂົ້າລະຫັດໄວ້ດ້ວຍວະລີຜ່ານການຊິ້ງຂອງທ່ານໃນວັນທີ <ph name="TIME" />. ໃຫ້ປ້ອນມັນເພື່ອເລີ່ມການຊິ້ງຂໍ້ມູນ.</translation>
 <translation id="6418346271604475326">ກຳລັງກະກຽມ PDF</translation>
-<translation id="6421095165635308">{count,plural, =1{ບັນທຶກບຸກມາກໃສ່ {title} ໃນບັນຊີຂອງທ່ານ, {email} ແລ້ວ}other{ບັນທຶກບຸກມາກໃສ່ {title} ໃນບັນຊີຂອງທ່ານ, {email} ແລ້ວ}}</translation>
 <translation id="6429213933892582367">ເປີດຕົວເລືອກລະຫັດຜ່ານ</translation>
 <translation id="6434591244308415567">ເກີດຄວາມຜິດພາດຂຶ້ນ. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="6435236283694032571">ເພີ່ມໃສ່ລາຍການທີ່ຈະອ່ານ</translation>
@@ -1213,7 +1208,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8974714402877957201">1. ເປີດການຕັ້ງຄ່າ iPad</translation>
 <translation id="8976382372951310360">ຊ່ວຍເຫຼືອ</translation>
 <translation id="8976414606286374109">ບັດຕ່າງໆແມ່ນຖືກບັນທຶກໄປໃສ່ບັນຊີ Google ຂອງທ່ານ.</translation>
-<translation id="8978059030508051916">{count,plural, =0{ບໍ່ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ}=1{{count} ລະຫັດຜ່ານທີ່ຖືກລະເມີດ}other{{count} ລະຫັດຜ່ານທີ່ຖືກລະເມີດ}}</translation>
 <translation id="8981454092730389528">ການຄວບຄຸມກິດຈະກຳ Google</translation>
 <translation id="8985320356172329008">ເຂົ້າສູ່ລະບົບ Google ເປັນ</translation>
 <translation id="8986567980592931173">ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google ຂອງທ່ານເພື່ອຊິ້ງລະຫັດຜ່ານ, ປະຫວັດ ແລໍະ ອື່ນໆຂອງທ່ານ.</translation>

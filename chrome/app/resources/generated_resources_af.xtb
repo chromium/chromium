@@ -2165,6 +2165,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2804043232879091219">Die alternatiewe blaaier kon nie oopgemaak word nie</translation>
 <translation id="2804667941345577550">Jy sal by hierdie werf afgemeld word, insluitend in oop oortjies</translation>
 <translation id="2804680522274557040">Kamera is afgeskakel</translation>
+<translation id="2804742109948581745">Langs mekaar</translation>
 <translation id="2805539617243680210">Jy's gereed!</translation>
 <translation id="2805646850212350655">Microsoft-enkripterende lêerstelsel</translation>
 <translation id="2805756323405976993">Programme</translation>
@@ -2736,6 +2737,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3336855445806447827">Nie seker nie</translation>
 <translation id="3337568642696914359">Moenie werwe toelaat om protokolle te hanteer nie</translation>
 <translation id="3340620525920140773">Aflaai voltooi: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">instellings</translation>
 <translation id="3341699307020049241">Verkeerde PIN. Jy het <ph name="RETRIES" /> pogings oor.</translation>
 <translation id="3341703758641437857">Laat toegang tot lêer-ULR'e toe</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" wil graag hierdie uitbreiding verwyder.</translation>
@@ -4658,6 +4660,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5056950756634735043">Koppel tans aan die houer</translation>
 <translation id="5057110919553308744">Wanneer jy die uitbreiding klik</translation>
 <translation id="5059241099014281248">Beperk aanmelding</translation>
+<translation id="5059429103770496207">Skermstyl</translation>
 <translation id="5059526285558225588">Kies wat om te deel</translation>
 <translation id="5060332552815861872">Daar is 1 drukker beskikbaar om te stoor.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Hierdie vouer bevat 'n boekmerk. Is jy seker jy wil dit uitvee?}other{Hierdie vouer bevat # boekmerke. Is jy seker jy wil dit uitvee?}}</translation>
@@ -5592,6 +5595,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5904614460720589786">Kon nie <ph name="APP_NAME" /> opstel nie weens 'n opstellingprobleem. Kontak jou administrateur. Foutkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Amper op datum! Herbegin jou toestel om opdatering te voltooi.</translation>
 <translation id="5906732635754427568">Data wat met hierdie program geassosieer word, sal van hierdie toestel af verwyder word.</translation>
+<translation id="5906974869830879618">Voer asseblief 'n PIN in</translation>
 <translation id="5908474332780919512">Begin program wanneer jy aanmeld</translation>
 <translation id="5908695239556627796">Muis se rolleesspoed</translation>
 <translation id="5909379458939060601">Vee hierdie profiel en blaaierdata uit?</translation>
@@ -6979,6 +6983,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7139627972753429585"><ph name="APP_NAME" /> gebruik tans jou mikrofoon</translation>
 <translation id="7141105143012495934">Kon nie aanmeld nie omdat jou rekeningbesonderhede nie gehaal kon word nie. Kontak jou administrateur of probeer weer.</translation>
 <translation id="7141844554192012199">Kontrole</translation>
+<translation id="7143207342074048698">Koppel tans</translation>
 <translation id="7144878232160441200">Probeer weer</translation>
 <translation id="7148426638542880639">Werwe sal dalk nie werk soos jy sou verwag nie. Kies hierdie opsie as jy nie inligting op jou toestel wil agterlaat oor werwe wat jy besoek nie.</translation>
 <translation id="7149839598364933473">Skakel hierdie toestel om in 'n <ph name="DEVICE_OS" />-toestel.</translation>
@@ -9382,6 +9387,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="964790508619473209">Skermrangskikking</translation>
 <translation id="965211523698323809">Stuur en ontvang SMS'e van jou <ph name="DEVICE_TYPE" /> af. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Gee 'n kwessie met Google Cast aan</translation>
+<translation id="966588271015727539">Kies 'n Bluetooth Braille-skerm</translation>
 <translation id="967398046773905967">Moenie enige werwe toegang tot HID-toestelle gee nie</translation>
 <translation id="967624055006145463">Data geberg</translation>
 <translation id="96774243435178359">Bestuurde drukkers</translation>

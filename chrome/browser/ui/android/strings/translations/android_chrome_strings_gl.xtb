@@ -107,7 +107,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="1493287004536771723">Estás seguindo <ph name="SITE_NAME" /></translation>
 <translation id="1502010315804028179">Para xestionar os teus contrasinais, actualiza os servizos de Google Play</translation>
 <translation id="1506061864768559482">Motor de busca</translation>
-<translation id="1508960385613684700">Guía de privacidade <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="1508960385613684700">Guía de privacidade <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="1513352483775369820">Marcadores e historial web</translation>
 <translation id="1513814250881909472">Sincroniza os datos para obter as pestanas dos teus outros dispositivos</translation>
 <translation id="1513858653616922153">Eliminar contrasinal</translation>
@@ -162,6 +162,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="1910950723001426294">A lista de opcións para compartir está pechada.</translation>
 <translation id="1919130412786645364">Permitir inicio de sesión en Chrome</translation>
 <translation id="1922362554271624559">Idiomas suxeridos</translation>
+<translation id="1924255092154549435">Despregouse a pestana</translation>
 <translation id="1925021887439448749">Introducir enderezo web personalizado</translation>
 <translation id="1928696683969751773">Actualizacións</translation>
 <translation id="19288952978244135">Abre Chrome de novo.</translation>
@@ -770,6 +771,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5161254044473106830">Título obrigatorio</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="5171045022955879922">Buscar ou escribir o URL</translation>
+<translation id="5174700554036517242">A pestana volveu á súa altura inicial</translation>
 <translation id="5184329579814168207">Abrir en Chrome</translation>
 <translation id="5191251636205085390">Obtén información sobre novas tecnoloxías desenvolvidas co obxectivo de substituír as cookies de terceiros e aprende a manexalas</translation>
 <translation id="5193988420012215838">Copiouse no teu portapapeis</translation>
@@ -1252,6 +1254,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7686086654630106285">Máis información sobre os anuncios suxeridos polos sitios</translation>
 <translation id="768618399695552958">Precárganse algunhas das páxinas que visitas. As páxinas poden precargarse a través dos nosos servidores se están vinculadas a un sitio de Google.</translation>
 <translation id="7691043218961417207">Descubre contido para seguir</translation>
+<translation id="7697383401610880082">Controlador de arrastre</translation>
 <translation id="7698359219371678927">Crea un correo electrónico en <ph name="APP_NAME" /></translation>
 <translation id="7707922173985738739">Utilizaranse datos móbiles</translation>
 <translation id="7709094866268987903">Os intereses que quites mostraranse aquí</translation>

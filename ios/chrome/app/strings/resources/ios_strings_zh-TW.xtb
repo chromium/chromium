@@ -219,7 +219,6 @@
 <translation id="2482878487686419369">通知</translation>
 <translation id="2496626742194544812">前往第一個分頁</translation>
 <translation id="2500374554657206846">儲存密碼的選項</translation>
-<translation id="2502415369140591438">有 <ph name="COUNT" /> 組重複使用的密碼</translation>
 <translation id="2523363575747517183">這個網站不斷嘗試開啟其他應用程式。</translation>
 <translation id="2529021024822217800">全部開啟</translation>
 <translation id="2547458583188611426">目前未同步資料。如要開始同步，請輸入通關密語。</translation>
@@ -391,7 +390,6 @@
 <translation id="3581564640715911333">詢問是否要將網頁內容翻譯成其他語言</translation>
 <translation id="3588820906588687999">在新分頁中開啟圖片</translation>
 <translation id="3595252146048399851">你隨時可以在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步處理的資料。Google 可能會根據你的歷史記錄在 Google 搜尋等其他服務中提供個人化體驗。</translation>
-<translation id="3595588371156514964">{COUNT,plural, =1{有 {COUNT} 組低強度密碼}other{有 {COUNT} 組低強度密碼}}</translation>
 <translation id="3603009562372709545">複製連結網址</translation>
 <translation id="3607167657931203000">自動填入資料</translation>
 <translation id="3608008480985212611">如要管理偏好設定，請登入帳戶。</translation>
@@ -437,7 +435,6 @@
 <translation id="3928666092801078803">合併我的資料</translation>
 <translation id="3929457972718048006">地址</translation>
 <translation id="3943492037546055397">密碼</translation>
-<translation id="3951717558054674026">{count,plural, =1{{count} 組密碼的強度太低}other{{count} 組密碼的強度太低}}</translation>
 <translation id="3959736869653157332">「選單」→「新增無痕分頁」</translation>
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3968505803272650567">管理興趣喜好</translation>
@@ -774,7 +771,6 @@
 <translation id="6184086493125982861">顯示分頁</translation>
 <translation id="6187302354554850004">上次同步處理時間：<ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">未讀取</translation>
-<translation id="6193424046394092997">{count,plural, =1{已將書籤加入「{title}」}other{已將書籤加入「{title}」}}</translation>
 <translation id="6196207969502475924">語音搜尋</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{關閉 {COUNT} 個分頁}other{關閉 {COUNT} 個分頁}}</translation>
 <translation id="6210079381482819663"><ph name="THRESHOLD" /> 天以上未使用的分頁會移到這裡。你隨時可以前往<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />進行變更。</translation>
@@ -824,7 +820,6 @@
 
 您已在 <ph name="TIME" />使用同步通關密語對資料進行加密，請輸入通關密語開始進行同步。</translation>
 <translation id="6418346271604475326">正在準備 PDF</translation>
-<translation id="6421095165635308">{count,plural, =1{書籤已儲存到帳戶 ({email}) 中的「{title}」}other{書籤已儲存到帳戶 ({email}) 中的「{title}」}}</translation>
 <translation id="6429213933892582367">開啟「密碼選項」</translation>
 <translation id="6434591244308415567">發生錯誤，請稍後再試。</translation>
 <translation id="6435236283694032571">加入閱讀清單</translation>
@@ -1213,7 +1208,6 @@
 <translation id="8974714402877957201">1. 開啟 iPad 的 [設定]</translation>
 <translation id="8976382372951310360">說明</translation>
 <translation id="8976414606286374109">信用卡會儲存至你的 Google 帳戶。</translation>
-<translation id="8978059030508051916">{count,plural, =0{沒有任何密碼外洩}=1{{count} 組密碼外洩}other{{count} 組密碼外洩}}</translation>
 <translation id="8981454092730389528">Google 活動控制項</translation>
 <translation id="8985320356172329008">已使用下列帳戶登入 Google：</translation>
 <translation id="8986567980592931173">登入 Google 帳戶就能同步處理密碼、歷史記錄等等。</translation>

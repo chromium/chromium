@@ -46,6 +46,7 @@
 <translation id="1038462104119736705">Recomenda-se ter pelo menos <ph name="INSTALL_SIZE" /> de espaço livre para o Linux. Para liberar espaço, exclua arquivos do dispositivo.</translation>
 <translation id="1038643060055067718">Linhas:</translation>
 <translation id="1039337018183941703">Arquivo inválido ou corrompido</translation>
+<translation id="1040761927998636252">Favorito sem nome para <ph name="URL" /></translation>
 <translation id="1041175011127912238">Esta página não está respondendo</translation>
 <translation id="1041263367839475438">Dispositivos disponíveis</translation>
 <translation id="1042174272890264476">Seu computador já vem com a biblioteca RLZ do <ph name="SHORT_PRODUCT_NAME" /> integrada. O RLZ atribui uma tag não exclusiva e sem identificação pessoal para medir as pesquisas e o uso do <ph name="SHORT_PRODUCT_NAME" /> gerados por uma campanha promocional específica. Esses marcadores às vezes aparecem em consultas da Pesquisa Google no <ph name="PRODUCT_NAME" />.</translation>
@@ -2738,6 +2739,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3336855445806447827">Não sei</translation>
 <translation id="3337568642696914359">Não permitir que os sites gerenciem protocolos</translation>
 <translation id="3340620525920140773">Download concluído: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">configurações</translation>
 <translation id="3341699307020049241">PIN incorreto. Você tem <ph name="RETRIES" /> tentativas restantes.</translation>
 <translation id="3341703758641437857">Permitir acesso a URLs de arquivo
 </translation>
@@ -5596,6 +5598,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5904614460720589786">Não foi possível definir o app <ph name="APP_NAME" /> devido a um problema de configuração. Entre em contato com o administrador. Código do erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Atualização quase concluída. Reinicie o dispositivo para concluí-la.</translation>
 <translation id="5906732635754427568">Os dados associados a este app serão removidos deste dispositivo.</translation>
+<translation id="5906974869830879618">Insira um PIN</translation>
 <translation id="5908474332780919512">Iniciar app ao fazer login</translation>
 <translation id="5908695239556627796">Velocidade de rolagem do mouse</translation>
 <translation id="5909379458939060601">Excluir este perfil e os dados de navegação?</translation>
@@ -6985,6 +6988,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7139627972753429585"><ph name="APP_NAME" /> está usando o microfone</translation>
 <translation id="7141105143012495934">O login falhou porque não foi possível recuperar detalhes da sua conta. Entre em contato com o administrador ou tente novamente.</translation>
 <translation id="7141844554192012199">Check-up</translation>
+<translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
 <translation id="7148426638542880639">Os sites podem não funcionar conforme o esperado. Escolha esta opção se não quiser deixar informações no seu dispositivo sobre os sites visitados.</translation>
 <translation id="7149839598364933473">Converter este dispositivo para usar o <ph name="DEVICE_OS" />.</translation>
@@ -9390,6 +9394,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="964790508619473209">Disposição da tela</translation>
 <translation id="965211523698323809">Envie e receba mensagens de texto no <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Informar um problema com o Google Cast</translation>
+<translation id="966588271015727539">Selecione uma linha braille com Bluetooth</translation>
 <translation id="967398046773905967">Não permitir que nenhum site acesse dispositivos HID</translation>
 <translation id="967624055006145463">Dados armazenados</translation>
 <translation id="96774243435178359">Impressoras gerenciadas</translation>

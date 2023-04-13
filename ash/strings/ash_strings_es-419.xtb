@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">Dispositivo USB-C (puerto delantero)</translation>
 <translation id="1013598600051641573">Se cambió la resolución de <ph name="DISPLAY_NAME" /> a <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Para mantener este cambio, haz clic en Confirmar. En <ph name="TIMEOUT_SECONDS" />, se restablecerá la configuración anterior.</translation>
 <translation id="1013923882670373915">El dispositivo Bluetooth "<ph name="DEVICE_NAME" />" solicita permiso para sincronizarse. Ingresa el siguiente código de PIN en el dispositivo: <ph name="PINCODE" />.</translation>
+<translation id="1014722676793506285">Esto permite que <ph name="APP_NAME" />, todas las apps y sitios web con el permiso de ubicación y ChromeOS usen la ubicación del Wi-Fi y las redes móviles.</translation>
 <translation id="1017556409696559990">Minimizar la ventana superior cuando no hay historial del botón Atrás en Chrome</translation>
 <translation id="1024364763893396229">Guarda tu <ph name="NAME" /></translation>
 <translation id="1032891413405719768">El nivel de la batería de la pluma stylus está bajo</translation>
@@ -147,6 +148,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1651914502370159744">Abrir la página del Historial</translation>
 <translation id="1654477262762802994">Iniciar una búsqueda por voz</translation>
 <translation id="1668469839109562275">VPN integrada</translation>
+<translation id="1675844249244994876">Actualizar la ventana de la derecha</translation>
 <translation id="1677472565718498478">Tiempo restante <ph name="TIME" /></translation>
 <translation id="1677507110654891115">No se conectó <ph name="FEATURE_NAME" />.</translation>
 <translation id="1677582821739292812">Alguien más está viendo tu pantalla</translation>
@@ -191,6 +193,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Activar el acceso a la ubicación</translation>
 <translation id="1830308660060964064">Se dejó de fijar <ph name="ITEM_TITLE" /></translation>
 <translation id="1838895407229022812">La luz nocturna está apagada.</translation>
 <translation id="1854180393107901205">Detener transmisión</translation>
@@ -365,7 +368,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2726420622004325180">Tu teléfono debe tener los datos móviles activados para proporcionar un hotspot.</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conexión a un cargador de baja potencia. Es posible que la carga de la batería no sea confiable.</translation>
-<translation id="2740531572673183784">Aceptar</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Borrar"</translation>
 <translation id="2750941250130734256">Se desancló la ventana activa.</translation>
@@ -468,6 +470,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3255483164551725916">¿Qué puedes hacer?</translation>
 <translation id="3256109297135787951">Dejar de destacar un elemento en la biblioteca</translation>
 <translation id="3260969790895726815">La voz se procesa de manera local y el dictado funciona sin conexión, pero algunos comandos por voz no funcionarán.</translation>
+<translation id="3265032511221679826">¿Quieres activar el acceso a la ubicación precisa?</translation>
 <translation id="3269597722229482060">Hacer clic con el botón derecho</translation>
 <translation id="3289364673986435196">Menú de encendido</translation>
 <translation id="3289544412142055976">Por el momento, las apps de Linux no son compatibles</translation>
@@ -578,6 +581,7 @@ Conecta tu dispositivo a la corriente.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, usuario administrado</translation>
 <translation id="3666266999138159418">Desliza para ocultar la ventana flotante</translation>
 <translation id="367531336287639526">Seleccionar el primer ícono a la izquierda de la barra de direcciones</translation>
+<translation id="3677931086890821290">Esto permite que todas las apps y sitios web con el permiso de ubicación y ChromeOS usen la ubicación del Wi-Fi y las redes móviles.</translation>
 <translation id="3679827876008292680">Ir a la última pestaña en la ventana</translation>
 <translation id="36813544980941320">Se compartirán las redes Wi-Fi entre tu teléfono y tu <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Sitios web</translation>
@@ -845,6 +849,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="493076006037866439">Alejar la pantalla</translation>
 <translation id="4936329710968938986">Todos, desactivado</translation>
 <translation id="4938176435186993759">Ocultar todas las sugerencias</translation>
+<translation id="4943007472417128747">Se desactivó el hotspot para usar la conexión Wi-Fi. Para usar el hotspot, desactiva la conexión Wi-Fi.</translation>
 <translation id="4945196315133970626">Desactivar las notificaciones</translation>
 <translation id="4946376291507881335">Captura</translation>
 <translation id="495046168593986294">Desplazar hacia arriba</translation>
@@ -1389,6 +1394,7 @@ Nueva instalación</translation>
 Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation>
 <translation id="7526573455193969409">Es posible que la red esté supervisada</translation>
 <translation id="7536035074519304529">Dirección IP: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Actualizar la ventana de la izquierda</translation>
 <translation id="7543399541175347147">Por el momento, las apps de Linux y las ventanas de incógnito no son compatibles. Se guardarán las demás apps.</translation>
 <translation id="7544300628205093162">La retroiluminación del teclado está activada</translation>
 <translation id="7548434653388805669">Es hora de ir a la cama</translation>
@@ -1469,6 +1475,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7893503627044934815">No quiero ver este archivo</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Presionaste la combinación de teclas para girar la pantalla. ¿Quieres llevar a cabo esta acción?</translation>
+<translation id="7901190436359881020">Intercambiar las ventanas</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Toca el sensor de huellas dactilares</translation>
 <translation id="7904094684485781019">El administrador de esta cuenta inhabilitó el acceso múltiple.</translation>
@@ -1744,6 +1751,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="9198992156681343238">Se cambió la resolución de <ph name="DISPLAY_NAME" /> a <ph name="RESOLUTION" />. Para mantener este cambio, haz clic en Confirmar. En <ph name="TIMEOUT_SECONDS" />, se restablecerá la configuración anterior.</translation>
 <translation id="9201044636667689546">Conecta el dispositivo <ph name="NAME" /> con esta Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, administrada por tu administrador</translation>
+<translation id="9207682216934703221">Esto permite que <ph name="APP_NAME" />, <ph name="APP2_NAME" />, todas las apps y los sitios web con el permiso de ubicación y ChromeOS usen la ubicación del Wi-Fi y las redes móviles.</translation>
 <translation id="9210037371811586452">Saliendo del modo de escritorio unificado</translation>
 <translation id="9211490828691860325">Todos los escritorios</translation>
 <translation id="9211681782751733685">Tiempo restante hasta que se cargue por completo la batería: <ph name="TIME_REMAINING" /></translation>

@@ -2195,7 +2195,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2844169650293029770">Appareil USB de type C (port situé sur la gauche de l'appareil, à l'avant)</translation>
 <translation id="2844809857160214557">Afficher et gérer les tâches d'impression</translation>
 <translation id="2845382757467349449">Toujours afficher la barre de favoris</translation>
-<translation id="2845751331501453107">Lorsque vous naviguez, la personnalisation des annonces dépend de ce paramètre, des <ph name="BEGIN_LINK1" />annonces suggérées par les sites<ph name="LINK_END1" />, des <ph name="BEGIN_LINK2" />paramètres des cookies<ph name="LINK_END2" /> et de si le site que vous consultez personnalise les annonces</translation>
+<translation id="2845751331501453107">Le fait que vous voyiez ou non des annonces personnalisées lorsque vous naviguez sur Internet dépend de ce paramètre, des <ph name="BEGIN_LINK1" />annonces suggérées par les sites<ph name="LINK_END1" />, de vos <ph name="BEGIN_LINK2" />paramètres relatifs aux cookies<ph name="LINK_END2" /> et du comportement du site que vous consultez en matière de personnalisation</translation>
 <translation id="284581348330507117">Créez des mots de passe uniques</translation>
 <translation id="284805635805850872">Supprimer le logiciel malveillant ?</translation>
 <translation id="2849035674501872372">Rechercher</translation>
@@ -2722,6 +2722,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3336855445806447827">Je ne sais pas.</translation>
 <translation id="3337568642696914359">Ne pas autoriser les sites à gérer des protocoles</translation>
 <translation id="3340620525920140773">Téléchargement terminé : <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">paramètres</translation>
 <translation id="3341699307020049241">Code incorrect. Il vous reste <ph name="RETRIES" /> tentatives.</translation>
 <translation id="3341703758641437857">Autoriser l'accès aux URL de fichier</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" souhaite supprimer cette extension.</translation>
@@ -3020,6 +3021,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3609277884604412258">Recherche rapide</translation>
 <translation id="3610241585790874201">Non autorisés à enregistrer des données sur votre appareil</translation>
 <translation id="3610369246614755442">Le ventilateur de la station doit être réparé</translation>
+<translation id="3610961622607302617">Modifier le mot de passe pour <ph name="WEBSITE" /></translation>
 <translation id="361106536627977100">Données Flash</translation>
 <translation id="3611655097742243705">Accédez au Play Store pour trouver des applis</translation>
 <translation id="3611658447322220736">Les sites fermés récemment peuvent terminer l'envoi et la réception de données</translation>
@@ -4951,6 +4953,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5338503421962489998">Stockage local</translation>
 <translation id="5339031667684712858">Sites que vous avez supprimés</translation>
 <translation id="5340638867532133571">Autoriser les sites à installer des gestionnaires de paiement (recommandé)</translation>
+<translation id="5340787663756381836">&amp;Rechercher et modifier</translation>
 <translation id="5341793073192892252">Les cookies suivants ont été bloqués (tous les cookies tiers sont bloqués, sans exception)</translation>
 <translation id="5342091991439452114">Le code doit comprendre au moins <ph name="MINIMUM" /> chiffres</translation>
 <translation id="5344036115151554031">Restauration de Linux…</translation>
@@ -5575,6 +5578,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5904614460720589786">Impossible d'installer <ph name="APP_NAME" /> en raison d'un problème de configuration. Veuillez contacter votre administrateur. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Mise à jour presque terminée. Pour la finaliser, veuillez redémarrer votre appareil.</translation>
 <translation id="5906732635754427568">Les données associées à cette application seront supprimées de cet appareil.</translation>
+<translation id="5906974869830879618">Veuillez saisir un code</translation>
 <translation id="5908474332780919512">Lancer l'application lors de la connexion</translation>
 <translation id="5908695239556627796">Vitesse de défilement avec la souris</translation>
 <translation id="5909379458939060601">Supprimer ce profil et les données de connexion ?</translation>
@@ -6041,6 +6045,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6318125393809743217">Ajouter un fichier policies.json avec des configurations de règles.</translation>
 <translation id="6318407754858604988">Le téléchargement a commencé</translation>
 <translation id="6318944945640833942">Impossible de détecter l'imprimante. Veuillez saisir à nouveau son adresse.</translation>
+<translation id="6320808462673705899">Aucun favori ne correspond à votre recherche.</translation>
 <translation id="6322370287306604163">Déverrouiller plus vite avec votre empreinte</translation>
 <translation id="6322559670748154781">N'étant pas souvent téléchargé, ce fichier a été bloqué par la Protection Avancée.</translation>
 <translation id="6324916366299863871">Modifier le raccourci</translation>
@@ -6963,6 +6968,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7139627972753429585"><ph name="APP_NAME" /> utilise votre micro</translation>
 <translation id="7141105143012495934">Échec de la connexion, car il est impossible de récupérer les informations relatives à votre compte. Veuillez contacter votre administrateur ou réessayer.</translation>
 <translation id="7141844554192012199">Check-up</translation>
+<translation id="7143207342074048698">Connexion</translation>
 <translation id="7144878232160441200">Réessayer</translation>
 <translation id="7148426638542880639">Il est possible que les sites ne fonctionnent pas comme prévu. Choisissez cette option si vous ne souhaitez pas conserver d'informations concernant les sites que vous consultez sur votre appareil.</translation>
 <translation id="7149839598364933473">Installez <ph name="DEVICE_OS" /> sur l'appareil.</translation>
@@ -9346,6 +9352,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="939401694733344652">Ces comptes ne sont pas utilisés avec les applis Android actuellement. Si vous sélectionnez un compte à utiliser avec cette appli Android, il pourra également être utilisé avec les autres applis Android. Vous pouvez modifier l'accès des applis Android dans <ph name="LINK_BEGIN" />Paramètres &gt; Comptes<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Saisir la phrase secrète</translation>
 <translation id="939736085109172342">Nouveau dossier</translation>
+<translation id="940212040923880623">&amp;Rechercher et modifier</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> partage un onglet Chrome et un contenu audio.</translation>
 <translation id="944799160843436808">Un problème est survenu lors de la configuration de Steam sur Chromebook</translation>
 <translation id="945522503751344254">Envoyer un commentaire</translation>
@@ -9367,6 +9374,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="964790508619473209">Mode d'affichage de l'écran</translation>
 <translation id="965211523698323809">Envoyez et recevez des SMS depuis votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Signaler un problème avec Google Cast</translation>
+<translation id="966588271015727539">Sélectionner une plage braille Bluetooth</translation>
 <translation id="967398046773905967">N'autoriser aucun site à accéder aux périphériques HID</translation>
 <translation id="967624055006145463">Données stockées</translation>
 <translation id="96774243435178359">Imprimantes gérées</translation>

@@ -148,6 +148,7 @@
 <translation id="1651914502370159744">Відкрити сторінку "Історія"</translation>
 <translation id="1654477262762802994">Ввести голосовий запит</translation>
 <translation id="1668469839109562275">Вбудована мережа VPN</translation>
+<translation id="1675844249244994876">Оновити вікно праворуч</translation>
 <translation id="1677472565718498478">Залишилося <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> не підключено.</translation>
 <translation id="1677582821739292812">Хтось дивиться на ваш екран</translation>
@@ -367,7 +368,6 @@
 <translation id="2726420622004325180">Щоб увімкнути функцію "Точка доступу", на телефоні має бути мобільний Інтернет</translation>
 <translation id="2727175239389218057">Відповісти</translation>
 <translation id="2727977024730340865">Підключено до зарядного пристрою низької потужності. Акумулятор може заряджатися неналежним чином.</translation>
-<translation id="2740531572673183784">OK</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Видалити"</translation>
 <translation id="2750941250130734256">Активне вікно відкріплено.</translation>
@@ -848,6 +848,7 @@
 <translation id="493076006037866439">Віддалити екран</translation>
 <translation id="4936329710968938986">Усі, вимкнено</translation>
 <translation id="4938176435186993759">Приховати всі пропозиції</translation>
+<translation id="4943007472417128747">Точку доступу вимкнено, щоб підключитися до Wi-Fi. Щоб використовувати точку доступу, вимкніть Wi-Fi.</translation>
 <translation id="4945196315133970626">Вимкнути сповіщення</translation>
 <translation id="4946376291507881335">Зробити знімок</translation>
 <translation id="495046168593986294">Прокрутити вгору</translation>
@@ -1071,6 +1072,7 @@
 <translation id="5976112937189445008">Щоб записати вікно, натисніть клавішу Enter</translation>
 <translation id="5978382165065462689">Спільний доступ до екрана через віддалену допомогу.</translation>
 <translation id="5980301590375426705">Закрити сеанс гостя</translation>
+<translation id="5983567367406220847">Точку доступу вимкнено, оскільки ви нею не користувалися.</translation>
 <translation id="598407983968395253">Використати шаблон</translation>
 <translation id="598882571027504733">Щоб завантажити оновлення, перезапустіть Chromebook із під’єднаною клавіатурою.</translation>
 <translation id="6002179289567220515">Ви вимкнули 1 камеру за допомогою фізичного перемикача. Також можна вимкнути доступ для всіх камер.</translation>
@@ -1373,6 +1375,7 @@
 <translation id="7452560014878697800">Додаток використовує вашу камеру</translation>
 <translation id="7453330308669753048">Вилучено з результатів історії пошуку</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> до повного заряду</translation>
+<translation id="7459485586006128091">Точку доступу вимкнено через внутрішню помилку. Спробуйте підключитися за кілька хвилин.</translation>
 <translation id="7461924472993315131">Закріпити</translation>
 <translation id="746232733191930409">Режим запису екрана</translation>
 <translation id="7466449121337984263">Торкніться сканера</translation>
@@ -1392,6 +1395,7 @@
 Щоб завершити роботу, знову утримуйте кнопку живлення на пристрої.</translation>
 <translation id="7526573455193969409">Мережевий трафік може відстежуватися</translation>
 <translation id="7536035074519304529">ІР-адреса: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Оновити вікно ліворуч</translation>
 <translation id="7543399541175347147">Додатки Linux і вікна в режимі анонімного перегляду наразі не підтримуються. Інші додатки буде збережено.</translation>
 <translation id="7544300628205093162">Підсвітку клавіатури ввімкнено</translation>
 <translation id="7548434653388805669">Час спати</translation>
@@ -1445,6 +1449,7 @@
 <translation id="776344839111254542">Натисніть, щоб переглянути деталі оновлення</translation>
 <translation id="7768784765476638775">Читання з екрана</translation>
 <translation id="7769299611924763557">Зображення GIF буде готове незабаром</translation>
+<translation id="7773536009433685931">Увімкнути Wi-Fi</translation>
 <translation id="7780094051999721182">комбінації клавіш</translation>
 <translation id="7780159184141939021">Обернути екран</translation>
 <translation id="7796735576426975947">Нове сповіщення приховано</translation>
@@ -1472,6 +1477,7 @@
 <translation id="7893503627044934815">Не показувати цей файл</translation>
 <translation id="7895348134893321514">Сховище</translation>
 <translation id="7897375687985782769">Ви натиснули комбінацію клавіш для обертання екрана. Обернути?</translation>
+<translation id="7901190436359881020">Поміняти вікна місцями</translation>
 <translation id="7901405293566323524">Телефонний центр</translation>
 <translation id="7902625623987030061">Торкніться сканера відбитків пальців</translation>
 <translation id="7904094684485781019">Адміністратор цього облікового запису заборонив паралельний вхід.</translation>

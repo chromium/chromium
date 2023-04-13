@@ -2721,6 +2721,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3336855445806447827">No ho sé</translation>
 <translation id="3337568642696914359">No permetis que els llocs web gestionin protocols</translation>
 <translation id="3340620525920140773">S'ha completat la baixada: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">configuració</translation>
 <translation id="3341699307020049241">El PIN no és correcte. Et queden <ph name="RETRIES" /> intents.</translation>
 <translation id="3341703758641437857">Permet l'accés als URL de fitxer</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" vol suprimir aquesta extensió.</translation>
@@ -3558,7 +3559,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4047726037116394521">Ves a la pàgina d'inici</translation>
 <translation id="4048384495227695211">Mostra <ph name="FILE_NAME" /> a la carpeta</translation>
 <translation id="404894744863342743">Quan hagis acabat d'utilitzar el fitxer baixat, suprimeix-lo perquè els altres usuaris que fan servir aquest dispositiu no puguin veure les teves contrasenyes.</translation>
-<translation id="4049783682480068824">{COUNT,plural, =1{# contacte no està disponible. Per fer servir la funció Compartició Nearby amb aquest contacte, afegeix als teus contactes l'adreça electrònica associada al seu Compte de Google.}other{# contactes no estan disponibles. Per fer servir la funció Compartició Nearby amb aquests contactes, afegeix als teus contactes les adreces electròniques associades als seus Comptes de Google.}}</translation>
+<translation id="4049783682480068824">{COUNT,plural, =1{# contacte no està disponible. Per fer servir Compartició Nearby amb aquest contacte, afegeix als teus contactes l'adreça electrònica associada al seu Compte de Google.}other{# contactes no estan disponibles. Per fer servir Compartició Nearby amb aquests contactes, afegeix als teus contactes les adreces electròniques associades als seus Comptes de Google.}}</translation>
 <translation id="4050225813016893843">Mètode d'autenticació</translation>
 <translation id="4050534976465737778">Comprova que els dos dispositius estiguin desbloquejats, l'un a prop de l'altre i amb el Bluetooth activat. Si vols compartir fitxers amb un Chromebook que no és als teus contactes, comprova que tingui el mode Visibilitat Nearby activat (obre l'àrea d'estat i, a continuació, activa Visibilitat Nearby). <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Minúscul</translation>
@@ -4951,6 +4952,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5338503421962489998">Emmagatzematge local</translation>
 <translation id="5339031667684712858">Llocs web que has suprimit</translation>
 <translation id="5340638867532133571">Permet que els llocs web instal·lin gestors de pagament (opció recomanada)</translation>
+<translation id="5340787663756381836">&amp;Cerca i edita</translation>
 <translation id="5341793073192892252">S'han bloquejat les galetes següents (totes les galetes de tercers es bloquegen sempre)</translation>
 <translation id="5342091991439452114">El PIN ha de tenir com a mínim <ph name="MINIMUM" /> dígits</translation>
 <translation id="5344036115151554031">S'està restaurant Linux</translation>
@@ -4984,7 +4986,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5372529912055771682">El mode d'inscripció proporcionat no és compatible amb aquesta versió del sistema operatiu. Assegureu-vos que estigueu executant la darrera versió i torneu-ho a provar.</translation>
 <translation id="5372579129492968947">Deixa de fixar l'extensió</translation>
 <translation id="5372632722660566343">Continua sense cap compte</translation>
-<translation id="5375318608039113175">Per fer servir la funció Compartició Nearby amb aquests contactes, afegeix als teus contactes les adreces electròniques enllaçades als seus Comptes de Google.</translation>
+<translation id="5375318608039113175">Per fer servir Compartició Nearby amb aquests contactes, afegeix als teus contactes les adreces electròniques enllaçades als seus Comptes de Google.</translation>
 <translation id="5375577102295339548">Els llocs web poden ajudar a verificar que no ets un bot</translation>
 <translation id="5376094717770783089">Sol·licita accés</translation>
 <translation id="5376169624176189338">Feu clic per tornar enrere o manteniu premut per veure l'historial</translation>
@@ -5573,6 +5575,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5904614460720589786">No s'ha pogut configurar <ph name="APP_NAME" /> a causa d'un problema de configuració. Contacta amb l'administrador. Codi d'error: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Gairebé has acabat amb l'actualització. Reinicia el dispositiu per completar-la.</translation>
 <translation id="5906732635754427568">Les dades associades a aquesta aplicació se suprimiran del dispositiu.</translation>
+<translation id="5906974869830879618">Introdueix un PIN</translation>
 <translation id="5908474332780919512">Obre l'aplicació en iniciar la sessió</translation>
 <translation id="5908695239556627796">Velocitat de desplaçament del ratolí</translation>
 <translation id="5909379458939060601">Vols suprimir aquest perfil i les dades de navegació?</translation>
@@ -5948,7 +5951,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6238923052227198598">Mantén la darrera nota a la pantalla de bloqueig</translation>
 <translation id="6239558157302047471">Torna a carregar el &amp;marc</translation>
 <translation id="6240821072888636753">Pregunta sempre</translation>
-<translation id="6241530762627360640">Accedir a informació sobre els dispositius Bluetooth vinculats al sistema i descobrir dispositius Bluetooth a prop</translation>
+<translation id="6241530762627360640">Accedir a informació sobre els dispositius Bluetooth vinculats al sistema i descobrir dispositius Bluetooth propers</translation>
 <translation id="6241844896329831164">No cal accés</translation>
 <translation id="6242574558232861452">S'està comprovant si es compleixen les polítiques de seguretat de la teva organització.</translation>
 <translation id="6242589501614145408">Restableix la clau de seguretat</translation>
@@ -6959,6 +6962,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7139627972753429585"><ph name="APP_NAME" /> està utilitzant el micròfon</translation>
 <translation id="7141105143012495934">S'ha produït un problema en iniciar la sessió perquè no s'ha pogut recuperar la informació del compte. Contacteu amb l'administrador o torneu a provar-ho.</translation>
 <translation id="7141844554192012199">Comprova</translation>
+<translation id="7143207342074048698">Connectant</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
 <translation id="7148426638542880639">És possible que els llocs web no funcionin de la manera prevista. Tria aquesta opció si no vols deixar al dispositiu informació sobre els llocs web que visites.</translation>
 <translation id="7149839598364933473">Converteix aquest dispositiu en un dispositiu <ph name="DEVICE_OS" />.</translation>
@@ -9342,6 +9346,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="939401694733344652">Ara mateix, aquests comptes no s'utilitzen amb aplicacions d'Android. Si selecciones un compte per fer-lo servir amb aquesta aplicació d'Android, també es pot utilitzar amb altres aplicacions d'Android. Per canviar l'accés a les aplicacions d'Android, ves a <ph name="LINK_BEGIN" />Configuració &gt; Comptes<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Introduïu la frase de contrasenya</translation>
 <translation id="939736085109172342">Carpeta nova</translation>
+<translation id="940212040923880623">&amp;Cerca i edita</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> està compartint una pestanya de Chrome i l'àudio.</translation>
 <translation id="944799160843436808">S'ha produït un problema en configurar Steam a Chromebook</translation>
 <translation id="945522503751344254">Envia suggeriments</translation>
@@ -9363,6 +9368,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="964790508619473209">Disposició de la pantalla</translation>
 <translation id="965211523698323809">Envia i rep missatges de text amb el dispositiu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Informa d'un problema amb Google Cast</translation>
+<translation id="966588271015727539">Selecciona una pantalla braille amb connexió Bluetooth</translation>
 <translation id="967398046773905967">No permetis que cap lloc web accedeixi als dispositius d'interfície humana</translation>
 <translation id="967624055006145463">Dades emmagatzemades</translation>
 <translation id="96774243435178359">Impressores gestionades</translation>

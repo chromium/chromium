@@ -107,6 +107,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="1493287004536771723">Vous suivez <ph name="SITE_NAME" /></translation>
 <translation id="1502010315804028179">Mettez à jour les services Google Play pour gérer vos mots de passe</translation>
 <translation id="1506061864768559482">Moteur de recherche</translation>
+<translation id="1508960385613684700"><ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /> Guide sur la confidentialité</translation>
 <translation id="1513352483775369820">Favoris et historique Web</translation>
 <translation id="1513814250881909472">Synchronisez vos données pour ajouter vos onglets de vos autres appareils</translation>
 <translation id="1513858653616922153">Supprimer le mot de passe</translation>
@@ -161,6 +162,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="1910950723001426294">La liste d'options de partage est fermée.</translation>
 <translation id="1919130412786645364">Autoriser la connexion à Google Chrome</translation>
 <translation id="1922362554271624559">Langues suggérées</translation>
+<translation id="1924255092154549435">L'onglet est développé</translation>
 <translation id="1925021887439448749">Entrer une adresse Web personnalisée</translation>
 <translation id="1928696683969751773">Mises à jour</translation>
 <translation id="19288952978244135">Rouvrir Chrome.</translation>
@@ -769,6 +771,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5161254044473106830">Titre requis</translation>
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
 <translation id="5171045022955879922">Effectuez une recherche ou entrez une adresse URL</translation>
+<translation id="5174700554036517242">L'onglet est revenu à la hauteur initiale</translation>
 <translation id="5184329579814168207">Ouvrir dans Chrome</translation>
 <translation id="5191251636205085390">Découvrez les nouvelles technologies qui visent à remplacer les témoins tiers et apprenez à les utiliser.</translation>
 <translation id="5193988420012215838">Copié dans votre presse-papier</translation>
@@ -1251,6 +1254,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7686086654630106285">En savoir plus sur les annonces suggérées par les sites</translation>
 <translation id="768618399695552958">Certaines des pages que vous visitez sont préchargées. Les pages peuvent être préchargées par les serveurs de Google lorsqu'elles sont associées à un site Google.</translation>
 <translation id="7691043218961417207">Explorer le contenu à suivre</translation>
+<translation id="7697383401610880082">Poignée de déplacement</translation>
 <translation id="7698359219371678927">Créer un courriel dans <ph name="APP_NAME" /></translation>
 <translation id="7707922173985738739">Utiliser les données mobiles</translation>
 <translation id="7709094866268987903">Les centres d'intérêt que vous avez retirés seront affichés ici</translation>

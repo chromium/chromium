@@ -364,6 +364,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1801812870656502108">Details der virtuellen Karte</translation>
 <translation id="1803020234906945288">Gesunde Ernährung</translation>
 <translation id="1803351196216024260">Darf nachfragen, wenn sie mein Mikrofon verwenden möchte</translation>
+<translation id="1806174020048213474">Diese App fordert die Berechtigung zum Installieren von WLAN-Anmeldedaten an. Nach der Einrichtung stellt <ph name="DEVICE_TYPE" /> automatisch eine Verbindung zu beteiligten WLANs her. Deinstalliere die App, um diese Anmeldedaten zu entfernen.</translation>
 <translation id="1807246157184219062">Hell</translation>
 <translation id="1807528111851433570">Startblatt</translation>
 <translation id="180991881384371158">Der CVC befindet sich auf der Rückseite deiner Karte. Er besteht aus den letzten drei Ziffern rechts oben über dem Unterschriftenfeld.</translation>
@@ -1067,7 +1068,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3631244953324577188">Biometrisches Verfahren</translation>
 <translation id="3632503704576938756">Bildschirmfreigabe fortgesetzt</translation>
 <translation id="3632892046558972264">Bildschirmfreigabe pausiert</translation>
-<translation id="3633035844150606508">Adresse im Google-Konto <ph name="ACCOUNT" /> speichern</translation>
 <translation id="3633738897356909127">Schaltfläche „Chrome aktualisieren“ – drücke die Eingabetaste, um Chrome über die Chrome-Einstellungen zu aktualisieren</translation>
 <translation id="3634530185120165534">Fach 5</translation>
 <translation id="3634567936866541746">Du hast dein Passwort gerade auf einer verdächtigen Seite eingegeben. Chrome empfiehlt, deine gespeicherten Passwörter zu überprüfen, um deine Konten besser zu schützen.</translation>
@@ -1334,6 +1334,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4270541775497538019">Stapelfach 6</translation>
 <translation id="4274173425554582601">Computer und Elektronik</translation>
 <translation id="4275830172053184480">Gerät neu starten</translation>
+<translation id="4276974990916607331">Nein danke</translation>
 <translation id="4277028893293644418">Passwort zurücksetzen</translation>
 <translation id="4277937682389409325">Lokale Adresse</translation>
 <translation id="4278390842282768270">Zugelassen</translation>
@@ -1694,6 +1695,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5129534298163637277">Bestätigungsdialogfeld</translation>
 <translation id="5135404736266831032">Adressen verwalten…</translation>
 <translation id="5136841603454277753">Richtigen Code eingeben</translation>
+<translation id="5137761395480718572">Diese App fordert die Berechtigung zum Installieren von WLAN-Anmeldedaten an. Nach der Einrichtung stellt <ph name="DEVICE_TYPE" /> automatisch eine Verbindung zu beteiligten WLANs her. Deinstalliere die App, um diese Anmeldedaten zu entfernen. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Die virtuelle Karte ist zurzeit nicht verfügbar, bitte kontaktiere deine Bank</translation>
 <translation id="5138227688689900538">Weniger anzeigen</translation>
 <translation id="5145883236150621069">Fehlercode in der Richtlinienantwort</translation>
@@ -1734,6 +1736,8 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5234764350956374838">Schließen</translation>
 <translation id="5239623327352565343">Berechtigung zur Standortermittlung gewährt</translation>
 <translation id="5242889659037569123">Gepäck und Reisezubehör</translation>
+<translation id="5244732203286792411">Wird geladen…
+    Dies kann einen Moment dauern.</translation>
 <translation id="5250209940322997802">"Mit Netzwerk verbinden"</translation>
 <translation id="52517543715119994">Informationen zu Chrome-Funktionen</translation>
 <translation id="5251803541071282808">Cloud</translation>
@@ -1748,6 +1752,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5273881944177595304">Web-Apps und Onlinetools</translation>
 <translation id="5274025349362408263">Bücher und Literatur</translation>
 <translation id="5279286380302340275">Downloads verwalten</translation>
+<translation id="5279453600310613955">Nein danke</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Dokumenteigenschaften</translation>
 <translation id="528468243742722775">Ende</translation>
@@ -2240,6 +2245,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6529173248185917884">Siebte Rolle</translation>
 <translation id="6529602333819889595">&amp;Löschen wiederholen</translation>
 <translation id="6535751101619004418">Währungen und Devisenkurse</translation>
+<translation id="6536221421038631327">Wenn du ein Passpoint-Abo von deinem <ph name="DEVICE_TYPE" /> entfernst, werden auch die zugehörigen Netzwerke entfernt. Wende dich an „<ph name="FRIENDLY_NAME" />“, um Änderungen an deinem Abo vorzunehmen. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">Anlagefonds</translation>
 <translation id="6545864417968258051">Bluetooth-Suche</translation>
 <translation id="6547208576736763147">Doppelte Lochung links</translation>
@@ -3337,6 +3343,7 @@ Weitere Details:
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="922152298093051471">Chrome anpassen</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">Der <ph name="APP_NAME" /> App erlauben, WLANs einzurichten?</translation>
 <translation id="936602727769022409">Du könntest den Zugriff auf dein Google-Konto verlieren. Chromium empfiehlt dir, dein Passwort jetzt zu ändern. Du wirst dazu aufgefordert, dich anzumelden.</translation>
 <translation id="937457230470581909">Zoos, Aquarien und Parks</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Folgende Daten werden verwendet<ph name="END_BOLD" />: Deine Werbethemen basieren auf deinem aktuellen Browserverlauf, also einer Liste der Websites, die du auf diesem Gerät in Chrome besucht hast.</translation>

@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Yang berikut ialah beberapa sumber lain yang berguna:</translation>
 <translation id="1905710495812624430">Melebihi had maksimum percubaan yang dibenarkan.</translation>
 <translation id="1908234395526491708">Kegagalan permintaan UDP</translation>
+<translation id="1923388006036088459">Warna aksen</translation>
 <translation id="1947737735496445907">Dicetak</translation>
 <translation id="1951012854035635156">Pembantu</translation>
 <translation id="1962550982027027473">APN lalai diperlukan</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Muat turun selesai</translation>
 <translation id="3969602104473960991">Kata laluan Chrome OS dikemas kini</translation>
 <translation id="397105322502079400">Mengira...</translation>
+<translation id="3974175076798940554">Aset Chromebook Plus yang eksklusif kini tersedia</translation>
 <translation id="39823212440917567">Tugas cetak yang melebihi <ph name="NUMBER_OF_DAYS" /> hari akan dialih keluar</translation>
 <translation id="3993704782688964914">Kini <ph name="DEVICE_NAME" /> anda terkini</translation>
 <translation id="4003384961948020559">Gagal - Output penuh</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">Tambahkan akaun untuk berbilang log masuk. Semua akaun dilog masuk boleh diakses tanpa kata laluan, jadi ciri ini mesti digunakan dengan akaun yang dipercayai sahaja.</translation>
 <translation id="8364946094152050673">Pelayan tiada nama</translation>
 <translation id="8372477600026034341">Hos tambahan</translation>
+<translation id="8373046809163484087">Gunakan set warna yang sepadan dengan hiasan latar anda</translation>
 <translation id="8380114448424469341">Dokkan tetingkap pada separuh bahagian sebelah <ph name="DIRECTION" /> skrin</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> ini diurus perusahaan</translation>
 <translation id="8398927464629426868">Kadar pengecasan atau penyahcasan semasa peranti</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">Nama pengguna</translation>
 <translation id="8503836310948963452">Hanya beberapa minit lagi…</translation>
 <translation id="8508640263392900755">Butiran APN</translation>
+<translation id="8522687886059337719">Kini anda mempunyai akses kepada <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />hiasan latar<ph name="END_LINK_WALLPAPER_SUBPAGE" /> dan <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />penyelamat skrin<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> yang baharu</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Pembawa anda mungkin memerlukan pilihan ini untuk menyambung kepada rangkaian mereka. Hubungi pembawa anda untuk mendapatkan butiran.</translation>

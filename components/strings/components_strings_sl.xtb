@@ -364,6 +364,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1801812870656502108">Podrobnosti o navidezni kartici</translation>
 <translation id="1803020234906945288">Zdrava prehrana</translation>
 <translation id="1803351196216024260">Lahko zahteva uporabo mikrofona.</translation>
+<translation id="1806174020048213474">Ta aplikacija zahteva dovoljenje za namestitev poverilnic za Wi-Fi. Po nastavitvi se bo naprava <ph name="DEVICE_TYPE" /> samodejno povezala z vključenimi omrežji Wi-Fi. Če želite odstraniti te poverilnice, odmestite aplikacijo.</translation>
 <translation id="1807246157184219062">Svetlo</translation>
 <translation id="1807528111851433570">Začetni list</translation>
 <translation id="180991881384371158">CVC je na hrbtni strani kartice. To so zadnje tri številke v zgornjem desnem kotu polja s podpisom.</translation>
@@ -1069,7 +1070,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3631244953324577188">Biometrika</translation>
 <translation id="3632503704576938756">Deljenje zaslona se nadaljuje</translation>
 <translation id="3632892046558972264">Deljenje zaslona je začasno zaustavljeno</translation>
-<translation id="3633035844150606508">Shrani naslov v račun Google, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Gumb za posodobitev Chroma, pritisnite Enter, če želite posodobiti Chrome v Chromovih nastavitvah</translation>
 <translation id="3634530185120165534">Pladenj 5</translation>
 <translation id="3634567936866541746">Pravkar ste vnesli geslo na zavajajočem spletnem mestu. Chrome zaradi zaščite računov priporoča, da preverite shranjena gesla.</translation>
@@ -1336,6 +1336,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4270541775497538019">Zlagalnik 6</translation>
 <translation id="4274173425554582601">Računalniki in elektronika</translation>
 <translation id="4275830172053184480">Znova zaženite napravo.</translation>
+<translation id="4276974990916607331">Ne, hvala</translation>
 <translation id="4277028893293644418">Ponastavi geslo</translation>
 <translation id="4277937682389409325">Lokalni naslov</translation>
 <translation id="4278390842282768270">Dovoljeno</translation>
@@ -1696,6 +1697,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5129534298163637277">Pogovorno okno za potrditev</translation>
 <translation id="5135404736266831032">Upravljanje naslovov ...</translation>
 <translation id="5136841603454277753">Vnesite ustrezno kodo.</translation>
+<translation id="5137761395480718572">Ta aplikacija zahteva dovoljenje za namestitev poverilnic za Wi-Fi. Po nastavitvi se bo naprava <ph name="DEVICE_TYPE" /> samodejno povezala z vključenimi omrežji Wi-Fi. Če želite odstraniti te poverilnice, odmestite aplikacijo. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Virtualna kartica trenutno ni na voljo. Obrnite se na banko.</translation>
 <translation id="5138227688689900538">Pokaži manj</translation>
 <translation id="5145883236150621069">Koda napake v odzivu pravilnika</translation>
@@ -1752,6 +1754,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5273881944177595304">Spletni programi in orodja</translation>
 <translation id="5274025349362408263">Knjige in literatura</translation>
 <translation id="5279286380302340275">Upravljanje prenosov</translation>
+<translation id="5279453600310613955">Ne, hvala</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Lastnosti dokumenta</translation>
 <translation id="528468243742722775">Konec</translation>
@@ -1790,6 +1793,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5344579389779391559">Ta stran vam bo morda poskusila kaj zaračunati</translation>
 <translation id="5347645913823149105">Gumb za prilagajanje pisav v Chromu, pritisnite Enter, če želite prilagoditi velikosti pisav in tipografije v Chromu.</translation>
 <translation id="5355557959165512791">Spletnega mesta <ph name="SITE" /> trenutno ni mogoče obiskati, saj je to potrdilo preklicano. Napake omrežja in napadi na omrežje so običajno začasni, zato bo ta stran verjetno delovala pozneje.</translation>
+<translation id="5356345925629253198">Shranjene naslove lahko uporabite v Googlovih izdelkih. Ta naslov bo shranjen v računu Google (<ph name="ACCOUNT" />).</translation>
 <translation id="5357848622083956825">Vizualna umetnost in oblikovanje</translation>
 <translation id="536296301121032821">Nastavitev pravilnika ni bilo mogoče shraniti</translation>
 <translation id="5363309033720083897">Serijska vrata, ki jih dovoli skrbnik</translation>
@@ -2245,6 +2249,7 @@ Poleg tega lahko v nastavitvah Chroma kadar koli blokirate, da bi spletno mesto 
 <translation id="6529173248185917884">Kolut 7</translation>
 <translation id="6529602333819889595">&amp;Uveljavi izbris</translation>
 <translation id="6535751101619004418">Valute in devizno poslovanje</translation>
+<translation id="6536221421038631327">Če iz naprave <ph name="DEVICE_TYPE" /> odstranite naročnino na Passpoint, boste odstranili povezana omrežja. Če želite spremeniti naročniško pogodbo, se obrnite na »<ph name="FRIENDLY_NAME" />«. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">Vzajemni skladi</translation>
 <translation id="6545864417968258051">Iskanje naprav Bluetooth</translation>
 <translation id="6547208576736763147">Dvojno luknjanje na levi</translation>
@@ -3340,6 +3345,7 @@ Dodatne podrobnosti:
 <translation id="9219103736887031265">Slike</translation>
 <translation id="922152298093051471">Prilagodi Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">Želite aplikaciji <ph name="APP_NAME" /> dovoliti, da nastavi omrežja Wi-Fi?</translation>
 <translation id="936602727769022409">Izgubite lahko dostop do Google Računa. Chromium priporoča, da spremenite geslo. Pozvani boste, da se prijavite.</translation>
 <translation id="937457230470581909">Živalski vrti, akvariji in rezervati</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Kateri podatki se uporabljajo:<ph name="END_BOLD" /> Teme oglasov temeljijo na nedavni zgodovini brskanja, seznamu spletnih mest, ki ste jih obiskali s Chromom v tej napravi.</translation>

@@ -368,7 +368,6 @@
 <translation id="2726420622004325180">За да предостави точка за достъп, телефонът ви трябва да има мобилни данни</translation>
 <translation id="2727175239389218057">Отговор</translation>
 <translation id="2727977024730340865">Използва се зарядно устройство с малка мощност. Зареждането на батерията може да не е надеждно.</translation>
-<translation id="2740531572673183784">OK</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">„Delete“</translation>
 <translation id="2750941250130734256">Активният прозорец е отделен.</translation>
@@ -1073,6 +1072,7 @@
 <translation id="5976112937189445008">Натиснете Enter за записване на прозореца</translation>
 <translation id="5978382165065462689">Споделяте контрола върху екрана си чрез отдалечено съдействие.</translation>
 <translation id="5980301590375426705">Изход като гост</translation>
+<translation id="5983567367406220847">Точката за достъп е изключена поради неактивност.</translation>
 <translation id="598407983968395253">Използване на шаблон</translation>
 <translation id="598882571027504733">За да инсталирате актуализацията, рестартирайте своя Chromebook, докато клавиатурата е прикачена.</translation>
 <translation id="6002179289567220515">Използвахте физическия превключвател, за да изключите 1 камера. Можете също да забраните достъпа до всички камери.</translation>
@@ -1375,6 +1375,7 @@
 <translation id="7452560014878697800">Приложение използва камерата ви</translation>
 <translation id="7453330308669753048">Резултатът от историята на търсенията бе премахнат</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> до пълно зареждане</translation>
+<translation id="7459485586006128091">Точката за достъп бе изключена поради вътрешна грешка. Опитайте да се свържете отново след няколко минути.</translation>
 <translation id="7461924472993315131">Фиксиране</translation>
 <translation id="746232733191930409">Режим за записване на екрана</translation>
 <translation id="7466449121337984263">Моля, докоснете сензора</translation>
@@ -1448,6 +1449,7 @@
 <translation id="776344839111254542">Кликнете, за да видите подробности за актуализацията</translation>
 <translation id="7768784765476638775">Прочитане на глас</translation>
 <translation id="7769299611924763557">GIF файлът ви ще бъде готов скоро</translation>
+<translation id="7773536009433685931">Включване на Wi-Fi вместо това</translation>
 <translation id="7780094051999721182">преки пътища</translation>
 <translation id="7780159184141939021">Завъртане на екрана</translation>
 <translation id="7796735576426975947">Скрито е ново известие</translation>

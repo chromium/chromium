@@ -2148,6 +2148,7 @@
 <translation id="2804043232879091219">વૈકલ્પિક બ્રાઉઝર ખોલી શકાયું નથી</translation>
 <translation id="2804667941345577550">ખુલ્લા ટૅબ સહિત, આ સાઇટમાંથી તમને સાઇન આઉટ કરવામાં આવશે</translation>
 <translation id="2804680522274557040">કૅમેરા બંધ કર્યો</translation>
+<translation id="2804742109948581745">આજુબાજુમાં</translation>
 <translation id="2805539617243680210">આગળ વધવા માટે તમે સંપૂર્ણ રીતે સજ્જ છો!</translation>
 <translation id="2805646850212350655">Microsoft Encrypting File System</translation>
 <translation id="2805756323405976993">ઍપ</translation>
@@ -2719,6 +2720,7 @@
 <translation id="3336855445806447827">નિશ્ચિત નથી</translation>
 <translation id="3337568642696914359">સાઇટને પ્રોટોકૉલ હૅન્ડલ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="3340620525920140773">ડાઉનલોડ પૂર્ણ થયું: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">સેટિંગ</translation>
 <translation id="3341699307020049241">ખોટો પિન. તમારી પાસે હવે <ph name="RETRIES" /> પ્રયાસ બાકી છે.</translation>
 <translation id="3341703758641437857">URL ફાઇલ કરવા ઍક્સેસની મંજૂરી આપો</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" આ એક્સ્ટેંશનને કાઢી નાખવા માગે છે.</translation>
@@ -4640,6 +4642,7 @@
 <translation id="5056950756634735043">કન્ટેનર સાથે કનેક્ટ કરી રહ્યાં છીએ</translation>
 <translation id="5057110919553308744">તમે એક્સ્ટેંશનને ક્લિક કરો ત્યારે</translation>
 <translation id="5059241099014281248">સાઇન ઇન કરવાનું પ્રતિબંધિત કરો</translation>
+<translation id="5059429103770496207">ડિસ્પ્લેની શૈલી</translation>
 <translation id="5059526285558225588">શું શેર કરવું તે પસંદ કરો</translation>
 <translation id="5060332552815861872">1 પ્રિન્ટર સાચવવા માટે ઉપલબ્ધ છે.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{આ ફોલ્ડર બુકમાર્ક સમાવે છે. શું તમે ખરેખર એને ડિલીટ કરવા માગો છો?}one{આ ફોલ્ડર # બુકમાર્ક સમાવે છે. શું તમે ખરેખર એને ડિલીટ કરવા માગો છો?}other{આ ફોલ્ડર # બુકમાર્ક સમાવે છે. શું તમે ખરેખર એને ડિલીટ કરવા માગો છો?}}</translation>
@@ -4949,6 +4952,7 @@
 <translation id="5338503421962489998">સ્થાનિક સ્ટોરેજ</translation>
 <translation id="5339031667684712858">તમે કાઢી નાખેલી સાઇટ</translation>
 <translation id="5340638867532133571">સાઇટને ચુકવણી હૅન્ડલર ઇન્સ્ટૉલ કરવાની મંજૂરી આપો (સુઝાવ આપીએ છીએ)</translation>
+<translation id="5340787663756381836">&amp;શોધો અને ફેરફાર કરો</translation>
 <translation id="5341793073192892252">નીચેની કુકી બ્લૉક કરવામાં આવી હતી (તૃતીય પક્ષ કુકી, કોઈ પણ અપવાદ સિવાય, બ્લૉક કરવામાં આવી રહી છે)</translation>
 <translation id="5342091991439452114">PIN, ઓછામાં ઓછો <ph name="MINIMUM" /> અંકનો હોવો આવશ્યક છે</translation>
 <translation id="5344036115151554031">Linux રિસ્ટોર કરી રહ્યાં છીએ</translation>
@@ -5573,6 +5577,7 @@
 <translation id="5904614460720589786">ગોઠવણીમાં સમસ્યાને લીધે <ph name="APP_NAME" />ને સેટઅપ કરી શક્યાં નહીં. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">અપ ટૂ ડેટ થવામાં છે! અપડેટ કરવાનું સમાપ્ત કરવા માટે તમારા ઉપકરણને પુનઃપ્રારંભ કરો.</translation>
 <translation id="5906732635754427568">આ ઍપ્લિકેશન સાથે સંકળાયેલ ડેટાને આ ઉપકરણમાંથી દૂર કરવામાં આવશે.</translation>
+<translation id="5906974869830879618">કૃપા કરીને પિન દાખલ કરો</translation>
 <translation id="5908474332780919512">તમે સાઇન ઇન કરો ત્યારે ઍપ શરૂ કરો</translation>
 <translation id="5908695239556627796">માઉસ સ્ક્રોલની ઝડપ</translation>
 <translation id="5909379458939060601">શું આ પ્રોફાઇલ અને બ્રાઉઝિંગ ડેટા ડિલીટ કરીએ?</translation>
@@ -6963,6 +6968,7 @@ USB ડિવાઇસ</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> તમારા માઇક્રોફોનનો ઉપયોગ કરી રહી છે</translation>
 <translation id="7141105143012495934">સાઇન ઇન નિષ્ફળ થયું કારણ કે તમારી એકાઉન્ટ વિગતો પાછી મેળવી શકાઈ નથી. કૃપા કરીને તમારા એડમિનનો સંપર્ક કરો અથવા ફરી પ્રયાસ કરો.</translation>
 <translation id="7141844554192012199">તપાસ</translation>
+<translation id="7143207342074048698">કનેક્ટિંગ</translation>
 <translation id="7144878232160441200">ફરી પ્રયત્ન કરો</translation>
 <translation id="7148426638542880639">સાઇટ કદાચ તમારી અપેક્ષા મુજબ કામ કરશે નહીં. તમે મુલાકાત લો છો તે સાઇટ વિશેની માહિતી જો તમે તમારા ડિવાઇસ પર સાચવવા માગતા ન હો, તો આ વિકલ્પ પસંદ કરો.</translation>
 <translation id="7149839598364933473">આ ડિવાઇસને <ph name="DEVICE_OS" /> ડિવાઇસમાં રૂપાંતરિત કરો.</translation>
@@ -9340,6 +9346,7 @@ USB ડિવાઇસ</translation>
 <translation id="939401694733344652">હાલમાં આ એકાઉન્ટનો ઉપયોગ Android ઍપ સાથે કરવામાં આવી રહ્યો નથી. જો તમે આ Android ઍપ સાથે કોઈ એકાઉન્ટનો ઉપયોગ કરવાનું પસંદ કરો, તો તે એકાઉન્ટનો ઉપયોગ અન્ય Android ઍપ સાથે પણ કરી શકાય છે. તમે <ph name="LINK_BEGIN" />સેટિંગ &gt; એકાઉન્ટ<ph name="LINK_END" />માં જઈને Android ઍપના ઍક્સેસમાં ફેરફાર કરી શકો છો.</translation>
 <translation id="939598580284253335">પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="939736085109172342">નવું ફોલ્ડર</translation>
+<translation id="940212040923880623">&amp;શોધો અને ફેરફાર કરો</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" />, Chrome ટૅબ અને ઑડિઓને શેર કરી રહી છે.</translation>
 <translation id="944799160843436808">Chromebook પર Steam સેટઅપ કરવામાં સમસ્યા આવી છે</translation>
 <translation id="945522503751344254">પ્રતિસાદ મોકલો</translation>
@@ -9361,6 +9368,7 @@ USB ડિવાઇસ</translation>
 <translation id="964790508619473209">સ્ક્રીનની ગોઠવણી</translation>
 <translation id="965211523698323809">તમારી <ph name="DEVICE_TYPE" />માંથી ટેક્સ્ટ મેસેજ મોકલો અને મેળવો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Castમાં આવતી સમસ્યાની જાણ કરો</translation>
+<translation id="966588271015727539">બ્લૂટૂથનું બ્રેઇલ પ્રદર્શન પસંદ કરો</translation>
 <translation id="967398046773905967">કોઈપણ સાઇટને HID ડિવાઇસને ઍક્સેસ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="967624055006145463">સ્ટોર કરેલ ડેટા</translation>
 <translation id="96774243435178359">મેનેજ કરેલા પ્રિન્ટર</translation>

@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">הנה עוד כמה מקורות מידע שימושיים:</translation>
 <translation id="1905710495812624430">חריגה ממספר הניסיונות המרבי המותר.</translation>
 <translation id="1908234395526491708">‏בקשות UDP נכשלו</translation>
+<translation id="1923388006036088459">צבעים משניים</translation>
 <translation id="1947737735496445907">הודפסה</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">‏נדרש APN כברירת מחדל</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
 <translation id="3969602104473960991">‏הסיסמה של ChromeOS עודכנה</translation>
 <translation id="397105322502079400">מתבצע חישוב...</translation>
+<translation id="3974175076798940554">‏עכשיו אפשר לגשת לנכסים בלעדיים של Chromebook Plus</translation>
 <translation id="39823212440917567">משימות הדפסה בנות יותר מ-<ph name="NUMBER_OF_DAYS" /> ימים יוסרו</translation>
 <translation id="3993704782688964914">עכשיו המכשיר <ph name="DEVICE_NAME" /> מעודכן</translation>
 <translation id="4003384961948020559">נכשלה – מגש הפלט מלא</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">יש להוסיף חשבון לכניסה עם מספר חשבונות. כל החשבונות שאליהם נכנסת נגישים ללא סיסמה, לכן יש להשתמש בתכונה זו עם חשבונות אמינים בלבד.</translation>
 <translation id="8364946094152050673">שרתי שמות ריקים</translation>
 <translation id="8372477600026034341">מארחים נוספים</translation>
+<translation id="8373046809163484087">שימוש בקבוצות צבעים שמתאימות לטפט שלך</translation>
 <translation id="8380114448424469341">קיבוע החלון בחצי המסך בצד <ph name="DIRECTION" /></translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> זה מנוהל על ידי ארגון</translation>
 <translation id="8398927464629426868">קצב הטעינה או קצב הפריקה הנוכחיים של המכשיר</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">שם משתמש</translation>
 <translation id="8503836310948963452">רק עוד מספר דקות…</translation>
 <translation id="8508640263392900755">‏פרטי APN</translation>
+<translation id="8522687886059337719">עכשיו יש לך גישה ל<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />טפטים<ph name="END_LINK_WALLPAPER_SUBPAGE" /> חדשים ול<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />שומר מסך<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">ייתכן שהספק שלך ידרוש את האפשרות הזו כדי להתחבר לרשת שלו. למידע נוסף, ניתן לפנות לספק.</translation>

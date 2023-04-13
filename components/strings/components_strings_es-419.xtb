@@ -1070,7 +1070,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3631244953324577188">Biométricos</translation>
 <translation id="3632503704576938756">Se reanudó compartir pantalla</translation>
 <translation id="3632892046558972264">Se pausó compartir pantalla</translation>
-<translation id="3633035844150606508">Guardar la dirección en tu Cuenta de Google, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Botón Actualizar Chrome: presiona Intro para actualizar Chrome desde la configuración del navegador</translation>
 <translation id="3634530185120165534">Bandeja 5</translation>
 <translation id="3634567936866541746">Ingresaste tu contraseña en un sitio engañoso. Para proteger tus cuentas, Chrome te recomienda revisar las contraseñas que tengas guardadas.</translation>
@@ -1737,6 +1736,8 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5234764350956374838">Descartar</translation>
 <translation id="5239623327352565343">Se permite la ubicación</translation>
 <translation id="5242889659037569123">Equipaje y accesorios de viaje</translation>
+<translation id="5244732203286792411">Cargando…
+    Este proceso puede demorar un minuto.</translation>
 <translation id="5250209940322997802">"Conectarse a una red"</translation>
 <translation id="52517543715119994">Más información sobre las funciones de Chrome</translation>
 <translation id="5251803541071282808">Nube</translation>

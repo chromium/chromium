@@ -364,6 +364,7 @@
 <translation id="1801812870656502108">虚拟卡详细信息</translation>
 <translation id="1803020234906945288">健康饮食</translation>
 <translation id="1803351196216024260">可以询问能否使用您的麦克风</translation>
+<translation id="1806174020048213474">此应用请求您授权安装 Wi-Fi 凭据。设置完毕后，您的<ph name="DEVICE_TYPE" />将会自动连接到参与的 Wi-Fi 网络。如需移除这些凭据，请卸载该应用。</translation>
 <translation id="1807246157184219062">浅色调</translation>
 <translation id="1807528111851433570">起始工作表</translation>
 <translation id="180991881384371158">您的银行卡验证码 (CVC) 位于银行卡的背面，即签名框右上角的最后 3 位数字。</translation>
@@ -1065,7 +1066,6 @@
 <translation id="3631244953324577188">生物识别</translation>
 <translation id="3632503704576938756">屏幕共享已恢复</translation>
 <translation id="3632892046558972264">屏幕共享已暂停</translation>
-<translation id="3633035844150606508">将地址保存到您的 Google 帐号 <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">“更新 Chrome”按钮，按 Enter 键即可前往 Chrome 设置以更新 Chrome</translation>
 <translation id="3634530185120165534">纸匣 5</translation>
 <translation id="3634567936866541746">您刚刚在一个诈骗网站中输入了密码。为保护您的帐号安全，Chrome 建议检查您已保存的密码。</translation>
@@ -1332,6 +1332,7 @@
 <translation id="4270541775497538019">堆叠出纸器 6</translation>
 <translation id="4274173425554582601">计算机与电子产品</translation>
 <translation id="4275830172053184480">重启您的设备</translation>
+<translation id="4276974990916607331">不用了</translation>
 <translation id="4277028893293644418">重置密码</translation>
 <translation id="4277937682389409325">本地地址</translation>
 <translation id="4278390842282768270">允许</translation>
@@ -1692,6 +1693,7 @@
 <translation id="5129534298163637277">确认对话框</translation>
 <translation id="5135404736266831032">管理地址…</translation>
 <translation id="5136841603454277753">请输入正确的代码</translation>
+<translation id="5137761395480718572">此应用请求您授权安装 Wi-Fi 凭据。设置完毕后，您的<ph name="DEVICE_TYPE" />将会自动连接到参与的 Wi-Fi 网络。如需移除这些凭据，请卸载该应用。<ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">暂时无法使用虚拟卡，请联系您的发卡行</translation>
 <translation id="5138227688689900538">收起</translation>
 <translation id="5145883236150621069">策略响应中存在错误代码</translation>
@@ -1748,6 +1750,7 @@
 <translation id="5273881944177595304">Web 应用与在线工具</translation>
 <translation id="5274025349362408263">图书与文学</translation>
 <translation id="5279286380302340275">管理下载内容</translation>
+<translation id="5279453600310613955">不用了</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">文档属性</translation>
 <translation id="528468243742722775">结束</translation>
@@ -2239,6 +2242,7 @@
 <translation id="6529173248185917884">第 7 卷</translation>
 <translation id="6529602333819889595">恢复删除(&amp;R)</translation>
 <translation id="6535751101619004418">货币与外汇兑换</translation>
+<translation id="6536221421038631327">从<ph name="DEVICE_TYPE" />移除 Passpoint 订阅后，关联的网络也会一并移除。如需更改订阅方案，请与“<ph name="FRIENDLY_NAME" />”联系。<ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">共同基金</translation>
 <translation id="6545864417968258051">蓝牙扫描</translation>
 <translation id="6547208576736763147">双孔（左侧）</translation>
@@ -3335,6 +3339,7 @@
 <translation id="9219103736887031265">图片</translation>
 <translation id="922152298093051471">自定义 Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">要允许“<ph name="APP_NAME" />”应用设置 Wi-Fi 网络吗？</translation>
 <translation id="936602727769022409">您可能会无法再访问自己的 Google 帐号。Chromium 建议您立即更改密码。系统会要求您登录。</translation>
 <translation id="937457230470581909">动物园、水族馆与保护区</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />会使用哪些数据<ph name="END_BOLD" />：为确定您的广告主题，系统会使用您近期的浏览记录，即您在此设备上使用 Chrome 访问过的网站的列表。</translation>

@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">हे काही इतर उपयुक्त स्रोत आहेत:</translation>
 <translation id="1905710495812624430">कमाल अनुमती असलेले प्रयत्न ओलांडले.</translation>
 <translation id="1908234395526491708">UDP विनंती पूर्ण करता आली नाही</translation>
+<translation id="1923388006036088459">ॲक्सेंट रंग</translation>
 <translation id="1947737735496445907">प्रिंट केले</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">डीफॉल्ट APN ची आवश्यकता आहे</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">पूर्ण डाउनलोड करा</translation>
 <translation id="3969602104473960991">ChromeOS चा पासवर्ड अपडेट केला आहे</translation>
 <translation id="397105322502079400">गणना करत आहे...</translation>
+<translation id="3974175076798940554">Chromebook Plus साठी खास ॲसेट उपलब्ध आहेत</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> दिवसांपेक्षा जुने प्रिंट जॉब काढून टाकले जातील</translation>
 <translation id="3993704782688964914">तुमचे <ph name="DEVICE_NAME" /> आता अप टू डेट आहे</translation>
 <translation id="4003384961948020559">अयशस्वी झाले - आउटपुट भरले आहे</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">मल्टिपल साइन-इन वर खाते जोडा. सर्व साइन इन केलेल्या खात्यांवर पासवर्डशिवाय प्रवेश केला जाऊ शकतो, म्हणून हे वैशिष्ट्य केवळ विश्वसनीय खात्यांसह वापरले जावे.</translation>
 <translation id="8364946094152050673">रिकामे नेम सर्व्हर</translation>
 <translation id="8372477600026034341">अतिरिक्त होस्ट</translation>
+<translation id="8373046809163484087">तुमच्या वॉलपेपरशी जुळणाऱ्या रंगाचे संच वापरा</translation>
 <translation id="8380114448424469341">स्क्रीनच्या <ph name="DIRECTION" /> अर्ध्या भागात विंडो डॉक करा</translation>
 <translation id="8395584934117017006">हे <ph name="DEVICE_TYPE" /> एंटरप्राइझद्वारे व्यवस्थापित केलेले आहे</translation>
 <translation id="8398927464629426868">ज्या गतीने डिव्हाइस सध्या चार्ज किंवा डिस्चार्ज होत आहे</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">वापरकर्ता नाव</translation>
 <translation id="8503836310948963452">फक्त आणखी काही मिनिटे...</translation>
 <translation id="8508640263392900755">APN शी संबंधित तपशील</translation>
+<translation id="8522687886059337719">तुमच्याकडे आता नवीन <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />वॉलपेपर<ph name="END_LINK_WALLPAPER_SUBPAGE" /> आणि <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />स्क्रीन सेव्हर<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> चा अ‍ॅक्सेस आहे</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">तुमच्या वाहकाला त्यांच्या नेटवर्कशी कनेक्ट करण्यासाठी या पर्यायाची आवश्यकता असू शकते. तपशिलांसाठी तुमच्या वाहकाशी संपर्क साधा.</translation>

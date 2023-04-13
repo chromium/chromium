@@ -107,6 +107,7 @@
 <translation id="1493287004536771723">Го следите <ph name="SITE_NAME" /></translation>
 <translation id="1502010315804028179">За да управувате со вашите лозинки, ажурирајте ги услугите на Google Play</translation>
 <translation id="1506061864768559482">Пребарувач</translation>
+<translation id="1508960385613684700">Водич за приватност <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="1513352483775369820">Обележувачи и веб-историја</translation>
 <translation id="1513814250881909472">Синхронизирајте за да ги преземете картичките од другите уреди</translation>
 <translation id="1513858653616922153">Избриши ја лозинката</translation>
@@ -161,6 +162,7 @@
 <translation id="1910950723001426294">Списокот со опции за споделување е затворен.</translation>
 <translation id="1919130412786645364">Дозволете најавување на Chrome</translation>
 <translation id="1922362554271624559">Предложени јазици</translation>
+<translation id="1924255092154549435">Картичката е проширена</translation>
 <translation id="1925021887439448749">Внесете приспособена веб-адреса</translation>
 <translation id="1928696683969751773">Ажурирања</translation>
 <translation id="19288952978244135">Повторно отворете го Chrome.</translation>
@@ -769,6 +771,7 @@
 <translation id="5161254044473106830">Потребен е наслов</translation>
 <translation id="5170568018924773124">Прикажи во папка</translation>
 <translation id="5171045022955879922">Барај или впиши URL</translation>
+<translation id="5174700554036517242">Картичката е вратена на почетната висина</translation>
 <translation id="5184329579814168207">Отвори во Chrome</translation>
 <translation id="5191251636205085390">Дознајте за новите технологии што имаат за цел да ги заменат колачињата на трети лица и контролирајте ги</translation>
 <translation id="5193988420012215838">Копирано во привремената меморија</translation>
@@ -1251,6 +1254,7 @@
 <translation id="7686086654630106285">Повеќе за реклами предложени од сајтови</translation>
 <translation id="768618399695552958">Некои од страниците што ги посетувате се вчитани однапред. Страниците може да се вчитани однапред преку серверите на Google кога се поврзани од сајт на Google.</translation>
 <translation id="7691043218961417207">Истражете содржини за следење</translation>
+<translation id="7697383401610880082">Рачка за влечење</translation>
 <translation id="7698359219371678927">Создајте е-пошта во <ph name="APP_NAME" /></translation>
 <translation id="7707922173985738739">Ќе користи мобилен интернет</translation>
 <translation id="7709094866268987903">Интересите што сте ги отстраниле ќе се појават тука</translation>

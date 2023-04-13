@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">यहाँ केही अन्य उपयोगी स्रोतहरू दिइएका छन्:</translation>
 <translation id="1905710495812624430">अनुमति दिइएका प्रयासहरूको अधिकतम संख्या नाघ्यो।</translation>
 <translation id="1908234395526491708">UDP सम्बन्धी अनुरोध गर्न सकिएन</translation>
+<translation id="1923388006036088459">एक्सेन्ट कलर</translation>
 <translation id="1947737735496445907">प्रिन्ट गरियो</translation>
 <translation id="1951012854035635156">सहायक</translation>
 <translation id="1962550982027027473">डिफल्ट APN अनिवार्य रूपमा अन गर्नु पर्छ</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">डाउनलोड पूर्ण भयो</translation>
 <translation id="3969602104473960991">ChromeOS को पासवर्ड परिवर्तन गरिएको छ</translation>
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
+<translation id="3974175076798940554">Chromebook Plus मा मात्र प्रयोग गर्न मिल्ने एसेटहरू उपलब्ध भएका छन्</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> दिनभन्दा पहिलेका प्रिन्टसम्बन्धी कार्यहरू हटाइने छ</translation>
 <translation id="3993704782688964914">तपाईंको <ph name="DEVICE_NAME" /> अप टु डेट छ</translation>
 <translation id="4003384961948020559">प्रिन्ट गर्न सकिएन - ट्रे भरियो</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">बहुविध साइन-इन को लागि एउटा खाता थप्नुहोस्। सबै साइन-इन भएका खाताहरू पासवर्ड विना नै पहुँच गर्न सकिन्छ, त्यसैले यो सुविधा विश्वसनीय खाताहरूसँग मात्रै प्रयोग गर्नुपर्छ।</translation>
 <translation id="8364946094152050673">डोमेन नेम सर्भरहरू खाली छन्</translation>
 <translation id="8372477600026034341">अतिरिक्त होस्टहरू</translation>
+<translation id="8373046809163484087">तपाईंको वालपेपरसँग मिल्ने खालका कलर सेट प्रयोग गर्नुहोस्</translation>
 <translation id="8380114448424469341">विन्डोलाई स्क्रिनको <ph name="DIRECTION" />तिरको आधा भागमा डक गर्नुहोस्</translation>
 <translation id="8395584934117017006">इन्टरप्राइजले यो <ph name="DEVICE_TYPE" /> व्यवस्थापन गर्छ</translation>
 <translation id="8398927464629426868">यन्त्र हाल चार्ज वा डिस्चार्ज भइरहेको दर</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">एक-पटके टेक्स्ट म्यासेज</translation>
 <translation id="8503836310948963452">थप केही मिनेट मात्र पर्खनुहोस्…</translation>
 <translation id="8508640263392900755">APN सम्बन्धी विवरण</translation>
+<translation id="8522687886059337719">तपाईं अब नयाँ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />वालपेपर<ph name="END_LINK_WALLPAPER_SUBPAGE" /> तथा <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />स्क्रिन सेभर<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> प्रयोग गर्न सक्नुहुन्छ</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">तपाईंको मोबाइल सेवा प्रदायकले सो सेवा प्रदायकको नेटवर्कमा कनेक्ट गर्न सकोस् भन्नाका लागि तपाईंले यो विकल्प अन गर्नु पर्ने हुन सक्छ। यससम्बन्धी थप जानकारी प्राप्त गर्न आफ्नो मोबाइल सेवा प्रदायकलाई सम्पर्क गर्नुहोस्।</translation>

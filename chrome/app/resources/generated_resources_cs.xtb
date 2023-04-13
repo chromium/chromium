@@ -2723,6 +2723,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3336855445806447827">Nevím</translation>
 <translation id="3337568642696914359">Nepovolovat webům zpracovávat protokoly</translation>
 <translation id="3340620525920140773">Stažení bylo dokončeno: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">nastavení</translation>
 <translation id="3341699307020049241">Nesprávný PIN. Zbývá pokusů: <ph name="RETRIES" /></translation>
 <translation id="3341703758641437857">Umožnit přístup k adresám URL souborů</translation>
 <translation id="3342361181740736773">Rozšíření „<ph name="TRIGGERING_EXTENSION_NAME" />“ chce toto rozšíření odstranit.</translation>
@@ -4094,6 +4095,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4545759655004063573">Nelze uložit kvůli nedostatečným oprávněním. Uložte prosím soubor do jiného umístění.</translation>
 <translation id="4546308221697447294">Pohybujte se na internetu rychle pomocí prohlížeče Google Chrome</translation>
 <translation id="4546345569117159016">Pravé tlačítko</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> chce používat toto rozšíření:</translation>
 <translation id="4546692474302123343">Hlasový vstup Asistenta Google</translation>
 <translation id="4547659257713117923">Žádné karty z jiných zařízení</translation>
 <translation id="4547672827276975204">Nastavit automaticky</translation>
@@ -4951,6 +4953,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5338503421962489998">Místní úložiště</translation>
 <translation id="5339031667684712858">Odstraněné weby</translation>
 <translation id="5340638867532133571">Povolit webům instalovat obslužné nástroje pro platby (doporučeno)</translation>
+<translation id="5340787663756381836">&amp;Najít a upravit</translation>
 <translation id="5341793073192892252">Následující soubory cookie byly zablokovány (soubory cookie třetí strany jsou blokovány bez výjimky)</translation>
 <translation id="5342091991439452114">Minimální počet číslic v kódu PIN: <ph name="MINIMUM" /></translation>
 <translation id="5344036115151554031">Obnovení Linuxu</translation>
@@ -5572,6 +5575,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5904614460720589786">Nastavení aplikace <ph name="APP_NAME" /> se kvůli problému s konfigurací nezdařilo. Obraťte se na administrátora. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Aktualizace je téměř hotova! Dokončíte ji restartováním zařízení.</translation>
 <translation id="5906732635754427568">Data přidružená k této aplikaci z tohoto zařízení budou odstraněna.</translation>
+<translation id="5906974869830879618">Zadejte PIN</translation>
 <translation id="5908474332780919512">Spustit aplikaci při přihlášení</translation>
 <translation id="5908695239556627796">Rychlost posouvání myší</translation>
 <translation id="5909379458939060601">Smazat tento profil a údaje o prohlížení?</translation>
@@ -6962,6 +6966,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7139627972753429585">Aplikace <ph name="APP_NAME" /> používá váš mikrofon</translation>
 <translation id="7141105143012495934">Přihlášení selhalo, protože se nepodařilo načíst podrobnosti účtu. Kontaktujte administrátora nebo to zkuste znovu.</translation>
 <translation id="7141844554192012199">Zkontrolovat</translation>
+<translation id="7143207342074048698">Připojování</translation>
 <translation id="7144878232160441200">Opakovat</translation>
 <translation id="7148426638542880639">Weby nemusí fungovat podle očekávání. Tuto možnost vyberte, pokud v zařízení nechcete ponechat informace o webech, které navštěvujete.</translation>
 <translation id="7149839598364933473">Převeďte toto zařízení na systém <ph name="DEVICE_OS" />.</translation>
@@ -9345,6 +9350,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="939401694733344652">Tyto účty se momentálně nepoužívají s aplikacemi pro Android. Pokud vyberete účet k použití s touto aplikací pro Android, bude ho možné používat také s jinými aplikacemi pro Android. Přístup aplikací pro Android můžete změnit v <ph name="LINK_BEGIN" />Nastavení &gt; Účty<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Zadat heslovou frázi</translation>
 <translation id="939736085109172342">Nová složka</translation>
+<translation id="940212040923880623">&amp;Najít a upravit</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> sdílí kartu Chrome a zvuk.</translation>
 <translation id="944799160843436808">Při nastavování Steamu na Chromebooku došlo k problému</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
@@ -9366,6 +9372,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="964790508619473209">Uspořádání obrazovek</translation>
 <translation id="965211523698323809">Odesílejte a přijímejte na zařízení <ph name="DEVICE_TYPE" /> textové zprávy. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Nahlásit problém s Google Cast</translation>
+<translation id="966588271015727539">Vyberte hmatový displej Bluetooth</translation>
 <translation id="967398046773905967">Nepovolovat žádným webům přístup k zařízením HID</translation>
 <translation id="967624055006145463">Uložená data</translation>
 <translation id="96774243435178359">Spravované tiskárny</translation>

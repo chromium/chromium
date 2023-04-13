@@ -364,6 +364,7 @@
 <translation id="1801812870656502108">가상 카드 세부정보</translation>
 <translation id="1803020234906945288">건강한 식생활</translation>
 <translation id="1803351196216024260">마이크 사용을 요청할 수 있음</translation>
+<translation id="1806174020048213474">이 앱에서 Wi-Fi 사용자 인증 정보를 설치할 권한을 요청합니다. 설정이 완료되면 <ph name="DEVICE_TYPE" /> 기기가 제휴 Wi-Fi 네트워크에 자동으로 연결됩니다. 이러한 사용자 인증 정보를 삭제하려면 앱을 제거하세요.</translation>
 <translation id="1807246157184219062">밝게</translation>
 <translation id="1807528111851433570">시작 시트</translation>
 <translation id="180991881384371158">CVC는 카드 뒷면에 있습니다. 서명란 오른쪽 상단의 마지막 3자리 숫자입니다.</translation>
@@ -1069,7 +1070,6 @@
 <translation id="3631244953324577188">생체 인식</translation>
 <translation id="3632503704576938756">화면 공유 재개됨</translation>
 <translation id="3632892046558972264">화면 공유 일시중지됨</translation>
-<translation id="3633035844150606508">Google 계정(<ph name="ACCOUNT" />)에 주소를 저장합니다</translation>
 <translation id="3633738897356909127">Chrome 업데이트 버튼, Chrome 설정에서 Chrome을 업데이트하려면 Enter 누르기</translation>
 <translation id="3634530185120165534">트레이 5</translation>
 <translation id="3634567936866541746">사기성 사이트에 비밀번호를 입력했습니다. 계정을 안전하게 보호하려면 저장된 비밀번호를 확인해 보시기 바랍니다.</translation>
@@ -1336,6 +1336,7 @@
 <translation id="4270541775497538019">스태커 6</translation>
 <translation id="4274173425554582601">컴퓨터 및 전자 제품</translation>
 <translation id="4275830172053184480">기기 다시 시작</translation>
+<translation id="4276974990916607331">나중에</translation>
 <translation id="4277028893293644418">비밀번호 재설정</translation>
 <translation id="4277937682389409325">현지 주소</translation>
 <translation id="4278390842282768270">허용됨</translation>
@@ -1696,6 +1697,7 @@
 <translation id="5129534298163637277">확인 대화상자</translation>
 <translation id="5135404736266831032">주소 관리...</translation>
 <translation id="5136841603454277753">올바른 코드를 입력하세요.</translation>
+<translation id="5137761395480718572">이 앱에서 Wi-Fi 사용자 인증 정보를 설치할 권한을 요청합니다. 설정이 완료되면 <ph name="DEVICE_TYPE" /> 기기가 제휴 Wi-Fi 네트워크에 자동으로 연결됩니다. 이러한 사용자 인증 정보를 삭제하려면 앱을 제거하세요. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">현재 가상 카드를 사용할 수 없습니다. 은행에 문의해 주세요.</translation>
 <translation id="5138227688689900538">간략히</translation>
 <translation id="5145883236150621069">정책 응답에 오류 코드가 포함되어 있음</translation>
@@ -1752,6 +1754,7 @@
 <translation id="5273881944177595304">웹 앱 및 온라인 도구</translation>
 <translation id="5274025349362408263">도서 및 문학</translation>
 <translation id="5279286380302340275">다운로드 관리</translation>
+<translation id="5279453600310613955">나중에</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">문서 속성</translation>
 <translation id="528468243742722775">종료</translation>
@@ -2244,6 +2247,7 @@
 <translation id="6529173248185917884">7번째 롤</translation>
 <translation id="6529602333819889595">삭제 다시 실행(&amp;R)</translation>
 <translation id="6535751101619004418">통화 및 환율</translation>
+<translation id="6536221421038631327"><ph name="DEVICE_TYPE" />에서 Passpoint 구독을 삭제하면 연결된 네트워크가 삭제됩니다. 구독 요금제를 변경하려면 <ph name="FRIENDLY_NAME" />에 문의하세요. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">뮤추얼 펀드</translation>
 <translation id="6545864417968258051">블루투스 검색</translation>
 <translation id="6547208576736763147">왼쪽 2공 펀칭</translation>
@@ -3338,6 +3342,7 @@
 <translation id="9219103736887031265">이미지</translation>
 <translation id="922152298093051471">Chrome 맞춤설정</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385"><ph name="APP_NAME" /> 앱이 Wi-Fi 네트워크를 설정하도록 허용하시겠습니까?</translation>
 <translation id="936602727769022409">Google 계정에 액세스하지 못할 수 있습니다. 따라서 지금 비밀번호를 변경하는 것이 좋습니다. 로그인하라는 메시지가 표시됩니다.</translation>
 <translation id="937457230470581909">동물원, 수족관 및 보호구역</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />사용되는 데이터:<ph name="END_BOLD" /> 광고 주제는 내가 이 기기에서 Chrome을 사용하여 방문한 사이트의 목록인 최근 방문 기록을 기반으로 합니다.</translation>

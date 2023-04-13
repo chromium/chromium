@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">এখানে কিছু অন্যান্য সহায়ক রিসোর্স রয়েছে:</translation>
 <translation id="1905710495812624430">সর্বোচ্চ অনুমোদিত প্রচেষ্টা ছাড়িয়ে গেছে।</translation>
 <translation id="1908234395526491708">UDP-এর অনুরোধ করা যায়নি</translation>
+<translation id="1923388006036088459">অ্যাকসেন্ট কালার</translation>
 <translation id="1947737735496445907">প্রিন্ট করা হয়েছে</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">ডিফল্ট APN দিতে হবে</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">ডাউনলোড সম্পূর্ণ</translation>
 <translation id="3969602104473960991">ChromeOS-এর পাসওয়ার্ড আপডেট করা হয়েছে</translation>
 <translation id="397105322502079400">গণনা করা হচ্ছে...</translation>
+<translation id="3974175076798940554">এক্সক্লুসিভ Chromebook Plus অ্যাসেট এখন উপলভ্য</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
 <translation id="3993704782688964914">আপনার <ph name="DEVICE_NAME" /> ডিভাইস এখন আপ-টু-ডেট আছে</translation>
 <translation id="4003384961948020559">প্রিন্ট করা যায়নি - আউটপুট বিন ভর্তি হয়ে গেছে</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">একাধিক সাইন-ইন-এ একটি অ্যাকাউন্ট যোগ করুন৷ সমস্ত সাইন-ইন থাকা অ্যাকাউন্টগুলি কোনো পাসওয়ার্ড ছাড়াই অ্যাক্সেস করা যাবে, তাই এই বৈশিষ্ট্যটি শুধুমাত্র বিশ্বস্ত অ্যাকাউন্টগুলির সাথে ব্যবহার করা উচিৎ৷</translation>
 <translation id="8364946094152050673">ডোমেন নেম সার্ভার খালি রয়েছে</translation>
 <translation id="8372477600026034341">এক্সট্রা হোস্ট</translation>
+<translation id="8373046809163484087">আপনার ওয়ালপেপারের সাথে মেলে এমন রঙের সেট ব্যবহার করুন</translation>
 <translation id="8380114448424469341">স্ক্রিনের <ph name="DIRECTION" /> দিকের অর্ধেক জায়গায় উইন্ডো ডক করুন</translation>
 <translation id="8395584934117017006">এই <ph name="DEVICE_TYPE" /> এন্টারপ্রাইজ ম্যানেজ করে</translation>
 <translation id="8398927464629426868">বর্তমানে যে হারে ডিভাইসটি চার্জ হচ্ছে বা এটির চার্জ শেষ হচ্ছে</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">ইউজারনেম</translation>
 <translation id="8503836310948963452">আর মাত্র কয়েক মিনিট...</translation>
 <translation id="8508640263392900755">APN সম্পর্কিত বিবরণ</translation>
+<translation id="8522687886059337719">আপনি এখন নতুন <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ওয়ালপেপার<ph name="END_LINK_WALLPAPER_SUBPAGE" /> এবং <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />স্ক্রিন সেভার<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> অ্যাক্সেস করতে পারবেন</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">নেটওয়ার্কে কানেক্ট করার জন্য আপনার পরিষেবা প্রদানকারীর এই বিকল্পের প্রয়োজন হতে পারে। বিশদ বিবরণের জন্য আপনার পরিষেবা প্রদানকারীর সাথে যোগাযোগ করুন।</translation>

@@ -107,6 +107,7 @@ Arakatze-historia ezabatzen duzunean (osorik nahiz webgune zehatz bat), neurketa
 <translation id="1493287004536771723">Hasi zara <ph name="SITE_NAME" /> webguneari jarraitzen</translation>
 <translation id="1502010315804028179">Pasahitza kudeatzeko, eguneratu Google Play Services</translation>
 <translation id="1506061864768559482">Bilatzailea</translation>
+<translation id="1508960385613684700">Pribatutasun-gida <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
 <translation id="1513352483775369820">Laster-markak eta web-historia</translation>
 <translation id="1513814250881909472">Sinkronizatu datuak darabiltzazun beste gailuetako fitxak eskuratzeko</translation>
 <translation id="1513858653616922153">Ezabatu pasahitza</translation>
@@ -161,6 +162,7 @@ Arakatze-historia ezabatzen duzunean (osorik nahiz webgune zehatz bat), neurketa
 <translation id="1910950723001426294">Partekatze-aukeren zerrenda itxita dago.</translation>
 <translation id="1919130412786645364">Baimendu Chrome-n saioa hastea</translation>
 <translation id="1922362554271624559">Iradokitako hizkuntzak</translation>
+<translation id="1924255092154549435">Fitxa zabalduta dago</translation>
 <translation id="1925021887439448749">Idatzi web-helbide pertsonalizatua</translation>
 <translation id="1928696683969751773">Eguneratzeak</translation>
 <translation id="19288952978244135">Ireki berriro Chrome.</translation>
@@ -768,6 +770,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5161254044473106830">Izena behar da</translation>
 <translation id="5170568018924773124">Erakutsi karpetan</translation>
 <translation id="5171045022955879922">Bilatu edo idatzi URLa</translation>
+<translation id="5174700554036517242">Fitxa hasierako altuerara itzuli da</translation>
 <translation id="5184329579814168207">Ireki Chrome-n</translation>
 <translation id="5191251636205085390">Kontrolatu hirugarrenen cookieak ordezteko helburua duten teknologia berriak eta lortu haiei buruzko informazio gehiago</translation>
 <translation id="5193988420012215838">Arbelean kopiatuta</translation>
@@ -1250,6 +1253,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7686086654630106285">Webguneek iradokitako iragarkiei buruzko informazio gehiago</translation>
 <translation id="768618399695552958">Bisitatzen dituzun orrietako batzuk aurrez kargatzen dira. Baliteke orriak Google-ren zerbitzarien bidez aurrez kargatzea esteka Google-ren webgune batean badago.</translation>
 <translation id="7691043218961417207">Arakatu jarraitzeko edukia</translation>
+<translation id="7697383401610880082">Arrastatzeko kontrol-puntua</translation>
 <translation id="7698359219371678927">Sortu mezu elektronikoa <ph name="APP_NAME" /> aplikazioan</translation>
 <translation id="7707922173985738739">Erabili datu-konexioa</translation>
 <translation id="7709094866268987903">Kendutako interesak hemen agertuko dira</translation>

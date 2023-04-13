@@ -46,6 +46,7 @@
 <translation id="1038462104119736705">Do korzystania z Linuksa zalecane jest co najmniej <ph name="INSTALL_SIZE" /> wolnego miejsca. Aby zwolnić miejsce, usuń pliki z urządzenia.</translation>
 <translation id="1038643060055067718">Wiersze</translation>
 <translation id="1039337018183941703">Nieprawidłowy lub uszkodzony plik</translation>
+<translation id="1040761927998636252">Zakładka bez nazwy dla: <ph name="URL" /></translation>
 <translation id="1041175011127912238">Ta strona nie odpowiada</translation>
 <translation id="1041263367839475438">Dostępne urządzenia</translation>
 <translation id="1042174272890264476">Twój komputer zawiera również wbudowaną bibliotekę RLZ <ph name="SHORT_PRODUCT_NAME" />. Przypisuje ona powtarzalny, nieumożliwiający identyfikacji użytkownika tag służący do monitorowania wyszukiwań i używania <ph name="SHORT_PRODUCT_NAME" /> w ramach określonej kampanii promocyjnej. Etykiety te czasami pojawiają się w zapytaniach wyszukiwarki Google w <ph name="PRODUCT_NAME" />.</translation>
@@ -2709,6 +2710,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3336855445806447827">Nie wiem</translation>
 <translation id="3337568642696914359">Nie zezwalaj witrynom na obsługiwanie protokołów</translation>
 <translation id="3340620525920140773">Ukończono pobieranie: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">ustawienia</translation>
 <translation id="3341699307020049241">Nieprawidłowy kod PIN. Liczba pozostałych prób: <ph name="RETRIES" />.</translation>
 <translation id="3341703758641437857">Zezwalaj na dostęp do adresów URL plików</translation>
 <translation id="3342361181740736773">„<ph name="TRIGGERING_EXTENSION_NAME" />” chce usunąć to rozszerzenie.</translation>
@@ -5563,6 +5565,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5904614460720589786">Z powodu błędu konfiguracji nie udało się skonfigurować <ph name="APP_NAME" />. Skontaktuj się z administratorem. Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Już prawie gotowe. Uruchom ponownie urządzenie, by zakończyć aktualizację.</translation>
 <translation id="5906732635754427568">Dane powiązane z tą aplikacją zostaną usunięte z urządzenia.</translation>
+<translation id="5906974869830879618">Podaj kod PIN</translation>
 <translation id="5908474332780919512">Uruchom aplikację po zalogowaniu</translation>
 <translation id="5908695239556627796">Szybkość przewijania kółkiem myszy</translation>
 <translation id="5909379458939060601">Usunąć ten profil i dane przeglądania?</translation>
@@ -6952,6 +6955,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7139627972753429585"><ph name="APP_NAME" /> używa Twojego mikrofonu</translation>
 <translation id="7141105143012495934">Nie udało się zalogować, bo nie można pobrać informacji o koncie. Skontaktuj się z administratorem lub spróbuj ponownie.</translation>
 <translation id="7141844554192012199">Sprawdzanie</translation>
+<translation id="7143207342074048698">Łączenie</translation>
 <translation id="7144878232160441200">Spróbuj jeszcze raz</translation>
 <translation id="7148426638542880639">Strony mogą nie działać zgodnie z oczekiwaniami. Wybierz tę opcję, jeśli nie chcesz, aby na urządzeniu były zapisywane informacje o odwiedzanych stronach.</translation>
 <translation id="7149839598364933473">Przekonwertuj to urządzenie na urządzenie z systemem operacyjnym <ph name="DEVICE_OS" />.</translation>
@@ -9352,6 +9356,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="964790508619473209">Rozmieszczanie ekranów</translation>
 <translation id="965211523698323809">Wysyłanie i odbieranie SMS-ów na urządzeniu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Zgłoś problem z Google Cast</translation>
+<translation id="966588271015727539">Wybierz monitor brajlowski Bluetooth</translation>
 <translation id="967398046773905967">Nie zezwalaj żadnym stronom na dostęp do urządzeń HID</translation>
 <translation id="967624055006145463">Zapisane dane</translation>
 <translation id="96774243435178359">Zarządzane drukarki</translation>

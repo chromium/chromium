@@ -2166,6 +2166,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2804043232879091219">Ekki var hægt að opna hinn vafrann</translation>
 <translation id="2804667941345577550">Þú verður skráð(ur) út af þessu vefsvæði, þar á meðal opnum flipum</translation>
 <translation id="2804680522274557040">Slökkt á myndavél</translation>
+<translation id="2804742109948581745">Hlið við hlið</translation>
 <translation id="2805539617243680210">Allt til reiðu!</translation>
 <translation id="2805646850212350655">Dulkóðunarskráakerfi Microsoft</translation>
 <translation id="2805756323405976993">Forrit</translation>
@@ -2737,6 +2738,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3336855445806447827">Ekki viss</translation>
 <translation id="3337568642696914359">Ekki leyfa vefsvæðum að sjá um samskiptareglur</translation>
 <translation id="3340620525920140773">Niðurhali lokið: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">stillingar</translation>
 <translation id="3341699307020049241">Rangt PIN-númer. Þú átt <ph name="RETRIES" /> tilraunir eftir.</translation>
 <translation id="3341703758641437857">Veita aðgang að vefslóðum skráa</translation>
 <translation id="3342361181740736773">„<ph name="TRIGGERING_EXTENSION_NAME" />“ vill fjarlægja þessa viðbót.</translation>
@@ -4659,6 +4661,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5056950756634735043">Tengist geyminum</translation>
 <translation id="5057110919553308744">Þegar þú smellir á viðbótina</translation>
 <translation id="5059241099014281248">Takmarka innskráningu</translation>
+<translation id="5059429103770496207">Birtingarstíll</translation>
 <translation id="5059526285558225588">Veldu hverju þú deilir</translation>
 <translation id="5060332552815861872">Einn prentari er tiltækur til að vista.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Þessi mappa inniheldur bókamerki. Ertu viss um að þú viljir eyða henni?}one{Þessi mappa inniheldur # bókamerki. Ertu viss um að þú viljir eyða henni?}other{Þessi mappa inniheldur # bókamerki. Ertu viss um að þú viljir eyða henni?}}</translation>
@@ -4968,6 +4971,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5338503421962489998">Staðbundin vistun</translation>
 <translation id="5339031667684712858">Vefsvæði sem þú fjarlægðir</translation>
 <translation id="5340638867532133571">Leyfa vefsvæðum að setja upp greiðslumiðlara (ráðlagt)</translation>
+<translation id="5340787663756381836">&amp;Finna og breyta</translation>
 <translation id="5341793073192892252">Eftirfarandi fótspor voru útilokuð (fótspor þriðja aðila eru útilokuð án undantekninga)</translation>
 <translation id="5342091991439452114">PIN-númerið má ekki vera styttra en <ph name="MINIMUM" /> tölustafir</translation>
 <translation id="5344036115151554031">Endurheimtir Linux</translation>
@@ -5591,6 +5595,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5904614460720589786">Ekki tókst að setja <ph name="APP_NAME" /> upp vegna stillingarvandamáls. Hafðu samband við kerfisstjórann. Villukóði: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Uppfærslan er næstum tilbúin! Endurræstu tækið til að ljúka uppfærslunni.</translation>
 <translation id="5906732635754427568">Gögn sem tengjast þessu forriti verða fjarlægð úr tækinu.</translation>
+<translation id="5906974869830879618">Sláðu inn PIN-númer</translation>
 <translation id="5908474332780919512">Ræsa forrit þegar þú skráir þig inn</translation>
 <translation id="5908695239556627796">Flettihraði músar</translation>
 <translation id="5909379458939060601">Eyða þessum prófíl og vefskoðunargögnum?</translation>
@@ -6980,6 +6985,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7139627972753429585"><ph name="APP_NAME" /> er að nota hljóðnemann</translation>
 <translation id="7141105143012495934">Innskráning mistókst vegna þess að ekki tókst að sækja reikningsupplýsingar. Hafðu samband við kerfisstjóra eða reyndu aftur.</translation>
 <translation id="7141844554192012199">Yfirferð</translation>
+<translation id="7143207342074048698">Tengist</translation>
 <translation id="7144878232160441200">Reyna aftur</translation>
 <translation id="7148426638542880639">Óvíst er að vefsvæði virki líkt og búist er við. Veldu þennan valkost ef þú vilt ekki að upplýsingar um vefsvæði sem þú skoðar vistist í tækinu</translation>
 <translation id="7149839598364933473">Breyta þessu tæki í <ph name="DEVICE_OS" /> tæki.</translation>
@@ -9362,6 +9368,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="939401694733344652">Þessir reikningar eru ekki notaðir með Android forritum eins og er. Ef þú velur reikning til að nota með þessu Android forriti er einnig hægt að nota reikninginn með öðrum Android forritum. Þú getur breytt aðgangi Android forrita í <ph name="LINK_BEGIN" />Stillingar &gt; Reikningar<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Sláðu inn aðgangsorð</translation>
 <translation id="939736085109172342">Ný mappa</translation>
+<translation id="940212040923880623">&amp;Finna og breyta</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> deilir flipa og hljóði í Chrome.</translation>
 <translation id="944799160843436808">Vandamál kom upp við uppsetningu Steam í Chromebook</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>
@@ -9383,6 +9390,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="964790508619473209">Uppsetning skjáa</translation>
 <translation id="965211523698323809">Sendu og taktu á móti SMS-skilaboðum úr <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Tilkynna vandamál í Google Cast</translation>
+<translation id="966588271015727539">Velja blindraletursskjá með Bluetooth-tengingu</translation>
 <translation id="967398046773905967">Ekki veita neinum vefsvæðum aðgang að HID-tækjum</translation>
 <translation id="967624055006145463">Vistuð gögn</translation>
 <translation id="96774243435178359">Prentarar sem er stjórnað</translation>

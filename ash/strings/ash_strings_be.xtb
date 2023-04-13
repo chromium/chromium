@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">Прылада USB-C (пярэдні порт)</translation>
 <translation id="1013598600051641573">Для дысплэя "<ph name="DISPLAY_NAME" />" зададзена раздзяляльнасць <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Каб захаваць змяненні, націсніце "Пацвердзіць". Папярэднія налады будуць адноўлены праз <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Прылада Bluetooth "<ph name="DEVICE_NAME" />" запытвае дазвол на спалучэнне. Увядзіце на гэтай прыладзе PIN-код: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">Праграма "<ph name="APP_NAME" />" і ўсе праграмы і вэб-сайты, якія маюць дазвол на доступ да геаданых, а таксама ChromeOS змогуць выкарыстоўваць даныя пра месцазнаходжанне, атрыманыя праз Wi-Fi і мабільныя сеткі.</translation>
 <translation id="1017556409696559990">Згарнуць верхняе акно, калі ў Chrome няма папярэдняй гісторыі</translation>
 <translation id="1024364763893396229">Захаванне прылады "<ph name="NAME" />"</translation>
 <translation id="1032891413405719768">Нізкі зарад акумулятара стыла</translation>
@@ -147,6 +148,7 @@
 <translation id="1651914502370159744">Адкрыць старонку гісторыі</translation>
 <translation id="1654477262762802994">Пачаць галасавы запыт</translation>
 <translation id="1668469839109562275">Убудаваная сетка VPN</translation>
+<translation id="1675844249244994876">Абнавіць правае акно</translation>
 <translation id="1677472565718498478">Засталося <ph name="TIME" /></translation>
 <translation id="1677507110654891115">Функцыя "<ph name="FEATURE_NAME" />" не падключана.</translation>
 <translation id="1677582821739292812">Нехта глядзіць на ваш экран</translation>
@@ -191,6 +193,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Уключыць доступ да геаданых</translation>
 <translation id="1830308660060964064">Элемент "<ph name="ITEM_TITLE" />" адмацаваны</translation>
 <translation id="1838895407229022812">Начная падсветка выключана.</translation>
 <translation id="1854180393107901205">Спыніць трансляцыю</translation>
@@ -365,7 +368,6 @@
 <translation id="2726420622004325180">Каб тэлефон мог дзейнічаць як хот-спот, ён павінен выкарыстоўваць мабільную перадачу даных</translation>
 <translation id="2727175239389218057">Адказаць</translation>
 <translation id="2727977024730340865">Падключана зарадная прылада нізкай магутнасці. Зарадка акумулятара можа быць нестабільнай.</translation>
-<translation id="2740531572673183784">OK</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Выдаліць"</translation>
 <translation id="2750941250130734256">Актыўнае акно адмацавана.</translation>
@@ -468,6 +470,7 @@
 <translation id="3255483164551725916">Што ты ўмееш?</translation>
 <translation id="3256109297135787951">Скасаваць вылучэнне элемента на паліцы</translation>
 <translation id="3260969790895726815">Запісы голасу апрацоўваюцца на прыладзе і нікуды не перадаюцца. Галасавы ўвод працуе па-за сеткай. Некаторыя галасавыя каманды могуць не працаваць.</translation>
+<translation id="3265032511221679826">Уключыць доступ да даных дакладнага месцазнаходжання?</translation>
 <translation id="3269597722229482060">Націснуць правай кнопкай мышы</translation>
 <translation id="3289364673986435196">Меню кнопкі сілкавання</translation>
 <translation id="3289544412142055976">Праграмы Linux цяпер не падтрымліваюцца</translation>
@@ -578,6 +581,7 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, карыстальнік пад кіраваннем</translation>
 <translation id="3666266999138159418">Каб схаваць плаваючае акно, правядзіце пальцам</translation>
 <translation id="367531336287639526">Выбраць першы значок злева ад адраснага радка</translation>
+<translation id="3677931086890821290">Усе праграмы і вэб-сайты, якія маюць дазвол на доступ да геаданых, а таксама ChromeOS змогуць выкарыстоўваць даныя пра месцазнаходжанне, атрыманыя праз Wi-Fi і мабільныя сеткі.</translation>
 <translation id="3679827876008292680">Перайсці на апошнюю ўкладку акна</translation>
 <translation id="36813544980941320">Інфармацыя пра сеткі Wi-Fi будзе абагульвацца паміж тэлефонам і прыладай <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Вэб-сайты</translation>
@@ -844,6 +848,7 @@
 <translation id="493076006037866439">Паменшыць маштаб экрана</translation>
 <translation id="4936329710968938986">Для ўсіх: выключана</translation>
 <translation id="4938176435186993759">Схаваць усе прапановы</translation>
+<translation id="4943007472417128747">Хот-спот выключаны для выкарыстання Wi-Fi. Каб выкарыстоўваць хот-спот, выключыце Wi-Fi.</translation>
 <translation id="4945196315133970626">Выключыць апавяшчэнні</translation>
 <translation id="4946376291507881335">Зняць</translation>
 <translation id="495046168593986294">Прагартаць уверх</translation>
@@ -1067,6 +1072,7 @@
 <translation id="5976112937189445008">Каб запісаць акно, націсніце Увод</translation>
 <translation id="5978382165065462689">Абагульванне кантролю над экранам праз Аддаленую дапамогу.</translation>
 <translation id="5980301590375426705">Выйсці з гасцявога рэжыму</translation>
+<translation id="5983567367406220847">Хот-спот быў выключаны праз бяздзейнасць.</translation>
 <translation id="598407983968395253">Выкарыстаць шаблон</translation>
 <translation id="598882571027504733">Для абнаўлення падключыце клавіятуру і перазапусціце Chromebook.</translation>
 <translation id="6002179289567220515">Вы выключылі адну камеру фізічным пераключальнікам. Таксама можна выключыць доступ для ўсіх камер.</translation>
@@ -1369,6 +1375,7 @@
 <translation id="7452560014878697800">Камера выкарыстоўваецца адной з праграм</translation>
 <translation id="7453330308669753048">Вынік выдалены з гісторыі пошуку</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> да поўнай зарадкі</translation>
+<translation id="7459485586006128091">З-за ўнутранай памылкі хот-спот быў выключаны. Паспрабуйце падключыцца паўторна праз некалькі хвілін.</translation>
 <translation id="7461924472993315131">PIN-код</translation>
 <translation id="746232733191930409">Рэжым запісу экрана</translation>
 <translation id="7466449121337984263">Дакраніцеся да сканера</translation>
@@ -1388,6 +1395,7 @@
 Каб завяршыць працу прылады, зноў націсніце і ўтрымлівайце кнопку сілкавання на ёй.</translation>
 <translation id="7526573455193969409">За сеткай могуць сачыць</translation>
 <translation id="7536035074519304529">IP-адрас: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Абнавіць левае акно</translation>
 <translation id="7543399541175347147">Вокны ў рэжыме інкогніта і праграмы Linux зараз не падтрымліваюцца. Іншыя праграмы будуць захаваны.</translation>
 <translation id="7544300628205093162">Падсветка клавіятуры ўключана</translation>
 <translation id="7548434653388805669">Час класціся спаць</translation>
@@ -1441,6 +1449,7 @@
 <translation id="776344839111254542">Каб паглядзець звесткі пра абнаўленне, націсніце тут</translation>
 <translation id="7768784765476638775">Чытаць уголас</translation>
 <translation id="7769299611924763557">Файл GIF будзе неўзабаве гатовы</translation>
+<translation id="7773536009433685931">Уключыць Wi-Fi</translation>
 <translation id="7780094051999721182">ярлыкі</translation>
 <translation id="7780159184141939021">Паварот экрана</translation>
 <translation id="7796735576426975947">Новае апавяшчэнне схавана</translation>
@@ -1468,6 +1477,7 @@
 <translation id="7893503627044934815">Не паказваць гэты файл</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Вы націснулі спалучэнне клавіш для павароту экрана. Павярнуць экран?</translation>
+<translation id="7901190436359881020">Памяняць вокны</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Дакраніцеся да сканера адбіткаў пальцаў</translation>
 <translation id="7904094684485781019">Адміністратар уліковага запісу забараніў уваход у некалькі ўліковых запісаў.</translation>
@@ -1743,6 +1753,7 @@
 <translation id="9198992156681343238">Раздзяляльнасць экрана "<ph name="DISPLAY_NAME" />" зменена на <ph name="RESOLUTION" />. Каб захаваць змяненні, націсніце "Пацвердзіць". Папярэднія налады будуць адноўлены праз <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Падключыце прыладу "<ph name="NAME" />" да Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, знаходзіцца пад кіраваннем адміністратара</translation>
+<translation id="9207682216934703221">Праграмы "<ph name="APP_NAME" />", "<ph name="APP2_NAME" />" і ўсе праграмы і вэб-сайты, якія маюць дазвол на доступ да геаданых, а таксама ChromeOS змогуць выкарыстоўваць даныя пра месцазнаходжанне, атрыманыя праз Wi-Fi і мабільныя сеткі.</translation>
 <translation id="9210037371811586452">Выконваецца выхад з рэжыму адзінага працоўнага стала</translation>
 <translation id="9211490828691860325">Усе працоўныя сталы</translation>
 <translation id="9211681782751733685">Засталося часу да поўнай зарадкі акумулятара: <ph name="TIME_REMAINING" /></translation>

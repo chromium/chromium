@@ -217,7 +217,6 @@
 <translation id="2482878487686419369">Известувања</translation>
 <translation id="2496626742194544812">Одете на првата картичка</translation>
 <translation id="2500374554657206846">Опции за зачувување лозинка</translation>
-<translation id="2502415369140591438"><ph name="COUNT" /> повторно употребени лозинки</translation>
 <translation id="2523363575747517183">Веб-сајтов постојано се обидува да отвори друга апликација.</translation>
 <translation id="2529021024822217800">Отвори ги сите</translation>
 <translation id="2547458583188611426">Синхронизацијата не функционира. Внесете ја лозинката за да започне синхронизацијата.</translation>
@@ -389,7 +388,6 @@
 <translation id="3581564640715911333">Понудувај превод на страниците на други јазици</translation>
 <translation id="3588820906588687999">Отворете ја сликата во нова картичка</translation>
 <translation id="3595252146048399851">Секогаш може да изберете што да синхронизирате во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />. Google може да ги персонализира „Пребарување“ и другите услуги според вашата историја.</translation>
-<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} слаба лозинка}one{{COUNT} слаба лозинка}other{{COUNT} слаби лозинки}}</translation>
 <translation id="3603009562372709545">Копирајте URL на врска</translation>
 <translation id="3607167657931203000">Автомат. пополнување</translation>
 <translation id="3608008480985212611">Најавете се за да управувате со вашите поставки.</translation>
@@ -435,7 +433,6 @@
 <translation id="3928666092801078803">Комбинирај ги моите податоци</translation>
 <translation id="3929457972718048006">Адреси</translation>
 <translation id="3943492037546055397">Лозинки</translation>
-<translation id="3951717558054674026">{count,plural, =1{{count} слаба лозинка}one{{count} слаба лозинка}other{{count} слаби лозинки}}</translation>
 <translation id="3959736869653157332">Мени → Нова картичка „Инкогнито“</translation>
 <translation id="3967822245660637423">Преземањето е завршено</translation>
 <translation id="3968505803272650567">Управувајте со интересите</translation>
@@ -771,7 +768,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6184086493125982861">Прикажи картички</translation>
 <translation id="6187302354554850004">Последна синхронизација: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Непрочитани</translation>
-<translation id="6193424046394092997">{count,plural, =1{Додаден е обележувач во {title}}one{Додадени се обележувачи во {title}}other{Додадени се обележувачи во {title}}}</translation>
 <translation id="6196207969502475924">Гласовно пребарување</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Затвори {COUNT} картичка}one{Затвори {COUNT} картичка}other{Затвори {COUNT} картички}}</translation>
 <translation id="6210079381482819663">Картичките што не се користат <ph name="THRESHOLD" /> или повеќе дена се преместуваат тука. Ова може да го промените во секое време во <ph name="BEGIN_LINK" />Поставки<ph name="END_LINK" />.</translation>
@@ -820,7 +816,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 
 Вашите податоци беа шифрирани со лозинка за синхронизирање на <ph name="TIME" />. Внесете ја за да го започнете синхронизирањето.</translation>
 <translation id="6418346271604475326">Се подготвува PDF</translation>
-<translation id="6421095165635308">{count,plural, =1{Зачуван е обележувач во {title} во вашата сметка, {email}}one{Зачувани се обележувачи во {title} во вашата сметка, {email}}other{Зачувани се обележувачи во {title} во вашата сметка, {email}}}</translation>
 <translation id="6429213933892582367">Отворете „Опции за лозинки“</translation>
 <translation id="6434591244308415567">Грешка. Обидете се повторно подоцна.</translation>
 <translation id="6435236283694032571">Додај во „Списокот за читање“</translation>
@@ -1024,6 +1019,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7781011649027948662">Да се преведе страницата?</translation>
 <translation id="7781069478569868053">Страница во нова картичка</translation>
 <translation id="7781829728241885113">Вчера</translation>
+<translation id="7786246662347093005">{COUNT,plural, =1{По 1 ден}one{По {COUNT} ден}other{По {COUNT} дена}}</translation>
 <translation id="778855399387580014">Започнете пребарување во нова картичка на Chrome.</translation>
 <translation id="7791543448312431591">Додај</translation>
 <translation id="7807060072011926525">Обезбедено од Google</translation>
@@ -1088,6 +1084,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8136856065410661948">Ова ќе се користи за да се создаваат настани во вашиот „Календар на Apple“ од Chrome и Google Lens.</translation>
 <translation id="8156478151976189188">Синхронизацијата на лозинките не работи</translation>
 <translation id="8157532349231307196"><ph name="NUMBER_OF_ACCOUNTS" /> сметки</translation>
+<translation id="8159358225423560600">пред малку</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашите уреди<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8197543752516192074">Преведи ја страницата</translation>
@@ -1118,6 +1115,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8393889347136007944">Картички што не се користат <ph name="THRESHOLD" /> дена</translation>
 <translation id="8407669440184693619">Не се најдени лозинки за сајтов</translation>
 <translation id="842017693807136194">Најавен со</translation>
+<translation id="8423121072346537366">Пред малку</translation>
 <translation id="8425693829365242963">Вашите лозинки се единствени</translation>
 <translation id="8428045167754449968">Град</translation>
 <translation id="8428213095426709021">Поставки</translation>
@@ -1203,7 +1201,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8974714402877957201">1. Отворете ги поставките за iPad</translation>
 <translation id="8976382372951310360">Помош</translation>
 <translation id="8976414606286374109">Картичките се зачувуваат во вашата сметка на Google.</translation>
-<translation id="8978059030508051916">{count,plural, =0{Нема компромитирани лозинки}=1{{count} компромитирана лозинка}one{{count} компромитирана лозинка}other{{count} компромитирани лозинки}}</translation>
 <translation id="8981454092730389528">Контроли на активност на Google</translation>
 <translation id="8985320356172329008">Најавени сте на Google како</translation>
 <translation id="8998289560386111590">Не е достапен на вашиот уред</translation>

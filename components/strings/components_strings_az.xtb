@@ -364,6 +364,7 @@
 <translation id="1801812870656502108">Virtual kart detalları</translation>
 <translation id="1803020234906945288">Sağlam qidalanma</translation>
 <translation id="1803351196216024260">Saytlar mikrofonunuzdan istifadə etmək üçün icazə istəyə bilər</translation>
+<translation id="1806174020048213474">Bu tətbiq Wi-Fi giriş məlumatlarını quraşdırmaq icazəsi tələb edir. Ayarlamadan sonra <ph name="DEVICE_TYPE" /> əlçatan Wi-Fi şəbəkələrinə avtomatik qoşulacaq. Bu giriş məlumatlarını silmək üçün tətbiqi sistemdən silin.</translation>
 <translation id="1807246157184219062">Yüngül</translation>
 <translation id="1807528111851433570">Başlama vərəqi</translation>
 <translation id="180991881384371158">CVC kartın arxa hissəsindədir. Bu, imza xanasının yuxarı sağ tərəfindəki son 3 rəqəmdir.</translation>
@@ -1065,7 +1066,6 @@
 <translation id="3631244953324577188">Biometriklər</translation>
 <translation id="3632503704576938756">Ekran paylaşımı davam etdirilir</translation>
 <translation id="3632892046558972264">Ekran paylaşımı durdurulub</translation>
-<translation id="3633035844150606508">Ünvanı Google Hesabında (<ph name="ACCOUNT" />) saxlayın</translation>
 <translation id="3633738897356909127">"Chrome'u güncəlləyin" düyməsi, Chrome ayarlarında Chrome'u güncəlləmək üçün Enter düyməsinə basın</translation>
 <translation id="3634530185120165534">Qab 5</translation>
 <translation id="3634567936866541746">İndicə parolunuzu aldadıcı sayt içində yazdınız. Hesablarınızı qorumaq üçün Chrome yadda saxladığınız parolları yoxlamağı tövsiyə edir.</translation>
@@ -1332,6 +1332,7 @@
 <translation id="4270541775497538019">Yığıcı 6</translation>
 <translation id="4274173425554582601">Kompüter ve elektronika</translation>
 <translation id="4275830172053184480">Cihazınızı yenidən başladın</translation>
+<translation id="4276974990916607331">Xeyr, təşəkkürlər</translation>
 <translation id="4277028893293644418">Parolu sıfırlayın</translation>
 <translation id="4277937682389409325">Yerli ünvan</translation>
 <translation id="4278390842282768270">İcazə verilib</translation>
@@ -1692,6 +1693,7 @@
 <translation id="5129534298163637277">Təsdiq pəncərəsi</translation>
 <translation id="5135404736266831032">Ünvanları idarə edin...</translation>
 <translation id="5136841603454277753">Düzgün kodu daxil edin</translation>
+<translation id="5137761395480718572">Bu tətbiq Wi-Fi giriş məlumatlarını quraşdırmaq icazəsi tələb edir. Ayarlamadan sonra <ph name="DEVICE_TYPE" /> əlçatan Wi-Fi şəbəkələrinə avtomatik qoşulacaq. Bu giriş məlumatlarını silmək üçün tətbiqi sistemdən silin. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Virtual kart hazırda əlçatan deyil, bankınızla əlaqə saxlayın</translation>
 <translation id="5138227688689900538">Daha azına baxın</translation>
 <translation id="5145883236150621069">Xəta kodu siyasət cavabında mövcuddur</translation>
@@ -1748,6 +1750,7 @@
 <translation id="5273881944177595304">Veb tətbiqlər və onlayn alətlər</translation>
 <translation id="5274025349362408263">Kitablar və ədəbiyyat</translation>
 <translation id="5279286380302340275">Endirmələri idarə edin</translation>
+<translation id="5279453600310613955">Xeyr, təşəkkürlər</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Sənəd xüsusiyyətləri</translation>
 <translation id="528468243742722775">Son</translation>
@@ -2240,6 +2243,7 @@
 <translation id="6529173248185917884">Yeddinci Rulon</translation>
 <translation id="6529602333819889595">Silinməni yenidən edin</translation>
 <translation id="6535751101619004418">Valyuta və məzənnə</translation>
+<translation id="6536221421038631327"><ph name="DEVICE_TYPE" /> cihazından Keçid nöqtəsi abunəsini sildikdə əlaqədar şəbəkələr silinəcək. Abunə planına dəyişikliklər etmək üçün "<ph name="FRIENDLY_NAME" />" ilə əlaqə saxlayın. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">Yatırım fondları</translation>
 <translation id="6545864417968258051">Bluetooth axtarışı</translation>
 <translation id="6547208576736763147">Soldan qoşa deşik açın</translation>
@@ -3335,6 +3339,7 @@
 <translation id="9219103736887031265">Şəkillər</translation>
 <translation id="922152298093051471">Chrome'u fərdiləşdirin</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385"><ph name="APP_NAME" /> tətbiqinə Wi-Fi şəbəkələrini ayarlamaq icazəsi verilsin?</translation>
 <translation id="936602727769022409">Google Hesabına girişi itirə bilərsiniz. Chromium parolu dəyişməyi məsləhət görür. Daxil olmağınız tələb olunacaq.</translation>
 <translation id="937457230470581909">Zooparklar, akvariumlar və qoruqlar</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Hansı data istifadə olunur:<ph name="END_BOLD" /> Reklam mövzularınız son baxış tarixçənizə, bu cihazda Chrome istifadə edərək ziyarət etdiyiniz saytların siyahısına əsaslanır.</translation>

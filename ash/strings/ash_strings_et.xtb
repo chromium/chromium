@@ -368,7 +368,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2726420622004325180">Teie telefonil peab kuumkoha pakkumiseks olema mobiilne andmesideühendus</translation>
 <translation id="2727175239389218057">Vasta</translation>
 <translation id="2727977024730340865">Ühendatud väikese energiakuluga laadijaga. Aku laadimine võib olla ebastabiilne.</translation>
-<translation id="2740531572673183784">Ok</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">„Kustuta“</translation>
 <translation id="2750941250130734256">Aktiivne aken dokiti lahti.</translation>
@@ -1074,6 +1073,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5976112937189445008">Vajutage akna salvestamiseks sisestusklahvi</translation>
 <translation id="5978382165065462689">Ekraani juhtimise jagamine kaugabi kaudu.</translation>
 <translation id="5980301590375426705">Välju kül. seansist</translation>
+<translation id="5983567367406220847">Tegevusetuse tõttu on kuumkoht välja lülitatud.</translation>
 <translation id="598407983968395253">Kasuta malli</translation>
 <translation id="598882571027504733">Värskenduse hankimiseks taaskäivitage Chromebook koos ühendatud klaviatuuriga.</translation>
 <translation id="6002179289567220515">Kasutasite füüsilist lülitit, et 1 kaamera välja lülitada. Samuti saate lülitada välja juurdepääsu kõigile kaameratele.</translation>
@@ -1376,6 +1376,7 @@ Uus installimine</translation>
 <translation id="7452560014878697800">Rakendus kasutab teie kaamerat</translation>
 <translation id="7453330308669753048">Otsinguajaloo tulemus eemaldati</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> täitumiseni</translation>
+<translation id="7459485586006128091">Sisemise vea tõttu on kuumkoht välja lülitatud. Proovige mõne minuti pärast uuesti ühendust luua.</translation>
 <translation id="7461924472993315131">Kinnita</translation>
 <translation id="746232733191930409">Ekraanisalvestuse režiim</translation>
 <translation id="7466449121337984263">Puudutage andurit</translation>
@@ -1449,6 +1450,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="776344839111254542">Klõpsake värskenduse üksikasjade vaatamiseks</translation>
 <translation id="7768784765476638775">Vali ja kuula</translation>
 <translation id="7769299611924763557">Teie GIF on varsti valmis</translation>
+<translation id="7773536009433685931">Lülita sisse hoopis WiFi</translation>
 <translation id="7780094051999721182">otseteid</translation>
 <translation id="7780159184141939021">Ekraanikuva pööramine</translation>
 <translation id="7796735576426975947">Uus märguanne on peidetud</translation>

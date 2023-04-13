@@ -2723,6 +2723,7 @@ Pretende pará-lo?</translation>
 <translation id="3336855445806447827">Não sei</translation>
 <translation id="3337568642696914359">Não permitir que os sites processem protocolos</translation>
 <translation id="3340620525920140773">Transferência concluída: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">definições</translation>
 <translation id="3341699307020049241">PIN incorreto. Tem mais <ph name="RETRIES" /> tentativas.</translation>
 <translation id="3341703758641437857">Permitir acesso a URLs de ficheiro</translation>
 <translation id="3342361181740736773">A extensão "<ph name="TRIGGERING_EXTENSION_NAME" />" pretende remover esta extensão.</translation>
@@ -4954,6 +4955,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5338503421962489998">Armazenamento local</translation>
 <translation id="5339031667684712858">Sites que removeu</translation>
 <translation id="5340638867532133571">Permitir que os sites instalem controladores de pagamentos (recomendado)</translation>
+<translation id="5340787663756381836">&amp;Localizar e editar</translation>
 <translation id="5341793073192892252">Os seguintes cookies foram bloqueados (os cookies de terceiros estão a ser bloqueados sem excepção)</translation>
 <translation id="5342091991439452114">O PIN deve ter pelo menos <ph name="MINIMUM" /> dígitos</translation>
 <translation id="5344036115151554031">A restaurar o Linux…</translation>
@@ -5578,6 +5580,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5904614460720589786">Não foi possível configurar a app <ph name="APP_NAME" /> devido a um problema na configuração. Contacte o seu administrador. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Quase atualizado! Reinicie o dispositivo para concluir a atualização.</translation>
 <translation id="5906732635754427568">Os dados associados a esta aplicação serão removidos deste dispositivo.</translation>
+<translation id="5906974869830879618">Introduza um PIN.</translation>
 <translation id="5908474332780919512">Iniciar app quando inicia sessão</translation>
 <translation id="5908695239556627796">Velocidade de deslocação do rato</translation>
 <translation id="5909379458939060601">Eliminar este perfil e os dados de navegação?</translation>
@@ -6965,6 +6968,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7139627972753429585">A app <ph name="APP_NAME" /> está a utilizar o seu microfone.</translation>
 <translation id="7141105143012495934">O início de sessão falhou porque não foi possível obter os detalhes da sua conta. Contacte o gestor ou tente novamente.</translation>
 <translation id="7141844554192012199">Verificação</translation>
+<translation id="7143207342074048698">A ligar</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
 <translation id="7148426638542880639">Os sites podem não funcionar como esperado. Escolha esta opção se não quiser deixar informações no seu dispositivo sobre os sites que visita.</translation>
 <translation id="7149839598364933473">Converta este dispositivo num dispositivo <ph name="DEVICE_OS" />.</translation>
@@ -9347,6 +9351,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="939401694733344652">Estas contas não estão a ser utilizadas com apps Android neste momento. Se selecionar uma conta para utilizar com esta app Android, a conta também poderá ser utilizada com outras apps Android. Pode alterar o acesso das apps Android em <ph name="LINK_BEGIN" />Definições &gt; Contas<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Introduzir frase de acesso</translation>
 <translation id="939736085109172342">Nova pasta</translation>
+<translation id="940212040923880623">&amp;Localizar e editar</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> está a partilhar um separador do Chrome e o áudio.</translation>
 <translation id="944799160843436808">Ocorreu um problema ao configurar o Steam no Chromebook</translation>
 <translation id="945522503751344254">Enviar feedback</translation>
@@ -9368,6 +9373,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="964790508619473209">Posicionamento do ecrã</translation>
 <translation id="965211523698323809">Envie e receba mensagens de texto com o <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Comunicar um problema com o Google Cast</translation>
+<translation id="966588271015727539">Selecionar um ecrã em braille Bluetooth</translation>
 <translation id="967398046773905967">Não permitir o acesso de sites a dispositivos HID</translation>
 <translation id="967624055006145463">Dados armazenados</translation>
 <translation id="96774243435178359">Impressoras geridas</translation>

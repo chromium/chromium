@@ -368,7 +368,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2726420622004325180">Telefon anda mestilah mempunyai data mudah alih untuk menyediakan tempat liputan</translation>
 <translation id="2727175239389218057">Balas</translation>
 <translation id="2727977024730340865">Dipalamkan pada pengecas berkuasa rendah. Pengecasan bateri mungkin tidak boleh diharapkan.</translation>
-<translation id="2740531572673183784">Ok</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Padam"</translation>
 <translation id="2750941250130734256">Tetingkap aktif tidak didok.</translation>
@@ -1074,6 +1073,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5976112937189445008">Tekan kekunci enter untuk merakam skrin tetingkap</translation>
 <translation id="5978382165065462689">Berkongsi kawalan skrin anda melalui Bantuan Jauh.</translation>
 <translation id="5980301590375426705">Keluar dari tetamu</translation>
+<translation id="5983567367406220847">Tempat liputan telah dimatikan kerana tidak aktif.</translation>
 <translation id="598407983968395253">Gunakan templat</translation>
 <translation id="598882571027504733">Untuk mendapatkan kemas kini, mulakan semula Chromebook dengan papan kekunci yang dipasang.</translation>
 <translation id="6002179289567220515">Anda menggunakan suis fizikal untuk mematikan 1 kamera. Anda juga boleh mematikan akses untuk semua kamera.</translation>
@@ -1376,6 +1376,7 @@ Pemasangan baharu</translation>
 <translation id="7452560014878697800">Satu aplikasi sedang menggunakan kamera anda</translation>
 <translation id="7453330308669753048">Hasil sejarah carian dialih keluar</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> sehingga penuh</translation>
+<translation id="7459485586006128091">Tempat liputan telah dimatikan kerana ralat dalaman. Cuba sambungkan semula tempat liputan dalam masa beberapa minit.</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746232733191930409">Mod rakaman skrin</translation>
 <translation id="7466449121337984263">Sila sentuh penderia</translation>
@@ -1449,6 +1450,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="776344839111254542">Klik untuk melihat butiran kemas kini</translation>
 <translation id="7768784765476638775">Pilih untuk bercakap</translation>
 <translation id="7769299611924763557">GIF anda akan tersedia tidak lama lagi</translation>
+<translation id="7773536009433685931">Hidupkan Wi-Fi</translation>
 <translation id="7780094051999721182">pintasan</translation>
 <translation id="7780159184141939021">Putarkan Skrin</translation>
 <translation id="7796735576426975947">Pemberitahuan baharu disembunyikan</translation>

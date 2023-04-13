@@ -217,7 +217,6 @@
 <translation id="2482878487686419369">Ծանուցումներ</translation>
 <translation id="2496626742194544812">Անցնել առաջին ներդիր</translation>
 <translation id="2500374554657206846">Գաղտնաբառը պահելու տարբերակներ</translation>
-<translation id="2502415369140591438"><ph name="COUNT" /> կրկնվող գաղտնաբառ</translation>
 <translation id="2523363575747517183">Այս կայքը բազմիցս փորձում է բացել մեկ այլ հավելված։</translation>
 <translation id="2529021024822217800">Բացել բոլորը</translation>
 <translation id="2547458583188611426">Համաժամացումը չի աշխատում։ Համաժամացումը սկսելու համար մուտքագրեք ձեր անցաբառը։</translation>
@@ -389,7 +388,6 @@
 <translation id="3581564640715911333">Առաջարկել էջերի թարգմանությունն այլ լեզուներով</translation>
 <translation id="3588820906588687999">Բացել պատկերը նոր ներդիրում</translation>
 <translation id="3595252146048399851">Դուք ցանկացած ժամանակ կարող եք անցնել <ph name="BEGIN_LINK" />կարգավորումներ<ph name="END_LINK" /> և ընտրել, թե ինչն եք ուզում համաժամացնել։ Google-ը կարող է ձեր պատմության հիման վրա անհատականացնել Որոնումը և այլ ծառայությունները։</translation>
-<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} թույլ գաղտնաբառ}one{{COUNT} թույլ գաղտնաբառ}other{{COUNT} թույլ գաղտնաբառ}}</translation>
 <translation id="3603009562372709545">Պատճենել հղման հասցեն</translation>
 <translation id="3607167657931203000">Ինքնալցման տվյալները</translation>
 <translation id="3608008480985212611">Մտեք հաշիվ՝ ձեր կարգավորումները կառավարելու համար։</translation>
@@ -435,7 +433,6 @@
 <translation id="3928666092801078803">Իմ տվյալների միավորում</translation>
 <translation id="3929457972718048006">Հասցեներ</translation>
 <translation id="3943492037546055397">Գաղտնաբառեր</translation>
-<translation id="3951717558054674026">{count,plural, =1{{count} թույլ գաղտնաբառ}one{{count} թույլ գաղտնաբառ}other{{count} թույլ գաղտնաբառ}}</translation>
 <translation id="3959736869653157332">Ընտրացանկ → Նոր ինկոգնիտո ներդիր</translation>
 <translation id="3967822245660637423">Ներբեռնումն ավարտվեց</translation>
 <translation id="3968505803272650567">Կառավարել հետաքրքրությունները</translation>
@@ -771,7 +768,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6184086493125982861">Ցույց տալ ներդիրները</translation>
 <translation id="6187302354554850004">Վերջին անգամ համաժամացվել է՝ <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Չկարդացված</translation>
-<translation id="6193424046394092997">{count,plural, =1{Էջանշվեց «{title}» պանակում}one{Էջանշվեց «{title}» պանակում}other{Էջանշվեցին «{title}» պանակում}}</translation>
 <translation id="6196207969502475924">Ձայնային որոնում</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Փակել {COUNT} ներդիր}one{Փակել {COUNT} ներդիր}other{Փակել {COUNT} ներդիր}}</translation>
 <translation id="6210079381482819663">Առնվազն <ph name="THRESHOLD" /> օր չօգտագործված ներդիրները տեղափոխվում են այստեղ։ Սա ցանկացած ժամանակ կարող եք <ph name="BEGIN_LINK" />կարգավորումներում<ph name="END_LINK" /> փոփոխել։</translation>
@@ -820,7 +816,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 
 Ձեր տվյալները գաղտնագրվել են ձեր համաժամացման անցաբառով <ph name="TIME" />-ին: Համաժամացման համար մուտքագրեք անցաբառը:</translation>
 <translation id="6418346271604475326">PDF-ի պատրաստում</translation>
-<translation id="6421095165635308">{count,plural, =1{Էջանիշը պահվեց {email} հաշվի «{title}» բաժնում}one{Էջանիշը պահվեց {email} հաշվի «{title}» բաժնում}other{Էջանիշները պահվեցին {email} հաշվի «{title}» բաժնում}}</translation>
 <translation id="6429213933892582367">Բացեք Գաղտնաբառերի կարգավորումները</translation>
 <translation id="6434591244308415567">Սխալ առաջացավ։ Փորձեք ավելի ուշ։</translation>
 <translation id="6435236283694032571">Ավելացնել ընթերցանության ցանկում</translation>
@@ -1024,6 +1019,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7781011649027948662">Թարգմանե՞լ էջը</translation>
 <translation id="7781069478569868053">Նոր ներդիրի էջ</translation>
 <translation id="7781829728241885113">Երեկ</translation>
+<translation id="7786246662347093005">{COUNT,plural, =1{1 օր հետո}one{{COUNT} օր հետո}other{{COUNT} օր հետո}}</translation>
 <translation id="778855399387580014">Սկսեք որոնել Chrome-ի նոր ներդիրում:</translation>
 <translation id="7791543448312431591">Ավելացնել</translation>
 <translation id="7807060072011926525">Տրամադրված է Google-ի կողմից</translation>
@@ -1205,7 +1201,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8974714402877957201">1. Բացեք iPad-ի կարգավորումները։</translation>
 <translation id="8976382372951310360">Օգնություն</translation>
 <translation id="8976414606286374109">Քարտերը պահվում են Google հաշվում։</translation>
-<translation id="8978059030508051916">{count,plural, =0{Կոտրված գաղտնաբառեր չկան}=1{{count} կոտրված գաղտնաբառ}one{{count} կոտրված գաղտնաբառ}other{{count} կոտրված գաղտնաբառ}}</translation>
 <translation id="8981454092730389528">Google-ի գործունեության կառավարներ</translation>
 <translation id="8985320356172329008">Մուտք եք գործել Google որպես՝</translation>
 <translation id="8998289560386111590">Հասանելի չէ ձեր սարքում</translation>

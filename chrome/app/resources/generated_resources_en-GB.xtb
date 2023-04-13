@@ -2737,6 +2737,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3336855445806447827">Not sure</translation>
 <translation id="3337568642696914359">Don't allow sites to handle protocols</translation>
 <translation id="3340620525920140773">Download complete: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">settings</translation>
 <translation id="3341699307020049241">Incorrect PIN. You have <ph name="RETRIES" /> attempts remaining.</translation>
 <translation id="3341703758641437857">Allow access to file URLs</translation>
 <translation id="3342361181740736773">'<ph name="TRIGGERING_EXTENSION_NAME" />' would like to remove this extension.</translation>
@@ -5593,6 +5594,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5904614460720589786">Couldn't set up <ph name="APP_NAME" /> because of a configuration problem. Please contact your administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Nearly up to date! Restart your device to finish updating.</translation>
 <translation id="5906732635754427568">Data associated with this app will be removed from this device.</translation>
+<translation id="5906974869830879618">Please enter a pin</translation>
 <translation id="5908474332780919512">Start App When You Sign In</translation>
 <translation id="5908695239556627796">Mouse scroll speed</translation>
 <translation id="5909379458939060601">Delete this profile and browsing data?</translation>
@@ -6980,6 +6982,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7139627972753429585"><ph name="APP_NAME" /> is using your microphone</translation>
 <translation id="7141105143012495934">Sign-in failed because your account details could not be retrieved. Please contact your administrator or try again.</translation>
 <translation id="7141844554192012199">Check-up</translation>
+<translation id="7143207342074048698">Connecting</translation>
 <translation id="7144878232160441200">Retry</translation>
 <translation id="7148426638542880639">Sites may not work as you would expect. Choose this option if you don't want to leave information on your device about sites that you visit.</translation>
 <translation id="7149839598364933473">Convert this device into a <ph name="DEVICE_OS" /> device.</translation>
@@ -9384,6 +9387,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="964790508619473209">Screen arrangement</translation>
 <translation id="965211523698323809">Send and receive text messages from your <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Report an issue with Google Cast</translation>
+<translation id="966588271015727539">Select a Bluetooth braille display</translation>
 <translation id="967398046773905967">Do not allow any sites to access HID devices</translation>
 <translation id="967624055006145463">Data stored</translation>
 <translation id="96774243435178359">Managed printers</translation>

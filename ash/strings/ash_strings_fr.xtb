@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">Appareil USB de type C (port situé sur l'avant de l'appareil)</translation>
 <translation id="1013598600051641573">La résolution de "<ph name="DISPLAY_NAME" />" est passée à <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Cliquez sur "Confirmer" pour valider cette modification. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">L'appareil Bluetooth "<ph name="DEVICE_NAME" />" demande l'autorisation de s'associer. Veuillez saisir le code suivant sur l'appareil : <ph name="PINCODE" />.</translation>
+<translation id="1014722676793506285">Cela permet à <ph name="APP_NAME" /> ainsi qu'à toutes les applis et à tous les sites Web autorisés d'accéder à votre position, et à ChromeOS d'utiliser la position des réseaux mobiles et Wi-Fi.</translation>
 <translation id="1017556409696559990">Réduire la fenêtre supérieure en l'absence d'historique dans Chrome</translation>
 <translation id="1024364763893396229">Enregistrez "<ph name="NAME" />"</translation>
 <translation id="1032891413405719768">Le niveau de charge des piles du stylet est faible</translation>
@@ -192,6 +193,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet : <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Activer l'accès à la position</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> a été retiré</translation>
 <translation id="1838895407229022812">Éclairage nocturne désactivé.</translation>
 <translation id="1854180393107901205">Arrêter la diffusion</translation>
@@ -366,7 +368,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2726420622004325180">Les données mobiles doivent être activées sur votre téléphone pour qu'il puisse fournir un point d'accès</translation>
 <translation id="2727175239389218057">Répondre</translation>
 <translation id="2727977024730340865">L'appareil est branché à un chargeur de faible puissance. Il se peut que la charge ne soit pas fiable.</translation>
-<translation id="2740531572673183784">OK</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Supprimer"</translation>
 <translation id="2750941250130734256">Fenêtre active détachée.</translation>
@@ -469,6 +470,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3255483164551725916">Que sais-tu faire ?</translation>
 <translation id="3256109297135787951">Supprimer la mise en surbrillance d'un élément sur l'étagère</translation>
 <translation id="3260969790895726815">Les paroles sont traitées localement et la dictée fonctionne hors connexion, mais certaines commandes vocales ne sont pas prises en charge.</translation>
+<translation id="3265032511221679826">Activer l'accès à la position exacte ?</translation>
 <translation id="3269597722229482060">Clic droit</translation>
 <translation id="3289364673986435196">Menu Marche/Arrêt</translation>
 <translation id="3289544412142055976">Les applis Linux ne sont pas prises en charge actuellement</translation>
@@ -578,6 +580,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="366222428570480733">Utilisateur géré, <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Balayez l'écran pour masquer la fenêtre flottante</translation>
 <translation id="367531336287639526">Sélectionner la première icône à gauche de la barre d'adresse</translation>
+<translation id="3677931086890821290">Cela permet à toutes les applis et à tous les sites Web autorisés d'accéder à votre position, et à ChromeOS d'utiliser la position des réseaux mobiles et Wi-Fi.</translation>
 <translation id="3679827876008292680">Accéder au dernier onglet de la fenêtre</translation>
 <translation id="36813544980941320">Les réseaux Wi-Fi seront synchronisés sur votre téléphone et votre <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Sites Web</translation>
@@ -1221,6 +1224,7 @@ Nouvelle installation</translation>
 <translation id="6683022854667115063">Casque audio</translation>
 <translation id="6696025732084565524">Votre clavier amovible nécessite une mise à jour critique</translation>
 <translation id="6700713906295497288">Bouton de menu IME</translation>
+<translation id="6705577071209924099">Régler la luminosité</translation>
 <translation id="6707693040195709527">Délai de rétablissement d'une version antérieure de l'appareil expiré</translation>
 <translation id="6710213216561001401">Précédent</translation>
 <translation id="6723839937902243910">Alimentation</translation>
@@ -1744,6 +1748,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="9198992156681343238">La résolution de <ph name="DISPLAY_NAME" /> est passée à <ph name="RESOLUTION" />. Cliquez sur "Confirmer" pour conserver les modifications. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Connectez l'appareil <ph name="NAME" /> à ce Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, géré par votre administrateur</translation>
+<translation id="9207682216934703221">Cela permet à <ph name="APP_NAME" />, <ph name="APP2_NAME" />, ainsi qu'à toutes les applis et tous les sites Web autorisés d'accéder à votre position, et à ChromeOS d'utiliser la position des réseaux mobiles et Wi-Fi.</translation>
 <translation id="9210037371811586452">Sortie du mode Bureau unifié</translation>
 <translation id="9211490828691860325">Tous les bureaux</translation>
 <translation id="9211681782751733685">Temps restant avant que la batterie soit entièrement rechargée : <ph name="TIME_REMAINING" />.</translation>

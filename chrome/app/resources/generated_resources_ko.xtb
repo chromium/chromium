@@ -2167,6 +2167,7 @@
 <translation id="2804043232879091219">대체 브라우저를 열 수 없습니다.</translation>
 <translation id="2804667941345577550">열려 있는 탭을 포함하여 이 사이트에서 로그아웃됩니다.</translation>
 <translation id="2804680522274557040">카메라 사용 중지됨</translation>
+<translation id="2804742109948581745">나란히</translation>
 <translation id="2805539617243680210">설정 완료</translation>
 <translation id="2805646850212350655">Microsoft Encrypting File System</translation>
 <translation id="2805756323405976993">앱</translation>
@@ -2738,6 +2739,7 @@
 <translation id="3336855445806447827">잘 모르겠음</translation>
 <translation id="3337568642696914359">사이트에서 프로토콜을 처리하도록 허용하지 않음</translation>
 <translation id="3340620525920140773"><ph name="FILE_NAME" /> 다운로드 완료</translation>
+<translation id="3340978935015468852">설정</translation>
 <translation id="3341699307020049241">잘못된 PIN입니다. 앞으로 <ph name="RETRIES" />번 더 시도할 수 있습니다.</translation>
 <translation id="3341703758641437857">파일 URL에 대한 액세스 허용</translation>
 <translation id="3342361181740736773"><ph name="TRIGGERING_EXTENSION_NAME" />에서 이 확장 프로그램을 제거하려 합니다.</translation>
@@ -4658,6 +4660,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5056950756634735043">컨테이너에 연결 중입니다.</translation>
 <translation id="5057110919553308744">확장 프로그램을 클릭할 경우</translation>
 <translation id="5059241099014281248">로그인 제한</translation>
+<translation id="5059429103770496207">표시 스타일</translation>
 <translation id="5059526285558225588">공유할 정보 선택</translation>
 <translation id="5060332552815861872">저장할 수 있는 프린터가 1대 있습니다.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{폴더에 북마크가 있습니다. 삭제하시겠습니까?}other{폴더에 #개의 북마크가 있습니다. 삭제하시겠습니까?}}</translation>
@@ -5591,6 +5594,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5904614460720589786">구성 문제로 인해 <ph name="APP_NAME" /> 앱을 설정할 수 없습니다. 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="5906655207909574370">업데이트가 거의 완료되었습니다. 업데이트를 완료하려면 기기를 다시 시작하세요.</translation>
 <translation id="5906732635754427568">이 앱과 관련된 데이터가 이 기기에서 삭제됩니다.</translation>
+<translation id="5906974869830879618">PIN 입력</translation>
 <translation id="5908474332780919512">로그인 시 앱 실행</translation>
 <translation id="5908695239556627796">마우스 스크롤 속도</translation>
 <translation id="5909379458939060601">이 프로필과 인터넷 사용 기록을 삭제하시겠습니까?</translation>
@@ -6978,6 +6982,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" />에서 마이크를 사용 중입니다.</translation>
 <translation id="7141105143012495934">계정 세부정보를 가져올 수 없어 로그인할 수 없습니다. 관리자에게 문의하거나 다시 시도해 주세요.</translation>
 <translation id="7141844554192012199">진단</translation>
+<translation id="7143207342074048698">연결 중</translation>
 <translation id="7144878232160441200">다시 시도</translation>
 <translation id="7148426638542880639">사이트가 제대로 작동하지 않을 수 있습니다. 방문하는 사이트에 관한 정보를 기기에 저장하지 않으려면 이 옵션을 선택하세요.</translation>
 <translation id="7149839598364933473">이 기기를 <ph name="DEVICE_OS" /> 기기로 전환합니다</translation>
@@ -9382,6 +9387,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="964790508619473209">화면 배치</translation>
 <translation id="965211523698323809"><ph name="DEVICE_TYPE" />에서 SMS를 보내고 받으세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Google Cast 문제 신고</translation>
+<translation id="966588271015727539">블루투스 점자 디스플레이 선택</translation>
 <translation id="967398046773905967">모든 사이트의 HID 기기 액세스를 허용하지 않음</translation>
 <translation id="967624055006145463">저장된 데이터</translation>
 <translation id="96774243435178359">관리되는 프린터</translation>

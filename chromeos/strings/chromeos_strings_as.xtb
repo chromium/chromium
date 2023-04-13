@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">এইবোৰ অন্য কিছুমান সহায়ক উৎস:</translation>
 <translation id="1905710495812624430">চেষ্টা কৰাৰ সৰ্বাধিক সীমা অতিক্ৰম কৰিছে।</translation>
 <translation id="1908234395526491708">বিফল UDP অনুৰোধসমূহ</translation>
+<translation id="1923388006036088459">বৈশিষ্ট্যপূৰ্ণ ৰং</translation>
 <translation id="1947737735496445907">প্ৰিণ্ট কৰা হ’ল</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">এটা ডিফ’ল্ট এপিএনৰ আৱশ্যক</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">ডাউনল’ড সম্পূৰ্ণ হ’ল</translation>
 <translation id="3969602104473960991">ChromeOSৰ পাছৱৰ্ড আপডে’ট কৰা হৈছে</translation>
 <translation id="397105322502079400">গণনা কৰি থকা হৈছে…</translation>
+<translation id="3974175076798940554">এতিয়া Chromebook Plusৰ বিশেষ সম্পদসমূহ উপলব্ধ</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> দিনতকৈ পুৰণি প্ৰিণ্টৰ কামসমূহ আঁতৰোৱা হ’ব</translation>
 <translation id="3993704782688964914">আপোনাৰ <ph name="DEVICE_NAME" />টো এতিয়া আপ টু ডে’ট হৈ আছে</translation>
 <translation id="4003384961948020559">বিফল হৈছে - আউটপুট ভৰ্তি হৈ গৈছে</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">একাধিক ছাইন-ইন কৰিবলৈ এটা একাউণ্ট যোগ কৰক। ছাইন ইন কৰি থোৱা সকলো একাউণ্ট পাছৱৰ্ড অবিহনেই এক্সেছ কৰিব পাৰি, সেয়েহে এই সুবিধাটো কেৱল বিশ্বাসযোগ্য একাউণ্টৰ সৈতেহে ব্যৱহাৰ কৰা উচিত।</translation>
 <translation id="8364946094152050673">ড’মেইনৰ নাম থকা ছাৰ্ভাৰসমূহ খালী</translation>
 <translation id="8372477600026034341">অতিৰিক্ত হ’ষ্ট</translation>
+<translation id="8373046809163484087">আপোনাৰ ৱালপেপাৰৰ সৈতে মিলা ৰঙৰ ছেট ব্যৱহাৰ কৰক</translation>
 <translation id="8380114448424469341">স্ক্ৰীনৰ <ph name="DIRECTION" /> ফালৰ আধা অংশত ৱিণ্ড’ ড’ক কৰক</translation>
 <translation id="8395584934117017006">এই <ph name="DEVICE_TYPE" />টো এণ্টাৰপ্ৰাইজে পৰিচালনা কৰে</translation>
 <translation id="8398927464629426868">বৰ্তমান ডিভাইচটো চাৰ্জ অথবা ডিছচাৰ্জ হৈ থকাৰ হাৰ</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">ব্যৱহাৰকাৰীৰ নাম</translation>
 <translation id="8503836310948963452">আৰু মাত্ৰ কেইমিনিটমান বাকী…</translation>
 <translation id="8508640263392900755">এপিএনৰ সবিশেষ</translation>
+<translation id="8522687886059337719">আপোনাৰ এতিয়া নতুন <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ৱালপেপাৰ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> আৰু <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />স্ক্ৰীন ছেভাৰ<ph name="END_LINK_SCREENSAVER_SUBPAGE" />ৰ এক্সেছ আছে</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">আপোনাৰ বাহকৰ নেটৱৰ্কৰ সৈতে সংযুক্ত হ’বলৈ সেইটোক এই বিকল্পটোৰ আৱশ্যক হ’ব পাৰে। সবিশেষৰ বাবে আপোনাৰ বাহকৰ সৈতে যোগাযোগ কৰক।</translation>

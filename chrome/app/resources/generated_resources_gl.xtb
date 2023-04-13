@@ -2720,6 +2720,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3336855445806447827">Non estou seguro</translation>
 <translation id="3337568642696914359">Non permitir que os sitios xestionen protocolos</translation>
 <translation id="3340620525920140773">Completouse a descarga: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">configuración</translation>
 <translation id="3341699307020049241">O PIN é incorrecto. Quédanche <ph name="RETRIES" /> intentos.</translation>
 <translation id="3341703758641437857">Permitir acceso aos URL dos ficheiros</translation>
 <translation id="3342361181740736773">Á extensión "<ph name="TRIGGERING_EXTENSION_NAME" />" gustaríalle eliminar esta extensión.</translation>
@@ -4092,6 +4093,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4545759655004063573">Non se pode gardar debido a que non hai permisos suficientes. Garda o contido noutra localización.</translation>
 <translation id="4546308221697447294">Navega rápido con Google Chrome</translation>
 <translation id="4546345569117159016">Botón dereito</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> quere usar esta extensión:</translation>
 <translation id="4546692474302123343">Entrada de voz do Asistente de Google</translation>
 <translation id="4547659257713117923">Non hai pestanas doutros dispositivos</translation>
 <translation id="4547672827276975204">Definir automaticamente</translation>
@@ -5571,6 +5573,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5904614460720589786">Non se puido configurar a aplicación <ph name="APP_NAME" /> debido a un problema de configuración. Ponte en contacto co teu administrador. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">A actualización case rematou. Reinicia o dispositivo para finalizala.</translation>
 <translation id="5906732635754427568">Os datos asociados con esta aplicación quitaranse deste dispositivo.</translation>
+<translation id="5906974869830879618">Introduce un PIN</translation>
 <translation id="5908474332780919512">Iniciar aplicación ao iniciar sesión</translation>
 <translation id="5908695239556627796">Velocidade de desprazamento do rato</translation>
 <translation id="5909379458939060601">Queres eliminar este perfil e os datos de navegación?</translation>
@@ -6957,6 +6960,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7139627972753429585"><ph name="APP_NAME" /> está usando o micrófono</translation>
 <translation id="7141105143012495934">Produciuse un erro no inicio de sesión porque non se puideron recuperar os datos da túa conta. Ponte en contacto co administrador ou téntao de novo.</translation>
 <translation id="7141844554192012199">Revisión</translation>
+<translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Volver tentar</translation>
 <translation id="7148426638542880639">É posible que os sitios non funcionen da forma que esperas. Elixe esta opción se non queres deixar información sobre os sitios que visitas no teu dispositivo.</translation>
 <translation id="7149839598364933473">Transforma este aparello nun dispositivo <ph name="DEVICE_OS" />.</translation>
@@ -9360,6 +9364,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="964790508619473209">Disposición da pantalla</translation>
 <translation id="965211523698323809">Envía e recibe mensaxes de texto desde o <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Informar dun problema con Google Cast</translation>
+<translation id="966588271015727539">Selecciona una liña braille por Bluetooth</translation>
 <translation id="967398046773905967">Non permitir que ningún sitio acceda aos dispositivos de interface humana</translation>
 <translation id="967624055006145463">Datos almacenados</translation>
 <translation id="96774243435178359">Impresoras xestionadas</translation>

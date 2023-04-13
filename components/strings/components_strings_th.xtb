@@ -364,6 +364,7 @@
 <translation id="1801812870656502108">รายละเอียดบัตรเสมือน</translation>
 <translation id="1803020234906945288">การรับประทานอาหารเพื่อสุขภาพ</translation>
 <translation id="1803351196216024260">สามารถขอใช้ไมโครโฟนของคุณได้</translation>
+<translation id="1806174020048213474">แอปนี้กำลังขอสิทธิ์ในการติดตั้งข้อมูลเข้าสู่ระบบ Wi-Fi หลังตั้งค่าแล้ว <ph name="DEVICE_TYPE" /> จะเชื่อมต่อกับเครือข่าย Wi-Fi ที่เข้าร่วมโดยอัตโนมัติ หากต้องการนำข้อมูลเข้าสู่ระบบเหล่านี้ออก ให้ถอนการติดตั้งแอป</translation>
 <translation id="1807246157184219062">สว่าง</translation>
 <translation id="1807528111851433570">แผ่นงานเริ่มต้น</translation>
 <translation id="180991881384371158">CVC จะแสดงอยู่บนด้านหลังของบัตร โดยเป็นตัวเลข 3 หลักสุดท้ายที่ด้านขวาบนของช่องลายเซ็น</translation>
@@ -1068,7 +1069,6 @@
 <translation id="3631244953324577188">ข้อมูลไบโอเมตริก</translation>
 <translation id="3632503704576938756">กลับมาแชร์หน้าจออีกครั้ง</translation>
 <translation id="3632892046558972264">หยุดการแชร์หน้าจอชั่วคราว</translation>
-<translation id="3633035844150606508">บันทึกที่อยู่ในบัญชี Google <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">ปุ่มอัปเดต Chrome กด Enter เพื่ออัปเดต Chrome จากการตั้งค่า Chrome</translation>
 <translation id="3634530185120165534">ถาด 5</translation>
 <translation id="3634567936866541746">คุณเพิ่งใส่รหัสผ่านในเว็บไซต์ที่มีการหลอกลวง Chrome ขอแนะนำให้ตรวจสอบรหัสผ่านที่บันทึกไว้เพื่อรักษาความปลอดภัยของบัญชี</translation>
@@ -1335,6 +1335,7 @@
 <translation id="4270541775497538019">สแต็กเกอร์ 6</translation>
 <translation id="4274173425554582601">คอมพิวเตอร์และอิเล็กทรอนิกส์</translation>
 <translation id="4275830172053184480">รีสตาร์ทอุปกรณ์ของคุณ</translation>
+<translation id="4276974990916607331">ไม่เป็นไร</translation>
 <translation id="4277028893293644418">รีเซ็ตรหัสผ่าน</translation>
 <translation id="4277937682389409325">ที่อยู่ท้องถิ่น</translation>
 <translation id="4278390842282768270">อนุญาตแล้ว</translation>
@@ -1695,6 +1696,7 @@
 <translation id="5129534298163637277">กล่องโต้ตอบการยืนยัน</translation>
 <translation id="5135404736266831032">จัดการที่อยู่...</translation>
 <translation id="5136841603454277753">ป้อนรหัสที่ถูกต้อง</translation>
+<translation id="5137761395480718572">แอปนี้กำลังขอสิทธิ์ในการติดตั้งข้อมูลเข้าสู่ระบบ Wi-Fi หลังตั้งค่าแล้ว <ph name="DEVICE_TYPE" /> จะเชื่อมต่อกับเครือข่าย Wi-Fi ที่เข้าร่วมโดยอัตโนมัติ หากต้องการนำข้อมูลเข้าสู่ระบบเหล่านี้ออก ให้ถอนการติดตั้งแอป <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">บัตรเสมือนไม่พร้อมใช้งานในขณะนี้ โปรดติดต่อธนาคาร</translation>
 <translation id="5138227688689900538">แสดงน้อยลง</translation>
 <translation id="5145883236150621069">มีรหัสข้อผิดพลาดในการตอบกลับนโยบาย</translation>
@@ -1751,6 +1753,7 @@
 <translation id="5273881944177595304">เว็บแอปและเครื่องมือออนไลน์</translation>
 <translation id="5274025349362408263">หนังสือและวรรณกรรม</translation>
 <translation id="5279286380302340275">จัดการการดาวน์โหลด</translation>
+<translation id="5279453600310613955">ไม่เป็นไร</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">คุณสมบัติของเอกสาร</translation>
 <translation id="528468243742722775">สิ้นสุด</translation>
@@ -2244,6 +2247,7 @@
 <translation id="6529173248185917884">ม้วนกระดาษ 7</translation>
 <translation id="6529602333819889595">&amp;ทำซ้ำการนำออก</translation>
 <translation id="6535751101619004418">สกุลเงินและการแลกเปลี่ยนเงินตราต่างประเทศ</translation>
+<translation id="6536221421038631327">การนำการสมัครใช้บริการ Passpoint ออกจาก <ph name="DEVICE_TYPE" /> จะเป็นการนำเครือข่ายที่เกี่ยวข้องออกด้วย โปรดติดต่อ "<ph name="FRIENDLY_NAME" />" เพื่อเปลี่ยนแปลงแพ็กเกจการสมัครใช้บริการ <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">กองทุนรวม</translation>
 <translation id="6545864417968258051">การสแกนหาบลูทูธ</translation>
 <translation id="6547208576736763147">เจาะรูด้านซ้าย 2 รู</translation>
@@ -3340,6 +3344,7 @@
 <translation id="9219103736887031265">ภาพ</translation>
 <translation id="922152298093051471">ปรับแต่ง Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">อนุญาตให้แอป <ph name="APP_NAME" /> ตั้งค่าเครือข่าย Wi-Fi ไหม</translation>
 <translation id="936602727769022409">คุณอาจสูญเสียสิทธิ์เข้าถึงบัญชี Google ของคุณ Chromium ขอแนะนำให้เปลี่ยนรหัสผ่านทันที ระบบจะขอให้คุณลงชื่อเข้าใช้</translation>
 <translation id="937457230470581909">สวนสัตว์ พิพิธภัณฑ์สัตว์น้ำ และเขตอนุรักษ์</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />ข้อมูลที่ใช้:<ph name="END_BOLD" /> หัวข้อโฆษณาจะอิงตามประวัติการท่องเว็บล่าสุด ซึ่งเป็นรายการเว็บไซต์ที่คุณเคยเข้าชมโดยใช้ Chrome ในอุปกรณ์นี้</translation>

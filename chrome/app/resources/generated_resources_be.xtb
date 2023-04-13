@@ -2153,6 +2153,7 @@
 <translation id="2804043232879091219">Не ўдалося адкрыць альтэрнатыўны браўзер</translation>
 <translation id="2804667941345577550">Будзе выкананы выхад з гэтага сайта, у тым ліку на адкрытых укладках</translation>
 <translation id="2804680522274557040">Камера выключана</translation>
+<translation id="2804742109948581745">Побач</translation>
 <translation id="2805539617243680210">Усё гатова!</translation>
 <translation id="2805646850212350655">Шыфраваная файлавая сістэма Microsoft</translation>
 <translation id="2805756323405976993">Праграмы</translation>
@@ -2724,6 +2725,7 @@
 <translation id="3336855445806447827">Не ведаю</translation>
 <translation id="3337568642696914359">Не дазваляць сайтам кіраваць пратаколамі</translation>
 <translation id="3340620525920140773">Спампоўванне завершана: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">налады</translation>
 <translation id="3341699307020049241">Няправільны PIN-код. Засталося спроб: <ph name="RETRIES" />.</translation>
 <translation id="3341703758641437857">Дазволіць доступ да спасылак на файлы</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" прапануе выдаліць гэта пашырэнне.</translation>
@@ -4094,6 +4096,7 @@
 <translation id="4545759655004063573">Захаваць не ўдалося: недастаткова дазволаў. Выберыце іншае месцазнаходжанне.</translation>
 <translation id="4546308221697447294">Хуткі прагляд з Google Chrome</translation>
 <translation id="4546345569117159016">Правая кнопка</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> хоча выкарыстоўваць пашырэнне:</translation>
 <translation id="4546692474302123343">Галасавы ўвод з дапамогай Памочніка Google</translation>
 <translation id="4547659257713117923">Няма ўкладак з іншых прылад</translation>
 <translation id="4547672827276975204">Вызначаць аўтаматычна</translation>
@@ -4642,6 +4645,7 @@
 <translation id="5056950756634735043">Ідзе падключэнне да кантэйнера</translation>
 <translation id="5057110919553308744">Пры націсканні на пашырэнне</translation>
 <translation id="5059241099014281248">Задаць абмежаванні на ўваход</translation>
+<translation id="5059429103770496207">Стыль паказу</translation>
 <translation id="5059526285558225588">Выберыце, што абагульваць</translation>
 <translation id="5060332552815861872">Даступны 1 прынтар, які можна захаваць.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{У гэтай папцы ёсць закладка. Вы ўпэўненыя, што хочаце яе выдаліць?}one{У гэтай папцы ёсць # закладка. Вы ўпэўненыя, што хочаце яе выдаліць?}few{У гэтай папцы ёсць # закладкі. Вы ўпэўненыя, што хочаце яе выдаліць?}many{У гэтай папцы ёсць # закладак. Вы ўпэўненыя, што хочаце яе выдаліць?}other{У гэтай папцы ёсць # закладкі. Вы ўпэўненыя, што хочаце яе выдаліць?}}</translation>
@@ -4951,6 +4955,7 @@
 <translation id="5338503421962489998">Лакальнае сховішча</translation>
 <translation id="5339031667684712858">Сайты, выдаленыя вамі</translation>
 <translation id="5340638867532133571">Дазволіць сайтам усталёўваць апрацоўшчыкі аплаты (рэкамендуецца)</translation>
+<translation id="5340787663756381836">&amp;Знайсці і змяніць</translation>
 <translation id="5341793073192892252">Наступныя файлы cookie былі заблакіраваны (староннія файлы cookie блакіруюцца без выключэнняў)</translation>
 <translation id="5342091991439452114">Мінімальная колькасць лічбаў PIN-кода: <ph name="MINIMUM" /></translation>
 <translation id="5344036115151554031">Ідзе аднаўленне Linux</translation>
@@ -5574,6 +5579,7 @@
 <translation id="5904614460720589786">Не ўдалося наладзіць праграму <ph name="APP_NAME" /> з-за праблемы канфігурацыі. Звярніцеся да адміністратара. Код памылкі: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Амаль гатова! Каб завяршыць абнаўленне, перазапусціце прыладу.</translation>
 <translation id="5906732635754427568">Даныя, звязаныя з гэтай праграмай, будуць выдалены з гэтай прылады.</translation>
+<translation id="5906974869830879618">Увядзіце PIN-код</translation>
 <translation id="5908474332780919512">Запускаць праграму пры ўваходзе</translation>
 <translation id="5908695239556627796">Хуткасць прагорткі мышшу</translation>
 <translation id="5909379458939060601">Выдаліць гэты профіль і даныя прагляду старонак у інтэрнэце?</translation>
@@ -5843,6 +5849,7 @@
 <translation id="6136114942382973861">Закрыць панэль спамповак</translation>
 <translation id="6136287496450963112">Ключ бяспекі не абаронены PIN-кодам. Каб кіраваць адбіткамі пальцаў, спачатку стварыце PIN-код.</translation>
 <translation id="6138680304137685902">Подпіс X9.62 ECDSA з SHA-384</translation>
+<translation id="6140948187512243695">Паказаць падрабязныя звесткі</translation>
 <translation id="6141988275892716286">Пацвярджэнне спампоўвання</translation>
 <translation id="6143186082490678276">Даведка</translation>
 <translation id="6143366292569327983">Выберыце, з якой мовы трэба перакладаць старонку</translation>
@@ -6966,6 +6973,7 @@
 <translation id="7139627972753429585">Праграма "<ph name="APP_NAME" />" выкарыстоўвае ваш мікрафон</translation>
 <translation id="7141105143012495934">Уваход не выкананы: не ўдалося атрымаць даныя ўліковага запісу. Звярніцеся да адміністратара або паўтарыце спробу.</translation>
 <translation id="7141844554192012199">Праверка</translation>
+<translation id="7143207342074048698">Падключэнне</translation>
 <translation id="7144878232160441200">Паўтарыць</translation>
 <translation id="7148426638542880639">Сайты могуць працаваць некарэктна. Выберыце гэты варыянт, калі не хочаце, каб на прыладзе захоўвалася інфармацыя пра наведаныя сайты.</translation>
 <translation id="7149839598364933473">Усталяваць <ph name="DEVICE_OS" /> на гэту прыладу.</translation>
@@ -9347,6 +9355,7 @@
 <translation id="939401694733344652">Гэтыя ўліковыя запісы цяпер не выкарыстоўваюцца ў праграмах для Android. Калі вы выбераце ўліковы запіс для выкарыстання ў гэтай праграме для Android, яго можна будзе выкарыстаць і ў іншых такіх праграмах. Параметры доступу да праграм для Android можна змяніць у раздзеле <ph name="LINK_BEGIN" />Налады &gt; Уліковыя запісы<ph name="LINK_END" />.</translation>
 <translation id="939598580284253335">Увядзіце фразу-пароль</translation>
 <translation id="939736085109172342">Новая папка</translation>
+<translation id="940212040923880623">&amp;Знайсці і змяніць</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> абагульвае гук і ўкладку Chrome.</translation>
 <translation id="944799160843436808">Не ўдалося наладзіць Steam на Chromebook</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>
@@ -9368,6 +9377,7 @@
 <translation id="964790508619473209">Размяшчэнне экранаў</translation>
 <translation id="965211523698323809">Адпраўляйце і атрымлівайце тэкставыя паведамленні з прылады "<ph name="DEVICE_TYPE" />". <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Паскардзіцца на праблему з Google Cast</translation>
+<translation id="966588271015727539">Выбраць дысплэй Брайля з падключэннем праз Bluetooth</translation>
 <translation id="967398046773905967">Не дазваляць сайтам атрымліваць доступ да прылад HID</translation>
 <translation id="967624055006145463">Захаваныя даныя</translation>
 <translation id="96774243435178359">Прынтары пад кіраваннем</translation>

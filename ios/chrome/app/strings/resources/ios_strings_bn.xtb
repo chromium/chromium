@@ -217,7 +217,6 @@
 <translation id="2482878487686419369">বিজ্ঞপ্তিগুলি</translation>
 <translation id="2496626742194544812">প্রথমে ট্যাবে যান</translation>
 <translation id="2500374554657206846">পাসওয়ার্ড সেভ করার বিকল্প</translation>
-<translation id="2502415369140591438"><ph name="COUNT" />টি একই পাসওয়ার্ড যা আবার ব্যবহার করা হয়েছে</translation>
 <translation id="2523363575747517183">এই ওয়েবসাইটটি ক্রমাগত অন্য অ্যাপ্লিকেশন খোলার চেষ্টা করছে।</translation>
 <translation id="2529021024822217800">সবকটি খুলুন</translation>
 <translation id="2547458583188611426">সিঙ্ক বিকল্প কাজ করছে না। সিঙ্ক শুরু করতে, আপনার পাসফ্রেজ লিখুন।</translation>
@@ -389,7 +388,6 @@
 <translation id="3581564640715911333">অন্য ভাষাতে পৃষ্ঠা অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="3588820906588687999">নতুন ট্যাবে ছবি খুলুন</translation>
 <translation id="3595252146048399851"><ph name="BEGIN_LINK" />সেটিংসে<ph name="END_LINK" /> কোন ধরনের ডেটা সিঙ্ক করা হবে তা আপনি সবসময় বেছে নিতে পারবেন। আপনার ইতিহাসের উপরে ভিত্তি করে, সার্চ ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে Google এই ডেটা ব্যবহার করতে পারে।</translation>
-<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT}টি দুর্বল পাসওয়ার্ড}one{{COUNT}টি দুর্বল পাসওয়ার্ড}other{{COUNT}টি দুর্বল পাসওয়ার্ড}}</translation>
 <translation id="3603009562372709545">লিঙ্ক ইউআরএল কপি করুন</translation>
 <translation id="3607167657931203000">ডেটা স্বতঃপূর্ণ করুন</translation>
 <translation id="3608008480985212611">আপনার পছন্দ ম্যানেজ করতে সাইন-ইন করুন।</translation>
@@ -435,7 +433,6 @@
 <translation id="3928666092801078803">আমার ডেটা একত্রিত করুন</translation>
 <translation id="3929457972718048006">ঠিকানা</translation>
 <translation id="3943492037546055397">পাসওয়ার্ড</translation>
-<translation id="3951717558054674026">{count,plural, =1{{count}টি দুর্বল পাসওয়ার্ড}one{{count}টি দুর্বল পাসওয়ার্ড}other{{count}টি দুর্বল পাসওয়ার্ড}}</translation>
 <translation id="3959736869653157332">মেনু → নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="3967822245660637423">ডাউনলোড সম্পূর্ণ</translation>
 <translation id="3968505803272650567">আপনার পছন্দ ম্যানেজ করুন</translation>
@@ -773,7 +770,6 @@
 <translation id="6184086493125982861">ট্যাব দেখান</translation>
 <translation id="6187302354554850004">শেষে সিঙ্ক হয়েছে: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">অপঠিত</translation>
-<translation id="6193424046394092997">{count,plural, =1{{title}-এ বুকমার্ক করা হয়েছে}one{{title}-এ বুকমার্ক করা হয়েছে}other{{title}-এ বুকমার্ক করা হয়েছে}}</translation>
 <translation id="6196207969502475924">ভয়েস সার্চ</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT}টি ট্যাব বন্ধ করুন}one{{COUNT}টি ট্যাব বন্ধ করুন}other{{COUNT}টি ট্যাব বন্ধ করুন}}</translation>
 <translation id="6210079381482819663"><ph name="THRESHOLD" /> দিন বা তার বেশি সময় ধরে ব্যবহার করা হয়নি এমন ট্যাবগুলি এখানে সরানো হয়েছে। আপনি <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> থেকে এটি যেকোনও সময় করতে পারেন।</translation>
@@ -822,7 +818,6 @@
 
 আপনার সিঙ্ক পাসফ্রেজের মাধ্যমে আপনার ডেটা <ph name="TIME" /> এ এনক্রিপটেড হয়েছে। সিঙ্ক শুরু করতে এটি লিখুন।</translation>
 <translation id="6418346271604475326">পিডিএফ প্রস্তুত হচ্ছে</translation>
-<translation id="6421095165635308">{count,plural, =1{আপনার অ্যাকাউন্টে {title}-এ বুকমার্ক সেভ করা হয়েছে, {email}}one{আপনার অ্যাকাউন্টে {title}-এ বুকমার্ক সেভ করা হয়েছে, {email}}other{আপনার অ্যাকাউন্টে {title}-এ বুকমার্ক সেভ করা হয়েছে, {email}}}</translation>
 <translation id="6429213933892582367">পাসওয়ার্ড বিকল্প খুলুন</translation>
 <translation id="6434591244308415567">কোনও সমস্যা হয়েছে। পরে আবার চেষ্টা করুন।</translation>
 <translation id="6435236283694032571">পড়ার তালিকায় যোগ করুন</translation>
@@ -1026,6 +1021,7 @@
 <translation id="7781011649027948662">পৃষ্ঠাটি অনুবাদ করতে চান?</translation>
 <translation id="7781069478569868053">নতুন ট্যাব পৃষ্ঠা</translation>
 <translation id="7781829728241885113">গতকাল</translation>
+<translation id="7786246662347093005">{COUNT,plural, =1{১ দিন পরে}one{{COUNT} দিন পরে}other{{COUNT} দিন পরে}}</translation>
 <translation id="778855399387580014">নতুন Chrome ট্যাবে সার্চ করা শুরু করুন।</translation>
 <translation id="7791543448312431591">জুড়ুন</translation>
 <translation id="7807060072011926525">Google-এর প্রদান করা ফিড</translation>
@@ -1207,7 +1203,6 @@
 <translation id="8974714402877957201">১. iPad সেটিংস খুলুন</translation>
 <translation id="8976382372951310360">সহায়তা</translation>
 <translation id="8976414606286374109">কার্ড আপনার Google অ্যাকাউন্টে সেভ করা হয়।</translation>
-<translation id="8978059030508051916">{count,plural, =0{কোনও পাসওয়ার্ড চুরি হয়নি}=1{চুরি হয়ে যাওয়া {count}টি পাসওয়ার্ড}one{চুরি হয়ে যাওয়া {count}টি পাসওয়ার্ড}other{চুরি হয়ে যাওয়া {count}টি পাসওয়ার্ড}}</translation>
 <translation id="8981454092730389528">Google অ্যাক্টিভিটির নিয়ন্ত্রণগুলি</translation>
 <translation id="8985320356172329008">এই হিসেবে Google-এ সাইন-ইন করেছেন</translation>
 <translation id="8998289560386111590">আপনার ডিভাইসে উপলভ্য নয়</translation>

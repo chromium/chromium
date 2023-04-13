@@ -368,7 +368,6 @@
 <translation id="2726420622004325180">כדי לספק נקודה לשיתוף אינטרנט, נדרשת חבילת גלישה בטלפון</translation>
 <translation id="2727175239389218057">מענה</translation>
 <translation id="2727977024730340865">מחובר למטען בעל מתח נמוך. ייתכן שטעינת הסוללה לא תהיה אמינה.</translation>
-<translation id="2740531572673183784">אישור</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />,‏ <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">‏"Delete" (מחיקה)</translation>
 <translation id="2750941250130734256">בוטלה ההצמדה של החלון הפעיל.</translation>
@@ -1073,6 +1072,7 @@
 <translation id="5976112937189445008">‏כדי להקליט את החלון, מקישים על Enter</translation>
 <translation id="5978382165065462689">שיתוף שליטה במסך דרך סיוע מרחוק.</translation>
 <translation id="5980301590375426705">יציאה מהפעלת אורח</translation>
+<translation id="5983567367406220847">הנקודה לשיתוף האינטרנט הושבתה עקב חוסר פעילות.</translation>
 <translation id="598407983968395253">שימוש בתבנית</translation>
 <translation id="598882571027504733">‏כדי להתקין את העדכון, יש להפעיל מחדש את ה-Chromebook כשהמקלדת מחוברת.</translation>
 <translation id="6002179289567220515">כיבית מצלמה אחת באמצעות המתג הפיזי. אפשר גם להשבית את הגישה לכל המצלמות.</translation>
@@ -1375,6 +1375,7 @@
 <translation id="7452560014878697800">אפליקציה כלשהי משתמשת במצלמה שלך</translation>
 <translation id="7453330308669753048">התוצאה מהיסטוריית החיפושים הוסרה</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | הזמן שנותר לטעינה מלאה: <ph name="TIME" /></translation>
+<translation id="7459485586006128091">הנקודה לשיתוף האינטרנט הושבתה עקב שגיאה פנימית. אפשר לנסות להתחבר מחדש בעוד כמה דקות.</translation>
 <translation id="7461924472993315131">הצמדה</translation>
 <translation id="746232733191930409">מצב הקלטת מסך</translation>
 <translation id="7466449121337984263">יש לגעת בחיישן</translation>
@@ -1450,6 +1451,7 @@
 <translation id="776344839111254542">יש ללחוץ כדי להציג את פרטי העדכון</translation>
 <translation id="7768784765476638775">הקראה</translation>
 <translation id="7769299611924763557">‏קובץ ה-GIF יהיה מוכן בקרוב</translation>
+<translation id="7773536009433685931">‏הפעלת Wi-Fi במקום זאת</translation>
 <translation id="7780094051999721182">קיצורי הדרך</translation>
 <translation id="7780159184141939021">סיבוב המסך</translation>
 <translation id="7796735576426975947">התראה חדשה מוסתרת</translation>

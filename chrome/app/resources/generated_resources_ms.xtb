@@ -46,6 +46,7 @@
 <translation id="1038462104119736705">Sekurang-kurangnya <ph name="INSTALL_SIZE" /> ruang disyorkan untuk Linux. Untuk meningkatkan ruang kosong, padamkan fail daripada peranti anda.</translation>
 <translation id="1038643060055067718">Baris:</translation>
 <translation id="1039337018183941703">Fail tidak sah atau rosak</translation>
+<translation id="1040761927998636252">Penanda halaman tidak bernama untuk <ph name="URL" /></translation>
 <translation id="1041175011127912238">Halaman ini tidak bertindak balas</translation>
 <translation id="1041263367839475438">Peranti yang tersedia</translation>
 <translation id="1042174272890264476">Komputer anda juga disertakan dengan pustaka RLZ <ph name="SHORT_PRODUCT_NAME" /> terbina dalam. RLZ memperuntukkan tanda nama tidak unik yang tidak boleh mengenal pasti secara peribadi untuk mengukur carian dan penggunaan <ph name="SHORT_PRODUCT_NAME" /> yang didorong oleh kempen galakan tertentu. Label ini kadangkala dipaparkan dalam pertanyaan Google Search dalam <ph name="PRODUCT_NAME" />.</translation>
@@ -2165,6 +2166,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2804043232879091219">Penyemak imbas alternatif tidak boleh dibuka</translation>
 <translation id="2804667941345577550">Anda akan dilog keluar daripada tapak ini, termasuk dalam tab yang terbuka</translation>
 <translation id="2804680522274557040">Kamera dimatikan</translation>
+<translation id="2804742109948581745">Bersebelahan</translation>
 <translation id="2805539617243680210">Anda sudah bersedia!</translation>
 <translation id="2805646850212350655">Sistem Fail Penyulitan Microsoft</translation>
 <translation id="2805756323405976993">Apl</translation>
@@ -2736,6 +2738,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3336855445806447827">Tidak pasti</translation>
 <translation id="3337568642696914359">Jangan benarkan laman mengendalikan protokol</translation>
 <translation id="3340620525920140773">Muat turun selesai: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">tetapan</translation>
 <translation id="3341699307020049241">PIN salah. Anda mempunyai <ph name="RETRIES" /> percubaan lagi.</translation>
 <translation id="3341703758641437857">Membenarkan akses ke URL fail</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" ingin mengalih keluar sambungan ini.</translation>
@@ -4658,6 +4661,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5056950756634735043">Menyambung kepada bekas</translation>
 <translation id="5057110919553308744">Apabila anda mengklik sambungan</translation>
 <translation id="5059241099014281248">Sekat log masuk</translation>
+<translation id="5059429103770496207">Gaya paparan</translation>
 <translation id="5059526285558225588">Pilih kandungan untuk dikongsi</translation>
 <translation id="5060332552815861872">Terdapat 1 pencetak tersedia untuk disimpan.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Folder ini mengandungi penanda halaman. Adakah anda pasti mahu memadamnya?}other{Folder ini mengandungi # penanda halaman. Adakah anda pasti mahu memadamnya?}}</translation>
@@ -5591,6 +5595,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5904614460720589786">Tidak dapat menyediakan <ph name="APP_NAME" /> kerana terdapat masalah konfigurasi. Sila hubungi pentadbir anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Hampir terkini! Mulakan semula peranti anda untuk menyelesaikan kemas kini.</translation>
 <translation id="5906732635754427568">Data yang berkaitan dengan apl ini akan dialih keluar daripada peranti ini.</translation>
+<translation id="5906974869830879618">Sila masukkan pin</translation>
 <translation id="5908474332780919512">Mulakan Apl Apabila Anda Log Masuk</translation>
 <translation id="5908695239556627796">Kelajuan penatalan tetikus</translation>
 <translation id="5909379458939060601">Padamkan profil dan data semakan imbas ini?</translation>
@@ -6978,6 +6983,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7139627972753429585"><ph name="APP_NAME" /> sedang menggunakan mikrofon anda</translation>
 <translation id="7141105143012495934">Log masuk gagal kerana butiran akaun anda tidak boleh didapatkan semula. Sila hubungi pentadbir anda atau cuba lagi.</translation>
 <translation id="7141844554192012199">Semakan</translation>
+<translation id="7143207342074048698">Menyambung</translation>
 <translation id="7144878232160441200">Cuba semula</translation>
 <translation id="7148426638542880639">Laman mungkin tidak berfungsi seperti yang anda jangkakan. Pilih pilihan ini jika anda tidak mahu meninggalkan maklumat pada peranti anda tentang laman yang anda lawati.</translation>
 <translation id="7149839598364933473">Tukar peranti ini kepada peranti <ph name="DEVICE_OS" />.</translation>
@@ -9383,6 +9389,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="964790508619473209">Susunan skrin</translation>
 <translation id="965211523698323809">Hantar dan terima mesej teks daripada <ph name="DEVICE_TYPE" /> anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Laporkan isu berkaitan Google Cast</translation>
+<translation id="966588271015727539">Pilih paparan braille Bluetooth</translation>
 <translation id="967398046773905967">Jangan benarkan mana-mana tapak mengakses peranti HID</translation>
 <translation id="967624055006145463">Data disimpan</translation>
 <translation id="96774243435178359">Pencetak terurus</translation>

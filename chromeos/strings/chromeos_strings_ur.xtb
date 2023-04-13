@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">کچھ دوسرے مددگار وسائل یہ ہیں:</translation>
 <translation id="1905710495812624430">زیادہ سے زیادہ مجاز کوششوں سے تجاوز کرگیا۔</translation>
 <translation id="1908234395526491708">‏UDP درخواست کی ناکامیاں</translation>
+<translation id="1923388006036088459">ایکسنٹ کے رنگ</translation>
 <translation id="1947737735496445907">پرنٹ ہو گیا</translation>
 <translation id="1951012854035635156">اسسٹنٹ</translation>
 <translation id="1962550982027027473">‏ایک ڈیفالٹ APN درکار ہے</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">ڈاؤن لوڈ مکمل ہوگیا ہے</translation>
 <translation id="3969602104473960991">‏ChromeOS پاس ورڈ اپ ڈیٹ کیا گيا</translation>
 <translation id="397105322502079400">حساب لگایا جا رہا ہے…</translation>
+<translation id="3974175076798940554">‏خصوصی Chromebook Plus اثاثے اب دستیاب ہیں</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> دن سے پرانی پرنٹ جابز کو ہٹا دیا جائے گا</translation>
 <translation id="3993704782688964914">آپ کا <ph name="DEVICE_NAME" /> اب اپ ٹو ڈیٹ ہے</translation>
 <translation id="4003384961948020559">ناکام ہو گیا - آؤٹ پٹ مکمل</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">متعدد سائن ان میں ایک اکاؤنٹ شامل کریں۔ سبھی سائن ان کردہ اکاؤنٹس تک پاس ورڈ کے بغیر رسائی کی جا سکتی ہے لہذا یہ خصوصیت صرف بھروسہ مند اکاؤنٹس کے ساتھ استعمال کی جانی چاہیے۔</translation>
 <translation id="8364946094152050673">نام سرورز خالی ہیں</translation>
 <translation id="8372477600026034341">بہت زیادہ میزبان</translation>
+<translation id="8373046809163484087">اس رنگ کے سیٹس کا استعمال کریں جو آپ کے وال پیپر سے مماثل ہوں</translation>
 <translation id="8380114448424469341">اسکرین کے <ph name="DIRECTION" /> طرف موجود آدھے حصے پر ونڈو ڈاک کریں</translation>
 <translation id="8395584934117017006">یہ <ph name="DEVICE_TYPE" /> انٹرپرائز کے زیر انتظام ہے</translation>
 <translation id="8398927464629426868">آلے کی فی الحال چارج ہونے یا چارج ختم ہونے کی شرح</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">صارف کا نام</translation>
 <translation id="8503836310948963452">صرف چند مزید منٹ...</translation>
 <translation id="8508640263392900755">‏APN کی تفصیلات</translation>
+<translation id="8522687886059337719">اب آپ کو نئے <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />وال پیپرز<ph name="END_LINK_WALLPAPER_SUBPAGE" /> اور <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />اسکرین سیور<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> تک رسائی حاصل ہے</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">آپ کے کیریئر کو اپنے نیٹ ورک سے منسلک ہونے کیلئے اس اختیار کی ضرورت پڑ سکتی ہے۔ تفصیلات کیلئے اپنے کیریئر سے رابطہ کریں۔</translation>

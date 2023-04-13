@@ -148,6 +148,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1651914502370159744">Verlaufsseite öffnen</translation>
 <translation id="1654477262762802994">Gesprochene Anfrage starten</translation>
 <translation id="1668469839109562275">Integriertes VPN</translation>
+<translation id="1675844249244994876">Rechtes Fenster aktualisieren</translation>
 <translation id="1677472565718498478">Noch <ph name="TIME" /> h</translation>
 <translation id="1677507110654891115">"<ph name="FEATURE_NAME" />" ist nicht verbunden.</translation>
 <translation id="1677582821739292812">Jemand sieht auf deinen Bildschirm</translation>
@@ -367,7 +368,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2726420622004325180">Damit dein Smartphone einen Hotspot nutzen kann, müssen mobile Daten aktiviert sein</translation>
 <translation id="2727175239389218057">Antworten</translation>
 <translation id="2727977024730340865">Das Gerät ist an ein Schwachstrom-Ladegerät angeschlossen. Möglicherweise kann der Akku nicht zuverlässig aufgeladen werden.</translation>
-<translation id="2740531572673183784">Ok</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">„Löschen“</translation>
 <translation id="2750941250130734256">Fixierung des aktiven Fensters rückgängig gemacht.</translation>
@@ -847,6 +847,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="493076006037866439">Auf dem Bildschirm herauszoomen</translation>
 <translation id="4936329710968938986">Alle, aus</translation>
 <translation id="4938176435186993759">Alle Vorschläge ausblenden</translation>
+<translation id="4943007472417128747">Der Hotspot wurde deaktiviert, um das WLAN zu verwenden. Deaktiviere das WLAN, wenn du den Hotspot verwenden möchtest.</translation>
 <translation id="4945196315133970626">Benachrichtigungen deaktivieren</translation>
 <translation id="4946376291507881335">Aufnahme</translation>
 <translation id="495046168593986294">Nach oben scrollen</translation>
@@ -1070,6 +1071,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5976112937189445008">Eingabetaste drücken, um Fenster aufzuzeichnen</translation>
 <translation id="5978382165065462689">Du teilst dir die Bildschirmsteuerung per Remote-Unterstützung.</translation>
 <translation id="5980301590375426705">Gastsitzung beenden</translation>
+<translation id="5983567367406220847">Aufgrund von Inaktivität wurde der Hotspot deaktiviert.</translation>
 <translation id="598407983968395253">Vorlage verwenden</translation>
 <translation id="598882571027504733">Du kannst das Update vornehmen, indem du dein Chromebook mit angeschlossener Tastatur neu startest.</translation>
 <translation id="6002179289567220515">Du hast über den physischen Schalter eine Kamera ausgeschaltet. Du kannst auch den Zugriff für alle Kameras deaktivieren.</translation>
@@ -1372,6 +1374,7 @@ Neuinstallation</translation>
 <translation id="7452560014878697800">Eine Anwendung verwendet deine Kamera</translation>
 <translation id="7453330308669753048">Ergebnis aus dem Suchverlauf entfernt</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" /> % | vollständig geladen in <ph name="TIME" /></translation>
+<translation id="7459485586006128091">Aufgrund eines internen Fehlers wurde der Hotspot deaktiviert. Versuche in ein paar Minuten noch einmal, eine Verbindung herzustellen.</translation>
 <translation id="7461924472993315131">Anpinnen</translation>
 <translation id="746232733191930409">Modus zur Aufzeichnung des Bildschirms</translation>
 <translation id="7466449121337984263">Berühre den Sensor</translation>
@@ -1391,6 +1394,7 @@ Neuinstallation</translation>
 Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</translation>
 <translation id="7526573455193969409">Das Netzwerk wird möglicherweise überwacht</translation>
 <translation id="7536035074519304529">IP-Adresse: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Linkes Fenster aktualisieren</translation>
 <translation id="7543399541175347147">Linux-Apps und Inkognitofenster werden derzeit nicht unterstützt. Andere Apps werden gespeichert.</translation>
 <translation id="7544300628205093162">Hintergrundbeleuchtung der Tastatur ist an</translation>
 <translation id="7548434653388805669">Schlafenszeit</translation>
@@ -1444,6 +1448,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="776344839111254542">Zum Aufrufen von Aktualisierungsdetails klicken</translation>
 <translation id="7768784765476638775">Vorlesen</translation>
 <translation id="7769299611924763557">Die GIF-Datei ist gleich bereit</translation>
+<translation id="7773536009433685931">Stattdessen WLAN aktivieren</translation>
 <translation id="7780094051999721182">Verknüpfungen</translation>
 <translation id="7780159184141939021">Bildschirm drehen</translation>
 <translation id="7796735576426975947">Neue Benachrichtigung ausgeblendet</translation>
@@ -1471,6 +1476,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="7893503627044934815">Ich möchte nicht, dass diese Datei angezeigt wird</translation>
 <translation id="7895348134893321514">Schnellzugriff</translation>
 <translation id="7897375687985782769">Du hast die Tastenkombination zum Drehen des Bildschirms gedrückt. Möchtest du den Bildschirm drehen?</translation>
+<translation id="7901190436359881020">Fenster tauschen</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Fingerabdrucksensor berühren</translation>
 <translation id="7904094684485781019">Der Administrator dieses Kontos hat keine Mehrfachanmeldung zugelassen.</translation>

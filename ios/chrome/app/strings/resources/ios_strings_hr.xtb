@@ -219,7 +219,6 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 <translation id="2482878487686419369">Obavijesti</translation>
 <translation id="2496626742194544812">Idi na prvu karticu</translation>
 <translation id="2500374554657206846">Opcije za spremanje zaporki</translation>
-<translation id="2502415369140591438">Višestruko korištene zaporke: <ph name="COUNT" /></translation>
 <translation id="2523363575747517183">Ova web-lokacija opetovano pokušava otvoriti neku drugu aplikaciju.</translation>
 <translation id="2529021024822217800">Otvori sve</translation>
 <translation id="2547458583188611426">Sinkronizacija ne funkcionira. Unesite šifru da biste pokrenuli sinkronizaciju.</translation>
@@ -354,6 +353,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3324193307694657476">2. adresni redak</translation>
 <translation id="3328459813621383194">Premještanje neaktivnih kartica</translation>
 <translation id="3328801116991980348">Informacije o web-lokaciji</translation>
+<translation id="3344485292736684439">{count,plural, =1{Oznaka je spremljena u "{title}" na vašem računu, {email}}one{Oznake spremljene na "{title}" na vašem računu, {email}}few{Oznake spremljene na "{title}" na vašem računu, {email}}other{Oznake spremljene na "{title}" na vašem računu, {email}}}</translation>
 <translation id="3371831930909698441">Prevoditelj je dostupan. Opcije su dostupne pri dnu zaslona.</translation>
 <translation id="3377063233124932127">Sada se vaše spremljene oznake, zaporke i ostalo nalaze pri vrhu.</translation>
 <translation id="3393920035788932672">Dopušteni skočni</translation>
@@ -391,7 +391,6 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3581564640715911333">Ponudi prevođenje stranica na druge jezike</translation>
 <translation id="3588820906588687999">Otvori sliku u novoj kartici</translation>
 <translation id="3595252146048399851">U <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" /> možete odabrati što će se sinkronizirati. Google može prilagoditi Pretraživanje i druge usluge na temelju vaše povijesti.</translation>
-<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} slaba zaporka}one{{COUNT} slaba zaporka}few{{COUNT} slabe zaporke}other{{COUNT} slabih zaporki}}</translation>
 <translation id="3603009562372709545">Kopiraj URL veze</translation>
 <translation id="3607167657931203000">Podaci automatskog popunjavanja</translation>
 <translation id="3608008480985212611">Prijavite se da biste upravljali svojim preferencijama.</translation>
@@ -437,7 +436,6 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3928666092801078803">Kombiniranje podataka</translation>
 <translation id="3929457972718048006">Adrese</translation>
 <translation id="3943492037546055397">Zaporke</translation>
-<translation id="3951717558054674026">{count,plural, =1{{count} slaba zaporka}one{{count} slaba zaporka}few{{count} slabe zaporke}other{{count} slabih zaporki}}</translation>
 <translation id="3959736869653157332">Izbornik → Nova anonimna kartica</translation>
 <translation id="3967822245660637423">Preuzimanje dovršeno</translation>
 <translation id="3968505803272650567">Upravljaj interesima</translation>
@@ -774,7 +772,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6184086493125982861">Prikaz kartica</translation>
 <translation id="6187302354554850004">Posljednja sinkr.: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Nepročitano</translation>
-<translation id="6193424046394092997">{count,plural, =1{Označeno kao {title}}one{Označeno kao {title}}few{Označeno kao {title}}other{Označeno kao {title}}}</translation>
 <translation id="6196207969502475924">Glasovno pretraživanje</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Zatvori {COUNT} karticu}one{Zatvori {COUNT} karticu}few{Zatvori {COUNT} kartice}other{Zatvori {COUNT} kartica}}</translation>
 <translation id="6210079381482819663">Kartice koje se ne upotrebljavaju <ph name="THRESHOLD" /> ili više dana premještaju se ovdje. To uvijek možete promijeniti u <ph name="BEGIN_LINK" />postavkama<ph name="END_LINK" />.</translation>
@@ -824,7 +821,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 
 Vaši su podaci šifrirani vašom šifrom za sinkronizaciju <ph name="TIME" />. Unesite je da biste pokrenuli sinkronizaciju.</translation>
 <translation id="6418346271604475326">Priprema PDF-a</translation>
-<translation id="6421095165635308">{count,plural, =1{Oznaka je spremljena u mapu {title} na vašem računu, {email}}one{Oznake su spremljene u mapu {title} na vašem računu, {email}}few{Oznake su spremljene u mapu {title} na vašem računu, {email}}other{Oznake su spremljene u mapu {title} na vašem računu, {email}}}</translation>
 <translation id="6429213933892582367">Otvorite Opcije zaporke</translation>
 <translation id="6434591244308415567">Došlo je do pogreške. Pokušajte ponovo kasnije.</translation>
 <translation id="6435236283694032571">Dodaj na popis za čitanje</translation>
@@ -1037,6 +1033,7 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="7840771868269352570">Odabrane će se stavke ukloniti.</translation>
 <translation id="7845466610722898">Prikaži popis za čitanje</translation>
 <translation id="784551991304901159">Za pregled podataka na izborniku odaberite Uključi</translation>
+<translation id="7846158885638438868">{count,plural, =1{Označeno u "{title}"}one{Označeno u "{title}"}few{Označeno u "{title}"}other{Označeno u "{title}"}}</translation>
 <translation id="7853202427316060426">Aktivnost</translation>
 <translation id="7856733331829174190">Preuzimanje nije moguće</translation>
 <translation id="785938070103630874">Otvorite zaporke, načine plaćanja ili adresu i drugo</translation>
@@ -1213,7 +1210,6 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8974714402877957201">1. Otvorite postavke iPada</translation>
 <translation id="8976382372951310360">Pomoć</translation>
 <translation id="8976414606286374109">Kartice se spremaju na vaš Google račun.</translation>
-<translation id="8978059030508051916">{count,plural, =0{Nema ugroženih zaporki}=1{{count} ugrožena zaporka}one{{count} ugrožena zaporka}few{{count} ugrožene zaporke}other{{count} ugroženih zaporki}}</translation>
 <translation id="8981454092730389528">Google kontrole aktivnosti</translation>
 <translation id="8985320356172329008">Prijavljeni ste na Google kao</translation>
 <translation id="8986567980592931173">Prijavite se Google računom da biste sinkronizirali zaporke, povijest i ostalo.</translation>

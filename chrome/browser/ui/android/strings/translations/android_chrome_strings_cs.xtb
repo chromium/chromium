@@ -107,6 +107,7 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="1493287004536771723">Sledujete web <ph name="SITE_NAME" /></translation>
 <translation id="1502010315804028179">Pokud chcete spravovat hesla, aktualizujte Služby Google Play</translation>
 <translation id="1506061864768559482">Vyhledávač</translation>
+<translation id="1508960385613684700">Průvodce ochranou osobních údajů <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="1513352483775369820">Záložky a webová historie</translation>
 <translation id="1513814250881909472">Pokud chcete získat karty ze svých ostatních zařízení, zapněte synchronizaci</translation>
 <translation id="1513858653616922153">Vymazat heslo</translation>
@@ -161,6 +162,7 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="1910950723001426294">Seznam možností sdílení je zavřený.</translation>
 <translation id="1919130412786645364">Povolit přihlášení do Chromu</translation>
 <translation id="1922362554271624559">Navrhované jazyky</translation>
+<translation id="1924255092154549435">Karta je roztažená</translation>
 <translation id="1925021887439448749">Zadejte vlastní webovou adresu</translation>
 <translation id="1928696683969751773">Aktualizace</translation>
 <translation id="19288952978244135">Znovu spusťte Chrome.</translation>
@@ -769,6 +771,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5161254044473106830">Je požadován název</translation>
 <translation id="5170568018924773124">Zobrazit ve složce</translation>
 <translation id="5171045022955879922">Vyhledávejte či zadejte URL</translation>
+<translation id="5174700554036517242">Karta má opět původní výšku</translation>
 <translation id="5184329579814168207">Otevřít v Chromu</translation>
 <translation id="5191251636205085390">Další informace o správa nových technologií, které mají za cíl nahradit soubory cookie třetích stran</translation>
 <translation id="5193988420012215838">Zkopírováno do schránky</translation>
@@ -1251,6 +1254,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7686086654630106285">Další informace o reklamách navrhovaných weby</translation>
 <translation id="768618399695552958">Některé stránky, které navštěvujete, se načítají předběžně. Pokud na stránky odkazuje web Google, mohou se předběžně načíst prostřednictvím serverů Google.</translation>
 <translation id="7691043218961417207">Objevte obsah ke sledování</translation>
+<translation id="7697383401610880082">Úchyt pro přetažení</translation>
 <translation id="7698359219371678927">Vytvořit e-mail v aplikaci <ph name="APP_NAME" /></translation>
 <translation id="7707922173985738739">Bude používat mobilní data</translation>
 <translation id="7709094866268987903">Zde se budou zobrazovat odstraněné zájmy</translation>

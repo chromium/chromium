@@ -217,7 +217,6 @@
 <translation id="2482878487686419369">அறிவிப்புகள்</translation>
 <translation id="2496626742194544812">முதல் பக்கத்திற்குச் செல்</translation>
 <translation id="2500374554657206846">கடவுச்சொல்லைச் சேமிப்பதற்கான விருப்பத்தேர்வுகள்</translation>
-<translation id="2502415369140591438">ஏற்கெனவே பயன்படுத்திய கடவுச்சொற்கள்: <ph name="COUNT" /></translation>
 <translation id="2523363575747517183">இந்த இணையதளம், மற்றொரு பயன்பாட்டைத் திறப்பதற்கு மீண்டும் மீண்டும் முயல்கிறது.</translation>
 <translation id="2529021024822217800">எல்லாவற்றையும் திற</translation>
 <translation id="2547458583188611426">ஒத்திசைவு இயங்கவில்லை. ஒத்திசைவைத் தொடங்க கடவுச்சொற்றொடரை உள்ளிடவும்.</translation>
@@ -389,7 +388,6 @@
 <translation id="3581564640715911333">பக்கங்களைப் பிற மொழிகளில் மொழிபெயர்க்க அனுமதி</translation>
 <translation id="3588820906588687999">படத்தைப் புதிய தாவலில் திற</translation>
 <translation id="3595252146048399851">எதையெல்லாம் ஒத்திசைக்க வேண்டும் என்பதை <ph name="BEGIN_LINK" />அமைப்புகளுக்குச்<ph name="END_LINK" /> சென்று எப்போது வேண்டுமானாலும் தேர்வுசெய்யலாம். உங்கள் பதிவுகளின் அடிப்படையில் Search மற்றும் பிற சேவைகளை Google பிரத்தியேகமாக்கலாம்.</translation>
-<translation id="3595588371156514964">{COUNT,plural, =1{வலுவற்ற கடவுச்சொல்: {COUNT}}other{வலுவற்ற கடவுச்சொற்கள்: {COUNT}}}</translation>
 <translation id="3603009562372709545">இணைப்பு URL ஐ நகலெடு</translation>
 <translation id="3607167657931203000">தன்னிரப்பி தரவு</translation>
 <translation id="3608008480985212611">உங்கள் விருப்பத்தேர்வுகளை நிர்வகிக்க உள்நுழையுங்கள்.</translation>
@@ -435,7 +433,6 @@
 <translation id="3928666092801078803">எனது தரவை ஒன்றிணை</translation>
 <translation id="3929457972718048006">முகவரிகள்</translation>
 <translation id="3943492037546055397">கடவுச்சொற்கள்</translation>
-<translation id="3951717558054674026">{count,plural, =1{{count} வலுவற்ற கடவுச்சொல்}other{{count} வலுவற்ற கடவுச்சொற்கள்}}</translation>
 <translation id="3959736869653157332">மெனு → புதிய மறைநிலைப் பக்கம்</translation>
 <translation id="3967822245660637423">பதிவிறக்கம் முடிந்தது</translation>
 <translation id="3968505803272650567">ஆர்வங்களை நிர்வகி</translation>
@@ -772,7 +769,6 @@
 <translation id="6184086493125982861">தாவல்களைக் காண்பி</translation>
 <translation id="6187302354554850004">கடைசியாக ஒத்திசைத்தது: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">படிக்காதவை</translation>
-<translation id="6193424046394092997">{count,plural, =1{{title} இல் புக்மார்க் செய்யப்பட்டது}other{{title} இல் புக்மார்க் செய்யப்பட்டது}}</translation>
 <translation id="6196207969502475924">குரல் தேடல்</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{{COUNT} தாவலை மூடுக}other{{COUNT} தாவல்களை மூடுக}}</translation>
 <translation id="6210079381482819663"><ph name="THRESHOLD" /> நாட்கள் அல்லது அதற்கும் மேல் பயன்படுத்தப்படாத பக்கங்கள் இங்கே நகர்த்தப்படும். இதை எப்போது வேண்டுமானாலும் <ph name="BEGIN_LINK" />அமைப்புகளில்<ph name="END_LINK" /> மாற்றலாம்.</translation>
@@ -821,7 +817,6 @@
 
 <ph name="TIME" /> அன்று உங்கள் தரவு உங்கள் ஒத்திசைவு கடவுச்சொற்றொடரைக் கொண்டு என்க்ரிப்ட் செய்யப்பட்டது. ஒத்திசைவைத் தொடங்க, அதை உள்ளிடவும்.</translation>
 <translation id="6418346271604475326">PDF தயாராகிறது</translation>
-<translation id="6421095165635308">{count,plural, =1{உங்கள் கணக்கில் ({email}) உள்ள {title} ஃபோல்டரில் புக்மார்க் சேமிக்கப்பட்டது}other{உங்கள் கணக்கில் ({email}) உள்ள {title} ஃபோல்டரில் புக்மார்க்குகள் சேமிக்கப்பட்டன}}</translation>
 <translation id="6429213933892582367">கடவுச்சொல் விருப்பங்கள் என்பதைத் திறக்கவும்</translation>
 <translation id="6434591244308415567">பிழை ஏற்பட்டது. பிறகு முயலவும்.</translation>
 <translation id="6435236283694032571">வாசிப்புப் பட்டியலில் சேர்</translation>
@@ -1207,7 +1202,6 @@
 <translation id="8974714402877957201">1. iPad அமைப்புகளைத் திறக்கவும்</translation>
 <translation id="8976382372951310360">உதவி</translation>
 <translation id="8976414606286374109">கார்டுகள் உங்கள் Google கணக்கில் சேமிக்கப்படும்.</translation>
-<translation id="8978059030508051916">{count,plural, =0{களவாடப்பட்ட கடவுச்சொற்கள் எதுவுமில்லை}=1{{count} களவாடப்பட்ட கடவுச்சொல்}other{{count} களவாடப்பட்ட கடவுச்சொற்கள்}}</translation>
 <translation id="8981454092730389528">Google செயல்பாட்டுக் கட்டுப்பாடுகள்</translation>
 <translation id="8985320356172329008">Google இல் உள்நுழைந்திருக்கும் கணக்கு</translation>
 <translation id="8998289560386111590">உங்கள் சாதனத்தில் இல்லை</translation>

@@ -122,7 +122,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab lalu Enter untuk mengelola setelan Chrome Anda</translation>
 <translation id="1264309058268477500">Alternatif</translation>
 <translation id="1264974993859112054">Olahraga</translation>
-<translation id="1266469291454105242">Buka kunci perangkat</translation>
+<translation id="1266469291454105242">Pembuka kunci perangkat</translation>
 <translation id="1268480293435976622">Envelope Chinese #7</translation>
 <translation id="1269516672602708785">Buat situs baru di Google Sites dengan cepat</translation>
 <translation id="1270502636509132238">Metode Pengambilan</translation>
@@ -364,6 +364,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1801812870656502108">Detail kartu virtual</translation>
 <translation id="1803020234906945288">Makanan sehat</translation>
 <translation id="1803351196216024260">Dapat meminta untuk menggunakan mikrofon Anda</translation>
+<translation id="1806174020048213474">Aplikasi ini meminta izin untuk menginstal kredensial Wi-Fi. Setelah penyiapan, <ph name="DEVICE_TYPE" /> akan otomatis terhubung ke jaringan Wi-Fi yang berpartisipasi. Untuk menghapus kredensial ini, uninstal aplikasi.</translation>
 <translation id="1807246157184219062">Terang</translation>
 <translation id="1807528111851433570">Lembar mulai</translation>
 <translation id="180991881384371158">CVC Anda terletak di bagian belakang kartu. CVC adalah 3 digit terakhir di kanan atas kotak tanda tangan.</translation>
@@ -1068,7 +1069,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3631244953324577188">Biometrik</translation>
 <translation id="3632503704576938756">Berbagi layar dilanjutkan</translation>
 <translation id="3632892046558972264">Berbagi layar dijeda</translation>
-<translation id="3633035844150606508">Simpan alamat di Akun Google Anda, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Tombol Update Chrome, tekan Enter untuk mengupdate Chrome dari setelan Chrome</translation>
 <translation id="3634530185120165534">Baki 5</translation>
 <translation id="3634567936866541746">Anda baru saja memasukkan sandi ke situs penipuan. Untuk mengamankan akun Anda, Chrome merekomendasikan pemeriksaan sandi tersimpan Anda.</translation>
@@ -1335,6 +1335,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4270541775497538019">Tempat kertas 6</translation>
 <translation id="4274173425554582601">Komputer &amp; elektronik</translation>
 <translation id="4275830172053184480">Mulai ulang perangkat Anda</translation>
+<translation id="4276974990916607331">Lain kali</translation>
 <translation id="4277028893293644418">Reset sandi</translation>
 <translation id="4277937682389409325">Alamat lokal</translation>
 <translation id="4278390842282768270">Diizinkan</translation>
@@ -1695,6 +1696,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5129534298163637277">Dialog konfirmasi</translation>
 <translation id="5135404736266831032">Kelola alamat...</translation>
 <translation id="5136841603454277753">Masukkan kode yang benar</translation>
+<translation id="5137761395480718572">Aplikasi ini meminta izin untuk menginstal kredensial Wi-Fi. Setelah penyiapan, <ph name="DEVICE_TYPE" /> akan otomatis terhubung ke jaringan Wi-Fi yang berpartisipasi. Untuk menghapus kredensial ini, uninstal aplikasi. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Kartu virtual saat ini tidak tersedia, hubungi bank Anda</translation>
 <translation id="5138227688689900538">Tampilkan lebih sedikit</translation>
 <translation id="5145883236150621069">Ada kode kesalahan dalam tanggapan kebijakan</translation>
@@ -1751,6 +1753,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5273881944177595304">Aplikasi web &amp; alat online</translation>
 <translation id="5274025349362408263">Buku &amp; sastra</translation>
 <translation id="5279286380302340275">Kelola download</translation>
+<translation id="5279453600310613955">Lain kali</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Properti dokumen</translation>
 <translation id="528468243742722775">Berakhir</translation>
@@ -2243,6 +2246,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6529173248185917884">Rol Ketujuh</translation>
 <translation id="6529602333819889595">&amp;Ulangi Penghapusan</translation>
 <translation id="6535751101619004418">Mata uang asing &amp; kurs</translation>
+<translation id="6536221421038631327">Menghapus langganan Passpoint dari <ph name="DEVICE_TYPE" /> akan menghapus jaringan terkait. Hubungi "<ph name="FRIENDLY_NAME" />" untuk melakukan perubahan pada paket langganan Anda. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">Reksadana</translation>
 <translation id="6545864417968258051">Pemindaian Bluetooth</translation>
 <translation id="6547208576736763147">Dua lubang di kiri</translation>
@@ -3334,6 +3338,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="9219103736887031265">Gambar</translation>
 <translation id="922152298093051471">Sesuaikan Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">Izinkan aplikasi <ph name="APP_NAME" /> menyiapkan jaringan Wi-Fi?</translation>
 <translation id="936602727769022409">Anda dapat kehilangan akses ke Akun Google Anda. Chromium merekomendasikan untuk mengubah sandi Anda sekarang. Anda akan diminta untuk login.</translation>
 <translation id="937457230470581909">Kebun binatang, akuarium &amp; cagar alam</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Data yang digunakan:<ph name="END_BOLD" /> Topik iklan Anda didasarkan pada histori penjelajahan terbaru, yaitu daftar situs yang telah Anda buka menggunakan Chrome di perangkat ini.</translation>

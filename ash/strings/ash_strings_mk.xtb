@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-Ц уред (предна порта)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> се промени на <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Кликнете „Потврди“ за да ги задржите промените. Претходната поставка ќе се врати за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Уредот со Bluetooth „<ph name="DEVICE_NAME" />“ бара дозвола за спарување. Внесете го овој PIN-код на тој уред: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285">Ова овозможува <ph name="APP_NAME" /> и сите апликации и веб-сајтови со дозволата за локација и ChromeOS да користат локација на Wi-Fi и мобилни мрежи.</translation>
 <translation id="1017556409696559990">Минимизирајте го прозорецот најгоре кога нема задна историја во Chrome</translation>
 <translation id="1024364763893396229">Зачувајте: <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Батеријата на пенкалото е слаба</translation>
@@ -147,6 +148,7 @@
 <translation id="1651914502370159744">Ја отвора страницата со „Историја“</translation>
 <translation id="1654477262762802994">Започнете гласовно барање</translation>
 <translation id="1668469839109562275">Вградена VPN</translation>
+<translation id="1675844249244994876">Ажурирање на прозорецот оддесно</translation>
 <translation id="1677472565718498478">Уште <ph name="TIME" /></translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> не е поврзана.</translation>
 <translation id="1677582821739292812">Некој го гледа вашиот екран</translation>
@@ -191,6 +193,7 @@
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Етернет: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Вклучи пристап до локацијата</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> веќе не е закачена</translation>
 <translation id="1838895407229022812">„Ноќното светло“ е исклучено.</translation>
 <translation id="1854180393107901205">Запри со емитување</translation>
@@ -365,7 +368,6 @@
 <translation id="2726420622004325180">Телефонот мора да има мобилен интернет за да обезбеди точка на пристап</translation>
 <translation id="2727175239389218057">Одговори</translation>
 <translation id="2727977024730340865">Приклучен на полнач со мало напојување. Полнењето на батеријата може да не е веродостојно.</translation>
-<translation id="2740531572673183784">Во ред</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">„Избриши“</translation>
 <translation id="2750941250130734256">Активниот прозорец е изваден од приклучок.</translation>
@@ -468,6 +470,7 @@
 <translation id="3255483164551725916">Што можеш да направиш?</translation>
 <translation id="3256109297135787951">Отстранете го нагласувањето од ставка на полицата</translation>
 <translation id="3260969790895726815">Говорот се обработува локално, а диктирањето работи офлајн, но некои гласовни наредби нема да работат.</translation>
+<translation id="3265032511221679826">Дали да се вклучи пристап до прецизна локација?</translation>
 <translation id="3269597722229482060">Десен клик</translation>
 <translation id="3289364673986435196">Мени на копчето за вклучување</translation>
 <translation id="3289544412142055976">Апликациите на Linux не се поддржани во моментов</translation>
@@ -578,6 +581,7 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, управуван корисник</translation>
 <translation id="3666266999138159418">Повлечете за сокривање на лебдечкиот прозорец</translation>
 <translation id="367531336287639526">Изберете ја првата икона лево од лентата за адреси</translation>
+<translation id="3677931086890821290">Ова овозможува сите апликации и веб-сајтови со дозволата за локација и ChromeOS да користат локација на Wi-Fi и мобилни мрежи.</translation>
 <translation id="3679827876008292680">Оди до последната картичка во прозорецот</translation>
 <translation id="36813544980941320">Wi-Fi мрежите ќе се споделуваат помеѓу вашиот телефон и <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Веб-страници</translation>
@@ -845,6 +849,7 @@
 <translation id="493076006037866439">Одзумирање на екранот</translation>
 <translation id="4936329710968938986">Сите, исклучено</translation>
 <translation id="4938176435186993759">Сокриј ги сите предлози</translation>
+<translation id="4943007472417128747">Точката на пристап е исклучена за да се користи Wi-Fi. За да користите точка на пристап, исклучете ја Wi-Fi.</translation>
 <translation id="4945196315133970626">Исклучи известувања</translation>
 <translation id="4946376291507881335">Сликајте</translation>
 <translation id="495046168593986294">Оди нагоре</translation>
@@ -1389,6 +1394,7 @@
 За да го исклучите уредот, повторно притиснете и задржете го копчето за вклучување на уредот.</translation>
 <translation id="7526573455193969409">Мрежата можеби се следи</translation>
 <translation id="7536035074519304529">IP адреса: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Ажурирање на прозорецот одлево</translation>
 <translation id="7543399541175347147">Апликациите на Linux и прозорците „Инкогнито“ не се поддржани моментално. Другите апликации ќе се зачуваат.</translation>
 <translation id="7544300628205093162">Заднинското светло на тастатурата е вклучено</translation>
 <translation id="7548434653388805669">Време за спиење</translation>
@@ -1469,6 +1475,7 @@
 <translation id="7893503627044934815">Не сакам да се покажува датотекава</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Ја притиснавте кратенката од тастатура за ротација на екранот. Дали сакате да го ротирате екранот?</translation>
+<translation id="7901190436359881020">Замена на прозорците</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Допрете го сензорот за отпечатоци</translation>
 <translation id="7904094684485781019">Администраторот за оваа сметка не дозволува повеќекратно пријавување.</translation>
@@ -1744,6 +1751,7 @@
 <translation id="9198992156681343238">Резолуцијата на <ph name="DISPLAY_NAME" /> е сменета во <ph name="RESOLUTION" />. Кликнете „Потврди“ за да ги задржите промените. Претходната поставка ќе се врати за <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Поврзи <ph name="NAME" /> со овој Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, управувана од администраторот</translation>
+<translation id="9207682216934703221">Ова овозможува <ph name="APP_NAME" />, <ph name="APP2_NAME" /> и сите апликации и веб-сајтови со дозволата за локација и ChromeOS да користат локација на Wi-Fi и мобилни мрежи.</translation>
 <translation id="9210037371811586452">Се излегува од режим на единствена работна површина</translation>
 <translation id="9211490828691860325">Сите работни површини</translation>
 <translation id="9211681782751733685">Уште <ph name="TIME_REMAINING" /> до целосно полнење на батеријата.</translation>

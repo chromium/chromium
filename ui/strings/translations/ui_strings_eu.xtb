@@ -6,6 +6,7 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{Duela 1 egun}other{Duela # egun}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{Duela 1 minutu}other{Duela # minutu}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 min}other{# min}}</translation>
+<translation id="1178017578188974117">{DAYS,plural, =1{Duela egun bat}other{Duela # egun}}</translation>
 <translation id="1181037720776840403">Kendu</translation>
 <translation id="1243314992276662751">Kargatu</translation>
 <translation id="1266864766717917324">Ezin izan da partekatu <ph name="CONTENT_TYPE" /></translation>
@@ -15,7 +16,9 @@
 <translation id="1368832886055348810">Ezkerretik eskuinera</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
 <translation id="1398853756734560583">Maximizatu</translation>
+<translation id="1432724887402139994">{SECONDS,plural, =1{Duela minutu bat}other{Duela # minutu}}</translation>
 <translation id="1450753235335490080">Ezin da partekatu <ph name="CONTENT_TYPE" /></translation>
+<translation id="1523230076022876491">{MONTHS,plural, =1{Duela hilabete}other{Duela # hilabete}}</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minutu eta }other{# minutu eta }}</translation>
 <translation id="1643823602425662293">Jakinarazpena</translation>
 <translation id="169515659049020177">Maius</translation>
@@ -106,6 +109,7 @@
 <translation id="4491109536499578614">Irudia</translation>
 <translation id="4565377596337484307">Ezkutatu pasahitza</translation>
 <translation id="4588090240171750605">Joan eskuinera</translation>
+<translation id="4689010477870442157">{YEARS,plural, =1{Duela urtebete}other{Duela # urte}}</translation>
 <translation id="4724120544754982507">Jakinarazpen-zentroa: irakurri gabeko <ph name="UNREAD_NOTIFICATION_COUNT" /> jakinarazpen dituzu</translation>
 <translation id="4729257764711776855">zenbakia</translation>
 <translation id="4746179598275229723">Kendu da luzapenaren aingura</translation>
@@ -211,10 +215,12 @@
 <translation id="8867568208303837180">Bidaltzen…</translation>
 <translation id="8876215549894133151">Formatua:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>
+<translation id="8927924178504495502">{HOURS,plural, =1{Duela ordubete}other{Duela # ordu}}</translation>
 <translation id="8996630695507351249">Ziurtatu <ph name="TARGET_DEVICE_NAME" /> gailua Internetera konektatuta dagoela.</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 s}other{# s}}</translation>
 <translation id="9059834730836941392">Tolestu jakinarazpena</translation>
 <translation id="9170848237812810038">&amp;Desegin</translation>
 <translation id="932327136139879170">Hasiera</translation>
 <translation id="944069440740578670">Irakurri gabeko jakinarazpenak</translation>
+<translation id="966963601246348639">{SECONDS,plural, =1{Duela segundo bat}other{Duela # segundo}}</translation>
 </translationbundle>

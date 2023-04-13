@@ -364,6 +364,7 @@
 <translation id="1801812870656502108">Виртуал картын дэлгэрэнгүй</translation>
 <translation id="1803020234906945288">Эрүүл хооллолт</translation>
 <translation id="1803351196216024260">Таны микрофоныг ашиглахыг хүсэх боломжтой</translation>
+<translation id="1806174020048213474">Энэ апп Wi-Fi-н мандат үнэмлэхүүдийг суулгах зөвшөөрөл хүсэж байна. Тохируулсны дараа таны <ph name="DEVICE_TYPE" /> оролцож буй Wi-Fi сүлжээнүүдэд автоматаар холбогдоно. Эдгээр мандат үнэмлэхийг хасахын тулд аппыг устгана уу.</translation>
 <translation id="1807246157184219062">Гэрэлтүүлэг</translation>
 <translation id="1807528111851433570">Эхлэлийн хүснэгт</translation>
 <translation id="180991881384371158">Таны Карт баталгаажуулалтын код нь картын тань ар талд байдаг. Энэ нь гарын үсгийн нүдний баруун дээд талд байх сүүлийн 3 орон юм.</translation>
@@ -1070,7 +1071,6 @@
 <translation id="3631244953324577188">Биометр</translation>
 <translation id="3632503704576938756">Дэлгэц хуваалцахыг үргэлжлүүлсэн</translation>
 <translation id="3632892046558972264">Дэлгэц хуваалцахыг түр зогсоосон</translation>
-<translation id="3633035844150606508">Таны <ph name="ACCOUNT" /> Google Бүртгэлд хаяг хадгалах гэж байна</translation>
 <translation id="3633738897356909127">Chrome-г шинэчлэх товч, Chrome-н тохиргооноосоо Chrome-г шинэчлэхийн тулд Enter дарна уу</translation>
 <translation id="3634530185120165534">Гарах цаасны тавиур 5</translation>
 <translation id="3634567936866541746">Та дөнгөж сая сэжигтэй сайтад нууц үгээ орууллаа. Бүртгэлүүдээ хамгаалахын тулд Chrome хадгалсан нууц үгнүүдээ шалгахыг зөвлөж байна.</translation>
@@ -1337,6 +1337,7 @@
 <translation id="4270541775497538019">Гарах цаасыг зэрэгцүүлэх тавцан 6</translation>
 <translation id="4274173425554582601">Компьютер, цахилгаан бараа</translation>
 <translation id="4275830172053184480">Төхөөрөмжийг дахин эхлүүл</translation>
+<translation id="4276974990916607331">Үгүй, баярлалаа</translation>
 <translation id="4277028893293644418">Нууц үгийг шинэчлэх</translation>
 <translation id="4277937682389409325">Орон нутгийн хаяг</translation>
 <translation id="4278390842282768270">Зөвшөөрөгдсөн</translation>
@@ -1697,6 +1698,7 @@
 <translation id="5129534298163637277">Баталгаажуулалтын харилцах цонх</translation>
 <translation id="5135404736266831032">Хаягийг удирдах...</translation>
 <translation id="5136841603454277753">Зөв код оруулна уу</translation>
+<translation id="5137761395480718572">Энэ апп Wi-Fi-н мандат үнэмлэхүүдийг суулгах зөвшөөрөл хүсэж байна. Тохируулсны дараа таны <ph name="DEVICE_TYPE" /> оролцож буй Wi-Fi сүлжээнүүдэд автоматаар холбогдоно. Эдгээр мандат үнэмлэхийг хасахын тулд аппыг устгана уу. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Виртуал карт яг одоо боломжгүй байна. Банктайгаа холбогдоно уу</translation>
 <translation id="5138227688689900538">Хураангуйлж харуулах</translation>
 <translation id="5145883236150621069">удирдамжийн хариулт дахь алдааны код</translation>
@@ -1753,6 +1755,7 @@
 <translation id="5273881944177595304">Веб аппын онлайн хэрэгсэл</translation>
 <translation id="5274025349362408263">Ном, уран зохиол</translation>
 <translation id="5279286380302340275">Таталтуудыг удирдах</translation>
+<translation id="5279453600310613955">Үгүй, баярлалаа</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Документын төлөв байдал</translation>
 <translation id="528468243742722775">Төгсгөл</translation>
@@ -2244,6 +2247,7 @@
 <translation id="6529173248185917884">Долоо дахь хуйлмал</translation>
 <translation id="6529602333819889595">&amp; Устгах үйлдлийг дахин хийх</translation>
 <translation id="6535751101619004418">Мөнгөн тэмдэгт, гадаад валютын арилжаа</translation>
+<translation id="6536221421038631327">Passpoint-н захиалгыг өөрийн <ph name="DEVICE_TYPE" />-с хассанаар холбоотой сүлжээнүүдийг хасна. Захиалгын багцдаа өөрчлөлт хийхийн тулд "<ph name="FRIENDLY_NAME" />"-тай холбогдоно уу. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">Хамтын сан</translation>
 <translation id="6545864417968258051">Bluetooth скан хийх</translation>
 <translation id="6547208576736763147">Зүүн ирмэг дагуу хоёр нүх цоолох</translation>
@@ -3339,6 +3343,7 @@
 <translation id="9219103736887031265">Зураг</translation>
 <translation id="922152298093051471">Chrome-г өөрчлөх</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385"><ph name="APP_NAME" /> аппад Wi-Fi сүлжээнүүдийг тохируулахыг зөвшөөрөх үү?</translation>
 <translation id="936602727769022409">Та Google Бүртгэлийнхээ хандалтыг алдаж болзошгүй. Chromium таныг нууц үгээ одоо солихыг зөвлөж байна. Танаас нэвтрэхийг шаардана.</translation>
 <translation id="937457230470581909">Амьтны хүрээлэн, аквариум болон дархан цаазат газар</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Ямар өгөгдлийг ашигладаг вэ?:<ph name="END_BOLD" /> Таны зарын сэдвүүд таны саяхны хөтчийн түүх буюу энэ төхөөрөмжид Chrome-г ашиглан зочилсон сайтуудын жагсаалтад тулгуурладаг.</translation>

@@ -2723,6 +2723,7 @@
 <translation id="3336855445806447827">Չգիտեմ</translation>
 <translation id="3337568642696914359">Թույլ չտալ կայքերին մշակել հաղորդակարգեր</translation>
 <translation id="3340620525920140773">Ներբեռնումն ավարտվեց՝ <ph name="FILE_NAME" />:</translation>
+<translation id="3340978935015468852">կարգավորումներում</translation>
 <translation id="3341699307020049241">PIN կոդը սխալ է: Դուք ունեք ևս <ph name="RETRIES" /> փորձ:</translation>
 <translation id="3341703758641437857">Թույլատրել ֆայլերի բացումը հղումներով</translation>
 <translation id="3342361181740736773">«<ph name="TRIGGERING_EXTENSION_NAME" />» ծրագիրը փորձում է հեռացնել այս ընդլայնումը։</translation>
@@ -4095,6 +4096,7 @@
 <translation id="4545759655004063573">Հնարավոր չէ պահել ոչ բավարար թույլտվությունների պատճառով: Պահեք մեկ այլ տեղադրությունում:</translation>
 <translation id="4546308221697447294">Համացանցում ավելի արագ շրջեք Google Chrome-ի օգնությամբ</translation>
 <translation id="4546345569117159016">«Աջ» կոճակ</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" />-ն ուզում է օգտագործել այս ընդլայնումը՝</translation>
 <translation id="4546692474302123343">Google Օգնականի ձայնային ներածում</translation>
 <translation id="4547659257713117923">Այլ սարքերից ներդիրներ չկան</translation>
 <translation id="4547672827276975204">Ավտոմատ որոշում</translation>
@@ -5577,6 +5579,7 @@
 <translation id="5904614460720589786">Կազմաձևման խնդրի պատճառով չհաջողվեց կարգավորել <ph name="APP_NAME" /> հավելվածը։ Դիմեք ձեր ադմինիստրատորին։ Սխալի կոդը՝ <ph name="ERROR_CODE" />։</translation>
 <translation id="5906655207909574370">Գրեթե պատրաստ է: Վերագործարկեք սարքը` թարմացումն ավարտելու համար:</translation>
 <translation id="5906732635754427568">Այս հավելվածին առնչվող տվյալները կհեռացվեն այս սարքից:</translation>
+<translation id="5906974869830879618">Մուտքագրեք PIN կոդը</translation>
 <translation id="5908474332780919512">Գործարկել հավելվածը մուտք գործելիս</translation>
 <translation id="5908695239556627796">Մկնիկով ոլորման արագությունը</translation>
 <translation id="5909379458939060601">Ջնջե՞լ այս պրոֆիլը և այցելությունների պատմությունը</translation>
@@ -6965,6 +6968,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> հավելվածն օգտագործում է ձեր խոսափողը</translation>
 <translation id="7141105143012495934">Մուտքը չհաջողվեց, քանի որ ձեր հաշվի տվյալները չհաջողվեց առբերել: Կապվեք ադմինիստրատորի հետ կամ նորից փորձեք:</translation>
 <translation id="7141844554192012199">Ստուգում</translation>
+<translation id="7143207342074048698">Միացում</translation>
 <translation id="7144878232160441200">Նորից փորձել</translation>
 <translation id="7148426638542880639">Հնարավոր է՝ կայքերը չաշխատեն պատշաճ կերպով։ Ընտրեք այս տարբերակը, եթե չեք ուզում սարքում թողնել տեղեկություններ ձեր այցելած կայքերի մասին։</translation>
 <translation id="7149839598364933473">Տեղադրել <ph name="DEVICE_OS" />-ն այս սարքում</translation>
@@ -9366,6 +9370,7 @@
 <translation id="964790508619473209">Էկրանի դիրքը</translation>
 <translation id="965211523698323809">Ուղարկել և ստանալ SMS-ներ <ph name="DEVICE_TYPE" />սարքում <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Հաղորդել Google Cast-ի հետ կապված խնդրի մասին</translation>
+<translation id="966588271015727539">Ընտրեք Bluetooth-ի միջոցով միացվող բրայլյան էկրան</translation>
 <translation id="967398046773905967">Արգելափակել HID սարքերի հասանելիությունը բոլոր կայքերի համար։</translation>
 <translation id="967624055006145463">Պահված տվյալներ</translation>
 <translation id="96774243435178359">Կառավարվող տպիչներ</translation>

@@ -4,7 +4,7 @@
 <translation id="1012876632442809908">Dispositivo USB‑C (porto frontal)</translation>
 <translation id="1013598600051641573">A resolución do dispositivo <ph name="DISPLAY_NAME" /> cambiouse a <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Para gardar os cambios, fai clic en Confirmar. A configuración anterior restaurarase en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" quere recibir permiso para sincronizarse. Introduce este código PIN nese dispositivo: <ph name="PINCODE" /></translation>
-<translation id="1014722676793506285">Desta forma, <ph name="APP_NAME" />, todas as aplicacións e os sitios web con permiso de localización e ChromeOS poden utilizar a localización mediante wifi e redes de telefonía móbil.</translation>
+<translation id="1014722676793506285">Desta forma, <ph name="APP_NAME" />, todas as aplicacións e os sitios web con permiso de localización e ChromeOS poderán utilizar a localización mediante wifi e redes de telefonía móbil.</translation>
 <translation id="1017556409696559990">Minimizar ventá superior cando non haxa historial en Chrome</translation>
 <translation id="1024364763893396229">Garda o dispositivo (<ph name="NAME" />)</translation>
 <translation id="1032891413405719768">O lapis óptico ten pouca batería</translation>
@@ -148,6 +148,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1651914502370159744">Abrir páxina do historial</translation>
 <translation id="1654477262762802994">Iniciar unha consulta de voz</translation>
 <translation id="1668469839109562275">VPN integrada</translation>
+<translation id="1675844249244994876">Actualizar a ventá da dereita</translation>
 <translation id="1677472565718498478">Tempo restante: <ph name="TIME" /></translation>
 <translation id="1677507110654891115">A función <ph name="FEATURE_NAME" /> non está conectada.</translation>
 <translation id="1677582821739292812">Alguén está mirando a túa pantalla</translation>
@@ -367,7 +368,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2726420622004325180">O teu teléfono debe ter datos móbiles para ofrecer unha zona wifi</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Conectado a un cargador de baixa potencia. É posible que a carga da batería non sexa fiable.</translation>
-<translation id="2740531572673183784">Aceptar</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Elimina"</translation>
 <translation id="2750941250130734256">Ventá activa sen fixar.</translation>
@@ -581,7 +581,7 @@ Conecta o dispositivo á corrente.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Usuario xestionado</translation>
 <translation id="3666266999138159418">Pasa o dedo para ocultar a ventá flotante</translation>
 <translation id="367531336287639526">Selecciona a primeira icona á esquerda da barra de enderezos</translation>
-<translation id="3677931086890821290">Desta forma, todas as aplicacións e os sitios web con permiso de localización e ChromeOS poden utilizar a localización mediante wifi e redes de telefonía móbil.</translation>
+<translation id="3677931086890821290">Desta forma, todas as aplicacións e os sitios web con permiso de localización e ChromeOS poderán utilizar a localización mediante wifi e redes de telefonía móbil.</translation>
 <translation id="3679827876008292680">Ir á última pestana da ventá</translation>
 <translation id="36813544980941320">O teu teléfono e o dispositivo (<ph name="DEVICE_NAME" />) compartirán as redes wifi</translation>
 <translation id="3694122362646626770">Sitios web</translation>
@@ -849,6 +849,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="493076006037866439">Afastar a pantalla</translation>
 <translation id="4936329710968938986">Todos (desactivado)</translation>
 <translation id="4938176435186993759">Ocultar todas as suxestións</translation>
+<translation id="4943007472417128747">Desactivouse a zona wifi para poder usar a rede wifi. Desactiva esta última se prefires usar a zona wifi.</translation>
 <translation id="4945196315133970626">Desactivar notificacións</translation>
 <translation id="4946376291507881335">Zona que se capturará</translation>
 <translation id="495046168593986294">Desprazarse cara arriba</translation>
@@ -1393,6 +1394,7 @@ Nova instalación</translation>
 Para apagar o dispositivo, mantén premido de novo o botón de acendido.</translation>
 <translation id="7526573455193969409">É posible que se controle a rede</translation>
 <translation id="7536035074519304529">Enderezo IP: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Actualizar a ventá da esquerda</translation>
 <translation id="7543399541175347147">As aplicacións de Linux e as ventás do modo de incógnito agora mesmo non son compatibles. Gardaranse outras aplicacións.</translation>
 <translation id="7544300628205093162">A luz traseira do teclado está acendida</translation>
 <translation id="7548434653388805669">É hora de deitarse</translation>
@@ -1473,6 +1475,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7893503627044934815">Non quero que se mostre este ficheiro</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Premiches o atallo de teclado para xirar a pantalla. Queres realizar esta acción?</translation>
+<translation id="7901190436359881020">Cambiar as ventás</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Toca o sensor de impresión dixital</translation>
 <translation id="7904094684485781019">O administrador desta conta non permitiu o inicio de sesión múltiple.</translation>
@@ -1748,7 +1751,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="9198992156681343238">A resolución de <ph name="DISPLAY_NAME" /> cambiouse a <ph name="RESOLUTION" />. Para gardar os cambios, fai clic en Confirmar. A configuración anterior restaurarase en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Conecta o dispositivo (<ph name="NAME" />) a este Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, xestionada polo teu administrador</translation>
-<translation id="9207682216934703221">Desta forma, <ph name="APP_NAME" />, <ph name="APP2_NAME" /> e todas as aplicacións e os sitios web con permiso de localización e ChromeOS poden utilizar a localización mediante wifi e redes de telefonía móbil.</translation>
+<translation id="9207682216934703221">Desta forma, <ph name="APP_NAME" />, <ph name="APP2_NAME" />, todas as aplicacións e os sitios web con permiso de localización e ChromeOS poderán utilizar a localización mediante wifi e redes de telefonía móbil.</translation>
 <translation id="9210037371811586452">Saíndo do modo de escritorio unificado</translation>
 <translation id="9211490828691860325">Todos os ordenadores</translation>
 <translation id="9211681782751733685">Tempo restante para que se cargue a batería por completo: <ph name="TIME_REMAINING" />.</translation>

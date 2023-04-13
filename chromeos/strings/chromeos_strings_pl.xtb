@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Oto inne przydatne materiały:</translation>
 <translation id="1905710495812624430">Przekroczono maksymalną liczbę prób.</translation>
 <translation id="1908234395526491708">Nieudane żądania UDP</translation>
+<translation id="1923388006036088459">Kolory uzupełniające</translation>
 <translation id="1947737735496445907">Wydrukowano</translation>
 <translation id="1951012854035635156">Asystent</translation>
 <translation id="1962550982027027473">Domyślny punkt APN jest wymagany</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Pobieranie zakończone</translation>
 <translation id="3969602104473960991">Hasło do Chrome OS zostało zaktualizowane</translation>
 <translation id="397105322502079400">Obliczanie...</translation>
+<translation id="3974175076798940554">Wyjątkowe zasoby Chromebooka Plus są już dostępne</translation>
 <translation id="39823212440917567">Zadania drukowania starsze niż <ph name="NUMBER_OF_DAYS" /> dni zostaną usunięte</translation>
 <translation id="3993704782688964914">Oprogramowanie urządzenia (<ph name="DEVICE_NAME" />) jest aktualne</translation>
 <translation id="4003384961948020559">Niepowodzenie – odbiornik papieru jest pełny</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">Tu możesz dodać konto do wielokrotnego logowania. Ponieważ dostęp do wszystkich zalogowanych kont można uzyskać bez podawania hasła, tej funkcji należy używać tylko z zaufanymi kontami.</translation>
 <translation id="8364946094152050673">Puste serwery nazw</translation>
 <translation id="8372477600026034341">Dodatkowe hosty</translation>
+<translation id="8373046809163484087">Używaj zestawów kolorów, które pasują do tapety</translation>
 <translation id="8380114448424469341">Zadokuj okno po tej stronie ekranu: <ph name="DIRECTION" /></translation>
 <translation id="8395584934117017006">Tym urządzeniem (<ph name="DEVICE_TYPE" />) zarządza firma</translation>
 <translation id="8398927464629426868">Obecne tempo, w jakim urządzenie się ładuje lub rozładowuje</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">Nazwa użytkownika</translation>
 <translation id="8503836310948963452">Jeszcze kilka minut…</translation>
 <translation id="8508640263392900755">Dane APN</translation>
+<translation id="8522687886059337719">Teraz masz dostęp do nowych <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />tapet<ph name="END_LINK_WALLPAPER_SUBPAGE" /> i <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />wygaszacza ekranu<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Tej opcji może wymagać operator do połączenia z jego siecią. Aby uzyskać szczegółowe informacje, skontaktuj się z operatorem.</translation>

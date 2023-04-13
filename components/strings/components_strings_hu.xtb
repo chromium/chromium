@@ -364,6 +364,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1801812870656502108">Virtuális kártya adatai</translation>
 <translation id="1803020234906945288">Egészséges táplálkozás</translation>
 <translation id="1803351196216024260">Hozzáférést kérhet a mikrofonhoz</translation>
+<translation id="1806174020048213474">Ez az alkalmazás engedélyt kér a Wi-Fi-hálózathoz tartozó hitelesítési adatok telepítésére. A beállítás után a(z) <ph name="DEVICE_TYPE" /> automatikusan csatlakozik az egyik Wi-Fi-hálózathoz. A hitelesítési adatok eltávolításához távolítsa el az alkalmazást.</translation>
 <translation id="1807246157184219062">Világos</translation>
 <translation id="1807528111851433570">Indítási lap</translation>
 <translation id="180991881384371158">A CVC-kód a kártyája hátulján található. Ez az aláírásmező jobb felső sarkában található utolsó 3 számjegy.</translation>
@@ -1067,7 +1068,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3631244953324577188">Biometria</translation>
 <translation id="3632503704576938756">Képernyőmegosztás folytatva</translation>
 <translation id="3632892046558972264">Képernyőmegosztás szüneteltetve</translation>
-<translation id="3633035844150606508">Cím mentése az Ön Google-fiókjába (<ph name="ACCOUNT" />)</translation>
 <translation id="3633738897356909127">Chrome frissítése gomb, nyomja le az Enter billentyűt a Chrome-nak a Chrome beállításaiban való frissítéséhez</translation>
 <translation id="3634530185120165534">5. tálca</translation>
 <translation id="3634567936866541746">Megtévesztő webhelyen adta meg jelszavát. Fiókjai védelmében a Chrome azt javasolja, hogy ellenőrizze mentett jelszavait.</translation>
@@ -1334,6 +1334,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4270541775497538019">6. kötegelő</translation>
 <translation id="4274173425554582601">Számítógépek és elektronika</translation>
 <translation id="4275830172053184480">Indítsa újra az eszközt</translation>
+<translation id="4276974990916607331">Nem</translation>
 <translation id="4277028893293644418">Jelszó visszaállítása</translation>
 <translation id="4277937682389409325">Helyi cím</translation>
 <translation id="4278390842282768270">Engedélyezve</translation>
@@ -1694,6 +1695,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5129534298163637277">Megerősítő párbeszédpanel</translation>
 <translation id="5135404736266831032">Címek kezelése…</translation>
 <translation id="5136841603454277753">Helyes kódot adjon meg</translation>
+<translation id="5137761395480718572">Ez az alkalmazás engedélyt kér a Wi-Fi-hálózathoz tartozó hitelesítési adatok telepítésére. A beállítás után a(z) <ph name="DEVICE_TYPE" /> automatikusan csatlakozik az egyik Wi-Fi-hálózathoz. A hitelesítési adatok eltávolításához távolítsa el az alkalmazást. <ph name="LEARN_MORE" />.</translation>
 <translation id="5138014172396933048">A virtuális kártya jelenleg nem áll rendelkezésre, vegye fel a kapcsolatot a bankjával</translation>
 <translation id="5138227688689900538">Kevesebb megjelenítése</translation>
 <translation id="5145883236150621069">Az irányelv válasza hibakódot tartalmaz</translation>
@@ -1734,6 +1736,8 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5234764350956374838">Elvetés</translation>
 <translation id="5239623327352565343">Helyadatok engedélyezve</translation>
 <translation id="5242889659037569123">Poggyász és egyéb utazási kellékek</translation>
+<translation id="5244732203286792411">Betöltés…
+    Ez eltarthat néhány percig.</translation>
 <translation id="5250209940322997802">„Csatlakozás a hálózathoz”</translation>
 <translation id="52517543715119994">További információ a Chrome funkcióiról</translation>
 <translation id="5251803541071282808">Felhő</translation>
@@ -1748,6 +1752,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5273881944177595304">Internetes alkalmazások és online eszközök</translation>
 <translation id="5274025349362408263">Könyvek és irodalom</translation>
 <translation id="5279286380302340275">Letöltések kezelése</translation>
+<translation id="5279453600310613955">Nem</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Dokumentum tulajdonságai</translation>
 <translation id="528468243742722775">Befejezés</translation>
@@ -2240,6 +2245,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6529173248185917884">7. tekercs</translation>
 <translation id="6529602333819889595">&amp;Törlés újra</translation>
 <translation id="6535751101619004418">Pénznemek és deviza</translation>
+<translation id="6536221421038631327">Ha Passpoint-előfizetést távolít el <ph name="DEVICE_TYPE" /> eszközéről, akkor ezzel eltávolítja a társított hálózatokat is. Ha módosítani szeretné előfizetési csomagját, forduljon a következőhöz: „<ph name="FRIENDLY_NAME" />”. <ph name="LEARN_MORE" />.</translation>
 <translation id="6540534463546766581">Nyílt végű befektetési alapok</translation>
 <translation id="6545864417968258051">Bluetooth-alapú keresés</translation>
 <translation id="6547208576736763147">Kettő lyuk a bal oldalon</translation>
@@ -3336,6 +3342,7 @@ További részletek:
 <translation id="9219103736887031265">Képek</translation>
 <translation id="922152298093051471">A Chrome személyre szabása</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">Engedélyezi, hogy a(z) <ph name="APP_NAME" /> alkalmazás Wi-Fi-hálózatokat állítson be?</translation>
 <translation id="936602727769022409">Elveszítheti a hozzáférést Google-fiókjához. A Chromium azt javasolja, hogy azonnal módosítsa jelszavát. Be kell majd jelentkeznie.</translation>
 <translation id="937457230470581909">Állatkertek, akváriumok és rezervátumok</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Felhasznált adatok<ph name="END_BOLD" />: Hirdetéstémái a legutóbbi böngészési előzményein, azaz a Chrome használatával ezen az eszközön felkeresett webhelyek listáján alapulnak.</translation>

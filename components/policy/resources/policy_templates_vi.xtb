@@ -1179,6 +1179,15 @@ Chính sách này sẽ không có hiệu lực khi bạn đặt chính sách <ph
 
       Nếu bạn bật hoặc không đặt chính sách này, thì hệ thống sẽ bật tính năng Tra định nghĩa của thông tin nhanh.
       Nếu bạn tắt chính sách này, thì hệ thống sẽ tắt tính năng Tra định nghĩa của thông tin nhanh.</translation>
+<translation id="2095778449451007308">Chính sách này kiểm soát việc người dùng có thể bật Chế độ Chỉ giao thức HTTPS (Luôn sử dụng kết nối an toàn) trong phần Cài đặt hay không. Chế độ Chỉ giao thức HTTPS nâng mọi hình thức chuyển hướng lên giao thức HTTPS.
+      Nếu bạn không đặt chế độ cài đặt này hoặc đặt thành cho phép, thì người dùng sẽ được phép bật chế độ Chỉ giao thức HTTPS.
+      Nếu bạn đặt chế độ cài đặt này thành không cho phép, thì người dùng sẽ không được phép bật chế độ Chỉ giao thức HTTPS.
+      Nếu bạn đặt chế độ cài đặt này thành force_enabled (buộc bật), thì chế độ Chỉ giao thức HTTPS sẽ bật và người dùng sẽ không thể tắt chế độ này.
+      Tuỳ chọn buộc bật chế độ Chỉ giao thức HTTPS được hỗ trợ trên M112 trở đi.
+
+Bạn có thể sử dụng chính sách <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> riêng biệt
+để miễn trừ việc nâng cấp lên HTTPS nhờ tính năng này
+cho các tên máy chủ hoặc mẫu tên máy chủ cụ thể.</translation>
 <translation id="209586405398070749">Kênh ổn định</translation>
 <translation id="2096932573113293941">Yêu cầu người dùng cấp quyền để chạy các trình bổ trợ đòi hỏi uỷ quyền</translation>
 <translation id="2098658257603918882">Bật tính năng báo cáo sử dụng và dữ liệu liên quan đến sự cố</translation>

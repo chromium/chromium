@@ -1069,7 +1069,6 @@
 <translation id="3631244953324577188">生物特徵辨識</translation>
 <translation id="3632503704576938756">已繼續分享螢幕畫面</translation>
 <translation id="3632892046558972264">已暫停分享螢幕畫面</translation>
-<translation id="3633035844150606508">將地址儲存到 Google 帳戶 (<ph name="ACCOUNT" />) 中</translation>
 <translation id="3633738897356909127">「更新 Chrome」按鈕，按下 Enter 鍵即可透過 Chrome 設定來更新 Chrome</translation>
 <translation id="3634530185120165534">紙匣 5</translation>
 <translation id="3634567936866541746">你剛才在詐騙網站上輸入了密碼。為確保帳戶安全，Chrome 建議你檢查已儲存的密碼。</translation>
@@ -1793,6 +1792,7 @@
 <translation id="5344579389779391559">進入接下來的頁面後，系統可能會向您收費</translation>
 <translation id="5347645913823149105">「自訂 Chrome 中的字型」按鈕；按下 Enter 鍵即可自訂 Chrome 中的字型大小和字體</translation>
 <translation id="5355557959165512791">目前無法造訪 <ph name="SITE" />，因為這個網站的憑證已遭撤銷。網路錯誤和攻擊行為通常是暫時性的，因此這個網頁可能稍後就會恢復正常狀態。</translation>
+<translation id="5356345925629253198">你可以在各項 Google 產品中使用已儲存的地址。這個地址將儲存至你的 Google 帳戶 (<ph name="ACCOUNT" />) 中。</translation>
 <translation id="5357848622083956825">視覺藝術與設計</translation>
 <translation id="536296301121032821">無法儲存政策設定</translation>
 <translation id="5363309033720083897">管理員允許使用的序列埠</translation>

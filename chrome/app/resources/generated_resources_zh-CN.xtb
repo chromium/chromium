@@ -2142,6 +2142,7 @@
 <translation id="2804043232879091219">无法打开替代浏览器</translation>
 <translation id="2804667941345577550">您将会自动退出这个网站（包括打开的标签页）</translation>
 <translation id="2804680522274557040">摄像头已关闭</translation>
+<translation id="2804742109948581745">并排</translation>
 <translation id="2805539617243680210">您已设置完毕！</translation>
 <translation id="2805646850212350655">Microsoft 加密文件系统</translation>
 <translation id="2805756323405976993">应用</translation>
@@ -2713,6 +2714,7 @@
 <translation id="3336855445806447827">不确定</translation>
 <translation id="3337568642696914359">不允许网站处理协议</translation>
 <translation id="3340620525920140773">“<ph name="FILE_NAME" />”已下载完毕。</translation>
+<translation id="3340978935015468852">设置</translation>
 <translation id="3341699307020049241">PIN 码不正确。您还剩 <ph name="RETRIES" /> 次尝试机会。</translation>
 <translation id="3341703758641437857">允许访问文件网址</translation>
 <translation id="3342361181740736773">“<ph name="TRIGGERING_EXTENSION_NAME" />”想要移除该扩展程序。</translation>
@@ -4631,6 +4633,7 @@
 <translation id="5056950756634735043">正在连接到容器</translation>
 <translation id="5057110919553308744">当您点击此扩展程序时</translation>
 <translation id="5059241099014281248">限制登录</translation>
+<translation id="5059429103770496207">显示样式</translation>
 <translation id="5059526285558225588">选择要分享什么</translation>
 <translation id="5060332552815861872">有 1 台可保存的打印机。</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{此文件夹包含 1 个书签。确定要删除此文件夹吗？}other{此文件夹包含 # 个书签。确定要删除此文件夹吗？}}</translation>
@@ -4940,6 +4943,7 @@
 <translation id="5338503421962489998">本地存储</translation>
 <translation id="5339031667684712858">您已移除的网站</translation>
 <translation id="5340638867532133571">允许网站安装付款处理程序（推荐）</translation>
+<translation id="5340787663756381836">查找和修改(&amp;F)</translation>
 <translation id="5341793073192892252">已拦截以下 Cookie（所有第三方 Cookie 都会被拦截）</translation>
 <translation id="5342091991439452114">PIN 码必须至少为 <ph name="MINIMUM" /> 位数</translation>
 <translation id="5344036115151554031">正在恢复 Linux</translation>
@@ -5561,6 +5565,7 @@
 <translation id="5904614460720589786">无法设置 <ph name="APP_NAME" />，因为出现了配置问题。请与您的管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="5906655207909574370">即将更新到最新版本！重新启动您的设备即可完成更新。</translation>
 <translation id="5906732635754427568">系统将会从此设备上移除与该应用相关的数据。</translation>
+<translation id="5906974869830879618">请输入 PIN 码</translation>
 <translation id="5908474332780919512">在您登录时启动应用</translation>
 <translation id="5908695239556627796">鼠标滚屏速度</translation>
 <translation id="5909379458939060601">删除这份个人资料及相关浏览数据？</translation>
@@ -6947,6 +6952,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> 正在使用您的麦克风</translation>
 <translation id="7141105143012495934">由于无法获取您的帐号详情，因此登录失败了。请与管理员联系或重试。</translation>
 <translation id="7141844554192012199">检查</translation>
+<translation id="7143207342074048698">正在连接</translation>
 <translation id="7144878232160441200">重试</translation>
 <translation id="7148426638542880639">网站可能会无法按预期运行。如果您不想在设备上保留与您访问网站有关的信息，请选择此选项。</translation>
 <translation id="7149839598364933473">将此设备转换成一部 <ph name="DEVICE_OS" /> 设备。</translation>
@@ -9109,7 +9115,7 @@
 <translation id="9041692268811217999">您的管理员已禁止访问您计算机上的本地文件</translation>
 <translation id="904224458472510106">此操作无法撤消</translation>
 <translation id="9042827002460091668">请检查互联网连接，然后重试</translation>
-<translation id="9042893549633094279">隐私设置和安全性</translation>
+<translation id="9042893549633094279">隐私和安全</translation>
 <translation id="9043264199499366189">订阅 ChromeOS Flex 系统事件</translation>
 <translation id="9044646465488564462">无法连接到网络：<ph name="DETAILS" /></translation>
 <translation id="9045160989383249058">您的阅读清单已移至新增的侧边栏中。点击这里即可试用。</translation>
@@ -9329,6 +9335,7 @@
 <translation id="939401694733344652">目前这些帐号并未用于 Android 应用。如果您选择了一个帐号用于该 Android 应用，那么此帐号也可用于其他 Android 应用。您可在<ph name="LINK_BEGIN" />设置 &gt; 帐号<ph name="LINK_END" />部分中更改 Android 应用的权限。</translation>
 <translation id="939598580284253335">请输入密码</translation>
 <translation id="939736085109172342">新建文件夹</translation>
+<translation id="940212040923880623">查找和修改(&amp;F)</translation>
 <translation id="942532530371314860"><ph name="APP_NAME" /> 正在共享 Chrome 标签页和音频。</translation>
 <translation id="944799160843436808">设置 Chromebook 版 Steam 时出现问题</translation>
 <translation id="945522503751344254">发送反馈</translation>
@@ -9350,6 +9357,7 @@
 <translation id="964790508619473209">屏幕排列方式</translation>
 <translation id="965211523698323809">通过您的<ph name="DEVICE_TYPE" />收发短信。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">报告与 Google Cast 有关的问题</translation>
+<translation id="966588271015727539">选择蓝牙盲文显示屏</translation>
 <translation id="967398046773905967">禁止任何网站访问 HID 设备</translation>
 <translation id="967624055006145463">已存储的数据</translation>
 <translation id="96774243435178359">受管理的打印机</translation>

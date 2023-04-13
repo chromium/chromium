@@ -1065,7 +1065,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3631244953324577188">Biometrik tizimlar</translation>
 <translation id="3632503704576938756">Ekran namoyishi davom ettirildi</translation>
 <translation id="3632892046558972264">Ekran namoyishi pauzalandi</translation>
-<translation id="3633035844150606508">Manzilni Google hisobingizga saqlang (<ph name="ACCOUNT" />)</translation>
 <translation id="3633738897356909127">Chromeni yangilash tugmasi, Chrome sozlamalari orqali Chromeni yangilash uchun Enter tugmasini bosing</translation>
 <translation id="3634530185120165534">Tarnov 5</translation>
 <translation id="3634567936866541746">Hozirgina shubhali saytda parol kiritdingiz. Hisoblar himoyasi uchun Chrome saqlangan parollaringizni tekshirishni tavsiya qiladi.</translation>
@@ -1734,6 +1733,8 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5234764350956374838">Yopish</translation>
 <translation id="5239623327352565343">Joylashuv axborotiga kirishga ruxsat berilgan</translation>
 <translation id="5242889659037569123">Chamadon va sayohat aksessuarlari</translation>
+<translation id="5244732203286792411">Yuklanmoqda…
+    Bu bir daqiqa vaqt olishi mumkin.</translation>
 <translation id="5250209940322997802">“Tarmoqqa ulanish”</translation>
 <translation id="52517543715119994">Chrome funksiyalari bilan tanishuv</translation>
 <translation id="5251803541071282808">Bulut</translation>

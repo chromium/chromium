@@ -368,7 +368,6 @@
 <translation id="2726420622004325180">โทรศัพท์ต้องมืออินเทอร์เน็ตมือถือเพื่อการใช้งานเป็นฮอตสปอต</translation>
 <translation id="2727175239389218057">ตอบ</translation>
 <translation id="2727977024730340865">เสียบอยู่กับที่ชาร์จพลังงานต่ำ การชาร์จแบตเตอรี่อาจไม่น่าเชื่อถือ</translation>
-<translation id="2740531572673183784">ตกลง</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"ลบ"</translation>
 <translation id="2750941250130734256">เลิกตรึงหน้าต่างที่ใช้งานแล้ว</translation>
@@ -1069,6 +1068,7 @@
 <translation id="5976112937189445008">กด Enter เพื่อบันทึกหน้าต่าง</translation>
 <translation id="5978382165065462689">กำลังแชร์การควบคุมหน้าจอผ่านความช่วยเหลือระยะไกล</translation>
 <translation id="5980301590375426705">ออกเซสชันผู้มาเยือน</translation>
+<translation id="5983567367406220847">ปิดฮอตสปอตแล้วเนื่องจากไม่มีการใช้งาน</translation>
 <translation id="598407983968395253">ใช้เทมเพลต</translation>
 <translation id="598882571027504733">หากต้องการรับอัปเดต ให้รีสตาร์ท Chromebook ในขณะที่ยังเชื่อมต่อกับแป้นพิมพ์</translation>
 <translation id="6002179289567220515">คุณใช้สวิตช์จริงเพื่อปิดกล้อง 1 ตัว คุณยังปิดการเข้าถึงกล้องทุกตัวได้ด้วย</translation>
@@ -1371,6 +1371,7 @@
 <translation id="7452560014878697800">มีแอปพลิเคชันกำลังใช้กล้อง</translation>
 <translation id="7453330308669753048">นำผลลัพธ์ในประวัติการค้นหาออกแล้ว</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | อีก <ph name="TIME" /> จะเต็ม</translation>
+<translation id="7459485586006128091">ปิดฮอตสปอตแล้วเนื่องจากมีข้อผิดพลาดภายใน โปรดลองเชื่อมต่อใหม่ในอีกสักครู่</translation>
 <translation id="7461924472993315131">ปักหมุด</translation>
 <translation id="746232733191930409">โหมดบันทึกหน้าจอ</translation>
 <translation id="7466449121337984263">โปรดแตะเซ็นเซอร์</translation>
@@ -1444,6 +1445,7 @@
 <translation id="776344839111254542">คลิกเพื่อดูรายละเอียดการอัปเดต</translation>
 <translation id="7768784765476638775">เลือกเพื่อให้อ่าน</translation>
 <translation id="7769299611924763557">GIF จะพร้อมใช้งานในไม่ช้า</translation>
+<translation id="7773536009433685931">เปิด Wi-Fi แทน</translation>
 <translation id="7780094051999721182">ทางลัด</translation>
 <translation id="7780159184141939021">หมุนหน้าจอ</translation>
 <translation id="7796735576426975947">การแจ้งเตือนใหม่ซ่อนอยู่</translation>

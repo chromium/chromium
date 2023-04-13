@@ -1164,6 +1164,13 @@
 
       如果此政策已启用或未设置，系统将启用快速解答定义功能。
       如果此政策已停用，系统将停用快速解答定义功能。</translation>
+<translation id="2095778449451007308">此政策用于控制用户能否在“设置”中启用 HTTPS-Only 模式（即“一律使用安全连接”）。HTTPS-Only 模式会将所有导航路径升级到 HTTPS。
+      如果此设置设为“allowed”或未配置，用户将能启用 HTTPS-Only 模式。
+      如果此设置设为“disallowed”，用户将无法启用 HTTPS-Only 模式。
+      如果此设置设为“force_enabled”，系统将会启用 HTTPS-Only 模式，且用户无法停用该模式。
+      从 M112 开始，系统支持强制启用 HTTPS-Only 模式。
+
+单独的 <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> 政策可用于豁免特定主机名或主机名格式，使其不会被该功能升级到 HTTPS。</translation>
 <translation id="209586405398070749">稳定版</translation>
 <translation id="2096932573113293941">请求用户许可运行需要授权的插件</translation>
 <translation id="2098658257603918882">启用关于使用情况和崩溃相关数据的报告</translation>

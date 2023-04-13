@@ -2736,6 +2736,7 @@
 <translation id="3336855445806447827">ບໍ່ແນ່ໃຈ</translation>
 <translation id="3337568642696914359">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊຈັດການໂປຣໂຕຄໍ</translation>
 <translation id="3340620525920140773">ດາວໂຫຼດສຳເລັດແລ້ວ: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">ການຕັ້ງຄ່າ</translation>
 <translation id="3341699307020049241">PIN ບໍ່ຖືກຕ້ອງ. ທ່ານຍັງເຫຼືອຄວາມພະຍາຍາມ <ph name="RETRIES" /> ຄັ້ງ.</translation>
 <translation id="3341703758641437857">ອະນຸຍາດການເຂົ້າຫາ URLs ໄຟລ໌</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" ຕ້ອງການລຶບສ່ວນຂະຫຍາຍນີ້ອອກ.</translation>
@@ -5591,6 +5592,7 @@
 <translation id="5904614460720589786">ບໍ່ສາມາດຕິດຕັ້ງ <ph name="APP_NAME" /> ໄດ້ ເນື່ອງຈາກບັນຫາການຕັ້ງຄ່າ. ກະລຸນາຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ. ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">ອັບເດດໃກ້ແລ້ວໆ! ກະລຸນາປິດແລ້ວເປີດອຸປະກອນຂອງທ່ານຄືນໃໝ່ເພື່ອສິ້ນສຸດຂັ້ນຕອນການອັບເດດ.</translation>
 <translation id="5906732635754427568">ຂໍ້ມູນທີ່ເຊື່ອມໂຍງກັບແອັບນີ້ຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້.</translation>
+<translation id="5906974869830879618">ກະລຸນາປ້ອນ PIN</translation>
 <translation id="5908474332780919512">ເລີ່ມແອັບເມື່ອທ່ານເຂົ້າສູ່ລະບົບ</translation>
 <translation id="5908695239556627796">ຄວາມໄວການເລື່ອນເມົ້າ</translation>
 <translation id="5909379458939060601">ລຶບໂປຣໄຟລ໌ນີ້ ແລະ ຂໍ້ມູນການນຳໃຊ້ອອກບໍ?</translation>
@@ -6978,6 +6980,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> ກຳລັງໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານ</translation>
 <translation id="7141105143012495934">ລົງຊື່ເຂົ້າໃຊ້​ບໍ່​ສຳ​ເລັດ ເພາະ​ວ່າ​ບໍ່​ສາ​ມາດ​ກູ້​ຄືນ​ລາຍ​ລະ​ອຽດ​ບັນ​ຊີ​ຂອງ​ທ່ານ​ໄດ້. ກະ​ລຸ​ນາ​ຕິດ​ຕໍ່​ຜູ້ຄວບຄຸມຂອງທ່ານ ຫຼື ລອງໃໝ່ອີກ.</translation>
 <translation id="7141844554192012199">ການກວດສອບ</translation>
+<translation id="7143207342074048698">ກຳ​ລັງ​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="7144878232160441200">ລອງໃໝ່ອີກ</translation>
 <translation id="7148426638542880639">ເວັບໄຊອາດບໍ່ເຮັດວຽກຕາມທີ່ທ່ານຄາດໄວ້. ໃຫ້ເລືອກຕົວເລືອກນີ້ຫາກທ່ານບໍ່ຕ້ອງການເກັບຂໍ້ມູນໄວ້ຢູ່ອຸປະກອນຂອງທ່ານກ່ຽວກັບເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງ.</translation>
 <translation id="7149839598364933473">ປ່ຽນແປງອຸປະກອນນີ້ເປັນອຸປະກອນ <ph name="DEVICE_OS" />.</translation>
@@ -9379,6 +9382,7 @@
 <translation id="964790508619473209">ການຈັດວາງໜ້າຈໍ</translation>
 <translation id="965211523698323809">ສົ່ງ ແລະ ຮັບຂໍ້ຄວາມຈາກ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">ລາຍງານບັນຫາກັບ Google Cast</translation>
+<translation id="966588271015727539">ເລືອກການສະແດງຜົນອັກສອນນູນຜ່ານ Bluetooth</translation>
 <translation id="967398046773905967">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊໃດໆເຂົ້າເຖິງອຸປະກອນ HID</translation>
 <translation id="967624055006145463">ເກັບຂໍ້ມູນໄວ້ແລ້ວ</translation>
 <translation id="96774243435178359">ເຄື່ອງພິມທີ່ມີການຈັດການ</translation>

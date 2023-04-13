@@ -1068,7 +1068,6 @@
 <translation id="3631244953324577188">Биометрика</translation>
 <translation id="3632503704576938756">Экран бөлүшүү улантылды</translation>
 <translation id="3632892046558972264">Экран бөлүшүү тындырылды</translation>
-<translation id="3633035844150606508">Даректи Google аккаунтуңузга (<ph name="ACCOUNT" />) сактоо</translation>
 <translation id="3633738897356909127">Chrome'ду жаңыртуу баскычы. Chrome параметрлериңизден Chrome'ду жаңыртуу үчүн, Enter баскычын басыңыз</translation>
 <translation id="3634530185120165534">5-түпкүч</translation>
 <translation id="3634567936866541746">Сырсөзүңүздү жаңы эле кооптуу сайтта киргиздиңиз. Аккаунттарыңызды коргоо үчүн Chrome сакталган сырсөздөрүңүздү текшерүүнү сунуштайт.</translation>
@@ -1735,6 +1734,8 @@
 <translation id="5234764350956374838">Этибарга албоо</translation>
 <translation id="5239623327352565343">Жайгашкан жери аныктоого уруксат берилди</translation>
 <translation id="5242889659037569123">Жүк жана туристтик аксессуарлар</translation>
+<translation id="5244732203286792411">Жүктөлүүдө...
+    Бир аз убакыт талап кылынышы мүмкүн.</translation>
 <translation id="5250209940322997802">"Тармакка туташуу"</translation>
 <translation id="52517543715119994">Chrome'догу функциялар жөнүндө кеңири маалымат алыңыз</translation>
 <translation id="5251803541071282808">Булут</translation>

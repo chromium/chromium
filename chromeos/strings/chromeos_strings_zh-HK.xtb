@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">其他實用資源如下：</translation>
 <translation id="1905710495812624430">允許的嘗試次數超過上限。</translation>
 <translation id="1908234395526491708">UDP 要求失敗</translation>
+<translation id="1923388006036088459">強調色</translation>
 <translation id="1947737735496445907">已列印</translation>
 <translation id="1951012854035635156">助理</translation>
 <translation id="1962550982027027473">需要預設 APN</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3969602104473960991">已更新 Chrome OS 密碼</translation>
 <translation id="397105322502079400">計算中…</translation>
+<translation id="3974175076798940554">Chromebook Plus 獨家資產現已推出</translation>
 <translation id="39823212440917567">超過 <ph name="NUMBER_OF_DAYS" /> 天前的列印工作將被移除</translation>
 <translation id="3993704782688964914">您的「<ph name="DEVICE_NAME" />」已是最新版本</translation>
 <translation id="4003384961948020559">失敗 - 輸出紙匣已滿</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">新增可多重登入的帳戶。這些帳戶的使用者不需提供密碼即可存取所有已登入的帳戶。因此，建議您只讓信任的帳戶使用這項功能。</translation>
 <translation id="8364946094152050673">域名伺服器空白</translation>
 <translation id="8372477600026034341">其他主機</translation>
+<translation id="8373046809163484087">使用配合桌布的顏色組合</translation>
 <translation id="8380114448424469341">將視窗固定喺畫面<ph name="DIRECTION" />半部分</translation>
 <translation id="8395584934117017006">此 <ph name="DEVICE_TYPE" /> 由企業管理</translation>
 <translation id="8398927464629426868">裝置目前的充電或放電率</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">用戶名稱</translation>
 <translation id="8503836310948963452">只需多幾分鐘…</translation>
 <translation id="8508640263392900755">APN 詳情</translation>
+<translation id="8522687886059337719">您現可使用全新的<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />桌布<ph name="END_LINK_WALLPAPER_SUBPAGE" />和<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />螢幕保護程式<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">流動網絡供應商可能會要求您必須選擇此選項，才能連接他們的網絡。詳情請聯絡流動網絡供應商。</translation>

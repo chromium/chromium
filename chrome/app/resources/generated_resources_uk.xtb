@@ -2168,6 +2168,7 @@
 <translation id="2804043232879091219">Не вдалося відкрити альтернативний веб-переглядач</translation>
 <translation id="2804667941345577550">Ви вийдете з облікового запису на цьому сайті, зокрема у відкритих вкладках</translation>
 <translation id="2804680522274557040">Камеру вимкнено</translation>
+<translation id="2804742109948581745">Поруч</translation>
 <translation id="2805539617243680210">Готово!</translation>
 <translation id="2805646850212350655">Система шифрування файлів Microsoft</translation>
 <translation id="2805756323405976993">Додатки</translation>
@@ -2739,6 +2740,7 @@
 <translation id="3336855445806447827">Не знаю</translation>
 <translation id="3337568642696914359">Заборонити сайтам обробляти протоколи</translation>
 <translation id="3340620525920140773">Файл "<ph name="FILE_NAME" />" завантажено.</translation>
+<translation id="3340978935015468852">налаштування</translation>
 <translation id="3341699307020049241">Неправильний PIN-код. Залишилося спроб: <ph name="RETRIES" />.</translation>
 <translation id="3341703758641437857">Надавати доступ до URL-адрес файлу</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" хоче видалити це розширення.</translation>
@@ -4112,6 +4114,7 @@
 <translation id="4545759655004063573">Неможливо зберегти через недостатні дозволи. Збережіть в іншому місці.</translation>
 <translation id="4546308221697447294">Швидке завантаження сайтів у Google Chrome</translation>
 <translation id="4546345569117159016">Права кнопка</translation>
+<translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> хоче використовувати це розширення:</translation>
 <translation id="4546692474302123343">Голосовий ввід через Google Асистента</translation>
 <translation id="4547659257713117923">Немає вкладок з інших пристроїв</translation>
 <translation id="4547672827276975204">Налаштовувати автоматично</translation>
@@ -4660,6 +4663,7 @@
 <translation id="5056950756634735043">Підключення до контейнера</translation>
 <translation id="5057110919553308744">Коли ви натискаєте розширення</translation>
 <translation id="5059241099014281248">Обмежити вхід</translation>
+<translation id="5059429103770496207">Стиль відображення</translation>
 <translation id="5059526285558225588">Виберіть, що показувати</translation>
 <translation id="5060332552815861872">Можна зберегти 1 принтер.</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Ця папка містить закладку. Усе одно видалити?}one{Ця папка містить # закладку. Усе одно видалити?}few{Ця папка містить # закладки. Усе одно видалити?}many{Ця папка містить # закладок. Усе одно видалити?}other{Ця папка містить # закладки. Усе одно видалити?}}</translation>
@@ -5591,6 +5595,7 @@
 <translation id="5904614460720589786">Не вдалося налаштувати додаток <ph name="APP_NAME" /> через проблему з конфігурацією. Зв'яжіться з адміністратором. Код помилки: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Майже оновлено. Перезапустіть пристрій, щоб завершити оновлення.</translation>
 <translation id="5906732635754427568">Дані, пов’язані з цим додатком, буде видалено з пристрою.</translation>
+<translation id="5906974869830879618">Введіть PIN-код</translation>
 <translation id="5908474332780919512">Запускати додаток, коли ви входите в обліковий запис</translation>
 <translation id="5908695239556627796">Швидкість прокрутки мишею</translation>
 <translation id="5909379458939060601">Видалити цей профіль і дані веб-перегляду?</translation>
@@ -6983,6 +6988,7 @@
 <translation id="7139627972753429585">Додаток <ph name="APP_NAME" /> використовує ваш мікрофон</translation>
 <translation id="7141105143012495934">Помилка входу. Не вдалось отримати дані вашого облікового запису. Зв’яжіться з адміністратором або повторіть спробу.</translation>
 <translation id="7141844554192012199">Перевірити</translation>
+<translation id="7143207342074048698">Під’єднання</translation>
 <translation id="7144878232160441200">Повторити спробу</translation>
 <translation id="7148426638542880639">Сайти можуть не працювати належним чином. Виберіть цей варіант, якщо ви не хочете, щоб на вашому пристрої зберігалась інформація про відвідані сайти.</translation>
 <translation id="7149839598364933473">Установити на пристрої <ph name="DEVICE_OS" />.</translation>
@@ -9389,6 +9395,7 @@
 <translation id="964790508619473209">Розміщення екрана</translation>
 <translation id="965211523698323809">Обмінюйтеся текстовими повідомленнями за допомогою <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Повідомити про проблему з Google Cast</translation>
+<translation id="966588271015727539">Виберіть брайлівський Bluetooth-дисплей</translation>
 <translation id="967398046773905967">Закрити всім сайтам доступ до пристроїв HID</translation>
 <translation id="967624055006145463">Збережені дані</translation>
 <translation id="96774243435178359">Керовані принтери</translation>

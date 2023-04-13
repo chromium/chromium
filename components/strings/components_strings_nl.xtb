@@ -1065,7 +1065,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3631244953324577188">Biometrische systemen</translation>
 <translation id="3632503704576938756">Scherm delen hervat</translation>
 <translation id="3632892046558972264">Scherm delen onderbroken</translation>
-<translation id="3633035844150606508">Adres opslaan in je Google-account, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Knop 'Chrome updaten'. Druk op Enter om Chrome te updaten via de instellingen van Chrome.</translation>
 <translation id="3634530185120165534">Lade 5</translation>
 <translation id="3634567936866541746">Je hebt zojuist je wachtwoord opgegeven op een misleidende site. Chrome raadt je aan je opgeslagen wachtwoorden te checken om je accounts te beveiligen.</translation>
@@ -1789,6 +1788,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5344579389779391559">Deze pagina brengt je mogelijk kosten in rekening</translation>
 <translation id="5347645913823149105">De knop Lettertypen aanpassen in Chrome, druk op Enter om lettertypen en lettergrootten aan te passen in Chrome</translation>
 <translation id="5355557959165512791">Je kunt <ph name="SITE" /> momenteel niet bezoeken, omdat het bijbehorende certificaat is ingetrokken. Netwerkfouten en aanvallen zijn doorgaans tijdelijk, dus deze pagina werkt later waarschijnlijk correct.</translation>
+<translation id="5356345925629253198">Je kunt opgeslagen adressen gebruiken in meerdere Google-producten. Dit adres wordt opgeslagen in je Google-account (<ph name="ACCOUNT" />).</translation>
 <translation id="5357848622083956825">Visuele kunst en visueel ontwerp</translation>
 <translation id="536296301121032821">Opslaan van beleidsinstellingen is mislukt</translation>
 <translation id="5363309033720083897">Seriële poort toegestaan door je beheerder</translation>

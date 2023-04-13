@@ -4,6 +4,7 @@
 <translation id="1012876632442809908">USB-C qurilma (old port)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> tasviri <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) tiniqligiga oʻtkazildi. Tasdiqlash uchun bosing. Eski sozlamalar <ph name="TIMEOUT_SECONDS" /> dan keyin tiklanadi.</translation>
 <translation id="1013923882670373915">“<ph name="DEVICE_NAME" />” qurilmasi Bluetooth orqali bog‘lanishga ruxsat so‘ramoqda. Bu qurilmada quyidagi PIN-kodni kiriting: <ph name="PINCODE" /></translation>
+<translation id="1014722676793506285"><ph name="APP_NAME" />, ChromeOS operatsion tizimi va joylashuv maʼlumotlariga ruxsati boʻlgan barcha ilova va saytlarga geolokatsiya uchun Wi-Fi va mobil tarmoqdan foydalanishga ruxsat beriladi.</translation>
 <translation id="1017556409696559990">Chrome orqaga qaytish tarixi yoʻqligida yuqori oynani kichraytirish</translation>
 <translation id="1024364763893396229"><ph name="NAME" /> nomli qurilmangizni saqlang</translation>
 <translation id="1032891413405719768">Stilus batareyasi quvvati kam</translation>
@@ -147,6 +148,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1651914502370159744">Tarix sahifasini ochish</translation>
 <translation id="1654477262762802994">Ovozli qidiruvni boshlash</translation>
 <translation id="1668469839109562275">Ichki oʻrnatilgan VPN</translation>
+<translation id="1675844249244994876">Oʻng oynani yangilash</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> qoldi</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> ulanmadi.</translation>
 <translation id="1677582821739292812">Kimdir ekranga qarayapti</translation>
@@ -191,6 +193,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">Ethernet: <ph name="ADDRESS" /></translation>
+<translation id="1824922790784036530">Joylashuv axborotiga ruxsatni yoqish</translation>
 <translation id="1830308660060964064">Yechib olindi: <ph name="ITEM_TITLE" /></translation>
 <translation id="1838895407229022812">Tungi rejim oʻchiq.</translation>
 <translation id="1854180393107901205">Translatsiyani to‘xtatish</translation>
@@ -365,7 +368,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2726420622004325180">Telefon mobil internetsiz hotspot tarqata olmaydi</translation>
 <translation id="2727175239389218057">Javob berish</translation>
 <translation id="2727977024730340865">Kam quvvatli zaryadlash vositasi ulanildi. Quvvatlantirishda muammolar bo‘lishi mumkin.</translation>
-<translation id="2740531572673183784">Ok</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">“Oʻchirish”</translation>
 <translation id="2750941250130734256">Faol oyna ajratildi.</translation>
@@ -468,6 +470,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3255483164551725916">Assistent nimalarga qodir?</translation>
 <translation id="3256109297135787951">Javondagi narsaning ajratib belgilanishini bekor qilish</translation>
 <translation id="3260969790895726815">Nutq qurilmada qayta ishlanadi va ovoz bilan yozish oflayn rejimda ishlaydi, lekin ayrim ovozli buyruqlar ishlamaydi.</translation>
+<translation id="3265032511221679826">Aniq joylashuv maʼlumotlariga ruxsat berilsinmi?</translation>
 <translation id="3269597722229482060">Oʻng klik</translation>
 <translation id="3289364673986435196">Quvvat menyusi</translation>
 <translation id="3289544412142055976">Linux ilovalari hozirda ishlamaydi</translation>
@@ -578,6 +581,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> boshqariladigan hisob</translation>
 <translation id="3666266999138159418">Maullaq oynani yopish uchun suring</translation>
 <translation id="367531336287639526">Manzil qatori chapidagi birinchi belgini tanlang</translation>
+<translation id="3677931086890821290">ChromeOS operatsion tizimi, shuningdek, joylashuv maʼlumotlariga kirish huquqiga ega boʻlgan barcha ilovalar va saytlarga geolokatsiya uchun Wi-Fi va mobil tarmoqdan foydalanishga ruxsat beriladi.</translation>
 <translation id="3679827876008292680">Oynadagi oxirgi varaqni ochish</translation>
 <translation id="36813544980941320">Telefoningiz va <ph name="DEVICE_NAME" /> qurilmangizda bitta Wi-Fi tarmoq ishlatiladi</translation>
 <translation id="3694122362646626770">Veb-saytlar</translation>
@@ -844,6 +848,7 @@ Qurilmani quvvat manbaiga ulang.</translation>
 <translation id="493076006037866439">Ekranni kichilashtirish</translation>
 <translation id="4936329710968938986">Hammaga, oʻchiq</translation>
 <translation id="4938176435186993759">Barcha takliflarni berkitish</translation>
+<translation id="4943007472417128747">Wi-Fi ishlatish uchun hotspot oʻchirildi. Hotspot ishlatish uchun Wi-Fi aloqasini oʻchiring.</translation>
 <translation id="4945196315133970626">Bildirishnoma kelmasin</translation>
 <translation id="4946376291507881335">Tasvirga olish</translation>
 <translation id="495046168593986294">Tepaga chiqish</translation>
@@ -1390,6 +1395,7 @@ yangi oʻrnatilgan</translation>
 Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translation>
 <translation id="7526573455193969409">Tarmoq kuzatilishi mumkin</translation>
 <translation id="7536035074519304529">IP manzil: <ph name="ADDRESS" /></translation>
+<translation id="7536832381700852123">Chap oynani yangilash</translation>
 <translation id="7543399541175347147">Linux ilovalari va inkognito oynalarida ishlamaydi. Boshqa ilovalar saqlanadi.</translation>
 <translation id="7544300628205093162">Klaviatura orqa chirogʻi yoniq</translation>
 <translation id="7548434653388805669">Uyqu vaqti keldi</translation>
@@ -1471,6 +1477,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="7893503627044934815">Bu fayl chiqishini istamayman</translation>
 <translation id="7895348134893321514">Tote</translation>
 <translation id="7897375687985782769">Ekranni burish tugmasi bosildi. Ekranni burmoqchimisiz?</translation>
+<translation id="7901190436359881020">Oynalar joyini almashtirish</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Barmoq izi skaneriga tegining</translation>
 <translation id="7904094684485781019">Administrator bu hisobga boshqa hisoblar bilan birdaniga kirishni taqiqlab qo‘ygan.</translation>
@@ -1746,6 +1753,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="9198992156681343238"><ph name="DISPLAY_NAME" /> displeyining ekrani <ph name="RESOLUTION" /> hajmiga oʻzgartirildi. Tasdiqlash uchun bosing. Eski sozlamalar <ph name="TIMEOUT_SECONDS" /> dan keyin tiklanadi.</translation>
 <translation id="9201044636667689546"><ph name="NAME" /> qurilmasini bu Chromebookka ulang</translation>
 <translation id="9201374708878217446">Ulanish: <ph name="CONNECTION_STATUS" />, Administrator boshqaruvida</translation>
+<translation id="9207682216934703221"><ph name="APP_NAME" />, <ph name="APP2_NAME" />, ChromeOS operatsion tizimi va joylashuv maʼlumotlariga ruxsati boʻlgan barcha ilova va saytlarga geolokatsiya uchun Wi-Fi va mobil tarmoqdan foydalanishga ruxsat beriladi.</translation>
 <translation id="9210037371811586452">Birlashgan ish stoli rejimidan chiqilmoqda</translation>
 <translation id="9211490828691860325">Barcha ish stollari</translation>
 <translation id="9211681782751733685">Batareya toʻliq quvvatlanishigacha qolgan vaqt: <ph name="TIME_REMAINING" /></translation>

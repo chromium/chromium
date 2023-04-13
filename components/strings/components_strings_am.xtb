@@ -364,6 +364,7 @@
 <translation id="1801812870656502108">የምናባዊ ካርድ ዝርዝሮች</translation>
 <translation id="1803020234906945288">ጤነኛ አመጋገብ</translation>
 <translation id="1803351196216024260">ማይክሮፎንዎን ለመጠቀም መጠየቅ ይችላል</translation>
+<translation id="1806174020048213474">ይህ መተግበሪያ የWi-Fi የመግቢያ ማስረጃዎችን ለመጫን ፈቃድ እየጠየቀ ነው። ከውቅረት በኋላ የእርስዎ <ph name="DEVICE_TYPE" /> በራስ-ሰር ከተሳታፊ የWiFi አውታረ መረቦች ጋር ይገናኛል። እነዚህን የመግቢያ ማስረጃዎች ለማስወገድ መተግበሪያውን ያራግፉ።</translation>
 <translation id="1807246157184219062">ብርሃን</translation>
 <translation id="1807528111851433570">የመጀመሪያ ሉህ</translation>
 <translation id="180991881384371158">ካርድ ማረጋገጫ ኮድዎ በካርድዎ ጀርባ ላይ ነው። ከፊርማ ሳጥኑ አናት በስተቀኝ በኩል የመጨረሻዎቹ 3 አሃዞች ናቸው።</translation>
@@ -725,6 +726,7 @@
 <translation id="2718207025093645426">የሚተዳደር ተጠቃሚ ወይም መሣሪያ ምንም የተጫነ መመሪያ የለውም።</translation>
 <translation id="2721148159707890343">ጥያቄ ተሳክቷል</translation>
 <translation id="2723669454293168317">በChrome ቅንብሮች ውስጥ የደህንነት ፍተሻን ያሂዱ</translation>
+<translation id="2725492561136085792">ይህን እርምጃ ለማግበር አስገባን ይጫኑ</translation>
 <translation id="2726001110728089263">የጎን መሳቢያ</translation>
 <translation id="2728127805433021124">የአገልጋዩ እውቅና ማረጋገጫ የተፈረመው በደካማ የፊርማ ስልተቀመር ነው።</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />የግንኙነት መመርመሪያን በማሄድ ላይ<ph name="END_LINK" /></translation>
@@ -821,6 +823,7 @@
 <translation id="299990983510665749">ሃችባኮች</translation>
 <translation id="3002501248619246229">የግቤት መሳቢያ ሚዲያን ይመልከቱ</translation>
 <translation id="3005723025932146533">የተቀመጠ ቅጂ አሳይ</translation>
+<translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ የሚገኙ እርምጃዎችን ለማሰስ Tabን በመቀጠል የተመረጠውን እርምጃ ለመፈጸም Enterን ይጫኑ።</translation>
 <translation id="3013291976881901233">የMIDI መሣሪያዎች</translation>
 <translation id="301521992641321250">በራስ-ሰር ታግዷል</translation>
 <translation id="3016780570757425217">የእርስዎን መገኛ አካባቢ ይወቁ</translation>
@@ -1066,7 +1069,6 @@
 <translation id="3631244953324577188">ባዮሜትሪክስ</translation>
 <translation id="3632503704576938756">ማያ ገጽ ማጋራት ከቆመበት ቀጥሏል</translation>
 <translation id="3632892046558972264">ማያ ገጽ ማጋራት ባለበት ቆሟል</translation>
-<translation id="3633035844150606508">በእርስዎ Google መለያ <ph name="ACCOUNT" /> ውስጥ አድራሻን ያስቀምጡ</translation>
 <translation id="3633738897356909127">የChrome አዝራርን ያዘምኑ፣ Chromeን ለማዘመን ከእርስዎ Chrome ቅንብሮች ሆነው አስገባን ይጫኑ</translation>
 <translation id="3634530185120165534">መሳቢያ 5</translation>
 <translation id="3634567936866541746">አሁን የይለፍ ቃልዎን በአንድ አታላይ ጣቢያ ላይ አስገብተዋል። የእርስዎን መለያዎች ደህንነት ለመጠበቅ፣ Chrome የተቀመጡ ይለፍ ቃላትዎን መፈተሽ ይመክራል።</translation>
@@ -1333,6 +1335,7 @@
 <translation id="4270541775497538019">ቁልል 6</translation>
 <translation id="4274173425554582601">ኮምፒውተር እና ኤሌክትሮኒክስ</translation>
 <translation id="4275830172053184480">መሣሪያዎን ዳግም ያስጀምሩ</translation>
+<translation id="4276974990916607331">አይ፣ አመሰግናለሁ</translation>
 <translation id="4277028893293644418">የይለፍ ቃል ዳግም አቀናብር</translation>
 <translation id="4277937682389409325">አካባቢያዊ አድራሻ</translation>
 <translation id="4278390842282768270">ተፈቅዷል</translation>
@@ -1693,6 +1696,7 @@
 <translation id="5129534298163637277">የማረጋገጫ መገናኛ</translation>
 <translation id="5135404736266831032">አድራሻዎችን ያቀናብሩ...</translation>
 <translation id="5136841603454277753">ትክክለኛ ኮድ ያስገቡ</translation>
+<translation id="5137761395480718572">ይህ መተግበሪያ የWi-Fi የመግቢያ ማስረጃዎችን ለመጫን ፈቃድ እየጠየቀ ነው። ከውቅረት በኋላ የእርስዎ <ph name="DEVICE_TYPE" /> በራስ-ሰር ከተሳታፊ የWiFi አውታረ መረቦች ጋር ይገናኛል። እነዚህን የመግቢያ ማስረጃዎች ለማስወገድ መተግበሪያውን ያራግፉ። <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">ምናባዊ ካርድ አሁን አይገኝም፣ እባክዎ ባንክዎን ያነጋግሩ</translation>
 <translation id="5138227688689900538">ያነሰ አሳይ</translation>
 <translation id="5145883236150621069">የስህተት ኮድ በመምሪያው ምላሽ ውስጥ አለ</translation>
@@ -1733,6 +1737,8 @@
 <translation id="5234764350956374838">አሰናብት</translation>
 <translation id="5239623327352565343">አካባቢ ይፈቀዳል</translation>
 <translation id="5242889659037569123">ሻንጣዎች እና የጉዞ መለዋወጫዎች</translation>
+<translation id="5244732203286792411">በመጫን ላይ...
+    ይህ ትንሽ ጊዜ ሊወስድ ይችላል።</translation>
 <translation id="5250209940322997802">«ከአውታረ መረብ ጋር ይገናኙ»</translation>
 <translation id="52517543715119994">ስለChrome ባህሪዎች ይወቁ</translation>
 <translation id="5251803541071282808">ደመና</translation>
@@ -1747,6 +1753,7 @@
 <translation id="5273881944177595304">የድር መተግበሪያዎች እና መስመር ላይ መሣሪያዎች</translation>
 <translation id="5274025349362408263">መጽሐፍት እና ስነ ጽሁፍ</translation>
 <translation id="5279286380302340275">ውርዶችን ያቀናብሩ</translation>
+<translation id="5279453600310613955">አይ፣ አመሰግናለሁ</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">የሰነድ ባሕሪያት</translation>
 <translation id="528468243742722775">ጨርስ</translation>
@@ -2239,6 +2246,7 @@
 <translation id="6529173248185917884">ሰባተኛ ጥቅልል</translation>
 <translation id="6529602333819889595">&amp;ሰርዝን ድገም</translation>
 <translation id="6535751101619004418">ምንዛሬዎች እና የምንዛሬ ተመኖች</translation>
+<translation id="6536221421038631327">የመተላለፊያ የደንበኝነት ምዝገባን ከእርስዎ <ph name="DEVICE_TYPE" /> ማስወገድ ተጓዳኝ አውታረ መረቦችን ያስወግዳል። በደንበኝነት ምዝገባ ዕቅድዎ ላይ ለውጦችን ለማድረግ «<ph name="FRIENDLY_NAME" />»ን ያነጋግሩ። <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">የጋራ ፈንድ</translation>
 <translation id="6545864417968258051">የብሉቱዝ ቅኝት</translation>
 <translation id="6547208576736763147">በግራ በኩል ብሳ</translation>
@@ -3335,6 +3343,7 @@
 <translation id="9219103736887031265">ምስሎች</translation>
 <translation id="922152298093051471">Chromeን አብጅ</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">የ<ph name="APP_NAME" /> መተግበሪያ የWiFi አውታረ መረቦችን እንዲያዋቅር ይፈቀድ?</translation>
 <translation id="936602727769022409">የGoogle መለያዎን መዳረሻ ሊያጡ ይችላሉ። Chromium የይለፍ ቃልዎን አሁኑኑ እንዲቀይሩት ይመክራል። በመለያ እንዲገቡ ይጠየቃሉ።</translation>
 <translation id="937457230470581909">መካነ አራዊት፣ የውሃ ማጠራቀሚያዎች እና ጥበቃዎች</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />ምን ውሂብ ጥቅም ላይ እንደሚውል፦<ph name="END_BOLD" /> የእርስዎ የማስታወቂያ ርዕሶች የተመሰረቱት በእርስዎ የቅርብ ጊዜ የአሰሳ ታሪክ ላይ ነው፣ ይህም በዚህ መሣሪያ ላይ Chromeን በመጠቀም የጎበኟቸው የጣቢያዎች ዝርዝር ነው።</translation>

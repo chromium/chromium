@@ -107,6 +107,7 @@ Barcha yoki ayrim saytlar uchun — ochilgan sahifalar tarixi oʻchirilganida �
 <translation id="1493287004536771723"><ph name="SITE_NAME" /> tasmasiga obuna boʻlgansiz</translation>
 <translation id="1502010315804028179">Parollarni boshqarish uchun Google Play xizmatlarini yangilang</translation>
 <translation id="1506061864768559482">Qidiruv tizimi</translation>
+<translation id="1508960385613684700">Maxfiylik qoʻllanmasi <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /></translation>
 <translation id="1513352483775369820">Xatcho‘plar va qidiruv tarixi</translation>
 <translation id="1513814250881909472">Boshqa qurilmalardan varaqlarni olish uchun sinxronlang</translation>
 <translation id="1513858653616922153">Parolni o‘chirish</translation>
@@ -161,6 +162,7 @@ Barcha yoki ayrim saytlar uchun — ochilgan sahifalar tarixi oʻchirilganida �
 <translation id="1910950723001426294">Ruxsat parametrlari roʻyxati yopildi.</translation>
 <translation id="1919130412786645364">Chrome hisobiga kirishga ruxsat berish</translation>
 <translation id="1922362554271624559">Tavsiya etilgan tillar</translation>
+<translation id="1924255092154549435">Varaq kengaytirildi</translation>
 <translation id="1925021887439448749">Boshqa veb-manzilni kiriting</translation>
 <translation id="1928696683969751773">Yangilanishlar</translation>
 <translation id="19288952978244135">Chromeni qaytadan oching.</translation>
@@ -769,6 +771,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5161254044473106830">Sarlavha kiriting</translation>
 <translation id="5170568018924773124">&amp;Jildda ko‘rsatish</translation>
 <translation id="5171045022955879922">Qidiring yoki URL manzili kiriting</translation>
+<translation id="5174700554036517242">Varaq dastlabki balandlikka qaytdi</translation>
 <translation id="5184329579814168207">Chrome brauzerida ochish</translation>
 <translation id="5191251636205085390">Tashqi cookie fayllar oʻrniga ishlatiladigan yangi texnologiyalarni oʻrganing va boshqaring</translation>
 <translation id="5193988420012215838">Vaqtinchalik xotiraga nusxalandi</translation>
@@ -1251,6 +1254,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7686086654630106285">Saytlar tomonidan tavsiya etilgan reklamalar haqida</translation>
 <translation id="768618399695552958">Siz kiradigan ayrim sahifalar oldindan yuklanadi. Agar bu kirish Google platformasidan saytdan turib amalga oshirilsa, u Google serverlari orqali oldindan yuklanadi.</translation>
 <translation id="7691043218961417207">Kuzatish uchun kontent toping</translation>
+<translation id="7697383401610880082">Surish dastagi</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> orqali e-pochta yaratish</translation>
 <translation id="7707922173985738739">Mobil internetdan foydalanish</translation>
 <translation id="7709094866268987903">Siz olib tashlagan qiziqishlar shu yerda chiqadi</translation>

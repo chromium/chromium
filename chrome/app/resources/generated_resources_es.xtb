@@ -2722,6 +2722,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3336855445806447827">No lo sé con seguridad</translation>
 <translation id="3337568642696914359">No permitir que los sitios procesen protocolos</translation>
 <translation id="3340620525920140773">Descarga completa: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">configuración</translation>
 <translation id="3341699307020049241">PIN incorrecto. Te quedan <ph name="RETRIES" /> intentos.</translation>
 <translation id="3341703758641437857">Permitir acceso a URL de archivo</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" quiere quitar esta extensión.</translation>
@@ -5575,6 +5576,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5904614460720589786">No se ha podido configurar <ph name="APP_NAME" /> debido a un problema de configuración. Ponte en contacto con tu administrador. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">El dispositivo está casi actualizado. Reinícialo para completar la actualización.</translation>
 <translation id="5906732635754427568">Los datos asociados a esta aplicación se eliminarán de este dispositivo.</translation>
+<translation id="5906974869830879618">Introduce un PIN</translation>
 <translation id="5908474332780919512">Abrir aplicación al iniciar sesión</translation>
 <translation id="5908695239556627796">Velocidad de desplazamiento del ratón</translation>
 <translation id="5909379458939060601">¿Eliminar este perfil y los datos de navegación?</translation>
@@ -6962,6 +6964,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7139627972753429585"><ph name="APP_NAME" /> está usando tu micrófono</translation>
 <translation id="7141105143012495934">Se ha producido un error al iniciar sesión porque no ha sido posible recuperar la información de la cuenta. Ponte en contacto con el administrador o vuelve a intentarlo.</translation>
 <translation id="7141844554192012199">Revisión</translation>
+<translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Reintentar</translation>
 <translation id="7148426638542880639">Puede que los sitios no funcionen como deben. Selecciona esta opción si no quieres dejar en tu dispositivo información sobre los sitios que visitas.</translation>
 <translation id="7149839598364933473">Convierte este dispositivo en un dispositivo <ph name="DEVICE_OS" />.</translation>
@@ -9366,6 +9369,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="964790508619473209">Disposición de la pantalla</translation>
 <translation id="965211523698323809">Envía y recibe mensajes de texto con tu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Informar de un problema con Google Cast</translation>
+<translation id="966588271015727539">Selecciona una pantalla de braille Bluetooth</translation>
 <translation id="967398046773905967">No permitir que ningún sitio web acceda a los dispositivos HID</translation>
 <translation id="967624055006145463">Datos almacenados</translation>
 <translation id="96774243435178359">Impresoras gestionadas</translation>

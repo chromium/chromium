@@ -364,6 +364,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1801812870656502108">Butiran kad maya</translation>
 <translation id="1803020234906945288">Pemakanan sihat</translation>
 <translation id="1803351196216024260">Boleh meminta untuk menggunakan mikrofon anda</translation>
+<translation id="1806174020048213474">Apl ini meminta kebenaran untuk memasang bukti kelayakan Wi-Fi. Selepas persediaan, <ph name="DEVICE_TYPE" /> anda akan disambungkan secara automatik kepada rangkaian Wi-Fi yang turut serta. Untuk mengalih keluar bukti kelayakan ini, nyahpasang apl.</translation>
 <translation id="1807246157184219062">Cahaya</translation>
 <translation id="1807528111851433570">Helaian permulaan</translation>
 <translation id="180991881384371158">CVC tertera pada bahagian belakang kad anda. CVC ialah 3 digit terakhir pada bahagian atas sebelah kanan kotak tandatangan.</translation>
@@ -1070,7 +1071,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3631244953324577188">Biometrik</translation>
 <translation id="3632503704576938756">Perkongsian skrin disambung semula</translation>
 <translation id="3632892046558972264">Perkongsian skrin dijeda</translation>
-<translation id="3633035844150606508">Simpan alamat dalam Google Account anda, <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Butang Kemas Kini Chrome, tekan Enter untuk mengemas kini Chrome daripada tetapan Chrome anda</translation>
 <translation id="3634530185120165534">Dulang 5</translation>
 <translation id="3634567936866541746">Anda baru sahaja memasukkan kata laluan pada laman yang menipu. Untuk melindungi akaun anda, Chrome mengesyorkan agar anda menyemak kata laluan anda yang disimpan.</translation>
@@ -1337,6 +1337,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4270541775497538019">Petak 6</translation>
 <translation id="4274173425554582601">Komputer &amp; elektronik</translation>
 <translation id="4275830172053184480">Mulakan semula peranti anda</translation>
+<translation id="4276974990916607331">Tidak perlu</translation>
 <translation id="4277028893293644418">Tetapkan semula kata laluan</translation>
 <translation id="4277937682389409325">Alamat tempatan</translation>
 <translation id="4278390842282768270">Dibenarkan</translation>
@@ -1697,6 +1698,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5129534298163637277">Dialog pengesahan</translation>
 <translation id="5135404736266831032">Urus alamat...</translation>
 <translation id="5136841603454277753">Masukkan kod yang betul</translation>
+<translation id="5137761395480718572">Apl ini meminta kebenaran untuk memasang bukti kelayakan Wi-Fi. Selepas persediaan, <ph name="DEVICE_TYPE" /> anda akan disambungkan secara automatik kepada rangkaian Wi-Fi yang turut serta. Untuk mengalih keluar bukti kelayakan ini, nyahpasang apl. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Kad maya tidak tersedia sekarang, sila hubungi bank anda</translation>
 <translation id="5138227688689900538">Tunjukkan kurang</translation>
 <translation id="5145883236150621069">Terdapat kod ralat dalam balasan dasar</translation>
@@ -1753,6 +1755,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5273881944177595304">Aplikasi web &amp; alat dalam talian</translation>
 <translation id="5274025349362408263">Buku &amp; kesusasteraan</translation>
 <translation id="5279286380302340275">Urus muat turun</translation>
+<translation id="5279453600310613955">Tidak perlu</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Sifat dokumen</translation>
 <translation id="528468243742722775">End</translation>
@@ -1791,6 +1794,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5344579389779391559">Halaman ini mungkin cuba mengenakan bayaran kepada anda</translation>
 <translation id="5347645913823149105">Butang sesuaikan fon dalam Chrome, tekan Enter untuk menyesuaikan saiz fon dan rupa huruf dalam Chrome</translation>
 <translation id="5355557959165512791">Anda tidak boleh melawati <ph name="SITE" /> sekarang kerana sijil tapak ini telah ditarik balik. Ralat dan serangan rangkaian biasanya bersifat sementara. Oleh sebab itu, halaman ini mungkin akan berfungsi semula kemudian.</translation>
+<translation id="5356345925629253198">Anda boleh menggunakan alamat yang disimpan merentas produk Google. Alamat ini akan disimpan dalam Google Account anda (<ph name="ACCOUNT" />).</translation>
 <translation id="5357848622083956825">Seni visual &amp; reka bentuk</translation>
 <translation id="536296301121032821">Gagal menyimpan tetapan dasar</translation>
 <translation id="5363309033720083897">Port bersiri yang dibenarkan oleh pentadbir anda</translation>
@@ -2245,6 +2249,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6529173248185917884">Gulungan Ketujuh</translation>
 <translation id="6529602333819889595">&amp;Buat Semula Pemadaman</translation>
 <translation id="6535751101619004418">Mata wang &amp; pertukaran asing</translation>
+<translation id="6536221421038631327">Tindakan mengalih keluar langganan Passpoint daripada <ph name="DEVICE_TYPE" /> anda akan turut mengalih keluar rangkaian yang berkaitan. Hubungi "<ph name="FRIENDLY_NAME" />" untuk membuat perubahan pada pelan langganan anda. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">Dana amanah</translation>
 <translation id="6545864417968258051">Pengimbasan Bluetooth</translation>
 <translation id="6547208576736763147">Dua tebukan kiri</translation>
@@ -3341,6 +3346,7 @@ Butiran tambahan:
 <translation id="9219103736887031265">Imej</translation>
 <translation id="922152298093051471">Sesuaikan Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">Benarkan apl <ph name="APP_NAME" /> menyediakan rangkaian Wi-Fi?</translation>
 <translation id="936602727769022409">Anda mungkin akan kehilangan akses kepada Akaun Google anda. Chromium mengesyorkan supaya anda menukar kata laluan sekarang. Anda akan diminta untuk log masuk.</translation>
 <translation id="937457230470581909">Zoo, akuarium &amp; rizab</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Jenis data yang digunakan:<ph name="END_BOLD" /> Topik iklan anda adalah berdasarkan sejarah penyemakan imbas anda baru-baru ini, iaitu senarai laman yang telah anda lawati menggunakan Chrome pada peranti ini.</translation>

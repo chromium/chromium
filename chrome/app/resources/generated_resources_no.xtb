@@ -46,6 +46,7 @@
 <translation id="1038462104119736705">Minst <ph name="INSTALL_SIZE" /> ledig plass anbefales for Linux. For å få mer ledig plass, slett filer fra enheten.</translation>
 <translation id="1038643060055067718">Linjer:</translation>
 <translation id="1039337018183941703">Ugyldig eller skadet fil.</translation>
+<translation id="1040761927998636252">Bokmerke uten navn for <ph name="URL" /></translation>
 <translation id="1041175011127912238">Denne siden svarer ikke</translation>
 <translation id="1041263367839475438">Tilgjengelige enheter</translation>
 <translation id="1042174272890264476">Datamaskinen din har <ph name="SHORT_PRODUCT_NAME" />s RLZ-bibliotek innebygget. RLZ tildeler en ikke-unik, ikke-personlig tagg for å måle søk og <ph name="SHORT_PRODUCT_NAME" />-bruk drevet av en bestemt markedsføringskampanje. Disse etikettene vises noen ganger i Google-søk i <ph name="PRODUCT_NAME" />.</translation>
@@ -2732,6 +2733,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3336855445806447827">Usikker</translation>
 <translation id="3337568642696914359">Ikke la nettsteder behandle protokoller</translation>
 <translation id="3340620525920140773">Nedlastingen er fullført: <ph name="FILE_NAME" />.</translation>
+<translation id="3340978935015468852">innstillinger</translation>
 <translation id="3341699307020049241">Feil PIN-kode. Du har <ph name="RETRIES" /> forsøk igjen.</translation>
 <translation id="3341703758641437857">Tillat tilgang til filnettadresser</translation>
 <translation id="3342361181740736773">«<ph name="TRIGGERING_EXTENSION_NAME" />» vil fjerne denne utvidelsen.</translation>
@@ -5584,6 +5586,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5904614460720589786">Kunne ikke konfigurere <ph name="APP_NAME" /> på grunn av et konfigurasjonsproblem. Kontakt administratoren din. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="5906655207909574370">Nå er oppdateringen snart ferdig! Start enheten på nytt for å fullføre oppdateringen.</translation>
 <translation id="5906732635754427568">Data som er tilknyttet denne appen, fjernes fra denne enheten.</translation>
+<translation id="5906974869830879618">Skriv inn en PIN-kode</translation>
 <translation id="5908474332780919512">Start appen når du logger på</translation>
 <translation id="5908695239556627796">Rullehastighet for musen</translation>
 <translation id="5909379458939060601">Vil du slette denne profilen og de tilhørende nettlesingsdataene?</translation>
@@ -6971,6 +6974,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7139627972753429585"><ph name="APP_NAME" /> bruker mikrofonen din</translation>
 <translation id="7141105143012495934">Påloggingen mislyktes fordi kontoopplysningene dine ikke kunne hentes ut. Kontakt administratoren din, eller prøv på nytt.</translation>
 <translation id="7141844554192012199">Sjekk</translation>
+<translation id="7143207342074048698">Kobler til</translation>
 <translation id="7144878232160441200">Prøv på nytt</translation>
 <translation id="7148426638542880639">Noen nettsteder fungerer kanskje ikke som forventet. Velg dette alternativet hvis du ikke vil etterlate deg informasjon om nettstedene du besøker, på denne enheten.</translation>
 <translation id="7149839598364933473">Konverter denne enheten til en <ph name="DEVICE_OS" />-enhet.</translation>
@@ -9375,6 +9379,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="964790508619473209">Skjermoppsett</translation>
 <translation id="965211523698323809">Send og motta SMS-er fra <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">Rapportér problemer med Google Cast</translation>
+<translation id="966588271015727539">Velg en Bluetooth-leselist</translation>
 <translation id="967398046773905967">Ikke gi noen nettsteder tilgang til HID-enheter</translation>
 <translation id="967624055006145463">Lagrede data</translation>
 <translation id="96774243435178359">Administrerte skrivere</translation>

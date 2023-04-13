@@ -364,6 +364,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1801812870656502108">Upplýsingar um sýndarkort</translation>
 <translation id="1803020234906945288">Heilsusamlegt mataræði</translation>
 <translation id="1803351196216024260">Getur beðið um að nota hljóðnemann</translation>
+<translation id="1806174020048213474">Þetta forrit biður um heimild til að setja upp WiFi-skilríki. Eftir uppsetningu tengist <ph name="DEVICE_TYPE" /> sjálfkrafa við skráð WiFi-net. Fjarlægðu forritið til að fjarlægja skilríkin.</translation>
 <translation id="1807246157184219062">Ljóst</translation>
 <translation id="1807528111851433570">Fyrsta blað</translation>
 <translation id="180991881384371158">CVC-númerið er á bakhlið kortsins. Það eru 3 síðustu tölurnar til hægri ofan við undirskriftarreitinn.</translation>
@@ -1069,7 +1070,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3631244953324577188">Lífkenni</translation>
 <translation id="3632503704576938756">Skjádeiling er hafin að nýju</translation>
 <translation id="3632892046558972264">Hlé var gert á skjádeilingu</translation>
-<translation id="3633035844150606508">Vista heimilisfang á Google-reikningnum þínum: <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Hnappurinn Uppfæra Chrome, ýttu á Enter til að uppfæra Chrome úr stillingum Chrome</translation>
 <translation id="3634530185120165534">Bakki 5</translation>
 <translation id="3634567936866541746">Þú gafst upp aðgangsorðið þitt á svindlsíðu. Chrome mælir með því að þú athugir vistuðu aðgangsorðin þín núna til að tryggja öryggi reikninganna þinna.</translation>
@@ -1336,6 +1336,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4270541775497538019">Staflari 6</translation>
 <translation id="4274173425554582601">Tölvur og raftæki</translation>
 <translation id="4275830172053184480">Endurræstu tækið</translation>
+<translation id="4276974990916607331">Nei takk</translation>
 <translation id="4277028893293644418">Endurstilla aðgangsorð</translation>
 <translation id="4277937682389409325">Staðbundið heimilisfang</translation>
 <translation id="4278390842282768270">Leyft</translation>
@@ -1696,6 +1697,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5129534298163637277">Staðfestingargluggi</translation>
 <translation id="5135404736266831032">Stjórna heimilisföngum...</translation>
 <translation id="5136841603454277753">Sláðu inn réttan kóða</translation>
+<translation id="5137761395480718572">Þetta forrit biður um heimild til að setja upp WiFi-skilríki. Eftir uppsetningu tengist <ph name="DEVICE_TYPE" /> sjálfkrafa við skráð WiFi-net. Fjarlægðu forritið til að fjarlægja skilríkin.<ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Sýndarkort er ekki tiltækt í augnablikinu, hafðu samband við bankann</translation>
 <translation id="5138227688689900538">Sýna minna</translation>
 <translation id="5145883236150621069">Villukóði til staðar í stefnusvari</translation>
@@ -1752,6 +1754,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5273881944177595304">Vefforrit og netverkfæri</translation>
 <translation id="5274025349362408263">Bækur og bókmenntir</translation>
 <translation id="5279286380302340275">Stjórna niðurhali</translation>
+<translation id="5279453600310613955">Nei takk</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Eiginleikar skjals</translation>
 <translation id="528468243742722775">Ljúka</translation>
@@ -2244,6 +2247,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6529173248185917884">Sjöunda rúlla</translation>
 <translation id="6529602333819889595">Endu&amp;rtaka eyðingu</translation>
 <translation id="6535751101619004418">Gjaldmiðlar og gjaldeyrisskipti</translation>
+<translation id="6536221421038631327">Ef þú fjarlægir áskrift að Aðgangspunkti úr <ph name="DEVICE_TYPE" /> verða tengd netkerfi fjarlægð. Hafðu samband við „<ph name="FRIENDLY_NAME" />“ til að breyta áskriftinni þinni. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">Verðbréfasjóðir</translation>
 <translation id="6545864417968258051">Bluetooth-leit</translation>
 <translation id="6547208576736763147">Tvö göt vinstra megin</translation>
@@ -3339,6 +3343,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="9219103736887031265">Myndir</translation>
 <translation id="922152298093051471">Sérsníða Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">Leyfa forritinu <ph name="APP_NAME" /> að setja upp WiFi-net?</translation>
 <translation id="936602727769022409">Þú gætir glatað aðganginum að Google reikningnum þínum. Chromium mælir með því að þú skiptir um aðgangsorð núna. Þú verður beðin(n) um að skrá þig inn.</translation>
 <translation id="937457230470581909">Dýragarðar, sædýrasöfn og friðuð landsvæði</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Gögnin sem eru notuð:<ph name="END_BOLD" /> Umfjöllunarefni auglýsinga byggjast á nýlegum vafraferli sem er skrá yfir vefsvæði sem þú hefur opnað með Chrome í þessu tæki.</translation>

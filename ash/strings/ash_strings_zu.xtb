@@ -368,7 +368,6 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="2726420622004325180">Ifoni yakho kumele ibe nedatha yeselula ukuze inikeze i-hotspot</translation>
 <translation id="2727175239389218057">Phendula</translation>
 <translation id="2727977024730340865">Ixhunye kushaja yamandla aphansi. Ukushaja ibhethri kungenzeka kungathembeki.</translation>
-<translation id="2740531572673183784">Ok</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
 <translation id="2750932254614666392">"Sula"</translation>
 <translation id="2750941250130734256">Iwindi elisebenzayo lisuse ukudokha.</translation>
@@ -1073,6 +1072,7 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="5976112937189445008">Cindezela u-enter ukuze urekhode iwindi</translation>
 <translation id="5978382165065462689">Ukulawula ukwabelana kwesikrini sakho nge-Remote Assistance.</translation>
 <translation id="5980301590375426705">Phuma kusihambeli</translation>
+<translation id="5983567367406220847">Ngenxa yokungasebenzi, i-hotspot ivaliwe.</translation>
 <translation id="598407983968395253">Sebenzisa isifanekiso</translation>
 <translation id="598882571027504733">Ukuze uthole izibuyekezo, qalisa kabusha i-Chromebook ngekhibhodi enamathiselwe.</translation>
 <translation id="6002179289567220515">Usebenzise iswishi engokoqobo ukuvala ikhamera e-1. Ungavala futhi ukufinyelela kuwo wonke amakhamera.</translation>
@@ -1375,6 +1375,7 @@ Ukufaka okusha</translation>
 <translation id="7452560014878697800">Uhlelo lokusebenza lusebenzisa ikhamera yakho</translation>
 <translation id="7453330308669753048">Umphumela womlando wosesho ususiwe</translation>
 <translation id="7455047553373871740">Ngu-<ph name="BATTERY_PERCENTAGE" />% - ngu-<ph name="TIME" /> kuze kugcwale</translation>
+<translation id="7459485586006128091">Ngenxa yephutha langaphakathi, i-hotspot ivaliwe. Zama ukuxhuma kabusha emizuzwini embalwa.</translation>
 <translation id="7461924472993315131">Phina</translation>
 <translation id="746232733191930409">Imodi yokurekhoda isikrini</translation>
 <translation id="7466449121337984263">Sicela uthinte inzwa</translation>
@@ -1448,6 +1449,7 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="776344839111254542">Chofoza ukuze ubuke imininingwane yokubuyekeza</translation>
 <translation id="7768784765476638775">Khetha ukuze ukhulume</translation>
 <translation id="7769299611924763557">I-GIF yakho izolunga maduze</translation>
+<translation id="7773536009433685931">Vula i-WiFi esikhundleni salokho</translation>
 <translation id="7780094051999721182">izinqamuleli</translation>
 <translation id="7780159184141939021">Zungezisa isikrini</translation>
 <translation id="7796735576426975947">Isaziso esisha sifihliwe</translation>

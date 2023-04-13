@@ -1186,6 +1186,15 @@ Esta política no tendrá ningún efecto si estableces la política <ph name="DE
 
       Si habilitas la política o no la estableces, se habilitarán las definiciones de Respuestas rápidas.
       Si inhabilitas la política, se inhabilitarán la definiciones de Respuestas rápidas.</translation>
+<translation id="2095778449451007308">Esta política controla si los usuarios pueden habilitar el modo solo HTTPS (Usar siempre conexiones seguras) en la Configuración. El modo solo HTTPS actualiza todas las navegaciones a páginas HTTPS.
+      Si no estableces esta configuración o la habilitas, los usuarios podrán habilitar el modo solo HTTPS.
+      Si inhabilitas esta configuración, los usuarios no podrán habilitar el modo solo HTTPS.
+      Si estableces esta configuración en force_enabled, se habilitará el modo solo HTTPS y los usuarios no podrán inhabilitarlo.
+      La habilitación forzosa del modo solo HTTPS es compatible a partir de la versión M112.
+
+Se puede usar la política <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> independiente
+para que esta función no actualice a HTTPS
+los nombres de host o patrones de nombre de host específicos.</translation>
 <translation id="209586405398070749">Canal estable</translation>
 <translation id="2096932573113293941">Solicitar permiso al usuario para ejecutar complementos que requieren autorización</translation>
 <translation id="2098658257603918882">Habilitar informes de uso y datos relacionados con bloqueos</translation>

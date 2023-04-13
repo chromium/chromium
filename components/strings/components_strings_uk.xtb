@@ -364,6 +364,7 @@
 <translation id="1801812870656502108">Дані віртуальної картки</translation>
 <translation id="1803020234906945288">Здорове харчування</translation>
 <translation id="1803351196216024260">Може просити доступ до мікрофона</translation>
+<translation id="1806174020048213474">Цей додаток запитує дозвіл установити облікові дані Wi-Fi. Після налаштування ваш пристрій <ph name="DEVICE_TYPE" /> автоматично підключатиметься до відповідних мереж Wi-Fi. Щоб вилучити ці облікові дані, видаліть додаток.</translation>
 <translation id="1807246157184219062">Світла</translation>
 <translation id="1807528111851433570">Перший аркуш</translation>
 <translation id="180991881384371158">Код CVC вказується на зворотній стороні картки. Це – останні 3 цифри, розташовані вгорі праворуч поля підпису.</translation>
@@ -1069,7 +1070,6 @@
 <translation id="3631244953324577188">Біометрія</translation>
 <translation id="3632503704576938756">Показ екрана відновлено</translation>
 <translation id="3632892046558972264">Показ екрана призупинено</translation>
-<translation id="3633035844150606508">Зберегти адресу у вашому обліковому записі Google <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Кнопка "Оновити Chrome"; натисніть Enter, щоб оновити веб-переглядач Chrome у його налаштуваннях</translation>
 <translation id="3634530185120165534">Лоток 5</translation>
 <translation id="3634567936866541746">Щойно ви ввели пароль на оманливому сайті. Щоб захистити ваші облікові записи, Chrome радить перевірити збережені паролі.</translation>
@@ -1336,6 +1336,7 @@
 <translation id="4270541775497538019">Накопичувач 6</translation>
 <translation id="4274173425554582601">Комп’ютери й електроніка</translation>
 <translation id="4275830172053184480">Перезапустіть пристрій</translation>
+<translation id="4276974990916607331">Ні, дякую</translation>
 <translation id="4277028893293644418">Скинути пароль</translation>
 <translation id="4277937682389409325">Місцева адреса</translation>
 <translation id="4278390842282768270">Дозволено</translation>
@@ -1696,6 +1697,7 @@
 <translation id="5129534298163637277">Вікно підтвердження</translation>
 <translation id="5135404736266831032">Керувати адресами…</translation>
 <translation id="5136841603454277753">Введіть правильний код</translation>
+<translation id="5137761395480718572">Цей додаток запитує дозвіл установити облікові дані Wi-Fi. Після налаштування ваш пристрій <ph name="DEVICE_TYPE" /> автоматично підключатиметься до відповідних мереж Wi-Fi. Щоб вилучити ці облікові дані, видаліть додаток. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Віртуальна картка недоступна. Зв’яжіться зі своїм банком.</translation>
 <translation id="5138227688689900538">Показати менше</translation>
 <translation id="5145883236150621069">Відповідь правила містить код помилки</translation>
@@ -1736,6 +1738,8 @@
 <translation id="5234764350956374838">Закрити</translation>
 <translation id="5239623327352565343">Доступ до геоданих дозволено</translation>
 <translation id="5242889659037569123">Багаж і аксесуари для подорожей</translation>
+<translation id="5244732203286792411">Завантаження…
+    Трохи зачекайте.</translation>
 <translation id="5250209940322997802">"Під’єднайте пристрій до мережі"</translation>
 <translation id="52517543715119994">Докладніше про функції Chrome</translation>
 <translation id="5251803541071282808">Хмара</translation>
@@ -1750,6 +1754,7 @@
 <translation id="5273881944177595304">Веб-додатки й інструменти для роботи в Інтернеті</translation>
 <translation id="5274025349362408263">Книги й література</translation>
 <translation id="5279286380302340275">Керувати завантаженнями</translation>
+<translation id="5279453600310613955">Ні, дякую</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Властивості документа</translation>
 <translation id="528468243742722775">Завершити</translation>
@@ -2242,6 +2247,7 @@
 <translation id="6529173248185917884">Сьомий рулон</translation>
 <translation id="6529602333819889595">&amp;Повторити видалення</translation>
 <translation id="6535751101619004418">Курси обміну валют</translation>
+<translation id="6536221421038631327">Якщо вилучити підписку Passpoint із пристрою <ph name="DEVICE_TYPE" />, буде вилучено зв’язані мережі. Зв’яжіться з компанією "<ph name="FRIENDLY_NAME" />" і внесіть зміни в план підписки. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">Взаємні фонди</translation>
 <translation id="6545864417968258051">Пошук пристроїв Bluetooth</translation>
 <translation id="6547208576736763147">Пробити два отвори ліворуч</translation>
@@ -3338,6 +3344,7 @@
 <translation id="9219103736887031265">Зображення</translation>
 <translation id="922152298093051471">Налаштувати Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">Дозволити додатку <ph name="APP_NAME" /> налаштовувати мережі Wi-Fi?</translation>
 <translation id="936602727769022409">Ви можете втратити доступ до облікового запису Google. Chromium радить змінити пароль. Вам буде запропоновано ввійти в обліковий запис.</translation>
 <translation id="937457230470581909">Зоопарки, акваріуми й заповідники</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Які дані використовуються.<ph name="END_BOLD" /> Теми оголошень визначаються на основі вашої нещодавньої історії веб-перегляду (тобто переліку сайтів, які ви відвідали через Chrome на цьому пристрої).</translation>

@@ -1066,7 +1066,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3631244953324577188">Dati biometrici</translation>
 <translation id="3632503704576938756">Condivisione schermo riattivata</translation>
 <translation id="3632892046558972264">Condivisione schermo in pausa</translation>
-<translation id="3633035844150606508">Salva l'indirizzo nel tuo Account Google <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Pulsante Aggiorna Chrome, premi Invio per aggiornare Chrome dalle relative impostazioni</translation>
 <translation id="3634530185120165534">Vassoio 5</translation>
 <translation id="3634567936866541746">Hai appena inserito la tua password su un sito ingannevole. Per proteggere i tuoi account, Chrome ti consiglia di controllare le password salvate.</translation>
@@ -1733,6 +1732,8 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5234764350956374838">Ignora</translation>
 <translation id="5239623327352565343">Posizione consentita</translation>
 <translation id="5242889659037569123">Bagagli e accessori da viaggio</translation>
+<translation id="5244732203286792411">Caricamento in corso…
+    Questa operazione potrebbe richiedere un minuto.</translation>
 <translation id="5250209940322997802">"Collegati alla rete"</translation>
 <translation id="52517543715119994">Scopri di più sulle funzionalità di Chrome</translation>
 <translation id="5251803541071282808">Cloud</translation>
@@ -1785,6 +1786,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5344579389779391559">Questa pagina potrebbe tentare di addebitarti dei costi</translation>
 <translation id="5347645913823149105">Pulsante Personalizza caratteri in Chrome, premi Invio per personalizzare dimensioni dei caratteri e caratteri tipografici in Chrome.</translation>
 <translation id="5355557959165512791">Al momento non puoi visitare il sito <ph name="SITE" /> perché il relativo certificato è stato revocato. In genere gli errori di rete e gli attacchi sono temporanei, pertanto questa pagina potrebbe funzionare più tardi.</translation>
+<translation id="5356345925629253198">Puoi usare gli indirizzi salvati in tutti i prodotti Google. Questo indirizzo verrà salvato nel tuo Account Google (<ph name="ACCOUNT" />).</translation>
 <translation id="5357848622083956825">Design e arti visive</translation>
 <translation id="536296301121032821">Archiviazione delle impostazioni criterio non riuscita</translation>
 <translation id="5363309033720083897">Porta seriale consentita dal tuo amministratore</translation>
@@ -2096,6 +2098,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6165508094623778733">Scopri di più</translation>
 <translation id="6167577165590485365">Ultimo tentativo di recupero:</translation>
 <translation id="6169916984152623906">Ora puoi navigare in privato. Le altre persone che usano questo dispositivo non vedranno le tue attività, ma i download e i preferiti verranno salvati.</translation>
+<translation id="617256461084925519">Google Chrome sta provando a verificare la tua identità per poter inserire i tuoi dati di pagamento.</translation>
 <translation id="6177128806592000436">La tua connessione a questo sito non è sicura</translation>
 <translation id="6177531123306197852">Busta C2</translation>
 <translation id="6180316780098470077">Intervallo tra tentativi</translation>
@@ -2646,6 +2649,7 @@ Ulteriori dettagli:
 <translation id="7518003948725431193">Nessuna pagina web trovata per l'indirizzo web: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">Sezione "<ph name="SECTION" />" nascosta</translation>
+<translation id="752189128961566325">Puoi utilizzarlo su tutti i prodotti Google</translation>
 <translation id="7523408071729642236">Produzione</translation>
 <translation id="7526934274050461096">La connessione a questo sito non è privata</translation>
 <translation id="7529884293139707752">Istruzione domiciliare</translation>
@@ -2873,6 +2877,7 @@ Ulteriori dettagli:
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" non è configurato correttamente. La disinstallazione di "<ph name="SOFTWARE_NAME" />" solitamente risolve il problema. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058009102480785916">Industria alimentare</translation>
 <translation id="8058603697124206642">non richiesto</translation>
+<translation id="8064892030280197386">verificare la tua identità per poter inserire i tuoi dati di pagamento.</translation>
 <translation id="8066225060526005217">Gestito dalle impostazioni dei cookie</translation>
 <translation id="8067872629359326442">Hai appena inserito la tua password su un sito ingannevole. Chromium può aiutarti. Per cambiare la password e informare Google che il tuo account potrebbe essere a rischio, fai clic su Proteggi account.</translation>
 <translation id="8070439594494267500">Icona dell'app</translation>

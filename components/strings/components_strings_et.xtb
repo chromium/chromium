@@ -364,6 +364,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1801812870656502108">Virtuaalkaardi üksikasjad</translation>
 <translation id="1803020234906945288">Tervislik toitumine</translation>
 <translation id="1803351196216024260">Saab küsida luba teie mikrofoni kasutamiseks</translation>
+<translation id="1806174020048213474">See rakendus küsib luba WiFi mandaadi installimiseks. Pärast seadistamist loob teie <ph name="DEVICE_TYPE" /> osalevate WiFi-võrkudega automaatselt ühenduse. Selle mandaadi eemaldamiseks desinstallige rakendus.</translation>
 <translation id="1807246157184219062">Hele</translation>
 <translation id="1807528111851433570">Algusleht</translation>
 <translation id="180991881384371158">CVC asub kaardi tagaküljel. See on allkirjaväljast paremal ülal asuv kolmekohaline kood.</translation>
@@ -1069,7 +1070,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3631244953324577188">Biomeetria</translation>
 <translation id="3632503704576938756">Ekraani jagamist jätkati</translation>
 <translation id="3632892046558972264">Ekraani jagamine peatati</translation>
-<translation id="3633035844150606508">Salvestage aadress oma Google’i kontole <ph name="ACCOUNT" /></translation>
 <translation id="3633738897356909127">Nupp Värskenda Chrome'i, vajutage Chrome'i seadetes Chrome'i värskendamiseks sisestusklahvi</translation>
 <translation id="3634530185120165534">Salv 5</translation>
 <translation id="3634567936866541746">Sisestasite äsja oma parooli kahtlasele saidile. Teie kontode turvalisuse tagamiseks soovitab Chrome teil salvestatud paroole kohe kontrollida.</translation>
@@ -1336,6 +1336,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4270541775497538019">Virnastaja 6</translation>
 <translation id="4274173425554582601">Arvutid ja elektroonika</translation>
 <translation id="4275830172053184480">Taaskäivitage seade</translation>
+<translation id="4276974990916607331">Tänan, ei</translation>
 <translation id="4277028893293644418">Lähtesta parool</translation>
 <translation id="4277937682389409325">Kohalik aadress</translation>
 <translation id="4278390842282768270">Lubatud</translation>
@@ -1696,6 +1697,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5129534298163637277">Kinnitusdialoog</translation>
 <translation id="5135404736266831032">Halda aadresse …</translation>
 <translation id="5136841603454277753">Sisestage õige kood</translation>
+<translation id="5137761395480718572">See rakendus küsib luba WiFi mandaadi installimiseks. Pärast seadistamist loob teie <ph name="DEVICE_TYPE" /> osalevate WiFi-võrkudega automaatselt ühenduse. Selle mandaadi eemaldamiseks desinstallige rakendus. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Virtuaalkaart pole praegu saadaval. Võtke ühendust oma pangaga.</translation>
 <translation id="5138227688689900538">Kuva vähem</translation>
 <translation id="5145883236150621069">Reegli vastuses sisaldus veakood</translation>
@@ -1752,6 +1754,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5273881944177595304">Veebirakendused ja võrgutööriistad</translation>
 <translation id="5274025349362408263">Raamatud ja kirjandus</translation>
 <translation id="5279286380302340275">Allalaadimiste haldamine</translation>
+<translation id="5279453600310613955">Tänan, ei</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Dokumendi atribuudid</translation>
 <translation id="528468243742722775">Lõpeta</translation>
@@ -2244,6 +2247,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6529173248185917884">Seitsmes rull</translation>
 <translation id="6529602333819889595">&amp;Kustuta uuesti</translation>
 <translation id="6535751101619004418">Valuuta ja valuutavahetus</translation>
+<translation id="6536221421038631327">Passpointi tellimuse eemaldamisel teie seadmest <ph name="DEVICE_TYPE" /> eemaldatakse ka seotud võrgud. Tellimuspaketi muutmiseks võtke ühendust järgmisega: „<ph name="FRIENDLY_NAME" />“. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">Investeerimisfondid</translation>
 <translation id="6545864417968258051">Bluetoothi otsimine</translation>
 <translation id="6547208576736763147">Kaks auku vasakul</translation>
@@ -3339,6 +3343,7 @@ Lisateave:
 <translation id="9219103736887031265">Pildid</translation>
 <translation id="922152298093051471">Chrome'i kohandamine</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">Kas lubada rakendusel <ph name="APP_NAME" /> seadistada WiFi-võrke?</translation>
 <translation id="936602727769022409">Võite kaotada juurdepääsu oma Google'i kontole. Chromium soovitab teil kohe oma parooli muuta. Teil palutakse sisse logida.</translation>
 <translation id="937457230470581909">Loomaaiad, akvaariumid, kaitsealad</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Milliseid andmeid kasutatakse?<ph name="END_BOLD" /> Teie reklaamiteemad põhinevad teie hiljutisel sirvimisajalool (saitide loend, mida olete selles seadmes Chrome'iga külastanud).</translation>

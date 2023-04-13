@@ -219,7 +219,6 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="2496626742194544812">Przejdź do pierwszej karty</translation>
 <translation id="2500374554657206846">Opcje zapisania hasła</translation>
-<translation id="2502415369140591438">Ponownie użyte hasła: <ph name="COUNT" /></translation>
 <translation id="2523363575747517183">Ta strona internetowa wielokrotnie próbuje otworzyć inną aplikację.</translation>
 <translation id="2529021024822217800">Otwórz wszystkie</translation>
 <translation id="2547458583188611426">Synchronizacja nie działa. Aby ją rozpocząć, wpisz hasło.</translation>
@@ -391,7 +390,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3581564640715911333">Proponuj tłumaczenie stron w innych językach</translation>
 <translation id="3588820906588687999">Otwórz grafikę w nowej karcie</translation>
 <translation id="3595252146048399851">W <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" /> możesz wybrać, co chcesz synchronizować. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
-<translation id="3595588371156514964">{COUNT,plural, =1{{COUNT} słabe hasło}few{{COUNT} słabe hasła}many{{COUNT} słabych haseł}other{{COUNT} słabego hasła}}</translation>
 <translation id="3603009562372709545">Kopiuj URL linku</translation>
 <translation id="3607167657931203000">Autouzupełnianie</translation>
 <translation id="3608008480985212611">Zaloguj się, aby zarządzać ustawieniami.</translation>
@@ -437,7 +435,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3928666092801078803">Połącz moje dane</translation>
 <translation id="3929457972718048006">Adresy</translation>
 <translation id="3943492037546055397">Hasła</translation>
-<translation id="3951717558054674026">{count,plural, =1{{count} słabe hasło}few{{count} słabe hasła}many{{count} słabych haseł}other{{count} słabego hasła}}</translation>
 <translation id="3959736869653157332">Menu → Nowa karta incognito</translation>
 <translation id="3967822245660637423">Pobieranie zakończone</translation>
 <translation id="3968505803272650567">Zarządzaj zainteresowaniami</translation>
@@ -774,7 +771,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6184086493125982861">Pokaż karty</translation>
 <translation id="6187302354554850004">Ostatnia synchronizacja: <ph name="LAST_USED_TIME" /></translation>
 <translation id="6189413832092199491">Nieprzeczytane</translation>
-<translation id="6193424046394092997">{count,plural, =1{Dodano do zakładek w folderze {title}}few{Dodano do zakładek w folderze {title}}many{Dodano do zakładek w folderze {title}}other{Dodano do zakładek w folderze {title}}}</translation>
 <translation id="6196207969502475924">Wyszukiwanie głosowe</translation>
 <translation id="6202364442240589072">{COUNT,plural, =1{Zamknij {COUNT} kartę}few{Zamknij {COUNT} karty}many{Zamknij {COUNT} kart}other{Zamknij {COUNT} karty}}</translation>
 <translation id="6210079381482819663">Tutaj są przenoszone karty nieużywane przez co najmniej <ph name="THRESHOLD" /> dni. Możesz to zmienić w dowolnym momencie w <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" />.</translation>
@@ -824,7 +820,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 
 Twoje dane zostały zaszyfrowane z użyciem hasła synchronizacji w dniu <ph name="TIME" />. Wpisz je, by rozpocząć synchronizację.</translation>
 <translation id="6418346271604475326">Przygotowuję PDF</translation>
-<translation id="6421095165635308">{count,plural, =1{Zakładka została zapisana w folderze {title} na Twoim koncie {email}}few{Zakładki zostały zapisane w folderze {title} na Twoim koncie {email}}many{Zakładki zostały zapisane w folderze {title} na Twoim koncie {email}}other{Zakładki zostały zapisane w folderze {title} na Twoim koncie {email}}}</translation>
 <translation id="6429213933892582367">Otwórz Opcje haseł</translation>
 <translation id="6434591244308415567">Wystąpił błąd. Spróbuj ponownie później.</translation>
 <translation id="6435236283694032571">Dodaj do listy Do przeczytania</translation>
@@ -1213,7 +1208,6 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8974714402877957201">1. Otwórz Ustawienia na iPadzie.</translation>
 <translation id="8976382372951310360">Pomoc</translation>
 <translation id="8976414606286374109">Karty zostały zapisane na koncie Google.</translation>
-<translation id="8978059030508051916">{count,plural, =0{Brak przejętych haseł}=1{{count} przejęte hasło}few{{count} przejęte hasła}many{{count} przejętych haseł}other{{count} przejętego hasła}}</translation>
 <translation id="8981454092730389528">Zarządzanie aktywnością w Google</translation>
 <translation id="8985320356172329008">Jesteś zalogowany w Google jako</translation>
 <translation id="8986567980592931173">Zaloguj się na konto Google, aby synchronizować swoje hasła, historię i inne dane.</translation>

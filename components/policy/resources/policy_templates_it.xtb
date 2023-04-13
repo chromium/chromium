@@ -4776,6 +4776,13 @@ Nota: questo criterio non viene applicato agli upgrade a HSTS.</translation>
 <translation id="5448022937220253000">Scegli cosa fare con i dati utente dopo la disattivazione di <ph name="LACROS_NAME" /></translation>
 <translation id="5449690328792750354">L'API Event.path sarà disponibile.</translation>
 <translation id="5452024130413254050">Consente di stabilire se le VM che utilizzano questa configurazione hanno accesso a un vTPM; il valore predefinito è false e, se il criterio non viene configurato, viene usato il valore <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" />.</translation>
+<translation id="5452167809842762761">Questo criterio è stato rimosso nella versione M114. Serviva per disattivare CECPQ2, ma CECPQ2 è stato disattivato per impostazione predefinita e verrà sostituito da Kyber, un meccanismo di incapsulamento della chiave (KEM) post-quantistico selezionato dal NIST, nuovamente associato al nostro accordo chiave classico standard, X25519.
+
+Se questo criterio non viene configurato o se viene attivato, <ph name="PRODUCT_NAME" /> seguirà la procedura di implementazione predefinita di CECPQ2, un algoritmo di accordo chiave post-quantistico in TLS.
+
+      CECPQ2 comporta la generazione di messaggi TLS di dimensioni maggiori che, in rarissimi casi, potrebbero attivare bug in alcuni componenti hardware di rete. Questo criterio può essere impostato su False per disattivare ECPQ2 durante la risoluzione dei problemi di rete.
+
+      Questo criterio è una misura temporanea e verrà rimosso nelle future versioni di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5454128917282602937">Quando un utente passa da un dispositivo <ph name="PRODUCT_OS_NAME" /> a un altro dello stesso tipo, il servizio <ph name="PRODUCT_NAME" /> V2 avvia le finestre del browser e delle app del dispositivo precedente su quello nuovo.
 Se il criterio viene impostato su Enabled, le finestre del browser e delle app verranno avviate automaticamente al momento dell'accesso dall'ultimo dispositivo <ph name="PRODUCT_OS_NAME" /> utilizzato dall'utente corrente.
 Se il criterio viene impostato su Disabled o se non viene configurato, gli elementi da avviare al momento dell'accesso verranno determinati in base alle impostazioni di ripristino totale.</translation>
