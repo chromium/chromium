@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_definition_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_pre_target_handler.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_translation_view.h"
+#include "chrome/browser/ui/quick_answers/ui/rich_answers_unit_conversion_view.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -163,8 +164,10 @@ void RichAnswersView::InitLayout(const quick_answers::QuickAnswer& result) {
       return;
     }
     case quick_answers::ResultType::kUnitConversionResult:
+      content_view_ = base_view_->AddChildView(
+          std::make_unique<RichAnswersUnitConversionView>(result));
+      return;
     default: {
-      // TODO(b/259440976): Add child views for each result type.
       return;
     }
   }
