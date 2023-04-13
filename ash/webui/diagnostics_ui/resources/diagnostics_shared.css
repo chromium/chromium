@@ -8,7 +8,7 @@
  * #import=chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js
  * #import=chrome://resources/cr_elements/cr_shared_style.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
- * #include=cr-shared-style
+ * #include=cr-shared-style cros-color-overrides
  * #css_wrapper_metadata_end */
 
  :host {
@@ -38,15 +38,6 @@
 
   :host-context(body.jelly-enabled) .grey-container {
     background-color: var(--cros-sys-app_base_shaded);
-  }
-
-  :host-context(body.jelly-enabled) cr-button {
-    --bg-action: var(--cros-sys-primary);
-    --text-color: var(--cros-sys-on_primary_container);
-  }
-
-  :host-context(body.jelly-enabled) cr-dialog {
-    --cr-dialog-background-color: var(--cros-sys-base_elevated);
   }
 
   hr {
