@@ -49,8 +49,7 @@ TestWaylandServerThread::TestWaylandServerThread(const ServerConfig& config)
     : Thread("test_wayland_server"),
       client_destroy_listener_(this),
       config_(config),
-      compositor_v4_(4),
-      compositor_v3_(3),
+      compositor_(config.compositor_version),
       output_(base::BindRepeating(
           &TestWaylandServerThread::OnTestOutputMetricsFlush,
           base::Unretained(this))),
@@ -99,12 +98,8 @@ bool TestWaylandServerThread::Start() {
 
   if (wl_display_init_shm(display_.get()) < 0)
     return false;
-  if (config_.compositor_version == CompositorVersion::kV3) {
-    if (!compositor_v3_.Initialize(display_.get()))
-      return false;
-  } else {
-    if (!compositor_v4_.Initialize(display_.get()))
-      return false;
+  if (!compositor_.Initialize(display_.get())) {
+    return false;
   }
   if (!sub_compositor_.Initialize(display_.get()))
     return false;

@@ -53,7 +53,6 @@ struct DisplayDeleter {
 
 // Server configuration related enums and structs.
 enum class PrimarySelectionProtocol { kNone, kGtk, kZwp };
-enum class CompositorVersion { kV3, kV4 };
 enum class TextInputExtensionVersion { kV7, kV8 };
 enum class ShouldUseExplicitSynchronizationProtocol { kNone, kUse };
 enum class EnableAuraShellProtocol { kEnabled, kDisabled };
@@ -61,7 +60,7 @@ enum class EnableAuraShellProtocol { kEnabled, kDisabled };
 struct ServerConfig {
   TextInputExtensionVersion text_input_extension_version =
       TextInputExtensionVersion::kV8;
-  CompositorVersion compositor_version = CompositorVersion::kV4;
+  TestCompositor::Version compositor_version = TestCompositor::Version::kV4;
   PrimarySelectionProtocol primary_selection_protocol =
       PrimarySelectionProtocol::kNone;
   ShouldUseExplicitSynchronizationProtocol use_explicit_synchronization =
@@ -227,12 +226,8 @@ class TestWaylandServerThread : public base::Thread,
   ServerConfig config_;
 
   // Represent Wayland global objects
-  // Compositor version is selected dynamically by server config but version is
-  // actually set on construction thus both compositor version objects appear
-  // here.
-  // TODO(crbug.com/1315587): Refactor this pattern when required.
-  TestCompositor compositor_v4_;
-  TestCompositor compositor_v3_;
+  TestCompositor compositor_;
+
   TestSubCompositor sub_compositor_;
   TestViewporter viewporter_;
   TestAlphaCompositing alpha_compositing_;
