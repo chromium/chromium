@@ -34,8 +34,7 @@ gfx::Size WindowFrameUtil::GetWindows10GlassCaptionButtonAreaSize() {
 bool WindowFrameUtil::IsWin10TabSearchCaptionButtonEnabled(
     const Browser* browser) {
 #if BUILDFLAG(IS_WIN)
-  return browser->is_type_normal() &&
-         base::FeatureList::IsEnabled(features::kWin10TabSearchCaptionButton);
+  return browser->is_type_normal();
 #else
   return false;
 #endif  // BUILDFLAG(IS_WIN)

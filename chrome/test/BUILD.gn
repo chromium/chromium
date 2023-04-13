@@ -2512,6 +2512,7 @@ if (!is_android) {
         "../browser/ui/views/device_id/pen_id_browsertest_win.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_win.cc",
       ]
+      sources -= [ "../browser/ui/views/tabs/tab_search_button_browsertest.cc" ]
     }
 
     if (is_win || is_linux) {

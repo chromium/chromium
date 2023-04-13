@@ -209,10 +209,6 @@ int GetLocationPermissionsExperimentBubblePromptLimit();
 int GetLocationPermissionsExperimentLabelPromptLimit();
 #endif
 
-#if BUILDFLAG(IS_WIN)
-BASE_DECLARE_FEATURE(kWin10TabSearchCaptionButton);
-#endif
-
 BASE_DECLARE_FEATURE(kStopLoadingAnimationForHiddenWindow);
 
 }  // namespace features

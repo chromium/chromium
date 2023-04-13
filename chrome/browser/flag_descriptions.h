@@ -2748,8 +2748,6 @@ extern const char kUseXpsForPrintingFromPdfName[];
 extern const char kUseXpsForPrintingFromPdfDescription[];
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
-extern const char kWin10TabSearchCaptionButtonName[];
-extern const char kWin10TabSearchCaptionButtonDescription[];
 #endif  // BUILDFLAG(IS_WIN)
 
 // Mac ------------------------------------------------------------------------

@@ -31,11 +31,6 @@ class TabStripRegionViewBrowserTest : public InProcessBrowserTest {
     scoped_feature_list_.InitAndDisableFeature(
         features::kChromeOSTabSearchCaptionButton);
 #endif
-
-#if BUILDFLAG(IS_WIN)
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kWin10TabSearchCaptionButton);
-#endif
     InProcessBrowserTest::SetUp();
   }
 
@@ -98,8 +93,10 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestForwardFocus) {
   move_forward_over_tab(tab_2);
   EXPECT_TRUE(new_tab_button()->HasFocus());
 
+#if !BUILDFLAG(IS_WIN)
   press_right();
   EXPECT_TRUE(tab_search_button()->HasFocus());
+#endif  // !BUILDFLAG(IS_WIN)
 
   // Focus should cycle back around to tab_0.
   press_right();
@@ -134,8 +131,10 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestReverseFocus) {
   EXPECT_TRUE(tab_0->HasFocus());
 
   // Pressing left should immediately cycle back around to the last button.
+#if !BUILDFLAG(IS_WIN)
   press_left();
   EXPECT_TRUE(tab_search_button()->HasFocus());
+#endif  // !BUILDFLAG(IS_WIN)
   press_left();
   EXPECT_TRUE(new_tab_button()->HasFocus());
 
@@ -163,15 +162,18 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
   // The first tab should be active.
   EXPECT_TRUE(tab_0->HasFocus());
 
+#if !BUILDFLAG(IS_WIN)
   EXPECT_TRUE(tab_strip_region_view()->AcceleratorPressed(
       tab_strip_region_view()->end_key()));
   EXPECT_TRUE(tab_search_button()->HasFocus());
+#endif  // !BUILDFLAG(IS_WIN)
 
   EXPECT_TRUE(tab_strip_region_view()->AcceleratorPressed(
       tab_strip_region_view()->home_key()));
   EXPECT_TRUE(tab_0->HasFocus());
 }
 
+#if !BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest,
                        TestSearchButtonIsEndAligned) {
   const int kRightMargin =
@@ -179,3 +181,4 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest,
   EXPECT_EQ(tab_strip_region_view()->GetLocalBounds().right() - kRightMargin,
             tab_search_button()->bounds().right());
 }
+#endif  // !BUILDFLAG(IS_WIN)

@@ -8655,13 +8655,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHttpsUpgradesDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kHttpsUpgrades)},
 
-#if BUILDFLAG(IS_WIN)
-    {"win-10-tab-search-caption-button",
-     flag_descriptions::kWin10TabSearchCaptionButtonName,
-     flag_descriptions::kWin10TabSearchCaptionButtonDescription, kOsWin,
-     FEATURE_VALUE_TYPE(features::kWin10TabSearchCaptionButton)},
-#endif  // BUILDFLAG(IS_WIN)
-
     {"omnibox-updated-connection-security-indicators",
      flag_descriptions::kOmniboxUpdatedConnectionSecurityIndicatorsName,
      flag_descriptions::kOmniboxUpdatedConnectionSecurityIndicatorsDescription,

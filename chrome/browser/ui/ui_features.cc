@@ -342,16 +342,6 @@ int GetLocationPermissionsExperimentLabelPromptLimit() {
 }
 #endif
 
-#if BUILDFLAG(IS_WIN)
-
-// Moves the Tab Search button into the browser frame's caption button area on
-// Windows 10 (crbug.com/1223847).
-BASE_FEATURE(kWin10TabSearchCaptionButton,
-             "Win10TabSearchCaptionButton",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-#endif
-
 // Reduce resource usage when view is hidden by not rendering loading animation.
 BASE_FEATURE(kStopLoadingAnimationForHiddenWindow,
              "StopLoadingAnimationForHiddenWindow",

@@ -7806,11 +7806,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "win-10-tab-search-caption-button",
-    "owners": [ "tluk@google.com", "chrome-cros@google.com" ],
-    "expiry_milestone": 99
-  },
-  {
     "name": "window-layout-menu",
     "owners": [ "shidi", "chromeos-wmp-eng@google.com" ],
     "expiry_milestone": 122
