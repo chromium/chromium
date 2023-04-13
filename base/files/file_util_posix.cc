@@ -73,6 +73,24 @@
 extern "C" char* mkdtemp(char* path);
 #endif
 
+#include <dlfcn.h>
+
+static void* LookupRecordReplaySymbol(const char* name) {
+  void* fnptr = dlsym(RTLD_DEFAULT, name);
+  return fnptr ? fnptr : reinterpret_cast<void*>(1);
+}
+
+static bool RecordReplayHasDivergedFromRecording() {
+  static void* fnptr;
+  if (!fnptr) {
+    fnptr = LookupRecordReplaySymbol("RecordReplayHasDivergedFromRecording");
+  }
+  if (fnptr != reinterpret_cast<void*>(1)) {
+    return reinterpret_cast<bool(*)()>(fnptr)();
+  }
+  return false;
+}
+
 namespace base {
 
 namespace {
@@ -909,6 +927,12 @@ bool WriteFileDescriptor(int fd, StringPiece data) {
 
 bool AllocateFileRegion(File* file, int64_t offset, size_t size) {
   DCHECK(file);
+
+  // Trying to resize a file for e.g. shared memory will fail when diverged
+  // from the recording. Pretend things worked, there isn't a file or shared
+  // memory backing anyways.
+  if (RecordReplayHasDivergedFromRecording())
+    return true;
 
   // Explicitly extend |file| to the maximum size. Zeros will fill the new
   // space. It is assumed that the existing file is fully realized as

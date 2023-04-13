@@ -14,6 +14,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 
+#include "base/record_replay.h"
+
 namespace base {
 namespace subtle {
 
@@ -35,6 +37,12 @@ using ScopedPathUnlinker =
 #if !BUILDFLAG(IS_NACL)
 bool CheckFDAccessMode(int fd, int expected_mode) {
   int fd_status = fcntl(fd, F_GETFL);
+
+  // RUN-1685: Ignore the fcntl result after diverging from the recording,
+  // the recorder will start returning errors and we don't want to crash the process.
+  if (recordreplay::HasDivergedFromRecording())
+    return true;
+
   if (fd_status == -1) {
     // TODO(crbug.com/838365): convert to DLOG when bug fixed.
     PLOG(ERROR) << "fcntl(" << fd << ", F_GETFL) failed";
@@ -151,6 +159,13 @@ bool PlatformSharedMemoryRegion::ConvertToReadOnly() {
   CHECK_EQ(mode_, Mode::kWritable)
       << "Only writable shared memory region can be converted to read-only";
 
+  // ScopedGeneric::reset crashes when resetting e.g. the fd to an identical fd.
+  // When we're diverged from the recording this can happen because dummy file
+  // descriptors can be used, and the reset() check isn't applicable here because
+  // closing a file descriptor doesn't do anything when replaying.
+  if (recordreplay::HasDivergedFromRecording())
+    handle_.fd.reset();
+
   handle_.fd.reset(handle_.readonly_fd.release());
   mode_ = Mode::kReadOnly;
   return true;
@@ -236,8 +251,15 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
     // Also open as readonly so that we can ConvertToReadOnly().
     readonly_fd.reset(HANDLE_EINTR(open(path.value().c_str(), O_RDONLY)));
     if (!readonly_fd.is_valid()) {
-      DPLOG(ERROR) << "open(\"" << path.value() << "\", O_RDONLY) failed";
-      return {};
+      // When diverged from the recording we can't open files that weren't
+      // originally opened when recording. Make up a fake file descriptor
+      // so execution can still proceed.
+      if (recordreplay::HasDivergedFromRecording()) {
+        readonly_fd.reset(42);
+      } else {
+        DPLOG(ERROR) << "open(\"" << path.value() << "\", O_RDONLY) failed";
+        return {};
+      }
     }
   }
 
@@ -247,19 +269,22 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 
   if (readonly_fd.is_valid()) {
     stat_wrapper_t shm_stat;
-    if (File::Fstat(shm_file.GetPlatformFile(), &shm_stat) != 0) {
+    if (File::Fstat(shm_file.GetPlatformFile(), &shm_stat) != 0 &&
+        !recordreplay::HasDivergedFromRecording()) {
       DPLOG(ERROR) << "fstat(fd) failed";
       return {};
     }
 
     stat_wrapper_t readonly_stat;
-    if (File::Fstat(readonly_fd.get(), &readonly_stat) != 0) {
+    if (File::Fstat(readonly_fd.get(), &readonly_stat) != 0 &&
+        !recordreplay::HasDivergedFromRecording()) {
       DPLOG(ERROR) << "fstat(readonly_fd) failed";
       return {};
     }
 
-    if (shm_stat.st_dev != readonly_stat.st_dev ||
-        shm_stat.st_ino != readonly_stat.st_ino) {
+    if ((shm_stat.st_dev != readonly_stat.st_dev ||
+         shm_stat.st_ino != readonly_stat.st_ino) &&
+        !recordreplay::HasDivergedFromRecording()) {
       LOG(ERROR) << "Writable and read-only inodes don't match; bailing";
       return {};
     }

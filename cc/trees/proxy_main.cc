@@ -37,6 +37,8 @@
 
 namespace cc {
 
+extern bool LayerTreeHostPointerIsValid(void* layer_tree_host);
+
 ProxyMain::ProxyMain(LayerTreeHost* layer_tree_host,
                      TaskRunnerProvider* task_runner_provider)
     : layer_tree_host_(layer_tree_host),
@@ -52,6 +54,11 @@ ProxyMain::ProxyMain(LayerTreeHost* layer_tree_host,
   TRACE_EVENT0("cc", "ProxyMain::ProxyMain");
   DCHECK(task_runner_provider_);
   DCHECK(IsMainThread());
+
+  if (recordreplay::IsRecordingOrReplaying() && !LayerTreeHostPointerIsValid(layer_tree_host_)) {
+    recordreplay::Warning("[RUN-1686] ProxyMain::ProxyMain layer tree host not valid %p",
+                          (void*)layer_tree_host_);
+  }
 }
 
 ProxyMain::~ProxyMain() {
@@ -132,6 +139,14 @@ void ProxyMain::DidCompletePageScaleAnimation() {
 void ProxyMain::BeginMainFrame(
     std::unique_ptr<BeginMainFrameAndCommitState> begin_main_frame_state) {
   recordreplay::SetCompositorProxy(this);
+
+  // Sometimes we try to repaint when the layer tree host pointer isn't valid,
+  // for an unknown reason. Deal with this by refusing to update the frame.
+  if (recordreplay::HasDivergedFromRecording() && !LayerTreeHostPointerIsValid(layer_tree_host_)) {
+    recordreplay::Warning("[RUN-1686] ProxyMain::BeginMainFrame layer tree host not valid %p",
+                          (void*)layer_tree_host_);
+    return;
+  }
 
   DCHECK(IsMainThread());
   DCHECK_EQ(NO_PIPELINE_STAGE, current_pipeline_stage_);
@@ -331,11 +346,6 @@ void ProxyMain::BeginMainFrame(
 
   // If UI resources were evicted on the impl thread, we need a commit.
   if (begin_main_frame_state->evicted_ui_resources)
-    final_pipeline_stage_ = COMMIT_PIPELINE_STAGE;
-
-  // When repainting, force a commit to occur so that a paint will happen even if
-  // nothing has changed since the last one.
-  if (recordreplay::HasDivergedFromRecording())
     final_pipeline_stage_ = COMMIT_PIPELINE_STAGE;
 
   current_pipeline_stage_ = UPDATE_LAYERS_PIPELINE_STAGE;

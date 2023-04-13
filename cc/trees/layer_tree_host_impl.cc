@@ -1220,12 +1220,6 @@ bool LayerTreeHostImpl::HasDamage() const {
     return true;
   }
 
-  // When repainting while diverged from the recording, always treat the frame
-  // as damaged so that painting will occur even if nothing has changed since
-  // the last paint.
-  if (recordreplay::HasDivergedFromRecording())
-    return true;
-
   const LayerTreeImpl* active_tree = active_tree_.get();
 
   // If the root render surface has no visible damage, then don't generate a
