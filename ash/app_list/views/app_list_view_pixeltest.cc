@@ -367,36 +367,14 @@ TEST_P(AppListViewTabletPixelTest, SearchBoxViewActive) {
       "search_box_view_active", /*revision_number=*/0, search_box_view));
 }
 
-class AppListViewAssistantZeroStateParams {
- public:
-  AppListViewAssistantZeroStateParams(bool rtl, bool dark_theme)
-      : rtl_(rtl), dark_theme_(dark_theme) {}
-
-  static std::string ToTestSuffix(
-      const testing::TestParamInfo<AppListViewAssistantZeroStateParams>& info) {
-    std::string suffix;
-    suffix.append(info.param.rtl() ? "rtl" : "ltr");
-    suffix.append("_");
-    suffix.append(info.param.dark_theme() ? "dark" : "light");
-    return suffix;
-  }
-
-  bool rtl() const { return rtl_; }
-  bool dark_theme() const { return dark_theme_; }
-
- private:
-  bool rtl_;
-  bool dark_theme_;
-};
-
 class AppListViewAssistantZeroStateTest
     : public AssistantAshTestBase,
-      public testing::WithParamInterface<AppListViewAssistantZeroStateParams> {
+      public testing::WithParamInterface<TestVariantsParam> {
  public:
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
     pixel_test::InitParams init_params;
-    init_params.under_rtl = GetParam().rtl();
+    init_params.under_rtl = IsRtl(GetParam());
     return init_params;
   }
 
@@ -408,19 +386,19 @@ class AppListViewAssistantZeroStateTest
     SetNumberOfSessionsWhereOnboardingShown(
         assistant::ui::kOnboardingMaxSessionsShown);
     DarkLightModeController::Get()->SetDarkModeEnabledForTest(
-        GetParam().dark_theme());
+        IsDarkMode(GetParam()));
+    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(
+        IsTabletMode(GetParam()));
     ShowAssistantUi();
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    RTL,
-    AppListViewAssistantZeroStateTest,
-    testing::Values(AppListViewAssistantZeroStateParams(false, false),
-                    AppListViewAssistantZeroStateParams(false, true),
-                    AppListViewAssistantZeroStateParams(true, false),
-                    AppListViewAssistantZeroStateParams(true, true)),
-    &AppListViewAssistantZeroStateParams::ToTestSuffix);
+INSTANTIATE_TEST_SUITE_P(RTL,
+                         AppListViewAssistantZeroStateTest,
+                         testing::Combine(/*IsRtl=*/testing::Bool(),
+                                          /*IsDarkMode=*/testing::Bool(),
+                                          /*IsTabletMode=*/testing::Bool()),
+                         &GenerateTestSuffix);
 
 TEST_P(AppListViewAssistantZeroStateTest, Basic) {
   // Wait layout.
