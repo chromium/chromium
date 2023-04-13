@@ -22,7 +22,7 @@ from anys import ANY_NUMBER, ANY_STR, AnyContains, AnyGT, AnyLT, AnyWithEntries
 _command_counter = itertools.count(1)
 
 
-def get_next_command_id():
+def get_next_command_id() -> int:
     """
     >>> x = get_next_command_id()
     >>> y = get_next_command_id()
@@ -31,12 +31,15 @@ def get_next_command_id():
     return next(_command_counter)
 
 
-async def subscribe(websocket, event_names, context_ids=None, channel=None):
+async def subscribe(websocket,
+                    event_names: str | list[str],
+                    context_ids: str | list[str] | None = None,
+                    channel: str | None = None):
     if isinstance(event_names, str):
         event_names = [event_names]
     if isinstance(context_ids, str):
         context_ids = [context_ids]
-    command = {
+    command: dict = {
         "method": "session.subscribe",
         "params": {
             "events": event_names
@@ -51,18 +54,18 @@ async def subscribe(websocket, event_names, context_ids=None, channel=None):
     await execute_command(websocket, command)
 
 
-async def send_JSON_command(websocket, command):
+async def send_JSON_command(websocket, command: dict) -> int:
     if "id" not in command:
         command["id"] = get_next_command_id()
     await websocket.send(json.dumps(command))
     return command["id"]
 
 
-async def read_JSON_message(websocket):
+async def read_JSON_message(websocket) -> dict:
     return json.loads(await websocket.recv())
 
 
-async def set_html_content(websocket, context_id, html_content):
+async def set_html_content(websocket, context_id: str, html_content: str):
     """Sets the current page content without navigation."""
     await execute_command(
         websocket, {
@@ -77,7 +80,7 @@ async def set_html_content(websocket, context_id, html_content):
         })
 
 
-async def get_tree(websocket, context_id=None):
+async def get_tree(websocket, context_id: str | None = None) -> dict:
     """Get the tree of browsing contexts."""
     params = {}
     if context_id is not None:
@@ -88,7 +91,10 @@ async def get_tree(websocket, context_id=None):
     })
 
 
-async def goto_url(websocket, context_id, url, wait="interactive"):
+async def goto_url(websocket,
+                   context_id: str,
+                   url: str,
+                   wait: str = "interactive") -> dict:
     """Open given URL in the given context."""
     return await execute_command(
         websocket, {
@@ -101,7 +107,7 @@ async def goto_url(websocket, context_id, url, wait="interactive"):
         })
 
 
-async def execute_command(websocket, command):
+async def execute_command(websocket, command: dict) -> dict:
     if "id" not in command:
         command["id"] = get_next_command_id()
 
@@ -119,7 +125,7 @@ async def execute_command(websocket, command):
             })
 
 
-async def wait_for_event(websocket, event_method):
+async def wait_for_event(websocket, event_method: str) -> dict:
     """Wait and return a specific event from Bidi server."""
     while True:
         event_response = await read_JSON_message(websocket)
@@ -167,15 +173,15 @@ def AnyExtending(expected: list | dict):
     >>> assert {"a": {"a1": [1, 2]}, "b": 2} == AnyExtending({"a": {"a1": [1, 2]}})
     """
     if type(expected) is list:
-        result = []
+        list_result = []
         for index, _ in enumerate(expected):
-            result.append(AnyExtending(expected[index]))
-        return result
+            list_result.append(AnyExtending(expected[index]))
+        return list_result
 
     if type(expected) is dict:
-        result = {}
+        dict_result = {}
         for key in expected.keys():
-            result[key] = AnyExtending(expected[key])
-        return AnyWithEntries(result)
+            dict_result[key] = AnyExtending(expected[key])
+        return AnyWithEntries(dict_result)
 
     return expected

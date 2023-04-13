@@ -65,11 +65,11 @@ async def get_websocket():
         return await websockets.connect(ws_url)
 
 
-async def send_JSON_command(command, websocket):
+async def send_JSON_command(command: dict, websocket):
     await websocket.send(json.dumps(command))
 
 
-async def read_JSON_message(websocket):
+async def read_JSON_message(websocket) -> dict:
     return json.loads(await websocket.recv())
 
 

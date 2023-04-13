@@ -60,7 +60,7 @@ def create_context(websocket):
 
 
 @pytest_asyncio.fixture
-async def default_realm(websocket, context_id):
+async def default_realm(websocket, context_id: str):
     """Return the default realm for the given browsing context."""
     result = await execute_command(
         websocket, {
@@ -78,7 +78,7 @@ async def default_realm(websocket, context_id):
 
 
 @pytest_asyncio.fixture
-async def sandbox_realm(websocket, context_id):
+async def sandbox_realm(websocket, context_id: str):
     """Return a sandbox realm for the given browsing context."""
     result = await execute_command(
         websocket, {
@@ -150,7 +150,7 @@ def html_iframe_same_origin(html, iframe, url_same_origin):
 
 
 @pytest_asyncio.fixture
-async def iframe_id(websocket, context_id, html_iframe_same_origin, html):
+async def iframe_id(websocket, context_id: str, html_iframe_same_origin, html):
     """Navigate to a page with an iframe of the same origin, and return the
     iframe browser context id."""
     await goto_url(websocket, context_id, html_iframe_same_origin)
