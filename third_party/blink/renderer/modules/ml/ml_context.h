@@ -18,6 +18,7 @@
 namespace blink {
 
 class ML;
+class MLModelLoader;
 
 class MODULES_EXPORT MLContext final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -41,6 +42,9 @@ class MODULES_EXPORT MLContext final : public ScriptWrappable {
   void LogConsoleWarning(const String& message);
 
   ML* GetML();
+  // This method returns a MLModelLoader that's used and shared by WebNN APIs
+  // invoked on this MLContext.
+  MLModelLoader* GetModelLoaderForWebNN(ScriptState* script_state);
 
   void Trace(Visitor* visitor) const override;
 
@@ -63,6 +67,8 @@ class MODULES_EXPORT MLContext final : public ScriptWrappable {
   unsigned int num_threads_;
 
   Member<ML> ml_;
+  // WebNN uses this MLModelLoader to build a computational graph.
+  Member<MLModelLoader> ml_model_loader_;
 };
 
 }  // namespace blink

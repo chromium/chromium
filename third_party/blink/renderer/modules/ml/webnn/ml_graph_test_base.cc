@@ -33,6 +33,9 @@ std::string TestVarietyToString(
     case BackendType::kXnnpack:
       name += "Xnnpack_";
       break;
+    case BackendType::kModelLoader:
+      name += "ModelLoader_";
+      break;
   }
 
   switch (execution_mode) {

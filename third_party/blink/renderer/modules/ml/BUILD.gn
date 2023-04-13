@@ -8,7 +8,10 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "BUILD_WEBNN_WITH_XNNPACK=$build_webnn_with_xnnpack" ]
+  flags = [
+    "BUILD_WEBNN_WITH_XNNPACK=$build_webnn_with_xnnpack",
+    "BUILD_WEBNN_ON_CROS=$build_webnn_on_cros",
+  ]
 }
 
 blink_modules_sources("ml") {
@@ -50,6 +53,18 @@ blink_modules_sources("ml") {
 
     deps += [ "//third_party/xnnpack" ]
   }
+
+  if (build_webnn_on_cros) {
+    sources += [
+      "webnn/ml_graph_cros.cc",
+      "webnn/ml_graph_cros.h",
+    ]
+
+    deps += [
+      "//third_party/flatbuffers:flatbuffers",
+      "//third_party/tflite:tflite_public_headers",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -87,7 +102,7 @@ source_set("unit_tests") {
   }
 
   if (is_chromeos && current_cpu == "x64") {
-    sources += [ "webnn/ml_graph_test_tflite.cc" ]
+    sources += [ "webnn/ml_graph_test_cros.cc" ]
     deps += [ "//third_party/tflite" ]
   }
 }

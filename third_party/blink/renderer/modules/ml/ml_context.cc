@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
+#include "third_party/blink/renderer/modules/ml/ml_model_loader.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
@@ -54,8 +55,18 @@ ML* MLContext::GetML() {
   return ml_.Get();
 }
 
+MLModelLoader* MLContext::GetModelLoaderForWebNN(ScriptState* script_state) {
+  if (!ml_model_loader_) {
+    ExecutionContext* execution_context = ExecutionContext::From(script_state);
+    ml_model_loader_ =
+        MakeGarbageCollected<MLModelLoader>(execution_context, this);
+  }
+  return ml_model_loader_;
+}
+
 void MLContext::Trace(Visitor* visitor) const {
   visitor->Trace(ml_);
+  visitor->Trace(ml_model_loader_);
 
   ScriptWrappable::Trace(visitor);
 }

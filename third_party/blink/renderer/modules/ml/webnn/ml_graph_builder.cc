@@ -30,6 +30,10 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_xnnpack.h"
 #endif
 
+#if BUILDFLAG(BUILD_WEBNN_ON_CROS)
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_cros.h"
+#endif
+
 namespace blink {
 
 namespace {
@@ -1913,6 +1917,15 @@ ScriptPromise MLGraphBuilder::build(ScriptState* script_state,
   if (ml_context_->GetDevicePreference() == V8MLDevicePreference::Enum::kAuto ||
       ml_context_->GetDevicePreference() == V8MLDevicePreference::Enum::kCpu) {
     MLGraphXnnpack::ValidateAndBuildAsync(ml_context_, named_outputs, resolver);
+    return promise;
+  }
+#endif
+
+#if BUILDFLAG(BUILD_WEBNN_ON_CROS)
+  // On ChromeOS, ML model inferencing is off-loaded to ModelLoader service.
+  if (ml_context_->GetDevicePreference() == V8MLDevicePreference::Enum::kAuto ||
+      ml_context_->GetDevicePreference() == V8MLDevicePreference::Enum::kCpu) {
+    MLGraphCrOS::ValidateAndBuildAsync(ml_context_, named_outputs, resolver);
     return promise;
   }
 #endif
