@@ -205,13 +205,6 @@ void AbortSignal::InitializeCommon(ExecutionContext* execution_context,
     abort_algorithms_ =
         MakeGarbageCollected<UnremovableAbortAlgorithmCollection>();
   }
-
-  if (RuntimeEnabledFeatures::AbortSignalCompositionEnabled() &&
-      signal_type_ == AbortSignal::SignalType::kComposite) {
-    // Composite signals need to be kept alive when they have relevant event
-    // listeners or pending algorithms.
-    RegisterActiveScriptWrappable();
-  }
 }
 
 AbortSignal::~AbortSignal() = default;
@@ -431,6 +424,7 @@ bool AbortSignal::HasPendingActivity() const {
     return false;
   }
   DCHECK(RuntimeEnabledFeatures::AbortSignalCompositionEnabled());
+  CHECK(composition_manager_);
   // Settled signals cannot signal abort, so they can be GCed.
   if (composition_manager_->IsSettled()) {
     return false;
@@ -448,6 +442,15 @@ bool AbortSignal::CanAbort() const {
     return !composition_manager_->IsSettled();
   }
   return true;
+}
+
+void AbortSignal::ActiveScriptWrappableBaseConstructed() {
+  if (RuntimeEnabledFeatures::AbortSignalCompositionEnabled() &&
+      signal_type_ == AbortSignal::SignalType::kComposite) {
+    // Composite signals need to be kept alive when they have relevant event
+    // listeners or pending algorithms.
+    RegisterActiveScriptWrappable();
+  }
 }
 
 AbortSignal::AlgorithmHandle::AlgorithmHandle(AbortSignal::Algorithm* algorithm)

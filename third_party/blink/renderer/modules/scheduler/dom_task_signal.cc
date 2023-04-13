@@ -202,6 +202,7 @@ bool DOMTaskSignal::HasPendingActivity() const {
     return false;
   }
   DCHECK(RuntimeEnabledFeatures::AbortSignalCompositionEnabled());
+  CHECK(priority_composition_manager_);
   // True if priority changes for this signal can occur and be observed.
   bool has_pending_priority_activity =
       !priority_composition_manager_->IsSettled() &&

@@ -177,6 +177,11 @@ class CORE_EXPORT AbortSignal : public EventTargetWithInlineData,
   // can no longer emit events.
   virtual void DetachFromController();
 
+  // This enables the `PostConstructionCallbackTrait`, which is used to register
+  // the `LazyActiveScriptWrappable` for composite signals. Using this prevents
+  // calling a virtual method for objects under construction.
+  void ActiveScriptWrappableBaseConstructed();
+
  private:
   // Common constructor initialization separated out to make mutually exclusive
   // constructors more readable.
