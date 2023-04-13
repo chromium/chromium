@@ -70,6 +70,17 @@ class FormatQueryResults(unittest.TestCase):
         'query_optimal_shard_counts.subprocess.check_output')
     self._mock_check_output = self._mock_check_output_patcher.start()
     self.output_file_handle, self.output_file = tempfile.mkstemp()
+    with open(self.output_file, 'w') as f:
+      f.write(
+          json.dumps({
+              'chromium.builder_group': {
+                  'builder_name': {
+                      'fake_test_suite': {
+                          'shards': 4
+                      }
+                  }
+              },
+          }))
 
   def tearDown(self):
     os.remove(self.output_file)
@@ -98,7 +109,7 @@ class FormatQueryResults(unittest.TestCase):
     ])
     query_optimal_shard_counts.main(['--output-file', self.output_file])
     with open(self.output_file, 'r') as f:
-      script_result = json.loads(f.read())
+      script_result = json.load(f)
     self.assertEqual(
         script_result['chromium.linux']['Linux Tests'],
         {'browser_tests': {
@@ -126,7 +137,7 @@ class FormatQueryResults(unittest.TestCase):
     ])
     query_optimal_shard_counts.main(['--output-file', self.output_file])
     with open(self.output_file, 'r') as f:
-      script_result = json.loads(f.read())
+      script_result = json.load(f)
     self.assertEqual(
         len(script_result['chromium.linux']),
         2,
@@ -153,7 +164,7 @@ class FormatQueryResults(unittest.TestCase):
     query_optimal_shard_counts.main(
         ['--output-file', self.output_file, '--verbose'])
     with open(self.output_file, 'r') as f:
-      script_result = json.loads(f.read())
+      script_result = json.load(f)
     expected_dict = {
         'shards':
         DEFAULT_DICT['optimal_shard_count'],
@@ -171,9 +182,10 @@ class FormatQueryResults(unittest.TestCase):
 
   def testNoQueryResults(self):
     self._mock_check_output.return_value = json.dumps([])
-    query_optimal_shard_counts.main(['--output-file', self.output_file])
+    query_optimal_shard_counts.main(
+        ['--output-file', self.output_file, '--overwrite-output-file'])
     with open(self.output_file, 'r') as f:
-      script_result = json.loads(f.read())
+      script_result = json.load(f)
     self.assertEqual({}, script_result)
 
   def testLookbackDates(self):
@@ -213,6 +225,97 @@ class FormatQueryResults(unittest.TestCase):
     big_query_arg_list = mock_call_args[0]
     self.assertTrue(any('2023-01-01' in arg for arg in big_query_arg_list))
     self.assertTrue(any('2022-12-29' in arg for arg in big_query_arg_list))
+
+  def testMergeExistingOutputFile(self):
+    self._mock_check_output.return_value = json.dumps([
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+            optimal_shard_count=16,
+        ),
+    ])
+    existing_output_file_data = json.dumps({
+        'chromium.linux': {
+            'Linux Tests': {
+                'browser_tests': {
+                    'shards': 15,
+                },
+                'interactive_ui_tests': {
+                    'shards': 3,
+                }
+            },
+        },
+        'chromium.android': {
+            'android-12-x64-rel': {
+                'webview_instrumentation_test_apk': {
+                    'shards': 11,
+                }
+            }
+        }
+    })
+    with open(self.output_file, 'w') as f:
+      f.write(existing_output_file_data)
+    query_optimal_shard_counts.main(['--output-file', self.output_file])
+    with open(self.output_file, 'r') as f:
+      script_result = json.load(f)
+    self.assertEqual(
+        script_result['chromium.linux']['Linux Tests']['browser_tests'],
+        {'shards': 16},
+    )
+    self.assertEqual(
+        script_result['chromium.linux']['Linux Tests']['interactive_ui_tests'],
+        {'shards': 3},
+    )
+    self.assertEqual(
+        script_result['chromium.android']['android-12-x64-rel']
+        ['webview_instrumentation_test_apk'],
+        {'shards': 11},
+    )
+
+  def testOverwriteExistingOutputFile(self):
+    self._mock_check_output.return_value = json.dumps([
+        query_response_test_suite_dict(
+            waterfall_builder_group='chromium.linux',
+            waterfall_builder_name='Linux Tests',
+            try_builder='linux-rel',
+            test_suite='browser_tests',
+            optimal_shard_count=16,
+        ),
+    ])
+    existing_output_file_data = json.dumps({
+        'chromium.linux': {
+            'Linux Tests': {
+                'browser_tests': {
+                    'shards': 15,
+                },
+                'interactive_ui_tests': {
+                    'shards': 3,
+                }
+            },
+        },
+        'chromium.android': {
+            'android-12-x64-rel': {
+                'webview_instrumentation_test_apk': {
+                    'shards': 11,
+                }
+            }
+        }
+    })
+    with open(self.output_file, 'w') as f:
+      f.write(existing_output_file_data)
+    query_optimal_shard_counts.main(
+        ['--output-file', self.output_file, '--overwrite-output-file'])
+    with open(self.output_file, 'r') as f:
+      script_result = json.load(f)
+    self.assertEqual(
+        script_result['chromium.linux']['Linux Tests']['browser_tests'],
+        {'shards': 16},
+    )
+    self.assertIsNone(script_result['chromium.linux']['Linux Tests'].get(
+        'interactive_ui_tests'))
+    self.assertIsNone(script_result.get('chromium.android'))
 
 
 if __name__ == '__main__':
