@@ -1547,7 +1547,7 @@ void RenderFrameHostManager::CreateWebUIForNavigationIfNeeded(
     // It's possible for the navigation to already have a WebUI associated with
     // it if this function is called from OnResponseStarted.
     CHECK_GE(request->state(), NavigationRequest::WILL_PROCESS_RESPONSE);
-    CHECK(!request->web_ui()->has_frame_host());
+    CHECK(!request->web_ui()->HasRenderFrameHost());
     return;
   }
 

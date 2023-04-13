@@ -39,6 +39,7 @@ class TestWebUI : public WebUI {
   // WebUI overrides.
   WebContents* GetWebContents() override;
   WebUIController* GetController() override;
+  RenderFrameHost* GetRenderFrameHost() override;
   void SetController(std::unique_ptr<WebUIController> controller) override;
   float GetDeviceScaleFactor() override;
   const std::u16string& GetOverriddenTitle() override;

@@ -48,6 +48,10 @@ WebUIController* TestWebUI::GetController() {
   return controller_.get();
 }
 
+RenderFrameHost* TestWebUI::GetRenderFrameHost() {
+  return nullptr;
+}
+
 void TestWebUI::SetController(std::unique_ptr<WebUIController> controller) {
   controller_ = std::move(controller);
 }

@@ -21785,7 +21785,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_FALSE(webui_nav->HasRenderFrameHost());
     EXPECT_TRUE(webui_nav->HasWebUI());
     created_webui = webui_nav->web_ui();
-    EXPECT_FALSE(created_webui->has_frame_host());
+    EXPECT_FALSE(created_webui->HasRenderFrameHost());
 
     // The pending commit RenderFrameHost for `url_2` is still around and
     // doesn't have a WebUI Object.
@@ -21823,8 +21823,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(webui_nav->HasRenderFrameHost());
   EXPECT_FALSE(webui_nav->HasWebUI());
   EXPECT_EQ(created_webui, webui_nav->GetRenderFrameHost()->web_ui());
-  EXPECT_TRUE(created_webui->has_frame_host());
-  EXPECT_EQ(created_webui->frame_host(), webui_nav->GetRenderFrameHost());
+  EXPECT_TRUE(created_webui->HasRenderFrameHost());
+  EXPECT_EQ(created_webui->GetRenderFrameHost(),
+            webui_nav->GetRenderFrameHost());
   EXPECT_EQ(webui_nav->GetRenderFrameHost(),
             root->render_manager()->speculative_frame_host());
 
@@ -21834,7 +21835,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(webui_nav_manager.was_successful());
   EXPECT_EQ(url_webui, contents()->GetLastCommittedURL());
   EXPECT_EQ(created_webui, current_main_frame_host()->web_ui());
-  EXPECT_EQ(created_webui->frame_host(), current_main_frame_host());
+  EXPECT_EQ(created_webui->GetRenderFrameHost(), current_main_frame_host());
 }
 
 INSTANTIATE_TEST_SUITE_P(

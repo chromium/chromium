@@ -5,6 +5,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "content/browser/webui/test_webui_js_bridge_ui.h"
+#include "content/public/test/test_web_ui.h"
 #include "content/test/web_ui/webui_js_bridge_unittest.test-mojom-webui-js-bridge-impl.h"
 #include "content/test/web_ui/webui_js_bridge_unittest2.test-mojom-webui-js-bridge-impl.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -84,8 +85,11 @@ class WebUIJsBridgeTest : public testing::Test {
   WebUIJsBridgeTest() = default;
   ~WebUIJsBridgeTest() override = default;
 
+  TestWebUI* web_ui() { return &test_web_ui; }
+
  private:
   base::test::TaskEnvironment task_environment_;
+  TestWebUI test_web_ui;
 };
 
 // Tests binder methods are overridden and can be called. Calling them does
@@ -100,7 +104,7 @@ TEST_F(WebUIJsBridgeTest, Bind) {
       });
   Bar bar;
 
-  TestWebUIJsBridgeUI controller;
+  TestWebUIJsBridgeUI controller(web_ui());
   mojom::FooWebUIJsBridgeImpl bridge(
       &controller, page_handler_binder,
       base::BindRepeating(&Bar::BindBar, base::Unretained(&bar)),
@@ -129,7 +133,7 @@ TEST_F(WebUIJsBridgeTest, Bind) {
 // Tests we correctly generate a WebUIJsBridgeImpl for a interface that
 // binds interfaces in a separate mojom.
 TEST_F(WebUIJsBridgeTest, CrossModule) {
-  TestWebUIJsBridgeUI controller;
+  TestWebUIJsBridgeUI controller(web_ui());
   mojom::TestWebUIJsBridge2Impl bridge(&controller, base::DoNothing());
   bridge.BindSecondaryInterface(mojo::NullReceiver());
 }
@@ -137,7 +141,7 @@ TEST_F(WebUIJsBridgeTest, CrossModule) {
 // Tests that we crash if the wrong WebUIController is passed to the
 // WebUIJsBridge.
 TEST_F(WebUIJsBridgeTest, IncorrectWebUIControllerCrash) {
-  TestWebUIJsBridgeIncorrectUI controller;
+  TestWebUIJsBridgeIncorrectUI controller(web_ui());
   EXPECT_DEATH_IF_SUPPORTED(
       mojom::TestWebUIJsBridge2Impl bridge(&controller, base::DoNothing()), "");
 }

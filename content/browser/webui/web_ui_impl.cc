@@ -116,7 +116,8 @@ void WebUIImpl::Send(const std::string& message, base::Value::List args) {
 }
 
 void WebUIImpl::SetRenderFrameHost(RenderFrameHost* render_frame_host) {
-  frame_host_ = static_cast<RenderFrameHostImpl*>(render_frame_host);
+  frame_host_ =
+      static_cast<RenderFrameHostImpl*>(render_frame_host)->GetWeakPtr();
   // Assert that we can only open WebUI for the active or speculative pages.
   DCHECK(frame_host_->lifecycle_state() ==
              RenderFrameHostImpl::LifecycleStateImpl::kActive ||
@@ -199,6 +200,14 @@ void WebUIImpl::AddRequestableScheme(const char* scheme) {
 
 WebUIController* WebUIImpl::GetController() {
   return controller_.get();
+}
+
+RenderFrameHost* WebUIImpl::GetRenderFrameHost() {
+  return frame_host_.get();
+}
+
+bool WebUIImpl::HasRenderFrameHost() const {
+  return !!frame_host_;
 }
 
 void WebUIImpl::SetController(std::unique_ptr<WebUIController> controller) {

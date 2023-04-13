@@ -14,6 +14,9 @@ This file specifies resources for content_browsertests.
   <translations />
   <release seq="1">
     <includes>
+      <include name="IDR_WEB_UI_MANAGED_INTERFACE_TEST_HTML" file="data/web_ui_managed_interface_test.html" type="BINDATA" resource_path="web_ui_managed_interface_test.html" />
+      <include name="IDR_WEB_UI_MANAGED_INTERFACE_TEST_JS" file="data/web_ui_managed_interface_test.js" type="BINDATA" resource_path="web_ui_managed_interface_test.js" />
+      <include name="IDR_WEB_UI_MANAGED_INTERFACE_TEST_TEST_MOJOM_WEBUI_JS" file="${root_gen_dir}/mojom-webui/content/test/data/web_ui_managed_interface_test.test-mojom-webui.js" use_base_dir="false" type="BINDATA" resource_path="web_ui_managed_interface_test.test-mojom-webui.js" />
       <include name="IDR_WEB_UI_MOJO_HTML" file="data/web_ui_mojo_test.html" type="BINDATA" />
       <include name="IDR_WEB_UI_MOJO_JS" file="data/web_ui_mojo_test.js" type="BINDATA" resource_path="web_ui_mojo_test.js" />
       <include name="IDR_WEB_UI_MOJO_TS_HTML" file="data/web_ui_mojo_ts_test.html" type="BINDATA" />

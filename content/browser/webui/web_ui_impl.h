@@ -70,6 +70,7 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   // WebUI implementation:
   WebContents* GetWebContents() override;
   WebUIController* GetController() override;
+  RenderFrameHost* GetRenderFrameHost() override;
   void SetController(std::unique_ptr<WebUIController> controller) override;
   float GetDeviceScaleFactor() override;
   const std::u16string& GetOverriddenTitle() override;
@@ -99,12 +100,7 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
     return web_contents_observer_.get();
   }
 
-  RenderFrameHostImpl* frame_host() const {
-    CHECK(frame_host_);
-    return frame_host_;
-  }
-
-  bool has_frame_host() const { return !!frame_host_; }
+  bool HasRenderFrameHost() const;
 
  private:
   friend class WebUIMainFrameObserver;
@@ -140,13 +136,17 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   // See regression test:
   // `WebUIImplBrowserTest::SynchronousWebContentDeletionInUnload`
   raw_ptr<WebContents, DisableDanglingPtrDetection> web_contents_;
-  // `frame_host_` might stay unset for a while, as the WebUIImpl object is
-  // created early in a navigation, and a RenderFrameHost for the navigation
-  // might not be created until the final response for the navigation is
-  // received in some cases (after `NavigationRequest::OnResponseStarted()`).
-  // See also `SetRenderFrameHost()` for more details.
-  raw_ptr<RenderFrameHostImpl, DisableDanglingPtrDetection> frame_host_ =
-      nullptr;
+
+  // During WebUI construction, `frame_host_` might stay unset for a while,
+  // as the WebUIImpl object is created early in a navigation, and a
+  // RenderFrameHost for the navigation might not be created until the final
+  // response for the navigation is received in some cases
+  // (after `NavigationRequest::OnResponseStarted()`).
+  // During WebUI destruction, `frame_host_` is always valid except
+  // if the WebContents is destroyed by the WebUIController subclass.
+  // See regression test:
+  // `WebUIImplBrowserTest::SynchronousWebContentDeletionInUnload`
+  base::WeakPtr<RenderFrameHostImpl> frame_host_;
 
   // The WebUIMessageHandlers we own.
   std::vector<std::unique_ptr<WebUIMessageHandler>> handlers_;
