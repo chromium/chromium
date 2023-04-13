@@ -9836,9 +9836,7 @@
                         "IPH_PerformanceNewBadge",
                         "PageTimelineMonitor"
                     ],
-                    "disable_features": [
-                        "IPH_HighEfficiencyInfoMode"
-                    ]
+                    "disable_features": []
                 }
             ]
         }

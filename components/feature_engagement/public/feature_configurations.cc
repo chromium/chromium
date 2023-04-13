@@ -162,20 +162,6 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHHighEfficiencyInfoModeFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
-    // Show the promo up to 3 times if the page action chip was not opened
-    // within the last week
-    config->trigger = EventConfig("high_efficiency_info_trigger",
-                                  Comparator(LESS_THAN, 3), 360, 360);
-    config->used =
-        EventConfig("high_efficiency_info_shown", Comparator(EQUAL, 0), 7, 360);
-    return config;
-  }
-
   if (kIPHHighEfficiencyModeFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;

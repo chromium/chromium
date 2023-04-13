@@ -61,10 +61,10 @@ class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
   ~HighEfficiencyChipViewBrowserTest() override = default;
 
   void SetUp() override {
-    iph_features_.InitForDemo(
-        feature_engagement::kIPHHighEfficiencyInfoModeFeature,
+    scoped_feature_list_.InitWithFeaturesAndParameters(
         {{performance_manager::features::kHighEfficiencyModeAvailable,
-          {{"default_state", "true"}, {"time_before_discard", "1h"}}}});
+          {{"default_state", "true"}, {"time_before_discard", "1h"}}}},
+        {});
 
     InProcessBrowserTest::SetUp();
   }
@@ -130,36 +130,6 @@ class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
     manager->DiscardPageForTesting(contents);
   }
 
-  void WaitForIPHToShow() {
-    views::NamedWidgetShownWaiter waiter(
-        views::test::AnyWidgetTestPasskey{},
-        user_education::HelpBubbleView::kViewClassName);
-    waiter.WaitIfNeededAndGet();
-  }
-
-  user_education::HelpBubbleView* GetHelpBubbleView() {
-    return GetFeaturePromoController()
-        ->promo_bubble_for_testing()
-        ->AsA<user_education::HelpBubbleViews>()
-        ->bubble_view();
-  }
-
-  void ClickIPHCancelButton() {
-    views::test::WidgetDestroyedWaiter waiter(GetHelpBubbleView()->GetWidget());
-    views::test::InteractionTestUtilSimulatorViews::PressButton(
-        GetHelpBubbleView()->GetDefaultButtonForTesting(),
-        ui::test::InteractionTestUtil::InputType::kMouse);
-    waiter.Wait();
-  }
-
-  void ClickIPHSettingsButton() {
-    views::test::WidgetDestroyedWaiter waiter(GetHelpBubbleView()->GetWidget());
-    views::test::InteractionTestUtilSimulatorViews::PressButton(
-        GetHelpBubbleView()->GetNonDefaultButtonForTesting(0),
-        ui::test::InteractionTestUtil::InputType::kMouse);
-    waiter.Wait();
-  }
-
   views::InkDropState GetInkDropState() {
     return views::InkDrop::Get(GetHighEfficiencyChipView())
         ->GetInkDrop()
@@ -167,7 +137,7 @@ class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  feature_engagement::test::ScopedIphFeatureList iph_features_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::SimpleTestTickClock test_clock_;
   resource_coordinator::ScopedSetTickClockForTesting
       scoped_set_tick_clock_for_testing_;

@@ -142,7 +142,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHExtensionsMenuFeature,
     &kIPHFocusHelpBubbleScreenReaderPromoFeature,
     &kIPHGMCCastStartStopFeature,
-    &kIPHHighEfficiencyInfoModeFeature,
     &kIPHHighEfficiencyModeFeature,
     &kIPHLiveCaptionFeature,
     &kIPHTabAudioMutingFeature,

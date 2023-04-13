@@ -392,25 +392,6 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleTitleText(IDS_BATTERY_SAVER_MODE_PROMO_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)));
 
-  // kIPHHighEfficiencyInfoModeFeature:
-  registry.RegisterFeature(std::move(
-      FeaturePromoSpecification::CreateForCustomAction(
-          feature_engagement::kIPHHighEfficiencyInfoModeFeature,
-          kHighEfficiencyChipElementId,
-          IDS_HIGH_EFFICIENCY_INFO_MODE_PROMO_TEXT,
-          IDS_HIGH_EFFICIENCY_INFO_MODE_PROMO_ACTION_TEXT,
-          base::BindRepeating(
-              [](ui::ElementContext ctx,
-                 user_education::FeaturePromoHandle promo_handle) {
-                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
-                if (browser)
-                  chrome::ShowSettingsSubPage(browser,
-                                              chrome::kPerformanceSubPage);
-                RecordHighEfficiencyInfoIPHOpenSettings(browser != nullptr);
-              }))
-          .SetBubbleTitleText(IDS_HIGH_EFFICIENCY_INFO_MODE_PROMO_TITLE)
-          .SetBubbleArrow(HelpBubbleArrow::kTopCenter)));
-
   // kIPHHighEfficiencyModeFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(

@@ -35,12 +35,6 @@ namespace {
 
 // The duration that the chip should be expanded for.
 constexpr base::TimeDelta kChipAnimationDuration = base::Seconds(12);
-// The delay before the IPH should be potentially shown. This should be less
-// than kChipAnimationDuration but longer than kIconLabelAnimationDurationMs.
-constexpr base::TimeDelta kIPHDelayDuration = base::Seconds(1);
-
-// We want this to show up before the chip finishes animating.
-static_assert(kIPHDelayDuration < kChipAnimationDuration);
 
 }  // namespace
 
@@ -126,14 +120,6 @@ void HighEfficiencyChipView::UpdateImpl() {
       AnimateOut();
       ResetSlideAnimation(false);
     }
-
-    if (base::FeatureList::IsEnabled(
-            feature_engagement::kIPHHighEfficiencyInfoModeFeature)) {
-      // Delay the IPH to ensure the chip is not animating when it appears.
-      timer_.Start(FROM_HERE, kIPHDelayDuration,
-                   base::BindOnce(&HighEfficiencyChipView::MaybeShowIPH,
-                                  weak_ptr_factory_.GetWeakPtr()));
-    }
   } else {
     AnimateOut();
     ResetSlideAnimation(false);
@@ -150,10 +136,6 @@ void HighEfficiencyChipView::OnExecuting(
   }
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
-
-  // If the IPH is currently open, close it before opening the dialog.
-  browser_view->CloseFeaturePromo(
-      feature_engagement::kIPHHighEfficiencyInfoModeFeature);
 
   // Open the dialog bubble.
   View* anchor_view = browser_view->toolbar_button_provider()->GetAnchorView(
@@ -173,26 +155,6 @@ const gfx::VectorIcon& HighEfficiencyChipView::GetVectorIcon() const {
 
 views::BubbleDialogDelegate* HighEfficiencyChipView::GetBubble() const {
   return bubble_;
-}
-
-void HighEfficiencyChipView::MaybeShowIPH() {
-  if (browser_->window() != nullptr) {
-    bool const promo_shown = browser_->window()->MaybeShowFeaturePromo(
-        feature_engagement::kIPHHighEfficiencyInfoModeFeature, {},
-        base::BindOnce(&HighEfficiencyChipView::OnIPHClosed,
-                       weak_ptr_factory_.GetWeakPtr()));
-    // While the IPH is showing, pause the animation of the chip so it doesn't
-    // animate closed.
-    if (promo_shown) {
-      PauseAnimation();
-      SetHighlighted(true);
-    }
-  }
-}
-
-void HighEfficiencyChipView::OnIPHClosed() {
-  SetHighlighted(false);
-  UnpauseAnimation();
 }
 
 void HighEfficiencyChipView::OnHighEfficiencyModeChanged() {
