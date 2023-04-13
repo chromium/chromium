@@ -133,9 +133,6 @@ vars = {
   # Fetch clang-tidy into the same bin/ directory as our clang binary.
   'checkout_clang_tidy': False,
 
-  # Fetch clang libraries and headers in order to build clang tooling.
-  'checkout_clang_libs': False,
-
   # Fetch clangd into the same bin/ directory as our clang binary.
   'checkout_clangd': False,
 
@@ -241,26 +238,11 @@ vars = {
   # instead of downloading the prebuilt pinned revision.
   'llvm_force_head_revision': False,
 
-  # Fetch Rust toolchain built against our LLVM revision instead of the Android
-  # Rust toolchain. Experimental. The corresponding GN arg
-  # use_chromium_rust_toolchain directs the build to use this toolchain instead
-  # of the Android toolchain.
-  #
-  # We avoid doing this on toolchain build bots (where
-  # `checkout_rust_toolchain_deps` is set) since they are building the Rust
-  # toolchain.
-  'checkout_rust': 'host_os == "linux" and not checkout_rust_toolchain_deps',
+  # Fetch Rust toolchain.
+  'checkout_rust': 'host_os == "linux"',
 
   # Fetch the Android team's Rust toolchain.
   'fetch_android_chromium_rust_toolchain': False,
-
-  # Build in-tree Rust toolchain. checkout_clang_libs must also be True. The
-  # corresponding GN arg use_chromium_rust_toolchain directs the build to use
-  # the in-tree toolchain instead of the Android toolchain.
-  #
-  # This is not intended for local development.
-  # Prefer using //tools/rust/build_rust.py directly.
-  'build_chromium_rust_toolchain': False,
 
   # See //docs/testing/regression-test-selection.md
   # for info on RTS
@@ -288,12 +270,6 @@ vars = {
   'checkout_siso': False,
   # siso CIPD package version.
   'siso_version': 'latest',
-
-  # Fetch dependencies needed to build Rust toolchain. Not needed if developing
-  # Rust code in Chromium; instead enable checkout_rust
-  # (which is gradually being made the default across different platforms).
-  # Only use if building the Rust toolchain.
-  'checkout_rust_toolchain_deps': False,
 
   'android_git': 'https://android.googlesource.com',
   'aomedia_git': 'https://aomedia.googlesource.com',
@@ -4205,16 +4181,6 @@ hooks = [
                '--package=clang-tidy'],
   },
   {
-    # Grab the libraries and header files of the clang compiler that will be
-    # used to build Chromium. These can be used to build clang tooling for
-    # static analysis or codegen.
-    'name': 'clang_libs',
-    'pattern': '.',
-    'condition': 'checkout_clang_libs',
-    'action': ['python3', 'src/tools/clang/scripts/update.py',
-               '--package=clang-libs'],
-  },
-  {
     # This is also supposed to support the same set of platforms as 'clang'
     # above. LLVM ToT support isn't provided at the moment.
     'name': 'clangd',
@@ -4222,17 +4188,6 @@ hooks = [
     'condition': 'checkout_clangd',
     'action': ['python3', 'src/tools/clang/scripts/update.py',
                '--package=clangd'],
-  },
-  {
-    # Build experimental in-tree Rust toolchain. Must run after clang_libs or
-    # clang_tot hook. This should only be run on bots. Syncing clang-libs above
-    # and passing `--use-final-llvm-build-dir` links rustc against the LLVM libs
-    # in clang-libs
-    'name': 'build_rust',
-    'pattern': '.',
-    'condition': 'build_chromium_rust_toolchain',
-    'action': ['python3', 'src/tools/rust/build_rust.py',
-               '--use-final-llvm-build-dir'],
   },
   {
     # Should run after the clang hook. Used on mac, as well as for orderfile

@@ -620,58 +620,6 @@ def main():
   PackageInArchive(clang_format_dir, clang_format_dir)
   MaybeUpload(args.upload, clang_format_dir + '.t*z', gcs_platform)
 
-  # Zip up clang-libs for users who opt into it. We want Clang and LLVM headers
-  # and libs, as well as a couple binaries. The LLVM parts are needed by the
-  # Rust build.
-  clang_libs_dir = 'clang-libs-' + stamp
-  shutil.rmtree(clang_libs_dir, ignore_errors=True)
-  os.makedirs(os.path.join(clang_libs_dir, 'include'))
-  # TODO(danakj): It's possible we need to also include headers from
-  # LLVM_DIR/clang/lib/AST/ and other subdirs of lib, but we won't include them
-  # unless we see it's needed, and we can document why.
-  shutil.copytree(os.path.join(LLVM_DIR, 'clang', 'include', 'clang'),
-                  os.path.join(clang_libs_dir, 'include', 'clang'))
-
-  # Copy LLVM includes. The llvm source and build directory includes must be
-  # merged. llvm-c for C bindings is also included.
-  #
-  # Headers and libs are copied from LLVM_BOOTSTRAP_DIR, not LLVM_RELEASE_DIR,
-  # because the release libs have LTO so they contain LLVM bitcode while the
-  # bootstrap libs do not. The Rust build consumes these,the first stage of
-  # which cannot handle newer LLVM bitcode. The stage 0 rustc is linked against
-  # an older LLVM.
-  shutil.copytree(os.path.join(LLVM_DIR, 'llvm', 'include', 'llvm'),
-                  os.path.join(clang_libs_dir, 'include', 'llvm'))
-  shutil.copytree(os.path.join(LLVM_DIR, 'llvm', 'include', 'llvm-c'),
-                  os.path.join(clang_libs_dir, 'include', 'llvm-c'))
-  shutil.copytree(os.path.join(LLVM_BOOTSTRAP_DIR, 'include', 'llvm'),
-                  os.path.join(clang_libs_dir, 'include', 'llvm'),
-                  dirs_exist_ok=True)
-
-  # Copy llvm-config and FileCheck which the Rust build needs
-  os.makedirs(os.path.join(clang_libs_dir, 'bin'))
-  shutil.copy(os.path.join(LLVM_BOOTSTRAP_DIR, 'bin', 'llvm-config' + exe_ext),
-              os.path.join(clang_libs_dir, 'bin'))
-  shutil.copy(os.path.join(LLVM_BOOTSTRAP_DIR, 'bin', 'FileCheck' + exe_ext),
-              os.path.join(clang_libs_dir, 'bin'))
-
-  os.makedirs(os.path.join(clang_libs_dir, 'lib'))
-  if sys.platform == 'win32':
-    clang_libs_want = [
-        '*.lib',
-    ]
-  else:
-    clang_libs_want = [
-        '*.a',
-    ]
-  for lib_path in os.listdir(os.path.join(LLVM_BOOTSTRAP_DIR, 'lib')):
-    for lib_want in clang_libs_want:
-      if fnmatch.fnmatch(lib_path, lib_want):
-        shutil.copy(os.path.join(LLVM_BOOTSTRAP_DIR, 'lib', lib_path),
-                    os.path.join(clang_libs_dir, 'lib'))
-  PackageInArchive(clang_libs_dir, clang_libs_dir)
-  MaybeUpload(args.upload, clang_libs_dir + '.t*z', gcs_platform)
-
   if sys.platform == 'darwin':
     # dsymutil isn't part of the main zip, and it gets periodically
     # deployed to CIPD (manually, not as part of clang rolls) for use in the
