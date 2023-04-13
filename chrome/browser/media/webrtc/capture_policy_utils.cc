@@ -49,12 +49,14 @@ bool IsOriginInList(const GURL& request_origin,
   // aligns better than URLMatcher with the rules from:
   // https://chromeenterprise.google/policies/url-patterns/.
   for (const auto& value : allowed_origins) {
-    if (!value.is_string())
+    if (!value.is_string()) {
       continue;
+    }
     ContentSettingsPattern pattern =
         ContentSettingsPattern::FromString(value.GetString());
-    if (pattern.IsValid() && pattern.Matches(request_origin))
+    if (pattern.IsValid() && pattern.Matches(request_origin)) {
       return true;
+    }
   }
 
   return false;
@@ -76,12 +78,14 @@ AllowedScreenCaptureLevel GetAllowedCaptureLevel(
   // If we can't get the PrefService, then we won't apply any restrictions.
   Profile* profile =
       Profile::FromBrowserContext(capturer_web_contents->GetBrowserContext());
-  if (!profile)
+  if (!profile) {
     return AllowedScreenCaptureLevel::kUnrestricted;
+  }
 
   const PrefService* prefs = profile->GetPrefs();
-  if (!prefs)
+  if (!prefs) {
     return AllowedScreenCaptureLevel::kUnrestricted;
+  }
 
   return GetAllowedCaptureLevel(request_origin, *prefs);
 }
@@ -126,6 +130,16 @@ bool IsGetDisplayMediaSetSelectAllScreensAllowedForAnySite(
   if (!profile) {
     return false;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // To ensure that a user is informed at login time that capturing of all
+  // screens can happen (for privacy reasons), this API is only available on
+  // primary profiles.
+  if (!profile->IsMainProfile()) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
   if (!host_content_settings_map) {
@@ -150,12 +164,24 @@ bool IsGetDisplayMediaSetSelectAllScreensAllowed(
     const GURL& url) {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   Profile* profile = Profile::FromBrowserContext(context);
-  if (!profile)
+  if (!profile) {
     return false;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // To ensure that a user is informed at login time that capturing of all
+  // screens can happen (for privacy reasons), this API is only available on
+  // primary profiles.
+  if (!profile->IsMainProfile()) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
-  if (!host_content_settings_map)
+  if (!host_content_settings_map) {
     return false;
+  }
   ContentSetting auto_accept_enabled =
       host_content_settings_map->GetContentSetting(
           url, url,
