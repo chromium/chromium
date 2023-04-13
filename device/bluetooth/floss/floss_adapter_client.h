@@ -162,6 +162,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
 
   // Manage observers.
   void AddObserver(Observer* observer);
+  bool HasObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
   // Get the address of this adapter.

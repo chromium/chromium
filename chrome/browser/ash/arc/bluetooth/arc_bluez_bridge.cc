@@ -94,6 +94,8 @@ bluez::BluetoothAdapterBlueZ* ArcBluezBridge::GetAdapter() const {
   return static_cast<bluez::BluetoothAdapterBlueZ*>(bluetooth_adapter_.get());
 }
 
+void ArcBluezBridge::HandlePoweredOn() {}
+
 void ArcBluezBridge::GetSdpRecords(mojom::BluetoothAddressPtr remote_addr,
                                    const BluetoothUUID& target_uuid) {
   BluetoothDevice* device =
@@ -111,7 +113,7 @@ void ArcBluezBridge::GetSdpRecords(mojom::BluetoothAddressPtr remote_addr,
   mojom::BluetoothAddressPtr remote_addr_clone = remote_addr.Clone();
 
   device_bluez->GetServiceRecords(
-      base::BindOnce(&ArcBluezBridge::OnGetServiceRecordsDone,
+      base::BindOnce(&ArcBluezBridge::OnGetServiceRecordsFinished,
                      weak_factory_.GetWeakPtr(), std::move(remote_addr),
                      target_uuid),
       base::BindOnce(&ArcBluezBridge::OnGetServiceRecordsError,
@@ -152,56 +154,6 @@ void ArcBluezBridge::RemoveSdpRecord(uint32_t service_handle,
                      std::move(split_callback.first)),
       base::BindOnce(&OnRemoveServiceRecordError,
                      std::move(split_callback.second)));
-}
-
-void ArcBluezBridge::OnGetServiceRecordsDone(
-    mojom::BluetoothAddressPtr remote_addr,
-    const BluetoothUUID& target_uuid,
-    const std::vector<bluez::BluetoothServiceRecordBlueZ>& records_bluez) {
-  auto* sdp_bluetooth_instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_bridge_service_->bluetooth(), OnGetSdpRecords);
-  if (!sdp_bluetooth_instance) {
-    return;
-  }
-
-  std::vector<mojom::BluetoothSdpRecordPtr> records;
-  for (const auto& r : records_bluez) {
-    records.push_back(mojom::BluetoothSdpRecord::From(r));
-  }
-
-  sdp_bluetooth_instance->OnGetSdpRecords(mojom::BluetoothStatus::SUCCESS,
-                                          std::move(remote_addr), target_uuid,
-                                          std::move(records));
-}
-
-void ArcBluezBridge::OnGetServiceRecordsError(
-    mojom::BluetoothAddressPtr remote_addr,
-    const BluetoothUUID& target_uuid,
-    bluez::BluetoothServiceRecordBlueZ::ErrorCode error_code) {
-  auto* sdp_bluetooth_instance = ARC_GET_INSTANCE_FOR_METHOD(
-      arc_bridge_service_->bluetooth(), OnGetSdpRecords);
-  if (!sdp_bluetooth_instance) {
-    return;
-  }
-
-  mojom::BluetoothStatus status;
-
-  switch (error_code) {
-    case bluez::BluetoothServiceRecordBlueZ::ErrorCode::ERROR_ADAPTER_NOT_READY:
-      status = mojom::BluetoothStatus::NOT_READY;
-      break;
-    case bluez::BluetoothServiceRecordBlueZ::ErrorCode::
-        ERROR_DEVICE_DISCONNECTED:
-      status = mojom::BluetoothStatus::RMT_DEV_DOWN;
-      break;
-    default:
-      status = mojom::BluetoothStatus::FAIL;
-      break;
-  }
-
-  sdp_bluetooth_instance->OnGetSdpRecords(
-      status, std::move(remote_addr), target_uuid,
-      std::vector<mojom::BluetoothSdpRecordPtr>());
 }
 
 }  // namespace arc

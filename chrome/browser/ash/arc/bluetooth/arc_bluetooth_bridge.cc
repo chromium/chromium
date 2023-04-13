@@ -606,6 +606,58 @@ void ArcBluetoothBridge::DeviceRemoved(BluetoothAdapter* adapter,
   OnForgetDone(mojom::BluetoothAddress::From(address));
 }
 
+void ArcBluetoothBridge::OnGetServiceRecordsFinished(
+    mojom::BluetoothAddressPtr remote_addr,
+    const BluetoothUUID& target_uuid,
+    const std::vector<bluez::BluetoothServiceRecordBlueZ>& records_bluez) {
+  auto* sdp_bluetooth_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->bluetooth(), OnGetSdpRecords);
+  if (!sdp_bluetooth_instance) {
+    LOG(ERROR) << "Could not get bluetooth instance to return SDP records";
+    return;
+  }
+
+  std::vector<mojom::BluetoothSdpRecordPtr> records;
+  for (const auto& r : records_bluez) {
+    records.push_back(mojom::BluetoothSdpRecord::From(r));
+  }
+
+  sdp_bluetooth_instance->OnGetSdpRecords(mojom::BluetoothStatus::SUCCESS,
+                                          std::move(remote_addr), target_uuid,
+                                          std::move(records));
+}
+
+void ArcBluetoothBridge::OnGetServiceRecordsError(
+    mojom::BluetoothAddressPtr remote_addr,
+    const BluetoothUUID& target_uuid,
+    bluez::BluetoothServiceRecordBlueZ::ErrorCode error_code) {
+  auto* sdp_bluetooth_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->bluetooth(), OnGetSdpRecords);
+  if (!sdp_bluetooth_instance) {
+    LOG(ERROR) << "Could not get bluetooth instance to return SDP error";
+    return;
+  }
+
+  mojom::BluetoothStatus status;
+
+  switch (error_code) {
+    case bluez::BluetoothServiceRecordBlueZ::ErrorCode::ERROR_ADAPTER_NOT_READY:
+      status = mojom::BluetoothStatus::NOT_READY;
+      break;
+    case bluez::BluetoothServiceRecordBlueZ::ErrorCode::
+        ERROR_DEVICE_DISCONNECTED:
+      status = mojom::BluetoothStatus::RMT_DEV_DOWN;
+      break;
+    default:
+      status = mojom::BluetoothStatus::FAIL;
+      break;
+  }
+
+  sdp_bluetooth_instance->OnGetSdpRecords(
+      status, std::move(remote_addr), target_uuid,
+      std::vector<mojom::BluetoothSdpRecordPtr>());
+}
+
 void ArcBluetoothBridge::GattServiceAdded(BluetoothAdapter* adapter,
                                           BluetoothDevice* device,
                                           BluetoothRemoteGattService* service) {
@@ -1162,7 +1214,7 @@ void ArcBluetoothBridge::StopLEScanImpl() {
 
 void ArcBluetoothBridge::OnPoweredOn(
     ArcBluetoothBridge::AdapterStateCallback callback,
-    bool save_user_pref) const {
+    bool save_user_pref) {
   // Saves the power state to user preference only if Android initiated it.
   if (save_user_pref)
     SetPrimaryUserBluetoothPowerSetting(true);
@@ -1173,11 +1225,14 @@ void ArcBluetoothBridge::OnPoweredOn(
   // should do this after the above callback since Android will clear its
   // device cache after receiving the "ON" state of adapter.
   SendCachedDevices();
+
+  // Allow derived classes to perform additional logic if desired.
+  HandlePoweredOn();
 }
 
 void ArcBluetoothBridge::OnPoweredOff(
     ArcBluetoothBridge::AdapterStateCallback callback,
-    bool save_user_pref) const {
+    bool save_user_pref) {
   // Saves the power state to user preference only if Android initiated it.
   if (save_user_pref)
     SetPrimaryUserBluetoothPowerSetting(false);

@@ -341,6 +341,8 @@ class ArcBluetoothBridge
   static void EnsureFactoryBuilt();
 
  protected:
+  virtual void HandlePoweredOn() = 0;
+
   void ReserveAdvertisementHandleImpl(
       ReserveAdvertisementHandleCallback callback);
   void EnableAdvertisementImpl(
@@ -367,8 +369,8 @@ class ArcBluetoothBridge
   enum class AdapterPowerState { TURN_OFF, TURN_ON };
 
   // Chrome observer callbacks
-  void OnPoweredOn(AdapterStateCallback callback, bool save_user_pref) const;
-  void OnPoweredOff(AdapterStateCallback callback, bool save_user_pref) const;
+  void OnPoweredOn(AdapterStateCallback callback, bool save_user_pref);
+  void OnPoweredOff(AdapterStateCallback callback, bool save_user_pref);
   void OnPoweredError(AdapterStateCallback callback) const;
   void OnDiscoveryStarted(
       std::unique_ptr<device::BluetoothDiscoverySession> session);
@@ -383,6 +385,15 @@ class ArcBluetoothBridge
       device::BluetoothDevice::ConnectErrorCode error_code) const;
   void OnForgetDone(mojom::BluetoothAddressPtr addr);
   void OnForgetError(mojom::BluetoothAddressPtr addr) const;
+
+  void OnGetServiceRecordsFinished(
+      mojom::BluetoothAddressPtr remote_addr,
+      const device::BluetoothUUID& target_uuid,
+      const std::vector<bluez::BluetoothServiceRecordBlueZ>& records_bluez);
+  void OnGetServiceRecordsError(
+      mojom::BluetoothAddressPtr remote_addr,
+      const device::BluetoothUUID& target_uuid,
+      bluez::BluetoothServiceRecordBlueZ::ErrorCode error_code);
 
   void OnGattConnectStateChanged(mojom::BluetoothAddressPtr addr,
                                  bool connected) const;

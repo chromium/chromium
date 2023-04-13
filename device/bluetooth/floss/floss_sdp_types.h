@@ -93,6 +93,9 @@ using BtSdpRecord = absl::variant<BtSdpHeaderOverlay,
                                   BtSdpSapRecord,
                                   BtSdpDipRecord>;
 
+absl::optional<device::BluetoothUUID> DEVICE_BLUETOOTH_EXPORT
+GetUUIDFromSdpRecord(const floss::BtSdpRecord& record);
+
 }  // namespace floss
 
 #endif  // DEVICE_BLUETOOTH_FLOSS_FLOSS_SDP_TYPES_H_

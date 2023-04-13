@@ -51,6 +51,29 @@ constexpr char kSdpDipRecordPropProduct[] = "product";
 constexpr char kSdpDipRecordPropVersion[] = "version";
 constexpr char kSdpDipRecordPropPrimaryRecord[] = "primary_record";
 
+absl::optional<device::BluetoothUUID> GetUUIDFromSdpRecord(
+    const floss::BtSdpRecord& record) {
+  if (absl::holds_alternative<floss::BtSdpHeaderOverlay>(record)) {
+    return absl::get<floss::BtSdpHeaderOverlay>(record).uuid;
+  } else if (absl::holds_alternative<floss::BtSdpMasRecord>(record)) {
+    return absl::get<floss::BtSdpMasRecord>(record).hdr.uuid;
+  } else if (absl::holds_alternative<floss::BtSdpMnsRecord>(record)) {
+    return absl::get<floss::BtSdpMnsRecord>(record).hdr.uuid;
+  } else if (absl::holds_alternative<floss::BtSdpPseRecord>(record)) {
+    return absl::get<floss::BtSdpPseRecord>(record).hdr.uuid;
+  } else if (absl::holds_alternative<floss::BtSdpPceRecord>(record)) {
+    return absl::get<floss::BtSdpPceRecord>(record).hdr.uuid;
+  } else if (absl::holds_alternative<floss::BtSdpOpsRecord>(record)) {
+    return absl::get<floss::BtSdpOpsRecord>(record).hdr.uuid;
+  } else if (absl::holds_alternative<floss::BtSdpSapRecord>(record)) {
+    return absl::get<floss::BtSdpSapRecord>(record).hdr.uuid;
+  } else if (absl::holds_alternative<floss::BtSdpDipRecord>(record)) {
+    return absl::get<floss::BtSdpDipRecord>(record).hdr.uuid;
+  } else {
+    return absl::nullopt;
+  }
+}
+
 template <>
 bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
                                     BtSdpType* sdp_type) {

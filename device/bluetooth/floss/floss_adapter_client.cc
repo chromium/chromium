@@ -613,6 +613,10 @@ void FlossAdapterClient::AddObserver(FlossAdapterClient::Observer* observer) {
   observers_.AddObserver(observer);
 }
 
+bool FlossAdapterClient::HasObserver(FlossAdapterClient::Observer* observer) {
+  return observers_.HasObserver(observer);
+}
+
 void FlossAdapterClient::RemoveObserver(
     FlossAdapterClient::Observer* observer) {
   observers_.RemoveObserver(observer);

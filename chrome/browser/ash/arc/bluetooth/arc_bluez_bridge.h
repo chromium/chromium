@@ -33,14 +33,7 @@ class ArcBluezBridge : public ArcBluetoothBridge {
  protected:
   bluez::BluetoothAdapterBlueZ* GetAdapter() const;
 
-  void OnGetServiceRecordsDone(
-      mojom::BluetoothAddressPtr remote_addr,
-      const device::BluetoothUUID& target_uuid,
-      const std::vector<bluez::BluetoothServiceRecordBlueZ>& records_bluez);
-  void OnGetServiceRecordsError(
-      mojom::BluetoothAddressPtr remote_addr,
-      const device::BluetoothUUID& target_uuid,
-      bluez::BluetoothServiceRecordBlueZ::ErrorCode error_code);
+  void HandlePoweredOn() override;
 
  private:
   // WeakPtrFactory to use for callbacks.
