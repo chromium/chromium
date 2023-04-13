@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 // https://w3c.github.io/webrtc-pc/#rtcrtpheaderextensioncapability*
+// https://w3c.github.io/webrtc-extensions/#rtp-header-extension-control-transceiver-interface
 dictionary RTCRtpHeaderExtensionCapability {
-    DOMString uri;
-    RTCRtpTransceiverDirection direction = "sendrecv";
+    required DOMString uri;
+    required RTCRtpTransceiverDirection direction;
 };

@@ -6752,9 +6752,6 @@ crbug.com/1404614 [ Mac ] external/wpt/url/url-setters-a-area.window.html?exclud
 # parsing (which generates the warnings) happens twice, once for fast-path and once for existing path.
 crbug.com/1407201 fast/css/pseudo-in-range-invalid-value.html [ Failure Pass ]
 
-# TODO(crbug.com/1051821): temporarily disabled to allow WebRTC roll
-crbug.com/1051821 external/wpt/webrtc-extensions/RTCRtpTransceiver-headerExtensionControl.html [ Failure Pass ]
-
 # Sheriff 2023-01-05
 # fast/dom/Element/scrollTop-scrollLeft-body.html previously also linked with crbug.com/1249176
 crbug.com/1361956 [ Debug Mac12 ] fast/dom/Element/scrollTop-scrollLeft-body.html [ Failure Pass Timeout ]
