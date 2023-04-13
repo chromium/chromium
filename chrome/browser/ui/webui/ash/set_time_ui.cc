@@ -27,6 +27,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -36,6 +37,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash {
@@ -191,15 +193,24 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : MojoWebDialogUI(web_ui) {
 
   source->AddLocalizedStrings(values);
 
+  source->AddResourcePath("set_time.js", IDR_SET_TIME_JS);
   source->AddResourcePath("set_time_browser_proxy.js",
                           IDR_SET_TIME_BROWSER_PROXY_JS);
   source->AddResourcePath("set_time_dialog.html.js",
                           IDR_SET_TIME_DIALOG_HTML_JS);
   source->AddResourcePath("set_time_dialog.js", IDR_SET_TIME_DIALOG_JS);
   source->SetDefaultResource(IDR_SET_TIME_HTML);
+
+  source->AddBoolean("isJellyEnabled", chromeos::features::IsJellyEnabled());
 }
 
 SetTimeUI::~SetTimeUI() = default;
+
+void SetTimeUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
+}
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SetTimeUI)
 

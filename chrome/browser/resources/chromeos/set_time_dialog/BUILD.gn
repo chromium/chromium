@@ -32,6 +32,7 @@ js_library("set_time_browser_proxy") {
 }
 
 html_to_wrapper("html_wrapper_files") {
+  deps = [ "//ui/webui/resources/cr_components/color_change_listener:build_ts" ]
   in_files = [ "set_time_dialog.html" ]
   use_js = true
 }

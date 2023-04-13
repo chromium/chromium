@@ -293,6 +293,7 @@
 #include "chrome/browser/ui/webui/ash/office_fallback/office_fallback_ui.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.h"
 #include "chrome/browser/ui/webui/ash/parent_access/parent_access_ui.mojom.h"
+#include "chrome/browser/ui/webui/ash/set_time_ui.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_credentials_dialog.h"
 #include "chrome/browser/ui/webui/ash/smb_shares/smb_share_dialog.h"
 #include "chrome/browser/ui/webui/ash/vm/vm.mojom.h"
@@ -978,7 +979,7 @@ void PopulateChromeWebUIFrameBinders(
       ash::FirmwareUpdateAppUI, ash::ScanningUI, ash::OSFeedbackUI,
       ash::ShortcutCustomizationAppUI,
       ash::printing::printing_manager::PrintManagementUI,
-      ash::InternetDetailDialogUI,
+      ash::InternetDetailDialogUI, ash::SetTimeUI,
 #endif
       NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI, CustomizeChromeUI>(
       map);
