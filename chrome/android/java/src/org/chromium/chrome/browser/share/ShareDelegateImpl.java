@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.share;
 import android.app.Activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.OptIn;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.os.BuildCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
@@ -241,9 +243,11 @@ public class ShareDelegateImpl implements ShareDelegate {
     }
 
     @Override
+    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     public boolean isSharingHubEnabled() {
         return !(mIsCustomTab
-                || ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_SHEET_MIGRATION_ANDROID));
+                || (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_SHEET_MIGRATION_ANDROID)
+                        && BuildCompat.isAtLeastU()));
     }
 
     /**

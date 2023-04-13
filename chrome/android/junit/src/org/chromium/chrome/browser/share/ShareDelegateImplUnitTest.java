@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.share;
 import android.app.Activity;
 
 import androidx.annotation.NonNull;
+import androidx.core.os.BuildCompat;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareSheetDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateImplUnitTest.ShadowAndroidShareSheetController;
+import org.chromium.chrome.browser.share.ShareDelegateImplUnitTest.ShadowBuildCompatForU;
 import org.chromium.chrome.browser.share.ShareDelegateImplUnitTest.ShadowShareHelper;
 import org.chromium.chrome.browser.share.ShareDelegateImplUnitTest.ShadowShareSheetCoordinator;
 import org.chromium.chrome.browser.share.android_share_sheet.AndroidShareSheetController;
@@ -58,7 +60,7 @@ import java.lang.ref.WeakReference;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowShareSheetCoordinator.class, ShadowShareHelper.class,
-                ShadowAndroidShareSheetController.class})
+                ShadowAndroidShareSheetController.class, ShadowBuildCompatForU.class})
 @Features.EnableFeatures(ChromeFeatureList.SHARE_SHEET_MIGRATION_ANDROID)
 public class ShareDelegateImplUnitTest {
     @Rule
@@ -107,6 +109,7 @@ public class ShareDelegateImplUnitTest {
     public void tearDown() {
         AppHooks.setInstanceForTesting(null);
         TrackerFactory.setTrackerForTests(null);
+        ShadowBuildCompatForU.sIsAtLeastU = false;
         ShadowShareSheetCoordinator.reset();
         ShadowShareHelper.reset();
         ShadowAndroidShareSheetController.reset();
@@ -142,7 +145,8 @@ public class ShareDelegateImplUnitTest {
     }
 
     @Test
-    public void shareWithAndroidShareSheet() {
+    public void shareWithAndroidShareSheetForU() {
+        ShadowBuildCompatForU.sIsAtLeastU = true;
         Assert.assertFalse("ShareHub enabled.", mShareDelegate.isSharingHubEnabled());
 
         ShareParams shareParams = new ShareParams.Builder(mWindowAndroid, "", "").build();
@@ -153,6 +157,11 @@ public class ShareDelegateImplUnitTest {
                 ShadowShareSheetCoordinator.sChromeShareSheetShowed);
         Assert.assertTrue("shareWithSystemShareSheetUi not called.",
                 ShadowAndroidShareSheetController.sShareWithSystemShareSheetUiCalled);
+    }
+
+    @Test
+    public void androidShareSheetDisableNonU() {
+        Assert.assertTrue("ShareHub should be enabled T-.", mShareDelegate.isSharingHubEnabled());
     }
 
     @Implements(ShareHelper.class)
@@ -212,6 +221,17 @@ public class ShareDelegateImplUnitTest {
 
         public static void reset() {
             sShareWithSystemShareSheetUiCalled = false;
+        }
+    }
+
+    // Work around shadow to assume runtime is at least U.
+    // TODO(https://crbug.com/1420388): Switch to @Config(sdk=34) this once API 34 exists.
+    @Implements(BuildCompat.class)
+    static class ShadowBuildCompatForU {
+        static boolean sIsAtLeastU;
+        @Implementation
+        protected static boolean isAtLeastU() {
+            return sIsAtLeastU;
         }
     }
 }
