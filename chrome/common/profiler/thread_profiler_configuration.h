@@ -97,6 +97,7 @@ class ThreadProfilerConfiguration {
   enum ChildProcessConfiguration {
     kChildProcessProfileDisabled,
     kChildProcessProfileEnabled,
+    kChildProcessPeriodicOnly,
   };
 
   // The configuration state for the current process, browser or child.
