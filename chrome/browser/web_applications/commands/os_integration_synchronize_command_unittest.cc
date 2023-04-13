@@ -11,12 +11,12 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -59,7 +59,7 @@ class OsIntegrationSynchronizeCommandTest
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       test_override_ =
-          OsIntegrationTestOverride::OverrideForTesting(base::GetHomeDir());
+          OsIntegrationTestOverrideImpl::OverrideForTesting(base::GetHomeDir());
     }
 
     provider_ = FakeWebAppProvider::Get(profile());
@@ -120,7 +120,7 @@ class OsIntegrationSynchronizeCommandTest
  private:
   raw_ptr<FakeWebAppProvider> provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
+  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       test_override_;
 };
 

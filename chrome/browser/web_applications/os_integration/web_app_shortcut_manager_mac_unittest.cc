@@ -8,9 +8,9 @@
 #include "base/mac/foundation_util.h"
 #include "base/test/bind.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -37,7 +37,7 @@ class WebAppShortcutManagerMacTest : public WebAppTest {
     // Put shortcuts somewhere under the home dir, as otherwise LaunchServices
     // won't be able to find them.
     override_registration_ =
-        OsIntegrationTestOverride::OverrideForTesting(base::GetHomeDir());
+        OsIntegrationTestOverrideImpl::OverrideForTesting(base::GetHomeDir());
 
     provider_ = FakeWebAppProvider::Get(profile());
 
@@ -105,7 +105,7 @@ class WebAppShortcutManagerMacTest : public WebAppTest {
   const GURL kTestApp2Url = GURL("https://example.com");
 
  private:
-  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
+  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       override_registration_;
 
   raw_ptr<FakeWebAppProvider> provider_;

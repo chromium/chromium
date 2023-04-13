@@ -13,10 +13,10 @@
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -47,7 +47,7 @@ class RunOnOsLoginSubManagerTestBase : public WebAppTest {
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       test_override_ =
-          OsIntegrationTestOverride::OverrideForTesting(base::GetHomeDir());
+          OsIntegrationTestOverrideImpl::OverrideForTesting(base::GetHomeDir());
     }
     provider_ = FakeWebAppProvider::Get(profile());
 
@@ -114,7 +114,7 @@ class RunOnOsLoginSubManagerTestBase : public WebAppTest {
 
  private:
   raw_ptr<FakeWebAppProvider> provider_;
-  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
+  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       test_override_;
 };
 
@@ -342,7 +342,7 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest, InstallRunOnOsLoginNotRun) {
   // OS integration should be triggered.
   if (AreOsIntegrationSubManagersEnabled()) {
     if (IsRunOnOsLoginExecuteEnabled()) {
-      ASSERT_FALSE(GetOsIntegrationTestOverride()->IsRunOnOsLoginEnabled(
+      ASSERT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
           profile(), app_id, app_name));
     }
   } else {
@@ -365,7 +365,7 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest,
   const proto::WebAppOsIntegrationState& os_integration_state = state.value();
   if (AreOsIntegrationSubManagersEnabled()) {
     if (IsRunOnOsLoginExecuteEnabled()) {
-      ASSERT_TRUE(GetOsIntegrationTestOverride()->IsRunOnOsLoginEnabled(
+      ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
           profile(), app_id, app_name));
     }
   } else {
@@ -397,7 +397,7 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest, BlockedPolicySettingNoOsIntegration) {
   const proto::WebAppOsIntegrationState& os_integration_state = state.value();
   if (AreOsIntegrationSubManagersEnabled()) {
     if (IsRunOnOsLoginExecuteEnabled()) {
-      ASSERT_FALSE(GetOsIntegrationTestOverride()->IsRunOnOsLoginEnabled(
+      ASSERT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
           profile(), app_id, app_name));
     }
   } else {
@@ -430,7 +430,7 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest,
   const proto::WebAppOsIntegrationState& os_integration_state = state.value();
   if (AreOsIntegrationSubManagersEnabled()) {
     if (IsRunOnOsLoginExecuteEnabled()) {
-      ASSERT_TRUE(GetOsIntegrationTestOverride()->IsRunOnOsLoginEnabled(
+      ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
           profile(), app_id, app_name));
     }
   } else {
@@ -452,7 +452,7 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest, UpdateRunOnOsLoginMode) {
   const proto::WebAppOsIntegrationState& os_integration_state = state.value();
   if (AreOsIntegrationSubManagersEnabled()) {
     if (IsRunOnOsLoginExecuteEnabled()) {
-      ASSERT_TRUE(GetOsIntegrationTestOverride()->IsRunOnOsLoginEnabled(
+      ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
           profile(), app_id, app_name));
     }
   } else {
@@ -471,7 +471,7 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest, UpdateRunOnOsLoginMode) {
       updated_state.value();
   if (AreOsIntegrationSubManagersEnabled()) {
     if (IsRunOnOsLoginExecuteEnabled()) {
-      ASSERT_FALSE(GetOsIntegrationTestOverride()->IsRunOnOsLoginEnabled(
+      ASSERT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
           profile(), app_id, app_name));
     }
   } else {
@@ -493,7 +493,7 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest, UnregisterRunOnOsLogin) {
   const proto::WebAppOsIntegrationState& os_integration_state = state.value();
   if (AreOsIntegrationSubManagersEnabled()) {
     if (IsRunOnOsLoginExecuteEnabled()) {
-      ASSERT_TRUE(GetOsIntegrationTestOverride()->IsRunOnOsLoginEnabled(
+      ASSERT_TRUE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
           profile(), app_id, app_name));
     }
   } else {
@@ -503,7 +503,7 @@ TEST_P(RunOnOsLoginSubManagerExecuteTest, UnregisterRunOnOsLogin) {
   test::UninstallAllWebApps(profile());
   if (AreOsIntegrationSubManagersEnabled()) {
     if (IsRunOnOsLoginExecuteEnabled()) {
-      ASSERT_FALSE(GetOsIntegrationTestOverride()->IsRunOnOsLoginEnabled(
+      ASSERT_FALSE(OsIntegrationTestOverrideImpl::Get()->IsRunOnOsLoginEnabled(
           profile(), app_id, app_name));
     }
   }

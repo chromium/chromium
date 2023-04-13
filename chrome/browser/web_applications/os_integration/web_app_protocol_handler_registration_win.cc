@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/check_is_test.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_registration.h"
 
 #include <string>
@@ -36,48 +37,50 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
+namespace web_app {
 namespace {
 
 void RegisterProtocolHandlersWithOSInBackground(
-    const web_app::AppId& app_id,
+    const AppId& app_id,
     const std::wstring& app_name,
     const base::FilePath profile_path,
     std::vector<apps::ProtocolHandlerInfo> protocol_handlers,
     const std::wstring& app_name_extension) {
   base::AssertLongCPUWorkAllowed();
 
-  if (web_app::GetOsIntegrationTestOverride()) {  // IN-TEST
+  scoped_refptr<OsIntegrationTestOverride> os_override =
+      OsIntegrationTestOverride::Get();
+  if (os_override) {
+    CHECK_IS_TEST();
     // Instead of modifying the registry, add them to the testing data.
     std::vector<std::string> protocols_registered;
     for (apps::ProtocolHandlerInfo& info : protocol_handlers) {
       protocols_registered.push_back(info.protocol);
     }
-    web_app::GetOsIntegrationTestOverride()->RegisterProtocolSchemes(
-        app_id, std::move(protocols_registered));
+    os_override->RegisterProtocolSchemes(app_id,
+                                         std::move(protocols_registered));
     return;
   }
 
   base::FilePath web_app_path =
-      web_app::GetOsIntegrationResourcesDirectoryForApp(profile_path, app_id,
-                                                        GURL());
+      GetOsIntegrationResourcesDirectoryForApp(profile_path, app_id, GURL());
 
   absl::optional<base::FilePath> app_specific_launcher_path =
-      web_app::CreateAppLauncherFile(app_name, app_name_extension,
-                                     web_app_path);
-  if (!app_specific_launcher_path.has_value())
+      CreateAppLauncherFile(app_name, app_name_extension, web_app_path);
+  if (!app_specific_launcher_path.has_value()) {
     return;
+  }
 
-  base::CommandLine app_specific_launcher_command =
-      web_app::GetAppLauncherCommand(app_id, app_specific_launcher_path.value(),
-                                     profile_path);
+  base::CommandLine app_specific_launcher_command = GetAppLauncherCommand(
+      app_id, app_specific_launcher_path.value(), profile_path);
 
   std::wstring user_visible_app_name(app_name);
   user_visible_app_name.append(app_name_extension);
 
-  base::FilePath icon_path = web_app::internals::GetIconFilePath(
-      web_app_path, base::AsString16(app_name));
+  base::FilePath icon_path =
+      internals::GetIconFilePath(web_app_path, base::AsString16(app_name));
 
-  std::wstring prog_id = web_app::GetProgIdForApp(profile_path, app_id);
+  std::wstring prog_id = GetProgIdForApp(profile_path, app_id);
   ShellUtil::AddApplicationClass(prog_id, app_specific_launcher_command,
                                  user_visible_app_name, user_visible_app_name,
                                  icon_path);
@@ -95,11 +98,12 @@ void RegisterProtocolHandlersWithOSInBackground(
 }
 
 void UnregisterProtocolHandlersWithOsInBackground(
-    const web_app::AppId& app_id,
+    const AppId& app_id,
     const base::FilePath& profile_path) {
   base::AssertLongCPUWorkAllowed();
 
-  if (web_app::GetOsIntegrationTestOverride()) {  // IN-TEST
+  if (OsIntegrationTestOverride::Get()) {
+    CHECK_IS_TEST();
     // The unregistration is not tested due to complication in the
     // implementation of other OS's. Instead, we check if the updated
     // registrations are empty / don't have the offending protocol.
@@ -110,7 +114,7 @@ void UnregisterProtocolHandlersWithOsInBackground(
   // remove the web application directory. This must be done before cleaning up
   // the registry, since the app-specific-launcher path is retrieved from the
   // registry.
-  std::wstring prog_id = web_app::GetProgIdForApp(profile_path, app_id);
+  std::wstring prog_id = GetProgIdForApp(profile_path, app_id);
   base::FilePath app_specific_launcher_path =
       ShellUtil::GetApplicationPathForProgId(prog_id);
 
@@ -123,12 +127,10 @@ void UnregisterProtocolHandlersWithOsInBackground(
 
   // Remove protocol associations from the Windows registry.
   ShellUtil::RemoveAppProtocolAssociations(
-      web_app::GetProgIdForApp(profile_path, app_id));
+      GetProgIdForApp(profile_path, app_id));
 }
 
 }  // namespace
-
-namespace web_app {
 
 void RegisterProtocolHandlersWithOs(
     const AppId& app_id,
@@ -137,9 +139,11 @@ void RegisterProtocolHandlersWithOs(
     std::vector<apps::ProtocolHandlerInfo> protocol_handlers,
     ResultCallback callback) {
   if (protocol_handlers.empty()) {
-    if (web_app::GetOsIntegrationTestOverride()) {  // IN-TEST
-      web_app::GetOsIntegrationTestOverride()->RegisterProtocolSchemes(
-          app_id, std::vector<std::string>());
+    scoped_refptr<OsIntegrationTestOverride> os_override =
+        OsIntegrationTestOverride::Get();
+    if (os_override) {
+      CHECK_IS_TEST();
+      os_override->RegisterProtocolSchemes(app_id, std::vector<std::string>());
     }
     std::move(callback).Run(Result::kOk);
     return;

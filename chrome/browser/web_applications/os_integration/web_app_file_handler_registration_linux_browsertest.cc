@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -56,7 +56,8 @@ class WebAppFileHandlerRegistrationLinuxBrowserTest
  protected:
   WebAppFileHandlerRegistrationLinuxBrowserTest() {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    override_registration_ = OsIntegrationTestOverride::OverrideForTesting();
+    override_registration_ =
+        OsIntegrationTestOverrideImpl::OverrideForTesting();
   }
 
   Profile* profile() { return browser()->profile(); }
@@ -81,7 +82,7 @@ class WebAppFileHandlerRegistrationLinuxBrowserTest
   }
 
   absl::optional<webapps::InstallResultCode> result_code_;
-  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
+  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       override_registration_;
 };
 

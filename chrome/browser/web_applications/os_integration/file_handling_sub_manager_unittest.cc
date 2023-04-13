@@ -14,10 +14,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/file_handling_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -48,7 +48,7 @@ class FileHandlingSubManagerConfigureTest
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       test_override_ =
-          OsIntegrationTestOverride::OverrideForTesting(base::GetHomeDir());
+          OsIntegrationTestOverrideImpl::OverrideForTesting(base::GetHomeDir());
     }
     InitScopedFeatureList(scoped_feature_list_);
 
@@ -107,7 +107,7 @@ class FileHandlingSubManagerConfigureTest
 
  protected:
   WebAppProvider& provider() { return *provider_; }
-  scoped_refptr<OsIntegrationTestOverride> test_override() {
+  scoped_refptr<OsIntegrationTestOverrideImpl> test_override() {
     return test_override_->test_override;
   }
 
@@ -126,7 +126,7 @@ class FileHandlingSubManagerConfigureTest
 
   raw_ptr<FakeWebAppProvider> provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
+  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       test_override_;
 };
 

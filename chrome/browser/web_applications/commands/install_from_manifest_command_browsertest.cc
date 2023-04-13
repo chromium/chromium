@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/commands/install_from_manifest_command.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -38,7 +38,7 @@ class InstallFromManifestCommandTest : public WebAppControllerBrowserTest {
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       test_override_ =
-          OsIntegrationTestOverride::OverrideForTesting(base::GetHomeDir());
+          OsIntegrationTestOverrideImpl::OverrideForTesting(base::GetHomeDir());
     }
   }
 
@@ -69,7 +69,7 @@ class InstallFromManifestCommandTest : public WebAppControllerBrowserTest {
   base::flat_set<std::string> GetHostAllowlist() { return {"127.0.0.1"}; }
 
  private:
-  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
+  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       test_override_;
 };
 

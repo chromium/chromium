@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -120,8 +121,9 @@ bool UpdateJumpList(
         .Run(app_user_model_id, link_items);
 
   scoped_refptr<OsIntegrationTestOverride> test_override =
-      GetOsIntegrationTestOverride();
+      OsIntegrationTestOverride::Get();
   if (test_override) {
+    CHECK_IS_TEST();
     test_override->AddShortcutsMenuJumpListEntryForApp(app_user_model_id,
                                                        link_items);
   }
@@ -173,7 +175,7 @@ bool RegisterShortcutsMenuWithOsTask(
     const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos,
     const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps) {
   scoped_refptr<OsIntegrationTestOverride> test_override =
-      GetOsIntegrationTestOverride();
+      OsIntegrationTestOverride::Get();
 
   // Each entry in the ShortcutsMenu (JumpList on Windows) needs an icon in .ico
   // format. This helper writes these icon files to disk as a series of
@@ -244,8 +246,9 @@ bool UnregisterShortcutsMenuWithOs(const AppId& app_id,
                                    const base::FilePath& profile_path,
                                    RegisterShortcutsMenuCallback callback) {
   scoped_refptr<OsIntegrationTestOverride> test_override =
-      GetOsIntegrationTestOverride();
+      OsIntegrationTestOverride::Get();
   if (test_override) {
+    CHECK_IS_TEST();
     test_override->DeleteShortcutsMenuJumpListEntryForApp(
         GenerateAppUserModelId(profile_path, app_id));
   }

@@ -19,7 +19,7 @@
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #import "chrome/common/mac/app_mode_common.h"
@@ -130,7 +130,8 @@ class WebAppShortcutCreatorTest : public testing::Test {
   void SetUp() override {
     base::mac::SetBaseBundleID(kFakeChromeBundleId);
 
-    override_registration_ = OsIntegrationTestOverride::OverrideForTesting();
+    override_registration_ =
+        OsIntegrationTestOverrideImpl::OverrideForTesting();
     destination_dir_ =
         override_registration_->test_override->chrome_apps_folder();
 
@@ -187,7 +188,7 @@ class WebAppShortcutCreatorTest : public testing::Test {
   base::FilePath shim_base_name_;
   base::FilePath shim_path_;
 
-  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
+  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       override_registration_;
 };
 

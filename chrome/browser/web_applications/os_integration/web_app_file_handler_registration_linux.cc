@@ -75,7 +75,7 @@ GetUpdateMimeInfoDatabaseCallbackForTesting() {
 
 void RefreshMimeInfoCache() {
   scoped_refptr<OsIntegrationTestOverride> test_override =
-      web_app::GetOsIntegrationTestOverride();
+      OsIntegrationTestOverride::Get();
 
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   std::vector<std::string> argv;

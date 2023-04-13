@@ -15,9 +15,9 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -56,7 +56,7 @@ class ShortcutMenuHandlingSubManagerTestBase : public WebAppTest {
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       test_override_ =
-          OsIntegrationTestOverride::OverrideForTesting(base::GetHomeDir());
+          OsIntegrationTestOverrideImpl::OverrideForTesting(base::GetHomeDir());
     }
 
     provider_ = FakeWebAppProvider::Get(profile());
@@ -184,7 +184,7 @@ class ShortcutMenuHandlingSubManagerTestBase : public WebAppTest {
 
  private:
   raw_ptr<FakeWebAppProvider> provider_;
-  std::unique_ptr<OsIntegrationTestOverride::BlockingRegistration>
+  std::unique_ptr<OsIntegrationTestOverrideImpl::BlockingRegistration>
       test_override_;
 };
 
@@ -406,16 +406,20 @@ TEST_P(ShortcutMenuHandlingSubManagerExecuteTest, InstallWritesCorrectData) {
 #if BUILDFLAG(IS_WIN)
     const std::wstring app_user_model_id =
         web_app::GenerateAppUserModelId(profile()->GetPath(), app_id);
-    ASSERT_TRUE(GetOsIntegrationTestOverride()->IsShortcutsMenuRegisteredForApp(
-        app_user_model_id));
-    EXPECT_THAT(GetOsIntegrationTestOverride()->GetCountOfShortcutIconsCreated(
-                    app_user_model_id),
-                testing::Eq(num_menu_items));
-    EXPECT_THAT(GetOsIntegrationTestOverride()->GetIconColorsForShortcutsMenu(
-                    app_user_model_id),
-                testing::ElementsAreArray(colors));
+    ASSERT_TRUE(
+        OsIntegrationTestOverrideImpl::Get()->IsShortcutsMenuRegisteredForApp(
+            app_user_model_id));
+    EXPECT_THAT(
+        OsIntegrationTestOverrideImpl::Get()->GetCountOfShortcutIconsCreated(
+            app_user_model_id),
+        testing::Eq(num_menu_items));
+    EXPECT_THAT(
+        OsIntegrationTestOverrideImpl::Get()->GetIconColorsForShortcutsMenu(
+            app_user_model_id),
+        testing::ElementsAreArray(colors));
 #else
-    ASSERT_FALSE(GetOsIntegrationTestOverride()->AreShortcutsMenuRegistered());
+    ASSERT_FALSE(
+        OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
 #endif
   } else {
     ASSERT_FALSE(os_integration_state.has_shortcut_menus());
@@ -445,16 +449,20 @@ TEST_P(ShortcutMenuHandlingSubManagerExecuteTest,
 #if BUILDFLAG(IS_WIN)
     const std::wstring app_user_model_id =
         web_app::GenerateAppUserModelId(profile()->GetPath(), app_id);
-    ASSERT_TRUE(GetOsIntegrationTestOverride()->IsShortcutsMenuRegisteredForApp(
-        app_user_model_id));
-    EXPECT_THAT(GetOsIntegrationTestOverride()->GetCountOfShortcutIconsCreated(
-                    app_user_model_id),
-                testing::Eq(num_menu_items));
-    EXPECT_THAT(GetOsIntegrationTestOverride()->GetIconColorsForShortcutsMenu(
-                    app_user_model_id),
-                testing::ElementsAreArray(colors));
+    ASSERT_TRUE(
+        OsIntegrationTestOverrideImpl::Get()->IsShortcutsMenuRegisteredForApp(
+            app_user_model_id));
+    EXPECT_THAT(
+        OsIntegrationTestOverrideImpl::Get()->GetCountOfShortcutIconsCreated(
+            app_user_model_id),
+        testing::Eq(num_menu_items));
+    EXPECT_THAT(
+        OsIntegrationTestOverrideImpl::Get()->GetIconColorsForShortcutsMenu(
+            app_user_model_id),
+        testing::ElementsAreArray(colors));
 #else
-    ASSERT_FALSE(GetOsIntegrationTestOverride()->AreShortcutsMenuRegistered());
+    ASSERT_FALSE(
+        OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
 #endif
   } else {
     ASSERT_FALSE(os_integration_state.has_shortcut_menus());
@@ -468,10 +476,11 @@ TEST_P(ShortcutMenuHandlingSubManagerExecuteTest,
         web_app::GenerateAppUserModelId(profile()->GetPath(), app_id);
     ASSERT_TRUE(os_integration_state.has_shortcut_menus());
     ASSERT_FALSE(
-        GetOsIntegrationTestOverride()->IsShortcutsMenuRegisteredForApp(
+        OsIntegrationTestOverrideImpl::Get()->IsShortcutsMenuRegisteredForApp(
             app_user_model_id));
 #else
-    ASSERT_FALSE(GetOsIntegrationTestOverride()->AreShortcutsMenuRegistered());
+    ASSERT_FALSE(
+        OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
 #endif
   } else {
     ASSERT_FALSE(os_integration_state.has_shortcut_menus());
@@ -497,16 +506,20 @@ TEST_P(ShortcutMenuHandlingSubManagerExecuteTest, UpdateShortcutMenuItems) {
 #if BUILDFLAG(IS_WIN)
     const std::wstring app_user_model_id =
         web_app::GenerateAppUserModelId(profile()->GetPath(), app_id);
-    ASSERT_TRUE(GetOsIntegrationTestOverride()->IsShortcutsMenuRegisteredForApp(
-        app_user_model_id));
-    EXPECT_THAT(GetOsIntegrationTestOverride()->GetCountOfShortcutIconsCreated(
-                    app_user_model_id),
-                testing::Eq(num_menu_items));
-    EXPECT_THAT(GetOsIntegrationTestOverride()->GetIconColorsForShortcutsMenu(
-                    app_user_model_id),
-                testing::ElementsAreArray(colors));
+    ASSERT_TRUE(
+        OsIntegrationTestOverrideImpl::Get()->IsShortcutsMenuRegisteredForApp(
+            app_user_model_id));
+    EXPECT_THAT(
+        OsIntegrationTestOverrideImpl::Get()->GetCountOfShortcutIconsCreated(
+            app_user_model_id),
+        testing::Eq(num_menu_items));
+    EXPECT_THAT(
+        OsIntegrationTestOverrideImpl::Get()->GetIconColorsForShortcutsMenu(
+            app_user_model_id),
+        testing::ElementsAreArray(colors));
 #else
-    ASSERT_FALSE(GetOsIntegrationTestOverride()->AreShortcutsMenuRegistered());
+    ASSERT_FALSE(
+        OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
 #endif
   } else {
     ASSERT_FALSE(os_integration_state.has_shortcut_menus());
@@ -535,16 +548,20 @@ TEST_P(ShortcutMenuHandlingSubManagerExecuteTest, UpdateShortcutMenuItems) {
 #if BUILDFLAG(IS_WIN)
     const std::wstring updated_model_id =
         web_app::GenerateAppUserModelId(profile()->GetPath(), updated_app_id);
-    ASSERT_TRUE(GetOsIntegrationTestOverride()->IsShortcutsMenuRegisteredForApp(
-        updated_model_id));
-    EXPECT_THAT(GetOsIntegrationTestOverride()->GetCountOfShortcutIconsCreated(
-                    updated_model_id),
-                testing::Eq(updated_num_menu_items));
-    EXPECT_THAT(GetOsIntegrationTestOverride()->GetIconColorsForShortcutsMenu(
-                    updated_model_id),
-                testing::ElementsAreArray(updated_colors));
+    ASSERT_TRUE(
+        OsIntegrationTestOverrideImpl::Get()->IsShortcutsMenuRegisteredForApp(
+            updated_model_id));
+    EXPECT_THAT(
+        OsIntegrationTestOverrideImpl::Get()->GetCountOfShortcutIconsCreated(
+            updated_model_id),
+        testing::Eq(updated_num_menu_items));
+    EXPECT_THAT(
+        OsIntegrationTestOverrideImpl::Get()->GetIconColorsForShortcutsMenu(
+            updated_model_id),
+        testing::ElementsAreArray(updated_colors));
 #else
-    ASSERT_FALSE(GetOsIntegrationTestOverride()->AreShortcutsMenuRegistered());
+    ASSERT_FALSE(
+        OsIntegrationTestOverrideImpl::Get()->AreShortcutsMenuRegistered());
 #endif
   } else {
     ASSERT_FALSE(updated_os_integration_state.has_shortcut_menus());
