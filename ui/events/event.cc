@@ -789,6 +789,12 @@ void TouchEvent::DisableSynchronousHandling() {
       static_cast<EventResult>(result() | ER_DISABLE_SYNC_HANDLING));
 }
 
+void TouchEvent::ForceProcessGesture() {
+  DispatcherApi dispatcher_api(this);
+  dispatcher_api.set_result(
+      static_cast<EventResult>(result() | ER_FORCE_PROCESS_GESTURE));
+}
+
 void TouchEvent::SetPointerDetailsForTest(
     const PointerDetails& pointer_details) {
   DCHECK_EQ(pointer_details_.id, pointer_details.id);

@@ -708,6 +708,13 @@ class EVENTS_EXPORT TouchEvent : public LocatedEvent {
     return !!(result() & ER_DISABLE_SYNC_HANDLING);
   }
 
+  // Forces to process the gesture recognition even if the event is marked
+  // as `handled` or `stopped_propagation`.
+  void ForceProcessGesture();
+  bool force_process_gesture() const {
+    return !!(result() & ER_FORCE_PROCESS_GESTURE);
+  }
+
   const PointerDetails& pointer_details() const { return pointer_details_; }
   void SetPointerDetailsForTest(const PointerDetails& pointer_details);
 

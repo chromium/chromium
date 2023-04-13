@@ -590,9 +590,12 @@ ui::EventDispatchDetails WindowEventDispatcher::PostDispatchEvent(
 
       if (!touchevent.synchronous_handling_disabled()) {
         Window* window = static_cast<Window*>(target);
+        auto event_result = touchevent.force_process_gesture()
+                                ? ui::ER_UNHANDLED
+                                : event.result();
         ui::GestureRecognizer::Gestures gestures =
             Env::GetInstance()->gesture_recognizer()->AckTouchEvent(
-                touchevent.unique_event_id(), event.result(),
+                touchevent.unique_event_id(), event_result,
                 false /* is_source_touch_event_set_blocking */, window);
 
         details = ProcessGestures(window, std::move(gestures));

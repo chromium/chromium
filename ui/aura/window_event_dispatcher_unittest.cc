@@ -3268,4 +3268,39 @@ TEST_F(WindowEventDispatcherTest, TargetIsDestroyedByHeldEvent) {
   root_window()->RemovePreTargetHandler(&recorder);
 }
 
+// Tests that touch event can be filtered by `StopPropagation`, but can still
+// be processed by GestureRecogtnizer with `ForceProcessGesture`.
+TEST_F(WindowEventDispatcherTest, FilteredTouchProcessGesture) {
+  // A event handler that stops propagation, but still allow gesture
+  // processing.
+  class : public ui::EventHandler {
+   public:
+    void OnTouchEvent(ui::TouchEvent* event) override {
+      event->StopPropagation();
+      event->ForceProcessGesture();
+    }
+  } handler;
+
+  root_window()->AddPreTargetHandler(&handler);
+
+  test::TestWindowDelegate delegate;
+  std::unique_ptr<aura::Window> window(test::CreateTestWindowWithDelegate(
+      &delegate, 1, gfx::Rect(100, 100), root_window()));
+
+  EventFilterRecorder recorder;
+  window->AddPreTargetHandler(&recorder);
+
+  ui::test::EventGenerator generator(root_window());
+
+  generator.PressTouch(gfx::Point(50, 50));
+  generator.ReleaseTouch();
+
+  EXPECT_EQ(0u, recorder.touch_locations().size());
+  EXPECT_EQ(5u, recorder.gesture_locations().size());
+  EXPECT_EQ(gfx::Point(50, 50), recorder.gesture_locations()[0]);
+
+  root_window()->RemovePreTargetHandler(&handler);
+  window->RemovePreTargetHandler(&recorder);
+}
+
 }  // namespace aura
