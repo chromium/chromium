@@ -147,6 +147,8 @@ class InstallAttributesClientTest : public testing::Test {
       expected_remove_firmware_management_parameters_reply_;
   ::user_data_auth::SetFirmwareManagementParametersReply
       expected_set_firmware_management_parameters_reply_;
+  ::user_data_auth::GetFirmwareManagementParametersReply
+      expected_get_firmware_management_parameters_reply_;
 
   // The expected replies to the respective blocking D-Bus calls.
   ::user_data_auth::InstallAttributesGetReply
@@ -198,6 +200,10 @@ class InstallAttributesClientTest : public testing::Test {
                ::user_data_auth::kSetFirmwareManagementParameters) {
       writer.AppendProtoAsArrayOfBytes(
           expected_set_firmware_management_parameters_reply_);
+    } else if (method_call->GetMember() ==
+               ::user_data_auth::kGetFirmwareManagementParameters) {
+      writer.AppendProtoAsArrayOfBytes(
+          expected_get_firmware_management_parameters_reply_);
     } else {
       ASSERT_FALSE(true) << "Unrecognized member: " << method_call->GetMember();
     }
@@ -340,6 +346,22 @@ TEST_F(InstallAttributesClientTest, SetFirmwareManagementParameters) {
   EXPECT_TRUE(
       ProtobufEquals(result_reply.value(),
                      expected_set_firmware_management_parameters_reply_));
+}
+
+TEST_F(InstallAttributesClientTest, GetFirmwareManagementParameters) {
+  expected_set_firmware_management_parameters_reply_.set_error(
+      user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
+  absl::optional<::user_data_auth::GetFirmwareManagementParametersReply>
+      result_reply;
+
+  client_->GetFirmwareManagementParameters(
+      ::user_data_auth::GetFirmwareManagementParametersRequest(),
+      CreateCopyCallback(&result_reply));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_NE(result_reply, absl::nullopt);
+  EXPECT_TRUE(
+      ProtobufEquals(result_reply.value(),
+                     expected_get_firmware_management_parameters_reply_));
 }
 
 TEST_F(InstallAttributesClientTest, BlockingInstallAttributesGet) {

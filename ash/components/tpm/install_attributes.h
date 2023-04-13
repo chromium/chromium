@@ -243,4 +243,8 @@ namespace chromeos {
 using ::ash::InstallAttributes;
 }
 
+namespace ash {
+using ::chromeos::InstallAttributes;
+}
+
 #endif  // ASH_COMPONENTS_TPM_INSTALL_ATTRIBUTES_H_
