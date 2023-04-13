@@ -105,6 +105,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
@@ -212,16 +213,49 @@ void ToolbarView::Init() {
   // Make sure the toolbar shows by default.
   size_animation_.Reset(1);
 
+  std::unique_ptr<DownloadToolbarButtonView> download_button;
+  if (download::IsDownloadBubbleEnabled(browser_->profile())) {
+    download_button =
+        std::make_unique<DownloadToolbarButtonView>(browser_view_);
+  }
+
   if (display_mode_ != DisplayMode::NORMAL) {
     location_bar_ = AddChildView(std::move(location_bar));
     location_bar_->Init();
+  }
 
-    if (display_mode_ == DisplayMode::CUSTOM_TAB) {
-      custom_tab_bar_ =
-          AddChildView(std::make_unique<CustomTabBarView>(browser_view_, this));
-    }
-
+  if (display_mode_ == DisplayMode::CUSTOM_TAB) {
+    custom_tab_bar_ =
+        AddChildView(std::make_unique<CustomTabBarView>(browser_view_, this));
     SetLayoutManager(std::make_unique<views::FillLayout>());
+    initialized_ = true;
+    return;
+  } else if (display_mode_ == DisplayMode::LOCATION) {
+    // Add the download button for popups.
+    if (download_button) {
+      download_button_ = AddChildView(std::move(download_button));
+      download_button_->SetPreferredSize(
+          gfx::Size(location_bar_->GetPreferredSize().height(),
+                    location_bar_->GetPreferredSize().height()));
+      download_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
+      // Hide the icon by default; it will show up when there's a download.
+      download_button_->Hide();
+    }
+    SetBackground(
+        views::CreateThemedSolidBackground(kColorLocationBarBackground));
+    SetLayoutManager(std::make_unique<views::FlexLayout>())
+        ->SetOrientation(views::LayoutOrientation::kHorizontal)
+        .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+        .SetDefault(views::kFlexBehaviorKey,
+                    views::FlexSpecification(
+                        views::LayoutOrientation::kHorizontal,
+                        views::MinimumFlexSizeRule::kPreferredSnapToZero))
+        .SetFlexAllocationOrder(views::FlexAllocationOrder::kReverse);
+    location_bar_->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                                 views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kUnbounded));
     initialized_ = true;
     return;
   }
@@ -268,12 +302,6 @@ void ToolbarView::Init() {
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControls)) {
     media_button = std::make_unique<MediaToolbarButtonView>(
         browser_view_, MediaToolbarButtonContextualMenu::Create(browser_));
-  }
-
-  std::unique_ptr<DownloadToolbarButtonView> download_button;
-  if (download::IsDownloadBubbleEnabled(browser_->profile())) {
-    download_button =
-        std::make_unique<DownloadToolbarButtonView>(browser_view_);
   }
 
   std::unique_ptr<send_tab_to_self::SendTabToSelfToolbarIconView>
@@ -661,16 +689,12 @@ void ToolbarView::Layout() {
     return;
   }
 
-  if (display_mode_ == DisplayMode::LOCATION) {
-    location_bar_->SetBounds(0, 0, width(),
-                             location_bar_->GetPreferredSize().height());
-    return;
-  }
+  if (display_mode_ == DisplayMode::NORMAL) {
+    LayoutCommon();
 
-  LayoutCommon();
-
-  if (features::IsChromeRefresh2023()) {
-    UpdateClipPath();
+    if (features::IsChromeRefresh2023()) {
+      UpdateClipPath();
+    }
   }
 
   // Call super implementation to ensure layout manager and child layouts
