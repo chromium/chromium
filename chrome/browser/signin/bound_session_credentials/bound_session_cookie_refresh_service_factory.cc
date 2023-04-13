@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_factory.h"
+#include <memory>
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 
@@ -44,7 +46,8 @@ BoundSessionCookieRefreshServiceFactory::
 BoundSessionCookieRefreshServiceFactory::
     ~BoundSessionCookieRefreshServiceFactory() = default;
 
-KeyedService* BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   // The account consistency method should not change during the lifetime of a
@@ -53,10 +56,11 @@ KeyedService* BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  auto* bound_session_cookie_refresh_service =
-      new BoundSessionCookieRefreshService(
-          ChromeSigninClientFactory::GetForProfile(profile),
-          IdentityManagerFactory::GetForProfile(profile));
+  std::unique_ptr<BoundSessionCookieRefreshService>
+      bound_session_cookie_refresh_service =
+          std::make_unique<BoundSessionCookieRefreshServiceImpl>(
+              ChromeSigninClientFactory::GetForProfile(profile),
+              IdentityManagerFactory::GetForProfile(profile));
   bound_session_cookie_refresh_service->Initialize();
   return bound_session_cookie_refresh_service;
 }

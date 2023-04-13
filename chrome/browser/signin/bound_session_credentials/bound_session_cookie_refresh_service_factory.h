@@ -24,8 +24,8 @@ class BoundSessionCookieRefreshServiceFactory
   BoundSessionCookieRefreshServiceFactory();
   ~BoundSessionCookieRefreshServiceFactory() override;
 
-  // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  // ProfileKeyedServiceFactory:
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
