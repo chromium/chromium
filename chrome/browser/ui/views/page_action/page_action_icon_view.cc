@@ -113,7 +113,7 @@ PageActionIconView::PageActionIconView(
         },
         this));
     if (auto* focus_ring = views::FocusRing::Get(this); focus_ring) {
-      focus_ring->SetOutsetFocusRingDisabled();
+      focus_ring->SetOutsetFocusRingDisabled(true);
     }
   }
   // Only shows bubble after mouse is released.

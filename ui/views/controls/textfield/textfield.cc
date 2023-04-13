@@ -242,7 +242,7 @@ Textfield::Textfield()
   views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                 GetCornerRadius());
   FocusRing::Install(this);
-  FocusRing::Get(this)->SetOutsetFocusRingDisabled();
+  FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
 
   if (::features::IsChromeRefresh2023()) {
     InkDrop::Install(this, std::make_unique<views::InkDropHost>(this));

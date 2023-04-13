@@ -172,6 +172,13 @@ void FocusRing::SetHaloInset(float halo_inset) {
   OnPropertyChanged(&halo_inset_, PropertyEffects::kPropertyEffectsPaint);
 }
 
+void FocusRing::SetOutsetFocusRingDisabled(bool disable) {
+  outset_focus_ring_disabled_ = disable;
+}
+bool FocusRing::GetOutsetFocusRingDisabled() const {
+  return outset_focus_ring_disabled_;
+}
+
 bool FocusRing::ShouldPaintForTesting() {
   return ShouldPaint();
 }
@@ -409,6 +416,7 @@ BEGIN_METADATA(FocusRing, View)
 ADD_PROPERTY_METADATA(absl::optional<ui::ColorId>, ColorId)
 ADD_PROPERTY_METADATA(float, HaloInset)
 ADD_PROPERTY_METADATA(float, HaloThickness)
+ADD_PROPERTY_METADATA(bool, OutsetFocusRingDisabled)
 END_METADATA
 
 }  // namespace views

@@ -1076,7 +1076,7 @@ void Tab::UpdateForegroundColors() {
   // There may be no focus ring when the tab is closing.
   if (auto* focus_ring = views::FocusRing::Get(this); focus_ring) {
     focus_ring->SetColorId(colors.focus_ring_color);
-    focus_ring->SetOutsetFocusRingDisabled();
+    focus_ring->SetOutsetFocusRingDisabled(true);
   }
   SchedulePaint();
 }

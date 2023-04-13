@@ -143,13 +143,8 @@ Combobox::Combobox(ui::ComboboxModel* model, int text_context, int text_style)
 
   UpdateBorder();
 
-  // The combobox uses the ink drop on the TransparentButton, but the focus ring
-  // needs to be set on the combobox itself. To ensure that the ink drop fills
-  // the entire bounds of the combobox including the portion of the combobox
-  // bounds that the focus ring paints over, we need to install the focus ring
-  // first so that the focus ring is added as a child before the
-  // TransparentButton and therefore painted before the ink drop.
   FocusRing::Install(this);
+  views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
 
   arrow_button_ =
       AddChildView(std::make_unique<TransparentButton>(base::BindRepeating(

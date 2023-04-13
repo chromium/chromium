@@ -33,6 +33,7 @@ constexpr int kFocusRingRadius = 16;
 RadioButton::RadioButton(const std::u16string& label, int group_id)
     : Checkbox(label) {
   SetGroup(group_id);
+  views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
 }
 
 RadioButton::~RadioButton() = default;

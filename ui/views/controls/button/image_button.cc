@@ -40,6 +40,7 @@ ImageButton::ImageButton(PressedCallback callback)
   // implementation is flipped horizontally so that the button's images are
   // mirrored when the UI directionality is right-to-left.
   SetFlipCanvasOnPaintForRTLUI(true);
+  views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
 }
 
 ImageButton::~ImageButton() = default;

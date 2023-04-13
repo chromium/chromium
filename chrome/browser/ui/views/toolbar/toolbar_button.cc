@@ -205,6 +205,7 @@ ToolbarButton::ToolbarButton(PressedCallback callback,
   SetProperty(views::kInternalPaddingKey, gfx::Insets());
 
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
 }
 
 ToolbarButton::~ToolbarButton() = default;

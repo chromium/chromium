@@ -198,6 +198,7 @@ class BookmarkButtonBase : public views::LabelButton {
     views::InstallPillHighlightPathGenerator(this);
 
     SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+    views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
     SetHideInkDropWhenShowingContextMenu(false);
 
     show_animation_ = std::make_unique<gfx::SlideAnimation>(this);

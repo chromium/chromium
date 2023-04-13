@@ -187,7 +187,7 @@ LocationBarView::LocationBarView(Browser* browser,
              !v->GetOmniboxPopupView()->IsOpen();
     });
     if (features::IsChromeRefresh2023()) {
-      views::FocusRing::Get(this)->SetOutsetFocusRingDisabled();
+      views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
     }
     views::InstallPillHighlightPathGenerator(this);
 
