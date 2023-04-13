@@ -252,6 +252,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
             return;
         }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_SHEET_CUSTOM_ACTIONS_POLISH)) {
+            mOrderedFirstPartyOptions.add(createCopyLinkFirstPartyOption());
             maybeAddLongScreenshotFirstPartyOption();
             maybeAddPrintFirstPartyOption();
             maybeAddSendTabToSelfFirstPartyOption();
@@ -260,6 +261,9 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
             maybeAddWebStyleNotesFirstPartyOption();
             maybeAddScreenshotFirstPartyOption();
             maybeAddLongScreenshotFirstPartyOption();
+            // Always show the copy link option as some entries does not offer the change for copy
+            // (e.g. feed card)
+            mOrderedFirstPartyOptions.add(createCopyLinkFirstPartyOption());
             maybeAddCopyFirstPartyOption();
             maybeAddSendTabToSelfFirstPartyOption();
             maybeAddQrCodeFirstPartyOption();
@@ -313,7 +317,6 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     }
 
     protected void maybeAddCopyFirstPartyOption() {
-        mOrderedFirstPartyOptions.add(createCopyLinkFirstPartyOption());
         mOrderedFirstPartyOptions.add(createCopyGifFirstPartyOption());
         mOrderedFirstPartyOptions.add(createCopyImageFirstPartyOption());
         mOrderedFirstPartyOptions.add(createCopyFirstPartyOption());
@@ -321,10 +324,16 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     }
 
     private FirstPartyOption createCopyLinkFirstPartyOption() {
-        return new FirstPartyOptionBuilder(
-                ContentType.LINK_PAGE_VISIBLE, ContentType.LINK_PAGE_NOT_VISIBLE)
-                .setContentTypesToDisableFor(ContentType.LINK_AND_TEXT)
-                .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy_url)
+        FirstPartyOptionBuilder builder = new FirstPartyOptionBuilder(
+                ContentType.LINK_PAGE_VISIBLE, ContentType.LINK_PAGE_NOT_VISIBLE);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_SHEET_CUSTOM_ACTIONS_POLISH)) {
+            builder.setContentTypesToDisableFor(
+                    ContentType.LINK_AND_TEXT, ContentType.IMAGE_AND_LINK);
+        } else {
+            builder.setContentTypesToDisableFor(ContentType.LINK_AND_TEXT);
+        }
+
+        return builder.setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy_url)
                 .setFeatureNameForMetrics(USER_ACTION_COPY_URL_SELECTED)
                 .setOnClickCallback((view) -> {
                     ClipboardManager clipboard = (ClipboardManager) mActivity.getSystemService(

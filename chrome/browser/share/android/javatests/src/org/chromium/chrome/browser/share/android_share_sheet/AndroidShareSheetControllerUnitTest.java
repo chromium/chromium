@@ -212,7 +212,7 @@ public class AndroidShareSheetControllerUnitTest {
         Assert.assertNotNull("Custom action is empty.",
                 intent.getParcelableArrayExtra(INTENT_EXTRA_CHOOSER_CUSTOM_ACTIONS));
 
-        assertCustomActions(intent, R.string.sharing_long_screenshot,
+        assertCustomActions(intent, R.string.sharing_copy_url, R.string.sharing_long_screenshot,
                 R.string.print_share_activity_title, R.string.send_tab_to_self_share_activity_title,
                 R.string.qr_code_share_icon_label);
     }
