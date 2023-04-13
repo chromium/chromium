@@ -543,7 +543,6 @@ bool CALayerOverlayProcessor::ProcessForCALayerOverlays(
   size_t max_number = (yuv_draw_quad_count < kMaxNumVideos)
                           ? layer_limit_default_
                           : layer_limit_with_many_videos_;
-
   if (num_visible_quads > max_number) {
     result = gfx::kCALayerFailedTooManyQuads;
   }

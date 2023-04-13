@@ -2006,6 +2006,21 @@
             ]
         }
     ],
+    "CALayerNewLimit": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CALayerNewLimit"
+                    ]
+                }
+            ]
+        }
+    ],
     "CPSS": [
         {
             "platforms": [
