@@ -2870,8 +2870,6 @@ TEST_F(AutocompleteResultTest, Android_InspireMe) {
 TEST_F(AutocompleteResultTest, Android_TrimOmniboxActions) {
   scoped_refptr<FakeAutocompleteProvider> provider =
       new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_SEARCH);
-  const OmniboxAction::LabelStrings dummy_labels(u"", u"", u"", u"");
-
   using OmniboxActionId::ACTION_IN_SUGGEST;
   using OmniboxActionId::HISTORY_CLUSTERS;
   using OmniboxActionId::PEDAL;
@@ -2991,3 +2989,100 @@ TEST_F(AutocompleteResultTest, Android_TrimOmniboxActions) {
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(AutocompleteResultTest, Android_UndedupTopSearch) {
+  scoped_refptr<FakeAutocompleteProvider> provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_SEARCH);
+
+  // 4 different matches to cover variety of scenarios.
+  // Matches are recognized by their type and actions presence.
+  // `search` is marked as a duplicate of both `entity` matches.
+  AutocompleteMatch what_you_typed(
+      provider.get(), 1, false, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
+  AutocompleteMatch search(provider.get(), 1, false,
+                           AutocompleteMatchType::SEARCH_SUGGEST);
+  search.allowed_to_be_default_match = true;
+
+  AutocompleteMatch entity_without_action(
+      provider.get(), 1, false, AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
+  AutocompleteMatch entity_with_action(
+      provider.get(), 1, false, AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
+  entity_with_action.actions.push_back(base::MakeRefCounted<FakeOmniboxAction>(
+      OmniboxActionId::ACTION_IN_SUGGEST));
+  entity_with_action.duplicate_matches.push_back(search);
+  entity_without_action.duplicate_matches.push_back(search);
+
+  struct UndedupTestData {
+    std::string test_name;
+    bool promote_entities;
+    std::vector<AutocompleteMatch> input;
+    std::vector<AutocompleteMatch> expected_result;
+  } test_cases[]{
+      {"no op with no matches", true, {}, {}},
+      {"no op with no entities / 1", true, {what_you_typed}, {what_you_typed}},
+      {"no op with no entities / 2",
+       true,
+       {what_you_typed, search},
+       {what_you_typed, search}},
+      {"no op with entities with no actions",
+       true,
+       {what_you_typed, entity_without_action},
+       {what_you_typed, entity_without_action}},
+      {"no op with entities with actions at low positions",
+       true,
+       {what_you_typed, entity_with_action},
+       {what_you_typed, entity_with_action}},
+
+      // Undedup and possibly rotate eligible cases.
+      {"no rotation when promotion is disabled with no actions at top position",
+       false,
+       {entity_without_action},
+       {search, entity_without_action}},
+      {"no rotation when promotion is enabled with no actions at top position",
+       true,
+       {entity_without_action},
+       {search, entity_without_action}},
+      {"no rotation when promotion is disabled with actions at top position",
+       false,
+       {entity_with_action},
+       {search, entity_with_action}},
+      {"rotation when promotion is enabled with actions at top position",
+       true,
+       {entity_with_action},
+       {entity_with_action, search}},
+  };
+
+  // Crete matches following the `input_matches_and_actions` input.
+  // The input specifies what type of OMNIBOX_ACTION should be added to every
+  // individual match.
+  // Once done, run the trimming and verify that the output contains exactly the
+  // matches we want to see.
+  for (const auto& test_case : test_cases) {
+    auto result = test_case.input;
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kActionsInSuggest,
+        {{OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.name,
+          test_case.promote_entities ? "true" : "false"}});
+    AutocompleteResult::UndedupTopSearchEntityMatch(&result);
+
+    EXPECT_EQ(result.size(), test_case.expected_result.size());
+    for (size_t index = 0u; index < result.size(); ++index) {
+      const auto& found_match = result[index];
+      const auto& expect_match = test_case.expected_result[index];
+      EXPECT_EQ(found_match.type, expect_match.type)
+          << "at index " << index
+          << " while testing variant: " << test_case.test_name;
+      EXPECT_EQ(found_match.actions.size(), expect_match.actions.size())
+          << "at index " << index
+          << " while testing variant: " << test_case.test_name;
+      for (size_t action_index = 0u; action_index < found_match.actions.size();
+           ++action_index) {
+        EXPECT_EQ(found_match.actions[action_index]->ActionId(),
+                  expect_match.actions[action_index]->ActionId())
+            << "action " << action_index << " at index " << index
+            << " while testing variant: " << test_case.test_name;
+      }
+    }
+  }
+}

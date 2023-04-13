@@ -706,4 +706,10 @@ BASE_FEATURE(kUrlScoringModel,
 // the suggestion list on the NTP and SRP.
 BASE_FEATURE(kInspireMe, "OmniboxInspireMe", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Actions in Suggest is a data-driven feature; it's considered enabled when the
+// data is available.
+// The feature flag below helps us tune feature behaviors.
+BASE_FEATURE(kActionsInSuggest,
+             "OmniboxActionsInSuggest",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace omnibox

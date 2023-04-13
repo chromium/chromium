@@ -1566,6 +1566,16 @@ const FeatureEntry::FeatureVariation
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_ANDROID)
+constexpr FeatureEntry::FeatureParam kOmniboxActionsInSuggestPromoteEntities[] =
+    {
+        {"PromoteEntitySuggestion", "true"},
+};
+
+constexpr FeatureEntry::FeatureVariation kOmniboxActionsInSuggestVariants[] = {
+    {"Promote Entities", kOmniboxActionsInSuggestPromoteEntities,
+     std::size(kOmniboxActionsInSuggestPromoteEntities), nullptr},
+};
+
 constexpr FeatureEntry::FeatureParam kOmniboxInspireMeWith5Trends[] = {
     {"AdditionalTrendingQueries", "5"},
     {"AdditionalRelatedQueries", "0"}};
@@ -5610,6 +5620,13 @@ const FeatureEntry kFeatureEntries[] = {
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_ANDROID)
+    {"omnibox-actions-in-suggest",
+     flag_descriptions::kOmniboxActionsInSuggestName,
+     flag_descriptions::kOmniboxActionsInSuggestDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kActionsInSuggest,
+                                    kOmniboxActionsInSuggestVariants,
+                                    "OmniboxBundledExperimentV1")},
+
     {"omnibox-inspire-me", flag_descriptions::kOmniboxInspireMeName,
      flag_descriptions::kOmniboxInspireMeDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kInspireMe,

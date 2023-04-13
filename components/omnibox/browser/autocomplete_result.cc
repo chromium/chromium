@@ -332,8 +332,9 @@ void AutocompleteResult::SortAndCull(
     // `stripped_destination_url` to detect result changes. If
     // `stripped_destination_url` is already set, i.e. it was not a pre-deduped
     // search suggestion, `ComputeStrippedDestinationURL()` will early exit.
-    if (DiscourageTopMatchFromBeingSearchEntity(&matches_))
+    if (UndedupTopSearchEntityMatch(&matches_)) {
       matches_[0].ComputeStrippedDestinationURL(input, template_url_service);
+    }
   }
 
   const bool is_zero_suggest = input.IsZeroSuggest();
@@ -813,8 +814,7 @@ ACMatches::iterator AutocompleteResult::FindTopMatch(
 }
 
 // static
-bool AutocompleteResult::DiscourageTopMatchFromBeingSearchEntity(
-    ACMatches* matches) {
+bool AutocompleteResult::UndedupTopSearchEntityMatch(ACMatches* matches) {
   if (matches->empty())
     return false;
 
@@ -868,10 +868,10 @@ bool AutocompleteResult::DiscourageTopMatchFromBeingSearchEntity(
   }
 
   if (non_entity_it != top_match->duplicate_matches.end()) {
-    // Copy the non-entity match, then erase it from the list of duplicates.
+    // Move out the non-entity match, then erase it from the list of duplicates.
     // We do this first, because the insertion operation invalidates all
     // iterators, including |top_match|.
-    AutocompleteMatch non_entity_match_copy = *non_entity_it;
+    AutocompleteMatch non_entity_match_copy{std::move(*non_entity_it)};
     top_match->duplicate_matches.erase(non_entity_it);
 
     // When we spawn our non-entity match copy, we still want to preserve any
@@ -881,9 +881,22 @@ bool AutocompleteResult::DiscourageTopMatchFromBeingSearchEntity(
       non_entity_match_copy.entity_id = top_match->entity_id;
     }
 
-    // Promote the non-entity match to the top, then immediately return, since
-    // all our iterators are invalid after the insertion.
-    matches->insert(matches->begin(), std::move(non_entity_match_copy));
+    // Unless the entity match has Actions in Suggest, promote the non-entity
+    // match to the top. Otherwise keep the entity match at the top followed by
+    // the non-entity match.
+    bool top_match_has_actions =
+        !!top_match->GetActionWhere([](const auto& action) {
+          return action->ActionId() == OmniboxActionId::ACTION_IN_SUGGEST;
+        });
+
+    if (top_match_has_actions &&
+        OmniboxFieldTrial::kActionsInSuggestPromoteEntitySuggestion.Get()) {
+      matches->insert(std::next(matches->begin()),
+                      std::move(non_entity_match_copy));
+    } else {
+      matches->insert(matches->begin(), std::move(non_entity_match_copy));
+    }
+    // Immediately return as all our iterators are invalid after the insertion.
     return true;
   }
 

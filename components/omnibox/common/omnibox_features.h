@@ -160,6 +160,10 @@ BASE_DECLARE_FEATURE(kUrlScoringModel);
 // Inspire Me - additional suggestions based on user's location and interests.
 BASE_DECLARE_FEATURE(kInspireMe);
 
+// Actions in Suggest - Action Chips for Entity Suggestions.
+// Data driven feature; flag helps tune behavior.
+BASE_DECLARE_FEATURE(kActionsInSuggest);
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURES_H_

@@ -1155,6 +1155,9 @@ extern const char kOriginAgentClusterDefaultDescription[];
 extern const char kOmitCorsClientCertName[];
 extern const char kOmitCorsClientCertDescription[];
 
+extern const char kOmniboxActionsInSuggestName[];
+extern const char kOmniboxActionsInSuggestDescription[];
+
 extern const char kOmniboxAdaptiveSuggestionsCountName[];
 extern const char kOmniboxAdaptiveSuggestionsCountDescription[];
 

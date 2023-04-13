@@ -5331,6 +5331,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "omnibox-actions-in-suggest",
+    "owners": [ "ender", "chrome-mobile-search@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "omnibox-adapt-narrow-tablet-windows",
     "owners": [ "pnoland", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120

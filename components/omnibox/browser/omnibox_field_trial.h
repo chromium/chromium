@@ -726,6 +726,13 @@ extern const base::FeatureParam<int> kInspireMeAdditionalTrendingQueries;
 
 // <- Inspire Me
 // ---------------------------------------------------------
+// Actions In Suggest ->
+//
+// When set to true, permits Entity suggestion with associated Actions to be
+// promoted over the Escape Hatch.
+extern const base::FeatureParam<bool> kActionsInSuggestPromoteEntitySuggestion;
+// <- Actions In Suggest
+// ---------------------------------------------------------
 
 // New params should be inserted above this comment. They should be ordered
 // consistently with `omnibox_features.h`. They should be formatted as:

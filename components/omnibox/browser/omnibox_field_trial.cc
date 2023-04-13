@@ -1165,6 +1165,15 @@ const base::FeatureParam<int> kInspireMeAdditionalTrendingQueries(
 
 // <- Inspire Me
 // ---------------------------------------------------------
+// Actions In Suggest ->
+// When set to true, permits Entity suggestion with associated Actions to be
+// promoted over the Escape Hatch.
+const base::FeatureParam<bool> kActionsInSuggestPromoteEntitySuggestion(
+    &omnibox::kActionsInSuggest,
+    "PromoteEntitySuggestion",
+    false);
+// <- Actions In Suggest
+// ---------------------------------------------------------
 
 }  // namespace OmniboxFieldTrial
 
