@@ -5135,22 +5135,6 @@
             ]
         }
     ],
-    "FastPairPowerConsumption": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220919",
-                    "enable_features": [
-                        "FastPair",
-                        "FastPairSavedDevices"
-                    ]
-                }
-            ]
-        }
-    ],
     "FastPathPaintPropertyUpdates": [
         {
             "platforms": [
