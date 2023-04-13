@@ -450,6 +450,10 @@ void MirroringActivity::CreateMediaController(
     mojo::PendingReceiver<mojom::MediaController> media_controller,
     mojo::PendingRemote<mojom::MediaStatusObserver> observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+  media_controller_receiver_.reset();
+  media_controller_receiver_.Bind(std::move(media_controller));
+  media_status_observer_.reset();
+  media_status_observer_.Bind(std::move(observer));
 }
 
 std::string MirroringActivity::GetRouteDescription(
@@ -664,6 +668,24 @@ void MirroringActivity::FetchMirroringStats() {
 void MirroringActivity::OnMirroringStats(base::Value json_stats) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
   debugger_->OnMirroringStats(json_stats.Clone());
+}
+
+void MirroringActivity::Play() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+  if (host_) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&mirroring::MirroringServiceHost::Resume,
+                                  host_->GetWeakPtr()));
+  }
+}
+
+void MirroringActivity::Pause() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+  if (host_) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&mirroring::MirroringServiceHost::Pause,
+                                  host_->GetWeakPtr()));
+  }
 }
 
 }  // namespace media_router
