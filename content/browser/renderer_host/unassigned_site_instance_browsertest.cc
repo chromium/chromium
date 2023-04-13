@@ -60,22 +60,7 @@
 namespace content {
 
 namespace {
-
 const std::string kEmptySchemeForTesting = "empty-scheme";
-
-void InitBackForwardCacheFeature(base::test::ScopedFeatureList* feature_list,
-                                 bool enable_back_forward_cache) {
-  if (enable_back_forward_cache) {
-    feature_list->InitWithFeaturesAndParameters(
-        GetBasicBackForwardCacheFeatureForTesting(
-            {{kBackForwardCacheNoTimeEviction, {}},
-             {features::kBackForwardCacheMemoryControls, {}}}),
-        {});
-  } else {
-    feature_list->InitAndDisableFeature(features::kBackForwardCache);
-  }
-}
-
 }  // namespace
 
 // Note that this test suite is parametrized for RenderDocument and

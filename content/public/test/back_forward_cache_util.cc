@@ -211,4 +211,17 @@ GetDefaultDisabledBackForwardCacheFeaturesForTesting(
   return final_features;
 }
 
+void InitBackForwardCacheFeature(base::test::ScopedFeatureList* feature_list,
+                                 bool enable_back_forward_cache) {
+  if (enable_back_forward_cache) {
+    feature_list->InitWithFeaturesAndParameters(
+        GetBasicBackForwardCacheFeatureForTesting(
+            {{kBackForwardCacheNoTimeEviction, {}},
+             {features::kBackForwardCacheMemoryControls, {}}}),
+        {});
+  } else {
+    feature_list->InitAndDisableFeature(features::kBackForwardCache);
+  }
+}
+
 }  // namespace content

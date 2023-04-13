@@ -129,6 +129,10 @@ std::vector<base::test::FeatureRef>
 GetDefaultDisabledBackForwardCacheFeaturesForTesting(
     const std::vector<base::test::FeatureRef>& additional_features);
 
+// Initializes BFCache to `enable_back_forward_cache` for `feature_list`.
+void InitBackForwardCacheFeature(base::test::ScopedFeatureList* feature_list,
+                                 bool enable_back_forward_cache);
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_TEST_BACK_FORWARD_CACHE_UTIL_H_
