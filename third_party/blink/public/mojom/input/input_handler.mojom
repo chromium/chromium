@@ -4,27 +4,28 @@
 
 module blink.mojom;
 
+import "cc/mojom/browser_controls_state.mojom";
 import "cc/mojom/overscroll_behavior.mojom";
 import "cc/mojom/touch_action.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/input/gesture_event.mojom";
-import "third_party/blink/public/mojom/input/input_event.mojom";
+import "third_party/blink/public/mojom/input/handwriting_gesture_result.mojom";
 import "third_party/blink/public/mojom/input/input_event_result.mojom";
+import "third_party/blink/public/mojom/input/input_event.mojom";
 import "third_party/blink/public/mojom/input/pointer_lock_context.mojom";
 import "third_party/blink/public/mojom/input/pointer_lock_result.mojom";
+import "third_party/blink/public/mojom/input/stylus_writing_gesture.mojom";
 import "third_party/blink/public/mojom/input/touch_event.mojom";
 import "third_party/blink/public/mojom/selection_menu/selection_menu_behavior.mojom";
 import "ui/base/ime/mojom/ime_types.mojom";
-import "third_party/blink/public/mojom/input/handwriting_gesture_result.mojom";
-import "third_party/blink/public/mojom/input/stylus_writing_gesture.mojom";
-import "ui/events/mojom/event.mojom";
 import "ui/events/mojom/event_constants.mojom";
+import "ui/events/mojom/event_latency_metadata.mojom";
+import "ui/events/mojom/event.mojom";
 import "ui/events/mojom/scroll_granularity.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/range/mojom/range.mojom";
 import "ui/latency/mojom/latency_info.mojom";
-import "cc/mojom/browser_controls_state.mojom";
 
 [EnableIf=is_android]
 import "third_party/blink/public/mojom/input/synchronous_compositor.mojom";
@@ -169,6 +170,7 @@ struct Event {
   int32 modifiers;
   mojo_base.mojom.TimeTicks timestamp;
   ui.mojom.LatencyInfo latency;
+  ui.mojom.EventLatencyMetadata event_latency_metadata;
   KeyData? key_data;
   PointerData? pointer_data;
   GestureData? gesture_data;

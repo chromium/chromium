@@ -1079,8 +1079,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   void OnInvalidInputEventSource() override;
 
   // Dispatch input events with latency information
-  void DispatchInputEventWithLatencyInfo(const blink::WebInputEvent& event,
-                                         ui::LatencyInfo* latency);
+  void DispatchInputEventWithLatencyInfo(
+      const blink::WebInputEvent& event,
+      ui::LatencyInfo* latency,
+      ui::EventLatencyMetadata* event_latency_metadata);
 
   void WindowSnapshotReachedScreen(int snapshot_id);
 

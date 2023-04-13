@@ -253,9 +253,11 @@ class CompositorFrameReportingControllerTest : public testing::Test {
 
   std::unique_ptr<EventMetrics> CreateEventMetrics(ui::EventType type) {
     const base::TimeTicks event_time = AdvanceNowByMs(10);
+    const base::TimeTicks arrived_in_browser_main_timestamp = AdvanceNowByMs(3);
     AdvanceNowByMs(10);
-    return SetupEventMetrics(
-        EventMetrics::CreateForTesting(type, event_time, &test_tick_clock_));
+    return SetupEventMetrics(EventMetrics::CreateForTesting(
+        type, event_time, arrived_in_browser_main_timestamp,
+        &test_tick_clock_));
   }
 
   std::unique_ptr<EventMetrics> CreateScrollBeginEventMetrics(

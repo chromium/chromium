@@ -324,6 +324,7 @@ source_set("common") {
     "//ui/display",
     "//ui/display/mojom",
     "//ui/events:events_base",
+    "//ui/events/mojom:event_latency_metadata_mojom",
     "//ui/latency/mojom:shared_mojom_traits",
   ]
 

@@ -41,6 +41,7 @@ include_rules = [
     "+ui/base/dragdrop/mojom",
     "+ui/display",
     "+ui/events/base_event_utils.h",
+    "+ui/events/mojom/event_latency_metadata_mojom_traits.h",
     "+ui/gfx/presentation_feedback.h",
     "+ui/gfx/transform.h",
     "+ui/gfx/geometry",

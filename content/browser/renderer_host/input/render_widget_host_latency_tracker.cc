@@ -94,7 +94,8 @@ RenderWidgetHostLatencyTracker::~RenderWidgetHostLatencyTracker() {}
 
 void RenderWidgetHostLatencyTracker::OnInputEvent(
     const blink::WebInputEvent& event,
-    LatencyInfo* latency) {
+    LatencyInfo* latency,
+    ui::EventLatencyMetadata* event_latency_metadata) {
   DCHECK(latency);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -135,9 +136,12 @@ void RenderWidgetHostLatencyTracker::OnInputEvent(
         ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, timestamp_original);
   }
 
+  base::TimeTicks begin_rwh_timestamp = base::TimeTicks::Now();
   latency->AddLatencyNumberWithTraceName(
       ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT,
-      GetTraceNameFromType(event.GetType()));
+      GetTraceNameFromType(event.GetType()), begin_rwh_timestamp);
+  event_latency_metadata->arrived_in_browser_main_timestamp =
+      begin_rwh_timestamp;
 
   if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin) {
     has_seen_first_gesture_scroll_update_ = false;

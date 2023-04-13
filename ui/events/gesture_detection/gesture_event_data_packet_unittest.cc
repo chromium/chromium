@@ -134,4 +134,33 @@ TEST_F(GestureEventDataPacketTest, GestureSource) {
   EXPECT_EQ(gfx::PointF(gesture.x, gesture.y), packet.touch_location());
 }
 
+TEST_F(GestureEventDataPacketTest, AddEventLatencyMetadataToGestures) {
+  GestureEventDataPacket packet = GestureEventDataPacket::FromTouch(
+      MockMotionEvent(MotionEvent::Action::DOWN));
+  packet.Push(CreateGesture(ET_GESTURE_TAP));
+  packet.Push(CreateGesture(ET_GESTURE_SCROLL_UPDATE));
+  packet.Push(CreateGesture(ET_GESTURE_PINCH_UPDATE));
+
+  EventLatencyMetadata event_latency_metadata;
+  event_latency_metadata.scrolls_blocking_touch_dispatched_to_renderer =
+      base::TimeTicks::Now();
+  packet.AddEventLatencyMetadataToGestures(
+      event_latency_metadata,
+      base::BindRepeating([](const ui::GestureEventData& data) {
+        return data.type() == ET_GESTURE_SCROLL_UPDATE;
+      }));
+
+  EXPECT_TRUE(packet.gesture(0)
+                  .details.GetEventLatencyMetadata()
+                  .scrolls_blocking_touch_dispatched_to_renderer.is_null());
+  EXPECT_EQ(
+      packet.gesture(1)
+          .details.GetEventLatencyMetadata()
+          .scrolls_blocking_touch_dispatched_to_renderer,
+      event_latency_metadata.scrolls_blocking_touch_dispatched_to_renderer);
+  EXPECT_TRUE(packet.gesture(2)
+                  .details.GetEventLatencyMetadata()
+                  .scrolls_blocking_touch_dispatched_to_renderer.is_null());
+}
+
 }  // namespace ui

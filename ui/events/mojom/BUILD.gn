@@ -80,3 +80,24 @@ mojom("mojom") {
   blink_cpp_typemaps = shared_cpp_typemaps
   webui_module_path = "chrome://resources/mojo/ui/events/mojom"
 }
+
+mojom("event_latency_metadata_mojom") {
+  generate_java = true
+  sources = [ "event_latency_metadata.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "ui.mojom.EventLatencyMetadata"
+          cpp = "::ui::EventLatencyMetadata"
+        },
+      ]
+
+      traits_headers = [ "event_latency_metadata_mojom_traits.h" ]
+      traits_sources = [ "event_latency_metadata_mojom_traits.cc" ]
+      traits_deps = [ "//ui/events:events_base" ]
+    },
+  ]
+}

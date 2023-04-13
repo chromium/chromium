@@ -287,6 +287,8 @@ void PassthroughTouchEventQueue::SendTouchEventImmediately(
 
   if (timeout_handler_)
     timeout_handler_->StartIfNecessary(*touch);
+  touch->event.GetModifiableEventLatencyMetadata().dispatched_to_renderer =
+      base::TimeTicks::Now();
   if (wait_for_ack)
     outstanding_touches_.insert(*touch);
   client_->SendTouchEventImmediately(*touch);

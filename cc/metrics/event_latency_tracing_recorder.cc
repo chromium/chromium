@@ -63,12 +63,26 @@ const char* EventLatencyTracingRecorder::GetDispatchBreakdownName(
   switch (start_stage) {
     case EventMetrics::DispatchStage::kGenerated:
       switch (end_stage) {
+        case EventMetrics::DispatchStage::
+            kScrollsBlockingTouchDispatchedToRenderer:
         case EventMetrics::DispatchStage::kArrivedInBrowserMain:
           return "GenerationToBrowserMain";
         case EventMetrics::DispatchStage::kArrivedInRendererCompositor:
           return "GenerationToRendererCompositor";
         default:
-          NOTREACHED();
+          NOTREACHED() << static_cast<int>(end_stage);
+          return "";
+      }
+    case EventMetrics::DispatchStage::kScrollsBlockingTouchDispatchedToRenderer:
+      switch (end_stage) {
+        case EventMetrics::DispatchStage::kArrivedInBrowserMain:
+          // This stage can only be in a Scroll EventLatency. It means a path of
+          // a corresponding blocking TouchMove from BrowserMain To Renderer To
+          // BrowserMain. Look at the corresponding TouchMove EventLatency for
+          // a more detailed breakdown of this stage.
+          return "TouchRendererHandlingToBrowserMain";
+        default:
+          NOTREACHED() << static_cast<int>(end_stage);
           return "";
       }
     case EventMetrics::DispatchStage::kArrivedInBrowserMain:
@@ -82,7 +96,7 @@ const char* EventLatencyTracingRecorder::GetDispatchBreakdownName(
         case EventMetrics::DispatchStage::kRendererMainStarted:
           return "RendererCompositorToMain";
         default:
-          NOTREACHED();
+          NOTREACHED() << static_cast<int>(end_stage);
           return "";
       }
     case EventMetrics::DispatchStage::kRendererCompositorStarted:

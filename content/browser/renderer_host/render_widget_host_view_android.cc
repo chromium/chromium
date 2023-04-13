@@ -2112,9 +2112,20 @@ void RenderWidgetHostViewAndroid::ProcessAckedTouchEvent(
     blink::mojom::InputEventResultState ack_result) {
   const bool event_consumed =
       ack_result == blink::mojom::InputEventResultState::kConsumed;
+  // |is_source_touch_event_set_non_blocking| defines a blocking behaviour of
+  // the future inputs.
+  const bool is_source_touch_event_set_non_blocking =
+      InputEventResultStateIsSetNonBlocking(ack_result);
+  // |was_touch_blocked| indicates whether the current event was dispatched
+  // blocking to the Renderer.
+  const bool was_touch_blocked =
+      ui::WebInputEventTraits::ShouldBlockEventStream(touch.event);
   gesture_provider_.OnTouchEventAck(
       touch.event.unique_touch_event_id, event_consumed,
-      InputEventResultStateIsSetNonBlocking(ack_result));
+      is_source_touch_event_set_non_blocking,
+      was_touch_blocked
+          ? absl::make_optional(touch.event.GetEventLatencyMetadata())
+          : absl::nullopt);
   if (touch.event.touch_start_or_first_touch_move && event_consumed &&
       host()->delegate() && host()->delegate()->GetInputEventRouter()) {
     host()
