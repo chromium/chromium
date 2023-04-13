@@ -396,7 +396,7 @@ void AudioEncoder::ProcessConfigure(Request* request) {
 
   media_encoder_ = CreateMediaAudioEncoder(*active_config_);
   if (!media_encoder_) {
-    HandleError(logger_->MakeException(
+    HandleError(logger_->MakeOperationError(
         "Encoder creation error.",
         media::EncoderStatus(
             media::EncoderStatus::Codes::kEncoderInitializationError,
@@ -421,8 +421,8 @@ void AudioEncoder::ProcessConfigure(Request* request) {
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (!status.is_ok()) {
-      self->HandleError(
-          self->logger_->MakeException("Encoding error.", std::move(status)));
+      self->HandleError(self->logger_->MakeOperationError("Encoding error.",
+                                                          std::move(status)));
     } else {
       base::UmaHistogramEnumeration("Blink.WebCodecs.AudioEncoder.Codec",
                                     codec);
@@ -467,8 +467,8 @@ void AudioEncoder::ProcessEncode(Request* request) {
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (!status.is_ok()) {
-      self->HandleError(
-          self->logger_->MakeException("Encoding error.", std::move(status)));
+      self->HandleError(self->logger_->MakeEncodingError("Encoding error.",
+                                                         std::move(status)));
     }
 
     req->EndTracing();
@@ -477,7 +477,7 @@ void AudioEncoder::ProcessEncode(Request* request) {
 
   if (data->channel_count() != active_config_->options.channels ||
       data->sample_rate() != active_config_->options.sample_rate) {
-    HandleError(logger_->MakeException(
+    HandleError(logger_->MakeEncodingError(
         "Input audio buffer is incompatible with codec parameters",
         media::EncoderStatus(media::EncoderStatus::Codes::kEncoderFailedEncode)
             .WithData("channels", data->channel_count())

@@ -694,7 +694,7 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
 
   media_encoder_ = CreateMediaVideoEncoder(*active_config_, gpu_factories);
   if (!media_encoder_) {
-    HandleError(logger_->MakeException(
+    HandleError(logger_->MakeOperationError(
         "Encoder creation error.",
         media::EncoderStatus(
             media::EncoderStatus::Codes::kEncoderInitializationError,
@@ -740,7 +740,7 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
       }
 
       self->HandleError(
-          self->logger_->MakeException(error_message, std::move(status)));
+          self->logger_->MakeOperationError(error_message, std::move(status)));
     } else {
       UMA_HISTOGRAM_ENUMERATION("Blink.WebCodecs.VideoEncoder.Codec", codec,
                                 media::VideoCodec::kMaxValue);
@@ -1027,7 +1027,8 @@ void VideoEncoder::OnEncodeDone(Request* request, media::EncoderStatus status) {
 
   active_encodes_--;
   if (!status.is_ok()) {
-    HandleError(logger_->MakeException("Encoding error.", std::move(status)));
+    HandleError(
+        logger_->MakeEncodingError("Encoding error.", std::move(status)));
   }
   request->EndTracing();
   ProcessRequests();
@@ -1096,7 +1097,7 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
     }
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (!status.is_ok()) {
-      self->HandleError(self->logger_->MakeException(
+      self->HandleError(self->logger_->MakeOperationError(
           "Encoder initialization error.", std::move(status)));
       self->blocking_request_in_progress_ = false;
       req->EndTracing();
