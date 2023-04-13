@@ -114,7 +114,7 @@ public class ContentViewFocusTest {
      * @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
      */
     @Test
-    @MediumTest
+    @DisabledTest(message = "http://crbug.com/172473")
     public void testHideSelectionOnPhoneTabSwiping() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         // Setup
