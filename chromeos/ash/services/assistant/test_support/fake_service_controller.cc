@@ -92,7 +92,13 @@ void FakeServiceController::Start() {
 }
 
 void FakeServiceController::Stop() {
-  SetState(State::kStopped);
+  // Post a delayed task to make it possible to set other state between
+  // kStopping and kStopped.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&FakeServiceController::SetState,
+                     weak_factory_.GetWeakPtr(), State::kStopped),
+      base::Milliseconds(1));
 }
 
 void FakeServiceController::ResetAllDataAndStop() {
