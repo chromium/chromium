@@ -1250,12 +1250,12 @@ void CreditCardAccessManager::OnUserAcceptedAuthenticationSelectionDialog(
       selected_authentication_type = UnmaskAuthFlowType::kCvc;
       break;
     case CardUnmaskChallengeOptionType::kSmsOtp:
+    case CardUnmaskChallengeOptionType::kEmailOtp:
       selected_authentication_type =
           unmask_auth_flow_type_ == UnmaskAuthFlowType::kFido
               ? UnmaskAuthFlowType::kOtpFallbackFromFido
               : UnmaskAuthFlowType::kOtp;
       break;
-    case CardUnmaskChallengeOptionType::kEmailOtp:
     case CardUnmaskChallengeOptionType::kUnknownType:
       NOTREACHED();
       break;

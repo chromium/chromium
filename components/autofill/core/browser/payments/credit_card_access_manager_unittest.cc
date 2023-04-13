@@ -516,13 +516,7 @@ class CreditCardAccessManagerTest : public testing::Test {
         break;
       }
       case CardUnmaskChallengeOptionType::kSmsOtp:
-        DCHECK(otp_authenticator_);
-        EXPECT_TRUE(otp_authenticator_->on_challenge_option_selected_invoked());
-        EXPECT_EQ(otp_authenticator_->card().number(),
-                  base::UTF8ToUTF16(std::string(kTestNumber)));
-        EXPECT_EQ(otp_authenticator_->card().record_type(),
-                  CreditCard::VIRTUAL_CARD);
-        EXPECT_EQ(otp_authenticator_->context_token(), "fake_context_token");
+        VerifyOnSelectChallengeOptionInvoked();
         EXPECT_EQ(otp_authenticator_->selected_challenge_option().id.value(),
                   "123");
         EXPECT_EQ(otp_authenticator_->selected_challenge_option().type,
@@ -532,10 +526,29 @@ class CreditCardAccessManagerTest : public testing::Test {
             u"xxx-xxx-3547");
         break;
       case CardUnmaskChallengeOptionType::kEmailOtp:
+        VerifyOnSelectChallengeOptionInvoked();
+        EXPECT_EQ(otp_authenticator_->selected_challenge_option().id.value(),
+                  "345");
+        EXPECT_EQ(otp_authenticator_->selected_challenge_option().type,
+                  CardUnmaskChallengeOptionType::kEmailOtp);
+        EXPECT_EQ(
+            otp_authenticator_->selected_challenge_option().challenge_info,
+            u"a******b@google.com");
+        break;
       case CardUnmaskChallengeOptionType::kUnknownType:
         NOTREACHED();
         break;
     }
+  }
+
+  void VerifyOnSelectChallengeOptionInvoked() {
+    DCHECK(otp_authenticator_);
+    EXPECT_TRUE(otp_authenticator_->on_challenge_option_selected_invoked());
+    EXPECT_EQ(otp_authenticator_->card().number(),
+              base::UTF8ToUTF16(std::string(kTestNumber)));
+    EXPECT_EQ(otp_authenticator_->card().record_type(),
+              CreditCard::VIRTUAL_CARD);
+    EXPECT_EQ(otp_authenticator_->context_token(), "fake_context_token");
   }
 
  protected:
@@ -2483,7 +2496,8 @@ TEST_F(CreditCardAccessManagerTest,
   base::HistogramTester histogram_tester;
   std::vector<CardUnmaskChallengeOption> challenge_options =
       test::GetCardUnmaskChallengeOptions(
-          {CardUnmaskChallengeOptionType::kSmsOtp});
+          {CardUnmaskChallengeOptionType::kSmsOtp,
+           CardUnmaskChallengeOptionType::kEmailOtp});
   MockCardUnmaskFlowUpToAuthenticationSelectionDialogAccepted(
       /*fido_authenticator_is_user_opted_in=*/false,
       /*is_user_verifiable=*/false, challenge_options, /*selected_index=*/0);

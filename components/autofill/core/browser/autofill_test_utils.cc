@@ -852,6 +852,12 @@ std::vector<CardUnmaskChallengeOption> GetCardUnmaskChallengeOptions(
             /*challenge_input_length=*/3U,
             /*cvc_position=*/CvcPosition::kBackOfCard));
         break;
+      case CardUnmaskChallengeOptionType::kEmailOtp:
+        challenge_options.emplace_back(
+            CardUnmaskChallengeOption::ChallengeOptionId("345"), type,
+            /*challenge_info=*/u"a******b@google.com",
+            /*challenge_input_length=*/6U);
+        break;
       default:
         NOTREACHED();
         break;

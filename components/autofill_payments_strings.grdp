@@ -708,6 +708,9 @@
   <message name="IDS_AUTOFILL_AUTHENTICATION_MODE_TEXT_MESSAGE" desc="The label for the text message authentication mode text shown in the Autofill card unmask authentication selection dialog on Desktop. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card.">
     Text message
   </message>
+  <message name="IDS_AUTOFILL_AUTHENTICATION_MODE_GET_EMAIL" desc="The label for the email authentication mode option shown in the Autofill card unmask authentication selection dialog on Desktop. If selected, we will display a new dialog where the user will be prompted to enter the OTP from the email message they received.">
+    Get an email
+  </message>
   <message name="IDS_AUTOFILL_CARD_UNMASK_AUTHENTICATION_SELECTION_DIALOG_CURRENT_INFO_NOT_SEEN_TEXT" desc="The current info not seen text shown in the Autofill card unmask authentication selection dialog on Desktop. It is the footer text on the dialog, and it instructs the user on what to do if they can not see their most up to date authentication information. This dialog lets the user choose the method of authentication when unmasking a server card, including a virtual card.">
     Not seeing your current info? Contact your bank to update it.
   </message>
