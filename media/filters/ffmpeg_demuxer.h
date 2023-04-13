@@ -304,7 +304,7 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
   FFmpegDemuxerStream* FindPreferredStreamForSeeking(base::TimeDelta seek_time);
 
   // FFmpeg callbacks during seeking.
-  void OnSeekFrameSuccess();
+  void OnSeekFrameDone(int result);
 
   // FFmpeg callbacks during reading + helper method to initiate reads.
   void ReadFrameIfNeeded();
@@ -334,9 +334,11 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
 
   void SetLiveness(StreamLiveness liveness);
 
-  void SeekInternal(base::TimeDelta time, base::OnceClosure seek_cb);
+  void SeekInternal(base::TimeDelta time,
+                    base::OnceCallback<void(int)> seek_cb);
   void OnVideoSeekedForTrackChange(DemuxerStream* video_stream,
-                                   base::OnceClosure seek_completed_cb);
+                                   base::OnceClosure seek_completed_cb,
+                                   int result);
   void SeekOnVideoTrackChange(base::TimeDelta seek_to_time,
                               TrackChangeCB seek_completed_cb,
                               DemuxerStream::Type stream_type,
