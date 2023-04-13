@@ -160,6 +160,24 @@ def GetFailedTestsFromTestLauncherSummary(summary):
   return list(failures)
 
 
+def GetFiltersForTests(tests, class_only):
+  # Note: Test names have the following structures:
+  #  * FixtureName.TestName
+  #  * InstantiationName/FixtureName.TestName/##
+  #  * FixtureName.TestName/##
+  # Since this script doesn't parse instantiations, we generate filters to
+  # match either regular tests or instantiated tests.
+  if class_only:
+    fixtures = set([t.split('.')[0] for t in tests])
+    return [c + '.*' for c in fixtures] + \
+          ['*/' + c + '.*/*' for c in fixtures] + \
+          [c + '.*/*' for c in fixtures]
+  else:
+    return [c for c in tests] + \
+        ['*/' + c + '/*' for c in tests] + \
+        [c + '/*' for c in tests]
+
+
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument(
@@ -240,24 +258,11 @@ def main():
     for m in rx.finditer(txt):
       tests.append(m.group(2) + '.' + m.group(3))
 
-    # Note: Test names have the following structures:
-    #  * FixtureName.TestName
-    #  * InstantiationName/FixtureName.TestName/##
-    #  * FixtureName.TestName/##
-    # Since this script doesn't parse instantiations, we generate filters to
-    # match either regular tests or instantiated tests.
     if args.wildcard_compress:
       test_filters = CompressWithWildcards(tests, args.wildcard_min_depth,
                                            args.wildcard_min_cases)
-    elif args.class_only:
-      fixtures = set([t.split('.')[0] for t in tests])
-      test_filters = [c + '.*' for c in fixtures] + \
-          ['*/' + c + '.*/*' for c in fixtures] + \
-          [c + '.*/*' for c in fixtures]
     else:
-      test_filters = [c for c in tests] + \
-          ['*/' + c + '/*' for c in tests] + \
-          [c + '/*' for c in tests]
+      test_filters = GetFiltersForTests(tests, args.class_only)
 
   if args.as_exclusions:
     test_filters = ['-' + x for x in test_filters]
