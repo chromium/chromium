@@ -319,7 +319,8 @@ MojoResult MojoWatcher::Arm(MojoResult* ready_result) {
 
   if (result == MOJO_RESULT_FAILED_PRECONDITION) {
     DCHECK_EQ(1u, num_blocking_events);
-    DCHECK_EQ(reinterpret_cast<uintptr_t>(this),
+    DCHECK_EQ(reinterpret_cast<uintptr_t>(
+                  reinterpret_cast<uintptr_t>(persistent_wrap_.get())),
               blocking_event.trigger_context);
     *ready_result = blocking_event.result;
     return result;
