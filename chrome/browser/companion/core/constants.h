@@ -15,6 +15,10 @@ const char kSigninPromoDeclinedCountPref[] =
 const char kExpsPromoDeclinedCountPref[] =
     "Companion.Promo.Exps.Declined.Count";
 
+// Pref name for storing experience opt-in status.
+const char kExpsOptInStatusGrantedPref[] =
+    "Companion.Exps.OptIn.Status.Granted";
+
 }  // namespace companion
 
 #endif  // CHROME_BROWSER_COMPANION_CORE_CONSTANTS_H_

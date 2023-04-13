@@ -15,6 +15,9 @@ enum MethodType {
 
   // Method called in response to user clicking on the region search button.
   kOnRegionSearchClicked = 2,
+
+  // Method called when user's experience opt-in status is available.
+  kOnExpsOptInStatusAvailable = 3,
 };
 
 // Types of promos shown in the companion UI.
@@ -63,6 +66,10 @@ interface CompanionPageHandler {
 
   // Called to notify the browser that user has clicked on region search button.
   OnRegionSearchClicked();
+
+  // Called to notify the browser that the user's experience opt-in status is
+  // available.
+  OnExpsOptInStatusAvailable(bool is_exps_opted_in);
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)

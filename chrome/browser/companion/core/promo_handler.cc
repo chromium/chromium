@@ -27,6 +27,8 @@ void PromoHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kMsbbPromoDeclinedCountPref, 0);
   registry->RegisterIntegerPref(kSigninPromoDeclinedCountPref, 0);
   registry->RegisterIntegerPref(kExpsPromoDeclinedCountPref, 0);
+  // TODO(shaktisahu): Move the pref registration to a better location.
+  registry->RegisterBooleanPref(kExpsOptInStatusGrantedPref, false);
 }
 
 void PromoHandler::OnPromoAction(PromoType promo_type,

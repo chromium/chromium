@@ -23,7 +23,7 @@ enum ParamType {
   METHOD_TYPE = 'type',
 
   // Optional arguments.
-  // Arguments for MethodType.kOnExpsOptinStatusChange.
+  // Arguments for MethodType.kOnExpsOptInStatusAvailable.
   IS_EXPS_OPTED_IN = 'isExpsOptedIn',
 
   // Arguments for MethodType.kOnPromoAction.
@@ -98,6 +98,9 @@ function onCompanionMessageEvent(event: MessageEvent) {
     if (validatePromoArguments(promoType, promoAction)) {
       companionProxy.handler.onPromoAction(promoType, promoAction);
     }
+  } else if (methodType === MethodType.kOnExpsOptInStatusAvailable) {
+    companionProxy.handler.onExpsOptInStatusAvailable(
+        data[ParamType.IS_EXPS_OPTED_IN]);
   }
 }
 

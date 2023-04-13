@@ -125,6 +125,11 @@ void CompanionPageHandler::OnRegionSearchClicked() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
+void CompanionPageHandler::OnExpsOptInStatusAvailable(bool is_exps_opted_in) {
+  auto* pref_service = GetProfile()->GetPrefs();
+  pref_service->SetBoolean(kExpsOptInStatusGrantedPref, is_exps_opted_in);
+}
+
 void CompanionPageHandler::EnableMsbb(bool enable_msbb) {
   auto* consent_service =
       UnifiedConsentServiceFactory::GetForProfile(GetProfile());
