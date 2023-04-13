@@ -18,12 +18,10 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/net/file_downloader.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/supervised_user/core/browser/remote_web_approvals_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
-#include "components/supervised_user/core/common/supervised_user_denylist.h"
 #include "components/supervised_user/core/common/supervised_users.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -42,7 +40,6 @@ class SupervisedUserURLFilter;
 }  // namespace supervised_user
 
 namespace base {
-class FilePath;
 class Version;
 }  // namespace base
 
@@ -86,20 +83,6 @@ class SupervisedUserService
     virtual void SetActive(bool active) = 0;
   };
 
-  // These enum values represent the source from which the supervised user's
-  // denylist has been loaded from. These values are logged to UMA. Entries
-  // should not be renumbered and numeric values should never be reused. Please
-  // keep in sync with "FamilyUserDenylistSource" in
-  // src/tools/metrics/histograms/enums.xml
-  enum class DenylistSource {
-    kNoSource = 0,
-    kDenylist = 1,
-    kOldDenylist = 2,  // Deprecated.
-    // Used for UMA. Update kMaxValue to the last value. Add future entries
-    // above this comment. Sync with enums.xml.
-    kMaxValue = kOldDenylist,
-  };
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // These enum values represent operations to manage the
   // kSupervisedUserApprovedExtensions user pref, which stores parent approved
@@ -118,10 +101,6 @@ class SupervisedUserService
   ~SupervisedUserService() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
-  static const char* GetDenylistSourceHistogramForTesting();
-
-  static base::FilePath GetDenylistPathForTesting();
 
   supervised_user::RemoteWebApprovalsManager& remote_web_approvals_manager() {
     return remote_web_approvals_manager_;
@@ -328,30 +307,6 @@ class SupervisedUserService
 
   void UpdateAsyncUrlChecker();
 
-  // Asynchronously loads a denylist from a binary file at |path| and applies
-  // it to the URL filters. If no file exists at |path| yet, downloads a file
-  // from |url| and stores it at |path| first.
-  void LoadDenylist(const base::FilePath& path, const GURL& url);
-
-  void OnDenylistFileChecked(const base::FilePath& path,
-                             const GURL& url,
-                             bool file_exists);
-
-  // Tries loading an older copy of the denylist if the new denylist fails to
-  // load.
-  void TryLoadingOldDenylist(const base::FilePath& path, bool file_exists);
-
-  // Asynchronously loads a denylist from a binary file at |path| and applies
-  // it to the URL filters.
-  void LoadDenylistFromFile(const base::FilePath& path);
-
-  void OnDenylistDownloadDone(const base::FilePath& path,
-                              FileDownloader::Result result);
-
-  void OnDenylistLoaded();
-
-  void UpdateDenylist();
-
   // Updates the manual overrides for hosts in the URL filters when the
   // corresponding preference is changed.
   void UpdateManualHosts();
@@ -391,15 +346,6 @@ class SupervisedUserService
   // Store a set of extension ids approved by the custodian.
   // It is only relevant for SU-initiated installs.
   std::set<std::string> approved_extensions_set_;
-
-  enum class DenylistLoadState {
-    NOT_LOADED,
-    LOAD_STARTED,
-    LOADED
-  } denylist_state_;
-
-  supervised_user::SupervisedUserDenylist denylist_;
-  std::unique_ptr<FileDownloader> denylist_downloader_;
 
   // Manages remote web approvals.
   supervised_user::RemoteWebApprovalsManager remote_web_approvals_manager_;

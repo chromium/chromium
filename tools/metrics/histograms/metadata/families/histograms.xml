@@ -322,19 +322,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FamilyUser.DenylistSource" enum="FamilyUserDenylistSource"
-    expires_after="2023-12-12">
-  <owner>courtneywong@chromium.org</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <summary>
-    Records the source from which the website filter denylist was loaded either
-    at login or when web content filter settings change. The default behavior is
-    to load the current denylist. If that fails, then loading the old denylist
-    will be attempted. If that also fails, then it is logged that there is no
-    denylist source.
-  </summary>
-</histogram>
-
 <histogram name="FamilyUser.DeviceOwner" enum="Boolean"
     expires_after="2023-12-12">
   <owner>agawronska@chromium.org</owner>
@@ -645,19 +632,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The extra page load delays introduced by network requests due to the
     supervised user SafeSites feature, measured once per page load.
-  </summary>
-</histogram>
-
-<histogram name="ManagedUsers.SafetyFilter"
-    enum="SupervisedUserSafetyFilterResult" expires_after="2023-12-12">
-  <owner>agawronska@chromium.org</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <summary>
-    The counts of results from the supervised user safety filter. Each entry
-    includes the outcome of the filter (i.e. allowed, blocked, or unknown) and
-    the page transition type (how the user got there, e.g. typed URL, clicked
-    link). This only includes URL requests that were handled by the SafeSites
-    filter (both online and the static blocklist).
   </summary>
 </histogram>
 

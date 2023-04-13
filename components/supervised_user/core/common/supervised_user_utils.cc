@@ -16,8 +16,6 @@ std::string FilteringBehaviorReasonToString(FilteringBehaviorReason reason) {
       return "Default";
     case FilteringBehaviorReason::ASYNC_CHECKER:
       return "AsyncChecker";
-    case FilteringBehaviorReason::DENYLIST:
-      return "Denylist";
     case FilteringBehaviorReason::MANUAL:
       return "Manual";
     case FilteringBehaviorReason::ALLOWLIST:

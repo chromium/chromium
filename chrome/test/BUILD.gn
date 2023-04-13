@@ -5582,7 +5582,6 @@ test("unit_tests") {
     "../browser/net/dns_probe_runner_unittest.cc",
     "../browser/net/dns_probe_service_factory_unittest.cc",
     "../browser/net/explicitly_allowed_network_ports_policy_handler_unittest.cc",
-    "../browser/net/file_downloader_unittest.cc",
     "../browser/net/net_error_tab_helper_unittest.cc",
     "../browser/net/probe_message_unittest.cc",
     "../browser/net/secure_dns_config_unittest.cc",
