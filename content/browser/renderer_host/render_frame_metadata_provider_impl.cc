@@ -12,6 +12,11 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "content/public/android/content_jni_headers/RenderFrameMetadataProviderImpl_jni.h"
+#endif
+
 namespace content {
 
 RenderFrameMetadataProviderImpl::RenderFrameMetadataProviderImpl(
@@ -21,7 +26,12 @@ RenderFrameMetadataProviderImpl::RenderFrameMetadataProviderImpl(
       frame_token_message_queue_(frame_token_message_queue) {}
 
 RenderFrameMetadataProviderImpl::~RenderFrameMetadataProviderImpl() {
-  CHECK(!inside_metadata_changed_);
+  if (inside_metadata_changed_) {
+#if BUILDFLAG(IS_ANDROID)
+    JNIEnv* env = base::android::AttachCurrentThread();
+    android::Java_RenderFrameMetadataProviderImpl_reportRecursiveDelete(env);
+#endif
+  }
 }
 
 void RenderFrameMetadataProviderImpl::AddObserver(Observer* observer) {
@@ -113,13 +123,26 @@ void RenderFrameMetadataProviderImpl::OnRenderFrameMetadataChanged(
     const cc::RenderFrameMetadata& metadata) {
   base::AutoReset<bool> auto_reset(&inside_metadata_changed_, true);
 
-  for (Observer& observer : observers_)
+  // Guard for this being recursively deleted from one of the observer
+  // callbacks.
+  base::WeakPtr<RenderFrameMetadataProviderImpl> self =
+      weak_factory_.GetWeakPtr();
+
+  for (Observer& observer : observers_) {
     observer.OnRenderFrameMetadataChangedBeforeActivation(metadata);
+    if (!self) {
+      return;
+    }
+  }
 
   if (metadata.local_surface_id != last_local_surface_id_) {
     last_local_surface_id_ = metadata.local_surface_id;
-    for (Observer& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OnLocalSurfaceIdChanged(metadata);
+      if (!self) {
+        return;
+      }
+    }
   }
 
   if (!frame_token)
