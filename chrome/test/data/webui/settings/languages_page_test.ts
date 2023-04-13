@@ -134,8 +134,8 @@ suite('languages page', function() {
 
     setup(function() {
       const addLanguagesButton =
-          languagesPage.shadowRoot!.querySelector<HTMLElement>(
-              '#addLanguages')!;
+          languagesPage.shadowRoot!.querySelector<HTMLElement>('#addLanguages')!
+          ;
       const whenDialogOpen = eventToPromise('cr-dialog-open', languagesPage);
       addLanguagesButton.click();
 
@@ -346,8 +346,7 @@ suite('languages page', function() {
       const listItems =
           languagesPage.shadowRoot!.querySelector('#languagesSection')!
               .querySelectorAll<HTMLElement>('.list-item');
-      const domRepeat =
-          languagesPage.shadowRoot!.querySelector('dom-repeat');
+      const domRepeat = languagesPage.shadowRoot!.querySelector('dom-repeat');
       assertTrue(!!domRepeat);
 
       let num_visibles = 0;

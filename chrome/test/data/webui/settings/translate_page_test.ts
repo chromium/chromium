@@ -91,11 +91,13 @@ suite('translate page settings', function() {
 
   suite(translate_page_tests.TestNames.TranslateSettings, function() {
     test('change target language', function() {
-      const targetLanguageSelector = translatePage.shadowRoot!.querySelector
-          <HTMLSelectElement>('#targetLanguage');
+      const targetLanguageSelector =
+          translatePage.shadowRoot!.querySelector<HTMLSelectElement>(
+              '#targetLanguage');
       assertTrue(!!targetLanguageSelector);
 
-      assertEquals(targetLanguageSelector.value,
+      assertEquals(
+          targetLanguageSelector.value,
           translatePage.getPref(translateTarget).value);
 
       targetLanguageSelector.value = 'sw';
