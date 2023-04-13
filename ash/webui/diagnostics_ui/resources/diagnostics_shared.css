@@ -40,6 +40,15 @@
     background-color: var(--cros-sys-app_base_shaded);
   }
 
+  :host-context(body.jelly-enabled) cr-button {
+    --bg-action: var(--cros-sys-primary);
+    --text-color: var(--cros-sys-on_primary_container);
+  }
+
+  :host-context(body.jelly-enabled) cr-dialog {
+    --cr-dialog-background-color: var(--cros-sys-base_elevated);
+  }
+
   hr {
     border: 0;
     border-top: 1px solid var(--cros-separator-color);
