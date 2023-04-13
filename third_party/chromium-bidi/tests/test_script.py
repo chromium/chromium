@@ -1041,6 +1041,6 @@ async def test_disown_releasesObject(websocket, default_realm, sandbox_realm):
             })
 
     assert {
-        "error": "invalid argument",
+        "error": "no such handle",
         "message": "Handle was not found."
     } == exception_info.value.args[0]

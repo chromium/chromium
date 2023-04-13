@@ -104,6 +104,7 @@ export namespace Message {
     InvalidSessionId = 'invalid session id',
     NoSuchAlert = 'no such alert',
     NoSuchFrame = 'no such frame',
+    NoSuchHandle = 'no such handle',
     NoSuchNode = 'no such node',
     NoSuchScript = 'no such script',
     SessionNotCreated = 'session not created',
@@ -139,6 +140,12 @@ export namespace Message {
   export class InvalidArgumentException extends ErrorResponse {
     constructor(message: string, stacktrace?: string) {
       super(ErrorCode.InvalidArgument, message, stacktrace);
+    }
+  }
+
+  export class NoSuchHandleException extends ErrorResponse {
+    constructor(message: string, stacktrace?: string) {
+      super(ErrorCode.NoSuchHandle, message, stacktrace);
     }
   }
 
