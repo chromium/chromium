@@ -1264,5 +1264,73 @@ TEST_F(FastPairDataParserTest,
   run_loop.Run();
 }
 
+// Regression test for b/274788634.
+TEST_F(FastPairDataParserTest,
+       ParseMessageStreamMessage_InvalidMessageCodeFollowedByBatteryUpdate) {
+  std::vector<uint8_t> bytes = {// Device Information
+                                /*mesage_group=*/0x03,
+                                // Session Nonce
+                                /*mesage_code=*/0x0A,
+                                /*additional_data_length=*/0x00, 0x08,
+                                /*additional_data=*/0x63, 0x19, 0xEC, 0x34,
+                                0x5F, 0xB3, 0xEF, 0x90,
+
+                                // Device Information
+                                /*mesage_group=*/0x03,
+                                // Battery Update
+                                /*mesage_code=*/0x03,
+                                /*additional_data_length=*/0x00, 0x03,
+                                /*additional_data=*/0x57, 0x41, 0x7F};
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&run_loop](std::vector<mojom::MessageStreamMessagePtr> messages) {
+        EXPECT_EQ(static_cast<int>(messages.size()), 1);
+        EXPECT_TRUE(messages[0]->is_battery_update());
+        EXPECT_EQ(87,
+                  messages[0]->get_battery_update()->left_bud_info->percentage);
+        EXPECT_EQ(
+            65, messages[0]->get_battery_update()->right_bud_info->percentage);
+        EXPECT_EQ(-1, messages[0]->get_battery_update()->case_info->percentage);
+        run_loop.Quit();
+      });
+
+  data_parser_->ParseMessageStreamMessages(bytes, std::move(callback));
+  run_loop.Run();
+}
+
+// Regression test for b/274788634.
+TEST_F(FastPairDataParserTest,
+       ParseMessageStreamMessage_InvalidMessageGroupFollowedByBatteryUpdate) {
+  std::vector<uint8_t> bytes = {// SASS
+                                /*mesage_group=*/0x07,
+                                // Connection Status
+                                /*mesage_code=*/0x34,
+                                /*additional_data_length=*/0x00, 0x0C,
+                                /*additional_data=*/0x4E, 0x61, 0xD9, 0x5B,
+                                0x50, 0x57, 0x9C, 0x69, 0x3E, 0x6B, 0x6C, 0x74,
+
+                                // Device Information
+                                /*mesage_group=*/0x03,
+                                // Battery Update
+                                /*mesage_code=*/0x03,
+                                /*additional_data_length=*/0x00, 0x03,
+                                /*additional_data=*/0x57, 0x41, 0x7F};
+  base::RunLoop run_loop;
+  auto callback = base::BindLambdaForTesting(
+      [&run_loop](std::vector<mojom::MessageStreamMessagePtr> messages) {
+        EXPECT_EQ(static_cast<int>(messages.size()), 1);
+        EXPECT_TRUE(messages[0]->is_battery_update());
+        EXPECT_EQ(87,
+                  messages[0]->get_battery_update()->left_bud_info->percentage);
+        EXPECT_EQ(
+            65, messages[0]->get_battery_update()->right_bud_info->percentage);
+        EXPECT_EQ(-1, messages[0]->get_battery_update()->case_info->percentage);
+        run_loop.Quit();
+      });
+
+  data_parser_->ParseMessageStreamMessages(bytes, std::move(callback));
+  run_loop.Run();
+}
+
 }  // namespace quick_pair
 }  // namespace ash

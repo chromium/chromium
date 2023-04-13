@@ -320,11 +320,6 @@ void FastPairDataParser::ParseMessageStreamMessages(
     remaining_bytes.pop_front();
     absl::optional<mojom::MessageGroup> message_group =
         MessageGroupFromByte(message_group_byte);
-    if (!message_group.has_value()) {
-      QP_LOG(WARNING) << __func__ << ": Unknown message group. Received 0x"
-                      << std::hex << message_group_byte << ".";
-      break;
-    }
 
     uint8_t message_code = remaining_bytes.front();
     remaining_bytes.pop_front();
@@ -350,6 +345,15 @@ void FastPairDataParser::ParseMessageStreamMessages(
       remaining_bytes.pop_front();
     }
 
+    // If we have an unknown message group, do not process the Message Stream
+    // message. The data was already removed above corresponding to this
+    // message, and we can continue to attempt to parse the next message.
+    if (!message_group.has_value()) {
+      QP_LOG(WARNING) << __func__ << ": Unknown message group. Received 0x"
+                      << std::hex << message_group_byte << ".";
+      continue;
+    }
+
     mojom::MessageStreamMessagePtr message = ParseMessageStreamMessage(
         message_group.value(), message_code,
         base::span<uint8_t>(additional_data.begin(), additional_data.end()));
@@ -364,6 +368,7 @@ void FastPairDataParser::ParseMessageStreamMessages(
                     << " remaining bytes not parsed.";
   }
 
+  // TODO(jackshira): Handle partial message data by returning the amount read.
   std::move(callback).Run(std::move(parsed_messages));
 }
 
