@@ -458,3 +458,28 @@ class LintWPTTest(LoggingTestCase):
         self.assertEqual(path, 'reftest.html.ini')
         self.assertEqual(
             description, "Test key 'expected' has an unused default condition")
+
+    def test_metadata_unknown_prop(self):
+        os_error, product_error = self._check_metadata("""\
+            [reftest.html]
+              disabled:
+                if oss == "win": wontfix
+                if os == "mac": wontfix
+              expected:
+                if os != "linux": PASS
+                # Should be detected even if the expression short-circuits.
+                if os == "linux" or prduct == "chrome": FAIL
+            """)
+        name, description, path, _ = os_error
+        self.assertEqual(name, 'META-UNKNOWN-PROP')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(
+            description, "Test key 'disabled' condition 'if oss == \"win\"' "
+            "uses unrecognized property 'oss'")
+        name, description, path, _ = product_error
+        self.assertEqual(name, 'META-UNKNOWN-PROP')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(
+            description, "Test key 'expected' condition "
+            "'if (os == \"linux\") or (prduct == \"chrome\")' "
+            "uses unrecognized property 'prduct'")

@@ -176,6 +176,16 @@ class MetadataUnreachableValue(MetadataRule):
     """
 
 
+class MetadataUnknownProp(MetadataRule):
+    name = 'META-UNKNOWN-PROP'
+    description = ('%(section_type)s key %(key)r %(condition)s '
+                   'uses unrecognized property %(prop)s')
+    to_fix = """
+    Check that all property names are spelled correctly:
+    https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_platform_tests_wptrunner.md#conditional-values
+    """
+
+
 LintError = Tuple[str, str, str, Optional[int]]
 ValueNode = Union[wptnode.ValueNode, wptnode.AtomNode, wptnode.ListNode]
 Condition = Optional[wptnode.Node]
@@ -362,10 +372,20 @@ class MetadataLinter(Compiler):
         # Simulate conditional value resolution for each test configuration.
         for config in self.configs:
             for i, condition in enumerate(conditions):
-                if self._eval_condition_taken(condition, config):
-                    # Mark this condition as having been exercised.
+                try:
+                    if self._eval_condition_taken(condition, config):
+                        # Mark this condition as having been exercised.
+                        conditions_not_taken.discard(i)
+                        break
+                except KeyError as error:
+                    self._error(MetadataUnknownProp,
+                                prop=str(error),
+                                condition=_format_condition(condition))
+                    # The conditional expression could not be evaluated because
+                    # of an unknown property. Do not show an unactionable
+                    # `META-UNREACHABLE-VALUE` error for this branch, but act
+                    # as if this branch were not taken.
                     conditions_not_taken.discard(i)
-                    break
             else:
                 # Add a sentinel object to simulate no default (an empty value).
                 # This unique value forces `META-CONDITIONS-UNNECESSARY` to
