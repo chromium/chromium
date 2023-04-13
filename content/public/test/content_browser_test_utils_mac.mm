@@ -142,8 +142,8 @@ void GetStringAtPointForRenderWidget(
               const gfx::Point& baseline_point) {
             std::string string =
                 attributed_string
-                    ? base::SysNSStringToUTF8(
-                          [attributed_string.To<NSAttributedString*>() string])
+                    ? base::SysCFStringRefToUTF8(CFAttributedStringGetString(
+                          attributed_string.To<CFAttributedStringRef>()))
                     : std::string();
             std::move(callback).Run(string, baseline_point);
           }),
@@ -165,8 +165,8 @@ void GetStringFromRangeForRenderWidget(
               const gfx::Point& baseline_point) {
             std::string string =
                 attributed_string
-                    ? base::SysNSStringToUTF8(
-                          [attributed_string.To<NSAttributedString*>() string])
+                    ? base::SysCFStringRefToUTF8(CFAttributedStringGetString(
+                          attributed_string.To<CFAttributedStringRef>()))
                     : std::string();
             std::move(callback).Run(string, baseline_point);
           }),

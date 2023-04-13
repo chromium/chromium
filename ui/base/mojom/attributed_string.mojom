@@ -7,22 +7,21 @@ module ui.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "ui/gfx/range/mojom/range.mojom";
 
-// This will serialize the font information of an NSAttributedString so that
-// it can be sent over mojo. This only stores the information of the
-// NSFontAttributeName. The motive is that of security: using NSArchiver and
-// friends to send objects from the renderer to the browser could lead to
-// deserialization of arbitrary objects. This restricts serialization to a
-// specific object class and specific attributes of that object.
+// This will serialize the font information of a CFAttributedString so that it
+// can be sent over mojo. This only stores the information of the font name and
+// font size. The motive is that of security: using NSArchiver and friends to
+// send objects from the renderer to the browser could lead to deserialization
+// of arbitrary objects. This restricts serialization to a specific object class
+// and specific attributes of that object.
 
-// A C++ mojo-friendly representation of the NSFontAttributeName attribute
-// set.
+// A C++ mojo-friendly representation of the font and font size attribute set.
 struct FontAttribute {
   mojo_base.mojom.String16 font_name;
   float font_point_size;
   gfx.mojom.Range effective_range;
 };
 
-// A struct that contains the pertinent information from an NSAttributedString,
+// A struct that contains the pertinent information from a CFAttributedString,
 // which can be serialized over mojo.
 struct AttributedString {
   // The plain-text string.

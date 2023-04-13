@@ -8,19 +8,15 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/base/mojom/attributed_string.mojom-blink.h"
 
-#if __OBJC__
-@class NSAttributedString;
-#else
-class NSAttributedString;
-#endif
+#include <CoreFoundation/CoreFoundation.h>
 
 namespace mojo {
 
 template <>
-struct PLATFORM_EXPORT
-    TypeConverter<ui::mojom::blink::AttributedStringPtr, NSAttributedString*> {
+struct PLATFORM_EXPORT TypeConverter<ui::mojom::blink::AttributedStringPtr,
+                                     CFAttributedStringRef> {
   static ui::mojom::blink::AttributedStringPtr Convert(
-      const NSAttributedString* ns_attributed_string);
+      CFAttributedStringRef cf_attributed_string);
 };
 
 }  // namespace mojo

@@ -9,26 +9,22 @@
 #include "ui/base/mojom/attributed_string.mojom.h"
 #include "ui/gfx/range/range.h"
 
-#if __OBJC__
-@class NSAttributedString;
-#else
-class NSAttributedString;
-#endif
+#include <CoreFoundation/CoreFoundation.h>
 
 namespace mojo {
 
 template <>
 struct CONTENT_EXPORT
-    TypeConverter<NSAttributedString*, ui::mojom::AttributedStringPtr> {
-  static NSAttributedString* Convert(
+    TypeConverter<CFAttributedStringRef, ui::mojom::AttributedStringPtr> {
+  static CFAttributedStringRef Convert(
       const ui::mojom::AttributedStringPtr& mojo_attributed_string);
 };
 
 template <>
 struct CONTENT_EXPORT
-    TypeConverter<ui::mojom::AttributedStringPtr, NSAttributedString*> {
+    TypeConverter<ui::mojom::AttributedStringPtr, CFAttributedStringRef> {
   static ui::mojom::AttributedStringPtr Convert(
-      const NSAttributedString* ns_attributed_string);
+      const CFAttributedStringRef cf_attributed_string);
 };
 
 }  // namespace mojo

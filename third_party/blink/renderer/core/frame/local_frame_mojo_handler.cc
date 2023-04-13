@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "base/mac/foundation_util.h"
 #include "third_party/blink/renderer/core/editing/substring_util.h"
 #include "third_party/blink/renderer/platform/fonts/mac/attributed_string_type_converter.h"
 #include "ui/base/mojom/attributed_string.mojom-blink.h"
@@ -1007,8 +1008,10 @@ void LocalFrameMojoHandler::GetStringForRange(
   NSAttributedString* string = SubstringUtil::AttributedSubstringInRange(
       frame_, base::checked_cast<WTF::wtf_size_t>(range.start()),
       base::checked_cast<WTF::wtf_size_t>(range.length()), baseline_point);
-  if (string)
-    attributed_string = ui::mojom::blink::AttributedString::From(string);
+  if (string) {
+    attributed_string =
+        ui::mojom::blink::AttributedString::From(base::mac::NSToCFCast(string));
+  }
 
   std::move(callback).Run(std::move(attributed_string), baseline_point);
 }
