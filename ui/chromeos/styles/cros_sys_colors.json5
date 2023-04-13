@@ -105,6 +105,7 @@
     'on-surface-variant': {
       light: '$cros.ref.neutralvariant30',
       dark:  '$cros.ref.neutralvariant80',
+      generate_per_mode: true,
     },
     outline: {
       light: '$cros.ref.neutralvariant50',
