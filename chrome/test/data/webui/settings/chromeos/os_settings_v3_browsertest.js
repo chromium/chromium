@@ -299,10 +299,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'device_page/per_device_pointing_stick_subsection_test.js',
    {enabled: ['ash::features::kInputDeviceSettingsSplit']},
  ],
- [
-   'DisplayAndMagnificationPage',
-   'display_and_magnification_page_tests.js',
- ],
  ['EsimInstallErrorDialog', 'esim_install_error_dialog_test.js'],
  ['EsimRemoveProfileDialog', 'esim_remove_profile_dialog_test.js'],
  ['EsimRenameDialog', 'esim_rename_dialog_test.js'],
@@ -429,6 +425,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  [
    'OsA11yPageCursorAndTouchpadPage',
    'os_a11y_page/cursor_and_touchpad_page_tests.js',
+ ],
+ [
+   'OsA11yPageDisplayAndMagnificationPage',
+   'os_a11y_page/display_and_magnification_page_tests.js',
  ],
  [
    'OsA11yPageKeyboardAndTextInputPage',

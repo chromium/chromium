@@ -4,32 +4,31 @@
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
+import {SettingsDisplayAndMagnificationElement} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {assertEquals, assertFalse, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
+import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-
-suite('DisplayAndMagnificationPageTests', function() {
-  let page = null;
+suite('settings-display-and-magnification-page', () => {
+  let page: SettingsDisplayAndMagnificationElement;
 
   function initPage() {
     page = document.createElement('settings-display-and-magnification-page');
     document.body.appendChild(page);
   }
 
-  setup(function() {
-    PolymerTest.clearBody();
+  setup(() => {
     loadTimeData.overrideValues(
         {isAccessibilityOSSettingsVisibilityEnabled: true});
     Router.getInstance().navigateTo(routes.A11Y_DISPLAY_AND_MAGNIFICATION);
   });
 
-  teardown(function() {
-    if (page) {
-      page.remove();
-    }
+  teardown(() => {
+    page.remove();
     Router.getInstance().resetRouteForTesting();
   });
 
@@ -43,13 +42,14 @@ suite('DisplayAndMagnificationPageTests', function() {
           flush();
           const router = Router.getInstance();
 
-          const subpageButton = page.shadowRoot.querySelector(selector);
-          assertTrue(!!subpageButton);
+          const subpageButton =
+              page.shadowRoot!.querySelector<HTMLElement>(selector);
+          assert(subpageButton);
 
           subpageButton.click();
           assertEquals(route, router.currentRoute);
           assertNotEquals(
-              subpageButton, page.shadowRoot.activeElement,
+              subpageButton, page.shadowRoot!.activeElement,
               `${selector} should not be focused`);
 
           const popStateEventPromise = eventToPromise('popstate', window);
@@ -60,12 +60,12 @@ suite('DisplayAndMagnificationPageTests', function() {
           assertEquals(
               routes.A11Y_DISPLAY_AND_MAGNIFICATION, router.currentRoute);
           assertEquals(
-              subpageButton, page.shadowRoot.activeElement,
+              subpageButton, page.shadowRoot!.activeElement,
               `${selector} should be focused`);
         });
   });
 
-  test('no subpages are available in kiosk mode', function() {
+  test('no subpages are available in kiosk mode', () => {
     loadTimeData.overrideValues({
       isKioskModeActive: true,
       showTabletModeShelfNavigationButtonsSettings: true,
@@ -73,7 +73,7 @@ suite('DisplayAndMagnificationPageTests', function() {
     initPage();
     flush();
 
-    const subpageLinks = page.root.querySelectorAll('cr-link-row');
+    const subpageLinks = page.shadowRoot!.querySelectorAll('cr-link-row');
     subpageLinks.forEach(subpageLink => assertFalse(isVisible(subpageLink)));
   });
 });

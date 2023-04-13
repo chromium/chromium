@@ -33,7 +33,7 @@ import {getTemplate} from './display_and_magnification_page.html.js';
 const SettingsDisplayAndMagnificationElementBase = DeepLinkingMixin(
     RouteOriginMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
-class SettingsDisplayAndMagnificationElement extends
+export class SettingsDisplayAndMagnificationElement extends
     SettingsDisplayAndMagnificationElementBase {
   static get is() {
     return 'settings-display-and-magnification-page';

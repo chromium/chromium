@@ -116,6 +116,7 @@ export {SettingsAudioAndCaptionsPageElement} from './os_a11y_page/audio_and_capt
 export {BluetoothBrailleDisplayListener, BluetoothBrailleDisplayManager} from './os_a11y_page/bluetooth_braille_display_manager.js';
 export {BluetoothBrailleDisplayUiElement} from './os_a11y_page/bluetooth_braille_display_ui.js';
 export {SettingsCursorAndTouchpadPageElement} from './os_a11y_page/cursor_and_touchpad_page.js';
+export {SettingsDisplayAndMagnificationElement} from './os_a11y_page/display_and_magnification_page.js';
 export {SettingsKeyboardAndTextInputPageElement} from './os_a11y_page/keyboard_and_text_input_page.js';
 export {SettingsManageA11yPageElement} from './os_a11y_page/manage_a11y_page.js';
 export {SettingsTextToSpeechPageElement} from './os_a11y_page/text_to_speech_page.js';
