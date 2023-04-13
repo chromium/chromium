@@ -153,18 +153,22 @@ PolicyEffect ComputeDevicePolicyEffect(Profile& profile) {
   return PolicyEffect::kNone;
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class FinishedReason {
-  kFinishedFlow,
-  kProfileAlreadySetUp,
-  kSkippedByPolicies,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  kExperimentCounterfactual,
+  kExperimentCounterfactual = 0,
 #endif
+  kFinishedFlow = 1,
+  kProfileAlreadySetUp = 2,
+  kSkippedByPolicies = 3,
+  kMaxValue = kSkippedByPolicies,
 };
 
 void SetFirstRunFinished(FinishedReason reason) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetBoolean(prefs::kFirstRunFinished, true);
+  base::UmaHistogramEnumeration("ProfilePicker.FirstRun.FinishReason", reason);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   absl::optional<ProfileMetrics::ProfileSignedInFlowOutcome> outcome;
@@ -365,6 +369,8 @@ void FirstRunService::OpenFirstRunInternal(EntryPoint entry_point) {
   base::UmaHistogramEnumeration(
       "Profile.LacrosPrimaryProfileFirstRunEntryPoint", entry_point);
 #endif
+  base::UmaHistogramEnumeration("ProfilePicker.FirstRun.EntryPoint",
+                                entry_point);
 
   // Note: we call `Show()` even if the FRE might be already open and rely on
   // the ProfilePicker to decide what it wants to do with `callback`.
@@ -439,12 +445,14 @@ KeyedService* FirstRunServiceFactory::BuildServiceInstanceFor(
   }
 
   if (!base::FeatureList::IsEnabled(kForYouFre)) {
+    base::UmaHistogramBoolean("ProfilePicker.FirstRun.ServiceCreated", false);
     SetFirstRunFinished(FinishedReason::kExperimentCounterfactual);
     return nullptr;
   }
 #endif
 
   auto* instance = new FirstRunService(profile);
+  base::UmaHistogramBoolean("ProfilePicker.FirstRun.ServiceCreated", true);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Check if we should turn Sync on from the background and skip the FRE.

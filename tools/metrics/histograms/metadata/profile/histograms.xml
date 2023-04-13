@@ -333,7 +333,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.LacrosPrimaryProfileFirstRunEntryPoint"
-    enum="LacrosFirstRunEntryPoint" expires_after="M120">
+    enum="FirstRunEntryPoint" expires_after="M120">
   <owner>dgn@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
@@ -765,6 +765,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ProfilePicker.FirstRun.EntryPoint" enum="FirstRunEntryPoint"
+    expires_after="2023-12-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>for-you-fre@google.com</owner>
+  <summary>
+    Records the entry point that triggered the first run experience. This is
+    recorded right before the first run is shown. If the FRE is skipped, this is
+    never recorded. If the FRE is exited early and needs to be shown again
+    (relevant only on Lacros where we support showing the FRE more than once),
+    or if the user re-triggers the FRE while it is already shown, there would be
+    more than one record for that install.
+
+    Note: Profile.LacrosPrimaryProfileFirstRunEntryPoint on Lacros records the
+    same data.
+  </summary>
+</histogram>
+
 <histogram name="ProfilePicker.FirstRun.ExitStatus" enum="FirstRunExitStatus"
     expires_after="2023-12-19">
   <owner>dgn@chromium.org</owner>
@@ -773,6 +790,18 @@ chromium-metrics-reviews@google.com.
     Records the status when the first run experience is exited. Note that some
     experiments can override the behaviour at the end of the first run, based on
     the the status. This histogram is recorded before the override happens.
+  </summary>
+</histogram>
+
+<histogram name="ProfilePicker.FirstRun.FinishReason"
+    enum="FirstRunFinishReason" expires_after="2023-12-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>for-you-fre@google.com</owner>
+  <summary>
+    Records the reason why the first run experience was marked finished. This
+    aims at tracking how often policies or some pre-existing state suppresses
+    the first run experience. It is tracked by the first run service itself,
+    when the flow completes (or is suppressed).
   </summary>
 </histogram>
 
@@ -800,6 +829,19 @@ chromium-metrics-reviews@google.com.
     on desktop for managed devices. This is needed to track if the managed
     organization name has been properly displayed in the first run experience
     managed disclaimer.
+  </summary>
+</histogram>
+
+<histogram name="ProfilePicker.FirstRun.ServiceCreated" enum="BooleanCreated"
+    expires_after="2023-12-19">
+  <owner>dgn@chromium.org</owner>
+  <owner>for-you-fre@google.com</owner>
+  <summary>
+    Records first run service creations in this current profile. true is
+    recorded if the service was successfully created, and false is recorded if
+    it was suppressed because the feature is disabled. If this is not the first
+    run or the profile is not able to display the first run experience, nothing
+    will be recorded.
   </summary>
 </histogram>
 

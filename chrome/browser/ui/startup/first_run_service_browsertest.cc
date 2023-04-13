@@ -220,6 +220,16 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
   profiles::testing::WaitForPickerWidgetCreated();
   EXPECT_FALSE(GetFirstRunFinishedPrefValue());
 
+  histogram_tester.ExpectUniqueSample("ProfilePicker.FirstRun.ServiceCreated",
+                                      true, 1);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  histogram_tester.ExpectUniqueSample(
+      "Profile.LacrosPrimaryProfileFirstRunEntryPoint",
+      FirstRunService::EntryPoint::kOther, 1);
+#endif
+  histogram_tester.ExpectUniqueSample("ProfilePicker.FirstRun.EntryPoint",
+                                      FirstRunService::EntryPoint::kOther, 1);
+
   // We don't expect synthetic trials to be registered here, since no group
   // is configured with the feature. For the positive test case, see
   // `FirstRunServiceCohortBrowserTest.GroupRegisteredAfterFre`.
@@ -238,6 +248,7 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kQuitEarly, 1);
+  histogram_tester.ExpectTotalCount("ProfilePicker.FirstRun.FinishReason", 0);
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
   histogram_tester.ExpectUniqueSample(
       "Signin.SignIn.Offered",
@@ -246,6 +257,8 @@ IN_PROC_BROWSER_TEST_F(FirstRunServiceBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "ProfilePicker.FirstRun.ExitStatus",
       ProfilePicker::FirstRunExitStatus::kQuitAtEnd, 1);
+  histogram_tester.ExpectUniqueSample("ProfilePicker.FirstRun.FinishReason",
+                                      /*kFinishedFlow*/ 1, 1);
 #endif
 }
 
