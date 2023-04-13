@@ -157,16 +157,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest, ViewSource) {
             browser()->tab_strip_model()->GetActiveWebContents());
 
   // Verify the contents of the view-source tab.
-  std::string actual_source_text;
   std::string view_source_extraction_script = R"(
       output = "";
       document.querySelectorAll(".line-content").forEach(function(elem) {
           output += elem.innerText;
       });
-      domAutomationController.send(output); )";
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      view_source_contents, view_source_extraction_script,
-      &actual_source_text));
+      output; )";
+  std::string actual_source_text =
+      content::EvalJs(view_source_contents, view_source_extraction_script)
+          .ExtractString();
   base::FilePath source_path =
       test_data_dir().AppendASCII("options_page_in_view/options.html");
   std::string expected_source_text;

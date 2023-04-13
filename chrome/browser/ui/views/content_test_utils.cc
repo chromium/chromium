@@ -53,9 +53,8 @@ void TestTextInputViaKeyEvent(content::WebContents* contents) {
   while (result != "a") {
     GiveItSomeTime(base::Milliseconds(100));
 
-    ASSERT_TRUE(content::ExecuteScriptAndExtractString(contents, R"(
-      window.domAutomationController.send(
-          document.getElementById('text-id').value);
-    )", &result));
+    result =
+        content::EvalJs(contents, "document.getElementById('text-id').value;")
+            .ExtractString();
   }
 }

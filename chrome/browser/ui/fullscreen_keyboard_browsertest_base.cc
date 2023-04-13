@@ -418,9 +418,9 @@ void FullscreenKeyboardBrowserTestBase::FinishTestAndVerifyResult() {
   EXPECT_TRUE(ui_test_utils::SendKeyPressSync(GetActiveBrowser(), ui::VKEY_X,
                                               false, false, false, false));
   expected_result_ += "KeyX ctrl:false shift:false alt:false meta:false";
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      GetActiveWebContents(), "getKeyEventReport();", &result));
+  std::string result =
+      content::EvalJs(GetActiveWebContents(), "getKeyEventReport();")
+          .ExtractString();
   NormalizeMetaKeyForMacOS(&result);
   NormalizeMetaKeyForMacOS(&expected_result_);
   base::TrimWhitespaceASCII(result, base::TRIM_ALL, &result);

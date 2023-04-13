@@ -47,10 +47,7 @@ namespace {
 
 std::string RunScript(content::RenderFrameHost* render_frame_host,
                       const std::string& script) {
-  std::string result;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(render_frame_host, script,
-                                                     &result));
-  return result;
+  return content::EvalJs(render_frame_host, script).ExtractString();
 }
 
 class IndicatorObserver : public MediaStreamCaptureIndicator::Observer {
@@ -171,7 +168,6 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
   void WatchPositionAndExpectGrantedPermission(
       permissions::PermissionRequestManager::AutoResponseType auto_response,
       bool expect_prompt) {
-    std::string result;
     content::WebContents* contents =
         current_browser()->tab_strip_model()->GetActiveWebContents();
     SetFrameForScriptExecutionToCurrent(contents);
@@ -180,8 +176,9 @@ class OneTimePermissionInteractiveUiTest : public WebRtcTestBase {
     permissions::PermissionRequestObserver observer(contents);
 
     if (expect_prompt) {
-      EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-          contents, "geoStartWithAsyncResponse();", &result));
+      std::string result =
+          content::EvalJs(contents, "geoStartWithAsyncResponse();")
+              .ExtractString();
       EXPECT_TRUE(
           result == "request-callback-success" ||  // First request.
           result ==

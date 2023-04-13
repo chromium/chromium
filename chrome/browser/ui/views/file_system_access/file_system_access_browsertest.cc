@@ -1237,15 +1237,10 @@ class FileSystemAccessBrowserTestForWebUI : public InProcessBrowserTest {
   // encountered during evaluation, returns the error's message.
   std::string GetJsStatementValueAsString(content::WebContents* web_contents,
                                           const std::string& statement) {
-    std::string result;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        web_contents,
-        base::StrCat({"Promise.resolve(", statement, ").then(",
-                      "  result => domAutomationController.send(result),"
-                      "  error => domAutomationController.send(error.message)"
-                      ");"}),
-        &result));
-    return result;
+    return content::EvalJs(web_contents,
+                           base::StrCat({"Promise.resolve(", statement,
+                                         ").catch(error => error.message);"}))
+        .ExtractString();
   }
 
   content::WebContents* SetUpAndNavigateToTestWebUI() {

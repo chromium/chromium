@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/ui/browser.h"
@@ -93,14 +94,14 @@ IN_PROC_BROWSER_TEST_F(AddSupervisionBrowserTest, URLParameters) {
   EXPECT_TRUE(content::WaitForLoadStop(contents()));
 
   // Get the URL from the embedded webview.
-  std::string webview_url;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      contents(),
-      std::string("domAutomationController.send(") +
-          std::string(kGetAddSupervisionUIElementJS) +
-          ".shadowRoot.querySelector('#webview').getAttribute('src')" +
-          std::string(");"),
-      &webview_url));
+  std::string webview_url =
+      content::EvalJs(
+          contents(),
+          base::StrCat(
+              {kGetAddSupervisionUIElementJS,
+               ".shadowRoot.querySelector('#webview').getAttribute('src')",
+               ";"}))
+          .ExtractString();
 
   GURL webview_gurl(webview_url);
   ASSERT_TRUE(webview_gurl.has_query());

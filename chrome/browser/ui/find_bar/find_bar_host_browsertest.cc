@@ -664,11 +664,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
   EXPECT_EQ(1, ordinal);
 
   // Move the selection to link 1, after searching.
-  std::string result;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents,
-      "window.domAutomationController.send(selectLink1());",
-      &result));
+  ASSERT_TRUE(content::ExecJs(web_contents, "selectLink1();"));
 
   // Do a find-next after the selection.  This should move forward
   // from there to the 3rd instance of 'google'.
@@ -693,11 +689,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
   int ordinal = 0;
 
   // Move the selection to the text span.
-  std::string result;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents,
-      "window.domAutomationController.send(selectSpan());",
-      &result));
+  ASSERT_TRUE(content::ExecJs(web_contents, "selectSpan();"));
 
   // Do a find-next after the selection. This should select the 2nd occurrence
   // of the word 'find'.

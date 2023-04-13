@@ -321,13 +321,9 @@ void PaymentRequestBrowserTestBase::InvokePaymentRequestUIWithJs(
 void PaymentRequestBrowserTestBase::ExpectBodyContains(
     const std::vector<std::string>& expected_strings) {
   content::WebContents* web_contents = GetActiveWebContents();
-  const std::string extract_contents_js =
-      "(function() { "
-      "window.domAutomationController.send(window.document.body.textContent); "
-      "})()";
-  std::string contents;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents, extract_contents_js, &contents));
+  const std::string extract_contents_js = "window.document.body.textContent;";
+  std::string contents =
+      content::EvalJs(web_contents, extract_contents_js).ExtractString();
   for (const std::string& expected_string : expected_strings) {
     EXPECT_NE(std::string::npos, contents.find(expected_string))
         << "String \"" << expected_string

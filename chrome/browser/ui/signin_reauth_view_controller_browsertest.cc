@@ -607,13 +607,11 @@ IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
       confirmation_dialog_contents);
   navigation_observer.Wait();
 
-  std::string dialog_message;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      confirmation_dialog_contents,
-      "window.domAutomationController.send("
-      "document.querySelector('signin-reauth-app').shadowRoot."
-      "querySelector('.message-container').innerText)",
-      &dialog_message));
+  std::string dialog_message =
+      content::EvalJs(confirmation_dialog_contents,
+                      "document.querySelector('signin-reauth-app').shadowRoot."
+                      "querySelector('.message-container').innerText")
+          .ExtractString();
   // The dialog message should specify that the password was already saved
   // locally.
   EXPECT_EQ(dialog_message,
@@ -632,13 +630,11 @@ IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
       confirmation_dialog_contents);
   navigation_observer.Wait();
 
-  std::string dialog_message;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
-      confirmation_dialog_contents,
-      "window.domAutomationController.send("
-      "document.querySelector('signin-reauth-app').shadowRoot."
-      "querySelector('.message-container').innerText)",
-      &dialog_message));
+  std::string dialog_message =
+      content::EvalJs(confirmation_dialog_contents,
+                      "document.querySelector('signin-reauth-app').shadowRoot."
+                      "querySelector('.message-container').innerText")
+          .ExtractString();
   // The dialog message should be the regular one.
   EXPECT_EQ(dialog_message,
             l10n_util::GetStringUTF8(IDS_ACCOUNT_PASSWORDS_REAUTH_DESC));
