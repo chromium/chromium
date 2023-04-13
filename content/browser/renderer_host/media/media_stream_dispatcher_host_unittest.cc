@@ -260,12 +260,14 @@ class MockMediaStreamDispatcherHost
 
   void OnDeviceStoppedInternal(const std::string& label,
                                const blink::MediaStreamDevice& device) {
-    if (blink::IsVideoInputMediaType(device.type))
+    if (blink::IsVideoInputMediaType(device.type)) {
       EXPECT_TRUE(device.IsSameDevice(
           stream_devices_set_->stream_devices[0]->video_device.value()));
-    if (blink::IsAudioInputMediaType(device.type))
+    }
+    if (blink::IsAudioInputMediaType(device.type)) {
       EXPECT_TRUE(device.IsSameDevice(
           stream_devices_set_->stream_devices[0]->audio_device.value()));
+    }
 
     OnDeviceStopSuccess();
   }
@@ -407,8 +409,9 @@ class MediaStreamDispatcherHostTest : public testing::Test {
     std::unique_ptr<MockMediaStreamUIProxy> fake_ui =
         std::make_unique<MockMediaStreamUIProxy>();
 
-    if (expect_started)
+    if (expect_started) {
       EXPECT_CALL(*fake_ui, MockOnStarted(_));
+    }
     return fake_ui;
   }
 
@@ -481,19 +484,22 @@ class MediaStreamDispatcherHostTest : public testing::Test {
 
   bool DoesContainRawIds(
       const absl::optional<blink::MediaStreamDevice>& optional_device) {
-    if (!optional_device.has_value())
+    if (!optional_device.has_value()) {
       return false;
+    }
     const blink::MediaStreamDevice& device = optional_device.value();
     if (device.id != media::AudioDeviceDescription::kDefaultDeviceId &&
         device.id != media::AudioDeviceDescription::kCommunicationsDeviceId) {
       for (const auto& audio_device : audio_device_descriptions_) {
-        if (audio_device.unique_id == device.id)
+        if (audio_device.unique_id == device.id) {
           return true;
+        }
       }
     }
     for (const std::string& device_id : stub_video_device_ids_) {
-      if (device_id == device.id)
+      if (device_id == device.id) {
         return true;
+      }
     }
     return false;
   }
@@ -501,8 +507,9 @@ class MediaStreamDispatcherHostTest : public testing::Test {
   bool DoesEveryDeviceMapToRawId(
       const absl::optional<blink::MediaStreamDevice>& optional_device,
       const url::Origin& origin) {
-    if (!optional_device.has_value())
+    if (!optional_device.has_value()) {
       return true;
+    }
     const blink::MediaStreamDevice& device = optional_device.value();
     if (device.type != blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
         device.type != blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
@@ -1153,8 +1160,9 @@ TEST_F(MediaStreamDispatcherHostTest, StopGeneratedStreams) {
 
   // Create first group of streams.
   size_t generated_streams = 3;
-  for (size_t i = 0; i < generated_streams; ++i)
+  for (size_t i = 0; i < generated_streams; ++i) {
     GenerateStreamAndWaitForResult(kPageRequestId + i, controls, expectation);
+  }
 
   media_stream_manager_->CancelAllRequests(kProcessId, kRenderId, kRequesterId);
   base::RunLoop().RunUntilIdle();

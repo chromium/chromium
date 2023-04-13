@@ -51,8 +51,9 @@ void BindMediaStreamDeviceObserverReceiver(
 
   RenderFrameHost* render_frame_host =
       RenderFrameHost::FromID(render_process_id, render_frame_id);
-  if (render_frame_host && render_frame_host->IsRenderFrameLive())
+  if (render_frame_host && render_frame_host->IsRenderFrameLive()) {
     render_frame_host->GetRemoteInterfaces()->GetInterface(std::move(receiver));
+  }
 }
 
 std::unique_ptr<MediaStreamWebContentsObserver, BrowserThread::DeleteOnUIThread>
@@ -345,8 +346,9 @@ bool MediaStreamDispatcherHost::CheckRequestAllScreensAllowed(
 
   RenderFrameHostImpl* render_frame_host =
       RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
-  if (!render_frame_host)
+  if (!render_frame_host) {
     return false;
+  }
   ContentBrowserClient* browser_client = GetContentClient()->browser();
   return browser_client->IsGetDisplayMediaSetSelectAllScreensAllowed(
       render_frame_host->GetBrowserContext(),
@@ -377,8 +379,9 @@ const mojo::Remote<blink::mojom::MediaStreamDeviceObserver>&
 MediaStreamDispatcherHost::GetMediaStreamDeviceObserver() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  if (media_stream_device_observer_)
+  if (media_stream_device_observer_) {
     return media_stream_device_observer_;
+  }
 
   auto dispatcher_receiver =
       media_stream_device_observer_.BindNewPipeAndPassReceiver();
