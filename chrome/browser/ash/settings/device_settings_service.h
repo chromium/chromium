@@ -187,7 +187,7 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
 
   // Determines the ownership status and reports the result to |callback|. This
   // is guaranteed to never return OWNERSHIP_UNKNOWN.
-  void GetOwnershipStatusAsync(OwnershipStatusCallback callback);
+  virtual void GetOwnershipStatusAsync(OwnershipStatusCallback callback);
 
   // Checks whether we have the private owner key.
   //
