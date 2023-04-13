@@ -10,7 +10,6 @@ documentation in [Gitiles-flavored Markdown]. It is automatically
 **If you add new documents, please also add a link to them in the Document Index
 below.**
 
----
 
 ## Table of Contents
 
@@ -43,7 +42,6 @@ below.**
     - Speed
     - UI
     - Probably Obsolete
-
 ---
 
 ## Creating Documentation
