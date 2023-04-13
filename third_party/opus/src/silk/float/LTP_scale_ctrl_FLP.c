@@ -41,7 +41,7 @@ void silk_LTP_scale_ctrl_FLP(
 
     if( condCoding == CODE_INDEPENDENTLY ) {
         /* Only scale if first frame in packet */
-        round_loss = psEnc->sCmn.PacketLoss_perc + psEnc->sCmn.nFramesPerPacket;
+        round_loss = psEnc->sCmn.PacketLoss_perc * psEnc->sCmn.nFramesPerPacket;
         if ( psEnc->sCmn.LBRR_flag ) {
             /* LBRR reduces the effective loss. In practice, it does not square the loss because
                losses aren't independent, but that still seems to work best. We also never go below 2%. */
