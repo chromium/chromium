@@ -174,8 +174,7 @@ struct MemberHashRecordReplayId
             std::enable_if_t<WTF::IsAnyMemberType<Member>::value>* = nullptr>
   static unsigned GetHash(const Member& m) {
     if (recordreplay::IsRecordingOrReplaying()) {
-      T* ptr = m.Get();
-      int id = ptr->RecordReplayId();
+      int id = m.Get()->RecordReplayId();
       // Ids are allowed to be zero if we've diverged from the recording.
       if (recordreplay::HasDivergedFromRecording()) {
         if (id > 0) {
@@ -201,7 +200,7 @@ struct MemberHashRecordReplayId
 template <typename T>
 using DefaultHashTypeForMember =
     std::conditional_t<IsSubclass<T, blink::ScriptWrappable>::value,
-                       MemberHashRecordReplayId<blink::ScriptWrappable>,
+                       MemberHashRecordReplayId<T>,
                        MemberHash<T>>;
 
 template <typename T>
