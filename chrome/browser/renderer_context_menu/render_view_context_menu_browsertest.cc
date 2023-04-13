@@ -1620,13 +1620,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
   }
 }
 
-// Test is flaky on Win and Mac dbg: crbug.com/1121731
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_MAC) && !defined(NDEBUG))
-#define MAYBE_OpenLinkInProfile DISABLED_OpenLinkInProfile
-#else
-#define MAYBE_OpenLinkInProfile OpenLinkInProfile
-#endif
-IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_OpenLinkInProfile) {
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenLinkInProfile) {
   signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
   // Create |num_profiles| extra profiles for testing.
   const int num_profiles = 8;
