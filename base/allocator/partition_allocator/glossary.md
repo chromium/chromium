@@ -73,6 +73,10 @@ each term depends mainly upon previously defined ones.
   [going up to `kMaxBucketed`][max-bucket-comment].
   * Plainly put, all slots (ergo the resulting spans) of a given size
     class are logically chained into one bucket.
+
+![A bucket, spanning multiple super pages, collects spans whose
+  slots are of a particular size class.](./dot/bucket.png)
+
 * **Normal Bucket**: Any bucket whose size ceiling does not exceed
   `kMaxBucketed`. This is the common case in PartitionAlloc, and
   the "normal" modifier is often dropped in casual reference.
