@@ -921,10 +921,6 @@
       'fuchsia-x64': 'official_fuchsia_x64',
     },
 
-    'official.chrome.continuous': {
-      'chromeos-amd64-generic-lacros-internal': 'chromeos_amd64-generic_lacros_official',
-    },
-
     'tryserver.blink': {
       # Most tryservers should have '_trybot' in their config names, but
       # 'release_trybot' includes 'dcheck_always_on', and the blink
