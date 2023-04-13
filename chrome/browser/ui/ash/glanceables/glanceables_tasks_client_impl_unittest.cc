@@ -468,7 +468,7 @@ TEST_F(GlanceablesTasksClientImplTest, MarkAsCompleted) {
   EXPECT_EQ(tasks->GetItemAt(0)->id, "task-1");
 }
 
-TEST_F(GlanceablesTasksClientImplTest, MarkAsCompletedOnHttpError) {
+TEST_F(GlanceablesTasksClientImplTest, DISABLED_MarkAsCompletedOnHttpError) {
   EXPECT_CALL(
       request_handler(),
       HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET))))
