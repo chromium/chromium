@@ -1580,7 +1580,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             config = "main_builder",
         ),
     ),
-    builderless = True,
+    builderless = False,
     cores = 32,
     # Target luci-chromium-ci-bionic-us-central1-c-1000-ssd-hm32-*.
     os = os.LINUX_DEFAULT,
@@ -1653,7 +1653,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             ],
         ),
     ),
-    builderless = True,
+    builderless = False,
     cores = 16,
     # Target luci-chromium-ci-bionic-us-central1-b-ssd-16-*.
     os = os.LINUX_DEFAULT,
@@ -1727,7 +1727,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             ],
         ),
     ),
-    builderless = True,
+    builderless = False,
     cores = 32,
     # Target luci-chromium-ci-win10-ssd-32-*.
     os = os.WINDOWS_DEFAULT,
