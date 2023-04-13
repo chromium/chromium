@@ -62,7 +62,8 @@ gfx::Point TabScrubberChromeOS::GetStartPoint(
   // opposite edges of the tab, which should be at (overlap / 2).
   gfx::Rect tab_edges = tab_bounds;
   // For odd overlap values, be conservative and inset both edges rounding up.
-  tab_edges.Inset(gfx::Insets::VH(0, (TabStyle::GetTabOverlap() + 1) / 2));
+  tab_edges.Inset(
+      gfx::Insets::VH(0, (tab->tab_style()->GetTabOverlap() + 1) / 2));
   const int x = (direction == LEFT)
                     ? std::min(tab_bounds.x() + left, tab_edges.right())
                     : std::max(tab_bounds.right() - right, tab_edges.x());
@@ -91,7 +92,7 @@ void TabScrubberChromeOS::SynthesizedScrollEvent(float x_offset,
                         ui::EventTimeForNow(),
                         /*flags=*/0, x_offset,
                         /*y_offset=*/0.f, /*x_offset_ordinal=*/0.f,
-                        /*y_offset_original=*/0.f, kFingerCount);
+                        /*y_offset_ordinal=*/0.f, kFingerCount);
   OnScrollEvent(&event);
 }
 

@@ -107,12 +107,13 @@ float TabGroupStyle::GetSyncIconWidth() const {
 }
 
 float TabGroupStyle::GetSelectedTabOpacity() const {
-  return TabStyle::kDefaultSelectedTabOpacity;
+  return TabStyle::Get()->GetSelectedTabOpacity();
 }
 
 // static
 int TabGroupStyle::GetChipCornerRadius() {
-  return TabStyle::GetCornerRadius() - TabGroupUnderline::kStrokeThickness;
+  return TabStyle::Get()->GetCornerRadius() -
+         TabGroupUnderline::kStrokeThickness;
 }
 
 ChromeRefresh2023TabGroupStyle::ChromeRefresh2023TabGroupStyle(

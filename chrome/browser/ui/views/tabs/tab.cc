@@ -661,7 +661,8 @@ void Tab::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 gfx::Size Tab::CalculatePreferredSize() const {
-  return gfx::Size(TabStyle::GetStandardWidth(), GetLayoutConstant(TAB_HEIGHT));
+  return gfx::Size(tab_style()->GetStandardWidth(),
+                   GetLayoutConstant(TAB_HEIGHT));
 }
 
 void Tab::PaintChildren(const views::PaintInfo& info) {
@@ -717,9 +718,9 @@ TabSlotView::ViewType Tab::GetTabSlotViewType() const {
 }
 
 TabSizeInfo Tab::GetTabSizeInfo() const {
-  return {TabStyle::GetPinnedWidth(), TabStyleViews::GetMinimumActiveWidth(),
-          TabStyleViews::GetMinimumInactiveWidth(),
-          TabStyle::GetStandardWidth()};
+  return {tab_style()->GetPinnedWidth(), tab_style()->GetMinimumActiveWidth(),
+          tab_style()->GetMinimumInactiveWidth(),
+          tab_style()->GetStandardWidth()};
 }
 
 void Tab::SetClosing(bool closing) {
@@ -913,7 +914,7 @@ void Tab::MaybeAdjustLeftForPinnedTab(gfx::Rect* bounds,
                                       int visual_width) const {
   if (ShouldRenderAsNormalTab())
     return;
-  const int pinned_width = TabStyle::GetPinnedWidth();
+  const int pinned_width = tab_style()->GetPinnedWidth();
   const int ideal_delta = width() - pinned_width;
   const int ideal_x = (pinned_width - visual_width) / 2;
   // TODO(crbug.com/533570): This code is broken when the current width is less
@@ -1040,7 +1041,7 @@ void Tab::UpdateIconVisibility() {
 }
 
 bool Tab::ShouldRenderAsNormalTab() const {
-  return !data().pinned || (width() >= (TabStyle::GetPinnedWidth() +
+  return !data().pinned || (width() >= (tab_style()->GetPinnedWidth() +
                                         kPinnedTabExtraWidthToRenderAsNormal));
 }
 

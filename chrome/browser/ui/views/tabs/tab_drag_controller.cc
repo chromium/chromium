@@ -2483,7 +2483,7 @@ TabDragController::GetTabGroupForTargetIndex(const std::vector<int>& selected) {
   // space for the rounded feet. Adding {tab_left_inset} to the horizontal
   // bounds of the tab results in the x position that would be drawn when there
   // are no feet showing.
-  const int tab_left_inset = TabStyle::GetTabOverlap() / 2;
+  const int tab_left_inset = TabStyle::Get()->GetTabOverlap() / 2;
 
   const auto tab_bounds_in_drag_context_coords = [this](int model_index) {
     const Tab* const tab = attached_context_->GetTabAt(model_index);

@@ -42,11 +42,11 @@ class TabStyleViews : public TabStyle {
   // If |force_active| is true, applies an active appearance on the tab (usually
   // involving painting an optional stroke) even if the tab is not the active
   //  tab.
-  virtual SkPath GetPath(
-      PathType path_type,
-      float scale,
-      bool force_active = false,
-      RenderUnits render_units = RenderUnits::kPixels) const = 0;
+  virtual SkPath GetPath(TabStyle::PathType path_type,
+                         float scale,
+                         bool force_active = false,
+                         TabStyle::RenderUnits render_units =
+                             TabStyle::RenderUnits::kPixels) const = 0;
 
   // Paints the tab.
   virtual void PaintTab(gfx::Canvas* canvas) const = 0;
@@ -67,27 +67,24 @@ class TabStyleViews : public TabStyle {
   virtual float GetActiveOpacity() const = 0;
 
   // Derives and returns colors for the tab. See TabColors, above.
-  virtual TabColors CalculateColors() const = 0;
-
-  // Opacity of the active tab background painted over inactive selected tabs.
-  virtual float GetSelectedTabOpacity() const = 0;
+  virtual TabStyle::TabColors CalculateColors() const = 0;
 
   // Sets the center of the radial highlight in the hover animation.
   virtual void SetHoverLocation(const gfx::Point& location) = 0;
 
   // Shows the hover animation.
-  virtual void ShowHover(ShowHoverStyle style) = 0;
+  virtual void ShowHover(TabStyle::ShowHoverStyle style) = 0;
 
   // Hides the hover animation.
-  virtual void HideHover(HideHoverStyle style) = 0;
+  virtual void HideHover(TabStyle::HideHoverStyle style) = 0;
 
   // Returns the minimum possible width of a selected Tab. Selected tabs must
   // always show a close button, and thus have a larger minimum size than
   // unselected tabs.
-  static int GetMinimumActiveWidth();
+  int GetMinimumActiveWidth() const;
 
   // Returns the minimum possible width of a single unselected Tab.
-  static int GetMinimumInactiveWidth();
+  int GetMinimumInactiveWidth() const;
 
  protected:
   // Avoid implicitly-deleted constructor.

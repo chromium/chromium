@@ -66,7 +66,6 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_layout_types.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
-#include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/tabs/z_orderable_tab_container_element.h"
 #include "chrome/browser/ui/views/touch_uma/touch_uma.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -452,7 +451,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     constexpr int kHorizontalMoveThreshold = 16;  // DIPs.
 
     double ratio = static_cast<double>(tab_strip_->GetInactiveTabWidth()) /
-                   TabStyle::GetStandardWidth();
+                   TabStyle::Get()->GetStandardWidth();
     return base::ClampRound(ratio * kHorizontalMoveThreshold);
   }
 
@@ -491,7 +490,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     DCHECK(!views.empty());
 
     std::vector<gfx::Rect> bounds;
-    const int overlap = TabStyle::GetTabOverlap();
+    const int overlap = TabStyle::Get()->GetTabOverlap();
     int x = 0;
     for (const TabSlotView* view : views) {
       const int width = view->width();
@@ -834,7 +833,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     if (candidate_index == 0)
       return 0;
 
-    const int tab_overlap = TabStyle::GetTabOverlap();
+    const int tab_overlap = TabStyle::Get()->GetTabOverlap();
 
     // We'll insert just right of the tab at |candidate_index| - 1.
     int ideal_x =
@@ -873,7 +872,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
           return 0;
         const int header_width =
             GetTabGroupHeader(*right_group)->bounds().width() -
-            TabStyle::GetTabOverlap();
+            TabStyle::Get()->GetTabOverlap();
         return header_width;
       }
     }
@@ -910,7 +909,8 @@ TabStrip::TabStrip(std::unique_ptr<TabStripController> controller)
           *AddChildViewAt(MakeTabContainer(this,
                                            hover_card_controller_.get(),
                                            base::to_address(drag_context_)),
-                          0)) {
+                          0)),
+      style_(TabStyle::Get()) {
   // TODO(pbos): This is probably incorrect, the background of individual tabs
   // depend on their selected state. This should probably be pushed down into
   // tabs.
@@ -954,7 +954,7 @@ int TabStrip::GetSizeNeededForViews(const std::vector<TabSlotView*>& views) {
   for (const TabSlotView* view : views)
     width += view->width();
   if (!views.empty())
-    width -= TabStyle::GetTabOverlap() * (views.size() - 1);
+    width -= TabStyle::Get()->GetTabOverlap() * (views.size() - 1);
   return width;
 }
 

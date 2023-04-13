@@ -209,7 +209,8 @@ class TabStripRegionViewTestWithScrollingDisabled
 // TabStripRegionViewTestWithScrollingEnabled.TabStripCanBeLargerThanContainer.
 TEST_F(TabStripRegionViewTestWithScrollingDisabled,
        TabStripCannotBeLargerThanContainer) {
-  const int minimum_active_width = TabStyleViews::GetMinimumInactiveWidth();
+  const int minimum_active_width =
+      TabStyleViews::Create()->GetMinimumInactiveWidth();
   controller_->AddTab(0, TabActive::kActive);
   CompleteAnimationAndLayout();
 
@@ -249,7 +250,8 @@ class TabStripRegionViewTestWithScrollingEnabled
 // TabStripCannotBeLargerThanContainer.
 TEST_F(TabStripRegionViewTestWithScrollingEnabled,
        TabStripCanBeLargerThanContainer) {
-  const int minimum_active_width = TabStyleViews::GetMinimumInactiveWidth();
+  const int minimum_active_width =
+      TabStyleViews::Create()->GetMinimumInactiveWidth();
   controller_->AddTab(0, TabActive::kActive);
   CompleteAnimationAndLayout();
 
@@ -276,7 +278,8 @@ TEST_F(TabStripRegionViewTestWithScrollingEnabled,
 
 TEST_F(TabStripRegionViewTestWithScrollingEnabled,
        TabStripScrollButtonsNotInWindowCaption) {
-  const int minimum_active_width = TabStyleViews::GetMinimumInactiveWidth();
+  const int minimum_active_width =
+      TabStyleViews::Create()->GetMinimumInactiveWidth();
   controller_->AddTab(0, TabActive::kActive);
   CompleteAnimationAndLayout();
 

@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
+#include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -621,8 +622,8 @@ class TabHoverCardBubbleView::ThumbnailView
         break;
       case ImageType::kThumbnail:
         image_view->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-        image_view->SetImageSize(
-            GetPreviewImageSize(image.size(), TabStyle::GetPreviewImageSize()));
+        image_view->SetImageSize(GetPreviewImageSize(
+            image.size(), bubble_view_->tab_style_->GetPreviewImageSize()));
         image_view->SetBackground(nullptr);
         break;
     }
@@ -632,12 +633,13 @@ class TabHoverCardBubbleView::ThumbnailView
   gfx::Size GetMinimumSize() const override { return gfx::Size(); }
 
   gfx::Size CalculatePreferredSize() const override {
-    return image_type_ == ImageType::kNone ? gfx::Size()
-                                           : TabStyle::GetPreviewImageSize();
+    return image_type_ == ImageType::kNone
+               ? gfx::Size()
+               : bubble_view_->tab_style_->GetPreviewImageSize();
   }
 
   gfx::Size GetMaximumSize() const override {
-    return TabStyle::GetPreviewImageSize();
+    return bubble_view_->tab_style_->GetPreviewImageSize();
   }
 
   // views::AnimationDelegateViews:
@@ -733,7 +735,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabHoverCardBubbleView,
 TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
     : BubbleDialogDelegateView(tab,
                                views::BubbleBorder::TOP_LEFT,
-                               views::BubbleBorder::STANDARD_SHADOW) {
+                               views::BubbleBorder::STANDARD_SHADOW),
+      tab_style_(TabStyle::Get()) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
 
   // Remove the accessible role so that hover cards are not read when they
@@ -988,7 +991,7 @@ absl::optional<double> TabHoverCardBubbleView::GetPreviewImageCrossfadeStart() {
 
 gfx::Size TabHoverCardBubbleView::CalculatePreferredSize() const {
   gfx::Size preferred_size = GetLayoutManager()->GetPreferredSize(this);
-  preferred_size.set_width(TabStyle::GetPreviewImageSize().width());
+  preferred_size.set_width(tab_style_->GetPreviewImageSize().width());
   DCHECK(!preferred_size.IsEmpty());
   return preferred_size;
 }

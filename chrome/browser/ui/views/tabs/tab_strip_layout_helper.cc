@@ -33,7 +33,7 @@ enum class ViewType {
 };
 
 TabLayoutConstants GetTabLayoutConstants() {
-  return {GetLayoutConstant(TAB_HEIGHT), TabStyle::GetTabOverlap()};
+  return {GetLayoutConstant(TAB_HEIGHT), TabStyle::Get()->GetTabOverlap()};
 }
 
 }  // namespace
@@ -70,8 +70,8 @@ TabStripLayoutHelper::TabStripLayoutHelper(
     GetTabsCallback get_tabs_callback)
     : controller_(controller),
       get_tabs_callback_(get_tabs_callback),
-      active_tab_width_(TabStyle::GetStandardWidth()),
-      inactive_tab_width_(TabStyle::GetStandardWidth()) {}
+      active_tab_width_(TabStyle::Get()->GetStandardWidth()),
+      inactive_tab_width_(TabStyle::Get()->GetStandardWidth()) {}
 
 TabStripLayoutHelper::~TabStripLayoutHelper() = default;
 

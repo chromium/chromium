@@ -358,7 +358,7 @@ TEST_F(TabContainerTest, ExitsClosingModeAtStandardWidth) {
   AddTab(0, absl::nullopt, TabActive::kActive);
 
   // Create just enough tabs so tabs are not full size.
-  const int standard_width = TabStyleViews::GetStandardWidth();
+  const int standard_width = TabStyle::Get()->GetStandardWidth();
   while (tab_container_->GetActiveTabWidth() == standard_width) {
     AddTab(0);
     tab_container_->CompleteAnimationAndLayout();
@@ -392,7 +392,7 @@ TEST_F(TabContainerTest, RemoveTabInGroupWithTabClosingMode) {
   AddTab(0, absl::nullopt, TabActive::kActive);
 
   // Create enough tabs so tabs are not full size.
-  const int standard_width = TabStyleViews::GetStandardWidth();
+  const int standard_width = TabStyle::Get()->GetStandardWidth();
 
   // Set a tab_counter to avoid infinite loop
   int tab_counter = 0;
@@ -694,7 +694,8 @@ TEST_F(TabContainerTest, GroupHeaderBasics) {
   TabGroupHeader* header = views[0]->header();
   EXPECT_EQ(first_slot_x, header->x());
   EXPECT_GT(header->width(), 0);
-  EXPECT_EQ(header->bounds().right() - TabStyle::GetTabOverlap(), tab->x());
+  EXPECT_EQ(header->bounds().right() - TabStyle::Get()->GetTabOverlap(),
+            tab->x());
   EXPECT_EQ(tab->height(), header->height());
 }
 
