@@ -17,6 +17,7 @@
 #error "Not used on Android"
 #endif
 
+class BrowserList;
 class Profile;
 
 namespace base { class FilePath; }
@@ -89,10 +90,16 @@ class BrowserAddedForProfileObserver : public BrowserListObserver {
  private:
   // Overridden from BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
+  void OnBrowserRemoved(Browser* browser) override;
+
+  void NotifyBrowserCreatedAnDie();
 
   // Profile for which the browser should be opened.
-  raw_ptr<Profile> profile_;
+  base::WeakPtr<Profile> profile_;
+  raw_ptr<Browser> browser_ = nullptr;
   base::OnceClosure callback_;
+  base::ScopedObservation<BrowserList, BrowserListObserver>
+      browser_list_observation_{this};
 };
 
 }  // namespace profiles
