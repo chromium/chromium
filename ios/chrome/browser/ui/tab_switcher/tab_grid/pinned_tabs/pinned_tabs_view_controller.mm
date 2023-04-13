@@ -11,6 +11,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/numerics/safe_conversions.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
@@ -790,6 +791,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   label.textColor = [UIColor colorNamed:kTextPrimaryColor];
   label.text = l10n_util::GetNSString(IDS_IOS_PINNED_TABS_DRAG_TO_PIN_LABEL);
   label.translatesAutoresizingMaskIntoConstraints = NO;
+
+  // Mirror the label for RTL (see crbug.com/1426256).
+  if (base::i18n::IsRTL()) {
+    label.transform = CGAffineTransformScale(label.transform, -1, 1);
+  }
+
   [_dropOverlayView addSubview:label];
 
   AddSameConstraints(_dropOverlayView, self.collectionView.backgroundView);
