@@ -3619,7 +3619,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaStreamManager.DesktopVideoDeviceUpdate"
-    enum="MediaStreamRequestResult2" expires_after="2023-04-16">
+    enum="MediaStreamRequestResult2" expires_after="2023-07-16">
   <owner>eladalon@chromium.org</owner>
   <owner>tovep@chromium.org</owner>
   <summary>
