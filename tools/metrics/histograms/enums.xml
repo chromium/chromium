@@ -11925,9 +11925,9 @@ Called by update_bad_message_reasons.py.-->
 <enum name="BookmarksSidePanelSortType">
   <int value="0" label="Newest"/>
   <int value="1" label="Oldest"/>
-  <int value="2" label="Alphabetical"/>
-  <int value="3" label="Reverse Alphabetical"/>
-  <int value="4" label="Last Opened"/>
+  <int value="2" label="Last Opened"/>
+  <int value="3" label="Alphabetical"/>
+  <int value="4" label="Reverse Alphabetical"/>
 </enum>
 
 <enum name="BookmarksSidePanelViewType">

@@ -20,9 +20,9 @@ enum ActionSource {
 enum SortOrder {
   kNewest = 0,
   kOldest = 1,
-  kAlphabetical = 2,
-  kReverseAlphabetical = 3,
-  kLastOpened = 4,
+  kLastOpened = 2,
+  kAlphabetical = 3,
+  kReverseAlphabetical = 4,
 
   // Must be last. May add new values before this one.
   kCount = 5,
