@@ -85,6 +85,7 @@ void QuickStartScreen::OnStatusChanged(
       SavePhoneInstanceID();
       return;
     }
+    case Step::PIN_VERIFICATION:
     case Step::NONE:
     case Step::ERROR:
     case Step::ADVERTISING:

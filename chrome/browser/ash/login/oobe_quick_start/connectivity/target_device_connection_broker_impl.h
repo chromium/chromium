@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_CONNECTIVITY_TARGET_DEVICE_CONNECTION_BROKER_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
@@ -53,6 +54,7 @@ class TargetDeviceConnectionBrokerImpl
   // TargetDeviceConnectionBroker:
   FeatureSupportStatus GetFeatureSupportStatus() const override;
   void StartAdvertising(ConnectionLifecycleListener* listener,
+                        bool use_pin_authentication,
                         ResultCallback on_start_advertising_callback) override;
   void StopAdvertising(base::OnceClosure on_stop_advertising_callback) override;
 
@@ -65,9 +67,10 @@ class TargetDeviceConnectionBrokerImpl
   void OnIncomingConnectionInitiated(
       const std::string& endpoint_id,
       const std::vector<uint8_t>& endpoint_info) override;
-  void OnIncomingConnectionAccepted(const std::string& endpoint_id,
-                                    const std::vector<uint8_t>& endpoint_info,
-                                    NearbyConnection* connection) override;
+  void OnIncomingConnectionAccepted(
+      const std::string& endpoint_id,
+      const std::vector<uint8_t>& endpoint_info,
+      NearbyConnection* nearby_connection) override;
 
   void GetBluetoothAdapter();
   void OnGetBluetoothAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
@@ -78,7 +81,7 @@ class TargetDeviceConnectionBrokerImpl
 
   // The EndpointInfo is the set of bytes that SmartSetup on Android expects to
   // be in the Nearby Connections advertisement.
-  std::vector<uint8_t> GenerateEndpointInfo();
+  std::vector<uint8_t> GenerateEndpointInfo() const;
 
   void StartNearbyConnectionsAdvertising(ResultCallback callback);
   void StopNearbyConnectionsAdvertising(base::OnceClosure callback);
@@ -89,11 +92,18 @@ class TargetDeviceConnectionBrokerImpl
       base::OnceClosure callback,
       NearbyConnectionsManager::ConnectionsStatus status);
 
+  // A 4-digit decimal pin code derived from the connection's authentication
+  // token for the pin authentication flow.
+  std::string pin_;
+
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   base::OnceClosure deferred_start_advertising_callback_;
 
   std::unique_ptr<FastPairAdvertiser> fast_pair_advertiser_;
   RandomSessionId random_session_id_;
+  Connection::SharedSecret shared_secret_;
+  ConnectionLifecycleListener* connection_lifecycle_listener_ = nullptr;
+  std::unique_ptr<Connection> connection_;
 
   base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager_;
 
