@@ -257,13 +257,13 @@ LayoutUnit FileUploadControlIntrinsicInlineSize(const HTMLInputElement& input,
   const Font& font = box.StyleRef().GetFont();
   const float min_default_label_width =
       kDefaultWidthNumChars *
-      font.Width(ConstructTextRun(font, character_as_string, box.StyleRef(),
+      font.Width(ConstructTextRun(character_as_string, box.StyleRef(),
                                   TextRun::kAllowTrailingExpansion));
 
   const String label =
       input.GetLocale().QueryString(IDS_FORM_FILE_NO_FILE_LABEL);
   float default_label_width = font.Width(ConstructTextRun(
-      font, label, box.StyleRef(), TextRun::kAllowTrailingExpansion));
+      label, box.StyleRef(), TextRun::kAllowTrailingExpansion));
   if (HTMLInputElement* button = input.UploadButton()) {
     if (LayoutObject* button_layout_object = button->GetLayoutObject()) {
       default_label_width +=
@@ -332,7 +332,7 @@ LayoutUnit MenuListIntrinsicInlineSize(const HTMLSelectElement& select,
       style.ApplyTextTransform(&text);
       // We apply SELECT's style, not OPTION's style because max_option_width is
       // used to determine intrinsic width of the menulist box.
-      TextRun text_run = ConstructTextRun(style.GetFont(), text, style);
+      TextRun text_run = ConstructTextRun(text, style);
       max_option_width =
           std::max(max_option_width, style.GetFont().Width(text_run));
     }

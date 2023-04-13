@@ -55,7 +55,7 @@ void DateTimeFieldElement::Trace(Visitor* visitor) const {
 
 float DateTimeFieldElement::ComputeTextWidth(const ComputedStyle& style,
                                              const String& text) {
-  return style.GetFont().Width(ConstructTextRun(style.GetFont(), text, style));
+  return style.GetFont().Width(ConstructTextRun(text, style));
 }
 
 void DateTimeFieldElement::DefaultEventHandler(Event& event) {
