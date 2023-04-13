@@ -47,8 +47,10 @@ GURL GetDialogURL(PrivacySandboxService::PromptType prompt_type) {
       return base_url.Resolve(chrome::kChromeUIPrivacySandboxDialogNoticePath);
     case PrivacySandboxService::PromptType::kM1NoticeEEA:
       return net::AppendQueryParameter(combined_dialog_url, "step", "notice");
-    case PrivacySandboxService::PromptType::kNone:
     case PrivacySandboxService::PromptType::kM1NoticeRestricted:
+      return base_url.Resolve(
+          chrome::kChromeUIPrivacySandboxDialogNoticeRestrictedPath);
+    case PrivacySandboxService::PromptType::kNone:
       NOTREACHED_NORETURN();
   }
 }

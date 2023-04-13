@@ -168,6 +168,7 @@ extern const char kChromeUIPrivacySandboxDialogHost[];
 extern const char kChromeUIPrivacySandboxDialogURL[];
 extern const char kChromeUIPrivacySandboxDialogCombinedPath[];
 extern const char kChromeUIPrivacySandboxDialogNoticePath[];
+extern const char kChromeUIPrivacySandboxDialogNoticeRestrictedPath[];
 extern const char kChromeUIPrivacySandboxFledgeURL[];
 extern const char kChromeUIPrivacySandboxTopicsURL[];
 extern const char kChromeUIProfileInternalsHost[];
