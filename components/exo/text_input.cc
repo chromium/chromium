@@ -132,7 +132,8 @@ void TextInput::Reset() {
 
 void TextInput::SetSurroundingText(const std::u16string& text,
                                    const gfx::Range& cursor_pos) {
-  surrounding_text_tracker_.Update(text, cursor_pos);
+  // TODO(crbug.com/1402906): Text range is not currently handled correctly.
+  surrounding_text_tracker_.Update(text, 0u, cursor_pos);
 
   // Convert utf8 grammar fragment to utf16.
   if (grammar_fragment_at_cursor_utf8_) {
@@ -231,7 +232,7 @@ void TextInput::SetCompositionText(const ui::CompositionText& composition) {
 }
 
 size_t TextInput::ConfirmCompositionText(bool keep_selection) {
-  const auto& [surrounding_text, cursor_pos, composition] =
+  const auto& [surrounding_text, utf16_offset, cursor_pos, composition] =
       surrounding_text_tracker_.predicted_state();
 
   const size_t composition_text_length = composition.length();
@@ -333,7 +334,7 @@ ui::TextInputClient::FocusReason TextInput::GetFocusReason() const {
 
 bool TextInput::GetTextRange(gfx::Range* range) const {
   DCHECK(range);
-  const auto& [surrounding_text, selection, unused_composition] =
+  const auto& [surrounding_text, utf16_offset, selection, unused_composition] =
       surrounding_text_tracker_.predicted_state();
   DCHECK(selection.IsValid());
 
@@ -362,7 +363,7 @@ bool TextInput::GetEditableSelectionRange(gfx::Range* range) const {
 }
 
 bool TextInput::SetEditableSelectionRange(const gfx::Range& range) {
-  const auto& [surrounding_text, unused_selection, composition] =
+  const auto& [surrounding_text, utf16_offset, unused_selection, composition] =
       surrounding_text_tracker_.predicted_state();
   if (surrounding_text.length() < range.GetMax())
     return false;
@@ -405,7 +406,7 @@ bool TextInput::ChangeTextDirectionAndLayoutAlignment(
 }
 
 void TextInput::ExtendSelectionAndDelete(size_t before, size_t after) {
-  const auto& [surrounding_text, selection, unused_composition] =
+  const auto& [surrounding_text, utf16_offset, selection, unused_composition] =
       surrounding_text_tracker_.predicted_state();
 
   DCHECK(selection.IsValid());
@@ -446,7 +447,7 @@ bool TextInput::ShouldDoLearning() {
 bool TextInput::SetCompositionFromExistingText(
     const gfx::Range& range,
     const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) {
-  const auto& [surrounding_text, selection, unused_composition] =
+  const auto& [surrounding_text, utf16_offset, selection, unused_composition] =
       surrounding_text_tracker_.predicted_state();
   DCHECK(selection.IsValid());
   if (surrounding_text.length() < range.GetMax())
