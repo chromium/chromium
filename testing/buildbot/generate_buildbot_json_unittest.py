@@ -75,6 +75,7 @@ class FakeBBGen(generate_buildbot_json.BBJSONGenerator):
                luci_milo_cfg,
                project_pyl='{"validate_source_side_specs_have_builder": True}',
                exceptions=EMPTY_PYL_FILE,
+               autoshard_exceptions=json.dumps({}),
                mixins=EMPTY_PYL_FILE,
                gn_isolate_map=EMPTY_PYL_FILE,
                variants=EMPTY_PYL_FILE):
@@ -87,6 +88,7 @@ class FakeBBGen(generate_buildbot_json.BBJSONGenerator):
         args.waterfalls_pyl_path: waterfalls,
         args.test_suites_pyl_path: test_suites,
         args.test_suite_exceptions_pyl_path: exceptions,
+        args.autoshard_exceptions_json_path: autoshard_exceptions,
         args.mixins_pyl_path: mixins,
         args.gn_isolate_map_pyl_path: gn_isolate_map,
         args.variants_pyl_path: variants,
@@ -1217,6 +1219,22 @@ SCRIPT_WITH_ARGS_SWARMING_EXCEPTIONS = """\
   },
 }
 """
+
+AUTOSHARD_EXCEPTIONS = json.dumps({
+    'chromium.test': {
+        'Fake Tester': {
+            'foo_test': {
+                'shards': 20,
+            },
+            'foo_test_apk': {
+                'shards': 2,
+            },
+            'swarming_test a_variant': {
+                'shards': 10,
+            },
+        }
+    },
+})
 
 NO_BAR_TEST_EXCEPTIONS = """\
 {
@@ -2784,6 +2802,27 @@ class MixinTests(TestCase):
                     LUCI_MILO_CFG,
                     exceptions=SCRIPT_WITH_ARGS_SWARMING_EXCEPTIONS,
                     mixins=SWARMING_MIXINS)
+    fbb.check_output_file_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
+  def test_autoshard_exceptions(self):
+    fbb = FakeBBGen(self.args,
+                    FOO_GTESTS_WATERFALL_MIXIN_WATERFALL,
+                    FOO_TEST_SUITE,
+                    LUCI_MILO_CFG,
+                    exceptions=SCRIPT_WITH_ARGS_SWARMING_EXCEPTIONS,
+                    autoshard_exceptions=AUTOSHARD_EXCEPTIONS,
+                    mixins=SWARMING_MIXINS)
+    fbb.check_output_file_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
+  def test_autoshard_exceptions_variant_names(self):
+    fbb = FakeBBGen(self.args,
+                    MATRIX_GTEST_SUITE_WATERFALL,
+                    MATRIX_COMPOUND_TEST_WITH_TEST_KEY,
+                    LUCI_MILO_CFG,
+                    autoshard_exceptions=AUTOSHARD_EXCEPTIONS,
+                    variants=VARIANTS_FILE)
     fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 

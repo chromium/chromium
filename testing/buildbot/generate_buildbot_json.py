@@ -418,16 +418,18 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     args.pyl_files_dir = args.pyl_files_dir or THIS_DIR
     args.output_dir = args.output_dir or args.pyl_files_dir
 
-    def pyl_file_path(filename):
+    def absolute_file_path(filename):
       return os.path.join(args.pyl_files_dir, filename)
 
-    args.waterfalls_pyl_path = pyl_file_path('waterfalls.pyl')
-    args.mixins_pyl_path = pyl_file_path('mixins.pyl')
-    args.test_suites_pyl_path = pyl_file_path('test_suites.pyl')
-    args.test_suite_exceptions_pyl_path = pyl_file_path(
+    args.waterfalls_pyl_path = absolute_file_path('waterfalls.pyl')
+    args.mixins_pyl_path = absolute_file_path('mixins.pyl')
+    args.test_suites_pyl_path = absolute_file_path('test_suites.pyl')
+    args.test_suite_exceptions_pyl_path = absolute_file_path(
         'test_suite_exceptions.pyl')
-    args.gn_isolate_map_pyl_path = pyl_file_path('gn_isolate_map.pyl')
-    args.variants_pyl_path = pyl_file_path('variants.pyl')
+    args.gn_isolate_map_pyl_path = absolute_file_path('gn_isolate_map.pyl')
+    args.variants_pyl_path = absolute_file_path('variants.pyl')
+    args.autoshard_exceptions_json_path = absolute_file_path(
+        'autoshard_exceptions.json')
 
     return args
 
@@ -449,8 +451,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       return ast.literal_eval(self.read_file(pyl_file_path))
     except (SyntaxError, ValueError) as e: # pragma: no cover
       six.raise_from(
-          BBGenErr('Failed to parse pyl file "%s": %s' % (pyl_file_path, e)),
-          e)  # pragma: no cover
+          BBGenErr('Failed to parse pyl file "%s": %s' %
+                   (pyl_file_path, e)), e)  # pragma: no cover
     # pylint: enable=inconsistent-return-statements
 
   # TOOD(kbr): require that os_type be specified for all bots in waterfalls.pyl.
@@ -1571,6 +1573,12 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     filters = self.args.waterfall_filters
     result = collections.defaultdict(dict)
 
+    if os.path.exists(self.args.autoshard_exceptions_json_path):
+      autoshards = json.loads(
+          self.read_file(self.args.autoshard_exceptions_json_path))
+    else:
+      autoshards = {}
+
     required_fields = ('name',)
     for waterfall in self.waterfalls:
       for field in required_fields:
@@ -1585,6 +1593,30 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       # Join config files and hardcoded values together
       all_tests = self.generate_output_tests(waterfall)
       result[waterfall['name']] = all_tests
+
+      if not autoshards:
+        continue
+      for builder, test_spec in all_tests.items():
+        for target_type, test_list in test_spec.items():
+          if target_type == 'additional_compile_targets':
+            continue
+          for test_dict in test_list:
+            # Suites that apply variants or other customizations will create
+            # test_dicts that have "name" value that is different from the
+            # "test" value. Regular suites without any variations will only have
+            # "test" and no "name".
+            # e.g. name = vulkan_swiftshader_content_browsertests, but
+            # test = content_browsertests and
+            # test_id_prefix = "ninja://content/test:content_browsertests/"
+            # Check for "name" first and then fallback to "test"
+            test_name = test_dict.get('name') or test_dict.get('test')
+            if not test_name:
+              continue
+            shard_info = autoshards.get(waterfall['name'],
+                                        {}).get(builder, {}).get(test_name)
+            if shard_info:
+              test_dict['swarming'].update(
+                  {'shards': int(shard_info['shards'])})
 
     # Add do not edit warning
     for tests in result.values():

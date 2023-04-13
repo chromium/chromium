@@ -362,7 +362,10 @@ def main(args):
     data.setdefault(builder_group, {}).setdefault(builder_name,
                                                   {}).update(shard_dict)
 
-  output_data = json.dumps(data, indent=4, separators=(',', ': '))
+  output_data = json.dumps(data,
+                           indent=4,
+                           separators=(',', ': '),
+                           sort_keys=True)
   if opts.output_file:
     with open(opts.output_file, 'w') as output_file:
       output_file.write(output_data)
