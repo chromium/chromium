@@ -953,6 +953,11 @@ const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";
 
+const char kSyncSegmentsDataName[] = "Use synced segments data";
+const char kSyncSegmentsDataDescription[] =
+    "Enables history's segments to include foreign visits from syncing "
+    "devices.";
+
 const char kSynthesizedRestoreSessionName[] =
     "Use a synthesized native WKWebView sesion restoration (iOS15 only).";
 const char kSynthesizedRestoreSessionDescription[] =

@@ -846,6 +846,11 @@ extern const char kStartSurfaceDescription[];
 extern const char kSyncSandboxName[];
 extern const char kSyncSandboxDescription[];
 
+// Title and description for the flag to control if history's segments should
+// include foreign visits from syncing devices.
+extern const char kSyncSegmentsDataName[];
+extern const char kSyncSegmentsDataDescription[];
+
 // Title and description for the flag to synthesize native restore web states.
 extern const char kSynthesizedRestoreSessionName[];
 extern const char kSynthesizedRestoreSessionDescription[];

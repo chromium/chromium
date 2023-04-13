@@ -40,6 +40,7 @@
 #import "components/flags_ui/feature_entry_macros.h"
 #import "components/flags_ui/flags_storage.h"
 #import "components/flags_ui/flags_ui_switches.h"
+#import "components/history/core/browser/features.h"
 #import "components/invalidation/impl/invalidation_switches.h"
 #import "components/ntp_tiles/features.h"
 #import "components/ntp_tiles/switches.h"
@@ -1031,6 +1032,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          optimization_guide::features::kOptimizationTargetPrediction)},
+    {"sync-segments-data", flag_descriptions::kSyncSegmentsDataName,
+     flag_descriptions::kSyncSegmentsDataDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(history::kSyncSegmentsData)},
     {"sync-standalone-invalidations", flag_descriptions::kSyncInvalidationsName,
      flag_descriptions::kSyncInvalidationsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(::syncer::kUseSyncInvalidations)},
