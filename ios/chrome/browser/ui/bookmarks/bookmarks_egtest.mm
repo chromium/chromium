@@ -30,6 +30,7 @@
 using chrome_test_util::BookmarksHomeDoneButton;
 using chrome_test_util::BookmarksNavigationBarBackButton;
 using chrome_test_util::BookmarksSaveEditDoneButton;
+using chrome_test_util::BookmarksSaveEditFolderButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ContextBarCenterButtonWithLabel;
 using chrome_test_util::ContextBarLeadingButtonWithLabel;
@@ -139,6 +140,64 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
+}
+
+// Tests opening the folder chooser from the bookmark editor using
+// an incognito tab.
+// See http://crbug.com/1432310.
+- (void)testOpenFolderChooserFromBookmarkEditorWithIncognito {
+  [ChromeEarlGrey openNewIncognitoTab];
+  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+  // Invoke Edit through long press on "First URL" bookmark.
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"First URL")]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          BookmarksContextMenuEditButton()]
+      performAction:grey_tap()];
+  // Tap the Folder button.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Change Folder")]
+      performAction:grey_tap()];
+  // Close the folder chooser, bookmark editor and the bookmark list.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(BookmarksNavigationBarBackButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:BookmarksSaveEditDoneButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
+      performAction:grey_tap()];
+}
+
+// Tests opening the folder chooser from the folder editor using
+// an incognito tab.
+// See http://crbug.com/1432310.
+- (void)testOpenFolderChooserFromFolderEditorWithIncognito {
+  [ChromeEarlGrey openNewIncognitoTab];
+  [BookmarkEarlGrey setupStandardBookmarks];
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+  // Invoke Edit through long press on "Folder 1" folder.
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
+      performAction:grey_longPress()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          BookmarksContextMenuEditButton()]
+      performAction:grey_tap()];
+  // Tap the Folder button.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Change Folder")]
+      performAction:grey_tap()];
+  // Close the folder chooser, bookmark editor and the bookmark list.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(BookmarksNavigationBarBackButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:BookmarksSaveEditFolderButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:BookmarksHomeDoneButton()]
+      performAction:grey_tap()];
 }
 
 // Tests that changes to the parent folder from the Single Bookmark Editor

@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
@@ -83,7 +84,8 @@
 - (void)start {
   [super start];
   // TODO(crbug.com/1402758): Create a mediator.
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ChromeBrowserState* browserState =
+      self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
   bookmarks::BookmarkModel* model =
       ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
           browserState);
