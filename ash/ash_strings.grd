@@ -2575,6 +2575,18 @@ Connect your device to power.
       <message name="IDS_ASH_HOTSPOT_ON_TITLE" desc="Title used for the system notification shown when the hotspot is turned on.">
         Hotspot is on
       </message>
+      <message name="IDS_ASH_HOTSPOT_ON_MESSAGE_MULTIPLE_CONNECTED_DEVICES" desc="Message displayed in the notification when hotspot is turned on and multiple devices are connected.">
+        <ph name="DEVICECOUNT">$1</ph> devices connected
+      </message>
+      <message name="IDS_ASH_HOTSPOT_ON_MESSAGE_ONE_CONNECTED_DEVICE" desc="Message displayed in the notification when hotspot is turned on and one device is connected.">
+        1 device connected
+      </message>
+      <message name="IDS_ASH_HOTSPOT_ON_MESSAGE_NO_CONNECTED_DEVICES" desc="Message displayed in the notification when hotspot is turned on and no devices are connected.">
+        No devices connected
+      </message>
+      <message name="IDS_ASH_TURN_OFF_HOTSPOT_LABEL" desc="The label for button used to turn off hotspot.">
+        Turn off
+      </message>
       <message name="IDS_ASH_HOTSPOT_OFF_TITLE" desc="Title used for the system notification shown when the hotspot is turned off.">
         Hotspot is off
       </message>

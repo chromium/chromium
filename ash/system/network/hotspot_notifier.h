@@ -26,6 +26,7 @@ namespace ash {
 //  - Hotspot is turned on and has 'n' active connections
 class ASH_EXPORT HotspotNotifier
     : public hotspot_config::mojom::HotspotEnabledStateObserver,
+      public hotspot_config::mojom::CrosHotspotConfigObserver,
       public chromeos::network_config::CrosNetworkConfigObserver {
  public:
   HotspotNotifier();
@@ -38,6 +39,7 @@ class ASH_EXPORT HotspotNotifier
   static const char kWiFiTurnedOnNotificationId[];
   static const char kAutoDisabledNotificationId[];
   static const char kInternalErrorNotificationId[];
+  static const char kHotspotTurnedOnNotificationId[];
 
  private:
   friend class HotspotNotifierTest;
@@ -54,9 +56,17 @@ class ASH_EXPORT HotspotNotifier
       std::vector<chromeos::network_config::mojom::DeviceStatePropertiesPtr>
           devices);
 
+  // mojom::CrosHotspotConfigObserver:
+  void OnHotspotInfoChanged() override;
+
+  void OnGetHotspotInfo(hotspot_config::mojom::HotspotInfoPtr hotspot_info);
+
+  void DisableHotspotHandler(const char* notification_id,
+                             absl::optional<int> index);
+
   std::unique_ptr<message_center::Notification> CreateNotification(
-      const int title_id,
-      const int message_id,
+      const std::u16string& title_id,
+      const std::u16string& message_id,
       const char* notification_id,
       scoped_refptr<message_center::NotificationDelegate> delegate);
 
@@ -73,6 +83,8 @@ class ASH_EXPORT HotspotNotifier
       cros_network_config_observer_receiver_{this};
   mojo::Receiver<hotspot_config::mojom::HotspotEnabledStateObserver>
       hotspot_enabled_state_observer_receiver_{this};
+  mojo::Receiver<hotspot_config::mojom::CrosHotspotConfigObserver>
+      hotspot_config_observer_receiver_{this};
 
   base::WeakPtrFactory<HotspotNotifier> weak_ptr_factory_{this};
 };

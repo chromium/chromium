@@ -28,6 +28,8 @@ class CrosHotspotConfigTestHelper {
 
   void EnableHotspot();
 
+  void SetHotspotConfig(hotspot_config::mojom::HotspotConfigPtr hotspot_config);
+
  protected:
   // Called in |~CrosHotspotConfigTestHelper()| to destroy
   // cros_hotspot_config_impl_.

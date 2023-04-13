@@ -25,6 +25,18 @@ namespace {
 const char kCellularServicePath[] = "/service/cellular0";
 const char kCellularServiceGuid[] = "cellular_guid0";
 const char kCellularServiceName[] = "cellular_name0";
+const char kHotspotConfigSSID[] = "hotspot_SSID";
+const char kHotspotConfigPassphrase[] = "hotspot_passphrase";
+
+hotspot_config::mojom::HotspotConfigPtr GenerateTestConfig() {
+  auto mojom_config = hotspot_config::mojom::HotspotConfig::New();
+  mojom_config->auto_disable = false;
+  mojom_config->band = hotspot_config::mojom::WiFiBand::kAutoChoose;
+  mojom_config->security = hotspot_config::mojom::WiFiSecurityMode::kWpa2;
+  mojom_config->ssid = kHotspotConfigSSID;
+  mojom_config->passphrase = kHotspotConfigPassphrase;
+  return mojom_config;
+}
 
 }  // namespace
 
@@ -100,6 +112,11 @@ class HotspotNotifierTest : public NoSessionAshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetHotspotConfig(hotspot_config::mojom::HotspotConfigPtr mojom_config) {
+    cros_hotspot_config_test_helper_->SetHotspotConfig(std::move(mojom_config));
+    base::RunLoop().RunUntilIdle();
+  }
+
   void NotifyHotspotTurnedOff(
       hotspot_config::mojom::DisableReason disable_reason) {
     NetworkHandler* network_handler = NetworkHandler::Get();
@@ -111,6 +128,14 @@ class HotspotNotifierTest : public NoSessionAshTestBase {
     network_handler_test_helper_->service_test()->AddService(
         kCellularServicePath, kCellularServiceGuid, kCellularServiceName,
         shill::kTypeCellular, shill::kStateOnline, /*visible=*/true);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetHotspotStateInShill(const std::string& state) {
+    base::Value::Dict status_dict;
+    status_dict.Set(shill::kTetheringStatusStateProperty, state);
+    network_handler_test_helper_->manager_test()->SetManagerProperty(
+        shill::kTetheringStatusProperty, base::Value(std::move(status_dict)));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -222,6 +247,29 @@ TEST_F(HotspotNotifierTest, InternalError) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
       HotspotNotifier::kInternalErrorNotificationId));
+}
+
+TEST_F(HotspotNotifierTest, HotspotTurnedOn) {
+  SetValidHotspotCapabilities();
+  SetReadinessCheckResultReady();
+  AddActiveCellularService();
+  helper()->manager_test()->SetSimulateTetheringEnableResult(
+      FakeShillSimulatedResult::kSuccess, shill::kTetheringEnableResultSuccess);
+  base::RunLoop().RunUntilIdle();
+
+  SetHotspotConfig(GenerateTestConfig());
+  EnableHotspot();
+  SetHotspotStateInShill(shill::kTetheringStateActive);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
+      HotspotNotifier::kHotspotTurnedOnNotificationId));
+
+  message_center::MessageCenter::Get()->ClickOnNotificationButton(
+      HotspotNotifier::kHotspotTurnedOnNotificationId, 0);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          HotspotNotifier::kHotspotTurnedOnNotificationId));
 }
 
 }  // namespace ash
