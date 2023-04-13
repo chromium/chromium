@@ -170,14 +170,6 @@
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
 }
 
-// Tests sync server converted helpers in chrome_earl_grey.h.
-- (void)testSyncServerHelpers {
-  [ChromeEarlGrey startSync];
-  [ChromeEarlGrey waitForSyncEngineInitialized:NO
-                                   syncTimeout:base::Seconds(10)];
-  [ChromeEarlGrey clearSyncServerData];
-}
-
 // Tests executeJavaScript:error: in chrome_earl_grey.h
 - (void)testExecuteJavaScript {
   base::Value result = [ChromeEarlGrey evaluateJavaScript:@"0"];

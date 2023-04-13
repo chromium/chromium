@@ -343,12 +343,6 @@
 // Signs in with `identity` without sync consent.
 + (void)signInWithoutSyncWithIdentity:(FakeSystemIdentity*)identity;
 
-// Starts the sync server. The server should not be running when calling this.
-+ (void)startSync;
-
-// Stops the sync server. The server should be running when calling this.
-+ (void)stopSync;
-
 // Waits for sync engine to be initialized or not. It doesn't necessarily mean
 // that data types are configured and ready to use. See
 // SyncService::IsEngineInitialized() for details. If not succeeded a GREYAssert

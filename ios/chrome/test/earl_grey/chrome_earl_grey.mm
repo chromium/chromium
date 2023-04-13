@@ -754,14 +754,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface signInWithoutSyncWithIdentity:identity];
 }
 
-- (void)startSync {
-  [ChromeEarlGreyAppInterface startSync];
-}
-
-- (void)stopSync {
-  [ChromeEarlGreyAppInterface stopSync];
-}
-
 - (void)
     addUserDemographicsToSyncServerWithBirthYear:(int)rawBirthYear
                                           gender:

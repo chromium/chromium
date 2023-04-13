@@ -51,11 +51,6 @@ class SyncSetupService : public KeyedService {
   virtual bool IsSyncRequested() const;
   // Returns whether Sync-the-transport can start the Sync feature.
   virtual bool CanSyncFeatureStart() const;
-  // Enables or disables sync. Changes won't take effect in the sync backend
-  // before the next call to `CommitChanges`.
-  // TODO(crbug.com/1291946): This is only used in sync_test_util.mm; inline it
-  // there.
-  virtual void SetSyncEnabled(bool sync_enabled);
 
   // Returns all currently enabled datatypes.
   syncer::ModelTypeSet GetPreferredDataTypes() const;

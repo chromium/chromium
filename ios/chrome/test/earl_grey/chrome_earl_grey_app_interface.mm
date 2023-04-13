@@ -880,14 +880,6 @@ NSString* SerializedValue(const base::Value* value) {
   chrome_test_util::ClearSyncServerData();
 }
 
-+ (void)startSync {
-  chrome_test_util::StartSync();
-}
-
-+ (void)stopSync {
-  chrome_test_util::StopSync();
-}
-
 + (NSError*)waitForSyncEngineInitialized:(BOOL)isInitialized
                              syncTimeout:(base::TimeDelta)timeout {
   bool success = WaitUntilConditionOrTimeout(timeout, ^{
