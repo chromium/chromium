@@ -12713,25 +12713,6 @@
             ]
         }
     ],
-    "TangibleSyncOnDesktop": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "linux",
-                "chromeos_lacros",
-                "fuchsia"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TangibleSync"
-                    ]
-                }
-            ]
-        }
-    ],
     "TerminalTmuxRollout": [
         {
             "platforms": [

@@ -46,6 +46,15 @@ BASE_FEATURE(kIdentityStatusConsistency,
 #endif
 
 // Enables a new version of the sync confirmation UI.
-BASE_FEATURE(kTangibleSync, "TangibleSync", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTangibleSync,
+             "TangibleSync",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             // Fully rolled out on desktop: crbug.com/1430054
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+
+);
 
 }  // namespace switches
