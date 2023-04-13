@@ -483,3 +483,28 @@ class LintWPTTest(LoggingTestCase):
             description, "Test key 'expected' condition "
             "'if (os == \"linux\") or (prduct == \"chrome\")' "
             "uses unrecognized property 'prduct'")
+
+    def test_metadata_unknown_prop_value(self):
+        unrecognized_os, unrecognized_product = self._check_metadata("""\
+            [reftest.html]
+              # Note that both keys are reachable by some test configuration.
+              disabled:
+                if os == "mac" or os == "fuchsia": wontfix
+              expected:
+                if os == "mac" or (os == "linux" and "contentshell" != product): FAIL
+            """)
+        name, description, path, _ = unrecognized_os
+        self.assertEqual(name, 'META-UNKNOWN-PROP-VALUE')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(
+            description, "Test key 'disabled' condition "
+            "'if (os == \"mac\") or (os == \"fuchsia\")' "
+            "compares 'os' against unrecognized value 'fuchsia'")
+        name, description, path, _ = unrecognized_product
+        self.assertEqual(name, 'META-UNKNOWN-PROP-VALUE')
+        self.assertEqual(path, 'reftest.html.ini')
+        self.assertEqual(
+            description,
+            "Test key 'expected' condition 'if (os == \"mac\") or "
+            "((os == \"linux\") and (\"contentshell\" != product))' "
+            "compares 'product' against unrecognized value 'contentshell'")

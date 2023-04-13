@@ -4,6 +4,7 @@
 """Lint WPT files and metadata."""
 
 import argparse
+import collections
 import contextlib
 import enum
 import io
@@ -160,7 +161,7 @@ class MetadataBadValue(MetadataRule):
     implementation_statuses = {'implementing', 'not-implementing', 'default'}
 
 
-class MetadataUnnecessaryCondition(MetadataRule):
+class MetadataConditionsUnnecessary(MetadataRule):
     name = 'META-CONDITIONS-UNNECESSARY'
     description = '%(section_type)s key %(key)r always has value %(value)r'
     to_fix = """
@@ -182,6 +183,16 @@ class MetadataUnknownProp(MetadataRule):
                    'uses unrecognized property %(prop)s')
     to_fix = """
     Check that all property names are spelled correctly:
+    https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_platform_tests_wptrunner.md#conditional-values
+    """
+
+
+class MetadataUnknownPropValue(MetadataRule):
+    name = 'META-UNKNOWN-PROP-VALUE'
+    description = ('%(section_type)s key %(key)r %(condition)s compares '
+                   '%(prop)r against unrecognized value %(value)r')
+    to_fix = """
+    Check that all property values are valid and spelled correctly:
     https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_platform_tests_wptrunner.md#conditional-values
     """
 
@@ -280,6 +291,8 @@ class MetadataLinter(Compiler):
         # also provided to the error message formatter.
         self.context = {}
         self.errors = set()
+        # Check that all configurations have the same keys.
+        assert len(set({frozenset(config.data) for config in configs})) == 1
 
     @contextlib.contextmanager
     def using_context(self, **context):
@@ -347,7 +360,9 @@ class MetadataLinter(Compiler):
             if node.data not in valid_keys:
                 self._error(MetadataUnknownKey)
             else:
-                self._check_conditions(node)
+                with self.using_context(
+                        prop_comparisons=collections.defaultdict(set)):
+                    self._check_conditions(node)
 
     def _get_conditional_values(
         self,
@@ -399,14 +414,21 @@ class MetadataLinter(Compiler):
 
         if (len([condition for condition in conditions if condition]) > 0
                 and len(unique_values) == 1):
-            self._error(MetadataUnnecessaryCondition,
+            self._error(MetadataConditionsUnnecessary,
                         value=_format_node(values[0]))
-        else:
-            # No need to show that condition branches are unreachable if no
-            # conditions are necessary in the first place.
-            for i in conditions_not_taken:
-                self._error(MetadataUnreachableValue,
-                            condition=_format_condition(conditions[i]))
+            return
+        # No need to show condition-related errors if no conditions are
+        # necessary in the first place.
+        for i in conditions_not_taken:
+            self._error(MetadataUnreachableValue,
+                        condition=_format_condition(conditions[i]))
+        for prop, values in self.context['prop_comparisons'].items():
+            unknown_values = values - {config[prop] for config in self.configs}
+            for value in unknown_values:
+                self._error(MetadataUnknownPropValue,
+                            prop=prop,
+                            value=value,
+                            condition=_format_condition(condition))
 
     def _eval_condition_taken(self, condition: Condition,
                               run_info: metadata.RunInfo) -> bool:
@@ -414,6 +436,22 @@ class MetadataLinter(Compiler):
             return True
         self.expr_data = run_info.data
         return self.visit(condition)
+
+    def visit_BinaryExpressionNode(self,
+                                   node: wptnode.BinaryExpressionNode) -> bool:
+        # Evaluate the result first to check for unknown properties, which will
+        # raise a `KeyError`.
+        result = super().visit_BinaryExpressionNode(node)
+        _, operand0, operand1 = node.children
+        # Canonicalize operand order.
+        operand0, operand1 = sorted(
+            [operand0, operand1],
+            key=lambda operand: isinstance(operand, wptnode.VariableNode))
+        if (isinstance(operand0, (wptnode.NumberNode, wptnode.StringNode))
+                and isinstance(operand1, wptnode.VariableNode)):
+            value, prop = operand0.data, operand1.data
+            self.context['prop_comparisons'][prop].add(value)
+        return result
 
     def visit_ListNode(self,
                        node: wptnode.ListNode) -> Tuple[Union[bool, str]]:
