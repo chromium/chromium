@@ -8,7 +8,6 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/lacros/cert/cert_db_initializer_impl.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/lacros/lacros_service.h"
 
 class CertDbInitializer;
@@ -29,9 +28,7 @@ CertDbInitializer* CertDbInitializerFactory::GetForBrowserContext(
 CertDbInitializerFactory::CertDbInitializerFactory()
     : ProfileKeyedServiceFactory(
           "CertDbInitializerFactory",
-          ProfileSelections::BuildRedirectedInIncognito()) {
-  DependsOn(IdentityManagerFactory::GetInstance());
-}
+          ProfileSelections::BuildRedirectedInIncognito()) {}
 
 bool CertDbInitializerFactory::ServiceIsCreatedWithBrowserContext() const {
   return should_create_with_browser_context_;
