@@ -134,7 +134,15 @@ std::u16string GetUpgradeDialogMenuItemName() {
       UpgradeDetector::GetInstance()->is_outdated_install_no_au()) {
     return l10n_util::GetStringUTF16(IDS_UPGRADE_BUBBLE_MENU_ITEM);
   } else {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
+    return l10n_util::GetStringUTF16(
+        base::FeatureList::IsEnabled(features::kUpdateTextOptions)
+            ? IDS_RELAUNCH_TO_UPDATE_ALT
+            : IDS_RELAUNCH_TO_UPDATE);
+#else
     return l10n_util::GetStringUTF16(IDS_RELAUNCH_TO_UPDATE);
+#endif
   }
 }
 

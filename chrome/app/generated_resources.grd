@@ -9421,6 +9421,17 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_APP_MENU_BUTTON_UPDATE" desc="Short label next to app-menu button when an update is available.">
         Update
       </message>
+      <if expr="is_win or is_macosx or is_linux">
+        <message name="IDS_APP_MENU_BUTTON_UPDATE_ALT1" desc="Alternate short label next to app-menu button when an update is available.">
+          Finish update
+        </message>
+        <message name="IDS_APP_MENU_BUTTON_UPDATE_ALT2" desc="Alternate short label next to app-menu button when an update is available.">
+          Relaunch to update
+        </message>
+        <message name="IDS_APP_MENU_BUTTON_UPDATE_ALT3" desc="Alternate short label next to app-menu button when an update is available.">
+          New Chrome available
+        </message>
+      </if>
       <message name="IDS_APP_MENU_BUTTON_ERROR" desc="Short label next to app-menu button when the user needs to resolve something.">
         Error
       </message>

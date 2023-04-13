@@ -273,6 +273,18 @@ BASE_FEATURE(kTopChromeWebUIUsesSpareRenderer,
              "TopChromeWebUIUsesSpareRenderer",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Enables alternate update-related text to be displayed in browser app menu
+// button, menu item and confirmation dialog.
+BASE_FEATURE(kUpdateTextOptions,
+             "UpdateTextOptions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// Used to present different flavors of update strings in browser app menu
+// button.
+const base::FeatureParam<int> kUpdateTextOptionNumber{
+    &kUpdateTextOptions, "UpdateTextOptionNumber", 1};
+#endif
+
 // This enables enables persistence of a WebContents in a 1-to-1 association
 // with the current Profile for WebUI bubbles. See https://crbug.com/1177048.
 BASE_FEATURE(kWebUIBubblePerProfilePersistence,

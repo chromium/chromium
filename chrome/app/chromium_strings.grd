@@ -809,6 +809,12 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
 
+      <if expr="is_win or is_macosx or is_linux">
+        <message name="IDS_RELAUNCH_TO_UPDATE_ALT" desc="Alternate text label of the relaunch to update Chrome menu item" translateable="false">
+        Not used in Chromium. Placeholder to keep resource maps in sync.
+        </message>
+      </if>
+
       <if expr="is_macosx">
         <message name="IDS_APP_MENU_PRODUCT_NAME" desc="The application's short name, used for the Mac's application menu, activity monitor, etc. This should be less than 16 characters. Example: Chrome, not Google Chrome.">
           Chromium
@@ -1148,6 +1154,15 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
         <message name="IDS_RELAUNCH_AND_UPDATE" desc="The button in the Update Recommended dialog which updates and restarts ChromeOS.">
           Restart
+        </message>
+      </if>
+
+      <if expr="is_win or is_macosx or is_linux">
+        <message name="IDS_UPDATE_RECOMMENDED_DIALOG_TITLE_ALT" desc="Alternate window title for the Update Recommended dialog." translateable="false">
+          Not used in Chromium. Placeholder to keep resource maps in sync.
+        </message>
+        <message name="IDS_UPDATE_RECOMMENDED_ALT" desc="Alternate main text of the Update Recommended dialog with a count of open Incognito windows." translateable="false">
+          Not used in Chromium. Placeholder to keep resource maps in sync.
         </message>
       </if>
 

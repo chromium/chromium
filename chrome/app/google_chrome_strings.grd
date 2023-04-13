@@ -840,6 +840,19 @@ Permissions you've already given to websites and apps may apply to this account.
         </if>
       </if>
 
+      <if expr="is_win or is_macosx or is_linux">
+        <if expr="use_titlecase">
+          <message name="IDS_RELAUNCH_TO_UPDATE_ALT" desc="Alternate text label of the relaunch to update Chrome menu item">
+            Relaunch to Update - Your tabs will reopen
+          </message>
+        </if>
+        <if expr="not use_titlecase">
+          <message name="IDS_RELAUNCH_TO_UPDATE_ALT" desc="Alternate text label of the relaunch to update Chrome menu item">
+            Relaunch to update - your tabs will reopen
+          </message>
+        </if>
+      </if>
+
       <if expr="is_macosx">
         <message name="IDS_APP_MENU_PRODUCT_NAME" desc="The application's short name, used for the Mac's application menu, activity monitor, etc. This should be less than 16 characters. Example: Chrome, not Google Chrome.">
           Chrome
@@ -1219,6 +1232,18 @@ Permissions you've already given to websites and apps may apply to this account.
         </if>
         <message name="IDS_RELAUNCH_AND_UPDATE" desc="The button in the Update Recommended dialog which updates and restarts ChromeOS.">
           Restart
+        </message>
+      </if>
+
+      <if expr="is_win or is_macosx or is_linux">
+        <message name="IDS_UPDATE_RECOMMENDED_DIALOG_TITLE_ALT" desc="Alternate window title for the Update Recommended dialog.">
+          Relaunch to finish Chrome update
+        </message>
+        <message name="IDS_UPDATE_RECOMMENDED_ALT" desc="Alternate main text of the Update Recommended dialog with a count of open Incognito windows.">
+          {COUNT, plural,
+           =0 {Chrome is done updating. You can use the latest version as soon as you relaunch. After, your current tabs will reopen.}
+           =1 {Chrome is done updating. You can use the latest version as soon as you relaunch. After, your current tabs will reopen. Your Incognito window won't reopen.}
+          other {Chrome is done updating. You can use the latest version as soon as you relaunch. After, your current tabs will reopen. Your # Incognito windows won't reopen.}}
         </message>
       </if>
 
