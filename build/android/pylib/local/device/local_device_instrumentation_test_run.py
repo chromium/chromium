@@ -961,6 +961,25 @@ class LocalDeviceInstrumentationTestRun(
                          self._chrome_proxy.wpr_archive_path)
           self._chrome_proxy = None
 
+      def pull_baseline_profile():
+        # Search though status responses for the one with the key we are
+        # looking for.
+        for _, bundle in statuses:
+          baseline_profile_path = bundle.get(
+              'additionalTestOutputFile_baseline-profile-ts')
+          if baseline_profile_path:
+            # Found it.
+            break
+        else:
+          # This test does not generate a baseline profile.
+          return
+        with self._env.output_manager.ArchivedTempfile(
+            'baseline_profile.txt', 'baseline_profile') as baseline_profile:
+          device.PullFile(baseline_profile_path, baseline_profile.name)
+        _SetLinkOnResults(results, test_name, 'baseline_profile',
+                          baseline_profile.Link())
+        logging.warning('Baseline Profile Location %s', baseline_profile.Link())
+
 
       # While constructing the TestResult objects, we can parallelize several
       # steps that involve ADB. These steps should NOT depend on any info in
@@ -968,7 +987,8 @@ class LocalDeviceInstrumentationTestRun(
       # determined.
       post_test_steps = [
           restore_flags, restore_timeout_scale, stop_chrome_proxy,
-          handle_coverage_data, handle_render_test_data, pull_ui_screen_captures
+          handle_coverage_data, handle_render_test_data,
+          pull_ui_screen_captures, pull_baseline_profile
       ]
       if self._env.concurrent_adb:
         reraiser_thread.RunAsync(post_test_steps)
