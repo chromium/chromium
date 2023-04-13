@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS view-timeline on self
+PASS view-timeline on preceding sibling
+PASS view-timeline on ancestor
+PASS view-timeline on ancestor sibling
+PASS view-timeline on ancestor sibling, closest wins
+PASS view-timeline on ancestor sibling, skips nonmatching names
+PASS view-timeline on ancestor sibling, closer scroll-timeline wins
+FAIL view-timeline on ancestor sibling, scroll-timeline wins on same element assert_equals: expected "0" but got "75"
+Harness: the test ran to completion.
+
