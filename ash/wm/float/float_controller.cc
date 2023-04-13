@@ -237,7 +237,16 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
     TabletModeTuckEducation::OnWindowTucked();
   }
 
-  void OnUntuckAnimationEnded() { scoped_window_tucker_.reset(); }
+  void OnUntuckAnimationEnded() {
+    scoped_window_tucker_.reset();
+
+    // No-op for non-client-controlled windows. For the client-controlled
+    // windows, this ensures the bounds is sync between Chrome and the client.
+    // We don't send the offscreen bounds to the client when tucked, so we need
+    // to send the proper floated bounds when untucked.
+    UpdateWindowBoundsForTablet(floated_window_,
+                                WindowState::BoundsChangeAnimationType::kNone);
+  }
 
   void MaybeUntuckWindow(bool animate) {
     // The order here matters: `is_tucked_for_tablet_` must be set to false

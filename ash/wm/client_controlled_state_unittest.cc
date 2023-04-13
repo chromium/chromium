@@ -917,7 +917,7 @@ TEST_F(ClientControlledStateTest, FlingFloatedWindowInTabletMode) {
             gfx::Rect(gfx::Point(padding, padding), initial_bounds.size()));
 }
 
-TEST_F(ClientControlledStateTest, TuckFloatedWindowInTabletMode) {
+TEST_F(ClientControlledStateTest, TuckAndUntuckFloatedWindowInTabletMode) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
@@ -942,6 +942,7 @@ TEST_F(ClientControlledStateTest, TuckFloatedWindowInTabletMode) {
   EXPECT_TRUE(window_state()->IsFloated());
   EXPECT_EQ(kShellWindowId_FloatContainer, window()->parent()->GetId());
 
+  // Test tucking.
   // Start dragging in the center of the header and fling it to offscreen.
   auto* const header_view = GetHeaderView();
   auto* const event_generator = GetEventGenerator();
@@ -962,6 +963,14 @@ TEST_F(ClientControlledStateTest, TuckFloatedWindowInTabletMode) {
   ShellTestApi().WaitForWindowFinishAnimating(window());
   EXPECT_FALSE(window()->IsVisible());
   EXPECT_TRUE(float_controller->IsFloatedWindowTuckedForTablet(window()));
+
+  // Test untucking.
+  float_controller->MaybeUntuckFloatedWindowForTablet(window());
+  ShellTestApi().WaitForWindowFinishAnimating(window());
+  EXPECT_TRUE(window()->IsVisible());
+  EXPECT_FALSE(float_controller->IsFloatedWindowTuckedForTablet(window()));
+  EXPECT_EQ(FloatController::GetPreferredFloatWindowTabletBounds(window()),
+            delegate()->requested_bounds());
 }
 
 TEST_P(ClientControlledStateTestClamshellAndTablet, MoveFloatedWindow) {
