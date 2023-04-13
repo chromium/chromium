@@ -18,6 +18,12 @@
 
 class PrefService;
 
+#if BUILDFLAG(IS_IOS)
+namespace permissions {
+class BluetoothDelegateImpl;
+}
+#endif
+
 namespace content {
 class ShellBrowserContext;
 class ShellBrowserMainParts;
@@ -134,6 +140,9 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       cert_verifier::mojom::CertVerifierCreationParams*
           cert_verifier_creation_params) override;
   std::vector<base::FilePath> GetNetworkContextsParentDirectory() override;
+#if BUILDFLAG(IS_IOS)
+  BluetoothDelegate* GetBluetoothDelegate() override;
+#endif
   void BindBrowserControlInterface(mojo::ScopedMessagePipeHandle pipe) override;
   void GetHyphenationDictionary(
       base::OnceCallback<void(const base::FilePath&)>) override;
@@ -228,6 +237,9 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       create_throttles_for_navigation_callback_;
   base::RepeatingCallback<void(blink::web_pref::WebPreferences*)>
       override_web_preferences_callback_;
+#if BUILDFLAG(IS_IOS)
+  std::unique_ptr<permissions::BluetoothDelegateImpl> bluetooth_delegate_;
+#endif
 
   // NOTE: Tests may install a second ShellContentBrowserClient that becomes
   // the ContentBrowserClient used by content. This has subtle implications

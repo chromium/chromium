@@ -120,6 +120,11 @@
 #include "services/network/public/mojom/ct_log_info.mojom.h"
 #endif
 
+#if BUILDFLAG(IS_IOS)
+#include "components/permissions/bluetooth_delegate_impl.h"
+#include "content/shell/browser/bluetooth/shell_bluetooth_delegate_impl_client.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -680,6 +685,16 @@ std::vector<base::FilePath>
 ShellContentBrowserClient::GetNetworkContextsParentDirectory() {
   return {browser_context()->GetPath()};
 }
+
+#if BUILDFLAG(IS_IOS)
+BluetoothDelegate* ShellContentBrowserClient::GetBluetoothDelegate() {
+  if (!bluetooth_delegate_) {
+    bluetooth_delegate_ = std::make_unique<permissions::BluetoothDelegateImpl>(
+        std::make_unique<ShellBluetoothDelegateImplClient>());
+  }
+  return bluetooth_delegate_.get();
+}
+#endif
 
 void ShellContentBrowserClient::BindBrowserControlInterface(
     mojo::ScopedMessagePipeHandle pipe) {
