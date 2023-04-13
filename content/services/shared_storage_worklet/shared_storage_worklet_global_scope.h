@@ -50,13 +50,11 @@ class CONTENT_EXPORT SharedStorageWorkletGlobalScope {
           pending_url_loader_factory,
       blink::mojom::SharedStorageWorkletServiceClient* client,
       const GURL& script_source_url,
-      bool should_define_private_aggregation_object,
       blink::mojom::SharedStorageWorkletService::AddModuleCallback callback);
 
   void OnModuleScriptDownloaded(
       blink::mojom::SharedStorageWorkletServiceClient* client,
       const GURL& script_source_url,
-      bool should_define_private_aggregation_object,
       blink::mojom::SharedStorageWorkletService::AddModuleCallback callback,
       std::unique_ptr<std::string> response_body,
       std::string error_message);

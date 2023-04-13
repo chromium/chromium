@@ -38,7 +38,6 @@ class SharedStorageWorkletServiceImpl
   void AddModule(mojo::PendingRemote<network::mojom::URLLoaderFactory>
                      pending_url_loader_factory,
                  const GURL& script_source_url,
-                 bool should_define_private_aggregation_object,
                  AddModuleCallback callback) override;
   void RunURLSelectionOperation(
       const std::string& name,

@@ -38,12 +38,11 @@ void SharedStorageWorkletServiceImpl::AddModule(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
     const GURL& script_source_url,
-    bool should_define_private_aggregation_object,
     AddModuleCallback callback) {
   DCHECK(!global_scope_);
-  GetGlobalScope()->AddModule(
-      std::move(pending_url_loader_factory), client_.get(), script_source_url,
-      should_define_private_aggregation_object, std::move(callback));
+  GetGlobalScope()->AddModule(std::move(pending_url_loader_factory),
+                              client_.get(), script_source_url,
+                              std::move(callback));
 }
 
 void SharedStorageWorkletServiceImpl::RunURLSelectionOperation(

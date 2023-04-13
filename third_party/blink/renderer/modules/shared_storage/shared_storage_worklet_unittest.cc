@@ -27,6 +27,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/private_aggregation/aggregatable_report.mojom-blink.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
@@ -293,9 +294,7 @@ class SharedStorageWorkletTest : public testing::Test {
 
     base::test::TestFuture<bool, const std::string&> future;
     shared_storage_worklet_service_->AddModule(
-        factory.Unbind(), GURL(kModuleScriptSource),
-        /*should_define_private_aggregation_object=*/
-        create_private_aggregation_host_, future.GetCallback());
+        factory.Unbind(), GURL(kModuleScriptSource), future.GetCallback());
 
     return {future.Get<0>(), future.Get<1>()};
   }
@@ -327,10 +326,13 @@ class SharedStorageWorkletTest : public testing::Test {
 
   CrossVariantMojoRemote<mojom::blink::PrivateAggregationHostInterfaceBase>
   MaybeInitNewRemotePAHost() {
+    CHECK_EQ(ShouldDefinePrivateAggregationInSharedStorage(),
+             !!mock_private_aggregation_host_);
+
     mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
         pending_pa_host_remote;
 
-    if (mock_private_aggregation_host_) {
+    if (ShouldDefinePrivateAggregationInSharedStorage()) {
       mojo::PendingReceiver<mojom::blink::PrivateAggregationHost>
           pending_pa_host_receiver =
               pending_pa_host_remote.InitWithNewPipeAndPassReceiver();
@@ -352,7 +354,6 @@ class SharedStorageWorkletTest : public testing::Test {
   Persistent<SharedStorageWorkletMessagingProxy> messaging_proxy_;
 
   absl::optional<std::u16string> embedder_context_;
-  bool create_private_aggregation_host_ = false;
   bool private_aggregation_permissions_policy_allowed_ = true;
 
   base::test::TestFuture<void> worklet_terminated_future_;
@@ -388,7 +389,7 @@ class SharedStorageWorkletTest : public testing::Test {
     test_client_ = std::make_unique<TestClient>(
         std::move(pending_shared_storage_service_client_receiver));
 
-    if (create_private_aggregation_host_) {
+    if (ShouldDefinePrivateAggregationInSharedStorage()) {
       mock_private_aggregation_host_ =
           std::make_unique<MockMojomPrivateAggregationHost>();
     }
@@ -2243,12 +2244,20 @@ TEST_F(SharedStorageWorkletTest,
 class SharedStoragePrivateAggregationTest : public SharedStorageWorkletTest {
  public:
   SharedStoragePrivateAggregationTest() {
-    create_private_aggregation_host_ = true;
     private_aggregation_feature_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{blink::features::kPrivateAggregationApi,
           {{"enabled_in_shared_storage", "true"}}}},
         /*disabled_features=*/{});
+  }
+
+  void TearDown() override {
+    // Shut down the worklet gracefully. Otherwise, the
+    // `private_aggregation_feature_` may be destroyed before the worklet thread
+    // (e.g. SharedStorageWorkletGlobalScope::NotifyContextDestroyed()) and some
+    // feature state assertions could fail.
+    shared_storage_worklet_service_.reset();
+    EXPECT_TRUE(worklet_terminated_future_.Wait());
   }
 
   // `error_message` being `nullptr` indicates no error is expected.
@@ -2305,7 +2314,7 @@ class SharedStoragePrivateAggregationTest : public SharedStorageWorkletTest {
             {"class TestClass { async run() {", script_body,
              "}}; register(\"test-operation\", TestClass);"}));
 
-    CHECK_EQ(create_private_aggregation_host_,
+    CHECK_EQ(ShouldDefinePrivateAggregationInSharedStorage(),
              !!mock_private_aggregation_host_);
 
     if (mock_private_aggregation_host_) {
@@ -2663,27 +2672,6 @@ TEST_F(SharedStoragePrivateAggregationTest,
   EXPECT_TRUE(worklet_terminated_future_.Wait());
 
   run_loop.Run();
-}
-
-TEST_F(SharedStoragePrivateAggregationTest,
-       ShouldNotDefinePrivateAggregationObject_FailureIfAccessed) {
-  create_private_aggregation_host_ = false;
-
-  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
-      class TestClass {
-        async run() {
-          privateAggregation.sendHistogramReport({bucket: 1n, value: 2});
-        }
-      }
-
-      register("test-operation", TestClass);
-  )");
-
-  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
-  EXPECT_FALSE(run_result.success);
-  EXPECT_THAT(run_result.error_message,
-              testing::HasSubstr("privateAggregation cannot be "
-                                 "accessed in an insecure context."));
 }
 
 }  // namespace blink

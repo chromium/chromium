@@ -96,7 +96,6 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   void AddModule(mojo::PendingRemote<network::mojom::URLLoaderFactory>
                      pending_url_loader_factory,
                  const GURL& script_source_url,
-                 bool should_define_private_aggregation_object,
                  AddModuleCallback callback) override;
   void RunURLSelectionOperation(
       const std::string& name,
@@ -223,12 +222,6 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   // Whether the "private-aggregation" permissions policy is enabled in the
   // worklet.
   bool private_aggregation_permissions_policy_allowed_ = false;
-
-  // Whether the privateAggregation object should be defined. Set in
-  // `AddModule()` and can be false afterwards even if
-  // `IsPrivateAggregationEnabled()` if the worklet origin is not potentially
-  // trustworthy.
-  bool should_define_private_aggregation_object_ = false;
 
   const SharedStorageWorkletToken token_;
 };

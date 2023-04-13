@@ -115,8 +115,7 @@ interface SharedStorageWorkletService {
   // checked at the Mojo boundary to ensure it's from the same origin of the
   // current context.
   AddModule(pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
-            url.mojom.Url script_source_url,
-            bool should_define_private_aggregation_object)
+            url.mojom.Url script_source_url)
     => (bool success, string error_message);
 
   // Handle sharedStorage.runURLSelectionOperation(): run the operation

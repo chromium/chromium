@@ -26,6 +26,7 @@
 #include "gin/v8_initializer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/shared_storage/module_script_downloader.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-function.h"
@@ -63,7 +64,6 @@ void SharedStorageWorkletGlobalScope::AddModule(
         pending_url_loader_factory,
     blink::mojom::SharedStorageWorkletServiceClient* client,
     const GURL& script_source_url,
-    bool should_define_private_aggregation_object,
     blink::mojom::SharedStorageWorkletService::AddModuleCallback callback) {
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory(
       std::move(pending_url_loader_factory));
@@ -72,14 +72,12 @@ void SharedStorageWorkletGlobalScope::AddModule(
       url_loader_factory.get(), script_source_url,
       base::BindOnce(&SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded,
                      weak_ptr_factory_.GetWeakPtr(), client, script_source_url,
-                     should_define_private_aggregation_object,
                      std::move(callback)));
 }
 
 void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
     blink::mojom::SharedStorageWorkletServiceClient* client,
     const GURL& script_source_url,
-    bool should_define_private_aggregation_object,
     blink::mojom::SharedStorageWorkletService::AddModuleCallback callback,
     std::unique_ptr<std::string> response_body,
     std::string error_message) {
@@ -154,7 +152,7 @@ void SharedStorageWorkletGlobalScope::OnModuleScriptDownloaded(
             shared_storage_->GetWrapper(Isolate()).ToLocalChecked())
       .Check();
 
-  if (should_define_private_aggregation_object) {
+  if (blink::ShouldDefinePrivateAggregationInSharedStorage()) {
     private_aggregation_ = std::make_unique<PrivateAggregation>(
         *client, private_aggregation_permissions_policy_allowed_, *this);
     global

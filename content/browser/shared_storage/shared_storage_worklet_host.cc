@@ -24,8 +24,8 @@
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
@@ -88,14 +88,6 @@ SharedStorageURNMappingResult CreateSharedStorageURNMappingResult(
       SharedStorageBudgetMetadata{.origin = shared_storage_origin,
                                   .budget_to_charge = budget_to_charge},
       std::move(fenced_frame_reporter));
-}
-
-bool ShouldDefinePrivateAggregationObject(
-    const url::Origin& shared_storage_origin) {
-  return network::IsOriginPotentiallyTrustworthy(shared_storage_origin) &&
-         base::FeatureList::IsEnabled(
-             blink::features::kPrivateAggregationApi) &&
-         blink::features::kPrivateAggregationApiEnabledInSharedStorage.Get();
 }
 
 }  // namespace
@@ -200,7 +192,6 @@ void SharedStorageWorkletHost::AddModuleOnWorklet(
 
   GetAndConnectToSharedStorageWorkletService()->AddModule(
       std::move(url_loader_factory), script_source_url,
-      ShouldDefinePrivateAggregationObject(shared_storage_origin_),
       base::BindOnce(&SharedStorageWorkletHost::OnAddModuleOnWorkletFinished,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -912,7 +903,7 @@ mojo::PendingRemote<blink::mojom::PrivateAggregationHost>
 SharedStorageWorkletHost::MaybeBindPrivateAggregationHost() {
   DCHECK(browser_context_);
 
-  if (!ShouldDefinePrivateAggregationObject(shared_storage_origin_)) {
+  if (!blink::ShouldDefinePrivateAggregationInSharedStorage()) {
     return mojo::PendingRemote<blink::mojom::PrivateAggregationHost>();
   }
 

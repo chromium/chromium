@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/shared_storage/module_script_downloader.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -242,8 +243,7 @@ SharedStorageWorkletGlobalScope::SharedStorageWorkletGlobalScope(
   ContextFeatureSettings::From(
       this, ContextFeatureSettings::CreationMode::kCreateIfNotExists)
       ->EnablePrivateAggregationInSharedStorage(
-          base::FeatureList::IsEnabled(features::kPrivateAggregationApi) &&
-          features::kPrivateAggregationApiEnabledInSharedStorage.Get());
+          ShouldDefinePrivateAggregationInSharedStorage());
 }
 
 SharedStorageWorkletGlobalScope::~SharedStorageWorkletGlobalScope() = default;
@@ -307,7 +307,7 @@ void SharedStorageWorkletGlobalScope::OnConsoleApiMessage(
 
 void SharedStorageWorkletGlobalScope::NotifyContextDestroyed() {
   if (private_aggregation_) {
-    CHECK(should_define_private_aggregation_object_);
+    CHECK(ShouldDefinePrivateAggregationInSharedStorage());
     private_aggregation_->OnWorkletDestroyed();
   }
 
@@ -359,26 +359,11 @@ void SharedStorageWorkletGlobalScope::Initialize(
   }
 }
 
-bool SharedStorageWorkletGlobalScope::IsPrivateAggregationEnabled() {
-  return ContextFeatureSettings::From(
-             this, ContextFeatureSettings::CreationMode::kCreateIfNotExists)
-      ->isPrivateAggregationInSharedStorageEnabled();
-}
-
 void SharedStorageWorkletGlobalScope::AddModule(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
     const GURL& script_source_url,
-    bool should_define_private_aggregation_object,
     AddModuleCallback callback) {
-  // TODO(crbug.com/1432378): Remove this boolean if/when shared storage origins
-  // are only allowed to be potentially trustworthy.
-  if (should_define_private_aggregation_object_) {
-    CHECK(IsPrivateAggregationEnabled());
-  }
-  should_define_private_aggregation_object_ =
-      should_define_private_aggregation_object;
-
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory(
       std::move(pending_url_loader_factory));
 
@@ -561,7 +546,7 @@ SharedStorage* SharedStorageWorkletGlobalScope::sharedStorage(
 PrivateAggregation* SharedStorageWorkletGlobalScope::privateAggregation(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  CHECK(IsPrivateAggregationEnabled());
+  CHECK(ShouldDefinePrivateAggregationInSharedStorage());
 
   if (!add_module_finished_) {
     CHECK(!private_aggregation_);
@@ -569,16 +554,6 @@ PrivateAggregation* SharedStorageWorkletGlobalScope::privateAggregation(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "privateAggregation cannot be accessed during addModule().");
-
-    return nullptr;
-  }
-
-  if (!should_define_private_aggregation_object_) {
-    CHECK(!private_aggregation_);
-
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotAllowedError,
-        "privateAggregation cannot be accessed in an insecure context.");
 
     return nullptr;
   }
@@ -696,7 +671,7 @@ base::OnceClosure SharedStorageWorkletGlobalScope::StartOperation(
         private_aggregation_host) {
   CHECK(add_module_finished_);
   CHECK_EQ(!!private_aggregation_host,
-           should_define_private_aggregation_object_);
+           ShouldDefinePrivateAggregationInSharedStorage());
 
   int64_t operation_id = operation_counter_++;
 
@@ -709,7 +684,7 @@ base::OnceClosure SharedStorageWorkletGlobalScope::StartOperation(
   context->SetContinuationPreservedEmbedderData(
       v8::BigInt::New(context->GetIsolate(), operation_id));
 
-  if (should_define_private_aggregation_object_) {
+  if (ShouldDefinePrivateAggregationInSharedStorage()) {
     GetOrCreatePrivateAggregation()->OnOperationStarted(
         operation_id, std::move(private_aggregation_host));
   }
@@ -719,7 +694,7 @@ base::OnceClosure SharedStorageWorkletGlobalScope::StartOperation(
 }
 
 void SharedStorageWorkletGlobalScope::FinishOperation(int64_t operation_id) {
-  if (should_define_private_aggregation_object_) {
+  if (ShouldDefinePrivateAggregationInSharedStorage()) {
     CHECK(private_aggregation_);
     private_aggregation_->OnOperationFinished(operation_id);
   }
@@ -727,7 +702,7 @@ void SharedStorageWorkletGlobalScope::FinishOperation(int64_t operation_id) {
 
 PrivateAggregation*
 SharedStorageWorkletGlobalScope::GetOrCreatePrivateAggregation() {
-  CHECK(should_define_private_aggregation_object_);
+  CHECK(ShouldDefinePrivateAggregationInSharedStorage());
   CHECK(add_module_finished_);
 
   if (!private_aggregation_) {
