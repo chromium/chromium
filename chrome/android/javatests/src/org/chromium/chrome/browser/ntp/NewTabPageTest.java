@@ -820,6 +820,7 @@ public class NewTabPageTest {
      */
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1433093")
     public void testRecordHistogramProfileButtonClick_Ntp() {
         HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
                 HISTOGRAM_NTP_MODULE_CLICK, BrowserUiUtils.ModuleTypeOnStartAndNTP.PROFILE_BUTTON);
