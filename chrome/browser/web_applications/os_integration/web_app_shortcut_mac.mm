@@ -412,6 +412,32 @@ base::CommandLine BuildCommandLineForShimLaunch() {
   return command_line;
 }
 
+NSRunningApplication* FindRunningApplicationForBundleIdAndPath(
+    const std::string& bundle_id,
+    const base::FilePath& bundle_path) {
+  NSArray<NSRunningApplication*>* apps = [NSRunningApplication
+      runningApplicationsWithBundleIdentifier:base::SysUTF8ToNSString(
+                                                  bundle_id)];
+  for (NSRunningApplication* app in apps) {
+    if (base::mac::NSURLToFilePath(app.bundleURL) == bundle_path) {
+      return app;
+    }
+  }
+
+  // Sometimes runningApplicationsWithBundleIdentifier incorrectly fails to
+  // return all apps with the provided bundle id. So also scan over the full
+  // list of running applications.
+  apps = [NSWorkspace sharedWorkspace].runningApplications;
+  for (NSRunningApplication* app in apps) {
+    if (base::SysNSStringToUTF8(app.bundleIdentifier) == bundle_id &&
+        base::mac::NSURLToFilePath(app.bundleURL) == bundle_path) {
+      return app;
+    }
+  }
+
+  return nil;
+}
+
 // Wrapper around base::mac::LaunchApplication that attempts to retry the launch
 // once, if the initial launch fails. This helps reduce test flakiness on older
 // Mac OS bots (Mac 11 and Mac 10.16).
@@ -475,16 +501,13 @@ void LaunchApplicationWithWorkaround(
             LOG(ERROR) << "Failed to open application with path: "
                        << app_bundle_path;
             if (!options.create_new_instance) {
-              NSArray<NSRunningApplication*>* apps =
-                  [NSRunningApplication runningApplicationsWithBundleIdentifier:
-                                            base::SysUTF8ToNSString(bundle_id)];
-              for (NSRunningApplication* app in apps) {
-                if (base::mac::NSURLToFilePath(app.bundleURL) ==
-                    app_bundle_path) {
-                  LOG(ERROR) << "But found a running application anyway.";
-                  std::move(callback).Run(app);
-                  return;
-                }
+              NSRunningApplication* app =
+                  FindRunningApplicationForBundleIdAndPath(bundle_id,
+                                                           app_bundle_path);
+              if (app) {
+                LOG(ERROR) << "But found a running application anyway.";
+                std::move(callback).Run(app);
+                return;
               }
             }
 
@@ -1698,17 +1721,11 @@ void WaitForShimToQuitForTesting(const base::FilePath& shim_path,  // IN-TEST
                                  const std::string& app_id,
                                  bool terminate_shim) {
   std::string bundle_id = GetBundleIdentifier(app_id);
-  NSArray<NSRunningApplication*>* apps = [NSRunningApplication
-      runningApplicationsWithBundleIdentifier:base::SysUTF8ToNSString(
-                                                  bundle_id)];
-  NSRunningApplication* matching_app = nil;
-  for (NSRunningApplication* app in apps) {
-    if (base::mac::NSURLToFilePath(app.bundleURL) == shim_path) {
-      matching_app = app;
-      break;
-    }
-  }
+  NSRunningApplication* matching_app =
+      FindRunningApplicationForBundleIdAndPath(bundle_id, shim_path);
   if (!matching_app) {
+    LOG(ERROR) << "No matching applications found for app_id " << app_id
+               << " and path " << shim_path;
     return;
   }
 
