@@ -259,6 +259,7 @@ common_lib_list="\
   libglib2.0-0
   libgl1
   libgtk-3-0
+  libncurses5
   libpam0g
   libpango-1.0-0
   libpangocairo-1.0-0
