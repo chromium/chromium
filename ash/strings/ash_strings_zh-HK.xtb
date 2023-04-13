@@ -314,7 +314,7 @@
 <translation id="2658778018866295321">按一下並拖曳</translation>
 <translation id="2665788051462227163">此裝置未安裝「<ph name="UNAVAILABLE_APPS_ONE" />」和「<ph name="UNAVAILABLE_APPS_TWO" />」。</translation>
 <translation id="2673968385134502798">遊戲</translation>
-<translation id="2678852583403169292">選取以朗讀選單</translation>
+<translation id="2678852583403169292">揀選朗讀內容選單</translation>
 <translation id="2689613560355655046">桌面 8</translation>
 <translation id="2695305337569143674">網絡</translation>
 <translation id="2697697418792422688">顯示鍵盤設定。已選取<ph name="KEYBOARD_NAME" />。</translation>
@@ -529,7 +529,7 @@
 <translation id="380165613292957338">你好，有咩可以幫到你？</translation>
 <translation id="3804737937830804242">收合相機調整大小的按鈕</translation>
 <translation id="3826099427150913765">改用密碼</translation>
-<translation id="383058930331066723">「省電模式」已開啟</translation>
+<translation id="383058930331066723">「慳電模式」已開啟</translation>
 <translation id="383629559565718788">顯示鍵盤設定</translation>
 <translation id="384082539148746321">要刪除範本嗎？</translation>
 <translation id="3846575436967432996">沒有可用的網絡資料</translation>
@@ -1192,7 +1192,7 @@
 <translation id="7377481913241237033">使用代碼進行連結</translation>
 <translation id="7378203170292176219">拖曳以選取要錄影的範圍</translation>
 <translation id="7378594059915113390">媒體控制項</translation>
-<translation id="7378889811480108604">「省電模式」已關閉</translation>
+<translation id="7378889811480108604">「慳電模式」已關閉</translation>
 <translation id="7382680553121047388">開啟</translation>
 <translation id="7384028040782072252">在任何地方按一下右鍵，即可將應用程式重新排序</translation>
 <translation id="7386767620098596324">切換網絡連線。<ph name="STATE_TEXT" />。</translation>
@@ -1264,7 +1264,7 @@
 <translation id="7742327441377685481">沒有通知</translation>
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
 <translation id="776344839111254542">按一下即可查看更新詳情</translation>
-<translation id="7768784765476638775">選取以朗讀</translation>
+<translation id="7768784765476638775">揀選朗讀內容</translation>
 <translation id="7780094051999721182">捷徑</translation>
 <translation id="7780159184141939021">旋轉螢幕</translation>
 <translation id="7796735576426975947">已隱藏新通知</translation>
@@ -1327,7 +1327,7 @@
 <translation id="8091387634532529612">自動更新</translation>
 <translation id="8098591350844501178">停止將畫面投放到「<ph name="RECEIVER_NAME" />」</translation>
 <translation id="8113423164597455979">已在所有應用程式上啟用通知</translation>
-<translation id="8113515504791187892">「選取以朗讀」掣</translation>
+<translation id="8113515504791187892">「揀選朗讀內容」掣</translation>
 <translation id="8120151603115102514">您的手機沒有上鎖畫面。如要解鎖 Chromebook，請輸入密碼。</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">確定</translation>
@@ -1397,7 +1397,7 @@
 <translation id="8444246603146515890">已啟用桌面 <ph name="DESK_TITILE" /></translation>
 <translation id="8446884382197647889">瞭解詳情</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
-<translation id="8462305545768648477">關閉「選取以朗讀」</translation>
+<translation id="8462305545768648477">關閉「揀選朗讀內容」</translation>
 <translation id="847056008324733326">顯示比例設定</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> 已 <ph name="FEATURE_STATE" /><ph name="FEATURE_NAME" />。</translation>
 <translation id="8477270416194247200">按下 Alt + 搜尋鍵或 Shift 鍵即可取消。</translation>

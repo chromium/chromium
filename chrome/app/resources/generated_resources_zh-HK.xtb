@@ -403,7 +403,7 @@
 <translation id="1361655923249334273">未使用</translation>
 <translation id="1362865166188278099">發生機件故障。請檢查打印機</translation>
 <translation id="1363585519747660921">USB 列印機需要設定</translation>
-<translation id="136378536198524553">「省電模式」已開啟</translation>
+<translation id="136378536198524553">「慳電模式」已開啟</translation>
 <translation id="1368603372088757436"><ph name="DEVICE_TYPE" /> 不支援 Linux。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1372841398847029212">同步至您的帳戶</translation>
 <translation id="1373176046406139583">您可使用裝置分享設定來控制哪些人可在螢幕解鎖時與您分享檔案。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -602,7 +602,7 @@
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">我瞭解此下載項目會危害我的電腦</translation>
 <translation id="1535228823998016251">大聲</translation>
-<translation id="1535753739390684432">由系統讀出特定文字。請先選取畫面底部的「選取以朗讀」圖示，然後突顯所需文字。</translation>
+<translation id="1535753739390684432">由系統讀出特定文字。請先選取畫面底部的「揀選朗讀內容」圖示，然後突顯所需文字。</translation>
 <translation id="1536754031901697553">正在解除連結…</translation>
 <translation id="1537254971476575106">全螢幕放大鏡</translation>
 <translation id="15373452373711364">大型滑鼠游標</translation>
@@ -769,7 +769,7 @@
 <translation id="1662801900924515589">已安裝「<ph name="APP" />」</translation>
 <translation id="1665328953287874063">使用密碼或 PIN 解鎖 <ph name="DEVICE_TYPE" /></translation>
 <translation id="1666232093776384142">停用周邊裝置的資料存取保護</translation>
-<translation id="1667842670298352129">由系統讀出特定文字。請先選取畫面底部的「選取以朗讀」圖示，然後突顯所需文字。您亦可使用鍵盤快速鍵：突顯文字，然後按下搜尋鍵 + S 鍵。</translation>
+<translation id="1667842670298352129">由系統讀出特定文字。請先選取畫面底部的「揀選朗讀內容」圖示，然後突顯所需文字。您亦可使用鍵盤快速鍵：突顯文字，然後按下搜尋鍵 + S 鍵。</translation>
 <translation id="1668435968811469751">手動註冊</translation>
 <translation id="1668979692599483141">瞭解建議功能</translation>
 <translation id="1670399744444387456">基本設定</translation>
@@ -2353,7 +2353,7 @@
 <translation id="3021678814754966447">檢視頁框原始碼(&amp;V)</translation>
 <translation id="3022361196600037287"><ph name="DEVICE" /> 將會從此 Chromebook 移除，且不會儲存至 <ph name="PRIMARY_EMAIL" />。</translation>
 <translation id="3022978424994383087">無法辨識語音。</translation>
-<translation id="3023464535986383522">選取以朗讀</translation>
+<translation id="3023464535986383522">揀選朗讀內容</translation>
 <translation id="3024374909719388945">使用 24 小時制時鐘</translation>
 <translation id="3025174326431589540">{COUNT,plural, =0{未儲存密碼}=1{已檢查 {COUNT} 個網站的密碼}other{已檢查 {COUNT} 個網站和應用程式的密碼}}</translation>
 <translation id="3027296729579831126">開啟「咫尺共享」功能</translation>
@@ -3717,7 +3717,7 @@
 <translation id="4281844954008187215">服務條款</translation>
 <translation id="4282196459431406533">Smart Lock 已啟用</translation>
 <translation id="4284755288573763878">要關閉「強化安全瀏覽」功能嗎？</translation>
-<translation id="4284903252249997120">ChromeVox 螢幕閱讀器和選取以朗讀</translation>
+<translation id="4284903252249997120">ChromeVox 螢幕閱讀器和揀選朗讀內容</translation>
 <translation id="4285418559658561636">更新密碼</translation>
 <translation id="4285498937028063278">取消固定</translation>
 <translation id="428565720843367874">掃描這個檔案時，防毒軟件發生意外錯誤。</translation>
@@ -5528,7 +5528,7 @@
 <translation id="5955809630138889698">此裝置可能只可使用網上示範模式。詳情請與您的支援代表聯絡。</translation>
 <translation id="5956585768868398362">這是您想要的搜尋頁面嗎？</translation>
 <translation id="5957918771633727933">沒有可用的 eSIM 卡設定檔。請下載新的<ph name="BEGIN_LINK" />設定檔。<ph name="END_LINK" /></translation>
-<translation id="5957987129450536192">輕按個人檔案相片附近的「選取以朗讀」圖示，然後選取您想聽到的內容。</translation>
+<translation id="5957987129450536192">輕按個人檔案相片附近的「揀選朗讀內容」圖示，然後選取您想聽到的內容。</translation>
 <translation id="5959471481388474538">網絡無法使用</translation>
 <translation id="595959584676692139">重新載入網頁即可使用此擴充程式</translation>
 <translation id="5963413905009737549">區段</translation>
@@ -5618,7 +5618,7 @@
 <translation id="6043994281159824495">立即登出</translation>
 <translation id="6045114302329202345">主要 TrackPoint 按鈕</translation>
 <translation id="6047632800149092791">同步功能無法正常運作。請嘗試登出，然後重新登入。</translation>
-<translation id="6048747414605857443">為 ChromeVox 和「選取以朗讀」選取及自訂文字轉語音的聲音</translation>
+<translation id="6048747414605857443">為 ChromeVox 和「揀選朗讀內容」選取及自訂文字轉語音的聲音</translation>
 <translation id="6049797270917061226">攻擊者可能透過此檔案盜取您的個人資料。</translation>
 <translation id="6051354611314852653">糟糕！系統無法將 API 存取權授予這部裝置。</translation>
 <translation id="6051811090255711417">由於此檔案不符合安全政策要求，因此已被您的機構封鎖</translation>
@@ -6653,7 +6653,7 @@
 <translation id="6975361011348772931">已要求讀取並變更</translation>
 <translation id="6978121630131642226">搜尋引擎</translation>
 <translation id="6978717888677691380">您已封鎖的網站</translation>
-<translation id="6979041727349121225">省電模式</translation>
+<translation id="6979041727349121225">慳電模式</translation>
 <translation id="6979044105893951891">啟動及結束受管理的訪客工作階段</translation>
 <translation id="6979440798594660689">靜音 (預設)</translation>
 <translation id="6979737339423435258">所有時間</translation>
@@ -7124,7 +7124,7 @@
 <translation id="7423425410216218516">分享設定在 <ph name="MINUTES" /> 分鐘內開啟</translation>
 <translation id="7423513079490750513">移除<ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372">需要權限才能執行 <ph name="APP_NAME" /></translation>
-<translation id="7424153922653300265">「省電模式」已開啟</translation>
+<translation id="7424153922653300265">「慳電模式」已開啟</translation>
 <translation id="7424818322350938336">已新增網絡</translation>
 <translation id="7427315069950454694">今天的回憶</translation>
 <translation id="7427348830195639090">背景頁面：<ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -7517,7 +7517,7 @@
 <translation id="7768507955883790804">網頁會在您瀏覽時自動採用此設定</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" /> 將可以查看「<ph name="FOLDERNAME" />」中的檔案</translation>
 <translation id="7768770796815395237">變更</translation>
-<translation id="7768784765476638775">選取以朗讀</translation>
+<translation id="7768784765476638775">揀選朗讀內容</translation>
 <translation id="7769748505895274502">收合最近關閉的分頁</translation>
 <translation id="7770072242481632881">側面板選取器</translation>
 <translation id="7770450735129978837">點擊滑鼠右鍵</translation>
@@ -7979,7 +7979,7 @@
 <translation id="8177318697334260664">{NUM_TABS,plural, =1{將分頁移至新視窗}other{將分頁移至新視窗}}</translation>
 <translation id="8179188928355984576">不使用此帳戶登入 Android 應用程式</translation>
 <translation id="8179976553408161302">Enter 鍵</translation>
-<translation id="8180785270975217276">「省電模式」已開啟</translation>
+<translation id="8180785270975217276">「慳電模式」已開啟</translation>
 <translation id="8180786512391440389">「<ph name="EXTENSION" />」可以讀取和刪除已勾選位置中的圖片、影片和音效檔案。</translation>
 <translation id="8181215761849004992">無法加入網域。請檢查您的帳戶並查看您是否有足夠權限新增裝置。</translation>
 <translation id="8182105986296479640">應用程式無回應。</translation>
@@ -8219,7 +8219,7 @@
 <translation id="8389492867173948260">允許此擴充程式讀取及變更您瀏覽的網站上的所有資料：</translation>
 <translation id="8390449457866780408">無法與伺服器連線。</translation>
 <translation id="8391218455464584335">黑膠唱片</translation>
-<translation id="8392726714909453725">選取以朗讀設定</translation>
+<translation id="8392726714909453725">揀選朗讀內容設定</translation>
 <translation id="8393511274964623038">停止外掛程式</translation>
 <translation id="839363317075970734">藍牙裝置詳情</translation>
 <translation id="8393700583063109961">傳送訊息</translation>
@@ -8773,7 +8773,7 @@
 <translation id="8899851313684471736">在新視窗中開啟連結(&amp;W)</translation>
 <translation id="8900413463156971200">啟用流動網絡</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> 要求您備份資料，並在今天內歸還此 <ph name="DEVICE_TYPE" />。}other{<ph name="MANAGER" /> 要求您備份資料，並在期限前歸還此 <ph name="DEVICE_TYPE" />。}}</translation>
-<translation id="8902667442496790482">開啟「選取以朗讀」設定</translation>
+<translation id="8902667442496790482">開啟「揀選朗讀內容」設定</translation>
 <translation id="890616557918890486">變更來源</translation>
 <translation id="8907701755790961703">請選取國家/地區</translation>
 <translation id="8909298138148012791">已解除安裝 <ph name="APP_NAME" /></translation>

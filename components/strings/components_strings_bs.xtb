@@ -1719,7 +1719,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="519422657042045905">Bilješke nisu dostupne</translation>
 <translation id="5201306358585911203">Stranica ugrađena u ovu stranicu kaže</translation>
 <translation id="5205222826937269299">Potrebno je ime</translation>
-<translation id="5209518306177824490">SHA-1 otisak prsta</translation>
+<translation id="5209518306177824490">Digitalni otisak SHA-1</translation>
 <translation id="5209670883520018268">Ladica 20</translation>
 <translation id="521659676233207110">Ladica 13</translation>
 <translation id="5216942107514965959">Posljednji put je posjećeno danas</translation>
@@ -2505,7 +2505,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7233592378249864828">Štampanje tabele za potvrdu</translation>
 <translation id="7234638337680728591">Cijene goriva i stanice za punjenje vozila</translation>
 <translation id="7237492777898608035">Ne prikazuj ponovo ovu poruku za ovu web lokaciju</translation>
-<translation id="7238585580608191973">SHA-256 otisak prsta</translation>
+<translation id="7238585580608191973">Digitalni otisak SHA-256</translation>
 <translation id="7240120331469437312">Alternativni naziv subjekta potvrde</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
 <translation id="7243771829620208687">RA0</translation>

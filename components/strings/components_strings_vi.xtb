@@ -666,7 +666,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2576880857912732701">Nút quản lý chế độ cài đặt bảo mật, nhấn phím Enter để quản lý tính năng Duyệt web an toàn và nhiều tính năng khác trong phần Cài đặt của Chrome</translation>
 <translation id="2586657967955657006">Bảng nhớ tạm</translation>
 <translation id="2587730715158995865">Từ <ph name="ARTICLE_PUBLISHER" />. Đọc tin bài này và <ph name="OTHER_ARTICLE_COUNT" /> tin bài khác.</translation>
-<translation id="2587841377698384444">ID API thư mục:</translation>
+<translation id="2587841377698384444">Mã API Thư mục:</translation>
 <translation id="2594318783181750337">Chế độ xem nhanh trên web:</translation>
 <translation id="2595719060046994702">Thiết bị và tài khoản này không thuộc quyền quản lý của một công ty hoặc tổ chức khác.</translation>
 <translation id="2596415276201385844">Để thiết lập kết nối an toàn, bạn cần đặt thời gian đúng cho đồng hồ. Nguyên nhân là do chứng chỉ mà các trang web dùng để tự nhận dạng chỉ có hiệu lực trong khoảng thời gian cụ thể. Vì đồng hồ trên thiết bị của bạn không đúng nên Chrome không thể xác minh các chứng chỉ này.</translation>
@@ -2818,7 +2818,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7952192831285741665">EDP châu Âu</translation>
 <translation id="7952804540472583406"><ph name="BEGIN_LINK" />Đăng nhập<ph name="END_LINK" /> vào mạng.</translation>
 <translation id="7953569069500808819">May viền ở trên cùng</translation>
-<translation id="7955105108888461311">Hỏi trực tiếp</translation>
+<translation id="7955105108888461311">Gặp trực tiếp để hỏi</translation>
 <translation id="7956713633345437162">Dấu trang trên thiết bị di động</translation>
 <translation id="7961015016161918242">Không bao giờ</translation>
 <translation id="7962467575542381659">Thiết bị trên nền tảng</translation>

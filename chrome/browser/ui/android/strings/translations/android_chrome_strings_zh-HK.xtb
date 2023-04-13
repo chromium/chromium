@@ -311,7 +311,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="2722945394406572875">閂咗私隱沙箱提示</translation>
 <translation id="2723001399770238859">音效檔案</translation>
 <translation id="2732063072010454421">獲得更佳的語音體驗</translation>
-<translation id="2760989362628427051">在裝置啟用深色主題背景或開啟「省電模式」後啟用深色主題背景</translation>
+<translation id="2760989362628427051">在裝置啟用深色主題背景或開啟「慳電模式」後啟用深色主題背景</translation>
 <translation id="2762000892062317888">剛剛</translation>
 <translation id="276969039800130567">以 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入。</translation>
 <translation id="2776236159752647997">如需更多與私隱權、安全性和資料收集相關的設定，請參閱 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" /></translation>
@@ -1226,7 +1226,7 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="757855969265046257">{FILES,plural, =1{已下載 <ph name="FILES_DOWNLOADED_ONE" /> 個檔案}other{已下載 <ph name="FILES_DOWNLOADED_MANY" /> 個檔案}}</translation>
 <translation id="7581273696622423628">填寫問卷調查</translation>
 <translation id="7583262514280211622">這裡會顯示您的閱讀清單</translation>
-<translation id="7588219262685291874">在裝置開啟「省電模式」後啟用深色主題背景</translation>
+<translation id="7588219262685291874">在裝置開啟「慳電模式」後啟用深色主題背景</translation>
 <translation id="7594687499944811403">讓 <ph name="EMBEDDED_ORIGIN" /> 為 <ph name="TOP_ORIGIN" /> 驗證您的身份</translation>
 <translation id="7596558890252710462">作業系統</translation>
 <translation id="7605594153474022051">同步處理功能無法正常運作</translation>

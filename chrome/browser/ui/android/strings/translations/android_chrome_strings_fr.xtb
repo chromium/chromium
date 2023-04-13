@@ -635,7 +635,7 @@ Les jetons d'état privés améliorent la confidentialité sur le Web et ne peuv
 <translation id="4504667196171871375">Via le Wi-Fi et les données mobiles</translation>
 <translation id="4508528996305412043">Le menu de la carte de flux est ouvert</translation>
 <translation id="4508642716788467538">Choisissez votre langue</translation>
-<translation id="4509501256689523862">Lorsque vous naviguez, la personnalisation des annonces dépend de ce paramètre, des <ph name="BEGIN_LINK_1" />thèmes publicitaires<ph name="END_LINK_1" />, des <ph name="BEGIN_LINK_2" />paramètres des cookies<ph name="END_LINK_2" /> et de si le site que vous consultez personnalise les annonces</translation>
+<translation id="4509501256689523862">Le fait que vous voyiez ou non des annonces personnalisées lorsque vous naviguez sur Internet dépend de ce paramètre, des <ph name="BEGIN_LINK_1" />thèmes publicitaires<ph name="END_LINK_1" />, de vos <ph name="BEGIN_LINK_2" />paramètres relatifs aux cookies<ph name="END_LINK_2" /> et du comportement du site que vous consultez en matière de personnalisation</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Il y a # jour}one{Il y a # jour}other{Il y a # jours}}</translation>
 <translation id="451872707440238414">Rechercher dans vos favoris</translation>
 <translation id="4521489764227272523">Les données sélectionnées ont été supprimées de Chrome et des appareils synchronisés.
@@ -1280,7 +1280,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7851858861565204677">Autres appareils</translation>
 <translation id="7853202427316060426">Activité</translation>
 <translation id="7859988229622350291">Ne jamais traduire</translation>
-<translation id="7864208933699511058">Lorsque vous naviguez, la personnalisation des annonces dépend de ce paramètre, des <ph name="BEGIN_LINK_1" />annonces suggérées par les sites<ph name="END_LINK_1" />, des <ph name="BEGIN_LINK_2" />paramètres des cookies<ph name="END_LINK_2" /> et de si le site que vous consultez personnalise les annonces.</translation>
+<translation id="7864208933699511058">Le fait que vous voyiez ou non des annonces personnalisées lorsque vous naviguez sur Internet dépend de ce paramètre, des <ph name="BEGIN_LINK_1" />annonces suggérées par les sites<ph name="END_LINK_1" />, de vos <ph name="BEGIN_LINK_2" />paramètres relatifs aux cookies<ph name="END_LINK_2" /> et du comportement du site que vous consultez en matière de personnalisation.</translation>
 <translation id="7866213166286285359">Traduisez les pages ici</translation>
 <translation id="78707286264420418"><ph name="PRODUCT_NAME" /> a besoin de l'autorisation Appareils à proximité pour se connecter à votre appareil</translation>
 <translation id="7875915731392087153">Créer un e-mail</translation>

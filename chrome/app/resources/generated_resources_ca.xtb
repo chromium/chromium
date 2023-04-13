@@ -3468,7 +3468,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4047726037116394521">Ves a la pàgina d'inici</translation>
 <translation id="4048384495227695211">Mostra <ph name="FILE_NAME" /> a la carpeta</translation>
 <translation id="404894744863342743">Quan hagis acabat d'utilitzar el fitxer baixat, suprimeix-lo perquè els altres usuaris que fan servir aquest dispositiu no puguin veure les teves contrasenyes.</translation>
-<translation id="4049783682480068824">{COUNT,plural, =1{# contacte no està disponible. Per fer servir la funció Compartició Nearby amb aquest contacte, afegeix als teus contactes l'adreça electrònica associada al seu Compte de Google.}other{# contactes no estan disponibles. Per fer servir la funció Compartició Nearby amb aquests contactes, afegeix als teus contactes les adreces electròniques associades als seus Comptes de Google.}}</translation>
+<translation id="4049783682480068824">{COUNT,plural, =1{# contacte no està disponible. Per fer servir Compartició Nearby amb aquest contacte, afegeix als teus contactes l'adreça electrònica associada al seu Compte de Google.}other{# contactes no estan disponibles. Per fer servir Compartició Nearby amb aquests contactes, afegeix als teus contactes les adreces electròniques associades als seus Comptes de Google.}}</translation>
 <translation id="4050225813016893843">Mètode d'autenticació</translation>
 <translation id="4050534976465737778">Comprova que els dos dispositius estiguin desbloquejats, l'un a prop de l'altre i amb el Bluetooth activat. Si vols compartir fitxers amb un Chromebook que no és als teus contactes, comprova que tingui el mode Visibilitat Nearby activat (obre l'àrea d'estat i, a continuació, activa Visibilitat Nearby). <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Minúscul</translation>
@@ -4872,7 +4872,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5372529912055771682">El mode d'inscripció proporcionat no és compatible amb aquesta versió del sistema operatiu. Assegureu-vos que estigueu executant la darrera versió i torneu-ho a provar.</translation>
 <translation id="5372579129492968947">Deixa de fixar l'extensió</translation>
 <translation id="5372632722660566343">Continua sense cap compte</translation>
-<translation id="5375318608039113175">Per fer servir la funció Compartició Nearby amb aquests contactes, afegeix als teus contactes les adreces electròniques enllaçades als seus Comptes de Google.</translation>
+<translation id="5375318608039113175">Per fer servir Compartició Nearby amb aquests contactes, afegeix als teus contactes les adreces electròniques enllaçades als seus Comptes de Google.</translation>
 <translation id="5376094717770783089">Sol·licita accés</translation>
 <translation id="5376169624176189338">Feu clic per tornar enrere o manteniu premut per veure l'historial</translation>
 <translation id="5376931455988532197">El fitxer és massa gran</translation>
@@ -5819,7 +5819,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6238923052227198598">Mantén la darrera nota a la pantalla de bloqueig</translation>
 <translation id="6239558157302047471">Torna a carregar el &amp;marc</translation>
 <translation id="6240821072888636753">Pregunta sempre</translation>
-<translation id="6241530762627360640">Accedir a informació sobre els dispositius Bluetooth vinculats al sistema i descobrir dispositius Bluetooth a prop</translation>
+<translation id="6241530762627360640">Accedir a informació sobre els dispositius Bluetooth vinculats al sistema i descobrir dispositius Bluetooth propers</translation>
 <translation id="6241844896329831164">No cal accés</translation>
 <translation id="6242574558232861452">S'està comprovant si es compleixen les polítiques de seguretat de la teva organització.</translation>
 <translation id="6242589501614145408">Restableix la clau de seguretat</translation>
