@@ -305,24 +305,16 @@ CGFloat const kTableViewCornerRadius = 10;
 // Defaults to the globe symbol if no URL is associated with the cell.
 - (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
                        forCell:(UITableViewCell*)cell {
-  TableViewItem* item =
-      [_tableViewController.tableViewModel itemAtIndexPath:indexPath];
-  DCHECK(item);
   DCHECK(cell);
 
-  TableViewURLItem* URLItem = base::mac::ObjCCastStrict<TableViewURLItem>(item);
   TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
 
-  NSString* itemIdentifier = URLItem.uniqueIdentifier;
-
   auto faviconLoadedBlock = ^(FaviconAttributes* attributes) {
-    // Only set favicon if the cell hasn't been reused.
-    if ([URLCell.cellUniqueIdentifier isEqualToString:itemIdentifier]) {
-      DCHECK(attributes);
-      [URLCell.faviconView configureWithAttributes:attributes];
-    }
+    // TODO(crbug.com/1422362): if the user scrolls quickly and the cell is
+    // reused, it is possible that the wrong favicon is displayed (as the
+    // favicon fetch is asynchronous).
+    [URLCell.faviconView configureWithAttributes:attributes];
   };
-
   [self.delegate loadFaviconAtIndexPath:indexPath
                     faviconBlockHandler:faviconLoadedBlock];
 }
