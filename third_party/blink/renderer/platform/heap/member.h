@@ -7,6 +7,7 @@
 
 #include "base/check_op.h"
 #include "base/record_replay.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "third_party/blink/renderer/platform/heap/write_barrier.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -135,7 +136,6 @@ struct MemberHashRecordReplayRegisteredPointerId
   }
 };
 
-
 // Replay's hashing function with Member<>-wrapped objects, using the function
 // RecordReplayId for the hashing key.
 template <typename T>
@@ -174,7 +174,8 @@ struct MemberHashRecordReplayId
             std::enable_if_t<WTF::IsAnyMemberType<Member>::value>* = nullptr>
   static unsigned GetHash(const Member& m) {
     if (recordreplay::IsRecordingOrReplaying()) {
-      int id = m.Get()->RecordReplayId();
+      T* ptr = m.Get();
+      int id = ptr->RecordReplayId();
       // Ids are allowed to be zero if we've diverged from the recording.
       if (recordreplay::HasDivergedFromRecording()) {
         if (id > 0) {
@@ -198,21 +199,27 @@ struct MemberHashRecordReplayId
 };
 
 template <typename T>
+using DefaultHashTypeForMember =
+    std::conditional_t<IsSubclass<T, blink::ScriptWrappable>::value,
+                       MemberHashRecordReplayId<blink::ScriptWrappable>,
+                       MemberHash<T>>;
+
+template <typename T>
 struct DefaultHash<blink::Member<T>> {
   STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
+  using Hash = DefaultHashTypeForMember<T>;
 };
 
 template <typename T>
 struct DefaultHash<blink::WeakMember<T>> {
   STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
+  using Hash = DefaultHashTypeForMember<T>;
 };
 
 template <typename T>
 struct DefaultHash<blink::UntracedMember<T>> {
   STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
+  using Hash = DefaultHashTypeForMember<T>;
 };
 
 template <typename T>
