@@ -38,6 +38,7 @@ public class OmniboxFeatures {
     private static final MutableFlagWithSafeDefault sJourneysRowUiFlag =
             new MutableFlagWithSafeDefault(
                     ChromeFeatureList.OMNIBOX_HISTORY_CLUSTER_PROVIDER, false);
+
     private static final MutableFlagWithSafeDefault sCacheSuggestionResources =
             new MutableFlagWithSafeDefault(
                     ChromeFeatureList.OMNIBOX_CACHE_SUGGESTION_RESOURCES, false);
@@ -47,6 +48,10 @@ public class OmniboxFeatures {
                             ChromeFeatureList
                                     .OMNIBOX_ADAPTIVE_SUGGESTIONS_VISIBLE_GROUP_ELIGIBILITY_UPDATE,
                             false);
+
+    private static final MutableFlagWithSafeDefault sWarmRecycledViewPoolFlag =
+            new MutableFlagWithSafeDefault(
+                    ChromeFeatureList.OMNIBOX_WARM_RECYCLED_VIEW_POOL, false);
 
     /**
      * @param context The activity context.
@@ -134,5 +139,12 @@ public class OmniboxFeatures {
      */
     public static boolean adaptiveSuggestionsVisibleGroupEligibilityUpdate() {
         return sOmniboxAdaptiveSuggestionsVisibleGroupEligibilityUpdate.isEnabled();
+    }
+
+    /**
+     * Returns whether the omnibox's recycler view pool should be pre-warmed prior to initial use.
+     */
+    public static boolean shouldPreWarmRecyclerViewPool() {
+        return sWarmRecycledViewPoolFlag.isEnabled();
     }
 }

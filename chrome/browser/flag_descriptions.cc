@@ -2217,6 +2217,12 @@ const char kOmniboxRedoCurrentMatchDescription[] =
     "Use an alternative implementation of calculating the cached omnibox "
     "current match that is valid more often.";
 
+const char kOmniboxWarmRecycledViewPoolName[] =
+    "Omnibox warm recycled view pool";
+const char kOmniboxWarmRecycledViewPoolDescription[] =
+    "Pre-warms the Android Omnibox's RecyclerView pool by inflating "
+    "views before the omnibox is focused.";
+
 const char kOmniboxReportAssistedQueryStatsName[] =
     "Omnibox Assisted Query Stats param";
 const char kOmniboxReportAssistedQueryStatsDescription[] =

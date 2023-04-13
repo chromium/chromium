@@ -60822,6 +60822,7 @@ from previous Chrome versions.
   <int value="-639026783" label="disable-gpu-appcontainer"/>
   <int value="-638952203" label="RendererSideResourceScheduler:disabled"/>
   <int value="-638764080" label="EncryptedClientHello:disabled"/>
+  <int value="-638349846" label="OmniboxWarmRecycledViewPool:disabled"/>
   <int value="-638177392" label="FuseBoxDebug:enabled"/>
   <int value="-637297943" label="WebAuthenticationCableSecondFactor:disabled"/>
   <int value="-637215276" label="QuickAnswersOnEditableText:enabled"/>
@@ -65562,6 +65563,7 @@ from previous Chrome versions.
   <int value="1949019439"
       label="AutofillRestrictUnownedFieldsToFormlessCheckout:disabled"/>
   <int value="1949156880" label="SyncRequiresPoliciesLoaded:enabled"/>
+  <int value="1949314084" label="OmniboxWarmRecycledViewPool:enabled"/>
   <int value="1949908940" label="disable-zip-archiver-unpacker"/>
   <int value="1949996482" label="CSSColorSchemeUARendering:disabled"/>
   <int value="1950191981" label="OverlayNewLayout:enabled"/>

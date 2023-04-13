@@ -14,7 +14,6 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -205,49 +204,16 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             mLastKeyboardShownState = true;
         }
     }
-    /**
-     * RecyclerView pool that records performance of the view recycling mechanism.
-     * @see OmniboxSuggestionsListViewListAdapter#canReuseView(View, int)
-     */
-    private class HistogramRecordingRecycledViewPool extends RecycledViewPool {
-        HistogramRecordingRecycledViewPool() {
-            // The list below should include suggestions defined in OmniboxSuggestionUiType
-            // and specify the maximum anticipated volume of suggestions of each type.
-            // For readability reasons, keep the order of this list same as the order of
-            // the types defined in OmniboxSuggestionUiType.
-            setMaxRecycledViews(OmniboxSuggestionUiType.DEFAULT, 20);
-            setMaxRecycledViews(OmniboxSuggestionUiType.EDIT_URL_SUGGESTION, 1);
-            setMaxRecycledViews(OmniboxSuggestionUiType.ANSWER_SUGGESTION, 1);
-            setMaxRecycledViews(OmniboxSuggestionUiType.ENTITY_SUGGESTION, 8);
-            setMaxRecycledViews(OmniboxSuggestionUiType.TAIL_SUGGESTION, 15);
-            setMaxRecycledViews(OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION, 1);
-            setMaxRecycledViews(OmniboxSuggestionUiType.HEADER, 4);
-            setMaxRecycledViews(OmniboxSuggestionUiType.TILE_NAVSUGGEST, 1);
-            setMaxRecycledViews(OmniboxSuggestionUiType.PEDAL_SUGGESTION, 3);
-            setMaxRecycledViews(OmniboxSuggestionUiType.DIVIDER_LINE, 1);
-        }
-
-        @Override
-        public ViewHolder getRecycledView(int viewType) {
-            ViewHolder result = super.getRecycledView(viewType);
-            if (result == null) {
-                SuggestionsMetrics.recordSuggestionsViewCreatedType(viewType);
-            } else {
-                SuggestionsMetrics.recordSuggestionsViewReusedType(viewType);
-            }
-            return result;
-        }
-    }
 
     /**
      * Constructs a new list designed for containing omnibox suggestions.
      * @param context Context used for contained views.
      */
-    public OmniboxSuggestionsDropdown(@NonNull Context context) {
+    public OmniboxSuggestionsDropdown(@NonNull Context context, RecycledViewPool recycledViewPool) {
         super(context, null, android.R.attr.dropDownListViewStyle);
         setFocusable(true);
         setFocusableInTouchMode(true);
-        setRecycledViewPool(new HistogramRecordingRecycledViewPool());
+        setRecycledViewPool(recycledViewPool);
 
         // By default RecyclerViews come with item animators.
         setItemAnimator(null);
@@ -385,7 +351,9 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         super.onDetachedFromWindow();
         mEmbedder.onDetachedFromWindow();
         mOmniboxAlignment = OmniboxAlignment.UNSPECIFIED;
-        getRecycledViewPool().clear();
+        if (!OmniboxFeatures.shouldPreWarmRecyclerViewPool()) {
+            getRecycledViewPool().clear();
+        }
         mAdapter.recordSessionMetrics();
         mEmbedder.removeAlignmentObserver(mOmniboxAlignmentObserver);
     }

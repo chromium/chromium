@@ -5457,6 +5457,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxMostVisitedTilesAddRecycledViewPoolDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxMostVisitedTilesAddRecycledViewPool)},
+
+    {"omnibox-warm-recycled-view-pool",
+     flag_descriptions::kOmniboxWarmRecycledViewPoolName,
+     flag_descriptions::kOmniboxWarmRecycledViewPoolDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kOmniboxWarmRecycledViewPool)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"omnibox-local-history-zero-suggest-beyond-ntp",

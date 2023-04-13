@@ -261,6 +261,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kOmniboxCacheSuggestionResources,
     &kOmniboxConsumesImeInsets,
     &kOmniboxModernizeVisualUpdate,
+    &kOmniboxWarmRecycledViewPool,
     &kOpaqueOriginForIncomingIntents,
     &kPartnerHomepageInitialLoadImprovement,
     &kProbabilisticCryptidRenderer,
@@ -841,6 +842,10 @@ BASE_FEATURE(kOmniboxConsumesImeInsets,
 
 BASE_FEATURE(kOmniboxModernizeVisualUpdate,
              "OmniboxModernizeVisualUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kOmniboxWarmRecycledViewPool,
+             "OmniboxWarmRecycledViewPool",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOpaqueOriginForIncomingIntents,

@@ -26,6 +26,7 @@ import android.view.ViewGroup.MarginLayoutParams;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView.LayoutParams;
+import androidx.recyclerview.widget.RecyclerView.RecycledViewPool;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
@@ -68,6 +69,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
     private @Mock Runnable mDropdownScrollToTopListener;
     private @Mock WindowDelegate mWindowDelegate;
     private @Mock OmniboxSuggestionsDropdownAdapter mAdapter;
+    private @Mock RecycledViewPool mPool;
 
     private Context mContext;
 
@@ -122,7 +124,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
     public void setUp() {
         mContext = new ContextThemeWrapper(
                 ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
-        mDropdown = new OmniboxSuggestionsDropdown(mContext);
+        mDropdown = new OmniboxSuggestionsDropdown(mContext, mPool);
         mDropdown.setAdapter(mAdapter);
         mListener = mDropdown.getLayoutScrollListener();
     }
@@ -396,7 +398,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @SmallTest
     @LooperMode(Mode.PAUSED)
     public void testAlignmentProvider_changeDuringlayout() {
-        mDropdown = Mockito.spy(new OmniboxSuggestionsDropdown(mContext));
+        mDropdown = Mockito.spy(new OmniboxSuggestionsDropdown(mContext, mPool));
         mDropdown.setAdapter(mAdapter);
         mDropdown.setEmbedder(mEmbedder);
         mDropdown.onAttachedToWindow();

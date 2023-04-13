@@ -119,6 +119,7 @@ BASE_DECLARE_FEATURE(kOmniboxAdaptNarrowTabletWindows);
 BASE_DECLARE_FEATURE(kOmniboxCacheSuggestionResources);
 BASE_DECLARE_FEATURE(kOmniboxConsumesImeInsets);
 BASE_DECLARE_FEATURE(kOmniboxModernizeVisualUpdate);
+BASE_DECLARE_FEATURE(kOmniboxWarmRecycledViewPool);
 BASE_DECLARE_FEATURE(kOptimizeGeolocationHeaderGeneration);
 BASE_DECLARE_FEATURE(kPageAnnotationsService);
 BASE_DECLARE_FEATURE(kBookmarksImprovedSaveFlow);

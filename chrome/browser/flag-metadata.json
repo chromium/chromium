@@ -5741,6 +5741,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "omnibox-warm-recycled-view-pool",
+    "owners": [ "pnoland", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "omnibox-zero-suggest-in-memory-caching",
     "owners": [ "khalidpeer", "mahmadi", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120
