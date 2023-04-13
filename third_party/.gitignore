@@ -251,6 +251,9 @@
 /scons-2.0.1
 /securemessage/src
 /shaka-player/dist/
+/siso/siso
+/siso/siso.exe
+/siso/.versions
 /skia
 /smhasher/src
 /snappy/src
