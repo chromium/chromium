@@ -1125,6 +1125,77 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
   }
 }
 
+// Tests behavior of BlockedHexSSIDs on login screen and in a user session.
+// Also tests that if a blocked SSID was connected on the sign-in screen, it is
+// disconnected when a user signs in.
+IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest, BlockedHexSSIDs) {
+  constexpr char kGuidWifi1[] = "wifi_orig_guid_1";
+  constexpr char kGuidWifi2[] = "wifi_orig_guid_2";
+
+  CrosNetworkConfigGuidsAvailableWaiter available_waiter(
+      cros_network_config_.get(), {kGuidWifi1, kGuidWifi2});
+  AddPskWifiService(kServiceWifi1, kGuidWifi1, "WifiOne", shill::kStateIdle);
+  AddPskWifiService(kServiceWifi2, kGuidWifi2, "WifiTwo", shill::kStateIdle);
+  available_waiter.Wait();
+
+  // Check that initially no policies applied and CrosNetworkStateProperties
+  // has no prohibited networks.
+  {
+    EXPECT_THAT(CrosNetworkConfigGetGlobalPolicy()->blocked_hex_ssids,
+                IsEmpty());
+
+    EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi1));
+    EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi2));
+  }
+
+  // Apply device ONC policy.
+  // 576966694F6E65 is hex-encoded ASCII "WifiOne"
+  {
+    const char kDeviceONC[] = R"(
+        {
+          "GlobalNetworkConfiguration": {
+            "BlockedHexSSIDs": [ "576966694F6E65" ]
+          },
+          "NetworkConfigurations": [ ]
+        })";
+    SetDeviceOpenNetworkConfiguration(kDeviceONC, /*wait_applied=*/true);
+
+    EXPECT_THAT(CrosNetworkConfigGetGlobalPolicy()->blocked_hex_ssids,
+                ElementsAre("576966694F6E65"));
+  }
+
+  // The network is still connectable because BlockedHexSSIDs is not applied on
+  // the sign-in screen.
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi1));
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi2));
+
+  ConnectToService(kServiceWifi1);
+  EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi1), shill::kStateOnline);
+  EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi2), shill::kStateIdle);
+
+  // Sign-in a user and apply user without ONC policy.
+  // The blocked network should be automatically disconnected.
+  {
+    ServiceStateWaiter wifi_disconnected_waiter(shill_service_client_test_,
+                                                kServiceWifi1);
+
+    LoginUser(test_account_id_);
+    const std::string user_hash = GetTestUserHash();
+    shill_profile_client_test_->AddProfile(kUserProfilePath, user_hash);
+
+    wifi_disconnected_waiter.Wait(shill::kStateIdle);
+  }
+
+  EXPECT_TRUE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi1));
+  EXPECT_FALSE(IsProhibitedByPolicyInCrosNetworkConfig(kGuidWifi2));
+
+  EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi1), shill::kStateIdle);
+  EXPECT_EQ(GetWifiStateFromShillClient(kGuidWifi2), shill::kStateIdle);
+
+  // TODO(b/277809215): Attempt to connect to the prohibited service using
+  // CrosNetworkConfig.
+}
+
 // Behavior of AllowOnlyPolicyNetworksToConnectIfAvailable when no policy
 // networks are configured.
 IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
