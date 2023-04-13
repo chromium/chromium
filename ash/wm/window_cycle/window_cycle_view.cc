@@ -11,7 +11,7 @@
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/system_shadow.h"
 #include "ash/style/tab_slider.h"
 #include "ash/style/tab_slider_button.h"
@@ -123,11 +123,14 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
   layer()->SetName("WindowCycleView");
   layer()->SetMasksToBounds(true);
 
+  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
   SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysScrim2, kBackgroundCornerRadius));
+      is_jellyroll_enabled ? cros_tokens::kCrosSysScrim2
+                           : static_cast<ui::ColorId>(kColorAshShieldAndBase80),
+      kBackgroundCornerRadius));
   SetBorder(std::make_unique<views::HighlightBorder>(
       kBackgroundCornerRadius,
-      chromeos::features::IsJellyrollEnabled()
+      is_jellyroll_enabled
           ? views::HighlightBorder::Type::kHighlightBorderOnShadow
           : views::HighlightBorder::Type::kHighlightBorder1,
       /*use_light_colors=*/false));
@@ -147,9 +150,8 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
                             WindowCycleView::kInsideBorderHorizontalPaddingDp,
                             kInsideBorderVerticalPaddingDp,
                             WindowCycleView::kInsideBorderHorizontalPaddingDp),
-          chromeos::features::IsJellyrollEnabled()
-              ? kBetweenChildPaddingDpCrOSNext
-              : kBetweenChildPaddingDp));
+          is_jellyroll_enabled ? kBetweenChildPaddingDpCrOSNext
+                               : kBetweenChildPaddingDp));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 
@@ -176,7 +178,9 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
     // Configure the focus ring for the tab slider selector view.
     views::FocusRing::Install(tab_slider_selector_view);
     auto* focus_ring = views::FocusRing::Get(tab_slider_selector_view);
-    focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
+    focus_ring->SetColorId(is_jellyroll_enabled ? cros_tokens::kCrosSysFocusRing
+                                                : static_cast<ui::ColorId>(
+                                                      ui::kColorAshFocusRing));
     const float halo_inset = focus_ring->GetHaloThickness() / 2.f + 2;
     focus_ring->SetHaloInset(-halo_inset);
     // Set a pill shaped (fully rounded rect) highlight path to focus ring.
@@ -195,9 +199,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
     no_recent_items_label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
     no_recent_items_label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
 
-    no_recent_items_label_->SetEnabledColor(
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorSecondary));
+    no_recent_items_label_->SetEnabledColorId(kColorAshIconColorSecondary);
     no_recent_items_label_->SetFontList(
         no_recent_items_label_->font_list()
             .DeriveWithSizeDelta(
