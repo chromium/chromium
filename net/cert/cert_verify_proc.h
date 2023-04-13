@@ -39,17 +39,14 @@ class NET_EXPORT CertVerifyProc
   enum VerifyFlags {
     // If set, enables online revocation checking via CRLs and OCSP for the
     // certificate chain.
+    // Note: has no effect if VERIFY_DISABLE_NETWORK_FETCHES is set.
     VERIFY_REV_CHECKING_ENABLED = 1 << 0,
 
     // If set, this is equivalent to VERIFY_REV_CHECKING_ENABLED, in that it
     // enables online revocation checking via CRLs or OCSP, but only
     // for certificates issued by non-public trust anchors. Failure to check
     // revocation is treated as a hard failure.
-    // Note: If VERIFY_CERT_IO_ENABLE is not also supplied, certificates
-    // that chain to local trust anchors will likely fail - for example, due to
-    // lacking fresh cached revocation issue (Windows) or because OCSP stapling
-    // can only provide information for the leaf, and not for any
-    // intermediates.
+    // Note: has no effect if VERIFY_DISABLE_NETWORK_FETCHES is set.
     VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS = 1 << 1,
 
     // If set, certificates with SHA-1 signatures will be allowed, but only if
@@ -59,6 +56,12 @@ class NET_EXPORT CertVerifyProc
     // If set, disables the policy enforcement described at
     // https://security.googleblog.com/2017/09/chromes-plan-to-distrust-symantec.html
     VERIFY_DISABLE_SYMANTEC_ENFORCEMENT = 1 << 3,
+
+    // Disable network fetches during verification. This will override
+    // VERIFY_REV_CHECKING_ENABLED and
+    // VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS if they are also specified.
+    // TODO(https://crbug.com/1432793): This should also disable AIA fetching.
+    VERIFY_DISABLE_NETWORK_FETCHES = 1 << 4,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and

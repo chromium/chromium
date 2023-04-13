@@ -314,6 +314,18 @@ class PathBuilderDelegateImpl : public SimplePathBuilderDelegate {
   // Selects a revocation policy based on the CertVerifier flags and the given
   // certificate chain.
   RevocationPolicy ChooseRevocationPolicy(const ParsedCertificateList& certs) {
+    if (flags_ & CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES) {
+      // In theory when network fetches are disabled but revocation is enabled
+      // we could continue with networking_allowed=false (and
+      // VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS would also have to change
+      // allow_missing_info and allow_unable_to_check to true).
+      // That theoretically could allow still consulting any cached CRLs/etc.
+      // However in the way things are currently implemented in the builtin
+      // verifier there really is no point to bothering, just disable
+      // revocation checking if network fetches are disabled.
+      return NoRevocationChecking();
+    }
+
     // Use hard-fail revocation checking for local trust anchors, if requested
     // by the load flag and the chain uses a non-public root.
     if ((flags_ & CertVerifyProc::VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS) &&

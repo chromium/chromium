@@ -3299,6 +3299,36 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest, RevocationHardFailNoCrls) {
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
+TEST_P(CertVerifyProcInternalWithNetFetchingTest,
+       RevocationHardFailNoCrlsDisableNetworkFetches) {
+  if (!SupportsRevCheckingRequiredLocalAnchors()) {
+    LOG(INFO) << "Skipping test as verifier doesn't support "
+                 "VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS";
+    return;
+  }
+
+  // Create certs which have no AIA or CRL distribution points.
+  const char kHostname[] = "www.example.com";
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+
+  // Trust the root and build a chain to verify that includes the intermediate.
+  ScopedTestRoot scoped_root(root->GetX509Certificate().get());
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+
+  // Verify with flags for both hard-fail revocation checking for local anchors
+  // and disabling network fetches.
+  const int flags = CertVerifyProc::VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS |
+                    CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES;
+  CertVerifyResult verify_result;
+  int error =
+      Verify(chain.get(), kHostname, flags, CertificateList(), &verify_result);
+
+  // Should succeed, VERIFY_DISABLE_NETWORK_FETCHES takes priority.
+  EXPECT_THAT(error, IsOk());
+  EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
+}
+
 // CRL hard fail test where both leaf and intermediate are covered by valid
 // CRLs which have empty (non-present) revokedCertificates list. Verification
 // should succeed.
@@ -3653,6 +3683,42 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
   // Should fail, leaf is revoked.
   EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
+}
+
+TEST_P(CertVerifyProcInternalWithNetFetchingTest,
+       RevocationSoftFailLeafRevokedByCrlDisableNetworkFetches) {
+  if (!SupportsSoftFailRevChecking()) {
+    LOG(INFO) << "Skipping test as verifier doesn't support "
+                 "VERIFY_REV_CHECKING_ENABLED";
+    return;
+  }
+
+  const char kHostname[] = "www.example.com";
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+
+  // Root-issued CRL which does not revoke intermediate.
+  intermediate->SetCrlDistributionPointUrl(CreateAndServeCrl(root.get(), {}));
+
+  // Leaf is revoked by intermediate issued CRL.
+  leaf->SetCrlDistributionPointUrl(
+      CreateAndServeCrl(intermediate.get(), {leaf->GetSerialNumber()}));
+
+  // Trust the root and build a chain to verify that includes the intermediate.
+  ScopedTestRoot scoped_root(root->GetX509Certificate().get());
+  scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+  ASSERT_TRUE(chain.get());
+
+  // Verify with flags for both soft-fail revocation checking and disabling
+  // network fetches.
+  const int flags = CertVerifyProc::VERIFY_REV_CHECKING_ENABLED |
+                    CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES;
+  CertVerifyResult verify_result;
+  int error =
+      Verify(chain.get(), kHostname, flags, CertificateList(), &verify_result);
+
+  // Should succeed, VERIFY_DISABLE_NETWORK_FETCHES takes priority.
+  EXPECT_THAT(error, IsOk());
+  EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
 }
 
 TEST_P(CertVerifyProcInternalWithNetFetchingTest,

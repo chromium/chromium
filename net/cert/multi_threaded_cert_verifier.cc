@@ -149,8 +149,7 @@ void MultiThreadedCertVerifier::InternalRequest::Start(
 
   int flags = GetFlagsForConfig(config);
   if (params.flags() & CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES) {
-    flags &= ~CertVerifyProc::VERIFY_REV_CHECKING_ENABLED;
-    flags &= ~CertVerifyProc::VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS;
+    flags |= CertVerifyProc::VERIFY_DISABLE_NETWORK_FETCHES;
   }
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
