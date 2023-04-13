@@ -613,8 +613,6 @@ component("platform") {
     "fonts/font_height.cc",
     "fonts/font_height.h",
     "fonts/font_invalidation_reason.h",
-    "fonts/font_matching_metrics.cc",
-    "fonts/font_matching_metrics.h",
     "fonts/font_metrics.cc",
     "fonts/font_metrics.h",
     "fonts/font_metrics_override.h",
