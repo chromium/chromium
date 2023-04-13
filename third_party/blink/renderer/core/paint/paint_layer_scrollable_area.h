@@ -727,12 +727,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   unsigned in_resize_mode_ : 1;
   unsigned scrolls_overflow_ : 1;
 
-  // True if we are in an overflow scrollbar relayout.
-  unsigned in_overflow_relayout_ : 1;
-
-  // True if a second overflow scrollbar relayout is permitted.
-  unsigned allow_second_overflow_relayout_ : 1;
-
   // FIXME: once cc can handle composited scrolling with clip paths, we will
   // no longer need this bit.
   unsigned needs_composited_scrolling_ : 1;

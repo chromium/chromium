@@ -132,8 +132,6 @@ PaintLayerScrollableArea::PaintLayerScrollableArea(PaintLayer& layer)
       layer_(&layer),
       in_resize_mode_(false),
       scrolls_overflow_(false),
-      in_overflow_relayout_(false),
-      allow_second_overflow_relayout_(false),
       needs_composited_scrolling_(false),
       needs_scroll_offset_clamp_(false),
       needs_relayout_(false),
@@ -964,15 +962,8 @@ void PaintLayerScrollableArea::SetScrollOffsetUnconditionally(
 void PaintLayerScrollableArea::UpdateAfterLayout() {
   InvalidateAllStickyConstraints();
 
-  bool is_horizontal_scrollbar_frozen;
-  bool is_vertical_scrollbar_frozen;
-  if (in_overflow_relayout_ && !allow_second_overflow_relayout_) {
-    is_horizontal_scrollbar_frozen = is_vertical_scrollbar_frozen = true;
-  } else {
-    is_horizontal_scrollbar_frozen = IsHorizontalScrollbarFrozen();
-    is_vertical_scrollbar_frozen = IsVerticalScrollbarFrozen();
-  }
-  allow_second_overflow_relayout_ = false;
+  bool is_horizontal_scrollbar_frozen = IsHorizontalScrollbarFrozen();
+  bool is_vertical_scrollbar_frozen = IsVerticalScrollbarFrozen();
 
   if (NeedsScrollbarReconstruction()) {
     RemoveScrollbarsForReconstruction();
@@ -995,16 +986,10 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
   ComputeScrollbarExistence(kLayout, needs_horizontal_scrollbar,
                             needs_vertical_scrollbar);
 
-  // Removing auto scrollbars is a heuristic and can be incorrect if the content
-  // size depends on the scrollbar size (e.g., sized with percentages). Removing
-  // scrollbars can require two additional layout passes so this is only done on
-  // the first layout (!in_overflow_layout).
-  if (!in_overflow_relayout_ && !is_horizontal_scrollbar_frozen &&
-      !is_vertical_scrollbar_frozen &&
+  if (!is_horizontal_scrollbar_frozen && !is_vertical_scrollbar_frozen &&
       TryRemovingAutoScrollbars(needs_horizontal_scrollbar,
                                 needs_vertical_scrollbar)) {
     needs_horizontal_scrollbar = needs_vertical_scrollbar = false;
-    allow_second_overflow_relayout_ = true;
   }
 
   bool horizontal_scrollbar_should_change =
@@ -1050,25 +1035,10 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
            !GetLayoutBox()->IsHorizontalWritingMode())) {
         GetLayoutBox()->SetIntrinsicLogicalWidthsDirty();
       }
-      if (IsManagedByLayoutNG(*GetLayoutBox())) {
-        // If the box is managed by LayoutNG, don't go here. We don't want to
-        // re-enter the NG layout algorithm for this box from here. Just update
-        // the rectangles, in case scrollbars were added or removed. LayoutNG
-        // has its own scrollbar change detection mechanism.
-        UpdateScrollDimensions();
-      } else {
-        in_overflow_relayout_ = true;
-        SubtreeLayoutScope layout_scope(*GetLayoutBox());
-        layout_scope.SetNeedsLayout(
-            GetLayoutBox(), layout_invalidation_reason::kScrollbarChanged);
-        if (auto* block = DynamicTo<LayoutBlock>(GetLayoutBox())) {
-          block->UpdateBlockLayout(true);
-        } else {
-          GetLayoutBox()->UpdateLayout();
-        }
-        in_overflow_relayout_ = false;
-        scrollbar_manager_.DestroyDetachedScrollbars();
-      }
+      // Just update the rectangles, in case scrollbars were added or
+      // removed. The calling code on the layout side has its own scrollbar
+      // change detection mechanism.
+      UpdateScrollDimensions();
     }
   } else if (!HasScrollbar() && resizer_will_change) {
     Layer()->DirtyStackingContextZOrderLists();
@@ -1651,11 +1621,6 @@ void PaintLayerScrollableArea::ComputeScrollbarExistence(
 bool PaintLayerScrollableArea::TryRemovingAutoScrollbars(
     const bool& needs_horizontal_scrollbar,
     const bool& needs_vertical_scrollbar) {
-  // If scrollbars are removed but the content size depends on the scrollbars,
-  // additional layouts will be required to size the content. Therefore, only
-  // remove auto scrollbars for the initial layout pass.
-  DCHECK(!in_overflow_relayout_);
-
   if (!needs_horizontal_scrollbar && !needs_vertical_scrollbar)
     return false;
 
