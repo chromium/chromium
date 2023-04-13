@@ -34,12 +34,16 @@ def LoadPList(path):
     return plistlib.load(f)
 
 
-# This contains binaries from Xcode 14.0 14B47b along with the macOS 13 SDK
-# (13.0 22A372). To build these packages, see comments in
+# This contains binaries from Xcode 14.3 14E222b along with the macOS 13.3 SDK
+# (13.3 22E245). To build these packages, see comments in
 # build/xcode_binaries.yaml
+# To update the version numbers, open Xcode's "About Xcode" for the first number
+# and run `xcrun --show-sdk-build-version` for the second.
+# To update the _TAG, use the output of the `cipd create` command mentioned in
+# xcode_binaries.yaml.
 
 MAC_BINARIES_LABEL = 'infra_internal/ios/xcode/xcode_binaries/mac-amd64'
-MAC_BINARIES_TAG = '14b47b'
+MAC_BINARIES_TAG = 'ajH0-Cuzzqtyj98qUlsgO1-lepRhXoVVNAjVXDIYHxcC'
 
 # The toolchain will not be downloaded if the minimum OS version is not met. 19
 # is the major version number for macOS 10.15. Xcode 14.0 14B47b only runs on
