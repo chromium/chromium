@@ -184,6 +184,7 @@ class AppShimManager : public AppShimHostBootstrap::Client,
                         const std::vector<GURL>& urls) override;
   void OnShimOpenAppWithOverrideUrl(AppShimHost* host,
                                     const GURL& override_url) override;
+  void OnShimWillTerminate(AppShimHost* host) override;
   // AppLifetimeMonitor::Observer overrides:
   void OnAppStart(content::BrowserContext* context,
                   const std::string& app_id) override;

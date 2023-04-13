@@ -61,4 +61,10 @@
   return _appShimController->GetApplicationDockMenu();
 }
 
+// Called when the app is shutting down. Used to persist the current state of
+// the app.
+- (void)applicationWillTerminate:(NSNotification*)aNotification {
+  _appShimController->ApplicationWillTerminate();
+}
+
 @end

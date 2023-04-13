@@ -130,6 +130,10 @@ interface AppShimHost {
   // Sent when the app should be opened with an override url (e.g.
   // user clicks on an item in the application dock menu).
   OpenAppWithOverrideUrl(url.mojom.Url override_url);
+
+  // Sent when the app is about to terminate. Used to persist what profiles
+  // where open when the app was terminated.
+  ApplicationWillTerminate();
 };
 
 // Properties of an app shim that are specified when it connects to the browser

@@ -188,6 +188,7 @@ class AppShimHostTest : public testing::Test,
                         const std::vector<GURL>& urls) override {}
   void OnShimOpenAppWithOverrideUrl(AppShimHost* host,
                                     const GURL& override_url) override {}
+  void OnShimWillTerminate(AppShimHost* host) override {}
 
   chrome::mojom::AppShimLaunchResult launch_result_ =
       chrome::mojom::AppShimLaunchResult::kSuccess;

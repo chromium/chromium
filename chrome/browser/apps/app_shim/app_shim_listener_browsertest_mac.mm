@@ -208,6 +208,7 @@ class AppShimListenerBrowserTest : public InProcessBrowserTest,
   void ProfileSelectedFromMenu(const base::FilePath& profile_path) override {}
   void UrlsOpened(const std::vector<GURL>& urls) override {}
   void OpenAppWithOverrideUrl(const GURL& override_url) override {}
+  void ApplicationWillTerminate() override {}
 
   std::unique_ptr<base::RunLoop> runner_;
   mojo::Receiver<chrome::mojom::AppShimHost> receiver_{this};

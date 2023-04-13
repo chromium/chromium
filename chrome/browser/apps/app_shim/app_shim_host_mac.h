@@ -76,6 +76,10 @@ class AppShimHost : public chrome::mojom::AppShimHost {
     // url (e.g. user clicks on an item in the application dock menu).
     virtual void OnShimOpenAppWithOverrideUrl(AppShimHost* host,
                                               const GURL& override_url) = 0;
+
+    // Invoked by the shim host when the app is about to terminate (for example
+    // because the user quit it).
+    virtual void OnShimWillTerminate(AppShimHost* host) = 0;
   };
 
   AppShimHost(Client* client,
@@ -138,6 +142,7 @@ class AppShimHost : public chrome::mojom::AppShimHost {
   void ProfileSelectedFromMenu(const base::FilePath& profile_path) override;
   void UrlsOpened(const std::vector<GURL>& urls) override;
   void OpenAppWithOverrideUrl(const GURL& override_url) override;
+  void ApplicationWillTerminate() override;
 
   // Weak, owns |this|.
   const raw_ptr<Client> client_;
