@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
 
 namespace password_manager {
@@ -38,7 +39,7 @@ class IOSChromePasswordCheckManager;
              passwordCheckManager:(IOSChromePasswordCheckManager*)manager
                       prefService:(PrefService*)prefService
                       syncService:(syncer::SyncService*)syncService
-             supportMoveToAccount:(BOOL)supportMoveToAccount
+                          context:(DetailsContext)context
             passwordManagerClient:
                 (password_manager::PasswordManagerClient*)passwordManagerClient
     NS_DESIGNATED_INITIALIZER;

@@ -700,7 +700,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                browser:self.browser
                             credential:credential
                           reauthModule:[[ReauthenticationModule alloc] init]
-                  supportMoveToAccount:YES];
+                               context:DetailsContext::kGeneral];
   self.passwordDetailsCoordinator.delegate = self;
   self.passwordDetailsCoordinator.showCancelButton = showCancelButton;
   [self.passwordDetailsCoordinator start];

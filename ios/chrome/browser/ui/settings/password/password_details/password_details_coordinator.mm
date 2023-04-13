@@ -49,9 +49,8 @@
   password_manager::AffiliatedGroup _affiliatedGroup;
   password_manager::CredentialUIEntry _credential;
 
-  // Tells whether or not to support move to account option. If YES, move option
-  // will be supported, NO otherwise.
-  BOOL _supportMoveToAccount;
+  // The context in which the password details are accessed.
+  DetailsContext _context;
 }
 
 // Main view controller for this coordinator.
@@ -85,7 +84,7 @@
                               (const password_manager::CredentialUIEntry&)
                                   credential
                         reauthModule:(ReauthenticationModule*)reauthModule
-                supportMoveToAccount:(BOOL)supportMoveToAccount {
+                             context:(DetailsContext)context {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
@@ -94,7 +93,7 @@
     _baseNavigationController = navigationController;
     _credential = credential;
     _reauthenticationModule = reauthModule;
-    _supportMoveToAccount = supportMoveToAccount;
+    _context = context;
   }
   return self;
 }
@@ -106,7 +105,7 @@
                      affiliatedGroup:(const password_manager::AffiliatedGroup&)
                                          affiliatedGroup
                         reauthModule:(ReauthenticationModule*)reauthModule
-                supportMoveToAccount:(BOOL)supportMoveToAccount {
+                             context:(DetailsContext)context {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
@@ -115,7 +114,7 @@
     _baseNavigationController = navigationController;
     _affiliatedGroup = affiliatedGroup;
     _reauthenticationModule = reauthModule;
-    _supportMoveToAccount = supportMoveToAccount;
+    _context = context;
   }
   return self;
 }
@@ -150,7 +149,7 @@
                                     .get()
                 prefService:browserState->GetPrefs()
                 syncService:SyncServiceFactory::GetForBrowserState(browserState)
-       supportMoveToAccount:_supportMoveToAccount
+                    context:_context
       passwordManagerClient:PasswordTabHelper::FromWebState(webState)
                                 ->GetPasswordManagerClient()];
   self.mediator.consumer = self.viewController;

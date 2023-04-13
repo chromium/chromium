@@ -65,9 +65,8 @@ using base::SysNSStringToUTF16;
   // Listens to compromised passwords changes.
   std::unique_ptr<PasswordCheckObserverBridge> _passwordCheckObserver;
 
-  // YES when move to account option is supported in password details page, NO
-  // otherwise.
-  BOOL _supportMoveToAccount;
+  // The context in which the password details are accessed.
+  DetailsContext _context;
 
   // Password manager client.
   raw_ptr<password_manager::PasswordManagerClient> _passwordManagerClient;
@@ -99,7 +98,7 @@ using base::SysNSStringToUTF16;
      passwordCheckManager:(IOSChromePasswordCheckManager*)manager
               prefService:(PrefService*)prefService
               syncService:(syncer::SyncService*)syncService
-     supportMoveToAccount:(BOOL)supportMoveToAccount
+                  context:(DetailsContext)context
     passwordManagerClient:
         (password_manager::PasswordManagerClient*)passwordManagerClient {
   DCHECK(manager);
@@ -116,7 +115,7 @@ using base::SysNSStringToUTF16;
   _displayName = displayName;
   _passwordCheckObserver =
       std::make_unique<PasswordCheckObserverBridge>(self, manager);
-  _supportMoveToAccount = supportMoveToAccount;
+  _context = context;
   _passwordManagerClient = passwordManagerClient;
   _prefService = prefService;
   _syncService = syncService;
@@ -371,19 +370,18 @@ using base::SysNSStringToUTF16;
 // Pushes password details to the consumer.
 - (void)providePasswordsToConsumer {
   NSMutableArray<PasswordDetails*>* passwords = [NSMutableArray array];
-  std::vector<password_manager::CredentialUIEntry> insecureCredentials =
-      _manager->GetInsecureCredentials();
   for (const password_manager::CredentialUIEntry& credential : _credentials) {
     PasswordDetails* password =
         [[PasswordDetails alloc] initWithCredential:credential];
-    password.compromised = base::Contains(insecureCredentials, credential);
+    password.context = _context;
+    password.compromised = IsCompromised(credential);
     // Only offer moving to the account if all of these hold.
     // - The embedder of this page wants to support it.
     // - The entry was flagged as local only in the top-level view.
     // - The user is interested in saving passwords to the account, i.e. they
     // are opted in to account storage.
     password.shouldOfferToMoveToAccount =
-        _supportMoveToAccount &&
+        _context == DetailsContext::kGeneral &&
         password_manager::features_util::IsOptedInForAccountStorage(
             _prefService, _syncService) &&
         ShouldShowLocalOnlyIcon(credential, _syncService);

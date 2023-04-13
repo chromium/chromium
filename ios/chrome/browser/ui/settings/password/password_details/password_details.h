@@ -22,6 +22,16 @@ typedef NS_ENUM(NSInteger, CredentialType) {
   CredentialTypeFederation,
 };
 
+// Enum which represents the entry point from which the password details are
+// accessed.
+enum class DetailsContext {
+  kGeneral,  // When accessed from any context other than Password Checkup.
+  kCompromisedIssues,  // When accessed from the compromised issues page.
+  kDismissedWarnings,  // When accessed from the dismissed warnings page.
+  kReusedIssues,       // When accessed from the reused issues page.
+  kWeakIssues,         // When accessed from the weak issues page.
+};
+
 // Object which is used by `PasswordDetailsViewController` to show
 // information about password.
 @interface PasswordDetails : NSObject
@@ -59,6 +69,9 @@ typedef NS_ENUM(NSInteger, CredentialType) {
 
 // `shouldOfferToMoveToAccount` tells whether or not to show a move option.
 @property(nonatomic, assign) BOOL shouldOfferToMoveToAccount;
+
+// The DetailsContext for the password details.
+@property(nonatomic, assign) DetailsContext context;
 
 - (instancetype)initWithCredential:
     (const password_manager::CredentialUIEntry&)credential
