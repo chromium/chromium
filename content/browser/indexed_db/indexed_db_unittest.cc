@@ -361,19 +361,10 @@ TEST_P(IndexedDBTest, ClearSessionOnlyDatabases) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(base::DirectoryExists(normal_path_first_party));
-  // TODO(https://crbug.com/1429467): This directory shouldn't be deleted
-  // because it's a first-party context, which we only want to delete data for
-  // based on origin.
-  EXPECT_FALSE(base::DirectoryExists(session_only_path_first_party));
+  EXPECT_TRUE(base::DirectoryExists(session_only_path_first_party));
   EXPECT_FALSE(base::DirectoryExists(session_only_subdomain_path_first_party));
   EXPECT_TRUE(base::DirectoryExists(normal_path_third_party));
-  // TODO(https://crbug.com/1429467): Delete this conditional and always
-  // EXPECT_TRUE once this issue is fixed.
-  if (IsThirdPartyStoragePartitioningEnabled()) {
-    EXPECT_TRUE(base::DirectoryExists(session_only_path_third_party));
-  } else {
-    EXPECT_FALSE(base::DirectoryExists(session_only_path_third_party));
-  }
+  EXPECT_TRUE(base::DirectoryExists(session_only_path_third_party));
   EXPECT_FALSE(base::DirectoryExists(session_only_subdomain_path_third_party));
   EXPECT_TRUE(base::DirectoryExists(inverted_normal_path_third_party));
   // When storage partitioning is enabled these will be deleted because they
