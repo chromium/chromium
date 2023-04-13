@@ -23,6 +23,7 @@
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/seed_response.h"
 #include "components/variations/service/buildflags.h"
+#include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/ui_string_overrider.h"
 #include "components/variations/variations_seed_store.h"
 #include "components/version_info/channel.h"
@@ -186,6 +187,8 @@ class VariationsFieldTrialCreator {
   // Returns the locale that was used for evaluating trials.
   const std::string& application_locale() const { return application_locale_; }
 
+  SeedType seed_type() const { return seed_type_; }
+
  protected:
   // Get the platform we're running on, respecting OverrideVariationsPlatform().
   // Protected for testing.
@@ -252,6 +255,9 @@ class VariationsFieldTrialCreator {
   UIStringOverrider ui_string_overrider_;
 
   std::unique_ptr<VariationsSeedStore> seed_store_;
+
+  // Seed type used for variations.
+  SeedType seed_type_ = SeedType::kNullSeed;
 
   // Tracks whether |CreateTrialsFromSeed| has been called, to ensure that it is
   // called at most once.

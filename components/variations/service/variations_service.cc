@@ -937,6 +937,10 @@ bool VariationsService::SetUpFieldTrials(
       &safe_seed_manager_, /*add_entropy_source_to_variations_ids=*/true);
 }
 
+SeedType VariationsService::GetSeedType() const {
+  return field_trial_creator_.seed_type();
+}
+
 void VariationsService::OverrideCachedUIStrings() {
   field_trial_creator_.OverrideCachedUIStrings();
 }

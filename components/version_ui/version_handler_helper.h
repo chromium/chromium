@@ -7,7 +7,15 @@
 
 #include "base/values.h"
 
+namespace variations {
+enum class SeedType;
+}
+
 namespace version_ui {
+
+// Returns the variation seed type to be displayed on the chrome://version page.
+// Returns empty for Regular seed which should not be shown.
+std::string SeedTypeToUiString(variations::SeedType seed_type);
 
 // Returns the list of variations to be displayed on the chrome:://version page.
 base::Value::List GetVariationsList();

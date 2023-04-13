@@ -65,6 +65,7 @@ source_set("webui") {
     "//components/strings",
     "//components/ukm",
     "//components/ukm/debug:util",
+    "//components/variations/service",
     "//components/version_info",
     "//components/version_ui",
     "//google_apis",

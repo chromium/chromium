@@ -15,5 +15,6 @@ static_library("version_ui") {
     "//build:chromeos_buildflags",
     "//components/variations",
     "//components/variations/net",
+    "//components/variations/service",
   ]
 }

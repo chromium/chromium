@@ -79,6 +79,9 @@
   <message name="IDS_VERSION_UI_VARIATIONS" desc="label for the variations list on the about:version page">
     Active Variations
   </message>
+  <message name="IDS_VERSION_UI_VARIATIONS_SEED_NAME" desc="label for the variations seed type on the about:version page">
+    Variations Seed Type
+  </message>
   <message name="IDS_VERSION_UI_VARIATIONS_CMD" desc="label for the variations information in command-line format on the about:version page">
     Command-line variations
   </message>
