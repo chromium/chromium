@@ -978,6 +978,7 @@ void PopulateChromeWebUIFrameBinders(
       ash::FirmwareUpdateAppUI, ash::ScanningUI, ash::OSFeedbackUI,
       ash::ShortcutCustomizationAppUI,
       ash::printing::printing_manager::PrintManagementUI,
+      ash::InternetDetailDialogUI,
 #endif
       NewTabPageUI, OmniboxPopupUI, BookmarksSidePanelUI, CustomizeChromeUI>(
       map);
