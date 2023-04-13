@@ -1331,56 +1331,17 @@ void DriveIntegrationService::GetTotalPinnedSize(
     return;
   }
 
-  auto query_params = drivefs::mojom::QueryParameters::New();
-  query_params->page_size = 1000;
-  query_params->available_offline = true;
-
-  int64_t total_size = 0;
-  mojo::Remote<drivefs::mojom::SearchQuery> search_query;
-
-  GetDriveFsInterface()->StartSearchQuery(
-      search_query.BindNewPipeAndPassReceiver(), std::move(query_params));
-
-  auto* raw_search_query = search_query.get();
-  raw_search_query->GetNextPage(
-      base::BindOnce(&DriveIntegrationService::OnGetOfflineItemsPage,
-                     weak_ptr_factory_.GetWeakPtr(), total_size,
-                     std::move(search_query), std::move(callback)));
-}
-
-void DriveIntegrationService::OnGetOfflineItemsPage(
-    int64_t total_size,
-    mojo::Remote<drivefs::mojom::SearchQuery> search_query,
-    base::OnceCallback<void(int64_t)> callback,
-    drive::FileError error,
-    absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> results) {
-  if (!ash::features::IsDriveFsBulkPinningEnabled() ||
-      error != drive::FILE_ERROR_OK || results->empty() ||
-      callback.IsCancelled()) {
-    LOG_IF(ERROR, error != drive::FILE_ERROR_OK)
-        << "Cannot get offline size: " << error;
-    std::move(callback).Run(total_size);
-    return;
-  }
-
-  for (auto& result : *results) {
-    if (!result->metadata) {
-      continue;
-    }
-    // We only want to show storage used by Drive that a user can action (i.e.
-    // files that can be unpinned). This should exclude files that DriveFS
-    // implicitly caches as users can't remove these files.
-    const drivefs::mojom::FileMetadata& metadata = *result->metadata;
-    if (metadata.available_offline && metadata.pinned) {
-      total_size += result->metadata->size;
-    }
-  }
-
-  auto* raw_search_query = search_query.get();
-  raw_search_query->GetNextPage(
-      base::BindOnce(&DriveIntegrationService::OnGetOfflineItemsPage,
-                     weak_ptr_factory_.GetWeakPtr(), total_size,
-                     std::move(search_query), std::move(callback)));
+  GetDriveFsInterface()->GetOfflineFilesSpaceUsage(base::BindOnce(
+      [](base::OnceCallback<void(int64_t)> callback, drive::FileError error,
+         int64_t total_size) {
+        if (error != drive::FILE_ERROR_OK) {
+          LOG(ERROR) << "Cannot get offline size: " << error;
+          std::move(callback).Run(-1);
+          return;
+        }
+        std::move(callback).Run(total_size);
+      },
+      std::move(callback)));
 }
 
 void DriveIntegrationService::GetQuickAccessItems(
