@@ -22,6 +22,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -689,4 +690,85 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
               ElementsAre(("[1/1] a.test/title1.html -> "
                            "b.test/cross-site/c.test/title1.html (None) -> "
                            "c.test/title1.html")));
+}
+
+class DIPSBounceTrackingDevToolsIssueTest
+    : public content::TestDevToolsProtocolClient,
+      public DIPSBounceDetectorBrowserTest {
+ protected:
+  void WaitForIssueAndCheckTrackingSites(
+      const std::vector<std::string>& sites) {
+    auto is_dips_issue = [](const base::Value::Dict& params) {
+      return *(params.FindStringByDottedPath("issue.code")) ==
+             "BounceTrackingIssue";
+    };
+
+    // Wait for notification of a Bounce Tracking Issue.
+    base::Value::Dict params = WaitForMatchingNotification(
+        "Audits.issueAdded", base::BindRepeating(is_dips_issue));
+    ASSERT_EQ(*params.FindStringByDottedPath("issue.code"),
+              "BounceTrackingIssue");
+
+    base::Value::Dict* bounce_tracking_issue_details =
+        params.FindDictByDottedPath("issue.details.bounceTrackingIssueDetails");
+    ASSERT_TRUE(bounce_tracking_issue_details);
+
+    std::vector<std::string> tracking_sites;
+    base::Value::List* tracking_sites_list =
+        bounce_tracking_issue_details->FindList("trackingSites");
+    if (tracking_sites_list) {
+      for (const auto& val : *tracking_sites_list) {
+        tracking_sites.push_back(val.GetString());
+      }
+    }
+
+    // Verify the reported tracking sites match the expected sites.
+    EXPECT_THAT(tracking_sites, testing::ElementsAreArray(sites));
+
+    // Clear existing notifications so subsequent calls don't fail by checking
+    // `sites` against old notifications.
+    ClearNotifications();
+  }
+
+  void TearDownOnMainThread() override {
+    DetachProtocolClient();
+    DIPSBounceDetectorBrowserTest::TearDownOnMainThread();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DIPSBounceTrackingDevToolsIssueTest,
+                       BounceTrackingDevToolsIssue) {
+  WebContents* web_contents = GetActiveWebContents();
+
+  // Visit initial page on a.test.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, embedded_test_server()->GetURL("a.test", "/title1.html")));
+
+  // Open DevTools and enable Audit domain.
+  AttachToWebContents(web_contents);
+  SendCommandSync("Audits.enable");
+  ClearNotifications();
+
+  // Navigate with a click (not a redirect) to b.test, which S-redirects to
+  // c.test.
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(
+      web_contents,
+      embedded_test_server()->GetURL("b.test",
+                                     "/cross-site/c.test/title1.html"),
+      embedded_test_server()->GetURL("c.test", "/title1.html")));
+  WaitForIssueAndCheckTrackingSites({"b.test"});
+
+  // Navigate without a click (i.e. by C-redirecting) to d.test.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, embedded_test_server()->GetURL("d.test", "/title1.html")));
+  WaitForIssueAndCheckTrackingSites({"c.test"});
+
+  // Navigate without a click (i.e. by C-redirecting) to e.test, which
+  // S-redirects to f.test, which S-redirects to g.test.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents,
+      embedded_test_server()->GetURL(
+          "e.test", "/cross-site/f.test/cross-site/g.test/title1.html"),
+      embedded_test_server()->GetURL("g.test", "/title1.html")));
+  WaitForIssueAndCheckTrackingSites({"d.test", "e.test", "f.test"});
 }

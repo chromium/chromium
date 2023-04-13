@@ -22,6 +22,7 @@ enum InspectorIssueCode {
   kHeavyAdIssue,
   kLowTextContrastIssue,
   kFederatedAuthRequestIssue,
+  kBounceTrackingIssue,
   kGenericIssue,
   kDeprecationIssue,
 };
@@ -220,6 +221,10 @@ struct FederatedAuthRequestIssueDetails {
   FederatedAuthRequestResult status;
 };
 
+struct BounceTrackingIssueDetails {
+  array<string> tracking_sites;
+};
+
 enum GenericIssueErrorType {
   kCrossOriginPortalPostMessageError,
   kFormLabelForNameError,
@@ -263,6 +268,7 @@ struct InspectorIssueDetails {
   HeavyAdIssueDetails? heavy_ad_issue_details;
   LowTextContrastIssue? low_text_contrast_details;
   FederatedAuthRequestIssueDetails? federated_auth_request_details;
+  BounceTrackingIssueDetails? bounce_tracking_issue_details;
   GenericIssueDetails? generic_issue_details;
   DeprecationIssueDetails? deprecation_issue_details;
   mojo_base.mojom.UnguessableToken? issue_id;

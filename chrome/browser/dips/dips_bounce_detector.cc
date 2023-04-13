@@ -24,6 +24,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 
 using content::NavigationHandle;
 
@@ -217,7 +218,26 @@ bool DIPSRedirectContext::AddLateCookieAccess(GURL url, CookieOperation op) {
 
 void DIPSWebContentsObserver::EmitDIPSIssue(
     const std::set<std::string>& sites) {
-  // TODO (jdh@): Create a DIPSIssue type and report one from here.
+  if (sites.empty()) {
+    return;
+  }
+
+  auto details = blink::mojom::InspectorIssueDetails::New();
+  auto bounce_tracking_issue_details =
+      blink::mojom::BounceTrackingIssueDetails::New();
+
+  bounce_tracking_issue_details->tracking_sites.reserve(sites.size());
+  for (const auto& site : sites) {
+    bounce_tracking_issue_details->tracking_sites.push_back(site);
+  }
+
+  details->bounce_tracking_issue_details =
+      std::move(bounce_tracking_issue_details);
+
+  web_contents()->GetPrimaryMainFrame()->ReportInspectorIssue(
+      blink::mojom::InspectorIssueInfo::New(
+          blink::mojom::InspectorIssueCode::kBounceTrackingIssue,
+          std::move(details)));
 }
 
 void DIPSWebContentsObserver::ReportRedirectorsWithoutInteraction(

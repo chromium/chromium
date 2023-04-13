@@ -330,6 +330,30 @@ std::unique_ptr<protocol::Audits::InspectorIssue> BuildDeprecationIssue(
   return deprecation_issue;
 }
 
+std::unique_ptr<protocol::Audits::InspectorIssue> BuildBounceTrackingIssue(
+    const blink::mojom::BounceTrackingIssueDetailsPtr& issue_details) {
+  auto bounce_tracking_issue_details =
+      protocol::Audits::BounceTrackingIssueDetails::Create()
+          .SetTrackingSites(std::make_unique<protocol::Array<protocol::String>>(
+              issue_details->tracking_sites))
+          .Build();
+
+  auto protocol_issue_details =
+      protocol::Audits::InspectorIssueDetails::Create()
+          .SetBounceTrackingIssueDetails(
+              std::move(bounce_tracking_issue_details))
+          .Build();
+
+  auto issue =
+      protocol::Audits::InspectorIssue::Create()
+          .SetCode(
+              protocol::Audits::InspectorIssueCodeEnum::BounceTrackingIssue)
+          .SetDetails(std::move(protocol_issue_details))
+          .Build();
+
+  return issue;
+}
+
 void UpdateChildFrameTrees(FrameTreeNode* ftn, bool update_target_info) {
   if (auto* agent_host = WebContentsDevToolsAgentHost::GetFor(
           WebContentsImpl::FromFrameTreeNode(ftn))) {
@@ -1501,6 +1525,10 @@ void BuildAndReportBrowserInitiatedIssue(
   } else if (info->code ==
              blink::mojom::InspectorIssueCode::kDeprecationIssue) {
     issue = BuildDeprecationIssue(info->details->deprecation_issue_details);
+  } else if (info->code ==
+             blink::mojom::InspectorIssueCode::kBounceTrackingIssue) {
+    issue =
+        BuildBounceTrackingIssue(info->details->bounce_tracking_issue_details);
   } else {
     NOTREACHED() << "Unsupported type of browser-initiated issue";
   }
