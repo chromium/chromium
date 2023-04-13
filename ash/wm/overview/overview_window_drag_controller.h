@@ -108,6 +108,9 @@ class ASH_EXPORT OverviewWindowDragController {
                    float velocity_x,
                    float velocity_y);
   void ActivateDraggedWindow();
+
+  // Called when a gesture event is reset or when the dragged window is being
+  // destroyed.
   void ResetGesture();
 
   // Resets |overview_session_| to nullptr. It's needed since we defer the

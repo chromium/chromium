@@ -478,7 +478,13 @@ void OverviewWindowDragController::ResetGesture() {
       item_->UpdateCannotSnapWarningVisibility(/*animate=*/true);
     }
   }
-  overview_session_->PositionWindows(/*animate=*/true);
+
+  // No need to position windows that are being destroyed.
+  base::flat_set<OverviewItem*> ignored_items;
+  if (item_->GetWindow()->is_destroying()) {
+    ignored_items.insert(item_);
+  }
+  overview_session_->PositionWindows(/*animate=*/true, ignored_items);
   overview_session_->float_container_stacker()->OnDragFinished(
       item_->GetWindow());
   // This function gets called after a long press release, which bypasses

@@ -484,6 +484,24 @@ TEST_P(OverviewSessionTest, BasicGesture) {
   EXPECT_EQ(window2.get(), window_util::GetFocusedWindow());
 }
 
+// Tests that calling `views::Widget::CloseNow` on a minimized window that is
+// currently being dragged does not cause a crash. Regression test for
+// b/268413746.
+TEST_P(OverviewSessionTest, CloseNowDraggedMinimizedWindow) {
+  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  WindowState::Get(window.get())->Minimize();
+
+  // Start dragging the window.
+  ToggleOverview();
+  GetEventGenerator()->set_current_screen_location(
+      GetTransformedTargetBounds(window.get()).CenterPoint());
+  GetEventGenerator()->PressLeftButton();
+
+  // Call `views::Widget::CloseNow` on the window mid drag and verify no crash.
+  // This could happen in production when an exo window shuts down.
+  views::Widget::GetWidgetForNativeView(window.release())->CloseNow();
+}
+
 // Tests that the user action WindowSelector_ActiveWindowChanged is
 // recorded when the mouse/touchscreen/keyboard are used to select a window
 // in overview mode which is different from the previously-active window.

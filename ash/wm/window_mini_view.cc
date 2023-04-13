@@ -100,8 +100,7 @@ void WindowMiniView::SetShowPreview(bool show) {
   }
 
   if (!show) {
-    RemoveChildView(preview_view_);
-    delete preview_view_;
+    RemoveChildViewT(preview_view_);
     preview_view_ = nullptr;
     return;
   }

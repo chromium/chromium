@@ -437,8 +437,9 @@ void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
   // will be squashed to fit the given bounds. To get around this, stretch out
   // the contents so that it matches `unclipped_size_`, then clip the layer to
   // match `target_bounds`. This is what is done on non-minimized windows.
-  ui::Layer* preview_layer = overview_item_view_->preview_view()->layer();
-  DCHECK(preview_layer);
+  auto* preview_view = overview_item_view_->preview_view();
+  CHECK(preview_view);
+  ui::Layer* preview_layer = preview_view->layer();
   if (unclipped_size_) {
     gfx::SizeF target_size(*unclipped_size_);
     gfx::SizeF preview_size = GetWindowTargetBoundsWithInsets().size();
@@ -1053,10 +1054,10 @@ void OverviewItem::OnWindowBoundsChanged(aura::Window* window,
 }
 
 void OverviewItem::OnWindowDestroying(aura::Window* window) {
-  DCHECK_EQ(GetWindow(), window);
+  CHECK_EQ(GetWindow(), window);
 
   if (is_being_dragged_) {
-    DCHECK_EQ(this, overview_session_->window_drag_controller()->item());
+    CHECK_EQ(this, overview_session_->window_drag_controller()->item());
     overview_session_->window_drag_controller()->ResetGesture();
   }
 
