@@ -36,8 +36,14 @@
 
   .header {
     align-items: center;
+    box-sizing: border-box;
     display: flex;
-    margin-top: 8px;
+    font-size: inherit;
+    font-weight: inherit;
+    /* To mirror match typical row height of items in vertical list. */
+    height: 44px;
+    margin-block-end: 0;
+    margin-block-start: 0;
     outline: none;
     padding-bottom: 6px;
     padding-inline-end: 16px;
@@ -88,9 +94,6 @@
   }
 
   .secondary-side .header {
-    box-sizing: border-box;
-    height: 44px; /* To mirror match row height on primary side. */
-    margin: 0;
     padding-inline-end: 6px;
     padding-inline-start: 6px;
   }
@@ -113,7 +116,7 @@
         <template is="dom-if" if="[[hasHeaderForGroup_(groupId)]]">
           <!-- Header cannot be tabbed into but gets focus when clicked. This stops
               the dropdown from losing focus and closing as a result. -->
-          <div class="header" data-id$="[[groupId]]" tabindex="-1"
+          <h3 class="header" data-id$="[[groupId]]" tabindex="-1"
               on-focusin="onHeaderFocusin_" on-click="onHeaderClick_"
               aria-hidden="true">
             <span class="text">[[headerForGroup_(groupId)]]</span>
@@ -122,7 +125,7 @@
                 aria-label$="[[toggleButtonA11yLabelForGroup_(groupId, hiddenGroupIds_.*)]]"
                 on-mousedown="onToggleButtonMouseDown_">
             </cr-icon-button>
-          </div>
+          </h3>
         </template>
         <div class="matches">
           <template is="dom-repeat"
