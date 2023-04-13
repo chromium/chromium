@@ -162,6 +162,7 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
     ui::ColorId background_color_id,
     ui::ColorId separator_color_id,
     ui::ColorId dropdown_color_id,
+    ui::ColorId selected_dropdown_color_id,
     read_anything::mojom::LineSpacing line_spacing,
     read_anything::mojom::LetterSpacing letter_spacing) {
   if (font_scale > kReadAnythingMinimumFontScale) {
@@ -201,12 +202,14 @@ void ReadAnythingToolbarView::OnReadAnythingThemeChanged(
                                   foreground_color_id);
 
   // Update the background colors for the dropdowns.
-  colors_button_->SetDropdownColorIds(dropdown_color_id, foreground_color_id);
-  letter_spacing_button_->SetDropdownColorIds(dropdown_color_id,
-                                              foreground_color_id);
-  line_spacing_button_->SetDropdownColorIds(dropdown_color_id,
-                                            foreground_color_id);
-  font_combobox_->SetDropdownColorIds(dropdown_color_id, foreground_color_id);
+  colors_button_->SetDropdownColorIds(dropdown_color_id, foreground_color_id,
+                                      selected_dropdown_color_id);
+  letter_spacing_button_->SetDropdownColorIds(
+      dropdown_color_id, foreground_color_id, selected_dropdown_color_id);
+  line_spacing_button_->SetDropdownColorIds(
+      dropdown_color_id, foreground_color_id, selected_dropdown_color_id);
+  font_combobox_->SetDropdownColorIds(dropdown_color_id, foreground_color_id,
+                                      selected_dropdown_color_id);
 
   for (views::Separator* separator : separators_) {
     separator->SetColorId(separator_color_id);

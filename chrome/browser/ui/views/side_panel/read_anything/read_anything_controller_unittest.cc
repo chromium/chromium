@@ -39,6 +39,7 @@ class MockReadAnythingModelObserver : public ReadAnythingModel::Observer {
                ui::ColorId background_color_id,
                ui::ColorId separator_color_id,
                ui::ColorId dropdown_color_id,
+               ui::ColorId selection_color_id,
                read_anything::mojom::LineSpacing line_spacing,
                read_anything::mojom::LetterSpacing letter_spacing),
               (override));

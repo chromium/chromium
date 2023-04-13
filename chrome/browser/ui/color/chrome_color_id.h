@@ -522,6 +522,11 @@
   E_CPONLY(kColorReadAnythingDropdownBackgroundDark) \
   E_CPONLY(kColorReadAnythingDropdownBackgroundLight) \
   E_CPONLY(kColorReadAnythingDropdownBackgroundYellow) \
+  E_CPONLY(kColorReadAnythingDropdownSelected) \
+  E_CPONLY(kColorReadAnythingDropdownSelectedBlue) \
+  E_CPONLY(kColorReadAnythingDropdownSelectedDark) \
+  E_CPONLY(kColorReadAnythingDropdownSelectedLight) \
+  E_CPONLY(kColorReadAnythingDropdownSelectedYellow) \
 
 #if BUILDFLAG(IS_CHROMEOS)
 #define CHROME_PLATFORM_SPECIFIC_COLOR_IDS \
