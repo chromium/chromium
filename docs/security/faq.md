@@ -371,11 +371,13 @@ but users are otherwise free to invoke script against pages using either the URL
 bar or the DevTools console.
 
 <a name="TOC-Does-executing-JavaScript-from-a-bookmark-mean-there-s-an-XSS-vulnerability-"></a>
-### Does executing JavaScript from a bookmark mean there's an XSS vulnerability?
+### Does executing JavaScript from a bookmark or the Home button mean there's an XSS vulnerability?
 
 No. Chromium allows users to create bookmarks to JavaScript URLs that will run
 on the currently-loaded page when the user clicks the bookmark; these are called
 [bookmarklets](https://en.wikipedia.org/wiki/Bookmarklet).
+
+Similarly, the Home button may be configured to invoke a JavaScript URL when clicked.
 
 <a name="TOC-Does-executing-JavaScript-in-a-PDF-file-mean-there-s-an-XSS-vulnerability-"></a>
 ### Does executing JavaScript in a PDF file mean there's an XSS vulnerability?
