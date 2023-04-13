@@ -491,12 +491,13 @@ bool AreAppBrowsersOpen(const Profile* profile, const AppId& app_id) {
 class UninstallCompleteWaiter final : public BrowserListObserver,
                                       public WebAppInstallManagerObserver {
  public:
-  explicit UninstallCompleteWaiter(Profile* profile, const AppId& app_id)
+  explicit UninstallCompleteWaiter(
+      Profile* profile,
+      const AppId& app_id,
+      apps::Readiness readiness = apps::Readiness::kUninstalledByUser)
       : profile_(profile),
         app_id_(app_id),
-        app_unregistration_waiter_(profile,
-                                   app_id,
-                                   apps::Readiness::kUninstalledByUser) {
+        app_unregistration_waiter_(profile, app_id, readiness) {
     BrowserList::AddObserver(this);
     WebAppProvider* provider = WebAppProvider::GetForTest(profile);
     observation_.Observe(&provider->install_manager());
@@ -519,7 +520,9 @@ class UninstallCompleteWaiter final : public BrowserListObserver,
   void OnBrowserRemoved(Browser* browser) override { MaybeFinishWaiting(); }
 
   // WebAppInstallManagerObserver
-  void OnWebAppUninstalled(const AppId& app_id) override {
+  void OnWebAppUninstalled(
+      const AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source) override {
     if (app_id != app_id_) {
       return;
     }
@@ -2247,7 +2250,8 @@ void WebAppIntegrationTestDriver::UninstallPolicyApp(Site site) {
   DCHECK(policy_app);
   base::RunLoop run_loop;
 
-  UninstallCompleteWaiter uninstall_waiter(profile(), policy_app->id);
+  UninstallCompleteWaiter uninstall_waiter(
+      profile(), policy_app->id, apps::Readiness::kUninstalledByMigration);
   WebAppInstallManagerObserverAdapter observer(profile());
   observer.SetWebAppUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& app_id) {
@@ -3685,7 +3689,7 @@ void WebAppIntegrationTestDriver::UninstallPolicyAppById(Profile* profile,
                                                          const AppId& id) {
   base::RunLoop run_loop;
   AppReadinessWaiter app_registration_waiter(
-      profile, id, apps::Readiness::kUninstalledByUser);
+      profile, id, apps::Readiness::kUninstalledByMigration);
   WebAppInstallManagerObserverAdapter observer(profile);
   observer.SetWebAppUninstalledDelegate(
       base::BindLambdaForTesting([&](const AppId& app_id) {

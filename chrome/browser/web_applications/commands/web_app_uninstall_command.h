@@ -105,15 +105,15 @@ class WebAppUninstallCommand : public WebAppCommandTemplate<FullSystemLock> {
   void AppendUninstallResultsToDebugLog(const AppId& app_id);
   void Abort(webapps::UninstallResultCode code);
   void Uninstall(const AppId& app_id,
-                 const webapps::WebappUninstallSource& uninstall_source);
+                 webapps::WebappUninstallSource uninstall_source);
   void QueueSubAppsForUninstallIfAny(const AppId& app_id);
   void RemoveManagementTypeAfterOsUninstallRegistration(
       const AppId& app_id,
       const WebAppManagement::Type& install_source,
-      const webapps::WebappUninstallSource& uninstall_source,
+      webapps::WebappUninstallSource uninstall_source,
       OsHooksErrors os_hooks_errors);
   void OnSingleUninstallComplete(const AppId& app_id,
-                                 const webapps::WebappUninstallSource& source,
+                                 webapps::WebappUninstallSource source,
                                  webapps::UninstallResultCode code);
   void MaybeFinishUninstallAndDestruct();
 

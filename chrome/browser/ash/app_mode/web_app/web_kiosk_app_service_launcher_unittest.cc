@@ -41,6 +41,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -274,7 +275,8 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
 
   void OnAppUnregistered(std::string app_id, bool success) {
     ASSERT_TRUE(success);
-    web_app_provider()->install_manager().NotifyWebAppUninstalled(app_id);
+    web_app_provider()->install_manager().NotifyWebAppUninstalled(
+        app_id, webapps::WebappUninstallSource::kSync);
   }
 
   AccountId account_id_;

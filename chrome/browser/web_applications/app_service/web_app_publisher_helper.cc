@@ -274,6 +274,34 @@ apps::InstallSource GetInstallSource(
   }
 }
 
+apps::Readiness ConvertWebappUninstallSourceToReadiness(
+    webapps::WebappUninstallSource source) {
+  switch (source) {
+    case webapps::WebappUninstallSource::kUnknown:
+    case webapps::WebappUninstallSource::kAppMenu:
+    case webapps::WebappUninstallSource::kAppsPage:
+    case webapps::WebappUninstallSource::kOsSettings:
+    case webapps::WebappUninstallSource::kSync:
+    case webapps::WebappUninstallSource::kAppManagement:
+    case webapps::WebappUninstallSource::kAppList:
+    case webapps::WebappUninstallSource::kShelf:
+    case webapps::WebappUninstallSource::kPlaceholderReplacement:
+    case webapps::WebappUninstallSource::kArc:
+    case webapps::WebappUninstallSource::kSubApp:
+    case webapps::WebappUninstallSource::kStartupCleanup:
+    case webapps::WebappUninstallSource::kParentUninstall:
+    case webapps::WebappUninstallSource::kTestCleanup:
+      return apps::Readiness::kUninstalledByUser;
+    case webapps::WebappUninstallSource::kMigration:
+    case webapps::WebappUninstallSource::kInternalPreinstalled:
+    case webapps::WebappUninstallSource::kExternalPreinstalled:
+    case webapps::WebappUninstallSource::kExternalPolicy:
+    case webapps::WebappUninstallSource::kSystemPreinstalled:
+    case webapps::WebappUninstallSource::kExternalLockScreen:
+      return apps::Readiness::kUninstalledByMigration;
+  }
+}
+
 bool IsNoteTakingWebApp(const WebApp& web_app) {
   return web_app.note_taking_new_note_url().is_valid();
 }
@@ -728,10 +756,10 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
 }
 
 apps::AppPtr WebAppPublisherHelper::ConvertUninstalledWebApp(
-    const AppId& app_id) {
+    const AppId& app_id,
+    webapps::WebappUninstallSource uninstall_source) {
   auto app = std::make_unique<apps::App>(app_type(), app_id);
-  // TODO(crbug.com/1423775): Plumb uninstall source (reason) here.
-  app->readiness = apps::Readiness::kUninstalledByUser;
+  app->readiness = ConvertWebappUninstallSourceToReadiness(uninstall_source);
 
   return app;
 }
@@ -1280,7 +1308,9 @@ void WebAppPublisherHelper::OnWebAppManifestUpdated(
   }
 }
 
-void WebAppPublisherHelper::OnWebAppUninstalled(const AppId& app_id) {
+void WebAppPublisherHelper::OnWebAppUninstalled(
+    const AppId& app_id,
+    webapps::WebappUninstallSource uninstall_source) {
   paused_apps_.MaybeRemoveApp(app_id);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1291,7 +1321,7 @@ void WebAppPublisherHelper::OnWebAppUninstalled(const AppId& app_id) {
                                           result.microphone);
 #endif
 
-  delegate_->PublishWebApp(ConvertUninstalledWebApp(app_id));
+  delegate_->PublishWebApp(ConvertUninstalledWebApp(app_id, uninstall_source));
 }
 
 void WebAppPublisherHelper::OnWebAppInstallManagerDestroyed() {

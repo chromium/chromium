@@ -36,7 +36,9 @@ class WebAppSettingsUI : public ui::MojoWebUIController,
           receiver);
 
   // WebAppInstallManagerObserver:
-  void OnWebAppUninstalled(const web_app::AppId& app_id) override;
+  void OnWebAppUninstalled(
+      const web_app::AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source) override;
   void OnWebAppInstallManagerDestroyed() override;
 
  private:

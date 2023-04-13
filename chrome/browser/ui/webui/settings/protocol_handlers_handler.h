@@ -51,7 +51,9 @@ class ProtocolHandlersHandler
   void OnProtocolHandlerRegistryChanged() override;
 
   // web_app::WebAppInstallManagerObserver:
-  void OnWebAppUninstalled(const web_app::AppId& app_id) override;
+  void OnWebAppUninstalled(
+      const web_app::AppId& app_id,
+      webapps::WebappUninstallSource uninstall_source) override;
   void OnWebAppInstallManagerDestroyed() override;
 
   // web_app::AppRegistrarObserver:

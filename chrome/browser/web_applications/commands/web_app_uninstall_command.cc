@@ -30,7 +30,7 @@ namespace web_app {
 namespace {
 
 bool CanUninstallAllManagementSources(
-    const webapps::WebappUninstallSource& uninstall_source) {
+    webapps::WebappUninstallSource uninstall_source) {
   // Check that the source was from a known 'user' or allowed ones such
   // as kMigration.
   return uninstall_source == webapps::WebappUninstallSource::kUnknown ||
@@ -217,7 +217,7 @@ void WebAppUninstallCommand::Abort(webapps::UninstallResultCode code) {
 
 void WebAppUninstallCommand::Uninstall(
     const AppId& app_id,
-    const webapps::WebappUninstallSource& uninstall_source) {
+    webapps::WebappUninstallSource uninstall_source) {
   QueueSubAppsForUninstallIfAny(app_id);
 
   auto uninstall_job = WebAppUninstallJob::CreateAndStart(
@@ -227,7 +227,7 @@ void WebAppUninstallCommand::Uninstall(
                      weak_factory_.GetWeakPtr(), app_id, uninstall_source),
       lock_->os_integration_manager(), lock_->sync_bridge(),
       lock_->icon_manager(), lock_->registrar(), lock_->install_manager(),
-      lock_->translation_manager(), *profile_prefs_);
+      lock_->translation_manager(), *profile_prefs_, uninstall_source);
   apps_pending_uninstall_[app_id] = std::move(uninstall_job);
 }
 
@@ -244,7 +244,7 @@ void WebAppUninstallCommand::QueueSubAppsForUninstallIfAny(
 void WebAppUninstallCommand::RemoveManagementTypeAfterOsUninstallRegistration(
     const AppId& app_id,
     const WebAppManagement::Type& management_type,
-    const webapps::WebappUninstallSource& uninstall_source,
+    webapps::WebappUninstallSource uninstall_source,
     OsHooksErrors os_hooks_errors) {
   {
     ScopedRegistryUpdate update(&lock_->sync_bridge());
@@ -266,7 +266,7 @@ void WebAppUninstallCommand::RemoveManagementTypeAfterOsUninstallRegistration(
 
 void WebAppUninstallCommand::OnSingleUninstallComplete(
     const AppId& app_id,
-    const webapps::WebappUninstallSource& source,
+    webapps::WebappUninstallSource source,
     webapps::UninstallResultCode code) {
   DCHECK(base::Contains(apps_pending_uninstall_, app_id));
   apps_pending_uninstall_.erase(app_id);
