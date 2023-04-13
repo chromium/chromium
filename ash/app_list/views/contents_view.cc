@@ -20,7 +20,6 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "ui/compositor/layer.h"
@@ -208,7 +207,7 @@ gfx::Size ContentsView::AdjustSearchBoxSizeToFitMargins(
   const int padded_width =
       GetContentsBounds().width() - 2 * AppsContainerView::kHorizontalMargin;
   return gfx::Size(
-      base::clamp(padded_width, kSearchBarMinWidth, preferred_size.width()),
+      std::clamp(padded_width, kSearchBarMinWidth, preferred_size.width()),
       preferred_size.height());
 }
 

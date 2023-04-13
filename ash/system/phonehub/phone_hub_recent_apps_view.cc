@@ -4,6 +4,7 @@
 
 #include "ash/system/phonehub/phone_hub_recent_apps_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <numeric>
 #include <vector>
@@ -23,7 +24,6 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "ash/webui/eche_app_ui/system_info_provider.h"
-#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/phonehub/notification.h"
@@ -105,8 +105,8 @@ void LayoutAppButtonsView(views::View* buttons_view) {
     spacing = (child_area.width() - visible_child_width -
                kRecentAppButtonsViewHorizontalPadding * 2) /
               (static_cast<int>(visible_children.size()) - 1);
-    spacing = base::clamp(spacing, kRecentAppButtonMinSpacing,
-                          kRecentAppButtonDefaultSpacing);
+    spacing = std::clamp(spacing, kRecentAppButtonMinSpacing,
+                         kRecentAppButtonDefaultSpacing);
   }
 
   int child_x = child_area.x() + kRecentAppButtonsViewHorizontalPadding;

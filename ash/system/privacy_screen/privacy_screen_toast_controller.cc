@@ -4,6 +4,8 @@
 
 #include "ash/system/privacy_screen/privacy_screen_toast_controller.h"
 
+#include <algorithm>
+
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/bubble/bubble_constants.h"
 #include "ash/shelf/shelf.h"
@@ -14,7 +16,6 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_view.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 
 namespace ash {
@@ -143,8 +144,8 @@ void PrivacyScreenToastController::UpdateToastView() {
         /*enabled=*/privacy_screen_controller->GetEnabled(),
         /*managed=*/privacy_screen_controller->IsManaged());
     int width =
-        base::clamp(toast_view_->GetPreferredSize().width(),
-                    kPrivacyScreenToastMinWidth, kPrivacyScreenToastMaxWidth);
+        std::clamp(toast_view_->GetPreferredSize().width(),
+                   kPrivacyScreenToastMinWidth, kPrivacyScreenToastMaxWidth);
     bubble_view_->SetPreferredWidth(width);
   }
 }

@@ -9,7 +9,6 @@
 #include <algorithm>
 
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/hash/md5.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -50,7 +49,7 @@ const int kUnknownProximityValue = 127;
 
 void RecordAuthProximityRollingRssi(int rolling_rssi) {
   if (rolling_rssi != kUnknownProximityValue)
-    rolling_rssi = base::clamp(rolling_rssi, -100, 50);
+    rolling_rssi = std::clamp(rolling_rssi, -100, 50);
 
   base::UmaHistogramSparse("EasyUnlock.AuthProximity.RollingRssi",
                            rolling_rssi);

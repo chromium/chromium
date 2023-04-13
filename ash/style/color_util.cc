@@ -4,11 +4,12 @@
 
 #include "ash/style/color_util.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
-#include "base/cxx17_backports.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_utils.h"
@@ -66,9 +67,9 @@ SkColor ClampLightness(bool use_dark_color, SkColor color) {
   color_utils::SkColorToHSL(color, &hsl);
 
   if (use_dark_color) {
-    hsl.l = base::clamp(hsl.l, kMinLightnessDarkMode, 1.0);
+    hsl.l = std::clamp(hsl.l, kMinLightnessDarkMode, 1.0);
   } else {
-    hsl.l = base::clamp(hsl.l, 0.0, kMaxLightnessLightMode);
+    hsl.l = std::clamp(hsl.l, 0.0, kMaxLightnessLightMode);
   }
   return color_utils::HSLToSkColor(hsl, SkColorGetA(color));
 }

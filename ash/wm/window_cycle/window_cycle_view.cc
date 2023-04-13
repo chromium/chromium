@@ -4,6 +4,8 @@
 
 #include "ash/wm/window_cycle/window_cycle_view.h"
 
+#include <algorithm>
+
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -16,7 +18,6 @@
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_item_view.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
@@ -567,12 +568,12 @@ void WindowCycleView::Layout() {
     // However, the container must span the screen, i.e. the maximum x is 0
     // and the minimum for its right boundary is the width of the screen.
     int minimum_x = width() - content_container_bounds.width();
-    x_offset = base::clamp(x_offset, minimum_x, 0);
+    x_offset = std::clamp(x_offset, minimum_x, 0);
 
     // If the user has dragged, offset the container based on how much they
     // have dragged. Cap |horizontal_distance_dragged_| based on the available
     // distance from the container to the left and right boundaries.
-    float clamped_horizontal_distance_dragged = base::clamp(
+    float clamped_horizontal_distance_dragged = std::clamp(
         horizontal_distance_dragged_, static_cast<float>(minimum_x - x_offset),
         static_cast<float>(-x_offset));
     if (horizontal_distance_dragged_ != clamped_horizontal_distance_dragged)

@@ -4,6 +4,7 @@
 
 #include "ash/shelf/shelf_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -52,7 +53,6 @@
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
-#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -1701,7 +1701,7 @@ void ShelfView::MoveDragViewTo(int primary_axis_coordinate) {
   size_t target_index = views::ViewModelUtils::DetermineMoveIndex(
       *view_model_, drag_view_, shelf_->IsHorizontalAlignment(),
       drag_view_->x(), drag_view_->y());
-  target_index = base::clamp(target_index, indices.first, indices.second);
+  target_index = std::clamp(target_index, indices.first, indices.second);
 
   // Check the relative position of |drag_view_| and its ideal bounds if it can
   // be dragged across the separator to pin.

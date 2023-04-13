@@ -18,7 +18,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
-#include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/numerics/ranges.h"
 #include "chromeos/ui/wm/features.h"
@@ -46,8 +45,8 @@ int GetSnappedWindowAxisLength(float snap_ratio,
   min_axis_length = std::min(min_axis_length, work_area_axis_length);
   // The primary snap size is proportional to |snap_ratio|.
   if (is_primary_snap) {
-    return base::clamp(static_cast<int>(snap_ratio * work_area_axis_length),
-                       min_axis_length, work_area_axis_length);
+    return std::clamp(static_cast<int>(snap_ratio * work_area_axis_length),
+                      min_axis_length, work_area_axis_length);
   }
 
   // The secondary snap size is proportional to the |snap_ratio|, but
@@ -58,8 +57,8 @@ int GetSnappedWindowAxisLength(float snap_ratio,
   // `WindowPositioningUtilsTest.SnapBoundsWithOddNumberedScreenWidth`.
   const int empty_space_axis_length =
       static_cast<int>((1 - snap_ratio) * work_area_axis_length);
-  return base::clamp(work_area_axis_length - empty_space_axis_length,
-                     min_axis_length, work_area_axis_length);
+  return std::clamp(work_area_axis_length - empty_space_axis_length,
+                    min_axis_length, work_area_axis_length);
 }
 
 // Return true if the window or one of its ancestor returns true from

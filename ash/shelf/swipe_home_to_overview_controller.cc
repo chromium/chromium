@@ -4,6 +4,8 @@
 
 #include "ash/shelf/swipe_home_to_overview_controller.h"
 
+#include <algorithm>
+
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/controls/contextual_tooltip.h"
@@ -15,7 +17,6 @@
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
@@ -128,7 +129,7 @@ void SwipeHomeToOverviewController::Drag(const gfx::PointF& location_in_screen,
 
   const float progress = gfx::Tween::CalculateValue(
       gfx::Tween::FAST_OUT_SLOW_IN,
-      base::clamp(1.f - distance / target_distance, 0.0f, 1.0f));
+      std::clamp(1.f - distance / target_distance, 0.0f, 1.0f));
 
   float scale = gfx::Tween::FloatValueBetween(progress, 1.0f, kTargetHomeScale);
   Shell::Get()->app_list_controller()->UpdateScaleAndOpacityForHomeLauncher(

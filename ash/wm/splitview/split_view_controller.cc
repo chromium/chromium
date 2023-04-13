@@ -4,6 +4,7 @@
 
 #include "ash/wm/splitview/split_view_controller.h"
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 
@@ -49,7 +50,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -166,10 +166,10 @@ bool IsExactlyOneRootInSplitView() {
 
 gfx::Point GetBoundedPosition(const gfx::Point& location_in_screen,
                               const gfx::Rect& bounds_in_screen) {
-  return gfx::Point(base::clamp(location_in_screen.x(), bounds_in_screen.x(),
-                                bounds_in_screen.right() - 1),
-                    base::clamp(location_in_screen.y(), bounds_in_screen.y(),
-                                bounds_in_screen.bottom() - 1));
+  return gfx::Point(std::clamp(location_in_screen.x(), bounds_in_screen.x(),
+                               bounds_in_screen.right() - 1),
+                    std::clamp(location_in_screen.y(), bounds_in_screen.y(),
+                               bounds_in_screen.bottom() - 1));
 }
 
 ui::InputMethod* GetCurrentInputMethod() {

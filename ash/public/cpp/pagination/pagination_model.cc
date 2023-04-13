@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
-#include "base/cxx17_backports.h"
 #include "ui/gfx/animation/slide_animation.h"
 
 namespace ash {
@@ -249,7 +248,7 @@ int PaginationModel::CalculateTargetPage(int delta) const {
   else if (target_page > end_page && selected_page_ == end_page)
     end_page = total_pages_;
 
-  return base::clamp(target_page, start_page, end_page);
+  return std::clamp(target_page, start_page, end_page);
 }
 
 base::TimeDelta PaginationModel::GetTransitionAnimationSlideDuration() const {

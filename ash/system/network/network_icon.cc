@@ -4,6 +4,7 @@
 
 #include "ash/system/network/network_icon.h"
 
+#include <algorithm>
 #include <tuple>
 #include <utility>
 
@@ -18,7 +19,6 @@
 #include "ash/system/network/network_icon_animation_observer.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/containers/flat_map.h"
-#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
@@ -200,7 +200,7 @@ gfx::ImageSkia& ConnectingWirelessImage(ImageType image_type,
 
   int index =
       animation * nextafter(static_cast<float>(kNumConnectingImages), 0);
-  index = base::clamp(index, 0, kNumConnectingImages - 1);
+  index = std::clamp(index, 0, kNumConnectingImages - 1);
 
   auto map_key = std::make_tuple(
       is_bars_image, DarkLightModeControllerImpl::Get()->IsDarkModeEnabled(),

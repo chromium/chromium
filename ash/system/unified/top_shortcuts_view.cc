@@ -4,6 +4,7 @@
 
 #include "ash/system/unified/top_shortcuts_view.h"
 
+#include <algorithm>
 #include <cstddef>
 #include <memory>
 #include <numeric>
@@ -28,7 +29,6 @@
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
 #include "ash/system/unified/user_chooser_view.h"
 #include "ash/system/user/login_status.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -71,8 +71,8 @@ void TopShortcutButtonContainer::Layout() {
   if (visible_children.size() > 1) {
     spacing = (child_area.width() - visible_child_width) /
               (static_cast<int>(visible_children.size()) - 1);
-    spacing = base::clamp(spacing, kUnifiedTopShortcutButtonMinSpacing,
-                          kUnifiedTopShortcutButtonDefaultSpacing);
+    spacing = std::clamp(spacing, kUnifiedTopShortcutButtonMinSpacing,
+                         kUnifiedTopShortcutButtonDefaultSpacing);
   }
 
   int x = child_area.x();
@@ -90,7 +90,7 @@ void TopShortcutButtonContainer::Layout() {
           child_area.width() -
           (static_cast<int>(visible_children.size()) - 1) * spacing -
           (visible_child_width - width);
-      width = base::clamp(width, 0, std::max(0, remainder));
+      width = std::clamp(width, 0, std::max(0, remainder));
     }
 
     child->SetBounds(x, child_y, width, child->GetHeightForWidth(width));

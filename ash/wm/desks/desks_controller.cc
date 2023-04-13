@@ -4,6 +4,7 @@
 
 #include "ash/wm/desks/desks_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -54,7 +55,6 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -1542,8 +1542,8 @@ void DesksController::OnActiveUserSessionChanged(const AccountId& account_id) {
   int new_user_active_desk_index =
       /* This is a default initialized index to 0 if the id doesn't exist. */
       user_to_active_desk_index_[current_account_id_];
-  new_user_active_desk_index = base::clamp(new_user_active_desk_index, 0,
-                                           static_cast<int>(desks_.size()) - 1);
+  new_user_active_desk_index = std::clamp(new_user_active_desk_index, 0,
+                                          static_cast<int>(desks_.size()) - 1);
 
   ActivateDesk(desks_[new_user_active_desk_index].get(),
                DesksSwitchSource::kUserSwitch);

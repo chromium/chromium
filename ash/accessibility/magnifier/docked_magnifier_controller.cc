@@ -20,7 +20,6 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/work_area_insets.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -148,7 +147,7 @@ void DockedMagnifierController::SetScale(float scale) {
   if (active_user_pref_service_) {
     active_user_pref_service_->SetDouble(
         prefs::kDockedMagnifierScale,
-        base::clamp(scale, kMinMagnifierScale, kMaxMagnifierScale));
+        std::clamp(scale, kMinMagnifierScale, kMaxMagnifierScale));
   }
 }
 
@@ -157,8 +156,8 @@ void DockedMagnifierController::SetScreenHeightDivisor(
   if (active_user_pref_service_) {
     active_user_pref_service_->SetDouble(
         prefs::kDockedMagnifierScreenHeightDivisor,
-        base::clamp(screen_height_divisor, kMinScreenHeightDivisor,
-                    kMaxScreenHeightDivisor));
+        std::clamp(screen_height_divisor, kMinScreenHeightDivisor,
+                   kMaxScreenHeightDivisor));
   }
 }
 
@@ -468,9 +467,9 @@ void DockedMagnifierController::MaybePerformViewportResizing(
     case ui::ET_MOUSE_DRAGGED:
       // User continues holding and drags separator to resize Docked Magnifier.
       if (is_resizing_) {
-        SetScreenHeightDivisor(base::clamp(new_screen_height_divisor,
-                                           kMinScreenHeightDivisor,
-                                           kMaxScreenHeightDivisor));
+        SetScreenHeightDivisor(std::clamp(new_screen_height_divisor,
+                                          kMinScreenHeightDivisor,
+                                          kMaxScreenHeightDivisor));
         OnDisplayConfigurationChanged();
       }
       break;

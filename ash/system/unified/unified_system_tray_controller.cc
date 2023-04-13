@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "ash/system/unified/unified_system_tray_controller.h"
+
+#include <algorithm>
 #include <memory>
 
 #include "ash/capture_mode/capture_mode_feature_pod_controller.h"
@@ -67,7 +69,6 @@
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -896,9 +897,9 @@ double UnifiedSystemTrayController::GetDragExpandedAmount(
   // If already expanded, only consider swiping down. Otherwise, only consider
   // swiping up.
   if (was_expanded_) {
-    return base::clamp(1.0 - std::max(0.0, y_diff) / drag_threshold_, 0.0, 1.0);
+    return std::clamp(1.0 - std::max(0.0, y_diff) / drag_threshold_, 0.0, 1.0);
   } else {
-    return base::clamp(std::max(0.0, -y_diff) / drag_threshold_, 0.0, 1.0);
+    return std::clamp(std::max(0.0, -y_diff) / drag_threshold_, 0.0, 1.0);
   }
 }
 

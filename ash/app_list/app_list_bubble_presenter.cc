@@ -4,6 +4,7 @@
 
 #include "ash/app_list/app_list_bubble_presenter.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -27,7 +28,6 @@
 #include "ash/wm/container_finder.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/cxx17_backports.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
@@ -106,7 +106,7 @@ gfx::Size ComputeBubbleSize(aura::Window* root_window,
     int max_height =
         (work_area.height() - shelf_size - kExtraTopOfScreenSpacing) / 2;
     DCHECK_GE(max_height, default_height);
-    height = base::clamp(height_to_fit_all_apps, default_height, max_height);
+    height = std::clamp(height_to_fit_all_apps, default_height, max_height);
   }
 
   return gfx::Size(width, height);
