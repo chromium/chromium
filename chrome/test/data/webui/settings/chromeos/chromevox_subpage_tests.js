@@ -73,6 +73,13 @@ suite('ChromeVoxSubpageTests', function() {
       type: ControlType.TOGGLE,
     },
     {
+      id: 'brailleTableTypeDropdown',
+      prefKey: 'settings.a11y.chromevox.braille_table_type',
+      defaultValue: 'brailleTable8',
+      secondaryValue: 'brailleTable6',
+      type: ControlType.DROPDOWN,
+    },
+    {
       id: 'brailleWordWrapToggle',
       prefKey: 'settings.a11y.chromevox.braille_word_wrap',
       defaultValue: true,

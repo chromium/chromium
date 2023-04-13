@@ -173,6 +173,15 @@ found in the LICENSE file.
 </div>
 <h2>$i18n{chromeVoxBrailleLabel}</h2>
 <div class="sub-item">
+  <div class="settings-box continuation">
+    <div class="start settings-box-text">
+      $i18n{chromeVoxBrailleTableDescription}
+    </div>
+    <settings-dropdown-menu id="brailleTableTypeDropdown"
+        pref="{{prefs.settings.a11y.chromevox.braille_table_type}}"
+        menu-options="[[brailleTableTypeOptions_]]">
+    </settings-dropdown-menu>
+  </div>
   <settings-toggle-button
       id="brailleWordWrapToggle"
       class="settings-box continuation"

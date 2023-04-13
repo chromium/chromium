@@ -23,8 +23,8 @@ import {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../../control
 import {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {routes} from '../os_settings_routes.js';
-import {Route, Router} from '../router.js';
 import {RouteOriginMixin} from '../route_origin_mixin.js';
+import {Route, Router} from '../router.js';
 
 import {getTemplate} from './chromevox_subpage.html.js';
 import {ChromeVoxSubpageBrowserProxy, ChromeVoxSubpageBrowserProxyImpl} from './chromevox_subpage_browser_proxy.js';
@@ -170,6 +170,26 @@ class SettingsChromeVoxSubpageElement extends
       },
 
       /**
+       * Dropdown menu choices for braille table type options.
+       */
+      brailleTableTypeOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          return [
+            {
+              value: 'brailleTable6',
+              name: loadTimeData.getString('chromeVoxBrailleTable6Dot'),
+            },
+            {
+              value: 'brailleTable8',
+              name: loadTimeData.getString('chromeVoxBrailleTable8Dot'),
+            },
+          ];
+        },
+      },
+
+      /**
        * Dropdown menu choices for virtual braille display style options.
        */
       virtualBrailleDisplayStyleOptions_: {
@@ -282,6 +302,7 @@ class SettingsChromeVoxSubpageElement extends
   private numberReadingStyleOptions_: DropdownMenuOptionList;
   private punctuationEchoOptions_: DropdownMenuOptionList;
   private audioStrategyOptions_: DropdownMenuOptionList;
+  private brailleTableTypeOptions_: DropdownMenuOptionList;
   private voiceOptions_: DropdownMenuOptionList;
   private virtualBrailleDisplayStyleOptions_: DropdownMenuOptionList;
   private chromeVoxBrowserProxy_: ChromeVoxSubpageBrowserProxy;
