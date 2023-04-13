@@ -65,6 +65,7 @@ std::unique_ptr<ui::Event> PenEventProcessor::GenerateEvent(
     rotation_angle += 180;
   int tilt_x = pointer_pen_info.tiltX;
   int tilt_y = pointer_pen_info.tiltY;
+
   ui::PointerDetails pointer_details(
       input_type, mapped_pointer_id, /* radius_x */ 0.0f, /* radius_y */ 0.0f,
       pressure, rotation_angle, tilt_x, tilt_y, /* tangential_pressure */ 0.0f);

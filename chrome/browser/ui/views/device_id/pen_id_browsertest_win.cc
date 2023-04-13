@@ -30,6 +30,9 @@
 #include "ui/views/win/pen_id_handler.h"
 #include "ui/views/win/test_support/fake_ipen_device.h"
 #include "ui/views/win/test_support/fake_ipen_device_statics.h"
+#include "ui/views/win/test_support/fake_ipen_pointer_point_statics.h"
+#include "ui/views/win/test_support/fake_ipointer_point.h"
+#include "ui/views/win/test_support/fake_ipointer_point_properties.h"
 
 using views::FakeIPenDevice;
 using views::FakeIPenDeviceStatics;
@@ -39,6 +42,12 @@ using Microsoft::WRL::ComPtr;
 namespace {
 
 constexpr char kMainTestPageUrlPath[] = "/device_id/test.html";
+
+constexpr int kPointerId1 = 0;
+constexpr int kPointerId2 = 1;
+constexpr int kPointerId3 = 2;
+constexpr int kDeviceId1 = 0;
+constexpr int kDeviceId2 = 1;
 
 }  // namespace
 
@@ -168,14 +177,8 @@ bool PenIdBrowserTest::MouseEventCallback(
 // (MouseEventCallback) so that when the browser sends the pen event, it
 // checks for the right device id.
 IN_PROC_BROWSER_TEST_F(PenIdBrowserTest, PenDeviceTest) {
-  int kPointerId1 = 0;
-  int kPointerId2 = 1;
-  int kPointerId3 = 2;
-  int kDeviceId1 = 0;
-  int kDeviceId2 = 1;
-
   views::PenIdHandler::ScopedPenIdStaticsForTesting scoper(
-      &FakeIPenDeviceStatics::FakeIPenDeviceStaticsComPtr);
+      &FakeIPenDeviceStatics::FakeIPenDeviceStaticsComPtr, nullptr);
   const auto fake_pen_device = Microsoft::WRL::Make<FakeIPenDevice>();
   FakeIPenDeviceStatics::GetInstance()->SimulatePenEventGenerated(
       kPointerId1, fake_pen_device);
@@ -199,4 +202,39 @@ IN_PROC_BROWSER_TEST_F(PenIdBrowserTest, PenDeviceTest) {
   SimulatePenPointerEventAndStop(
       kDeviceId1, base::BindOnce(&PenIdBrowserTest::SimulatePenPointerDragEvent,
                                  base::Unretained(this)));
+}
+
+// Perform a pen drag for a pen that has a transducer id. Verify the correct
+// device id is propagated in the pointer event.
+IN_PROC_BROWSER_TEST_F(PenIdBrowserTest, PointerPointTest) {
+  views::PenIdHandler::ScopedPenIdStaticsForTesting scoper(
+      nullptr,
+      &views::FakeIPenPointerPointStatics::FakeIPenPointerPointStaticsComPtr);
+
+  const auto p1 = Microsoft::WRL::Make<views::FakeIPointerPoint>(
+      /*getProperties throw error*/ false,
+      /*has usage error*/ false,
+      /*get usage error*/ false,
+      /*tsn*/ 100,
+      /*tvid*/ 1);
+  const auto p2 = Microsoft::WRL::Make<views::FakeIPointerPoint>(
+      /*getProperties throw error*/ false,
+      /*has usage error*/ false,
+      /*get usage error*/ false,
+      /*tsn*/ 200,
+      /*tvid*/ 1);
+
+  views::FakeIPenPointerPointStatics::GetInstance()->AddPointerPoint(
+      kPointerId1, p1);
+  views::FakeIPenPointerPointStatics::GetInstance()->AddPointerPoint(
+      kPointerId2, p2);
+
+  SimulatePenPointerEventAndStop(
+      kPointerId1,
+      base::BindOnce(&PenIdBrowserTest::SimulatePenPointerDragEvent,
+                     base::Unretained(this)));
+  SimulatePenPointerEventAndStop(
+      kPointerId2,
+      base::BindOnce(&PenIdBrowserTest::SimulatePenPointerDragEvent,
+                     base::Unretained(this)));
 }
