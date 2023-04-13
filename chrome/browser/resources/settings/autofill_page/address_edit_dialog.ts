@@ -27,6 +27,9 @@ import {loadTimeData} from '../i18n_setup.js';
 import {getTemplate} from './address_edit_dialog.html.js';
 import * as uiComponents from './address_edit_dialog_components.js';
 
+const SANCTOINED_COUNTRY_CODES: readonly string[] =
+    Object.freeze(['CU', 'IR', 'KP', 'SD', 'SY']);
+
 export interface SettingsAddressEditDialogElement {
   $: {
     accountSourceNotice: HTMLElement,
@@ -123,6 +126,14 @@ export class SettingsAddressEditDialogElement extends
     assert(this.address);
 
     this.countryInfo_.getCountryList().then(countryList => {
+      if (this.address.guid && this.address.metadata !== undefined &&
+          this.address.metadata.source === AddressSource.ACCOUNT) {
+        // TODO(crbug.com/1432505): remove temporary sanctioned countries
+        // filtering.
+        countryList = countryList.filter(
+            country => !!country.countryCode &&
+                !SANCTOINED_COUNTRY_CODES.includes(country.countryCode));
+      }
       this.countries_ = countryList;
 
       const isEditingExistingAddress = !!this.address.guid;
