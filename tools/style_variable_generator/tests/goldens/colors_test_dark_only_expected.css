@@ -25,4 +25,6 @@ html:not(body) {
   --cros-disabled-opacity: 0.38;
 
   --cros-reference-opacity: 1;
+
+  --legacy_color: var(--cros-text-color-primary);
 }

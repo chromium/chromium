@@ -27,7 +27,7 @@ class BaseStyleGeneratorTest:
         path = os.path.join(os.path.dirname(__file__), 'goldens', filename)
         with open(path, 'r') as f:
             self.maxDiff = None
-            self.assertEqual(value, f.read())
+            self.assertEqual(value, f.read(), f'Did not match golden: {path}')
 
     def AddJSONFilesToModel(self, files):
         relpaths_from_cwd = [

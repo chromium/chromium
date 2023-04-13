@@ -26,6 +26,7 @@ class VariableType:
     UNTYPED_CSS = 'untyped_css'
     TYPEFACE = 'typeface'
     FONT_FAMILY = 'font_family'
+    LEGACY_MAPPING = 'legacy_mappings'
 
 
 class StyleVariable(object):
@@ -306,6 +307,9 @@ class Model(object):
 
         self.untyped_css = SimpleModel(VariableType.UNTYPED_CSS)
         self.submodels[VariableType.UNTYPED_CSS] = self.untyped_css
+
+        self.legacy_mappings = SimpleModel(VariableType.LEGACY_MAPPING)
+        self.submodels[VariableType.LEGACY_MAPPING] = self.legacy_mappings
 
         def CheckTypeFace(name, value_obj, context):
             assert value_obj['font_family']

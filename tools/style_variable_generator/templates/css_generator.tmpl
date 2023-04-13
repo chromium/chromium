@@ -33,6 +33,9 @@ Chrome OS pages.
 html:not(body) {
 {{- render_variables_for_mode(Modes.DEFAULT) -}}
 
+{%- for name, value in legacy_mappings.items() %}
+  {{name | to_css_var_name_unscoped}}: {{value | process_simple_ref}};
+{%  endfor -%}
 
 }
 

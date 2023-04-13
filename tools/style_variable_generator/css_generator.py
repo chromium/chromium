@@ -39,11 +39,13 @@ class CSSStyleGenerator(BaseGenerator):
             'typefaces': self.model.typefaces,
             'font_families': self.model.font_families,
             'untyped_css': self.model.untyped_css,
+            'legacy_mappings': self.model.legacy_mappings,
         }
 
     def GetFilters(self):
         return {
             'to_css_var_name': self.ToCSSVarName,
+            'to_css_var_name_unscoped': self.ToCSSVarNameUnscoped,
             'css_opacity': self._CSSOpacity,
             'css_color_rgb': self.CSSColorRGB,
             'process_simple_ref': self.ProcessSimpleRef,
@@ -126,6 +128,9 @@ class CSSStyleGenerator(BaseGenerator):
         var_name = name.translate(str.maketrans('-_.', '_--'))
 
         return '--%s%s' % (self._GetCSSVarPrefix(name), var_name)
+
+    def ToCSSVarNameUnscoped(self, name):
+        return f'--{name}'
 
     def _CSSOpacity(self, opacity):
         if opacity.var:
