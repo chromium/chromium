@@ -45,6 +45,8 @@ import java.util.UUID;
  * An address editor. Can be used for either shipping or billing address editing.
  */
 public class AddressEditor extends EditorBase<AutofillAddress> {
+    private static final Set<String> SANCTIONED_CONTRIES = Set.of("CU", "IR", "KP", "SD", "SY");
+
     private final Handler mHandler = new Handler();
     private final Map<Integer, EditorFieldModel> mAddressFields = new HashMap<>();
     private final Set<CharSequence> mPhoneNumbers = new HashSet<>();
@@ -105,6 +107,18 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
                 EditorFieldModel.createTextInput(EditorFieldModel.INPUT_TYPE_HINT_PERSON_NAME));
 
         return addressFields;
+    }
+
+    // TODO(crbug.com/1432505): remove temporary sanctioned countries filtering.
+    private static List<EditorFieldModel.DropdownKeyValue> getSupportedCountries(
+            boolean filterOutSanctionedCountries) {
+        List<EditorFieldModel.DropdownKeyValue> supportedCountries =
+                AutofillProfileBridge.getSupportedCountries();
+        if (filterOutSanctionedCountries) {
+            supportedCountries.removeIf(entry -> SANCTIONED_CONTRIES.contains(entry.getKey()));
+        }
+
+        return supportedCountries;
     }
 
     /**
@@ -207,7 +221,8 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
         if (mCountryField == null) {
             mCountryField = EditorFieldModel.createDropdown(
                     mContext.getString(R.string.autofill_profile_editor_country),
-                    AutofillProfileBridge.getSupportedCountries(), null /* hint */);
+                    getSupportedCountries(isAccountAddressProfile() && !mIsProfileNew),
+                    /*hint=*/null);
         }
 
         // Changing the country will update which fields are in the model. The actual fields are not
@@ -315,12 +330,13 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
 
     /** Saves the edited profile on disk. */
     private void commitChanges(AutofillProfile profile) {
-        if (willBeSavedInAccount()) {
+        String country = mCountryField.getValue().toString();
+        if (willBeSavedInAccount() && !SANCTIONED_CONTRIES.contains(country)) {
             profile.setSource(Source.ACCOUNT);
         }
         // Country code and phone number are always required and are always collected from the
         // editor model.
-        profile.setCountryCode(mCountryField.getValue().toString());
+        profile.setCountryCode(country);
         if (mPhoneField != null) profile.setPhoneNumber(mPhoneField.getValue().toString());
         if (mEmailField != null) profile.setEmailAddress(mEmailField.getValue().toString());
         if (mHonorificField != null) {

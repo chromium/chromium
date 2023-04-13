@@ -123,7 +123,12 @@ public class AddressEditorTest {
             CoreAccountInfo.createFromEmailAndGaiaId(USER_EMAIL, "gaia_id");
     // Note: can't initialize this list statically because of how Robolectric
     // initializes Android library dependencies.
-    private final List<DropdownKeyValue> mSupportedCountries = List.of(
+    private final List<DropdownKeyValue> mSupportedCountries =
+            List.of(new DropdownKeyValue("US", "United States"),
+                    new DropdownKeyValue("DE", "Germany"), new DropdownKeyValue("CU", "Cuba"),
+                    new DropdownKeyValue("IR", "Iran"), new DropdownKeyValue("KP", "North Korea"),
+                    new DropdownKeyValue("SD", "Sudan"), new DropdownKeyValue("SY", "Syria"));
+    private final List<DropdownKeyValue> mNonSactionedCountries = List.of(
             new DropdownKeyValue("US", "United States"), new DropdownKeyValue("DE", "Germany"));
 
     private Callback<AutofillAddress> mDoneCallback;
@@ -811,5 +816,91 @@ public class AddressEditorTest {
                 mEditedAutofillAddress.getProfile().getDependentLocality());
         Assert.assertEquals(
                 "New organization", mEditedAutofillAddress.getProfile().getCompanyName());
+    }
+
+    @Test
+    @SmallTest
+    public void accountSavingDisallowedForSanctionedCountry() {
+        when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
+        mAddressEditor = new AddressEditor(
+                /*saveToDisk=*/false, /*isUpdate=*/false, /*isMigrationToAccount=*/false);
+        mAddressEditor.setEditorDialog(mEditorDialog);
+        setUpAddressUiComponents(sSupportedAddressFields, "US");
+        setUpAddressUiComponents(sSupportedAddressFields, "SY");
+        mAddressEditor.edit(null, mDoneCallback);
+
+        EditorModel editorModel = mEditorModelCapture.getValue();
+        Assert.assertNotNull(editorModel);
+        List<EditorFieldModel> editorFields = editorModel.getFields();
+        Assert.assertEquals(13, editorFields.size());
+
+        EditorFieldModel countryDropdown = editorFields.get(0);
+        countryDropdown.setDropdownKey("SY", () -> {});
+
+        // Set values of the required fields.
+        editorFields.get(2).setValue("New Name");
+        editorFields.get(4).setValue("Locality");
+        editorFields.get(5).setValue("Dependent locality");
+        editorFields.get(8).setValue("Postal code");
+        editorFields.get(9).setValue("Street address");
+        editorModel.done();
+
+        Assert.assertNotNull(mEditedAutofillAddress);
+        Assert.assertEquals(
+                Source.LOCAL_OR_SYNCABLE, mEditedAutofillAddress.getProfile().getSource());
+    }
+
+    @Test
+    @SmallTest
+    public void countryDropDownExcludesSanctionedCountries_saveInAccountFlow() {
+        mAddressEditor = new AddressEditor(
+                /*saveToDisk=*/false, /*isUpdate=*/false, /*isMigrationToAccount=*/false);
+        mAddressEditor.setEditorDialog(mEditorDialog);
+        setUpAddressUiComponents(sSupportedAddressFields);
+        AutofillProfile toEdit = new AutofillProfile(sAccountProfile);
+        mAddressEditor.edit(new AutofillAddress(mActivity, toEdit), mDoneCallback);
+
+        EditorModel editorModel = mEditorModelCapture.getValue();
+        Assert.assertNotNull(editorModel);
+        List<EditorFieldModel> editorFields = editorModel.getFields();
+        Assert.assertEquals(13, editorFields.size());
+
+        assertThat(editorFields.get(0).getDropdownKeys(), containsInAnyOrder("US", "DE"));
+    }
+
+    @Test
+    @SmallTest
+    public void countryDropDownExcludesSanctionedCountries_MigrationFlow() {
+        mAddressEditor = new AddressEditor(
+                /*saveToDisk=*/false, /*isUpdate=*/false, /*isMigrationToAccount=*/true);
+        mAddressEditor.setEditorDialog(mEditorDialog);
+        setUpAddressUiComponents(sSupportedAddressFields);
+        AutofillProfile toEdit = new AutofillProfile(sLocalProfile);
+        mAddressEditor.edit(new AutofillAddress(mActivity, toEdit), mDoneCallback);
+
+        EditorModel editorModel = mEditorModelCapture.getValue();
+        Assert.assertNotNull(editorModel);
+        List<EditorFieldModel> editorFields = editorModel.getFields();
+        Assert.assertEquals(13, editorFields.size());
+
+        assertThat(editorFields.get(0).getDropdownKeys(), containsInAnyOrder("US", "DE"));
+    }
+
+    @Test
+    @SmallTest
+    public void countryDropDownExcludesSanctionedCountries_editExistingAccountProfile() {
+        mAddressEditor = new AddressEditor(
+                /*saveToDisk=*/false, /*isUpdate=*/true, /*isMigrationToAccount=*/false);
+        mAddressEditor.setEditorDialog(mEditorDialog);
+        setUpAddressUiComponents(sSupportedAddressFields);
+        AutofillProfile toEdit = new AutofillProfile(sAccountProfile);
+        mAddressEditor.edit(new AutofillAddress(mActivity, toEdit), mDoneCallback);
+
+        EditorModel editorModel = mEditorModelCapture.getValue();
+        Assert.assertNotNull(editorModel);
+        List<EditorFieldModel> editorFields = editorModel.getFields();
+        Assert.assertEquals(13, editorFields.size());
+
+        assertThat(editorFields.get(0).getDropdownKeys(), containsInAnyOrder("US", "DE"));
     }
 }
