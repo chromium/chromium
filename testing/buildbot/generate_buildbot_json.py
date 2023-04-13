@@ -1674,8 +1674,8 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     # Similar to get_builders_that_do_not_actually_exist above, but for
     # waterfalls defined in internal configs.
     return [
-        'chrome', 'chrome.pgo', 'internal.chrome.fyi', 'internal.chromeos.fyi',
-        'internal.soda'
+        'chrome', 'chrome.pgo', 'chrome.gpu.fyi', 'internal.chrome.fyi',
+        'internal.chromeos.fyi', 'internal.soda'
     ]
 
   def check_input_file_consistency(self, verbose=False):

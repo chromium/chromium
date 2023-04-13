@@ -2209,6 +2209,13 @@
       },
     },
   },
+  'context_lost_passthrough_tests': {
+    # Not enough capacity.
+    'remove_from': [
+      'Lacros FYI Release (eve)',
+      'Lacros FYI Release (jacuzzi)',
+    ],
+  },
   'context_lost_validating_tests': {
     # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
     # exception once there is enough capacity to run these tests.
@@ -2594,10 +2601,13 @@
     ],
   },
   'gpu_process_launch_tests': {
-    # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
-    # exception once there is enough capacity to run these tests.
     'remove_from': [
+      # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
+      # exception once there is enough capacity to run these tests.
       'Android FYI Release (Pixel 2)',
+      # Not enough capacity.
+      'Lacros FYI Release (eve)',
+      'Lacros FYI Release (jacuzzi)',
     ],
   },
   'gpu_pytype': {
@@ -2623,10 +2633,13 @@
     ],
   },
   'hardware_accelerated_feature_tests': {
-    # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
-    # exception once there is enough capacity to run these tests.
     'remove_from': [
+      # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
+      # exception once there is enough capacity to run these tests.
       'Android FYI Release (Pixel 2)',
+      # Not enough capacity.
+      'Lacros FYI Release (eve)',
+      'Lacros FYI Release (jacuzzi)',
     ],
   },
   'headless_browsertests': {
@@ -3531,6 +3544,11 @@
         ],
       },
     },
+    # Not enough capacity.
+    'remove_from': [
+      'Lacros FYI Release (eve)',
+      'Lacros FYI Release (jacuzzi)',
+    ],
   },
   'screenshot_sync_validating_tests': {
     'modifications': {
@@ -4193,6 +4211,16 @@
         'swarming': {
           'shards': 30,
         },
+      },
+      'Lacros FYI Release (eve)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/lacros-device.webgl2_conformance_gles_passthrough_tests.filter',
+        ],
+      },
+      'Lacros FYI Release (jacuzzi)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/lacros-device.webgl2_conformance_gles_passthrough_tests.filter',
+        ],
       },
     },
   },
