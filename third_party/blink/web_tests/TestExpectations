@@ -6868,3 +6868,4 @@ crbug.com/1432666 [ Mac ] external/wpt/mediacapture-record/passthrough/MediaReco
 
 # Sheriff 2023-04-13
 crbug.com/1432763 [ Linux ] external/wpt/fetch/metadata/generated/element-picture.https.sub.html [ Pass Timeout ]
+crbug.com/1432812 [ Win11 ] fast/backgrounds/repeat/negative-offset-repeat-transformed.html [ Failure Pass ]
