@@ -74451,13 +74451,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Enabled">NPAPI is enabled</int>
 </enum>
 
-<enum name="NQE.ConnectivityMonitor.NetworkChangeType">
-  <int value="0" label="NoEarlyActivation"/>
-  <int value="1" label="EarlyActivationOfUnknownNetwork"/>
-  <int value="2" label="EarlyActivationOfDifferentNetwork"/>
-  <int value="3" label="EarlyActivationOfSameNetwork"/>
-</enum>
-
 <enum name="NQEEffectiveConnectionType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Offline"/>

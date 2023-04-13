@@ -3166,12 +3166,6 @@ chromium-metrics-reviews@google.com.
       label="Observed metric was greater than 5100 (inclusive) units"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="NQE_SignalStrengthQueried" separator=".">
-  <suffix name="Cellular" label="On cellular network."/>
-  <suffix name="WiFi" label="On WiFi network."/>
-  <affected-histogram name="NQE.SignalStrengthQueried"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="OfflinePagesArchiveDirectoryType" separator=".">
   <suffix name="Persistent" label="Persistent archive directory"/>
   <suffix name="Temporary" label="Temporary archive directory"/>
