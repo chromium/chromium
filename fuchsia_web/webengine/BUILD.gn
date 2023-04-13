@@ -737,6 +737,7 @@ source_set("cast_streaming_receiver") {
     ":switches",
     "//components/cast/message_port",
     "//components/cast_streaming/browser",
+    "//ui/display",
     "//url",
   ]
   public = [
