@@ -10,6 +10,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/mac/wrap_cg_display.h"
 #include "base/task/thread_pool.h"
 
 namespace ui {
@@ -67,7 +68,7 @@ bool TryPromptUserForScreenCapture() {
     // in the applications list in System permissions. Stream creation will
     // fail if the user denies permission, or if our application is already
     // in the system permssion and is unchecked.
-    base::ScopedCFTypeRef<CGDisplayStreamRef> stream(CGDisplayStreamCreate(
+    base::ScopedCFTypeRef<CGDisplayStreamRef> stream(wrapCGDisplayStreamCreate(
         CGMainDisplayID(), 1, 1, 'BGRA', nullptr,
         ^(CGDisplayStreamFrameStatus status, uint64_t displayTime,
           IOSurfaceRef frameSurface, CGDisplayStreamUpdateRef updateRef){
