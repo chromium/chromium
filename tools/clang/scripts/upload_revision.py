@@ -49,6 +49,10 @@ BOTS = [
     'mac_upload_clang',
     'mac_upload_clang_arm',
     'win_upload_clang',
+    'linux_upload_rust',
+    'mac_upload_rust',
+    'mac_upload_rust_arm',
+    'win_upload_rust',
 ]
 
 # Keep lines in here at <= 72 columns, else they wrap in gerrit.
