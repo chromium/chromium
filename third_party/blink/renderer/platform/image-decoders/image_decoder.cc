@@ -25,13 +25,11 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sys_byteorder.h"
-#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "media/media_buildflags.h"
 #include "skia/ext/cicp.h"
 #include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/exif_reader.h"
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
@@ -446,24 +444,7 @@ ImageFrame* ImageDecoder::DecodeFrameBufferAtIndex(wtf_size_t index) {
   if (frame->GetStatus() != ImageFrame::kFrameComplete) {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "Decode Image",
                  "imageType", FilenameExtension().Ascii());
-    if (metrics_frame_index_ != index) {
-      metrics_frame_index_ = index;
-      metrics_time_delta_ = base::TimeDelta();
-    }
-    base::ElapsedTimer timer;
     Decode(index);
-    metrics_time_delta_ += timer.Elapsed();
-    if (frame->GetStatus() == ImageFrame::kFrameComplete) {
-      BitmapImageMetrics::CountDecodedImageFrameTime(
-          FilenameExtension(), metrics_time_delta_,
-          frame->OriginalFrameRect().size().Area64(),
-          metrics_first_ && (index == 0));
-      metrics_frame_index_ = kNotFound;
-      metrics_time_delta_ = base::TimeDelta();
-      if (index == 0) {
-        metrics_first_ = false;
-      }
-    }
   }
 
   frame->NotifyBitmapIfPixelsChanged();
