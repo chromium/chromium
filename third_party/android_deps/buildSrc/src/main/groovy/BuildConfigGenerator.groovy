@@ -871,6 +871,12 @@ class BuildConfigGenerator extends DefaultTask {
                 // Every target that has a dep on androidx_window_window will need these checks turned off.
                 sb.append('  enable_bytecode_checks = false\n')
                 break
+            case 'androidx_credentials_credentials':
+                sb.append('\n')
+                // We are overriding 1.0.0-SNAPSHOT to 1.2.0-alpha03 which has different deps.
+                // TODO(1433052): remove after 1.2.0 becomes part of the normal release structure.
+                sb.append('  deps += [":androidx_core_core_java"]\n')
+                break
             case 'androidx_asynclayoutinflater_asynclayoutinflater':
                 sb.append('\n')
                 sb.append('  # References AppCompatActivity using reflection, if exists.\n')
