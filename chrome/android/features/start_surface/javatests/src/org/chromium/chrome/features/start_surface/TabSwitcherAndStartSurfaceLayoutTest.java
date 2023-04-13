@@ -1930,8 +1930,10 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         boolean checkThumbnail = !currentTab.isNativePage();
 
         if (checkThumbnail) {
-            mActivityTestRule.getActivity().getTabContentManager().removeTabThumbnail(
-                    currentTab.getId());
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                mActivityTestRule.getActivity().getTabContentManager().removeTabThumbnail(
+                        currentTab.getId());
+            });
         }
 
         int count = getCaptureCount();

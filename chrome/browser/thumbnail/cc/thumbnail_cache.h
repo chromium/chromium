@@ -21,6 +21,8 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/thumbnail/cc/etc1_thumbnail_helper.h"
+#include "chrome/browser/thumbnail/cc/jpeg_thumbnail_helper.h"
 #include "chrome/browser/thumbnail/cc/scoped_ptr_expiring_cache.h"
 #include "chrome/browser/thumbnail/cc/thumbnail.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -90,8 +92,6 @@ class ThumbnailCache : ThumbnailDelegate {
   // ThumbnailDelegate implementation
   void InvalidateCachedThumbnail(Thumbnail* thumbnail) override;
   static base::FilePath GetCacheDirectory();
-  static base::FilePath GetFilePath(TabId tab_id);
-  static base::FilePath GetJpegFilePath(TabId tab_id);
 
  private:
   friend class ThumbnailCacheTest;
@@ -117,11 +117,10 @@ class ThumbnailCache : ThumbnailDelegate {
   void PruneCache();
 
   void RemoveFromDisk(TabId tab_id);
-  static void RemoveFromDiskTask(TabId tab_id);
-  void WriteThumbnailIfNecessary(TabId tab_id,
-                                 sk_sp<SkPixelRef> compressed_data,
-                                 float scale,
-                                 const gfx::Size& content_size);
+  void WriteEtc1ThumbnailIfNecessary(TabId tab_id,
+                                     sk_sp<SkPixelRef> compressed_data,
+                                     float scale,
+                                     const gfx::Size& content_size);
   void WriteJpegThumbnailIfNecessary(TabId tab_id,
                                      std::vector<uint8_t> compressed_data);
   void SaveAsJpeg(TabId tab_id,
@@ -142,43 +141,16 @@ class ThumbnailCache : ThumbnailDelegate {
   void ReadNextThumbnail();
   void MakeSpaceForNewItemIfNecessary(TabId tab_id);
   void RemoveFromReadQueue(TabId tab_id);
-  static void WriteTask(TabId tab_id,
+  void PostWriteTask();
+  void PostEtc1CompressionTask(TabId tab_id,
+                               const base::Time& time_stamp,
+                               float scale,
+                               sk_sp<SkPixelRef> compressed_data,
+                               const gfx::Size& content_size);
+  void PostEtc1ReadTask(TabId tab_id,
                         sk_sp<SkPixelRef> compressed_data,
                         float scale,
-                        const gfx::Size& content_size,
-                        base::OnceClosure post_write_task);
-  static void WriteJpegTask(TabId tab_id,
-                            std::vector<uint8_t> compressed_data,
-                            base::OnceClosure post_write_task);
-  void PostWriteTask();
-  static void CompressionTask(
-      SkBitmap raw_data,
-      gfx::Size encoded_size,
-      base::OnceCallback<void(sk_sp<SkPixelRef>, const gfx::Size&)>
-          post_compression_task);
-  static void JpegProcessingTask(
-      double jpeg_aspect_ratio,
-      SkBitmap bitmap,
-      base::OnceCallback<void(std::vector<uint8_t>)> post_processing_task);
-  void PostCompressionTask(TabId tab_id,
-                           const base::Time& time_stamp,
-                           float scale,
-                           sk_sp<SkPixelRef> compressed_data,
-                           const gfx::Size& content_size);
-  static void DecompressionTask(
-      base::OnceCallback<void(bool, const SkBitmap&)> post_decompress_callback,
-      sk_sp<SkPixelRef> compressed_data,
-      float scale,
-      const gfx::Size& encoded_size);
-  static void ReadTask(
-      bool decompress,
-      TabId tab_id,
-      base::OnceCallback<void(sk_sp<SkPixelRef>, float, const gfx::Size&)>
-          post_read_task);
-  void PostReadTask(TabId tab_id,
-                    sk_sp<SkPixelRef> compressed_data,
-                    float scale,
-                    const gfx::Size& content_size);
+                        const gfx::Size& content_size);
   void NotifyObserversOfThumbnailAddedToCache(TabId tab_id);
   void NotifyObserversOfThumbnailRead(TabId tab_id);
   void RemoveOnMatchedTimeStamp(TabId tab_id, const base::Time& time_stamp);
@@ -188,7 +160,11 @@ class ThumbnailCache : ThumbnailDelegate {
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level);
 
+  // TODO(ckitagawa): Look into making this USER_VISIBLE for at least a subset
+  // of tasks.
   const scoped_refptr<base::SequencedTaskRunner> file_sequenced_task_runner_;
+  thumbnail::Etc1ThumbnailHelper etc1_helper_;
+  thumbnail::JpegThumbnailHelper jpeg_helper_;
 
   const size_t compression_queue_max_size_;
   const size_t write_queue_max_size_;

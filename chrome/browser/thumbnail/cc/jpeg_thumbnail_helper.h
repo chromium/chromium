@@ -24,17 +24,19 @@ class JpegThumbnailHelper {
   JpegThumbnailHelper(const JpegThumbnailHelper&) = delete;
   JpegThumbnailHelper& operator=(const JpegThumbnailHelper&) = delete;
 
-  // Callback post_processing_task will run on the thread created by this
-  // helper.
+  // `post_processing_task` will run on the thread that created this
+  // JpegThumbnailHelper.
   void Compress(
       double jpeg_aspect_ratio,
       const SkBitmap& bitmap,
       base::OnceCallback<void(std::vector<uint8_t>)> post_processing_task);
-  // Closure post_write_task will run on the thread created by this helper.
+  // `post_write_task` will run on the thread that created this
+  // JpegThumbnailHelper.
   void Write(thumbnail::TabId tab_id,
              std::vector<uint8_t> compressed_data,
              base::OnceClosure post_write_task);
-  // Callback post_read_task will run on the thread created by this helper.
+  // `post_read_task` will run on the thread that created this
+  // JpegThumbnailHelper.
   void Read(thumbnail::TabId tab_id,
             base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>
                 post_read_task);
