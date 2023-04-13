@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/media/fuchsia_media_codec_provider_impl.h"
 
+#include <fuchsia/media/cpp/fidl.h>
 #include <fuchsia/mediacodec/cpp/fidl.h>
 #include <lib/fit/function.h>
 #include <lib/sys/cpp/component_context.h>
@@ -11,8 +12,8 @@
 #include "base/command_line.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
-#include "media/base/media_switches.h"
 #include "media/base/supported_video_decoder_config.h"
+#include "media/base/video_codecs.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -47,38 +48,110 @@ absl::optional<std::string> GetMimeTypeForVideoCodec(media::VideoCodec codec) {
   return absl::nullopt;
 }
 
-// fuchsia::mediacodec::CodecDescription does not provide enough codec info
-// to determine if a media::VideoDecoderConfig is supported. The constant and
-// the helper function below is to make a safe assumption that converts the type
-// to media::SupportedVideoDecoderConfigs.
-// TODO(fxbug.dev/85214): Remove the constant and the helper function below
-// after more details are added to mediacodec.CodecDescription.
-constexpr gfx::Size kFuchsiaDecodeSizeMax(1920, 1080);  // 1080p
+media::VideoCodecProfile ConvertToVideoCodecProfile(
+    const fuchsia::media::CodecProfile& profile) {
+  switch (profile) {
+    case fuchsia::media::CodecProfile::H264PROFILE_BASELINE:
+      return media::VideoCodecProfile::H264PROFILE_BASELINE;
+    case fuchsia::media::CodecProfile::H264PROFILE_MAIN:
+      return media::VideoCodecProfile::H264PROFILE_MAIN;
+    case fuchsia::media::CodecProfile::H264PROFILE_EXTENDED:
+      return media::VideoCodecProfile::H264PROFILE_EXTENDED;
+    case fuchsia::media::CodecProfile::H264PROFILE_HIGH:
+      return media::VideoCodecProfile::H264PROFILE_HIGH;
+    case fuchsia::media::CodecProfile::H264PROFILE_HIGH10PROFILE:
+      return media::VideoCodecProfile::H264PROFILE_HIGH10PROFILE;
+    case fuchsia::media::CodecProfile::H264PROFILE_HIGH422PROFILE:
+      return media::VideoCodecProfile::H264PROFILE_HIGH422PROFILE;
+    case fuchsia::media::CodecProfile::H264PROFILE_HIGH444PREDICTIVEPROFILE:
+      return media::VideoCodecProfile::H264PROFILE_HIGH444PREDICTIVEPROFILE;
+    case fuchsia::media::CodecProfile::H264PROFILE_SCALABLEBASELINE:
+      return media::VideoCodecProfile::H264PROFILE_SCALABLEBASELINE;
+    case fuchsia::media::CodecProfile::H264PROFILE_SCALABLEHIGH:
+      return media::VideoCodecProfile::H264PROFILE_SCALABLEHIGH;
+    case fuchsia::media::CodecProfile::H264PROFILE_STEREOHIGH:
+      return media::VideoCodecProfile::H264PROFILE_STEREOHIGH;
+    case fuchsia::media::CodecProfile::H264PROFILE_MULTIVIEWHIGH:
+      return media::VideoCodecProfile::H264PROFILE_MULTIVIEWHIGH;
+    case fuchsia::media::CodecProfile::VP8PROFILE_ANY:
+      return media::VideoCodecProfile::VP8PROFILE_ANY;
+    case fuchsia::media::CodecProfile::VP9PROFILE_PROFILE0:
+      return media::VideoCodecProfile::VP9PROFILE_PROFILE0;
+    case fuchsia::media::CodecProfile::VP9PROFILE_PROFILE1:
+      return media::VideoCodecProfile::VP9PROFILE_PROFILE1;
+    case fuchsia::media::CodecProfile::VP9PROFILE_PROFILE2:
+      return media::VideoCodecProfile::VP9PROFILE_PROFILE2;
+    case fuchsia::media::CodecProfile::VP9PROFILE_PROFILE3:
+      return media::VideoCodecProfile::VP9PROFILE_PROFILE3;
+    case fuchsia::media::CodecProfile::HEVCPROFILE_MAIN:
+      return media::VideoCodecProfile::HEVCPROFILE_MAIN;
+    case fuchsia::media::CodecProfile::HEVCPROFILE_MAIN10:
+      return media::VideoCodecProfile::HEVCPROFILE_MAIN10;
+    case fuchsia::media::CodecProfile::HEVCPROFILE_MAIN_STILL_PICTURE:
+      return media::VideoCodecProfile::HEVCPROFILE_MAIN_STILL_PICTURE;
+    default:
+      NOTIMPLEMENTED() << "Unknown codec profile: " << profile;
+      return media::VideoCodecProfile::VIDEO_CODEC_PROFILE_UNKNOWN;
+  }
+}
+
 media::SupportedVideoDecoderConfigs GetSupportedVideoDecoderConfigsForCodecList(
-    const std::vector<fuchsia::mediacodec::CodecDescription>& codec_list) {
+    const std::vector<fuchsia::mediacodec::DetailedCodecDescription>&
+        detailed_codec_list) {
   media::SupportedVideoDecoderConfigs configs;
-  for (const auto& codec_description : codec_list) {
-    if (codec_description.mime_type == "video/h264" ||
-        codec_description.mime_type == "video/h264-muti") {
-      configs.emplace_back(media::VideoCodecProfile::H264PROFILE_MIN,
-                           media::VideoCodecProfile::H264PROFILE_STEREOHIGH,
-                           media::kDefaultSwDecodeSizeMin,
-                           kFuchsiaDecodeSizeMax, codec_description.is_hw,
-                           false);
-    } else if (codec_description.mime_type == "video/vp8") {
-      configs.emplace_back(media::VideoCodecProfile::VP8PROFILE_MIN,
-                           media::VideoCodecProfile::VP8PROFILE_MAX,
-                           media::kDefaultSwDecodeSizeMin,
-                           kFuchsiaDecodeSizeMax, codec_description.is_hw,
-                           false);
-    } else if (codec_description.mime_type == "video/vp9") {
-      // Only SD profiles are supported for VP9. HDR profiles (2 and 3) are not
-      // supported.
-      configs.emplace_back(media::VideoCodecProfile::VP9PROFILE_MIN,
-                           media::VideoCodecProfile::VP9PROFILE_PROFILE1,
-                           media::kDefaultSwDecodeSizeMin,
-                           kFuchsiaDecodeSizeMax, codec_description.is_hw,
-                           false);
+
+  for (const auto& codec_description : detailed_codec_list) {
+    if (!codec_description.has_codec_type() || !codec_description.has_is_hw() ||
+        !codec_description.has_mime_type() ||
+        !codec_description.has_profile_descriptions()) {
+      LOG(WARNING) << "Missing required fields when parsing the "
+                      "DetailedCodecDescription. Skipped.";
+      continue;
+    }
+
+    if (
+        // Only use platform codecs that are accelerated.
+        !codec_description.is_hw() ||
+        // Exclude non-video codecs.
+        codec_description.mime_type().find("video") != 0 ||
+        // Exclude non-decoder codecs.
+        codec_description.codec_type() !=
+            fuchsia::mediacodec::CodecType::DECODER ||
+        !codec_description.profile_descriptions()
+             .is_decoder_profile_descriptions()) {
+      continue;
+    }
+
+    for (const auto& profile_description :
+         codec_description.profile_descriptions()
+             .decoder_profile_descriptions()) {
+      if (!profile_description.has_profile() ||
+          !profile_description.has_min_image_size() ||
+          !profile_description.has_max_image_size()) {
+        LOG(WARNING) << "Missing required fields when parsing the "
+                        "DecoderProfileDescription. Skipped.";
+        continue;
+      }
+
+      const auto video_codec_profile =
+          ConvertToVideoCodecProfile(profile_description.profile());
+      if (video_codec_profile ==
+          media::VideoCodecProfile::VIDEO_CODEC_PROFILE_UNKNOWN) {
+        continue;
+      }
+
+      configs.emplace_back(
+          video_codec_profile, video_codec_profile,
+          gfx::Size(profile_description.min_image_size().width,
+                    profile_description.min_image_size().height),
+          gfx::Size(profile_description.max_image_size().width,
+                    profile_description.max_image_size().height),
+          profile_description.has_allow_encryption()
+              ? profile_description.allow_encryption()
+              : false,
+          profile_description.has_require_encryption()
+              ? profile_description.require_encryption()
+              : false);
     }
   }
 
@@ -170,8 +243,8 @@ void FuchsiaMediaCodecProviderImpl::EnsureCodecFactory() {
 
   codec_factory_.set_error_handler(fit::bind_member(
       this, &FuchsiaMediaCodecProviderImpl::OnCodecFactoryDisconnected));
-  codec_factory_.events().OnCodecList =
-      fit::bind_member(this, &FuchsiaMediaCodecProviderImpl::OnCodecList);
+  codec_factory_->GetDetailedCodecDescriptions(fit::bind_member(
+      this, &FuchsiaMediaCodecProviderImpl::OnGetDetailedCodecDescriptions));
 }
 
 void FuchsiaMediaCodecProviderImpl::OnCodecFactoryDisconnected(
@@ -182,24 +255,26 @@ void FuchsiaMediaCodecProviderImpl::OnCodecFactoryDisconnected(
   RunPendingGetSupportedVideoDecoderConfigsCallbacks();
 }
 
-void FuchsiaMediaCodecProviderImpl::OnCodecList(
-    std::vector<::fuchsia::mediacodec::CodecDescription> codec_list) {
-  supported_video_decoder_configs_.emplace(
-      GetSupportedVideoDecoderConfigsForCodecList(codec_list));
+void FuchsiaMediaCodecProviderImpl::OnGetDetailedCodecDescriptions(
+    fuchsia::mediacodec::CodecFactoryGetDetailedCodecDescriptionsResponse
+        response) {
+  if (response.has_codecs()) {
+    supported_video_decoder_configs_.emplace(
+        GetSupportedVideoDecoderConfigsForCodecList(response.codecs()));
+  }
   RunPendingGetSupportedVideoDecoderConfigsCallbacks();
 }
 
 void FuchsiaMediaCodecProviderImpl::
     RunPendingGetSupportedVideoDecoderConfigsCallbacks() {
-  media::SupportedVideoDecoderConfigs configs = {};
-  if (supported_video_decoder_configs_) {
-    configs = supported_video_decoder_configs_.value();
-  }
+  media::SupportedVideoDecoderConfigs configs =
+      supported_video_decoder_configs_.value_or(
+          std::vector<media::SupportedVideoDecoderConfig>{});
 
-  for (auto& callback : pending_get_supported_vd_configs_callbacks_) {
+  for (auto& callback :
+       std::exchange(pending_get_supported_vd_configs_callbacks_, {})) {
     std::move(callback).Run(configs);
   }
-  pending_get_supported_vd_configs_callbacks_.clear();
 }
 
 }  // namespace content
