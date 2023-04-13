@@ -39,7 +39,7 @@ per-file *chromium.perf*.json=wenbinzhang@google.com
 per-file *chromium.perf*.json=hypan@google.com
 
 # For OOBE-related test filters.
-per-file *oobe*=file://chrome/browser/ui/webui/ash/login/OWNERS
+per-file *oobe*=file://ash/login/OOBE_WEBUI_OWNERS
 
 # iOS Owners
 per-file chromium.clang.json=file://infra/config/groups/ios/OWNERS

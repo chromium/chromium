@@ -1,0 +1,14 @@
+# For more information on DIR_METADATA files, see:
+#   https://source.chromium.org/chromium/infra/infra/+/HEAD:go/src/infra/tools/dirmd/README.md
+#
+# For the schema of this file, see Metadata message:
+#   https://source.chromium.org/chromium/infra/infra/+/HEAD:go/src/infra/tools/dirmd/proto/dir_metadata.proto
+
+buganizer {
+  # https://b.corp.google.com/issues?q=status:open%20componentid:167191
+  # ChromeOS > Platform > System > Power
+  component_id: 167191
+}
+
+team_email : "chromeos-hibernate@google.com"
+os: CHROME_OS
