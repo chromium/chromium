@@ -153,6 +153,8 @@ TEST_F(FirstPartySetsNavigationThrottleTest, WillStartRequest_Defer) {
 }
 
 TEST_F(FirstPartySetsNavigationThrottleTest, WillStartRequest_Proceed) {
+  base::HistogramTester histograms;
+
   // Create throttle for main frames.
   content::MockNavigationHandle handle(GURL(kExampleURL), main_rfh());
   ASSERT_TRUE(handle.IsInOutermostMainFrame());
@@ -167,6 +169,9 @@ TEST_F(FirstPartySetsNavigationThrottleTest, WillStartRequest_Proceed) {
           ->is_ready());
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle->WillStartRequest().action());
+
+  histograms.ExpectTotalCount("FirstPartySets.NavigationThrottle.ResumeDelta",
+                              0);
 }
 
 TEST_F(FirstPartySetsNavigationThrottleTest, ResumeOnReady) {
@@ -188,6 +193,9 @@ TEST_F(FirstPartySetsNavigationThrottleTest, ResumeOnReady) {
   service()->InitForTesting();
 
   run_loop.Run();
+
+  histograms.ExpectTotalCount("FirstPartySets.NavigationThrottle.ResumeDelta",
+                              1);
 
   EXPECT_FALSE(throttle->GetTimerForTesting().IsRunning());
   histograms.ExpectUniqueSample(
@@ -222,6 +230,9 @@ TEST_F(FirstPartySetsNavigationThrottleTest, ResumeOnTimeout) {
   histograms.ExpectBucketCount(
       "FirstPartySets.NavigationThrottle.ResumeOnTimeout", false,
       /*expected_count=*/0);
+
+  histograms.ExpectTotalCount("FirstPartySets.NavigationThrottle.ResumeDelta",
+                              1);
 }
 
 }  // namespace first_party_sets
