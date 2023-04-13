@@ -65,8 +65,5 @@
     ]
   },
   "builder_group": "chromium.chromiumos",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chrome_browser_release"
-  ]
+  "recipe": "chromium"
 }
