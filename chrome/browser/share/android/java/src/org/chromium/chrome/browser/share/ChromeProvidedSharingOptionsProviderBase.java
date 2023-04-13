@@ -9,6 +9,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.net.Uri;
+import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -277,7 +278,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     }
 
     private void maybeAddQrCodeFirstPartyOption() {
-        if (!mIsIncognito) {
+        if (!mIsIncognito && !TextUtils.isEmpty(mUrl)) {
             mOrderedFirstPartyOptions.add(createQrCodeFirstPartyOption());
         }
     }

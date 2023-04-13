@@ -123,11 +123,12 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
 
         if (showCustomActions) {
             boolean isInMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(activity);
-            var actionProvider = new AndroidCustomActionProvider(
-                    params.getWindow().getActivity().get(), params.getWindow(), mTabProvider,
-                    mController, params, mPrintCallback, isIncognito, this,
-                    TrackerFactory.getTrackerForProfile(profile), params.getUrl(), profile,
-                    chromeShareExtras, isInMultiWindow, mLinkToTextCoordinator);
+            var actionProvider =
+                    new AndroidCustomActionProvider(params.getWindow().getActivity().get(),
+                            params.getWindow(), mTabProvider, mController, params, mPrintCallback,
+                            isIncognito, this, TrackerFactory.getTrackerForProfile(profile),
+                            getUrlToShare(params, chromeShareExtras), profile, chromeShareExtras,
+                            isInMultiWindow, mLinkToTextCoordinator);
             if (actionProvider.getCustomActions().size() > 0
                     || actionProvider.getModifyShareAction() != null) {
                 provider = actionProvider;
@@ -142,9 +143,10 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
         // Update the image being shared into ShareParams's url based on the information from
         // chromeShareExtras.
         if (chromeShareExtras.isImage()) {
-            String imageUrlToShare = getImageUrlToShare(params, chromeShareExtras);
+            String imageUrlToShare = getUrlToShare(params, chromeShareExtras);
             params.setUrl(imageUrlToShare);
         }
+
         if (!isLinkSharing(params, chromeShareExtras)) {
             ShareHelper.shareWithSystemShareSheetUi(
                     params, profile, chromeShareExtras.saveLastUsed(), provider);
@@ -221,7 +223,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
                 || contents.contains(ContentType.LINK_PAGE_NOT_VISIBLE);
     }
 
-    private static String getImageUrlToShare(
+    private static String getUrlToShare(
             ShareParams shareParams, ChromeShareExtras chromeShareExtras) {
         if (!TextUtils.isEmpty(shareParams.getUrl())) {
             return shareParams.getUrl();
