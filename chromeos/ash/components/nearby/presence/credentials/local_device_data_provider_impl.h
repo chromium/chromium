@@ -41,6 +41,11 @@ class LocalDeviceDataProviderImpl : public LocalDeviceDataProvider {
                                 const std::string& image_url) override;
 
  private:
+  // Creates a device name of the form "<given name>'s <device type>."
+  // For example, "Josh's Chromebook." If a given name cannot be found, returns
+  // just the device type.
+  std::string GetDeviceName() const;
+
   PrefService* pref_service_ = nullptr;
   const raw_ptr<signin::IdentityManager> identity_manager_;
 };

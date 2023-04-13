@@ -16,6 +16,7 @@ namespace ash::nearby::presence {
   ::nearby::internal::Metadata proto;
   proto.set_device_type(device_type);
   proto.set_account_name(account_name);
+  proto.set_user_name(user_name);
   proto.set_device_name(device_name);
   proto.set_user_name(user_name);
   proto.set_device_profile_url(profile_url);

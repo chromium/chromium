@@ -12,6 +12,8 @@ namespace ash::nearby::presence {
 namespace prefs {
 
 extern const char kNearbyPresenceDeviceIdPrefName[];
+extern const char kNearbyPresenceUserNamePrefName[];
+extern const char kNearbyPresenceProfileUrlPrefName[];
 
 }  // namespace prefs
 

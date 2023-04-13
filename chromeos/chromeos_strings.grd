@@ -3205,6 +3205,10 @@
         <message name="IDS_SHIMLESS_RMA_LID_CALIBRATION_INSTRUCTIONS" translateable="false" desc="Instructions for calibrating gyroscope and accelerometer located in the lid of the device.">
           Before proceeding, place your whole device (base and lid) on a flat surface.
         </message>
+        <!-- Nearby Presence -->
+        <message name="IDS_NEARBY_PRESENCE_DEVICE_NAME" is_accessibility_with_no_ui="true" desc="The device name used to advertise the user's device during a feature flow. Displayed to other devices.">
+          <ph name="GIVEN_NAME">$1<ex>Josh</ex></ph>'s <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>
+        </message>
         <!-- Finalize device page -->
         <message name="IDS_SHIMLESS_RMA_FINALIZE_PAGE_TITLE" translateable="false" desc="Title for the page shown when finalizing the device. Finalizing is the process of confirming the device is ready to return to the owner.">
           Finalizing repair

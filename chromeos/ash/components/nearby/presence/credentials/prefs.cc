@@ -13,12 +13,18 @@ namespace prefs {
 
 const char kNearbyPresenceDeviceIdPrefName[] =
     "nearby_presence.local_device_id";
+const char kNearbyPresenceUserNamePrefName[] = "nearby_presence.user_name";
+const char kNearbyPresenceProfileUrlPrefName[] = "nearby_presence.profile_url";
 
 }  // namespace prefs
 
 void RegisterNearbyPresenceCredentialPrefs(PrefRegistrySimple* registry) {
   // These prefs are not synced across devices on purpose.
   registry->RegisterStringPref(prefs::kNearbyPresenceDeviceIdPrefName,
+                               /*default_value=*/std::string());
+  registry->RegisterStringPref(prefs::kNearbyPresenceUserNamePrefName,
+                               /*default_value=*/std::string());
+  registry->RegisterStringPref(prefs::kNearbyPresenceProfileUrlPrefName,
                                /*default_value=*/std::string());
 }
 
