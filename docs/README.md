@@ -10,7 +10,41 @@ documentation in [Gitiles-flavored Markdown]. It is automatically
 **If you add new documents, please also add a link to them in the Document Index
 below.**
 
-[TOC]
+---
+
+## Table of Contents
+
+- Creating Documentation
+    - Guidelines
+    - Previewing Changes
+- Document Index
+    - Checking Out and Building
+    - Design Docs
+    - Integrated Development Environment (IDE) Set Up Guides
+    - Git
+    - Clang
+    - General Development
+    - Testing
+    - Configuration Docs
+    - GPU-Related Docs
+    - Misc Linux-Specific Docs
+    - Misc MacOS-Specific Docs
+    - Misc Windows-Specific Docs
+    - Misc Android-Specific Docs
+    - Misc iOS-Specific Docs
+    - Misc WebUI-Specific Docs
+    - Media
+    - Accessibility
+    - Memory
+    - Memory Infrastructure Timeline Profiling (MemoryInfra)
+    - Metrics
+    - Misc
+    - Mojo &amp; Services
+    - Speed
+    - UI
+    - Probably Obsolete
+
+---
 
 ## Creating Documentation
 
