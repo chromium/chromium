@@ -91,6 +91,7 @@ class TestWaylandServerThread : public base::Thread,
   class OutputDelegate;
 
   TestWaylandServerThread();
+  explicit TestWaylandServerThread(const ServerConfig& config);
 
   TestWaylandServerThread(const TestWaylandServerThread&) = delete;
   TestWaylandServerThread& operator=(const TestWaylandServerThread&) = delete;
@@ -102,9 +103,7 @@ class TestWaylandServerThread : public base::Thread,
   // descriptor that a client can connect to. The caller is responsible for
   // ensuring that this file descriptor gets closed (for example, by calling
   // wl_display_connect).
-  // Instantiates an xdg_shell of version |shell_version|; versions 6 and 7
-  // (stable) are supported.
-  bool Start(const ServerConfig& config);
+  bool Start();
 
   // Runs 'callback' or 'closure' on the server thread; blocks until the
   // callable is run and all pending Wayland requests and events are delivered.
@@ -224,6 +223,8 @@ class TestWaylandServerThread : public base::Thread,
   raw_ptr<wl_client> client_ = nullptr;
   raw_ptr<wl_event_loop> event_loop_ = nullptr;
   raw_ptr<wl_protocol_logger> protocol_logger_ = nullptr;
+
+  ServerConfig config_;
 
   // Represent Wayland global objects
   // Compositor version is selected dynamically by server config but version is

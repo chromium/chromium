@@ -45,14 +45,14 @@ class MockWaylandOutputDelegate : public WaylandOutput::Delegate {
 
 }  // namespace
 
-class WaylandZAuraOutputManagerTest : public WaylandTestSimpleWithAuraShell {
- protected:
-  // WaylandTestSimpleWithAuraShell:
-  void SetUp() override {
-    SetUseAuraOutputManager(true);
-    WaylandTestSimpleWithAuraShell::SetUp();
-  }
+class WaylandZAuraOutputManagerTest : public WaylandTestSimple {
+ public:
+  WaylandZAuraOutputManagerTest()
+      : WaylandTestSimple(wl::ServerConfig{
+            .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled,
+            .use_aura_output_manager = true}) {}
 
+ protected:
   // Sends sample metrics to the primary output configured for this fixture.
   void SendSampleMetrics(const WaylandOutput::Metrics& metrics) {
     const auto wayland_display_id =
