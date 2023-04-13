@@ -66,6 +66,9 @@ import 'chrome://resources/cr_components/certificate_manager/certificate_manager
 // Sections
 import './a11y_page/a11y_page.js';
 import './downloads_page/downloads_page.js';
+// <if expr="_google_chrome">
+import './get_most_chrome_page/get_most_chrome_page.js';
+// </if>
 // <if expr="not chromeos_ash">
 import './languages_page/languages_page.js';
 import './languages_page/spell_check_page.js';
@@ -138,6 +141,9 @@ export {SettingsRadioGroupElement} from './controls/settings_radio_group.js';
 export {SettingsSliderElement} from './controls/settings_slider.js';
 export {DownloadsBrowserProxy, DownloadsBrowserProxyImpl} from './downloads_page/downloads_browser_proxy.js';
 export {SettingsDownloadsPageElement} from './downloads_page/downloads_page.js';
+// <if expr="_google_chrome">
+export {SettingsGetMostChromePageElement} from './get_most_chrome_page/get_most_chrome_page.js';
+// </if>
 // <if expr="_google_chrome and is_win">
 export {IncompatibleApplicationItemElement} from './incompatible_applications_page/incompatible_application_item.js';
 export {ActionTypes, IncompatibleApplication, IncompatibleApplicationsBrowserProxy, IncompatibleApplicationsBrowserProxyImpl} from './incompatible_applications_page/incompatible_applications_browser_proxy.js';

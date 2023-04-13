@@ -265,6 +265,9 @@ build_webui("build") {
   if (is_chromeos) {
     web_component_files += [ "controls/password_prompt_dialog.ts" ]
   }
+  if (is_chrome_branded) {
+    web_component_files += [ "get_most_chrome_page/get_most_chrome_page.ts" ]
+  }
 
   # -----------------web_component_files end ----------------------------------
 
