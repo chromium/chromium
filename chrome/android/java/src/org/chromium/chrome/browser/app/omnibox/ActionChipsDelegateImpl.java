@@ -173,6 +173,13 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
         try {
             var intent = Intent.parseUri(
                     actionInSuggest.actionInfo.getActionUri(), Intent.URI_INTENT_SCHEME);
+
+            // Don't call directly. Use `DIAL` instead to let the user decide.
+            // Note also that ACTION_CALL requires a dedicated permission.
+            if (intent.getAction().equals(Intent.ACTION_CALL)) {
+                intent.setAction(Intent.ACTION_DIAL);
+            }
+
             intent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
             startActivity(intent);
 
