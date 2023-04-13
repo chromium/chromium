@@ -8,3 +8,4 @@ deps_cache_max_mb=256
 # TODO(b/276727504) Re-enable once noop build shutdown time bug is fixed
 # enable_deps_cache=true
 use_unified_uploads=true
+fast_log_collection=true
