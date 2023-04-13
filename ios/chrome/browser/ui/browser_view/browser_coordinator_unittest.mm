@@ -111,7 +111,7 @@ class BrowserCoordinatorTest : public PlatformTest {
         chrome_browser_state_.get(),
         std::make_unique<FakeAuthenticationServiceDelegate>());
     SessionRestorationBrowserAgent::CreateForBrowser(
-        browser_.get(), [[TestSessionService alloc] init]);
+        browser_.get(), [[TestSessionService alloc] init], false);
     SessionRestorationBrowserAgent::FromBrowser(browser_.get())
         ->SetSessionID([[NSUUID UUID] UUIDString]);
 

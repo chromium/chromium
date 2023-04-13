@@ -141,7 +141,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         ->SetWebUsageEnabled(true);
 
     SessionRestorationBrowserAgent::CreateForBrowser(
-        browser_.get(), [[TestSessionService alloc] init]);
+        browser_.get(), [[TestSessionService alloc] init], false);
     SessionRestorationBrowserAgent::FromBrowser(browser_.get())
         ->SetSessionID([[NSUUID UUID] UUIDString]);
 

@@ -67,6 +67,7 @@ source_set("main") {
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/sync:sync_error_browser_agent",
     "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/tabs:features",
     "//ios/chrome/browser/ui/start_surface",
     "//ios/chrome/browser/upgrade",
     "//ios/chrome/browser/url_loading",

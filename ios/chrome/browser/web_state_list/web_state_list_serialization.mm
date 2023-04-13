@@ -15,7 +15,6 @@
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
-#import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_order_controller.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_removing_indexes.h"
@@ -72,15 +71,17 @@ bool GetPinnedStateForWebState(web::WebState* web_state) {
 // Checks whether provided `web_state` is in the `session_restoration_scope`.
 bool IsWebStateInRestorationScope(
     web::WebState* web_state,
-    SessionRestorationScope session_restoration_scope) {
+    SessionRestorationScope session_restoration_scope,
+    bool enable_pinned_web_states) {
   switch (session_restoration_scope) {
     case SessionRestorationScope::kAll:
       return true;
     case SessionRestorationScope::kPinnedOnly:
-      return IsPinnedTabsEnabled() ? GetPinnedStateForWebState(web_state)
-                                   : false;
+      return enable_pinned_web_states ? GetPinnedStateForWebState(web_state)
+                                      : false;
     case SessionRestorationScope::kRegularOnly:
-      return !GetPinnedStateForWebState(web_state);
+      return enable_pinned_web_states ? !GetPinnedStateForWebState(web_state)
+                                      : true;
   }
 }
 
@@ -181,6 +182,7 @@ SessionWindowIOS* SerializeWebStateList(WebStateList* web_state_list) {
 void DeserializeWebStateList(WebStateList* web_state_list,
                              SessionWindowIOS* session_window,
                              SessionRestorationScope session_restoration_scope,
+                             bool enable_pinned_web_states,
                              const WebStateFactory& web_state_factory) {
   const int old_count = web_state_list->count();
   for (CRWSessionStorage* session in session_window.sessions) {
@@ -188,13 +190,20 @@ void DeserializeWebStateList(WebStateList* web_state_list,
 
     // Drop WebState that is not in the restoration scope.
     if (!IsWebStateInRestorationScope(web_state.get(),
-                                      session_restoration_scope)) {
+                                      session_restoration_scope,
+                                      enable_pinned_web_states)) {
       continue;
     }
 
     web_state_list->InsertWebState(
         web_state_list->count(), std::move(web_state),
         WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
+  }
+
+  const NSInteger restored_sessions_count = web_state_list->count() - old_count;
+
+  if (restored_sessions_count == 0) {
+    return;
   }
 
   // Restore the WebStates pinned state and opener-opened relationship.
@@ -229,7 +238,6 @@ void DeserializeWebStateList(WebStateList* web_state_list,
         WebStateOpener(opener, [boxed_opener_navigation_index intValue]));
   }
 
-  const NSInteger restored_sessions_count = web_state_list->count() - old_count;
   const NSInteger selected_index = GetAdjustedSelectedIndex(
       session_window, restored_sessions_count, session_restoration_scope);
 
@@ -239,7 +247,7 @@ void DeserializeWebStateList(WebStateList* web_state_list,
   }
 
   // By default all the restored tabs are not pinned.
-  if (IsPinnedTabsEnabled()) {
+  if (enable_pinned_web_states) {
     // Restore the WebStates pinned state. This should be done in a separate
     // cycle, since pinning the WebStates may cause WebStates indexes to change.
     for (int index = old_count; index < web_state_list->count(); ++index) {

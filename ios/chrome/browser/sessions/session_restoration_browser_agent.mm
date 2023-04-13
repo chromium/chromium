@@ -36,13 +36,15 @@ BROWSER_USER_DATA_KEY_IMPL(SessionRestorationBrowserAgent)
 
 SessionRestorationBrowserAgent::SessionRestorationBrowserAgent(
     Browser* browser,
-    SessionServiceIOS* session_service)
+    SessionServiceIOS* session_service,
+    bool enable_pinned_web_states)
     : session_service_(session_service),
       web_state_list_(browser->GetWebStateList()),
       web_enabler_(WebUsageEnablerBrowserAgent::FromBrowser(browser)),
       browser_state_(browser->GetBrowserState()),
       session_ios_factory_(
           [[SessionIOSFactory alloc] initWithWebStateList:web_state_list_]),
+      enable_pinned_web_states_(enable_pinned_web_states),
       all_web_state_observer_(
           std::make_unique<AllWebStateObservationForwarder>(web_state_list_,
                                                             this)) {
@@ -81,9 +83,6 @@ void SessionRestorationBrowserAgent::RemoveObserver(
 bool SessionRestorationBrowserAgent::RestoreSessionWindow(
     SessionWindowIOS* window,
     SessionRestorationScope scope) {
-  if (!window.sessions.count)
-    return false;
-
   // Start the session restoration.
   restoring_session_ = true;
 
@@ -100,12 +99,12 @@ bool SessionRestorationBrowserAgent::RestoreSessionWindow(
       base::BindOnce(^(WebStateList* web_state_list) {
         web::WebState::CreateParams create_params(browser_state_);
         DeserializeWebStateList(
-            web_state_list, window, scope,
+            web_state_list, window, scope, enable_pinned_web_states_,
             base::BindRepeating(&web::WebState::CreateWithStorageSession,
                                 create_params));
       }));
 
-  DCHECK_GT(web_state_list_->count(), old_count);
+  DCHECK_GE(web_state_list_->count(), old_count);
   int restored_count = web_state_list_->count() - old_count;
   int restored_pinned_count =
       web_state_list_->GetIndexOfFirstNonPinnedWebState() -

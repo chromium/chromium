@@ -273,8 +273,8 @@ class TabGridMediatorTest : public PlatformTest {
   void PrepareForRestoration() {
     TestSessionService* test_session_service =
         [[TestSessionService alloc] init];
-    SessionRestorationBrowserAgent::CreateForBrowser(browser_.get(),
-                                                     test_session_service);
+    SessionRestorationBrowserAgent::CreateForBrowser(
+        browser_.get(), test_session_service, false);
     SessionRestorationBrowserAgent::FromBrowser(browser_.get())
         ->SetSessionID([[NSUUID UUID] UUIDString]);
   }

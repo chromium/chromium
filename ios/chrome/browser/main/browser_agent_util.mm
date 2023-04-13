@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/sync/sync_error_browser_agent.h"
 #import "ios/chrome/browser/tabs/closing_web_state_observer_browser_agent.h"
+#import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/tabs/synced_window_delegate_browser_agent.h"
 #import "ios/chrome/browser/tabs/tab_parenting_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
@@ -92,7 +93,7 @@ void AttachBrowserAgents(Browser* browser) {
 
   // SessionRestorartionAgent requires WebUsageEnablerBrowserAgent.
   SessionRestorationBrowserAgent::CreateForBrowser(
-      browser, [SessionServiceIOS sharedService]);
+      browser, [SessionServiceIOS sharedService], IsPinnedTabsEnabled());
 
   // TabUsageRecorderBrowserAgent and WebStateListMetricsBrowserAgent observe
   // the SessionRestorationBrowserAgent, so they should be created after the the

@@ -84,7 +84,8 @@ class SessionRestorationBrowserAgent
   BROWSER_USER_DATA_KEY_DECL();
 
   SessionRestorationBrowserAgent(Browser* browser,
-                                 SessionServiceIOS* session_service);
+                                 SessionServiceIOS* session_service,
+                                 bool enable_pinned_web_states);
 
   // Returns array of CRWSessionStorage for the provided session restoration
   // `scope`. This method is mainly needed to remove the dropped session
@@ -151,6 +152,8 @@ class SessionRestorationBrowserAgent
 
   // True when session restoration is in progress.
   bool restoring_session_ = false;
+
+  const bool enable_pinned_web_states_;
 
   // Observer for the active web state in `browser_`'s web state list.
   std::unique_ptr<AllWebStateObservationForwarder> all_web_state_observer_;
