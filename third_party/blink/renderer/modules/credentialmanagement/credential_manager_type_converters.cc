@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_values.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authenticator_selection_criteria.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_cable_authentication_data.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_cable_registration_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_logout_r_ps_request.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_config.h"
@@ -53,8 +52,6 @@ using blink::mojom::blink::AuthenticatorSelectionCriteriaPtr;
 using blink::mojom::blink::AuthenticatorTransport;
 using blink::mojom::blink::CableAuthentication;
 using blink::mojom::blink::CableAuthenticationPtr;
-using blink::mojom::blink::CableRegistration;
-using blink::mojom::blink::CableRegistrationPtr;
 using blink::mojom::blink::CredentialInfo;
 using blink::mojom::blink::CredentialInfoPtr;
 using blink::mojom::blink::CredentialType;
@@ -532,13 +529,6 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
     if (extensions->hasAppidExclude()) {
       mojo_options->appid_exclude = extensions->appidExclude();
     }
-    if (extensions->hasCableRegistration()) {
-      CableRegistrationPtr mojo_cable =
-          CableRegistration::From(*extensions->cableRegistration());
-      if (mojo_cable) {
-        mojo_options->cable_registration_data = std::move(mojo_cable);
-      }
-    }
     if (extensions->hasHmacCreateSecret()) {
       mojo_options->hmac_create_secret = extensions->hmacCreateSecret();
     }
@@ -629,20 +619,6 @@ TypeConverter<CableAuthenticationPtr, blink::CableAuthenticationData>::Convert(
       return nullptr;
   }
 
-  return entity;
-}
-
-// static
-CableRegistrationPtr
-TypeConverter<CableRegistrationPtr, blink::CableRegistrationData>::Convert(
-    const blink::CableRegistrationData& data) {
-  auto entity = CableRegistration::New();
-  entity->versions = data.versions();
-  entity->relying_party_public_key =
-      ConvertFixedSizeArray(data.rpPublicKey(), 65);
-  if (entity->relying_party_public_key.empty()) {
-    return nullptr;
-  }
   return entity;
 }
 

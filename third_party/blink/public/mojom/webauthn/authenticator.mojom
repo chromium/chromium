@@ -281,16 +281,6 @@ struct CableAuthentication {
   array<uint8>? experiments;
 };
 
-// Cloud-assisted BLE extension data for makeCredential.
-struct CableRegistration {
-  // The caBLE versions supported by the relying party.
-  array<uint8> versions;
-
-  // The 65-byte ECDSA ephemeral public key belonging to the relying party
-  // for use in establishing an encrypted caBLE channel with an authenticator.
-  array<uint8, 65> relying_party_public_key;
-};
-
 // See https://w3c.github.io/webauthn/#dictdef-authenticationextensionsprfvalues
 struct PRFValues {
   // In the Javascript-to-native direction, id is the credential ID for these
@@ -484,12 +474,6 @@ struct PublicKeyCredentialCreationOptions {
   // Specifies whether the RP wants attestation information for the created
   // credential.
   AttestationConveyancePreference attestation;
-
-  // The contents of the cloud assisted BLE extension for makeCredential
-  // requests, if any. This extension permits browsers and authenticator
-  // devices to establish a pairingless BLE connection.
-  // TODO(crbug.com/842371): Add link to spec when available.
-  CableRegistration? cable_registration_data;
 
   // The contents of the hmacCreateSecret extension, if any. See
   // https://fidoalliance.org/specs/fido-v2.0-rd-20180702/fido-client-to-authenticator-protocol-v2.0-rd-20180702.html#sctn-hmac-secret-extension

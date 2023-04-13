@@ -151,7 +151,6 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/credentialmanagement/authenticator_response.idl",
           "//third_party/blink/renderer/modules/credentialmanagement/authenticator_selection_criteria.idl",
           "//third_party/blink/renderer/modules/credentialmanagement/cable_authentication_data.idl",
-          "//third_party/blink/renderer/modules/credentialmanagement/cable_registration_data.idl",
           "//third_party/blink/renderer/modules/credentialmanagement/collected_client_data.idl",
           "//third_party/blink/renderer/modules/credentialmanagement/credential.idl",
           "//third_party/blink/renderer/modules/credentialmanagement/credential_creation_options.idl",
