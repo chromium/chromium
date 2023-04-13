@@ -40,7 +40,7 @@ async def test_subscribeForUnknownContext_exceptionReturned(websocket):
 
 @pytest.mark.asyncio
 async def test_subscribeWithoutContext_subscribesToEventsInAllContexts(
-        websocket, context_id):
+        websocket, context_id, html):
     result = await execute_command(
         websocket, {
             "method": "session.subscribe",
@@ -55,7 +55,7 @@ async def test_subscribeWithoutContext_subscribesToEventsInAllContexts(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": "data:text/html,<h2>test</h2>",
+                "url": html("<h2>test</h2>"),
                 "wait": "complete",
                 "context": context_id
             }
@@ -69,7 +69,7 @@ async def test_subscribeWithoutContext_subscribesToEventsInAllContexts(
 
 @pytest.mark.asyncio
 async def test_subscribeWithContext_subscribesToEventsInGivenContext(
-        websocket, context_id):
+        websocket, context_id, html):
     result = await execute_command(
         websocket, {
             "method": "session.subscribe",
@@ -85,7 +85,7 @@ async def test_subscribeWithContext_subscribesToEventsInGivenContext(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": "data:text/html,<h2>test</h2>",
+                "url": html("<h2>test</h2>"),
                 "wait": "complete",
                 "context": context_id
             }
@@ -99,7 +99,7 @@ async def test_subscribeWithContext_subscribesToEventsInGivenContext(
 
 @pytest.mark.asyncio
 async def test_subscribeWithContext_subscribesToEventsInNestedContext(
-        websocket, context_id, page_with_nested_iframe_url):
+        websocket, context_id, html_iframe_same_origin, url_same_origin):
     await subscribe(websocket, "browsingContext.contextCreated")
 
     # Navigate to some page.
@@ -107,7 +107,7 @@ async def test_subscribeWithContext_subscribesToEventsInNestedContext(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": page_with_nested_iframe_url,
+                "url": html_iframe_same_origin,
                 "wait": "complete",
                 "context": context_id
             }
@@ -119,7 +119,7 @@ async def test_subscribeWithContext_subscribesToEventsInNestedContext(
         "method": "browsingContext.contextCreated",
         "params": {
             "context": ANY_STR,
-            "url": "about:blank",
+            "url": url_same_origin,
             "children": None,
             "parent": context_id
         }
@@ -249,7 +249,7 @@ async def test_subscribeToTopLevelContextAndUnsubscribeFromNestedContext_unsubsc
 
 @pytest.mark.asyncio
 async def test_subscribeWithContext_doesNotSubscribeToEventsInAnotherContexts(
-        websocket, context_id, another_context_id):
+        websocket, context_id, another_context_id, html):
     # 1. Get 2 contexts.
     # 2. Subscribe to event `browsingContext.load` on the first one.
     # 3. Navigate waiting complete loading in both contexts.
@@ -264,7 +264,7 @@ async def test_subscribeWithContext_doesNotSubscribeToEventsInAnotherContexts(
             "id": command_id_1,
             "method": "browsingContext.navigate",
             "params": {
-                "url": "data:text/html,<h2>test</h2>",
+                "url": html("<h2>test</h2>"),
                 "wait": "complete",
                 "context": context_id
             }
@@ -286,7 +286,7 @@ async def test_subscribeWithContext_doesNotSubscribeToEventsInAnotherContexts(
             "id": command_id_2,
             "method": "browsingContext.navigate",
             "params": {
-                "url": "data:text/html,<h2>test</h2>",
+                "url": html("<h2>test</h2>"),
                 "wait": "complete",
                 "context": another_context_id
             }

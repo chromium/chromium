@@ -610,10 +610,10 @@ async def test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed
 
 @pytest.mark.asyncio
 async def test_script_callFunctionWithNode_resultReceived(
-        websocket, context_id):
+        websocket, context_id, html):
     # 1. Get element.
     # 2. Evaluate script on it.
-    await goto_url(websocket, context_id, "data:text/html,<h2>test</h2>")
+    await goto_url(websocket, context_id, html("<h2>test</h2>"))
 
     # 1. Get element.
     result = await execute_command(

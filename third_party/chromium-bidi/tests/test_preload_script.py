@@ -20,7 +20,7 @@ from test_helpers import (AnyExtending, execute_command, read_JSON_message,
 
 
 @pytest.mark.asyncio
-async def test_addPreloadScript_setGlobalVariable(websocket, context_id):
+async def test_addPreloadScript_setGlobalVariable(websocket, context_id, html):
     result = await execute_command(
         websocket, {
             "method": "script.addPreloadScript",
@@ -35,7 +35,7 @@ async def test_addPreloadScript_setGlobalVariable(websocket, context_id):
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": "data:text/html,<h2>test</h2>",
+                "url": html("<h2>test</h2>"),
                 "wait": "complete",
                 "context": context_id
             }
@@ -57,7 +57,7 @@ async def test_addPreloadScript_setGlobalVariable(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_addPreloadScript_logging(websocket, context_id):
+async def test_addPreloadScript_logging(websocket, context_id, html):
     await subscribe(websocket, "log.entryAdded")
 
     result = await execute_command(
@@ -74,7 +74,7 @@ async def test_addPreloadScript_logging(websocket, context_id):
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": "data:text/html,<h2>test</h2>",
+                "url": html("<h2>test</h2>"),
                 "wait": "complete",
                 "context": context_id
             }

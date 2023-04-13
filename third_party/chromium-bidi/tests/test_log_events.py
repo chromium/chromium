@@ -320,14 +320,14 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_exceptionThrown_logEntryAddedEventEmitted(
-        websocket, context_id):
+        websocket, context_id, html):
     await subscribe(websocket, "log.entryAdded")
 
     await send_JSON_command(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
-                "url": "data:text/html,<script>throw new Error('some error')</script>",
+                "url": html("<script>throw new Error('some error')</script>"),
                 "wait": "interactive",
                 "context": context_id
             }

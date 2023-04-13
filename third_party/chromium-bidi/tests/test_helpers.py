@@ -51,14 +51,6 @@ async def subscribe(websocket, event_names, context_ids=None, channel=None):
     await execute_command(websocket, command)
 
 
-ANY_SHARED_ID = ANY_STR & AnyContains("_element_")
-
-# Check if the timestamp has the proper order of magnitude between
-# "2020-01-01 00:00:00" (1577833200000) and
-# "2100-01-01 00:00:00" (4102441200000).
-ANY_TIMESTAMP = ANY_NUMBER & AnyGT(1577833200000) & AnyLT(4102441200000)
-
-
 async def send_JSON_command(websocket, command):
     if "id" not in command:
         command["id"] = get_next_command_id()
@@ -134,6 +126,14 @@ async def wait_for_event(websocket, event_method):
         if "method" in event_response and event_response[
                 "method"] == event_method:
             return event_response
+
+
+ANY_SHARED_ID = ANY_STR & AnyContains("_element_")
+
+# Check if the timestamp has the proper order of magnitude between
+#   "2020-01-01 00:00:00" (1577833200000) and
+#   "2100-01-01 00:00:00" (4102441200000).
+ANY_TIMESTAMP = ANY_NUMBER & AnyGT(1577833200000) & AnyLT(4102441200000)
 
 
 def AnyExtending(expected: list | dict):

@@ -411,11 +411,12 @@ async def test_serialization_deserialization_date(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_serialization_node(websocket, context_id):
+async def test_serialization_node(websocket, context_id, html):
     await goto_url(
         websocket, context_id,
-        "data:text/html,<div some_attr_name='some_attr_value' "
-        ">some text<h2>some another text</h2></div>")
+        html(
+            "<div some_attr_name='some_attr_value'>some text<h2>some another text</h2></div>"
+        ))
 
     result = await execute_command(
         websocket, {
@@ -471,12 +472,13 @@ async def test_serialization_node(websocket, context_id):
     (lambda s: f"new Map([['qwe', {s}]])", lambda r: r["value"][0][1]),
 ])
 @pytest.mark.asyncio
-async def test_serialization_nested_node(websocket, context_id, eval_delegate,
-                                         extract_delegate):
+async def test_serialization_nested_node(websocket, context_id, html,
+                                         eval_delegate, extract_delegate):
     await goto_url(
         websocket, context_id,
-        "data:text/html,<div some_attr_name='some_attr_value' "
-        ">some text<h2>some another text</h2></div>")
+        html(
+            "<div some_attr_name='some_attr_value'>some text<h2>some another text</h2></div>"
+        ))
 
     eval_node = "document.querySelector('body > div')"
 

@@ -19,9 +19,9 @@ from test_helpers import execute_command, goto_url, set_html_content
 
 
 @pytest.mark.asyncio
-async def test_sharedId_in_same_realm_same_navigable(websocket, context_id):
-    await goto_url(websocket, context_id,
-                   "data:text/html,<div>some text</div>")
+async def test_sharedId_in_same_realm_same_navigable(websocket, context_id,
+                                                     html):
+    await goto_url(websocket, context_id, html("<div>some text</div>"))
 
     result = await execute_command(
         websocket, {
@@ -103,9 +103,8 @@ async def test_sharedId_without_navigation(websocket, context_id):
 
 @pytest.mark.asyncio
 async def test_sharedId_in_different_realm_same_navigable(
-        websocket, context_id):
-    await goto_url(websocket, context_id,
-                   "data:text/html,<div>some text</div>")
+        websocket, context_id, html):
+    await goto_url(websocket, context_id, html("<div>some text</div>"))
 
     result = await execute_command(
         websocket, {
@@ -148,9 +147,8 @@ async def test_sharedId_in_different_realm_same_navigable(
 
 
 @pytest.mark.asyncio
-async def test_sharedId_in_different_navigable(websocket, context_id):
-    await goto_url(websocket, context_id,
-                   "data:text/html,<div>some text</div>")
+async def test_sharedId_in_different_navigable(websocket, context_id, html):
+    await goto_url(websocket, context_id, html("<div>some text</div>"))
 
     result = await execute_command(
         websocket, {
@@ -166,7 +164,7 @@ async def test_sharedId_in_different_navigable(websocket, context_id):
 
     shared_id = result["result"]["value"]["sharedId"]
 
-    await goto_url(websocket, context_id, "data:text/html,some other page")
+    await goto_url(websocket, context_id, html("some other page"))
 
     with pytest.raises(Exception) as exception_info:
         await execute_command(
@@ -194,9 +192,8 @@ async def test_sharedId_in_different_navigable(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_sharedId_not_found(websocket, context_id):
-    await goto_url(websocket, context_id,
-                   "data:text/html,<div>some text</div>")
+async def test_sharedId_not_found(websocket, context_id, html):
+    await goto_url(websocket, context_id, html("<div>some text</div>"))
 
     result = await execute_command(
         websocket, {

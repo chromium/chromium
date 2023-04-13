@@ -15,6 +15,7 @@
 
 import os
 
+import pytest
 import pytest_asyncio
 import websockets
 from test_helpers import execute_command, get_tree, goto_url
@@ -30,7 +31,36 @@ async def websocket():
 
 
 @pytest_asyncio.fixture
-async def default_realm(context_id, websocket):
+async def context_id(websocket):
+    """Return the context id from the first browsing context."""
+    result = await get_tree(websocket)
+    return result["contexts"][0]["context"]
+
+
+@pytest_asyncio.fixture
+async def another_context_id(create_context):
+    """Return an additional browsing context id."""
+    return await create_context()
+
+
+@pytest_asyncio.fixture
+def create_context(websocket):
+    """Return a browsing context factory."""
+
+    async def create_context():
+        result = await execute_command(websocket, {
+            "method": "browsingContext.create",
+            "params": {
+                "type": "tab"
+            }
+        })
+        return result['context']
+
+    return create_context
+
+
+@pytest_asyncio.fixture
+async def default_realm(websocket, context_id):
     """Return the default realm for the given browsing context."""
     result = await execute_command(
         websocket, {
@@ -48,7 +78,7 @@ async def default_realm(context_id, websocket):
 
 
 @pytest_asyncio.fixture
-async def sandbox_realm(context_id, websocket):
+async def sandbox_realm(websocket, context_id):
     """Return a sandbox realm for the given browsing context."""
     result = await execute_command(
         websocket, {
@@ -66,45 +96,64 @@ async def sandbox_realm(context_id, websocket):
     return result["realm"]
 
 
-@pytest_asyncio.fixture
-async def context_id(websocket):
-    """Return the context id from the first browsing context."""
-    result = await get_tree(websocket)
-    return result["contexts"][0]["context"]
+@pytest.fixture
+def url_same_origin():
+    """Return a same-origin URL."""
+    return 'about:blank'
+
+
+# TODO(sadym): make offline.
+@pytest.fixture(params=[
+    'https://example.com/',  # Another domain: Cross-origin
+    'data:text/html,<h2>child page</h2>',  # Data URL: Cross-origin
+])
+def url_cross_origin(request):
+    """Return a cross-origin URL."""
+    return request.param
+
+
+# TODO(sadym): make offline.
+@pytest.fixture(params=[
+    'about:blank',  # Same-origin
+    'https://example.com/',  # Another domain: Cross-origin
+    'data:text/html,<h2>child page</h2>',  # Data URL: Cross-origin
+])
+def url_all_origins(request):
+    """Return an URL exhaustively, including same-origin and cross-origin."""
+    return request.param
+
+
+@pytest.fixture
+def html():
+    """Return a factory for HTML data URL with the given content."""
+
+    def html(content=""):
+        return f'data:text/html,{content}'
+
+    return html
+
+
+@pytest.fixture
+def iframe():
+    """Return a factory for <iframe> with the given src."""
+
+    def iframe(src=""):
+        return f'<iframe src="{src}" />'
+
+    return iframe
+
+
+@pytest.fixture
+def html_iframe_same_origin(html, iframe, url_same_origin):
+    """Return a page URL with an iframe of the same origin."""
+    return html(iframe(url_same_origin))
 
 
 @pytest_asyncio.fixture
-async def another_context_id(create_context):
-    return await create_context()
-
-
-@pytest_asyncio.fixture
-def create_context(websocket):
-    """Return a function that creates a new browsing context."""
-
-    async def _():
-        result = await execute_command(websocket, {
-            "method": "browsingContext.create",
-            "params": {
-                "type": "tab"
-            }
-        })
-        return result['context']
-
-    return _
-
-
-@pytest_asyncio.fixture
-async def page_with_nested_iframe_url():
-    """Return a page URL with a nested iframe of about:blank."""
-    return 'data:text/html,<h1>MAIN_PAGE</h1>' \
-           '<iframe src="about:blank" />'
-
-
-@pytest_asyncio.fixture
-async def iframe_id(context_id, websocket, page_with_nested_iframe_url):
-    """Navigate to a page with nested iframe of `about:blank`, and return the iframe BrowserContextId."""
-    await goto_url(websocket, context_id, page_with_nested_iframe_url)
+async def iframe_id(websocket, context_id, html_iframe_same_origin, html):
+    """Navigate to a page with an iframe of the same origin, and return the
+    iframe browser context id."""
+    await goto_url(websocket, context_id, html_iframe_same_origin)
     result = await get_tree(websocket, context_id)
 
     iframe_id = result["contexts"][0]["children"][0]["context"]

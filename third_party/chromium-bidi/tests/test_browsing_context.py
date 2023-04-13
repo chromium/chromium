@@ -36,7 +36,7 @@ async def test_browsingContext_subscribeToAllBrowsingContextEvents_eventReceived
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_noInitialLoadEvents(websocket):
+async def test_browsingContext_noInitialLoadEvents(websocket, html):
     # Due to the nature, the test does not always fail, even if the
     # implementation does not guarantee the initial context to be fully loaded.
     # The test asserts there was no initial "browsingContext.load" emitted
@@ -46,7 +46,7 @@ async def test_browsingContext_noInitialLoadEvents(websocket):
     # 3. Navigate to some url.
     # 4. Verify the new page is loaded.
 
-    url = "data:text/html,<h2>test</h2>"
+    url = html("<h2>test</h2>")
 
     await send_JSON_command(
         websocket, {
@@ -142,8 +142,8 @@ async def test_browsingContext_getTreeWithRoot_contextReturned(
 
 @pytest.mark.asyncio
 async def test_navigateToPageWithHash_contextInfoUpdated(
-        websocket, context_id):
-    url = "data:text/html,<h2>test</h2>"
+        websocket, context_id, html):
+    url = html("<h2>test</h2>")
     url_with_hash_1 = url + "#1"
 
     # Initial navigation.
@@ -161,15 +161,10 @@ async def test_navigateToPageWithHash_contextInfoUpdated(
     }
 
 
-# TODO(sadym): make offline.
-@pytest.mark.parametrize(
-    "nested_iframe",
-    ['https://example.com/', 'data:text/html,<h1>CHILD_PAGE</h1>'])
 @pytest.mark.asyncio
 async def test_browsingContext_addAndRemoveNestedContext_contextAddedAndRemoved(
-        websocket, context_id, nested_iframe):
-    page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
-                              f'<iframe src="{nested_iframe}" />'
+        websocket, context_id, url_cross_origin, html, iframe):
+    page_with_nested_iframe = html(iframe(url_cross_origin))
     await goto_url(websocket, context_id, page_with_nested_iframe, "complete")
 
     result = await get_tree(websocket)
@@ -179,7 +174,7 @@ async def test_browsingContext_addAndRemoveNestedContext_contextAddedAndRemoved(
             "context": context_id,
             "children": [{
                 "context": ANY_STR,
-                "url": nested_iframe,
+                "url": url_cross_origin,
                 "children": []
             }],
             "parent": None,
@@ -215,13 +210,11 @@ async def test_browsingContext_addAndRemoveNestedContext_contextAddedAndRemoved(
 # TODO(sadym): make offline.
 @pytest.mark.asyncio
 async def test_browsingContext_afterNavigation_getTreeWithNestedCrossOriginContexts_contextsReturned(
-        websocket, context_id):
+        websocket, context_id, html, iframe):
     nested_iframe = 'https://example.com/'
     another_nested_iframe = 'https://example.org/'
-    page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
-                              f'<iframe src="{nested_iframe}" />'
-    another_page_with_nested_iframe = f'data:text/html,<h1>ANOTHER_MAIN_PAGE</h1>' \
-                                      f'<iframe src="{another_nested_iframe}" />'
+    page_with_nested_iframe = html(iframe(nested_iframe))
+    another_page_with_nested_iframe = html(iframe(another_nested_iframe))
 
     await goto_url(websocket, context_id, page_with_nested_iframe, "complete")
     await goto_url(websocket, context_id, another_page_with_nested_iframe,
@@ -245,13 +238,13 @@ async def test_browsingContext_afterNavigation_getTreeWithNestedCrossOriginConte
 
 @pytest.mark.asyncio
 async def test_browsingContext_afterNavigation_getTreeWithNestedContexts_contextsReturned(
-        websocket, context_id):
-    nested_iframe = 'data:text/html,<h2>IFRAME</h2>'
-    another_nested_iframe = 'data:text/html,<h2>ANOTHER_IFRAME</h2>'
-    page_with_nested_iframe = f'data:text/html,<h1>MAIN_PAGE</h1>' \
-                              f'<iframe src="{nested_iframe}" />'
-    another_page_with_nested_iframe = f'data:text/html,<h1>ANOTHER_MAIN_PAGE</h1>' \
-                                      f'<iframe src="{another_nested_iframe}" />'
+        websocket, context_id, html, iframe):
+    nested_iframe = html('<h2>IFRAME</h2>')
+    another_nested_iframe = html('<h2>ANOTHER_IFRAME</h2>')
+    page_with_nested_iframe = html('<h1>MAIN_PAGE</h1>' +
+                                   iframe(nested_iframe))
+    another_page_with_nested_iframe = html('<h1>ANOTHER_MAIN_PAGE</h1>' +
+                                           iframe(another_nested_iframe))
 
     await goto_url(websocket, context_id, page_with_nested_iframe, "complete")
 
@@ -370,16 +363,12 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
 
 @pytest.mark.asyncio
 async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCreatedEmitted(
-        websocket, context_id):
-    nested_iframe = 'data:text/html,<h1>PAGE_WITHOUT_CHILD_IFRAMES</h1>'
-    intermediate_page = 'data:text/html,<h1>PAGE_WITH_1_CHILD_IFRAME</h1>' \
-                        '<iframe src="' + \
-                        nested_iframe.replace('"', '&quot;') + \
-                        '" />'
-    top_level_page = 'data:text/html,<h1>PAGE_WITH_2_CHILD_IFRAMES</h1>' \
-                     '<iframe src="' + \
-                     intermediate_page.replace('"', '&quot;') + \
-                     '" />'
+        websocket, context_id, html, iframe):
+    nested_iframe = html('<h1>PAGE_WITHOUT_CHILD_IFRAMES</h1>')
+    intermediate_page = html('<h1>PAGE_WITH_1_CHILD_IFRAME</h1>' +
+                             iframe(nested_iframe.replace('"', '&quot;')))
+    top_level_page = html('<h1>PAGE_WITH_2_CHILD_IFRAMES</h1>' +
+                          iframe(intermediate_page.replace('"', '&quot;')))
 
     await subscribe(websocket, ["browsingContext.contextCreated"])
 
@@ -486,7 +475,7 @@ async def test_browsingContext_close_browsingContext_closed(
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigateWaitNone_navigated(
-        websocket, context_id):
+        websocket, context_id, html):
     await subscribe(
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
@@ -496,7 +485,7 @@ async def test_browsingContext_navigateWaitNone_navigated(
             "id": 13,
             "method": "browsingContext.navigate",
             "params": {
-                "url": "data:text/html,<h2>test</h2>",
+                "url": html("<h2>test</h2>"),
                 "wait": "none",
                 "context": context_id
             }
@@ -509,7 +498,7 @@ async def test_browsingContext_navigateWaitNone_navigated(
         "id": 13,
         "result": {
             "navigation": navigation_id,
-            "url": "data:text/html,<h2>test</h2>"
+            "url": html("<h2>test</h2>")
         }
     }
 
@@ -521,7 +510,7 @@ async def test_browsingContext_navigateWaitNone_navigated(
             "context": context_id,
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
-            "url": "data:text/html,<h2>test</h2>"
+            "url": html("<h2>test</h2>")
         }
     }
 
@@ -533,14 +522,14 @@ async def test_browsingContext_navigateWaitNone_navigated(
             "context": context_id,
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
-            "url": "data:text/html,<h2>test</h2>"
+            "url": html("<h2>test</h2>")
         }
     }
 
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigateWaitInteractive_navigated(
-        websocket, context_id):
+        websocket, context_id, html):
     await subscribe(
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
@@ -550,7 +539,7 @@ async def test_browsingContext_navigateWaitInteractive_navigated(
             "id": 14,
             "method": "browsingContext.navigate",
             "params": {
-                "url": "data:text/html,<h2>test</h2>",
+                "url": html("<h2>test</h2>"),
                 "wait": "interactive",
                 "context": context_id
             }
@@ -565,7 +554,7 @@ async def test_browsingContext_navigateWaitInteractive_navigated(
             "context": context_id,
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
-            "url": "data:text/html,<h2>test</h2>"
+            "url": html("<h2>test</h2>")
         }
     }
 
@@ -577,7 +566,7 @@ async def test_browsingContext_navigateWaitInteractive_navigated(
             "context": context_id,
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
-            "url": "data:text/html,<h2>test</h2>",
+            "url": html("<h2>test</h2>"),
         }
     }
 
@@ -587,14 +576,14 @@ async def test_browsingContext_navigateWaitInteractive_navigated(
         "id": 14,
         "result": {
             "navigation": navigation_id,
-            "url": "data:text/html,<h2>test</h2>"
+            "url": html("<h2>test</h2>")
         }
     }
 
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigateWaitComplete_navigated(
-        websocket, context_id):
+        websocket, context_id, html):
     await subscribe(
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
@@ -604,7 +593,7 @@ async def test_browsingContext_navigateWaitComplete_navigated(
             "id": 15,
             "method": "browsingContext.navigate",
             "params": {
-                "url": "data:text/html,<h2>test</h2>",
+                "url": html("<h2>test</h2>"),
                 "wait": "complete",
                 "context": context_id
             }
@@ -619,7 +608,7 @@ async def test_browsingContext_navigateWaitComplete_navigated(
             "context": context_id,
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
-            "url": "data:text/html,<h2>test</h2>"
+            "url": html("<h2>test</h2>")
         }
     }
 
@@ -629,7 +618,7 @@ async def test_browsingContext_navigateWaitComplete_navigated(
         "id": 15,
         "result": {
             "navigation": navigation_id,
-            "url": "data:text/html,<h2>test</h2>"
+            "url": html("<h2>test</h2>")
         }
     }
 
@@ -641,15 +630,15 @@ async def test_browsingContext_navigateWaitComplete_navigated(
             "context": context_id,
             "navigation": navigation_id,
             "timestamp": ANY_TIMESTAMP,
-            "url": "data:text/html,<h2>test</h2>"
+            "url": html("<h2>test</h2>")
         }
     }
 
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigateSameDocumentNavigation_waitNone_navigated(
-        websocket, context_id):
-    url = "data:text/html,<h2>test</h2>"
+        websocket, context_id, html):
+    url = html("<h2>test</h2>")
     url_with_hash_1 = url + "#1"
     url_with_hash_2 = url + "#2"
 
@@ -665,8 +654,8 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitNone_navigated
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigateSameDocumentNavigation_waitInteractive_navigated(
-        websocket, context_id):
-    url = "data:text/html,<h2>test</h2>"
+        websocket, context_id, html):
+    url = html("<h2>test</h2>")
     url_with_hash_1 = url + "#1"
     url_with_hash_2 = url + "#2"
 
@@ -706,8 +695,8 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitInteractive_na
 
 @pytest.mark.asyncio
 async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navigated(
-        websocket, context_id):
-    url = "data:text/html,<h2>test</h2>"
+        websocket, context_id, html):
+    url = html("<h2>test</h2>")
     url_with_hash_1 = url + "#1"
     url_with_hash_2 = url + "#2"
 
