@@ -1701,6 +1701,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Viz.FrameSink.GpuBusyDuration" units="microseconds"
+    expires_after="2024-04-11">
+  <owner>sashamcintosh@chromium.org</owner>
+  <owner>chromeos-gfx@chromium.org</owner>
+  <summary>
+    The time that a begin frame is throttled due to max pending swaps. Recorded
+    when draw and swap executes (only when a frame is throttled). Refer to
+    BeginFrameSource::SetIsGpuBusy for details.
+
+    Warning: This metric does not include reports from clients with
+    low-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Viz.FrameSinkVideoCapturer.CaptureDuration" units="ms"
     expires_after="2023-07-15">
   <owner>bialpio@chromium.org</owner>

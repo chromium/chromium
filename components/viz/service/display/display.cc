@@ -943,6 +943,9 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
       scheduler_->DidSwapBuffers();
     pending_swaps_++;
 
+    UMA_HISTOGRAM_COUNTS_100("Compositing.Display.PendingSwaps",
+                             pending_swaps_);
+
     renderer_->SwapBuffers(std::move(swap_frame_data));
   } else {
     TRACE_EVENT_INSTANT0("viz", "Swap skipped.", TRACE_EVENT_SCOPE_THREAD);

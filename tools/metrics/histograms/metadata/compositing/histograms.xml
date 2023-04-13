@@ -510,6 +510,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.Display.PendingSwaps" units="swaps"
+    expires_after="2024-04-11">
+  <owner>sashamcintosh@chromium.org</owner>
+  <owner>chromeos-gfx@chromium.org</owner>
+  <summary>
+    Records the count of pending swaps in the display scheduler. Length of the
+    swap chain can be used as a rough approximation for input latency. Recorded
+    before the swap executes. Refer to Display::DrawAndSwap for details.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.Display.VizDependencyResolvedToGpuStartedDrawUs"
     units="microseconds" expires_after="2022-12-18">
   <owner>vasilyt@chromium.org</owner>
