@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <cstdlib>
 #include <iosfwd>
 #include <iostream>  // NOLINT(readability/streams)
