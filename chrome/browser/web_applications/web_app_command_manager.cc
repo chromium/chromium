@@ -16,12 +16,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
-#include "chrome/browser/web_applications/web_app_install_task.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "content/public/browser/web_contents.h"
@@ -337,7 +338,10 @@ content::WebContents* WebAppCommandManager::EnsureWebContentsCreated(
 content::WebContents* WebAppCommandManager::EnsureWebContentsCreated() {
   DCHECK(profile_);
   if (!shared_web_contents_)
-    shared_web_contents_ = WebAppInstallTask::CreateWebContents(profile_);
+    shared_web_contents_ = content::WebContents::Create(
+        content::WebContents::CreateParams(profile_));
+  web_app::CreateWebAppInstallTabHelpers(shared_web_contents_.get());
+
   return shared_web_contents_.get();
 }
 

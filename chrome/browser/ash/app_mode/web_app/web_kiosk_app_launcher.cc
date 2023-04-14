@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_install_task.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/common/chrome_features.h"
@@ -95,8 +95,10 @@ void WebKioskAppLauncher::ContinueWithNetworkReady() {
   observers_.NotifyAppInstalling();
   DCHECK(!is_installed_);
 
-  web_contents_for_app_info_ =
-      web_app::WebAppInstallTask::CreateWebContents(profile_);
+  web_contents_for_app_info_ = content::WebContents::Create(
+      content::WebContents::CreateParams(profile_));
+  web_app::CreateWebAppInstallTabHelpers(web_contents_for_app_info_.get());
+
   url_loader_->LoadUrl(
       WebKioskAppManager::Get()->GetAppByAccountId(account_id_)->install_url(),
       web_contents_for_app_info_.get(),

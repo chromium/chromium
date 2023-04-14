@@ -212,8 +212,6 @@ source_set("web_applications") {
     "web_app_install_manager_observer.h",
     "web_app_install_params.cc",
     "web_app_install_params.h",
-    "web_app_install_task.cc",
-    "web_app_install_task.h",
     "web_app_install_utils.cc",
     "web_app_install_utils.h",
     "web_app_internals_utils.cc",
