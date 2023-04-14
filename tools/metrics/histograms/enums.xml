@@ -64385,6 +64385,7 @@ from previous Chrome versions.
   <int value="1298981651" label="disable-new-task-manager"/>
   <int value="1299336534"
       label="AutofillSuppressCreditCardSaveForAssistant:disabled"/>
+  <int value="1299784522" label="EmptyStates:disabled"/>
   <int value="1300282719" label="OfflinePagesBackgroundLoading:enabled"/>
   <int value="1300753556" label="ManualPasswordGenerationAndroid:disabled"/>
   <int value="1300900599" label="ArcUpdateO4CListViaA2C2:enabled"/>
@@ -65638,6 +65639,7 @@ from previous Chrome versions.
   <int value="1972232935" label="DisplayMoveWindowAccels:enabled"/>
   <int value="1972720114" label="WebPaymentsJustInTimePaymentApp:enabled"/>
   <int value="1973376634" label="WebXRMultiGpu:enabled"/>
+  <int value="1974013089" label="EmptyStates:enabled"/>
   <int value="1974565950" label="enable-experimental-accessibility-labels"/>
   <int value="1974776131" label="MediaFeeds:disabled"/>
   <int value="1975327115" label="NewBaseUrlInheritanceBehavior:disabled"/>

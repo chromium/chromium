@@ -237,6 +237,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDeferNotifyInMotion,
     &kDelayTransitionsForAnimation,
     &kDrawEdgeToEdge,
+    &kEmptyStates,
     &kExperimentsForAgsa,
     &kExploreSites,
     &kFocusOmniboxInIncognitoTabIntents,
@@ -750,6 +751,8 @@ BASE_FEATURE(kDownloadHomeForExternalApp,
 BASE_FEATURE(kDrawEdgeToEdge,
              "DrawEdgeToEdge",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEmptyStates, "EmptyStates", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExperimentsForAgsa,
              "ExperimentsForAgsa",

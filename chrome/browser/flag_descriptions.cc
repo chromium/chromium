@@ -4231,6 +4231,12 @@ const char kTabStripRedesignAndroidDescription[] =
     "Enabled Tab Strip Redesign on Android - A visual redesign of Clank Tab "
     "Strip that is consistent with GM3.";
 
+const char kEmptyStatesAndroidName[] = "Empty States Android.";
+const char kEmptyStatesAndroidDescription[] =
+    "Enabled Clank Empty States on Android - Add illustrations to Clank empty "
+    "states to update tab switcher UI, recent tabs, bookmarks, reading list "
+    "and history zero states";
+
 const char kFoldableJankFixAndroidName[] = "Fix for jank seen on foldables.";
 const char kFoldableJankFixAndroidDescription[] =
     "Enables fix for jank seen during fold to unfold transition on foldables "

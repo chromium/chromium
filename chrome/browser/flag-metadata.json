@@ -2355,6 +2355,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "enable-empty-states",
+    "owners": [ "zheliooo", "skavuluru", "nemco", "clank-app-team@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-enhanced-safe-browsing-settings-improvements",
     "owners": [ "awado", "jacastro", "chrome-counter-abuse-alerts@google.com"],
     "expiry_milestone": 114

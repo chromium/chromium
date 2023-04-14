@@ -6533,6 +6533,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kTabStripRedesignVariations,
                                     "TabStripRedesignAndroid")},
 
+    {"enable-empty-states", flag_descriptions::kEmptyStatesAndroidName,
+     flag_descriptions::kEmptyStatesAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kEmptyStates)},
+
     {"enable-foldable-jank-fix", flag_descriptions::kFoldableJankFixAndroidName,
      flag_descriptions::kFoldableJankFixAndroidDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kFoldableJankFix,
