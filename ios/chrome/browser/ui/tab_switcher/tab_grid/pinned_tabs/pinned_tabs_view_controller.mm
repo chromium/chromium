@@ -748,23 +748,26 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
   self.view = collectionView;
 
+  UIView* backgroundView;
+
   // Only apply the blur if transparency effects are not disabled.
   if (!UIAccessibilityIsReduceTransparencyEnabled()) {
     _backgroundColor = [UIColor clearColor];
 
     UIBlurEffect* blurEffect =
         [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThinMaterialDark];
-    UIVisualEffectView* blurEffectView =
-        [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-
-    blurEffectView.frame = collectionView.bounds;
-    blurEffectView.autoresizingMask =
-        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-
-    collectionView.backgroundView = blurEffectView;
+    backgroundView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
   } else {
     _backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+
+    backgroundView = [[UIView alloc] init];
   }
+
+  backgroundView.frame = collectionView.bounds;
+  backgroundView.autoresizingMask =
+      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+
+  collectionView.backgroundView = backgroundView;
   collectionView.backgroundColor = _backgroundColor;
 
   _dragEnabledConstraint = [collectionView.heightAnchor
