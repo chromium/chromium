@@ -27,6 +27,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/security_state/core/security_state.h"
 #include "components/translate/core/browser/language_state.h"
@@ -43,10 +44,6 @@
 #endif
 
 class PrefService;
-
-namespace device_reauth {
-class DeviceAuthenticator;
-}
 
 namespace signin {
 class IdentityManager;
