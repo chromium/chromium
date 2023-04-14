@@ -536,13 +536,21 @@ wtf_size_t NGGridLayoutTrackCollection::GetSetTrackCount(
 
 LayoutUnit NGGridLayoutTrackCollection::MajorBaseline(
     wtf_size_t set_index) const {
-  DCHECK(baselines_ && set_index < baselines_->major.size());
+  if (!baselines_) {
+    return LayoutUnit::Min();
+  }
+
+  DCHECK_LT(set_index, baselines_->major.size());
   return baselines_->major[set_index];
 }
 
 LayoutUnit NGGridLayoutTrackCollection::MinorBaseline(
     wtf_size_t set_index) const {
-  DCHECK(baselines_ && set_index < baselines_->minor.size());
+  if (!baselines_) {
+    return LayoutUnit::Min();
+  }
+
+  DCHECK_LT(set_index, baselines_->minor.size());
   return baselines_->minor[set_index];
 }
 

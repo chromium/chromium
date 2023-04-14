@@ -3668,7 +3668,7 @@ crbug.com/764235 external/wpt/css/css-grid/alignment/grid-baseline-justify-001.h
 
 # [css-subgrid]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/auto-track-sizing-001.html [ Failure ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/baseline-001.html [ Failure Crash ]
+crbug.com/618969 external/wpt/css/css-grid/subgrid/baseline-001.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-001.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-002.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/grid-gap-003.html [ Failure ]
@@ -3685,10 +3685,8 @@ crbug.com/618969 external/wpt/css/css-grid/subgrid/orthogonal-writing-mode-001.h
 crbug.com/618969 external/wpt/css/css-grid/subgrid/orthogonal-writing-mode-002.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/orthogonal-writing-mode-003.html [ Failure ]
 crbug.com/618969 external/wpt/css/css-grid/subgrid/orthogonal-writing-mode-004.html [ Failure ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-baseline-001.html [ Failure Crash ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-baseline-002.html [ Failure Crash ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-baseline-003.html [ Crash ]
-crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-baseline-004.html [ Crash ]
+crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-baseline-001.html [ Failure ]
+crbug.com/618969 external/wpt/css/css-grid/subgrid/subgrid-baseline-002.html [ Failure ]
 
 # [css-animations]
 

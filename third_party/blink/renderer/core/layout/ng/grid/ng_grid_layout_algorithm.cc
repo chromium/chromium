@@ -403,16 +403,22 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
 
 MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
-  DCHECK(!ConstraintSpace().GridLayoutSubtree());
-
   const auto& node = Node();
   const LayoutUnit override_intrinsic_inline_size =
       node.OverrideIntrinsicContentInlineSize();
 
-  if (override_intrinsic_inline_size != kIndefiniteSize) {
-    const LayoutUnit size =
-        BorderScrollbarPadding().InlineSum() + override_intrinsic_inline_size;
+  auto FixedMinMaxSizes = [&](LayoutUnit size) -> MinMaxSizesResult {
+    size += BorderScrollbarPadding().InlineSum();
     return {{size, size}, /* depends_on_block_constraints */ false};
+  };
+
+  if (override_intrinsic_inline_size != kIndefiniteSize) {
+    return FixedMinMaxSizes(override_intrinsic_inline_size);
+  }
+
+  if (const auto* layout_subtree = ConstraintSpace().GridLayoutSubtree()) {
+    return FixedMinMaxSizes(
+        layout_subtree->LayoutData().Columns().ComputeSetSpanSize());
   }
 
   // If we have inline size containment ignore all children.
@@ -865,9 +871,6 @@ void NGGridLayoutAlgorithm::ComputeGridGeometry(
   }
 
   if (!is_standalone_grid) {
-    DCHECK_NE(grid_available_size_.block_size, kIndefiniteSize)
-        << "The available block size of a subgrid should be resolved by its "
-           "parent grid's sizing algorithm.";
     return;
   }
 
