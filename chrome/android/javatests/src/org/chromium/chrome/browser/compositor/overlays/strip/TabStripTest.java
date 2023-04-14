@@ -715,18 +715,16 @@ public class TabStripTest {
         // Check scrolling tab strip
         checkTabStrips();
 
-        // Open enough regular tabs to cause the strip to scroll.
-        StripLayoutHelper tabStrip =
-                TabStripUtils.getStripLayoutHelper(sActivityTestRule.getActivity(), false);
-        while (tabStrip.getMinimumScrollOffset() >= 0) {
+        // Open enough regular tabs to hide the tab at index 0.
+        TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+        final StripLayoutTab tab = TabStripUtils.findStripLayoutTab(
+                sActivityTestRule.getActivity(), false, model.getTabAt(0).getId());
+        while (tab.isVisible()) {
             ChromeTabUtils.newTabFromMenu(
                     InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
         }
 
-        // Get tab at index 0 and assert it is not visible.
-        TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
-        final StripLayoutTab tab = TabStripUtils.findStripLayoutTab(
-                sActivityTestRule.getActivity(), false, model.getTabAt(0).getId());
+        // Assert the tab at index 0 is not visible.
         assertTabVisibility(false, tab);
 
         // Create visibility callback helper.
