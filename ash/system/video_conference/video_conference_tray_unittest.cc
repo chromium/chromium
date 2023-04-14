@@ -151,6 +151,25 @@ TEST_F(VideoConferenceTrayTest, ClickTrayButton) {
   EXPECT_FALSE(toggle_bubble_button()->toggled());
 }
 
+// Tests that tapping directly on the VideoConferenceTray (not the child toggle
+// buttons) toggles the bubble.
+TEST_F(VideoConferenceTrayTest, ClickTrayBackgroundViewTogglesBubble) {
+  // Tap the body of the TrayBackgroundView, missing all toggle buttons. The
+  // bubble should show up.
+  video_conference_tray()->PerformAction(ui::GestureEvent(
+      0, 0, 0, base::TimeTicks(), ui::GestureEventDetails(ui::ET_GESTURE_TAP)));
+
+  EXPECT_TRUE(video_conference_tray()->GetBubbleView());
+  EXPECT_TRUE(toggle_bubble_button()->toggled());
+
+  // Tap the body again, it should hide the bubble.
+  video_conference_tray()->PerformAction(ui::GestureEvent(
+      0, 0, 0, base::TimeTicks(), ui::GestureEventDetails(ui::ET_GESTURE_TAP)));
+
+  EXPECT_FALSE(video_conference_tray()->GetBubbleView());
+  EXPECT_FALSE(toggle_bubble_button()->toggled());
+}
+
 TEST_F(VideoConferenceTrayTest, ToggleBubbleButtonRotation) {
   SetTrayAndButtonsVisible();
 
