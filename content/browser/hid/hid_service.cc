@@ -276,11 +276,24 @@ void HidService::Connect(
     std::move(callback).Run(mojo::NullRemote());
     return;
   }
+
+  auto* delegate = GetContentClient()->browser()->GetHidDelegate();
+  if (!delegate) {
+    std::move(callback).Run(mojo::NullRemote());
+    return;
+  }
+
+  auto* device_info = delegate->GetDeviceInfo(browser_context, device_guid);
+  if (!device_info ||
+      !delegate->HasDevicePermission(browser_context, origin_, *device_info)) {
+    std::move(callback).Run(mojo::NullRemote());
+    return;
+  }
+
   if (watchers_.empty()) {
     IncrementActiveFrameCount();
   }
 
-  auto* delegate = GetContentClient()->browser()->GetHidDelegate();
   delegate->IncrementConnectionCount(browser_context, origin_);
 
   mojo::PendingRemote<device::mojom::HidConnectionWatcher> watcher;
