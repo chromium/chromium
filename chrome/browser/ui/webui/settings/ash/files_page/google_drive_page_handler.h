@@ -1,0 +1,54 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_FILES_PAGE_GOOGLE_DRIVE_PAGE_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_FILES_PAGE_GOOGLE_DRIVE_PAGE_HANDLER_H_
+
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/webui/settings/ash/files_page/mojom/google_drive_handler.mojom.h"
+#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+
+class Profile;
+
+namespace ash::settings {
+
+// ChromeOS "Google Drive" settings page UI handler.
+class GoogleDrivePageHandler : public google_drive::mojom::PageHandler,
+                               drivefs::pinning::PinManager::Observer {
+ public:
+  GoogleDrivePageHandler(
+      mojo::PendingReceiver<google_drive::mojom::PageHandler> receiver,
+      mojo::PendingRemote<google_drive::mojom::Page> page,
+      Profile* profile);
+
+  GoogleDrivePageHandler(const GoogleDrivePageHandler&) = delete;
+  GoogleDrivePageHandler& operator=(const GoogleDrivePageHandler&) = delete;
+
+  ~GoogleDrivePageHandler() override;
+
+ private:
+  // google_drive::mojom::PageHandler:
+  void CalculateRequiredSpace() override;
+
+  // drivefs::pinning::PinManager::Observer
+  void OnProgress(const drivefs::pinning::Progress& progress) override;
+  void OnDrop() override;
+
+  void NotifyServiceUnavailable();
+  void NotifyProgress(const drivefs::pinning::Progress& progress);
+
+  drivefs::pinning::PinManager* GetPinManager();
+  raw_ptr<Profile> profile_;
+
+  mojo::Remote<google_drive::mojom::Page> page_;
+  mojo::Receiver<google_drive::mojom::PageHandler> receiver_{this};
+};
+
+}  // namespace ash::settings
+
+#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_FILES_PAGE_GOOGLE_DRIVE_PAGE_HANDLER_H_
