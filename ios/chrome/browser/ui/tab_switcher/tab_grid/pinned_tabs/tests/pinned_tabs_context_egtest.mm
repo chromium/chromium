@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/test/query_title_server_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -38,19 +39,6 @@ NSString* const kPinnedTabTitlePrefix = @"PinnedTab";
 // Matcher for the overflow pin action.
 id<GREYMatcher> GetMatcherForPinOverflowAction() {
   return grey_accessibilityID(kToolsMenuPinTabId);
-}
-
-// net::EmbeddedTestServer handler that responds with the request's query as the
-// title and body.
-std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
-    const net::test_server::HttpRequest& request) {
-  std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
-      new net::test_server::BasicHttpResponse);
-  http_response->set_content_type("text/html");
-  http_response->set_content("<html><head><title>" + request.GetURL().query() +
-                             "</title></head><body>" +
-                             request.GetURL().query() + "</body></html>");
-  return std::move(http_response);
 }
 
 // Matcher for the regual cell at the given `index`.
@@ -125,15 +113,10 @@ void PinTabUsingOverfolwMenu() {
   [ChromeEarlGreyUI tapToolsMenuAction:GetMatcherForPinOverflowAction()];
 }
 
-// Returns the URL for a test page with the given `title`.
-GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
-  return test_server->GetURL("/querytitle?" + base::SysNSStringToUTF8(title));
-}
-
 // Creates a regular tab with `title` using `test_server`.
 void CreateRegularTab(net::EmbeddedTestServer* test_server, NSString* title) {
   [ChromeEarlGreyUI openNewTab];
-  [ChromeEarlGrey loadURL:GetURLForTitle(test_server, title)];
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(test_server, title)];
 }
 
 // Create `tabs_count` of regular tabs.
@@ -167,10 +150,7 @@ void CreatePinnedTabs(int tabs_count, net::EmbeddedTestServer* test_server) {
 
 // Sets up the EmbeddedTestServer as needed for tests.
 - (void)setUpTestServer {
-  self.testServer->RegisterDefaultHandler(base::BindRepeating(
-      net::test_server::HandlePrefixedRequest, "/querytitle",
-      base::BindRepeating(&HandleQueryTitle)));
-
+  RegisterQueryTitleHandler(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start");
 }
 

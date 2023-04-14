@@ -19,6 +19,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs:constants",
+    "//ios/chrome/browser/ui/tab_switcher/test:utils",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
