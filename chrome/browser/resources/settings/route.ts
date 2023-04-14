@@ -264,7 +264,8 @@ function createBrowserSettingsRoutes(): SettingsRoutes {
     }
 
     // <if expr="_google_chrome">
-    if (visibility.getMostChrome !== false) {
+    if (visibility.getMostChrome !== false &&
+        loadTimeData.getBoolean('showGetTheMostOutOfChromeSection')) {
       r.GET_MOST_CHROME = r.ADVANCED.createSection(
           '/getMostChrome', 'getMostChrome',
           loadTimeData.getString('getTheMostOutOfChrome'));
