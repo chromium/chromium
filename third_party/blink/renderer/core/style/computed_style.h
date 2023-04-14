@@ -2573,7 +2573,9 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   static bool IsDisplayInlineType(EDisplay display) {
-    return display == EDisplay::kInline || IsDisplayReplacedType(display);
+    return display == EDisplay::kInline ||
+           display == EDisplay::kInlineListItem ||
+           IsDisplayReplacedType(display);
   }
 
   static bool IsDisplayTableType(EDisplay display) {

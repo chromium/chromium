@@ -91,6 +91,7 @@
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_fieldset.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_ruby_run.h"
+#include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_outside_list_marker.h"
@@ -375,6 +376,8 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     case EDisplay::kInline:
       return MakeGarbageCollected<LayoutInline>(element);
     case EDisplay::kInlineListItem:
+      DCHECK(RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled());
+      return MakeGarbageCollected<LayoutNGInlineListItem>(element);
     case EDisplay::kFlowRootListItem:
     case EDisplay::kInlineFlowRootListItem:
       DCHECK(RuntimeEnabledFeatures::CSSDisplayMultipleValuesEnabled());

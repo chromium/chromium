@@ -1620,8 +1620,6 @@ crbug.com/995106 external/wpt/css/css-lists/inline-block-list.html [ Failure ]
 crbug.com/995106 external/wpt/css/css-lists/inline-block-list-marker.html [ Failure ]
 crbug.com/995106 external/wpt/css/css-lists/inline-list.html [ Failure ]
 crbug.com/995106 external/wpt/css/css-lists/inline-list-marker.html [ Failure ]
-crbug.com/995106 external/wpt/css/css-lists/inline-list-with-table-child.html [ Failure ]
-crbug.com/995106 external/wpt/css/cssom-view/client-props-inline-list-item.html [ Failure ]
 
 # css-pseudo
 crbug.com/1163437 external/wpt/css/css-pseudo/grammar-spelling-errors-001.html [ Failure ]

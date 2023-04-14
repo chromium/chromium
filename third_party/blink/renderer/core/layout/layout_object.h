@@ -898,6 +898,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectNGListItem);
   }
+  bool IsInlineListItem() const {
+    NOT_DESTROYED();
+    return IsOfType(kLayoutObjectNGInlineListItem);
+  }
   bool IsLayoutNGInsideListMarker() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectNGInsideListMarker);
@@ -3530,6 +3534,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     kLayoutObjectNGFlexibleBox,
     kLayoutObjectNGFrameSet,
     kLayoutObjectNGGrid,
+    kLayoutObjectNGInlineListItem,
     kLayoutObjectNGInsideListMarker,
     kLayoutObjectNGListItem,
     kLayoutObjectNGOutsideListMarker,
