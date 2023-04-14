@@ -4512,7 +4512,7 @@ hooks = [
   # Download Telemetry's binary dependencies via conditionals
   {
     'name': 'checkout_telemetry_binary_dependencies',
-    'condition': 'checkout_telemetry_dependencies or checkout_chromium_autofill_test_dependencies or checkout_chromium_password_manager_test_dependencies',
+    'condition': 'checkout_telemetry_dependencies',
     'pattern': '.',
     'action': [ 'vpython3',
                 'src/third_party/catapult/telemetry/bin/fetch_telemetry_binary_dependencies',
@@ -4600,6 +4600,15 @@ hooks = [
     'action': [ 'python3',
                 'src/chrome/test/data/android/manage_wpr_archives.py',
                 'download',
+    ],
+  },
+  # Download only WPR binary dependencies from Telemetry via conditionals
+  {
+    'name': 'checkout_wpr_binary_dependencies',
+    'condition': 'checkout_chromium_autofill_test_dependencies or checkout_chromium_password_manager_test_dependencies',
+    'pattern': '.',
+    'action': [ 'vpython3',
+                'src/third_party/catapult/telemetry/bin/fetch_wpr_binary_dependencies',
     ],
   },
   {
