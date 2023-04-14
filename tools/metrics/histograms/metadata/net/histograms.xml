@@ -2210,6 +2210,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.NetworkTransaction{HostType}.RetryReason"
+    enum="HttpNetworkTransactionRetryReason" expires_after="2023-09-01">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>Log the reason when HttpNetworkTransaction retries.</summary>
+  <token key="HostType">
+    <variant name=""/>
+    <variant name="H3SupportedGoogleHost"/>
+  </token>
+</histogram>
+
 <histogram name="Net.NumQuicSessionsAtShutdown" units="units"
     expires_after="2023-10-08">
   <owner>dschinazi@chromium.org</owner>
@@ -2694,6 +2705,81 @@ chromium-metrics-reviews@google.com.
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>The number of times ServerConfigUpdateMessages ignored.</summary>
+</histogram>
+
+<histogram name="Net.QuicProtocolErrorRetryDelay{HostType}.{FinalResult}"
+    units="ms" expires_after="2023-09-01">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Log the retry delay caused by ERR_QUIC_PROTOCOL_ERROR. Recorded when
+    HttpNetworkTransaction finishes.
+  </summary>
+  <token key="HostType">
+    <variant name=""/>
+    <variant name="H3SupportedGoogleHost"/>
+  </token>
+  <token key="FinalResult">
+    <variant name="Failure"/>
+    <variant name="Success"/>
+  </token>
+</histogram>
+
+<histogram name="Net.QuicProtocolError{HostType}.RetryStatus"
+    enum="QuicProtocolErrorRetryStatus" expires_after="2023-09-01">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    The status of how HttpNetworkTransaction handles a ERR_QUIC_PROTOCOL_ERROR.
+    Recorded when HttpNetworkTransaction finishes.
+  </summary>
+  <token key="HostType">
+    <variant name=""/>
+    <variant name="H3SupportedGoogleHost"/>
+  </token>
+</histogram>
+
+<histogram name="Net.QuicProtocolError{HostType}.{RetryStatus}.QuicErrorCode"
+    enum="QuicErrorCodes" expires_after="2023-09-01">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Log the QUIC error code when HttpNetworkTransaction handles a
+    ERR_QUIC_PROTOCOL_ERROR.
+  </summary>
+  <token key="HostType">
+    <variant name=""/>
+    <variant name="H3SupportedGoogleHost"/>
+  </token>
+  <token key="RetryStatus">
+    <variant name="NoRetryExceededMaxRetries"/>
+    <variant name="NoRetryHeaderReceived"/>
+    <variant name="NoRetryNoAlternativeService"/>
+    <variant name="RetryAltServiceBroken"/>
+    <variant name="RetryAltServiceNotBroken"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Net.QuicProtocolError{HostType}.{RetryStatus}.QuicStreamErrorCode"
+    enum="QuicRstStreamErrorCodes" expires_after="2023-09-01">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Log the QUIC stream error code when HttpNetworkTransaction handles a
+    ERR_QUIC_PROTOCOL_ERROR.
+  </summary>
+  <token key="HostType">
+    <variant name=""/>
+    <variant name="H3SupportedGoogleHost"/>
+  </token>
+  <token key="RetryStatus">
+    <variant name="NoRetryExceededMaxRetries"/>
+    <variant name="NoRetryHeaderReceived"/>
+    <variant name="NoRetryNoAlternativeService"/>
+    <variant name="RetryAltServiceBroken"/>
+    <variant name="RetryAltServiceNotBroken"/>
+  </token>
 </histogram>
 
 <histogram name="Net.QuicServerInfo.DiskCacheState"

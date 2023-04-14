@@ -50791,6 +50791,28 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="9" label="PATCH"/>
 </enum>
 
+<enum name="HttpNetworkTransactionRetryReason">
+  <int value="0" label="HttpRequestTimeout"/>
+  <int value="1" label="HttpMisdirectedRequest"/>
+  <int value="2" label="Http11Required"/>
+  <int value="3" label="SslClientAuthSignatureFailed"/>
+  <int value="4" label="ConnectionReset"/>
+  <int value="5" label="ConnectionClosed"/>
+  <int value="6" label="ConnectionAborted"/>
+  <int value="7" label="SocketNotConnected"/>
+  <int value="8" label="EmptyResponse"/>
+  <int value="9" label="EarlyDataRejected"/>
+  <int value="10" label="WrongVersionOnEarlyData"/>
+  <int value="11" label="Http2PingFailed"/>
+  <int value="12" label="Http2ServerRefusedStream"/>
+  <int value="13" label="Http2PushedStreamNotAvailable"/>
+  <int value="14" label="Http2ClaimedPushedStreamResetByServer"/>
+  <int value="15" label="Http2PushedResponseDoesNotMatch"/>
+  <int value="16" label="QuicHandshakeFailed"/>
+  <int value="17" label="QuicGoawayRequestCanBeRetried"/>
+  <int value="18" label="QuicProtocolError"/>
+</enum>
+
 <enum name="HttpPasswordMigrationMode">
   <int value="0" label="Moved">
     HTTP credentials were moved during migration to HTTPS
@@ -87816,6 +87838,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="NETWORK_DISCONNECTED"/>
   <int value="3" label="NETWORK_SOON_TO_DISCONNECT"/>
   <int value="4" label="NETWORK_IP_ADDRESS_CHANGED"/>
+</enum>
+
+<enum name="QuicProtocolErrorRetryStatus">
+  <int value="0" label="NoRetryExceededMaxRetries"/>
+  <int value="1" label="NoRetryHeaderReceived"/>
+  <int value="2" label="NoRetryNoAlternativeService"/>
+  <int value="3" label="RetryAltServiceBroken"/>
+  <int value="4" label="RetryAltServiceNotBroken"/>
 </enum>
 
 <enum name="QuicRejectReasons">

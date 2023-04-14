@@ -34,6 +34,7 @@
 #include "net/socket/connection_attempts.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -261,9 +262,35 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // proceed.
   bool CheckMaxRestarts();
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class RetryReason {
+    kHttpRequestTimeout = 0,
+    kHttpMisdirectedRequest = 1,
+    kHttp11Required = 2,
+    kSslClientAuthSignatureFailed = 3,
+    kConnectionReset = 4,
+    kConnectionClosed = 5,
+    kConnectionAborted = 6,
+    kSocketNotConnected = 7,
+    kEmptyResponse = 8,
+    kEarlyDataRejected = 9,
+    kWrongVersionOnEarlyData = 10,
+    kHttp2PingFailed = 11,
+    kHttp2ServerRefusedStream = 12,
+    kHttp2PushedStreamNotAvailable = 13,
+    kHttp2ClaimedPushedStreamResetByServer = 14,
+    kHttp2PushedResponseDoesNotMatch = 15,
+    kQuicHandshakeFailed = 16,
+    kQuicGoawayRequestCanBeRetried = 17,
+    kQuicProtocolError = 18,
+    kMaxValue = kQuicProtocolError,
+  };
+  static absl::optional<RetryReason> GetRetryReasonForIOError(int error);
+
   // Resets the connection and the request headers for resend.  Called when
   // ShouldResendRequest() is true.
-  void ResetConnectionAndRequestForResend();
+  void ResetConnectionAndRequestForResend(RetryReason retry_reason);
 
   // Sets up the state machine to restart the transaction with auth.
   void PrepareForAuthRestart(HttpAuth::Target target);
@@ -311,6 +338,23 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   bool ContentEncodingsValid() const;
 
   void ResumeAfterConnected(int result);
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class QuicProtocolErrorRetryStatus {
+    kNoRetryExceededMaxRetries = 0,
+    kNoRetryHeaderReceived = 1,
+    kNoRetryNoAlternativeService = 2,
+    kRetryAltServiceBroken = 3,
+    kRetryAltServiceNotBroken = 4,
+    kMaxValue = kRetryAltServiceNotBroken,
+  };
+
+  void RecordQuicProtocolErrorMetrics(
+      QuicProtocolErrorRetryStatus retry_status);
+
+  void RecordMetricsIfError(int rv);
+  void RecordMetrics(int rv);
 
   scoped_refptr<HttpAuthController>
       auth_controllers_[HttpAuth::AUTH_NUM_TARGETS];
@@ -376,8 +420,8 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   std::string request_referrer_;
   std::string request_user_agent_;
   int request_reporting_upload_depth_ = 0;
-  base::TimeTicks start_timeticks_;
 #endif
+  base::TimeTicks start_timeticks_;
 
   // The size in bytes of the buffer we use to drain the response body that
   // we want to throw away.  The response body is typically a small error
@@ -449,6 +493,8 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   size_t num_restarts_ = 0;
 
   bool close_connection_on_destruction_ = false;
+
+  absl::optional<base::TimeDelta> quic_protocol_error_retry_delay_;
 };
 
 }  // namespace net
