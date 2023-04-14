@@ -69,7 +69,7 @@ build_webui_tests("build") {
     "internet_subpage_menu_test.js",
     "kerberos_accounts_test.js",
     "kerberos_page_test.js",
-    "lock_screen_subpage_tests.ts",
+    "lock_screen_subpage_test.ts",
     "manage_users_subpage_tests.js",
     "multidevice_feature_item_tests.js",
     "multidevice_feature_toggle_tests.js",
@@ -193,26 +193,26 @@ build_webui_tests("build") {
     "keyboard_shortcut_banner/keyboard_shortcut_banner_test.ts",
 
     "multidevice_page/multidevice_page_tests.js",
-    "multidevice_page/multidevice_combined_setup_item_tests.ts",
+    "multidevice_page/multidevice_combined_setup_item_test.ts",
     "multidevice_page/multidevice_notification_access_setup_dialog_tests.js",
     "multidevice_page/multidevice_permissions_setup_dialog_tests.js",
     "multidevice_page/multidevice_smartlock_item_test.ts",
     "multidevice_page/multidevice_subpage_tests.js",
-    "multidevice_page/multidevice_wifi_sync_item_tests.ts",
+    "multidevice_page/multidevice_wifi_sync_item_test.ts",
     "multidevice_page/test_multidevice_browser_proxy.ts",
 
     "nearby_share_page/nearby_share_confirm_page_test.ts",
     "nearby_share_page/nearby_share_high_visibility_page_test.ts",
 
-    "os_a11y_page/audio_and_captions_page_tests.ts",
-    "os_a11y_page/cursor_and_touchpad_page_tests.ts",
-    "os_a11y_page/display_and_magnification_page_tests.ts",
-    "os_a11y_page/keyboard_and_text_input_page_tests.ts",
-    "os_a11y_page/manage_accessibility_page_tests.ts",
-    "os_a11y_page/os_a11y_page_tests.ts",
+    "os_a11y_page/audio_and_captions_page_test.ts",
+    "os_a11y_page/cursor_and_touchpad_page_test.ts",
+    "os_a11y_page/display_and_magnification_page_test.ts",
+    "os_a11y_page/keyboard_and_text_input_page_test.ts",
+    "os_a11y_page/manage_accessibility_page_test.ts",
+    "os_a11y_page/os_a11y_page_test.ts",
     "os_a11y_page/test_os_a11y_page_browser_proxy.ts",
-    "os_a11y_page/text_to_speech_page_tests.ts",
-    "os_a11y_page/text_to_speech_subpage_tests.ts",
+    "os_a11y_page/text_to_speech_page_test.ts",
+    "os_a11y_page/text_to_speech_subpage_test.ts",
     "os_a11y_page/tts_subpage_test.ts",
 
     "os_bluetooth_page/os_bluetooth_change_device_name_dialog_tests.js",
@@ -227,15 +227,15 @@ build_webui_tests("build") {
     "os_files_page/google_drive_page_test.ts",
     "os_files_page/office_page_test.ts",
     "os_files_page/os_files_page_test.ts",
-    "os_files_page/smb_shares_page_tests.ts",
+    "os_files_page/smb_shares_page_test.ts",
 
     "os_languages_page/smart_inputs_page_test.ts",
 
-    "os_people_page/add_user_dialog_tests.ts",
+    "os_people_page/add_user_dialog_test.ts",
 
-    "os_printing_page/os_printing_page_tests.ts",
+    "os_printing_page/os_printing_page_test.ts",
 
-    "os_privacy_page/smart_privacy_subpage_tests.ts",
+    "os_privacy_page/smart_privacy_subpage_test.ts",
 
     "os_search_page/search_subpage_test.ts",
 

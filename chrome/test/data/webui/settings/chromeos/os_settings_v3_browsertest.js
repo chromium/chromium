@@ -359,7 +359,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'KeyboardShortcutBanner',
    'keyboard_shortcut_banner/keyboard_shortcut_banner_test.js'
  ],
- ['LockScreenSubpage', 'lock_screen_subpage_tests.js'],
+ ['LockScreenSubpage', 'lock_screen_subpage_test.js'],
  ['ManageUsersSubpage', 'manage_users_subpage_tests.js'],
  // TODO(b/208932892): Re-enable once flakiness is fixed.
  // ['MultideviceFeatureItem', 'multidevice_feature_item_tests.js'],
@@ -383,11 +383,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ],
  [
    'MultiDevicePageMultideviceCombinedSetupItem',
-   'multidevice_page/multidevice_combined_setup_item_tests.js'
+   'multidevice_page/multidevice_combined_setup_item_test.js'
  ],
  [
    'MultidevicePageMultideviceWifiSyncItem',
-   'multidevice_page/multidevice_wifi_sync_item_tests.js'
+   'multidevice_page/multidevice_wifi_sync_item_test.js'
  ],
  [
    'MultideviceTaskContinuationItem',
@@ -421,37 +421,37 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['OncMojoTest', 'onc_mojo_test.js'],
  [
    'OsA11yPage',
-   'os_a11y_page/os_a11y_page_tests.js',
+   'os_a11y_page/os_a11y_page_test.js',
    {enabled: ['features::kPdfOcr']},
  ],
  [
    'OsA11yPageAudioAndCaptionsPage',
-   'os_a11y_page/audio_and_captions_page_tests.js',
+   'os_a11y_page/audio_and_captions_page_test.js',
  ],
  [
    'OsA11yPageCursorAndTouchpadPage',
-   'os_a11y_page/cursor_and_touchpad_page_tests.js',
+   'os_a11y_page/cursor_and_touchpad_page_test.js',
  ],
  [
    'OsA11yPageDisplayAndMagnificationPage',
-   'os_a11y_page/display_and_magnification_page_tests.js',
+   'os_a11y_page/display_and_magnification_page_test.js',
  ],
  [
    'OsA11yPageKeyboardAndTextInputPage',
-   'os_a11y_page/keyboard_and_text_input_page_tests.js',
+   'os_a11y_page/keyboard_and_text_input_page_test.js',
  ],
  [
    'OsA11yPageManageAccessibilityPage',
-   'os_a11y_page/manage_accessibility_page_tests.js'
+   'os_a11y_page/manage_accessibility_page_test.js'
  ],
  [
    'OsA11yPageTextToSpeechPage',
-   'os_a11y_page/text_to_speech_page_tests.js',
+   'os_a11y_page/text_to_speech_page_test.js',
    {enabled: ['features::kPdfOcr']},
  ],
  [
    'OsA11yPageTextToSpeechSubpage',
-   'os_a11y_page/text_to_speech_subpage_tests.js',
+   'os_a11y_page/text_to_speech_subpage_test.js',
  ],
  ['OsA11yPageTtsSubpage', 'os_a11y_page/tts_subpage_test.js'],
  ['OsBluetoothPage', 'os_bluetooth_page/os_bluetooth_page_tests.js'],
@@ -483,7 +483,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['OsFilesPage', 'os_files_page/os_files_page_test.js'],
  ['OsFilesPageGoogleDrivePage', 'os_files_page/google_drive_page_test.js'],
  ['OsFilesPageOfficePage', 'os_files_page/office_page_test.js'],
- ['OsFilesPageSmbSharesPage', 'os_files_page/smb_shares_page_tests.js'],
+ ['OsFilesPageSmbSharesPage', 'os_files_page/smb_shares_page_test.js'],
  [
    'OsLanguagesPageSmartInputsPage',
    'os_languages_page/smart_inputs_page_test.js'
@@ -491,11 +491,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['OsLanguagesPageV2', 'os_languages_page_v2_tests.js'],
  ['OsPairedBluetoothList', 'os_paired_bluetooth_list_tests.js'],
  ['OsPairedBluetoothListItem', 'os_paired_bluetooth_list_item_tests.js'],
- ['OsPeoplePageAddUserDialog', 'os_people_page/add_user_dialog_tests.js'],
- ['OsPrintingPage', 'os_printing_page/os_printing_page_tests.js'],
+ ['OsPeoplePageAddUserDialog', 'os_people_page/add_user_dialog_test.js'],
+ ['OsPrintingPage', 'os_printing_page/os_printing_page_test.js'],
  [
    'OsPrivacyPageSmartPrivacySubpage',
-   'os_privacy_page/smart_privacy_subpage_tests.js'
+   'os_privacy_page/smart_privacy_subpage_test.js'
  ],
  ['OsSearchPageSearchSubpage', 'os_search_page/search_subpage_test.js'],
  ['OsSettingsHatsUi', 'os_settings_ui/os_settings_hats_ui_test.js'],
