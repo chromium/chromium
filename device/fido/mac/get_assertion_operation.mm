@@ -55,9 +55,8 @@ void GetAssertionOperation::Run() {
   }
 
   if (credentials->empty()) {
-    // TouchIdAuthenticator::HasCredentialForGetAssertionRequest() is
-    // invoked first to ensure this doesn't occur.
-    NOTREACHED();
+    // This can happen if e.g. a credential is deleted after it is shown to the
+    // user on the account picker.
     std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrNoCredentials,
                              {});
     return;
