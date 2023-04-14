@@ -67,11 +67,14 @@ class AccountManagedStatusFinder : public signin::IdentityManager::Observer {
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnRefreshTokenRemovedForAccount(
       const CoreAccountId& account_id) override;
+  void OnRefreshTokensLoaded() override;
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
 
  private:
-  void OutcomeDetermined(Outcome type);
+  Outcome DetermineOutcome();
+
+  void OutcomeDeterminedAsync(Outcome type);
 
   raw_ptr<signin::IdentityManager> identity_manager_;
   const CoreAccountInfo account_;
