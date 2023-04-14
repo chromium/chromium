@@ -13,6 +13,8 @@ static_library("presence") {
     "nearby_presence_service.h",
     "nearby_presence_service_impl.cc",
     "nearby_presence_service_impl.h",
+    "prefs/nearby_presence_prefs.cc",
+    "prefs/nearby_presence_prefs.h",
   ]
 
   deps = [
@@ -26,6 +28,7 @@ static_library("presence") {
     "//components/keyed_service/core",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
+    "//content/public/browser",
   ]
 }
 
@@ -42,6 +45,9 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/ash/components/nearby/presence:presence",
     "//chromeos/ash/components/nearby/presence/credentials:unit_tests",
+    "//components/prefs:prefs",
+    "//components/prefs:test_support",
+    "//content/public/browser",
     "//mojo/public/cpp/bindings:bindings",
     "//testing/gtest",
   ]

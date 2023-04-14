@@ -8,15 +8,14 @@
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-#include <memory>
-#include <string>
+class PrefService;
 
 namespace ash::nearby::presence {
 
 class NearbyPresenceServiceImpl : public NearbyPresenceService,
                                   public KeyedService {
  public:
-  NearbyPresenceServiceImpl();
+  explicit NearbyPresenceServiceImpl(PrefService* pref_service);
   NearbyPresenceServiceImpl(const NearbyPresenceServiceImpl&) = delete;
   NearbyPresenceServiceImpl& operator=(const NearbyPresenceServiceImpl&) =
       delete;
@@ -29,6 +28,8 @@ class NearbyPresenceServiceImpl : public NearbyPresenceService,
  private:
   // KeyedService:
   void Shutdown() override;
+
+  PrefService* pref_service_ = nullptr;
 };
 
 }  // namespace ash::nearby::presence

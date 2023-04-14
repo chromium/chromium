@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service_impl.h"
 
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,10 +52,14 @@ class NearbyPresenceServiceImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    nearby_presence_service = std::make_unique<NearbyPresenceServiceImpl>();
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+
+    nearby_presence_service =
+        std::make_unique<NearbyPresenceServiceImpl>(pref_service_.get());
   }
 
   std::unique_ptr<NearbyPresenceServiceImpl> nearby_presence_service;
+  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
 };
 
 TEST_F(NearbyPresenceServiceImplTest, StartScan) {
