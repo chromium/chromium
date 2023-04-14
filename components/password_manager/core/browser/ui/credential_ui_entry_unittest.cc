@@ -18,6 +18,12 @@ namespace {
 using testing::ElementsAre;
 using testing::UnorderedElementsAre;
 
+constexpr char kTestCom[] = "https://test.com";
+constexpr char kTestComChangePassword[] =
+    "https://test.com/.well-known/change-password";
+constexpr char kAndroidSignonRealm[] =
+    "android://certificate_hash@com.test.client/";
+
 // Creates matcher for a given domain info
 auto ExpectDomain(const std::string& name, const GURL& url) {
   return AllOf(testing::Field(&CredentialUIEntry::DomainInfo::name, name),
@@ -118,9 +124,9 @@ TEST(CredentialUIEntryTest, TestGetAffiliatedDomains) {
   std::vector<PasswordForm> forms;
 
   PasswordForm android_form;
-  android_form.signon_realm = "android://certificate_hash@com.test.client/";
+  android_form.signon_realm = kAndroidSignonRealm;
   android_form.app_display_name = "g3.com";
-  android_form.affiliated_web_realm = "https://test.com";
+  android_form.affiliated_web_realm = kTestCom;
 
   PasswordForm web_form;
   web_form.signon_realm = "https://g.com/";
@@ -146,7 +152,7 @@ TEST(CredentialUIEntryTest, TestGetAffiliatedDomainsHttpForm) {
 
 TEST(CredentialUIEntryTest, TestGetAffiliatedDomainsEmptyAndroidForm) {
   PasswordForm android_form;
-  android_form.signon_realm = "android://certificate_hash@com.test.client/";
+  android_form.signon_realm = kAndroidSignonRealm;
 
   CredentialUIEntry entry = CredentialUIEntry({android_form});
   EXPECT_THAT(entry.GetAffiliatedDomains(),
@@ -226,6 +232,28 @@ TEST(CredentialUIEntryTest, TestGetAffiliatedDuplicatesWithDifferentUrls) {
   EXPECT_THAT(entry.GetAffiliatedDomains(),
               UnorderedElementsAre(ExpectDomain("g.com", form1.url),
                                    ExpectDomain("g.com", form2.url)));
+}
+
+TEST(CredentialUIEntryTest, TestGetChangeURLAndroid) {
+  PasswordForm android_form;
+  android_form.signon_realm = kAndroidSignonRealm;
+  android_form.affiliated_web_realm = kTestCom;
+  CredentialUIEntry entry = CredentialUIEntry(android_form);
+  EXPECT_EQ(entry.GetChangePasswordURL(), GURL(kTestComChangePassword));
+}
+
+TEST(CredentialUIEntryTest, TestGetChangeURLAndroidNoAffiliatedWebRealm) {
+  PasswordForm android_form;
+  android_form.signon_realm = kAndroidSignonRealm;
+  CredentialUIEntry entry = CredentialUIEntry(android_form);
+  EXPECT_FALSE(entry.GetChangePasswordURL());
+}
+
+TEST(CredentialUIEntryTest, TestGetChangeURLWebForm) {
+  PasswordForm web_form;
+  web_form.url = GURL(kTestCom);
+  CredentialUIEntry entry = CredentialUIEntry(web_form);
+  EXPECT_EQ(entry.GetChangePasswordURL(), GURL(kTestComChangePassword));
 }
 
 }  // namespace password_manager

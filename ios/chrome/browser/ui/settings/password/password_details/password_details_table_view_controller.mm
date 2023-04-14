@@ -556,10 +556,10 @@ int GetPasswordIndex(int section) {
       if (!self.tableView.editing) {
         int passwordIndex = GetPasswordIndex(indexPath.section);
         DCHECK(self.applicationCommandsHandler);
-        DCHECK(self.passwords[passwordIndex].changePasswordURL.is_valid());
+        DCHECK(self.passwords[passwordIndex].changePasswordURL.has_value());
         OpenNewTabCommand* command = [OpenNewTabCommand
             commandWithURLFromChrome:self.passwords[passwordIndex]
-                                         .changePasswordURL];
+                                         .changePasswordURL.value()];
         UmaHistogramEnumeration("PasswordManager.BulkCheck.UserAction",
                                 PasswordCheckInteraction::kChangePassword);
         [self.applicationCommandsHandler closeSettingsUIAndOpenURL:command];
@@ -1214,7 +1214,7 @@ int GetPasswordIndex(int section) {
         [model addItem:[self changePasswordRecommendationItem]
             toSectionWithIdentifier:sectionForCompromisedInfo];
 
-        if (passwordDetails.changePasswordURL.is_valid()) {
+        if (passwordDetails.changePasswordURL.has_value()) {
           [model addItem:[self changePasswordItem]
               toSectionWithIdentifier:sectionForCompromisedInfo];
         }

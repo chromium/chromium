@@ -724,8 +724,7 @@ TEST_F(PasswordCheckDelegateTest,
 TEST_F(PasswordCheckDelegateTest,
        RecordChangePasswordFlowStartedForAppWithoutWebRealm) {
   // Create an insecure credential.
-  PasswordForm form =
-      MakeSavedAndroidPassword(kExampleApp, kUsername1, "", kExampleCom);
+  PasswordForm form = MakeSavedAndroidPassword(kExampleApp, kUsername1, "", "");
   AddIssueToForm(&form, InsecureType::kLeaked);
   store().AddLogin(form);
   RunUntilIdle();
@@ -1135,7 +1134,7 @@ TEST_F(PasswordCheckDelegateTest, WellKnownChangePasswordUrl) {
 
 TEST_F(PasswordCheckDelegateTest, WellKnownChangePasswordUrl_androidrealm) {
   PasswordForm form1 =
-      MakeSavedAndroidPassword(kExampleApp, kUsername1, "", kExampleCom);
+      MakeSavedAndroidPassword(kExampleApp, kUsername1, "", "");
   AddIssueToForm(&form1, InsecureType::kLeaked);
   store().AddLogin(form1);
 
