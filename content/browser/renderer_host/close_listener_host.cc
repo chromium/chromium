@@ -4,7 +4,9 @@
 
 #include "content/browser/renderer_host/close_listener_host.h"
 
+#include "base/feature_list.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace content {
 
@@ -24,8 +26,10 @@ void CloseListenerHost::SetListener(
 }
 
 bool CloseListenerHost::SignalIfActive() {
-  if (!close_listener_)
+  if (!close_listener_ ||
+      !base::FeatureList::IsEnabled(blink::features::kCloseWatcher)) {
     return false;
+  }
   close_listener_->Signal();
   return true;
 }

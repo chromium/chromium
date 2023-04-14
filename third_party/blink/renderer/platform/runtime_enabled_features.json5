@@ -592,7 +592,6 @@
     },
     {
       name: "CloseWatcher",
-      base_feature: "none",
     },
     {
       name: "CLSScrollAnchoring",
