@@ -77,7 +77,7 @@ struct MediaRecorderTestParams {
 static const MediaRecorderTestParams kMediaRecorderTestParams[] = {
     {true, false, "video/webm", "vp8", true},
     {true, false, "video/webm", "vp9", true},
-    {true, false, "video/webm", "av1", true},
+    {true, false, "video/webm", "av1", false},
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     {true, false, "video/x-matroska", "avc1", false},
 #endif
@@ -380,7 +380,7 @@ TEST_P(MediaRecorderHandlerTest, EncodeVideoFrames) {
     OnVideoFrameForTesting(video_frame);
     run_loop.Run();
   }
-  Mock::VerifyAndClearExpectations(this);
+  Mock::VerifyAndClearExpectations(recorder);
 
   {
     const size_t kEncodedSizeThreshold = 12;
@@ -396,8 +396,7 @@ TEST_P(MediaRecorderHandlerTest, EncodeVideoFrames) {
     OnVideoFrameForTesting(video_frame);
     run_loop.Run();
   }
-  Mock::VerifyAndClearExpectations(this);
-
+  Mock::VerifyAndClearExpectations(recorder);
   {
     const scoped_refptr<media::VideoFrame> alpha_frame =
         media::VideoFrame::CreateTransparentFrame(gfx::Size(160, 80));
@@ -418,11 +417,10 @@ TEST_P(MediaRecorderHandlerTest, EncodeVideoFrames) {
           .Times(1)
           .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
     }
-
     OnVideoFrameForTesting(alpha_frame);
     run_loop.Run();
   }
-
+  Mock::VerifyAndClearExpectations(recorder);
   media_recorder_handler_->Stop();
 }
 
@@ -470,7 +468,7 @@ TEST_P(MediaRecorderHandlerTest, OpusEncodeAudioFrames) {
       OnAudioBusForTesting(*audio_bus1);
     run_loop.Run();
   }
-  Mock::VerifyAndClearExpectations(this);
+  Mock::VerifyAndClearExpectations(recorder);
 
   {
     base::RunLoop run_loop;
@@ -486,6 +484,7 @@ TEST_P(MediaRecorderHandlerTest, OpusEncodeAudioFrames) {
       OnAudioBusForTesting(*audio_bus2);
     run_loop.Run();
   }
+  Mock::VerifyAndClearExpectations(recorder);
 
   media_recorder_handler_->Stop();
 }
@@ -537,6 +536,7 @@ TEST_P(MediaRecorderHandlerTest, WebmMuxerErrorWhileEncoding) {
     OnVideoFrameForTesting(video_frame);
     run_loop.Run();
   }
+  Mock::VerifyAndClearExpectations(recorder);
 
   // Make sure the |media_recorder_handler_| gets destroyed and removing sinks
   // before the MediaStreamVideoTrack dtor, avoiding a DCHECK on a non-empty
@@ -598,6 +598,8 @@ TEST_P(MediaRecorderHandlerTest, PauseRecorderForVideo) {
   OnEncodedVideoForTesting(params, "vp9 frame", "", base::TimeTicks::Now(),
                            true);
 
+  Mock::VerifyAndClearExpectations(recorder);
+
   // Make sure the |media_recorder_handler_| gets destroyed and removing sinks
   // before the MediaStreamVideoTrack dtor, avoiding a DCHECK on a non-empty
   // callback list.
@@ -631,6 +633,8 @@ TEST_P(MediaRecorderHandlerTest, StartStopStartRecorderForVideo) {
                                        gfx::ColorSpace());
   OnEncodedVideoForTesting(params, "vp9 frame", "", base::TimeTicks::Now(),
                            true);
+
+  Mock::VerifyAndClearExpectations(recorder);
 
   // Make sure the |media_recorder_handler_| gets destroyed and removing sinks
   // before the MediaStreamVideoTrack dtor, avoiding a DCHECK on a non-empty
@@ -685,6 +689,7 @@ TEST_F(MediaRecorderHandlerAudioVideoTest, EmitsCachedAudioDataOnStop) {
   EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
   media_recorder_handler_->Stop();
   media_recorder_handler_ = nullptr;
+  Mock::VerifyAndClearExpectations(recorder);
 }
 
 TEST_F(MediaRecorderHandlerAudioVideoTest, EmitsCachedVideoDataOnStop) {
@@ -704,6 +709,7 @@ TEST_F(MediaRecorderHandlerAudioVideoTest, EmitsCachedVideoDataOnStop) {
   EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
   media_recorder_handler_->Stop();
   media_recorder_handler_ = nullptr;
+  Mock::VerifyAndClearExpectations(recorder);
 }
 
 TEST_F(MediaRecorderHandlerAudioVideoTest,
@@ -726,6 +732,7 @@ TEST_F(MediaRecorderHandlerAudioVideoTest,
   EXPECT_CALL(*recorder, WriteData).Times(AtLeast(1));
   media_recorder_handler_->Stop();
   media_recorder_handler_ = nullptr;
+  Mock::VerifyAndClearExpectations(recorder);
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -862,7 +869,7 @@ TEST_P(MediaRecorderHandlerPassthroughTest, PassesThrough) {
     run_loop.Run();
   }
   EXPECT_EQ(media_recorder_handler_->ActualMimeType(), GetParam().mime_type);
-  Mock::VerifyAndClearExpectations(this);
+  Mock::VerifyAndClearExpectations(recorder);
 
   media_recorder_handler_->Stop();
 }
@@ -906,6 +913,7 @@ TEST_F(MediaRecorderHandlerPassthroughTest, ErrorsOutOnCodecSwitch) {
                              .WithData(std::string("vp8 frame"))
                              .BuildRefPtr());
   platform_->RunUntilIdle();
+  Mock::VerifyAndClearExpectations(recorder);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
