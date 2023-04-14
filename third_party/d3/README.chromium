@@ -1,10 +1,10 @@
 Name: d3
 Short Name: d3
 URL: https://github.com/d3/d3
-Version: 5.16.0
-CPEPrefix: cpe:/a:d3.js_project:d3.js:5.16.0::~~~node.js~~
-Date: Mon Apr 20 1:58 PM 2020 EDT
-Revision: 7244e45e68af39c519f76667a03039d5b24dd453
+Version: 7.8.4
+CPEPrefix: cpe:/a:d3.js_project:d3.js:7.8.4::~~~node.js~~
+Date: Fri Mar 31 10:43 PM 2023 EDT
+Revision: 37b1960e0af52d12bc7bbea2ed932ea954c36d14
 License: BSD 3-Clause
 License File: src/LICENSE
 Security Critical: Yes
