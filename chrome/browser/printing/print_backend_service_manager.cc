@@ -181,8 +181,9 @@ void PrintBackendServiceManager::UnregisterClient(ClientId id) {
              << ", is client being unregistered multiple times?";
     return;
   }
-  VLOG(1) << "Unregistering client with ID " << id
-          << " from print backend service.";
+  VLOG(1) << "Unregistering client with ID " << id << " (client type "
+          << ClientTypeToString(client_type.value())
+          << ") from print backend service.";
 
   absl::optional<base::TimeDelta> new_timeout =
       DetermineIdleTimeoutUpdateOnUnregisteredClient(client_type.value(),
@@ -1038,7 +1039,7 @@ void PrintBackendServiceManager::SetServiceIdleHandler(
   // Safe to use base::Unretained(this) since `this` is a global singleton
   // which never goes away.
   service.set_idle_handler(
-      kNoClientsRegisteredResetOnIdleTimeout,
+      timeout,
       base::BindRepeating(&PrintBackendServiceManager::OnIdleTimeout,
                           base::Unretained(this), sandboxed, remote_id));
 
