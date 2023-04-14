@@ -385,6 +385,10 @@ std::vector<TopRowActionKey> IdentifyTopRowActionKeys(
   }
 }
 
+bool IsInternalKeyboard(const ui::InputDevice& keyboard) {
+  return keyboard.type == INPUT_DEVICE_INTERNAL;
+}
+
 }  // namespace
 
 KeyboardCapability::KeyboardCapability(std::unique_ptr<Delegate> delegate)
@@ -793,6 +797,27 @@ bool KeyboardCapability::HasGlobeKeyOnAnyKeyboard() const {
   for (const ui::InputDevice& keyboard :
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
     if (HasGlobeKey(keyboard)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool KeyboardCapability::HasCalculatorKey(const InputDevice& keyboard) const {
+  const KeyboardInfo* keyboard_info = GetKeyboardInfo(keyboard);
+  if (!keyboard_info) {
+    return false;
+  }
+
+  // TODO(dpad): Many external keyboards do not have this key, but currently we
+  // do not have a good way to detect these situations.
+  return !IsInternalKeyboard(keyboard);
+}
+
+bool KeyboardCapability::HasCalculatorKeyOnAnyKeyboard() const {
+  for (const ui::InputDevice& keyboard :
+       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+    if (HasCalculatorKey(keyboard)) {
       return true;
     }
   }

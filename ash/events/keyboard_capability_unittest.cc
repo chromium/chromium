@@ -466,6 +466,24 @@ TEST_F(KeyboardCapabilityTest, TestHasGlobeKey) {
   EXPECT_TRUE(keyboard_capability_->HasGlobeKey(internal_keyboard_drallion));
 }
 
+TEST_F(KeyboardCapabilityTest, TestHasCalculatorKey) {
+  ui::InputDevice internal_keyboard(
+      /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+      /*name=*/"Keyboard1");
+  internal_keyboard.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(internal_keyboard,
+                                          kKbdTopRowLayout1Tag);
+  EXPECT_FALSE(keyboard_capability_->HasCalculatorKey(internal_keyboard));
+
+  ui::InputDevice external_keyboard(
+      /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
+      /*name=*/"Keyboard2");
+  external_keyboard.sys_path = base::FilePath("path1");
+  fake_keyboard_manager_->AddFakeKeyboard(external_keyboard,
+                                          kKbdTopRowLayoutUnspecified);
+  EXPECT_TRUE(keyboard_capability_->HasCalculatorKey(external_keyboard));
+}
+
 class ModifierKeyTest : public KeyboardCapabilityTest,
                         public testing::WithParamInterface<
                             std::tuple<ui::DeviceCapabilities,

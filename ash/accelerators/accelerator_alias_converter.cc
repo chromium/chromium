@@ -258,6 +258,17 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
       continue;
     }
 
+    // VKEY_MEDIA_LAUNCH_APP2 is the "Calculator" button on many external
+    // keyboards.
+    if (accelerator.key_code() == ui::VKEY_MEDIA_LAUNCH_APP2) {
+      if (Shell::Get()
+              ->keyboard_capability()
+              ->HasCalculatorKeyOnAnyKeyboard()) {
+        filtered_accelerators.push_back(accelerator);
+      }
+      continue;
+    }
+
     // Otherwise, always copy the accelerator.
     filtered_accelerators.push_back(accelerator);
   }

@@ -336,8 +336,12 @@ class KeyboardCapability : public InputDeviceEventObserver {
   bool HasGlobeKey(const InputDevice& keyboard) const;
   bool HasGlobeKeyOnAnyKeyboard() const;
 
-  // Gets the corresponding function key for the given `action_key` on the given
-  // `keyboard`.
+  // Check if the calculator key exists on the given keyboard.
+  bool HasCalculatorKey(const InputDevice& keyboard) const;
+  bool HasCalculatorKeyOnAnyKeyboard() const;
+
+  // Gets the corresponding function key for the given `action_key` on the
+  // given `keyboard`.
   absl::optional<KeyboardCode> GetCorrespondingFunctionKey(
       const InputDevice& keyboard,
       TopRowActionKey action_key) const;
