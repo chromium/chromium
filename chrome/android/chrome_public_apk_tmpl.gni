@@ -308,11 +308,6 @@ template("chrome_common_apk_or_module_tmpl") {
       enable_jni_multiplexing = true
     }
 
-    # TODO(agrieve): Make this the default for apks with minSdkVersion > 21.
-    if (_is_monochrome || _is_trichrome) {
-      no_xml_namespaces = true
-    }
-
     # Include resource strings files only for supported locales.
     aapt_locale_allowlist = platform_pak_locales
 

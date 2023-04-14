@@ -209,18 +209,19 @@ def _ParseManifestAttributes(apk_path):
   output = cmd_helper.GetCmdOutput([
       _AAPT_PATH.read(), 'd', 'xmltree', apk_path, 'AndroidManifest.xml'])
 
-  def parse_attr(name):
+  def parse_attr(namespace, name):
     # android:extractNativeLibs(0x010104ea)=(type 0x12)0x0
     # android:extractNativeLibs(0x010104ea)=(type 0x12)0xffffffff
     # dist:onDemand=(type 0x12)0xffffffff
-    m = re.search(name + r'(?:\(.*?\))?=\(type .*?\)(\w+)', output)
+    m = re.search(
+        f'(?:{namespace}:)?{name}' + r'(?:\(.*?\))?=\(type .*?\)(\w+)', output)
     return m and int(m.group(1), 16)
 
-  skip_extract_lib = bool(parse_attr('android:extractNativeLibs'))
-  sdk_version = parse_attr('android:minSdkVersion')
-  is_feature_split = parse_attr('android:isFeatureSplit')
+  skip_extract_lib = bool(parse_attr('android', 'extractNativeLibs'))
+  sdk_version = parse_attr('android', 'minSdkVersion')
+  is_feature_split = parse_attr('android', 'isFeatureSplit')
   # Can use <dist:on-demand>, or <module dist:onDemand="true">.
-  on_demand = parse_attr('dist:onDemand') or 'dist:on-demand' in output
+  on_demand = parse_attr('dist', 'onDemand') or 'on-demand' in output
   on_demand = bool(on_demand and is_feature_split)
 
   return sdk_version, skip_extract_lib, on_demand
