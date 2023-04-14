@@ -291,6 +291,11 @@ BASE_FEATURE(kDesktopPWAsRunOnOsLogin,
 #endif
 );
 
+// If enabled, allow-listed PWAs cannot be closed manually by the user.
+BASE_FEATURE(kDesktopPWAsPreventClose,
+             "DesktopPWAsPreventClose",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Runs diagnostics during start up to measure how broken web app icons are to
 // feed into metrics.
 BASE_FEATURE(kDesktopPWAsIconHealthChecks,

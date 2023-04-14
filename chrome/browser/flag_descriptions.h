@@ -3761,6 +3761,9 @@ extern const char kGetAllScreensMediaDescription[];
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kRunOnOsLoginName[];
 extern const char kRunOnOsLoginDescription[];
+
+extern const char kPreventCloseName[];
+extern const char kPreventCloseDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)

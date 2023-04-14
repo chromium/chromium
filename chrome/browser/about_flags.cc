@@ -8196,6 +8196,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-run-on-os-login", flag_descriptions::kRunOnOsLoginName,
      flag_descriptions::kRunOnOsLoginDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kDesktopPWAsRunOnOsLogin)},
+    {"enable-prevent-close", flag_descriptions::kPreventCloseName,
+     flag_descriptions::kPreventCloseDescription, kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(features::kDesktopPWAsPreventClose)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -62328,6 +62328,7 @@ from previous Chrome versions.
   <int value="176421334"
       label="OmniboxHistoryQuickProviderSpecificityScoreCountUniqueHosts:enabled"/>
   <int value="176526479" label="AccessibilityPageZoom:enabled"/>
+  <int value="176760435" label="DesktopPWAsPreventClose:enabled"/>
   <int value="176773784" label="EnableHardwareMirrorMode:disabled"/>
   <int value="176882922" label="ux-study-1"/>
   <int value="176898248" label="FilesAppExperimental:enabled"/>
@@ -62592,6 +62593,7 @@ from previous Chrome versions.
   <int value="321366101" label="WebXRARDOMOverlay:enabled"/>
   <int value="322118950" label="SyncPollImmediatelyOnEveryStartup:disabled"/>
   <int value="322249981" label="CrostiniMultiContainer:enabled"/>
+  <int value="322768805" label="DesktopPWAsPreventClose:disabled"/>
   <int value="323605372" label="ui-disable-compositor-animation-timelines"/>
   <int value="324060906"
       label="enable-experimental-accessibility-language-detection"/>
