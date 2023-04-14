@@ -266,6 +266,7 @@ public abstract class ChromeFeatureList {
     public static final String CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION =
             "ClearOmniboxFocusAfterNavigation";
     public static final String CLOSE_TAB_SUGGESTIONS = "CloseTabSuggestions";
+    public static final String CLOSE_TAB_SAVE_TAB_LIST = "CloseTabSaveTabList";
     public static final String COMMAND_LINE_ON_NON_ROOTED = "CommandLineOnNonRooted";
     public static final String COMMERCE_MERCHANT_VIEWER = "CommerceMerchantViewer";
     public static final String COMMERCE_PRICE_TRACKING = "CommercePriceTracking";
@@ -594,6 +595,8 @@ public abstract class ChromeFeatureList {
             new CachedFlag(CCT_TOOLBAR_CUSTOMIZATIONS, true);
     public static final CachedFlag sCloseTabSuggestions =
             new CachedFlag(CLOSE_TAB_SUGGESTIONS, false);
+    public static final CachedFlag sCloseTabSaveTabList =
+            new CachedFlag(CLOSE_TAB_SAVE_TAB_LIST, true);
     public static final CachedFlag sCommandLineOnNonRooted =
             new CachedFlag(COMMAND_LINE_ON_NON_ROOTED, false);
     public static final CachedFlag sCriticalPersistedTabData =

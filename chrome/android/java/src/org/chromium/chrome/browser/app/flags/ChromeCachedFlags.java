@@ -87,6 +87,7 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.sCctRetainableStateInMemory,
                 ChromeFeatureList.sCctToolbarCustomizations,
                 ChromeFeatureList.sCloseTabSuggestions,
+                ChromeFeatureList.sCloseTabSaveTabList,
                 ChromeFeatureList.sCommandLineOnNonRooted,
                 ChromeFeatureList.sCriticalPersistedTabData,
                 ChromeFeatureList.sDiscoverMultiColumn,

@@ -192,6 +192,14 @@ public class TabPersistentStore {
             public void tabClosureUndone(Tab tab) {
                 saveTabListAsynchronously();
             }
+
+            @Override
+            public void onFinishingMultipleTabClosure(List<Tab> tabs) {
+                if (!mTabModelSelector.isIncognitoSelected()
+                        && ChromeFeatureList.sCloseTabSaveTabList.isEnabled()) {
+                    saveTabListAsynchronously();
+                }
+            }
         };
         mTabModelSelector.getModel(false).addObserver(mTabModelObserver);
         mTabModelSelector.getModel(true).addObserver(mTabModelObserver);

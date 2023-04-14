@@ -186,6 +186,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCastDeviceFilter,
     &kClearOmniboxFocusAfterNavigation,
     &kCloseTabSuggestions,
+    &kCloseTabSaveTabList,
     &kCriticalPersistedTabData,
     &kCCTAllowCrossUidActivitySwitchFromBelow,
     &kCCTBackgroundTab,
@@ -533,6 +534,10 @@ BASE_FEATURE(kClearOmniboxFocusAfterNavigation,
 BASE_FEATURE(kCloseTabSuggestions,
              "CloseTabSuggestions",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCloseTabSaveTabList,
+             "CloseTabSaveTabList",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCriticalPersistedTabData,
              "CriticalPersistedTabData",
