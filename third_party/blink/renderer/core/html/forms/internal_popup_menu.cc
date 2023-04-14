@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/internal_popup_menu.h"
 
+#include "base/record_replay.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -157,6 +158,10 @@ scoped_refptr<FontData> PopupMenuCSSFontSelector::GetFontData(
 
 void PopupMenuCSSFontSelector::FontsNeedUpdate(FontSelector* font_selector,
                                                FontInvalidationReason reason) {
+  recordreplay::Assert(
+    "[RUN-1219-1728] PopupMenuCSSFontSelector::FontsNeedUpdate %d",
+    this->RecordReplayId()
+  );
   DispatchInvalidationCallbacks(reason);
 }
 
