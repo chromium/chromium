@@ -43,24 +43,8 @@ struct HostPortPair {
   uint16 port;
 };
 
-// Mirror of net::ProxyServer::Scheme.
-enum ProxyScheme {
-  kInvalid,
-  kDirect,
-  kHttp,
-  kSocks4,
-  kSocks5,
-  kHttps,
-  kQuic,
-};
-
-// Mirror of net::ProxyServer.
-struct ProxyServer {
-  ProxyScheme scheme;
-
-  // |host_and_port| field is set iff |scheme| is not INVALID or DIRECT.
-  HostPortPair? host_and_port;
-};
+[Native]
+struct ProxyServer;
 
 // Host resolution error info.
 struct ResolveErrorInfo {
@@ -74,27 +58,8 @@ struct ResolveErrorInfo {
   bool is_secure_network_error = false;
 };
 
-// Mirror of net::SSLClientCertType.
-enum SSLClientCertType {
-  kRsaSign = 1,
-  kEcdsaSign = 64,
-  kInvalid = 255,
-};
-
-// Mirror of net::SSLCertRequestInfo.
-struct SSLCertRequestInfo {
-  // The host and port of the SSL server that requested client authentication.
-  HostPortPair host_and_port;
-
-  // True if the server that issues this request was the HTTPS proxy used in
-  // the request.  False, if the server was the origin server.
-  bool is_proxy = false;
-
-  // List of DER-encoded X.509 DistinguishedName of certificate authorities
-  // allowed by the server.
-  array<string> cert_authorities;
-  array<SSLClientCertType> cert_key_types;
-};
+[Native]
+struct SSLCertRequestInfo;
 
 [Native]
 struct SSLInfo;

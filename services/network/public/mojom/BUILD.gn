@@ -849,10 +849,6 @@ mojom("mojom_network_param") {
           cpp = "::net::ProxyServer"
         },
         {
-          mojom = "network.mojom.ProxyScheme"
-          cpp = "::net::ProxyServer::Scheme"
-        },
-        {
           mojom = "network.mojom.ResolveErrorInfo"
           cpp = "::net::ResolveErrorInfo"
         },
