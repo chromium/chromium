@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
@@ -76,6 +78,7 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.test.util.ViewUtils;
 
 /**
  * Instrumentation tests for {@link ToolbarPhone}.
@@ -715,10 +718,9 @@ public class ToolbarPhoneTest {
         // Show a button, this will inflate the optional button view and create its coordinator.
         TestThreadUtils.runOnUiThreadBlocking(() -> { mToolbar.updateOptionalButton(buttonData); });
 
-        CriteriaHelper.pollUiThread(()
-                                            -> mToolbar.getOptionalButtonViewForTesting() != null
-                        && mToolbar.getOptionalButtonViewForTesting().getVisibility()
-                                == View.VISIBLE);
+        CriteriaHelper.pollUiThread(() -> mToolbar.getOptionalButtonViewForTesting() != null);
+        ViewUtils.onViewWaiting(
+                allOf(equalTo(mToolbar.getOptionalButtonViewForTesting()), isDisplayed()));
 
         // Replace the coordinator with a mock, and set the button to visible with regular width.
         View optionalButtonView = mToolbar.findViewById(R.id.optional_toolbar_button_container);
