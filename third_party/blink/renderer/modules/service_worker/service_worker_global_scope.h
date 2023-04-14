@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -115,6 +116,8 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   bool IsServiceWorkerGlobalScope() const override { return true; }
   bool ShouldInstallV8Extensions() const final;
   bool IsInFencedFrame() const override;
+
+  const blink::BlinkStorageKey& storage_key() const { return storage_key_; }
 
   // Implements WorkerGlobalScope:
   void Initialize(
@@ -428,7 +431,8 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       mojom::blink::ServiceWorkerObjectInfoPtr service_worker_info,
       mojom::blink::FetchHandlerExistence fetch_handler_existence,
       mojo::PendingReceiver<mojom::blink::ReportingObserver>,
-      mojom::blink::AncestorFrameType ancestor_frame_type) override;
+      mojom::blink::AncestorFrameType ancestor_frame_type,
+      const blink::BlinkStorageKey& storage_key) override;
   void DispatchInstallEvent(DispatchInstallEventCallback callback) override;
   void AbortInstallEvent(int event_id,
                          mojom::blink::ServiceWorkerEventStatus status);
@@ -730,6 +734,8 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   // used to check if the service worker is registered in a fenced frame or not
   // in order to block powerful API call in fenced frames.
   mojom::blink::AncestorFrameType ancestor_frame_type_;
+
+  blink::BlinkStorageKey storage_key_;
 };
 
 template <>

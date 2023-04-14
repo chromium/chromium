@@ -1566,7 +1566,8 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
         blink::mojom::ServiceWorkerObjectInfoPtr,
         blink::mojom::FetchHandlerExistence,
         mojo::PendingReceiver<blink::mojom::ReportingObserver>,
-        blink::mojom::AncestorFrameType) override {
+        blink::mojom::AncestorFrameType,
+        const blink::StorageKey& storage_key) override {
       client_->SimulateFailureOfScriptEvaluation();
     }
 

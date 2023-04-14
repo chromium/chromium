@@ -629,6 +629,7 @@ _CONFIG = [
             'network::.+',
 
             # Used in network service types.
+            'net::SchemefulSite',
             'net::SiteForCookies',
 
             # PartitionAlloc
