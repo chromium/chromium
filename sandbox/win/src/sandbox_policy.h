@@ -42,8 +42,8 @@ enum class SubSystem {
 enum class Semantics {
   kFilesAllowAny,       // Allows open or create for any kind of access that
                         // the file system supports.
-  kFilesAllowReadonly,  // Allows open or create with read access only.
-  kFilesAllowQuery,     // Allows access to query the attributes of a file.
+  kFilesAllowReadonly,  // Allows open or create with read access only
+                        // (includes access to query the attributes of a file).
   kNamedPipesAllowAny,  // Allows creation of a named pipe.
   kFakeGdiInit,         // Fakes user32 and gdi32 initialization. This can
                         // be used to allow the DLLs to load and initialize

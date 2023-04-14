@@ -452,7 +452,7 @@ std::unique_ptr<TestRunner> QueryAttributesFileRunner() {
   EXPECT_TRUE(runner->AddRuleSys32(Semantics::kFilesAllowAny, L"notfound.exe"));
   EXPECT_TRUE(runner->AddRuleSys32(Semantics::kFilesAllowAny, L"drivers"));
   EXPECT_TRUE(
-      runner->AddRuleSys32(Semantics::kFilesAllowQuery, L"ipconfig.exe"));
+      runner->AddRuleSys32(Semantics::kFilesAllowReadonly, L"ipconfig.exe"));
   return runner;
 }
 
