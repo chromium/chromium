@@ -52,17 +52,12 @@ void ActiveDirectoryPolicyManager::Init(SchemaRegistry* registry) {
   // Does nothing if |store_| hasn't yet initialized.
   PublishPolicy();
 
-  const base::TimeDelta fetch_interval =
-      ash::features::IsChromadAvailableEnabled()
-          ? kFetchIntervalChromadEnabled
-          : kFetchIntervalChromadDisabled;
-
   scheduler_ = std::make_unique<PolicyScheduler>(
       base::BindRepeating(&ActiveDirectoryPolicyManager::DoPolicyFetch,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&ActiveDirectoryPolicyManager::OnPolicyFetched,
                           weak_ptr_factory_.GetWeakPtr()),
-      fetch_interval);
+      kFetchIntervalChromadDisabled);
 
   if (external_data_manager_) {
     // Use the system network context here instead of a context derived from the

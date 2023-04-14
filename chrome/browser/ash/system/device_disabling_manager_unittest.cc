@@ -227,7 +227,7 @@ TEST_F(DeviceDisablingManagerOOBETest, NotDisabledWhenTurnedOffBySwitch) {
 }
 
 // Verifies that the device is not considered disabled during OOBE when it is
-// already enrolled, even if the device is marked as disabled.
+// already enrolled in cloud mode, even if the device is marked as disabled.
 TEST_F(DeviceDisablingManagerOOBETest, NotDisabledWhenEnterpriseOwned) {
   SetEnterpriseCloudOwned();
   SetDeviceDisabled(true);
@@ -236,11 +236,8 @@ TEST_F(DeviceDisablingManagerOOBETest, NotDisabledWhenEnterpriseOwned) {
 }
 
 // Verifies that the device is not considered disabled during OOBE when it is
-// enrolled in AD mode, even if the device is marked as disabled and Chromad is
-// disabled by flag.
-TEST_F(DeviceDisablingManagerOOBETest, NotDisabledWhenAdOwnedChromadDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kChromadAvailable);
+// enrolled in AD mode, even if the device is marked as disabled.
+TEST_F(DeviceDisablingManagerOOBETest, NotDisabledWhenAdOwned) {
   SetEnterpriseActiveDirectoryOwned();
   SetDeviceDisabled(true);
 
@@ -399,9 +396,6 @@ TEST_F(DeviceDisablingManagerTest,
 // Verifies that the device is not considered disabled when device disabling is
 // turned off by switch, even if the device is AD managed.
 TEST_F(DeviceDisablingManagerTest, NotDisabledWhenTurnedOffBySwitchAdManaged) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kChromadAvailable);
-
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableDeviceDisabling);
   SetEnterpriseActiveDirectoryOwned();
@@ -427,28 +421,9 @@ TEST_F(DeviceDisablingManagerTest, NotDisabledWhenConsumerOwned) {
   CreateDeviceDisablingManager();
 }
 
-// Verifies that AD device is not considered disabled when Chromad is enabled
-// via flag, and the device is explicitly marked as not disabled.
-TEST_F(DeviceDisablingManagerTest, NotDisabledWhenAdManagedAndChromadEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kChromadAvailable);
-
-  SetEnterpriseActiveDirectoryOwned();
-  MakeCrosSettingsTrusted();
-  SetDeviceDisabled(false);
-
-  EXPECT_CALL(*this, RestartToLoginScreen()).Times(0);
-  EXPECT_CALL(*this, ShowDeviceDisabledScreen()).Times(0);
-  EXPECT_CALL(*this, OnDisabledMessageChanged(_)).Times(0);
-  CreateDeviceDisablingManager();
-}
-
-// Verifies that AD device is considered disabled when Chromad is disabled via
-// flag, even when it is explicitly marked as not disabled.
+// Verifies that AD device is considered disabled, even when it is explicitly
+// marked as not disabled (as per b/259180126).
 TEST_F(DeviceDisablingManagerTest, DisabledWhenAdManagedAndChromadDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kChromadAvailable);
-
   SetEnterpriseActiveDirectoryOwned();
   MakeCrosSettingsTrusted();
   SetDisabledMessage("");
@@ -617,12 +592,9 @@ TEST_F(DeviceDisablingManagerTest, IsDeviceDisabledEnterpriseOwned) {
   EXPECT_TRUE(DeviceDisablingManager::IsDeviceDisabledDuringNormalOperation());
 }
 
-// Tests the IsDeviceDisabledDuringNormalOperation() method, when device is
-// enterprise AD owned, Chromad disabled by flag.
-TEST_F(DeviceDisablingManagerTest, IsDeviceDisabledChromadDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kChromadAvailable);
-
+// Tests that IsDeviceDisabledDuringNormalOperation() is always true, when
+// device is enterprise AD owned (as per b/259180126).
+TEST_F(DeviceDisablingManagerTest, IsDeviceDisabledAdOwner) {
   // Enterprise AD owned.
   SetEnterpriseActiveDirectoryOwned();
   MakeCrosSettingsTrusted();

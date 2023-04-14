@@ -431,15 +431,6 @@ BASE_FEATURE(kCaptivePortalErrorPage,
              "CaptivePortalErrorPage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether Active Directory management on ChromeOS (Chromad) is
-// supported or not. When this feature is enabled, Chromad continues working
-// normally. Disabling this feature will block enrollment in AD mode, and will
-// disable devices that are already in AD mode - displaying an error message to
-// the user.
-BASE_FEATURE(kChromadAvailable,
-             "ChromadAvailable",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables or disables always using device-activity-status data to filter
 // eligible host phones.
 BASE_FEATURE(kCryptAuthV2AlwaysUseActiveEligibleHosts,
@@ -2522,10 +2513,6 @@ bool IsCaptureModeTourEnabled() {
 
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {
   return base::FeatureList::IsEnabled(kCheckPasswordsAgainstCryptohomeHelper);
-}
-
-bool IsChromadAvailableEnabled() {
-  return base::FeatureList::IsEnabled(kChromadAvailable);
 }
 
 bool IsClipboardHistoryLongpressEnabled() {

@@ -37,7 +37,6 @@ void DeviceDisabledScreen::ShowImpl() {
   }
 
   const bool is_disabled_ad_device =
-      !features::IsChromadAvailableEnabled() &&
       InstallAttributes::Get()->IsActiveDirectoryManaged();
 
   view_->Show(DeviceDisablingManager()->serial_number(),

@@ -95,7 +95,6 @@ BASE_DECLARE_FEATURE(kCellularBypassESimInstallationConnectivityCheck);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCellularUseSecondEuicc);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kCheckPasswordsAgainstCryptohomeHelper);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kChromadAvailable);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kClipboardHistoryLongpress);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kClipboardHistoryRefresh);
@@ -692,7 +691,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptivePortalErrorPageEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeTourEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsChromadAvailableEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryLongpressEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryRefreshEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryReorderEnabled();
