@@ -636,15 +636,37 @@ const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting() {
   return keysForTesting;
 }
 
-bool ShouldRegisterPromoWithPromoManager() {
+bool ShouldRegisterPromoWithPromoManager(bool is_signed_in) {
   // Consider showing the default browser promo if (1) launch is not after a
   // crash, (2) chrome is not likely set as default browser, (3) the user
-  // skipped first run, (4) the user is not going through the First Run screens
-  // or first run was not recent, and (5) the user has not seen any default
-  // browser promo outside of the First Run screens.
+  // skipped first run, (4) the user is not going through the First Run
+  // screens or first run was not recent, and (5) the user has not seen any
+  // default browser promo outside of the First Run screens.
   return GetApplicationContext()->WasLastShutdownClean() &&
          !IsChromeLikelyDefaultBrowser() &&
          !HasUserOpenedSettingsFromFirstRunPromo() && !UserInPromoCooldown() &&
-         (!HasUserInteractedWithTailoredFullscreenPromoBefore() ||
-          !HasUserInteractedWithFullscreenPromoBefore());
+         (IsTailoredPromoEligibleUser(is_signed_in) ||
+          IsGeneralPromoEligibleUser(is_signed_in));
+}
+
+bool IsTailoredPromoEligibleUser(bool is_signed_in) {
+  bool is_made_for_ios_promo_eligible =
+      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeMadeForIOS);
+  bool is_all_tabs_promo_eligible =
+      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeAllTabs) &&
+      is_signed_in;
+  bool is_stay_safe_promo_eligible =
+      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeStaySafe);
+  return !HasUserInteractedWithTailoredFullscreenPromoBefore() &&
+         (is_made_for_ios_promo_eligible || is_all_tabs_promo_eligible ||
+          is_stay_safe_promo_eligible);
+}
+
+bool IsGeneralPromoEligibleUser(bool is_signed_in) {
+  bool isGeneralPromoEligibleUser =
+      !HasUserInteractedWithFullscreenPromoBefore() &&
+      (IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral) ||
+       is_signed_in);
+  return isGeneralPromoEligibleUser ||
+         ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo();
 }

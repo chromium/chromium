@@ -171,6 +171,14 @@ const NSArray<NSString*>* DefaultBrowserUtilsLegacyKeysForTesting();
 
 // Return true if the default browser promo should be registered with the promo
 // manager to display a default browser promo.
-bool ShouldRegisterPromoWithPromoManager();
+bool ShouldRegisterPromoWithPromoManager(bool is_signed_in);
+
+// Return true if it was determined that the user is eligible for a
+// tailored promo.
+bool IsTailoredPromoEligibleUser(bool is_signed_in);
+
+// Return true if it was determined that the user is eligible for the
+// general promo.
+bool IsGeneralPromoEligibleUser(bool is_signed_in);
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_UTILS_H_
