@@ -1772,17 +1772,6 @@
     "expires": "Jul 1, 2023"
   },
   {
-    "prefix": "abort-signal-remove",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/eyedropper",
-      "external/wpt/idle-detection",
-      "external/wpt/web-nfc"
-    ],
-    "args": ["--disable-features=AbortSignalHandleBasedRemoval"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "split-user-media-queues",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

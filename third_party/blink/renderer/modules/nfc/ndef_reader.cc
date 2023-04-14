@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "services/device/public/mojom/nfc.mojom-blink.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -102,41 +101,37 @@ class NDEFReader::ReadAbortAlgorithm final : public AbortSignal::Algorithm {
 
 class NDEFReader::WriteAbortAlgorithm final : public AbortSignal::Algorithm {
  public:
-  WriteAbortAlgorithm(NDEFReader* ndef_reader, AbortSignal* signal)
-      : ndef_reader_(ndef_reader), abort_signal_(signal) {}
+  explicit WriteAbortAlgorithm(NDEFReader* ndef_reader)
+      : ndef_reader_(ndef_reader) {}
   ~WriteAbortAlgorithm() override = default;
 
-  void Run() override { ndef_reader_->WriteAbort(abort_signal_); }
+  void Run() override { ndef_reader_->WriteAbort(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(ndef_reader_);
-    visitor->Trace(abort_signal_);
     Algorithm::Trace(visitor);
   }
 
  private:
   Member<NDEFReader> ndef_reader_;
-  Member<AbortSignal> abort_signal_;
 };
 
 class NDEFReader::MakeReadOnlyAbortAlgorithm final
     : public AbortSignal::Algorithm {
  public:
-  MakeReadOnlyAbortAlgorithm(NDEFReader* ndef_reader, AbortSignal* signal)
-      : ndef_reader_(ndef_reader), abort_signal_(signal) {}
+  explicit MakeReadOnlyAbortAlgorithm(NDEFReader* ndef_reader)
+      : ndef_reader_(ndef_reader) {}
   ~MakeReadOnlyAbortAlgorithm() override = default;
 
-  void Run() override { ndef_reader_->MakeReadOnlyAbort(abort_signal_); }
+  void Run() override { ndef_reader_->MakeReadOnlyAbort(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(ndef_reader_);
-    visitor->Trace(abort_signal_);
     Algorithm::Trace(visitor);
   }
 
  private:
   Member<NDEFReader> ndef_reader_;
-  Member<AbortSignal> abort_signal_;
 };
 
 // static
@@ -291,13 +286,6 @@ void NDEFReader::ContextDestroyed() {
 }
 
 void NDEFReader::ReadAbort(AbortSignal* signal) {
-  if (!base::FeatureList::IsEnabled(features::kAbortSignalHandleBasedRemoval)) {
-    // There is no RemoveAlgorithm() method on AbortSignal so compare the signal
-    // bound to this callback to the one last passed to scan().
-    if (scan_signal_ != signal)
-      return;
-  }
-
   nfc_proxy_->StopReading(this);
   scan_abort_handle_.Clear();
 
@@ -332,17 +320,14 @@ ScriptPromise NDEFReader::write(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  write_signal_ = options->getSignalOr(nullptr);
   std::unique_ptr<ScopedAbortState> scoped_abort_state = nullptr;
-  if (write_signal_) {
-    if (write_signal_->aborted()) {
-      return ScriptPromise::Reject(script_state,
-                                   write_signal_->reason(script_state));
+  if (auto* signal = options->getSignalOr(nullptr)) {
+    if (signal->aborted()) {
+      return ScriptPromise::Reject(script_state, signal->reason(script_state));
     }
-    auto* handle = write_signal_->AddAlgorithm(
-        MakeGarbageCollected<WriteAbortAlgorithm>(this, write_signal_));
-    scoped_abort_state =
-        std::make_unique<ScopedAbortState>(write_signal_, handle);
+    auto* handle =
+        signal->AddAlgorithm(MakeGarbageCollected<WriteAbortAlgorithm>(this));
+    scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
   }
 
   // Step 11.2: Run "create NDEF message", if this throws an exception,
@@ -398,8 +383,10 @@ void NDEFReader::WriteOnRequestPermission(
     return;
   }
 
-  if (write_signal_ && write_signal_->aborted()) {
-    resolver->Reject(write_signal_->reason(script_state));
+  AbortSignal* signal =
+      scoped_abort_state ? scoped_abort_state->Signal() : nullptr;
+  if (signal && signal->aborted()) {
+    resolver->Reject(signal->reason(script_state));
     return;
   }
 
@@ -441,14 +428,7 @@ void NDEFReader::WriteOnRequestCompleted(
   }
 }
 
-void NDEFReader::WriteAbort(AbortSignal* signal) {
-  if (!base::FeatureList::IsEnabled(features::kAbortSignalHandleBasedRemoval)) {
-    // There is no RemoveAlgorithm() method on AbortSignal so compare the signal
-    // bound to this callback to the one last passed to write().
-    if (write_signal_ != signal)
-      return;
-  }
-
+void NDEFReader::WriteAbort() {
   // WriteOnRequestCompleted() should always be called whether the push
   // operation is cancelled successfully or not.
   nfc_proxy_->CancelPush();
@@ -465,18 +445,14 @@ ScriptPromise NDEFReader::makeReadOnly(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  make_read_only_signal_ = options->getSignalOr(nullptr);
   std::unique_ptr<ScopedAbortState> scoped_abort_state = nullptr;
-  if (make_read_only_signal_) {
-    if (make_read_only_signal_->aborted()) {
-      return ScriptPromise::Reject(
-          script_state, make_read_only_signal_->reason(script_state));
+  if (auto* signal = options->getSignalOr(nullptr)) {
+    if (signal->aborted()) {
+      return ScriptPromise::Reject(script_state, signal->reason(script_state));
     }
-    auto* handle = make_read_only_signal_->AddAlgorithm(
-        MakeGarbageCollected<MakeReadOnlyAbortAlgorithm>(
-            this, make_read_only_signal_));
-    scoped_abort_state =
-        std::make_unique<ScopedAbortState>(make_read_only_signal_, handle);
+    auto* handle = signal->AddAlgorithm(
+        MakeGarbageCollected<MakeReadOnlyAbortAlgorithm>(this));
+    scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
@@ -520,8 +496,10 @@ void NDEFReader::MakeReadOnlyOnRequestPermission(
     return;
   }
 
-  if (make_read_only_signal_ && make_read_only_signal_->aborted()) {
-    resolver->Reject(make_read_only_signal_->reason(script_state));
+  AbortSignal* signal =
+      scoped_abort_state ? scoped_abort_state->Signal() : nullptr;
+  if (signal && signal->aborted()) {
+    resolver->Reject(signal->reason(script_state));
     return;
   }
 
@@ -561,14 +539,7 @@ void NDEFReader::MakeReadOnlyOnRequestCompleted(
   }
 }
 
-void NDEFReader::MakeReadOnlyAbort(AbortSignal* signal) {
-  if (!base::FeatureList::IsEnabled(features::kAbortSignalHandleBasedRemoval)) {
-    // There is no RemoveAlgorithm() method on AbortSignal so compare the signal
-    // bound to this callback to the one last passed to makeReadOnly().
-    if (make_read_only_signal_ != signal)
-      return;
-  }
-
+void NDEFReader::MakeReadOnlyAbort() {
   // MakeReadOnlyOnRequestCompleted() should always be called whether the
   // makeReadOnly operation is cancelled successfully or not.
   nfc_proxy_->CancelMakeReadOnly();
@@ -581,9 +552,7 @@ void NDEFReader::Trace(Visitor* visitor) const {
   visitor->Trace(scan_signal_);
   visitor->Trace(scan_abort_handle_);
   visitor->Trace(write_requests_);
-  visitor->Trace(write_signal_);
   visitor->Trace(make_read_only_requests_);
-  visitor->Trace(make_read_only_signal_);
   EventTargetWithInlineData::Trace(visitor);
   ActiveScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);

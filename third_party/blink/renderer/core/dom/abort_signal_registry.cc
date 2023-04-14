@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/core/dom/abort_signal_registry.h"
 
-#include "base/feature_list.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -45,9 +43,6 @@ void AbortSignalRegistry::ContextDestroyed() {
 void AbortSignalRegistry::RegisterAbortAlgorithm(
     EventListener* listener,
     AbortSignal::AlgorithmHandle* handle) {
-  if (!base::FeatureList::IsEnabled(features::kAbortSignalHandleBasedRemoval)) {
-    return;
-  }
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
     return;
   }

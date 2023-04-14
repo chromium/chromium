@@ -9,7 +9,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/idle/idle_manager.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -49,21 +48,19 @@ static_assert(
 
 class IdleDetector::StartAbortAlgorithm final : public AbortSignal::Algorithm {
  public:
-  StartAbortAlgorithm(IdleDetector* idle_detector, AbortSignal* signal)
-      : idle_detector_(idle_detector), abort_signal_(signal) {}
+  explicit StartAbortAlgorithm(IdleDetector* idle_detector)
+      : idle_detector_(idle_detector) {}
   ~StartAbortAlgorithm() override = default;
 
-  void Run() override { idle_detector_->Abort(abort_signal_); }
+  void Run() override { idle_detector_->Abort(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(idle_detector_);
-    visitor->Trace(abort_signal_);
     Algorithm::Trace(visitor);
   }
 
  private:
   Member<IdleDetector> idle_detector_;
-  Member<AbortSignal> abort_signal_;
 };
 
 IdleDetector* IdleDetector::Create(ScriptState* script_state) {
@@ -155,8 +152,8 @@ ScriptPromise IdleDetector::start(ScriptState* script_state,
     // If there was a previous algorithm, it should have been removed when we
     // reached the "stopped" state.
     DCHECK(!abort_handle_);
-    abort_handle_ = signal_->AddAlgorithm(
-        MakeGarbageCollected<StartAbortAlgorithm>(this, signal_));
+    abort_handle_ =
+        signal_->AddAlgorithm(MakeGarbageCollected<StartAbortAlgorithm>(this));
   }
 
   mojo::PendingRemote<mojom::blink::IdleMonitor> remote;
@@ -181,14 +178,7 @@ void IdleDetector::SetTaskRunnerForTesting(
   timer_.SetTaskRunnerForTesting(task_runner_, tick_clock);
 }
 
-void IdleDetector::Abort(AbortSignal* signal) {
-  if (!base::FeatureList::IsEnabled(features::kAbortSignalHandleBasedRemoval)) {
-    // There is no RemoveAlgorithm() method on AbortSignal so compare the signal
-    // bound to this callback to the one last passed to start().
-    if (signal_ != signal)
-      return;
-  }
-
+void IdleDetector::Abort() {
   if (resolver_) {
     ScriptState* script_state = resolver_->GetScriptState();
     if (IsInParallelAlgorithmRunnable(resolver_->GetExecutionContext(),
