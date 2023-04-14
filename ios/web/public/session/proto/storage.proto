@@ -1,0 +1,24 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+package web.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+import "ios/web/public/session/proto/common.proto";
+import "ios/web/public/session/proto/metadata.proto";
+import "ios/web/public/session/proto/navigation.proto";
+import "ios/web/public/session/proto/session.proto";
+
+// Represents a single WebState.
+//
+// All the fields are required.
+message WebStateStorage {
+  bool has_opener = 1;
+  WebStateMetadataStorage metadata = 2;
+  UserAgentType user_agent = 3;
+  NavigationStorage navigation = 4;
+  CertificatesCacheStorage certs_cache = 5;
+}
