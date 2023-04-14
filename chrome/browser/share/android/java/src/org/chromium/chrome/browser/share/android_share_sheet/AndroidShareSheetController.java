@@ -207,7 +207,8 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
             Context context, Bitmap bitmap, int size, Callback<Uri> onImageUriAvailable) {
         // If bitmap is not provided, fallback to the globe placeholder icon.
         if (bitmap == null) {
-            bitmap = FaviconUtils.createGenericFaviconBitmap(context, size);
+            bitmap = FaviconUtils.createGenericFaviconBitmap(
+                    context, size, context.getColor(R.color.modern_white));
         }
         String fileName = String.valueOf(System.currentTimeMillis());
         ShareImageFileUtils.generateTemporaryUriFromBitmap(fileName, bitmap, onImageUriAvailable);

@@ -74,13 +74,18 @@ public class FaviconUtils {
      * Create a bitmap with corresponding size of a generic favicon.
      * @param context {@link Context} to read the generic favicon.
      * @param size Desired size of the bitmap.
+     * @param backgroundColor Optional background color for the favicon.
      * @return A generic globe favicon.
      */
-    public static Bitmap createGenericFaviconBitmap(Context context, int size) {
+    public static Bitmap createGenericFaviconBitmap(
+            Context context, int size, @Nullable @ColorInt Integer backgroundColor) {
         Bitmap bitmap = Bitmap.createBitmap(size, size, Config.ARGB_8888);
-        Drawable drawable = AppCompatResources.getDrawable(context, R.drawable.ic_globe_24dp);
+        Drawable drawable = AppCompatResources.getDrawable(context, R.drawable.ic_globe_48dp);
         drawable.setBounds(0, 0, size, size);
         Canvas canvas = new Canvas(bitmap);
+        if (backgroundColor != null) {
+            canvas.drawColor(backgroundColor);
+        }
         drawable.draw(canvas);
         return bitmap;
     }
