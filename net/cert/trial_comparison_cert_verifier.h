@@ -89,8 +89,8 @@ class NET_EXPORT TrialComparisonCertVerifier
              std::unique_ptr<Request>* out_req,
              const NetLogWithSource& net_log) override;
   void SetConfig(const Config& config) override;
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
+  void AddObserver(CertVerifier::Observer* observer) override;
+  void RemoveObserver(CertVerifier::Observer* observer) override;
   void UpdateVerifyProcData(
       scoped_refptr<CertNetFetcher> cert_net_fetcher,
       const CertVerifyProcFactory::ImplParams& impl_params) override;

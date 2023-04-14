@@ -46,8 +46,8 @@ class NET_EXPORT CoalescingCertVerifier : public CertVerifier,
              std::unique_ptr<CertVerifier::Request>* out_req,
              const NetLogWithSource& net_log) override;
   void SetConfig(const CertVerifier::Config& config) override;
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
+  void AddObserver(CertVerifier::Observer* observer) override;
+  void RemoveObserver(CertVerifier::Observer* observer) override;
 
   uint64_t requests_for_testing() const { return requests_; }
   uint64_t inflight_joins_for_testing() const { return inflight_joins_; }
