@@ -2905,7 +2905,8 @@ void Document::Shutdown() {
 
   probe::DocumentDetached(this);
 
-  if (recordreplay::IsRecordingOrReplaying("clear-idle-callbacks") && scripted_idle_task_controller_) {
+  if (recordreplay::IsRecordingOrReplaying("task-lifetime") &&
+      scripted_idle_task_controller_) {
     // [RUN-1335] We might have queued idle tasks, but the page got shutdown. Get rid of them!
     scripted_idle_task_controller_->ClearCallbacks();
   }

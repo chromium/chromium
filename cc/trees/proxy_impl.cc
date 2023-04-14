@@ -889,9 +889,6 @@ void ProxyImpl::ScheduledActionBeginMainFrameNotExpectedUntil(
                                 proxy_main_weak_ptr_, time));
 }
 
-// Sequence number used for frames triggered while repainting when replaying.
-static const uint64_t RepaintSequenceNumber = UINT32_MAX;
-
 DrawResult ProxyImpl::DrawInternal(bool forced_draw) {
   DCHECK(IsImplThread());
   DCHECK(host_impl_.get());
@@ -925,11 +922,6 @@ DrawResult ProxyImpl::DrawInternal(bool forced_draw) {
     draw_frame = forced_draw || result == DRAW_SUCCESS;
   } else {
     result = DRAW_ABORTED_CANT_DRAW;
-  }
-
-  if (recordreplay::HasDivergedFromRecording() &&
-      frame.begin_frame_ack.frame_id.sequence_number == RepaintSequenceNumber) {
-    recordreplay::OnCompositorRepainting();
   }
 
   if (draw_frame) {
@@ -1024,6 +1016,9 @@ bool ProxyImpl::DataForCommit::IsValid() const {
          (base::FeatureList::IsEnabled(features::kNonBlockingCommit) ||
           commit_timestamps);
 }
+
+// Sequence number used for frames triggered while repainting when replaying.
+static const uint64_t RepaintSequenceNumber = UINT32_MAX;
 
 void ProxyImpl::RecordReplayRepaint() {
   // When repainting, the main thread has already updated the layout tree and committed
