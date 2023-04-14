@@ -3624,11 +3624,11 @@ class TabletModeOverviewSessionTest : public OverviewTestBase {
   }
 
   void DispatchLongPress(OverviewItem* item) {
-    ui::TouchEvent long_press(
-        ui::ET_GESTURE_LONG_PRESS,
-        gfx::ToRoundedPoint(item->target_bounds().CenterPoint()),
-        base::TimeTicks::Now(),
-        ui::PointerDetails(ui::EventPointerType::kTouch));
+    const gfx::Point point =
+        gfx::ToRoundedPoint(item->target_bounds().CenterPoint());
+    ui::GestureEvent long_press(
+        point.x(), point.y(), 0, base::TimeTicks::Now(),
+        ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
     GetEventGenerator()->Dispatch(&long_press);
   }
 

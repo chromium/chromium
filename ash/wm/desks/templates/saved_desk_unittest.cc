@@ -334,9 +334,9 @@ class SavedDeskTest : public OverviewTestBase {
   }
 
   void LongPressAt(const gfx::Point& point) {
-    ui::TouchEvent long_press(ui::ET_GESTURE_LONG_PRESS, point,
-                              base::TimeTicks::Now(),
-                              ui::PointerDetails(ui::EventPointerType::kTouch));
+    ui::GestureEvent long_press(
+        point.x(), point.y(), 0, base::TimeTicks::Now(),
+        ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
     GetEventGenerator()->Dispatch(&long_press);
   }
 
