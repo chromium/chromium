@@ -10,6 +10,7 @@ import("//build/android/resource_sizes.gni")
 import("//build/config/android/channel.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
+import("//build/config/cronet/config.gni")
 import("//build/config/locales.gni")
 import("//chrome/android/chrome_common_shared_library.gni")
 import("//chrome/android/chrome_public_apk_tmpl.gni")
@@ -25,6 +26,8 @@ import("//printing/buildflags/buildflags.gni")
 import("//tools/grit/repack.gni")
 import("//tools/resources/generate_resource_allowlist.gni")
 import("//weblayer/variables.gni")
+
+assert(!is_cronet_build)
 
 if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
   assert(current_toolchain != android_secondary_abi_toolchain)

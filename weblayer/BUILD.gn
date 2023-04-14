@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 import("//components/captive_portal/core/features.gni")
 
+import("//build/config/cronet/config.gni")
 import("//build/config/features.gni")
 import("//build/config/locales.gni")
 import("//build/config/sanitizers/sanitizers.gni")
@@ -32,6 +33,8 @@ if (is_android) {
   import("//ui/gl/features.gni")
   import("//v8/gni/v8.gni")
 }
+
+assert(!is_cronet_build)
 
 source_set("android_descriptors") {
   sources = [ "browser/android_descriptors.h" ]

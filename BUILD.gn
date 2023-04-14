@@ -81,9 +81,12 @@ group("gn_all") {
   testonly = true
 
   if (is_cronet_build) {
-    deps = []
-    if (is_ios) {
-      deps += [ "//components/cronet/ios:cronet_package_ios" ]
+    if (is_android) {
+      deps = [ "//components/cronet/android:cronet_package_android" ]
+    } else if (is_ios) {
+      deps = [ "//components/cronet/ios:cronet_package_ios" ]
+    } else {
+      deps = []
     }
   } else {
     deps = [
@@ -830,13 +833,10 @@ group("gn_all") {
 
     # Rust build targets.
     deps += [ ":all_rust" ]
-  }
 
-  if (is_android && !is_component_build) {
-    deps += [ "//components/cronet/android:cronet_package_android" ]
-  }
-  if (!is_android && !is_ios) {
-    deps += [ "//components/cronet:cronet_tests" ]
+    if (!is_android && !is_ios) {
+      deps += [ "//components/cronet:cronet_tests" ]
+    }
   }
 }
 
