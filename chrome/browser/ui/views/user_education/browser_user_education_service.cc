@@ -284,25 +284,25 @@ void MaybeRegisterChromeFeaturePromos(
       IDS_PASSWORD_MANAGER_IPH_MANAGEMENT_BUBBLE_DURING_SIGNIN_SCREENREADER,
       FeaturePromoSpecification::AcceleratorInfo()));
 
-  // kIPHPasswordsWebAppProfileSwitchFeature:
-  registry.RegisterFeature(
-      std::move(FeaturePromoSpecification::CreateForSnoozePromo(
-                    feature_engagement::kIPHPasswordsWebAppProfileSwitchFeature,
-                    kAvatarButtonElementId,
-                    IDS_PASSWORD_MANAGER_IPH_BODY_WEB_APP_PROFILE_SWITCH)
-                    .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)));
-
   // kIPHPowerBookmarksSidePanelFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForSnoozePromo(
       feature_engagement::kIPHPowerBookmarksSidePanelFeature,
       kSidePanelButtonElementId, IDS_POWER_BOOKMARKS_SIDE_PANEL_PROMO));
 
-  // kIPHSwitchProfileFeature:
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
+  // kIPHSwitchProfileFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForToastPromo(
       feature_engagement::kIPHProfileSwitchFeature, kAvatarButtonElementId,
       IDS_PROFILE_SWITCH_PROMO, IDS_PROFILE_SWITCH_PROMO_SCREENREADER,
       FeaturePromoSpecification::AcceleratorInfo(IDC_SHOW_AVATAR_MENU)));
+
+  // kIPHPasswordsWebAppProfileSwitchFeature:
+  registry.RegisterFeature(FeaturePromoSpecification::CreateForToastPromo(
+      feature_engagement::kIPHPasswordsWebAppProfileSwitchFeature,
+      kAvatarButtonElementId,
+      IDS_PASSWORD_MANAGER_IPH_BODY_WEB_APP_PROFILE_SWITCH,
+      IDS_PROFILE_SWITCH_PROMO_SCREENREADER,
+      FeaturePromoSpecification::AcceleratorInfo()));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // kIPHReadingListDiscoveryFeature:

@@ -8541,9 +8541,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_PASSWORD_MANAGER_UNSYNCED_CREDENTIALS_BUBBLE_DESCRIPTION_GPM" desc="The description text of the 'save unsynced credentials' bubble.">
           Google Password Manager couldn't save these passwords in your Google Account. You can save them to this device.
         </message>
-        <message name="IDS_PASSWORD_MANAGER_IPH_BODY_WEB_APP_PROFILE_SWITCH" desc="Body of the in Product Help for profile switching shown in the password manager web app.">
-          You can choose the profile that you want to see the passwords from
-        </message>
 
         <if expr="not use_titlecase">
           <message name="IDS_PASSWORD_MANAGER_SAVE_UNSYNCED_CREDENTIALS_BUTTON_GPM" desc="Button text for the 'save unsynced credentials' bubble's save option.">
