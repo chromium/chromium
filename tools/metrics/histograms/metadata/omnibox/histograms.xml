@@ -2322,6 +2322,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Omnibox.URLScoringModelExecuted.ElapsedTime" units="ms"
+    expires_after="2024-04-14">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>yoangela@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The amount of time it takes to execute the URL scoring model for all the
+    eligible matches. Emitted when all the providers are done and there is at
+    least one eligible match for model execution.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.URLScoringModelExecuted.Matches" units="counts"
+    expires_after="2024-04-14">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>yoangela@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The number of matches the URL scoring model was executed for. Emitted when
+    all the providers are done and there is at least one eligible match for
+    model execution.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.ZeroPrefixOnFocusType" enum="OmniboxFocusType"
     expires_after="2023-04-26">
   <owner>rongtan@google.com</owner>

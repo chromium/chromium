@@ -1241,8 +1241,8 @@ extern const char kOmniboxInspireMeDescription[];
 extern const char kOmniboxMlLogUrlScoringSignalsName[];
 extern const char kOmniboxMlLogUrlScoringSignalsDescription[];
 
-extern const char kOmniboxMlRelevanceScoringName[];
-extern const char kOmniboxMlRelevanceScoringDescription[];
+extern const char kOmniboxMlUrlScoringName[];
+extern const char kOmniboxMlUrlScoringDescription[];
 
 extern const char kOmniboxMlUrlScoringModelName[];
 extern const char kOmniboxMlUrlScoringModelDescription[];

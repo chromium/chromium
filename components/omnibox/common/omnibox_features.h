@@ -155,7 +155,7 @@ BASE_DECLARE_FEATURE(kReportSearchboxStats);
 
 // Omnibox ML scoring.
 BASE_DECLARE_FEATURE(kLogUrlScoringSignals);
-BASE_DECLARE_FEATURE(kMlRelevanceScoring);
+BASE_DECLARE_FEATURE(kMlUrlScoring);
 BASE_DECLARE_FEATURE(kUrlScoringModel);
 
 // Inspire Me - additional suggestions based on user's location and interests.

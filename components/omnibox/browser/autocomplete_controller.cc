@@ -1016,7 +1016,7 @@ void AutocompleteController::UpdateResult(
         preserve_default_after_transfer ? preserve_default_match : nullptr);
   } else {
     // The async ML scoring is only run once all the providers are done. Use a
-    // WeakPtr since the model is not owned and `this` may not longer be alive.
+    // WeakPtr since the model is not owned and `this` may no longer be alive.
     scoring_model_weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
     if (MaybeRunUrlScoringModel(base::BindOnce(
             &AutocompleteController::AnnotateResultAndNotifyChanged,
@@ -1519,6 +1519,7 @@ bool AutocompleteController::ShouldRunProvider(
 
 void AutocompleteController::OnUrlScoringModelDone(
     AutocompleteInput input,
+    const base::ElapsedTimer elapsed_timer,
     base::OnceClosure completion_callback,
     std::vector<std::pair<absl::optional<float>, size_t>>
         outputs_and_match_indices) {
@@ -1547,20 +1548,38 @@ void AutocompleteController::OnUrlScoringModelDone(
     output_and_match_index_heap.emplace(output.value(), index);
   }
 
-  while (!relevance_heap.empty()) {
-    // Assign the match with the highest respective model output with the
-    // highest relevance score.
-    auto match_index = output_and_match_index_heap.top().second;
-    auto* match = result_.match_at(match_index);
+  if (!relevance_heap.empty()) {
+    // Record whether the model was executed for at least one eligible match.
+    provider_client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
+        metrics::OmniboxEventProto_Feature_ML_URL_SCORING);
 
-    match->RecordAdditionalInfo("legacy_relevance", match->relevance);
-    match->relevance = relevance_heap.top();
+    // Record how many eligible matches the model was executed for.
+    base::UmaHistogramCounts1000("Omnibox.URLScoringModelExecuted.Matches",
+                                 relevance_heap.size());
 
-    relevance_heap.pop();
-    output_and_match_index_heap.pop();
+    // Record how long it took to execute the model for all eligible matches.
+    base::UmaHistogramTimes("Omnibox.URLScoringModelExecuted.ElapsedTime",
+                            elapsed_timer.Elapsed());
   }
 
-  result_.SortAndCull(input, template_url_service_);
+  // Do not assign new relevance scores to the URL suggestions and do not rerank
+  // them in the counterfactual arm.
+  if (!OmniboxFieldTrial::IsMlUrlScoringCounterfactual()) {
+    while (!relevance_heap.empty()) {
+      // Assign the match with the highest respective model output with the
+      // highest relevance score.
+      auto match_index = output_and_match_index_heap.top().second;
+      auto* match = result_.match_at(match_index);
+
+      match->RecordAdditionalInfo("legacy_relevance", match->relevance);
+      match->relevance = relevance_heap.top();
+
+      relevance_heap.pop();
+      output_and_match_index_heap.pop();
+    }
+
+    result_.SortAndCull(input, template_url_service_);
+  }
 
   std::move(completion_callback).Run();
 }
@@ -1570,7 +1589,7 @@ bool AutocompleteController::MaybeRunUrlScoringModel(
   TRACE_EVENT0("omnibox", "AutocompleteController::MaybeRunUrlScoringModel");
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  if (!OmniboxFieldTrial::IsMlRelevanceScoringEnabled()) {
+  if (!OmniboxFieldTrial::IsMlUrlScoringEnabled()) {
     return false;
   }
 
@@ -1584,7 +1603,7 @@ bool AutocompleteController::MaybeRunUrlScoringModel(
       base::BarrierCallback<std::pair<absl::optional<float>, size_t>>(
           result_.size(),
           base::BindOnce(&AutocompleteController::OnUrlScoringModelDone,
-                         scoring_model_weak_ptr_, input_,
+                         scoring_model_weak_ptr_, input_, base::ElapsedTimer(),
                          std::move(completion_callback)));
 
   for (size_t match_index = 0; match_index < result_.matches_.size();

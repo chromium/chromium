@@ -690,18 +690,15 @@ BASE_FEATURE(kReportSearchboxStats,
              "OmniboxReportSearchboxStats",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, logs Omnibox URL scoring signals to OmniboxEventProto in UMA.
+// If enabled, logs Omnibox URL scoring signals to OmniboxEventProto for
+// training the ML scoring models.
 BASE_FEATURE(kLogUrlScoringSignals,
              "LogUrlScoringSignals",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, runs the ML scoring model to assign relevance scores to URL
-// suggestions. This enables the autocomplete system related changes to support
-// ML scoring and moves scoring out of the autocomplete providers into
-// autocomplete controller.
-BASE_FEATURE(kMlRelevanceScoring,
-             "MlRelevanceScoring",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// If enabled, runs the ML scoring model to assign new relevance scores to the
+// URL suggestions and reranks them.
+BASE_FEATURE(kMlUrlScoring, "MlUrlScoring", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, creates Omnibox autocompete URL scoring model.
 BASE_FEATURE(kUrlScoringModel,

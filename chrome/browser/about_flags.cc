@@ -1526,23 +1526,20 @@ const FeatureEntry::FeatureVariation
          std::size(kOmniboxRichAutocompletionAggressive4), nullptr},
 };
 
-const FeatureEntry::FeatureParam
-    kOmniboxMlRelevanceScoringRescoreFinalSuggestionsOnly[] = {
-        {"MlRelevanceScoringIncreaseNumCandidates", "false"},
+const FeatureEntry::FeatureParam kOmniboxMlUrlScoringCounterfactual[] = {
+    {"MlUrlScoringCounterfactual", "true"},
+};
+const FeatureEntry::FeatureParam kOmniboxMlUrlScoringIncreaseNumCandidates[] = {
+    {"MlUrlScoringIncreaseNumCandidates", "true"},
 };
 
-const FeatureEntry::FeatureParam
-    kOmniboxMlRelevanceScoringIncreaseNumCandidates[] = {
-        {"MlRelevanceScoringIncreaseNumCandidates", "true"},
-};
-
-const FeatureEntry::FeatureVariation kOmniboxMlRelevanceScoringVariations[] = {
-    {"Re-score final set of suggestions only",
-     kOmniboxMlRelevanceScoringRescoreFinalSuggestionsOnly,
-     std::size(kOmniboxMlRelevanceScoringRescoreFinalSuggestionsOnly), nullptr},
-    {"Re-score with more candidates",
-     kOmniboxMlRelevanceScoringIncreaseNumCandidates,
-     std::size(kOmniboxMlRelevanceScoringIncreaseNumCandidates), nullptr},
+const FeatureEntry::FeatureVariation kOmniboxMlUrlScoringVariations[] = {
+    {"Run the model but do not rescore or rerank the matches",
+     kOmniboxMlUrlScoringCounterfactual,
+     std::size(kOmniboxMlUrlScoringCounterfactual), nullptr},
+    {"Score additional candidates from providers",
+     kOmniboxMlUrlScoringIncreaseNumCandidates,
+     std::size(kOmniboxMlUrlScoringIncreaseNumCandidates), nullptr},
 };
 
 const FeatureEntry::FeatureParam kRealboxTwoPreviousSearchRelatedSuggestions[] =
@@ -5605,12 +5602,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxMlLogUrlScoringSignalsName,
      flag_descriptions::kOmniboxMlLogUrlScoringSignalsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kLogUrlScoringSignals)},
-    {"omnibox-ml-relevance-scoring",
-     flag_descriptions::kOmniboxMlRelevanceScoringName,
-     flag_descriptions::kOmniboxMlRelevanceScoringDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kMlRelevanceScoring,
-                                    kOmniboxMlRelevanceScoringVariations,
-                                    "MlRelevanceScoring")},
+    {"omnibox-ml-url-scoring", flag_descriptions::kOmniboxMlUrlScoringName,
+     flag_descriptions::kOmniboxMlUrlScoringDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kMlUrlScoring,
+                                    kOmniboxMlUrlScoringVariations,
+                                    "MlUrlScoring")},
     {"omnibox-ml-url-scoring-model",
      flag_descriptions::kOmniboxMlUrlScoringModelName,
      flag_descriptions::kOmniboxMlUrlScoringModelDescription, kOsDesktop,

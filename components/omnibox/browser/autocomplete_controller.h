@@ -18,6 +18,7 @@
 #include "base/observer_list_types.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
@@ -368,6 +369,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   // trims the matches, and calls `completion_callback`.
   void OnUrlScoringModelDone(
       AutocompleteInput input,
+      const base::ElapsedTimer elapsed_timer,
       base::OnceClosure completion_callback,
       std::vector<std::pair<absl::optional<float>, size_t>>
           outputs_and_match_indices);

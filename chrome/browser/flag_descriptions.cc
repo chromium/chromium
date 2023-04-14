@@ -2333,14 +2333,13 @@ const char kOmniboxMlLogUrlScoringSignalsName[] =
 const char kOmniboxMlLogUrlScoringSignalsDescription[] =
     "Enables Omnibox to log scoring signals of URL suggestions.";
 
-const char kOmniboxMlRelevanceScoringName[] = "Omnibox ML Relevance Scoring";
-const char kOmniboxMlRelevanceScoringDescription[] =
-    "Enables ML-based relevance scoring of Omnibox URL Suggestions.";
+const char kOmniboxMlUrlScoringName[] = "Omnibox ML URL Scoring";
+const char kOmniboxMlUrlScoringDescription[] =
+    "Enables ML-based relevance scoring for Omnibox URL Suggestions.";
 
-const char kOmniboxMlUrlScoringModelName[] =
-    "Omnibox autocomplete URL scoring model.";
+const char kOmniboxMlUrlScoringModelName[] = "Omnibox URL Scoring Model";
 const char kOmniboxMlUrlScoringModelDescription[] =
-    "Enables machine learning scoring model for Omnibox URL sugestions.";
+    "Enables ML scoring model for Omnibox URL sugestions.";
 
 const char kOmniboxOnClobberFocusTypeOnContentName[] =
     "Omnibox On Clobber Focus Type On Content";
