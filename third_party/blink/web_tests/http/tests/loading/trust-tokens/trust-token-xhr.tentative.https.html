@@ -12,7 +12,6 @@
     let request = new XMLHttpRequest();
     request.open('GET', 'https://trusttoken.test');
     request.setPrivateToken({
-      type: "private-state-token",
       version: 1,
       operation: 'token-request'
     });
@@ -29,7 +28,6 @@
     let request = new XMLHttpRequest();
     request.open('GET', 'https://trusttoken.test');
     request.setPrivateToken({
-      type: "private-state-token",
       version: 1,
       operation: 'token-redemption'
     });
@@ -46,7 +44,6 @@
       let request = new XMLHttpRequest();
       request.open('GET', 'https://destination.test');
       request.setPrivateToken({
-        type: "private-state-token",
         version: 1,
         operation: 'send-redemption-record',
         issuers: ['https://issuer.test']

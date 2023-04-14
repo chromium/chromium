@@ -11,7 +11,7 @@
 
         promise_test(function () {
             return fetch('/wpt_internal/trust-tokens/resources/trust_token_issuance.py', {
-                privateToken: { type: 'private-state-token', version: 1, operation: 'token-request' }
+                privateToken: { version: 1, operation: 'token-request' }
             }).then(function (response) {
                 assert_equals(response.status, 200);
                 assert_equals(response.headers.get('Sec-Private-State-Token'), null);
@@ -20,7 +20,7 @@
 
         promise_test(function () {
             return fetch('/wpt_internal/trust-tokens/resources/trust_token_redemption.py', {
-                privateToken: { type: 'private-state-token', version: 1, operation: 'token-redemption' }
+                privateToken: { version: 1, operation: 'token-redemption' }
             }).then(async function (response) {
                 assert_equals(response.status, 200);
                 assert_equals(response.headers.get('Sec-Private-State-Token'), null);
@@ -33,7 +33,7 @@
             const host_info = get_host_info();
             const frame = document.createElement('iframe');
             frame.src = '/wpt_internal/trust-tokens/resources/trust_token_send_redemption_record.py';
-            frame.privateToken = JSON.stringify({ type: 'private-state-token', version: 1, operation: 'send-redemption-record', issuers: [host_info.ORIGIN] });
+            frame.privateToken = JSON.stringify({ version: 1, operation: 'send-redemption-record', issuers: [host_info.ORIGIN] });
             document.body.appendChild(frame);
 
             return new Promise(resolve => {

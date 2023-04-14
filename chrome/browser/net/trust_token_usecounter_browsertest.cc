@@ -51,8 +51,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenUseCountersBrowsertest, CountsFetchUse) {
 
   std::string cmd = R"(
   (async () => {
-    await fetch("/page404.html", {privateToken: {type: 'private-state-token',
-                                               version: 1,
+    await fetch("/page404.html", {privateToken: {version: 1,
                                                operation: 'token-request'}});
   } )(); )";
 
@@ -84,7 +83,6 @@ IN_PROC_BROWSER_TEST_F(TrustTokenUseCountersBrowsertest, CountsXhrUse) {
     let request = new XMLHttpRequest();
     request.open('GET', '/page404.html');
     request.setPrivateToken({
-      type: 'private-state-token',
       version: 1,
       operation: 'token-request'
     });
@@ -129,8 +127,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenUseCountersBrowsertest, CountsIframeUse) {
                          R"( const myFrame = document.getElementById("test");
                          myFrame.privateToken = $1;
                          myFrame.src = $2;)",
-                         R"({"type": "private-state-token",
-                            "version": 1,
+                         R"({"version": 1,
                             "operation": "send-redemption-record"})",
                          "/page404.html")));
   TestNavigationObserver load_observer(web_contents);
@@ -162,8 +159,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenUseCountersBrowsertest, CountsIframeUseViaSetat
                          R"( const myFrame = document.getElementById("test");
                          myFrame.setAttribute('privateToken', $1);
                          myFrame.src = $2;)",
-                         R"({"type": "private-state-token",
-                            "version": 1,
+                         R"({"version": 1,
                             "operation": "send-redemption-record"})",
                          "/page404.html")));
   TestNavigationObserver load_observer(web_contents);
