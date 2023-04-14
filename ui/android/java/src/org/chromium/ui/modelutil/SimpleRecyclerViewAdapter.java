@@ -91,9 +91,6 @@ public class SimpleRecyclerViewAdapter
             public void onItemMoved(ListObservable source, int curIndex, int newIndex) {
                 notifyItemMoved(curIndex, newIndex);
             }
-
-            @Override
-            public void onItemSwapped(ListObservable source, int firstIndex, int secondIndex) {}
         };
         mListData.addObserver(mListObserver);
     }

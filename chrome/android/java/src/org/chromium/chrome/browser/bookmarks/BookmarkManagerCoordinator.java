@@ -16,6 +16,7 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
@@ -32,8 +33,8 @@ import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
+import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -41,6 +42,7 @@ import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -67,7 +69,7 @@ public class BookmarkManagerCoordinator
     private final Profile mProfile;
 
     /**
-     * Creates an instance of {@link BookmarkManager}. It also initializes resources,
+     * Creates an instance of {@link BookmarkManagerCoordinator}. It also initializes resources,
      * bookmark models and jni bridges.
      * @param context The current {@link Context} used to obtain resources or inflate views.
      * @param openBookmarkComponentName The component to use when opening a bookmark.
@@ -108,18 +110,26 @@ public class BookmarkManagerCoordinator
                 mMainView.findViewById(R.id.selectable_list);
         mSelectableListLayout = selectableList;
         mSelectableListLayout.initializeEmptyView(R.string.bookmarks_folder_empty);
+        ModelList modelList = new ModelList();
+        DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter =
+                new DragReorderableRecyclerViewAdapter(context, modelList);
+        mRecyclerView =
+                mSelectableListLayout.initializeRecyclerView(dragReorderableRecyclerViewAdapter);
 
-        BookmarkItemsAdapter bookmarkItemsAdapter =
-                new BookmarkItemsAdapter(context, this::createView, this::bindView);
-        mRecyclerView = mSelectableListLayout.initializeRecyclerView(
-                (RecyclerView.Adapter<RecyclerView.ViewHolder>) bookmarkItemsAdapter);
+        // Disable everything except move animations. Switching between folders should be as
+        // seamless as possible without flickering caused by these animations. While dragging
+        // should still pick up the slide animation from moves.
+        ItemAnimator itemAnimator = mRecyclerView.getItemAnimator();
+        itemAnimator.setChangeDuration(0);
+        itemAnimator.setAddDuration(0);
+        itemAnimator.setRemoveDuration(0);
 
         // Using OneshotSupplier as an alternative to a 2-step initialization process.
         OneshotSupplierImpl<BookmarkDelegate> bookmarkDelegateSupplier =
                 new OneshotSupplierImpl<>();
         mBookmarkToolbarCoordinator = new BookmarkToolbarCoordinator(context, mSelectableListLayout,
-                selectionDelegate, /*searchDelegate=*/this, bookmarkItemsAdapter, isDialogUi,
-                bookmarkDelegateSupplier, mBookmarkModel, mBookmarkOpener);
+                selectionDelegate, /*searchDelegate=*/this, dragReorderableRecyclerViewAdapter,
+                isDialogUi, bookmarkDelegateSupplier, mBookmarkModel, mBookmarkOpener);
         mSelectableListLayout.configureWideDisplayStyle();
 
         LargeIconBridge largeIconBridge = new LargeIconBridge(mProfile);
@@ -128,14 +138,45 @@ public class BookmarkManagerCoordinator
         BookmarkUndoController bookmarkUndoController =
                 new BookmarkUndoController(context, mBookmarkModel, snackbarManager);
         mMediator = new BookmarkManagerMediator(context, mBookmarkModel, mBookmarkOpener,
-                mSelectableListLayout, selectionDelegate, mRecyclerView, bookmarkItemsAdapter,
-                largeIconBridge, isDialogUi, isIncognito, mBackPressStateSupplier, mProfile,
-                bookmarkUndoController);
+                mSelectableListLayout, selectionDelegate, mRecyclerView,
+                dragReorderableRecyclerViewAdapter, largeIconBridge, isDialogUi, isIncognito,
+                mBackPressStateSupplier, mProfile, bookmarkUndoController, modelList);
         mPromoHeaderManager = mMediator.getPromoHeaderManager();
 
         bookmarkDelegateSupplier.set(/*bookmarkDelegate=*/mMediator);
 
         mMainView.addOnAttachStateChangeListener(this);
+
+        dragReorderableRecyclerViewAdapter.registerType(ViewType.PERSONALIZED_SIGNIN_PROMO,
+                this::buildPersonalizedPromoView,
+                BookmarkManagerViewBinder::bindPersonalizedPromoView);
+        dragReorderableRecyclerViewAdapter.registerType(ViewType.PERSONALIZED_SYNC_PROMO,
+                this::buildPersonalizedPromoView,
+                BookmarkManagerViewBinder::bindPersonalizedPromoView);
+        dragReorderableRecyclerViewAdapter.registerType(ViewType.SYNC_PROMO,
+                this::buildLegacyPromoView, BookmarkManagerViewBinder::bindLegacyPromoView);
+        dragReorderableRecyclerViewAdapter.registerType(ViewType.SECTION_HEADER,
+                BookmarkManagerCoordinator::buildSectionHeaderView,
+                BookmarkManagerViewBinder::bindSectionHeaderView);
+        dragReorderableRecyclerViewAdapter.registerDraggableType(ViewType.FOLDER,
+                this::buildAndInitBookmarkFolderView,
+                BookmarkManagerViewBinder::bindBookmarkFolderView,
+                BookmarkManagerViewBinder::bindDraggableViewHolder,
+                mMediator.getDraggabilityProvider());
+        dragReorderableRecyclerViewAdapter.registerDraggableType(ViewType.BOOKMARK,
+                this::buildAndInitBookmarkItemRow, BookmarkManagerViewBinder::bindBookmarkItemView,
+                BookmarkManagerViewBinder::bindDraggableViewHolder,
+                mMediator.getDraggabilityProvider());
+        dragReorderableRecyclerViewAdapter.registerDraggableType(ViewType.SHOPPING_POWER_BOOKMARK,
+                this::buildAndInitShoppingItemView, BookmarkManagerViewBinder::bindShoppingItemView,
+                BookmarkManagerViewBinder::bindDraggableViewHolder,
+                mMediator.getDraggabilityProvider());
+        dragReorderableRecyclerViewAdapter.registerType(ViewType.DIVIDER,
+                BookmarkManagerCoordinator::buildDividerView,
+                BookmarkManagerViewBinder::bindDividerView);
+        dragReorderableRecyclerViewAdapter.registerType(ViewType.SHOPPING_FILTER,
+                BookmarkManagerCoordinator::buildShoppingFilterView,
+                BookmarkManagerViewBinder::bindShoppingFilterView);
 
         RecordUserAction.record("MobileBookmarkManagerOpen");
         if (!isDialogUi) {
@@ -240,54 +281,6 @@ public class BookmarkManagerCoordinator
                 FAVICON_MAX_CACHE_SIZE_BYTES);
     }
 
-    // View creation methods.
-
-    /**
-     * Should only be called after fully initialized.
-     * @param parent The parent to which the new {@link View} will be added as a child.
-     * @param viewType The type of row being created.
-     * @return A new View that can be added to the view hierarchy.
-     */
-    public View createView(@NonNull ViewGroup parent, @ViewType int viewType) {
-        // The shopping-specific bookmark row is only shown with the visual refresh. When
-        // there's a mismatch, the ViewType is downgraded to ViewType.BOOKMARK.
-        if (viewType == ViewType.SHOPPING_POWER_BOOKMARK
-                && !BookmarkFeatures.isBookmarksVisualRefreshEnabled()) {
-            viewType = ViewType.BOOKMARK;
-        }
-
-        switch (viewType) {
-            case ViewType.PERSONALIZED_SIGNIN_PROMO:
-            case ViewType.PERSONALIZED_SYNC_PROMO:
-                return buildPersonalizedPromoView(parent);
-            case ViewType.SYNC_PROMO:
-                return buildLegacyPromoView(parent);
-            case ViewType.SECTION_HEADER:
-                return buildSectionHeaderView(parent);
-            case ViewType.FOLDER:
-                BookmarkFolderRow folderRow = buildBookmarkFolderView(parent);
-                folderRow.onDelegateInitialized(mMediator);
-                return folderRow;
-            case ViewType.BOOKMARK:
-                BookmarkItemRow itemRow = buildBookmarkItemView(parent);
-                itemRow.onDelegateInitialized(mMediator);
-                return itemRow;
-            case ViewType.SHOPPING_POWER_BOOKMARK:
-                PowerBookmarkShoppingItemRow shoppingItemRow = buildShoppingItemView(parent);
-                shoppingItemRow.onDelegateInitialized(mMediator);
-                // TODO(https://crbug.com/1416611): Move init to view binding.
-                shoppingItemRow.init(mImageFetcher, mBookmarkModel, mSnackbarManager, mProfile);
-                return shoppingItemRow;
-            case ViewType.DIVIDER:
-                return buildDividerView(parent);
-            case ViewType.SHOPPING_FILTER:
-                return buildShoppingFilterView(parent);
-            default:
-                assert false;
-                return null;
-        }
-    }
-
     public void bindView(View view, @ViewType int viewType, PropertyModel model) {
         ViewBinder<PropertyModel, View, PropertyKey> viewBinder = null;
         switch (viewType) {
@@ -322,47 +315,74 @@ public class BookmarkManagerCoordinator
         PropertyModelChangeProcessor.create(model, view, viewBinder);
     }
 
-    private View buildPersonalizedPromoView(ViewGroup parent) {
+    @VisibleForTesting
+    View buildPersonalizedPromoView(ViewGroup parent) {
         return mPromoHeaderManager.createPersonalizedSigninAndSyncPromoHolder(parent);
     }
 
-    private View buildLegacyPromoView(ViewGroup parent) {
+    @VisibleForTesting
+    View buildLegacyPromoView(ViewGroup parent) {
         return mPromoHeaderManager.createSyncPromoHolder(parent);
     }
 
-    private View buildSectionHeaderView(ViewGroup parent) {
+    static @VisibleForTesting View buildSectionHeaderView(ViewGroup parent) {
         return inflate(parent, org.chromium.chrome.R.layout.bookmark_section_header);
     }
 
-    @VisibleForTesting
-    static BookmarkFolderRow buildBookmarkFolderView(ViewGroup parent) {
-        return BookmarkFolderRow.buildView(
+    private static BookmarkFolderRow buildBookmarkFolderView(ViewGroup parent) {
+        BookmarkFolderRow bookmarkFolderRow = BookmarkFolderRow.buildView(
                 parent.getContext(), BookmarkFeatures.isBookmarksVisualRefreshEnabled());
+        return bookmarkFolderRow;
     }
 
-    @VisibleForTesting
-    static BookmarkItemRow buildBookmarkItemView(ViewGroup parent) {
-        return BookmarkItemRow.buildView(
+    static @VisibleForTesting BookmarkItemRow buildBookmarkItemView(ViewGroup parent) {
+        BookmarkItemRow bookmarkItemRow = BookmarkItemRow.buildView(
                 parent.getContext(), BookmarkFeatures.isBookmarksVisualRefreshEnabled());
+        return bookmarkItemRow;
     }
 
-    @VisibleForTesting
-    static PowerBookmarkShoppingItemRow buildShoppingItemView(ViewGroup parent) {
-        return PowerBookmarkShoppingItemRow.buildView(
-                parent.getContext(), BookmarkFeatures.isBookmarksVisualRefreshEnabled());
+    static @VisibleForTesting PowerBookmarkShoppingItemRow buildShoppingItemView(ViewGroup parent) {
+        PowerBookmarkShoppingItemRow powerBookmarkShoppingItemRow =
+                PowerBookmarkShoppingItemRow.buildView(
+                        parent.getContext(), BookmarkFeatures.isBookmarksVisualRefreshEnabled());
+        return powerBookmarkShoppingItemRow;
     }
 
-    private View buildDividerView(ViewGroup parent) {
+    static @VisibleForTesting View buildDividerView(ViewGroup parent) {
         return inflate(parent, org.chromium.chrome.R.layout.horizontal_divider);
     }
 
-    private View buildShoppingFilterView(ViewGroup parent) {
+    static @VisibleForTesting View buildShoppingFilterView(ViewGroup parent) {
         return inflate(parent, org.chromium.chrome.R.layout.shopping_filter_row);
     }
 
-    private View inflate(ViewGroup parent, @LayoutRes int layoutId) {
+    private static View inflate(ViewGroup parent, @LayoutRes int layoutId) {
         Context context = parent.getContext();
         return LayoutInflater.from(context).inflate(layoutId, parent, false);
+    }
+
+    @VisibleForTesting
+    BookmarkFolderRow buildAndInitBookmarkFolderView(ViewGroup parent) {
+        BookmarkFolderRow bookmarkFolderRow = buildBookmarkFolderView(parent);
+        bookmarkFolderRow.onDelegateInitialized(mMediator);
+        return bookmarkFolderRow;
+    }
+
+    @VisibleForTesting
+    BookmarkItemRow buildAndInitBookmarkItemRow(ViewGroup parent) {
+        BookmarkItemRow bookmarkItemRow = buildBookmarkItemView(parent);
+        bookmarkItemRow.onDelegateInitialized(mMediator);
+        return bookmarkItemRow;
+    }
+
+    @VisibleForTesting
+    PowerBookmarkShoppingItemRow buildAndInitShoppingItemView(ViewGroup parent) {
+        PowerBookmarkShoppingItemRow powerBookmarkShoppingItemRow = buildShoppingItemView(parent);
+        powerBookmarkShoppingItemRow.onDelegateInitialized(mMediator);
+        // TODO(https://crbug.com/1416611): Move init to view binding.
+        powerBookmarkShoppingItemRow.init(
+                mImageFetcher, mBookmarkModel, mSnackbarManager, mProfile);
+        return powerBookmarkShoppingItemRow;
     }
 
     // Testing methods.

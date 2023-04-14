@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
+import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.NavigationButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.base.TestActivity;
@@ -66,7 +67,7 @@ public class BookmarkToolbarMediatorTest {
     @Mock
     BookmarkDelegate mBookmarkDelegate;
     @Mock
-    BookmarkItemsAdapter mBookmarkItemsAdapter;
+    DragReorderableRecyclerViewAdapter mDragReorderableRecyclerViewAdapter;
     @Mock
     BookmarkModel mBookmarkModel;
     @Mock
@@ -111,8 +112,9 @@ public class BookmarkToolbarMediatorTest {
                          .with(BookmarkToolbarProperties.OPEN_FOLDER_CALLBACK, mOpenFolderCallback)
                          .build();
 
-        mMediator = new BookmarkToolbarMediator(mContext, mModel, mBookmarkItemsAdapter,
-                mBookmarkDelegateSupplier, mSelectionDelegate, mBookmarkModel, mBookmarkOpener);
+        mMediator = new BookmarkToolbarMediator(mContext, mModel,
+                mDragReorderableRecyclerViewAdapter, mBookmarkDelegateSupplier, mSelectionDelegate,
+                mBookmarkModel, mBookmarkOpener);
         mBookmarkDelegateSupplier.set(mBookmarkDelegate);
     }
 
@@ -131,6 +133,10 @@ public class BookmarkToolbarMediatorTest {
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         verify(mContext).startActivity(intentCaptor.capture());
         Assert.assertEquals(clazz.getName(), intentCaptor.getValue().getComponent().getClassName());
+
+        mMediator = new BookmarkToolbarMediator(mContext, mModel,
+                mDragReorderableRecyclerViewAdapter, mBookmarkDelegateSupplier, mSelectionDelegate,
+                mBookmarkModel, mBookmarkOpener);
     }
 
     @Test

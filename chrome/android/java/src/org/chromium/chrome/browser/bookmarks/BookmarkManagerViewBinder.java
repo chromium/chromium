@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.ItemTouchHelper;
+
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
@@ -17,6 +19,7 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.Highl
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
 
 /** Responsible for binding views to their properties. */
 class BookmarkManagerViewBinder {
@@ -66,17 +69,6 @@ class BookmarkManagerViewBinder {
             BookmarkId id = model.get(BookmarkManagerProperties.BOOKMARK_ID);
             row.setBookmarkId(id, model.get(BookmarkManagerProperties.LOCATION),
                     model.get(BookmarkManagerProperties.IS_FROM_FILTER_VIEW));
-        } else if (key == BookmarkManagerProperties.ITEM_TOUCH_HELPER) {
-            // Also uses BookmarkManagerProperties.VIEW_HOLDER.
-            BookmarkRow row = ((BookmarkRow) view);
-            row.setDragHandleOnTouchListener((v, event) -> {
-                if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                    model.get(BookmarkManagerProperties.ITEM_TOUCH_HELPER)
-                            .startDrag(model.get(BookmarkManagerProperties.VIEW_HOLDER));
-                }
-                // This callback consumed the click action (don't activate menu).
-                return true;
-            });
         } else if (key == BookmarkManagerProperties.IS_HIGHLIGHTED) {
             // Also uses key == BookmarkManagerProperties.CLEAR_HIGHLIGHT.
             // Turn on the highlight for the currently highlighted bookmark.
@@ -103,5 +95,16 @@ class BookmarkManagerViewBinder {
                         .onResult(BookmarkId.SHOPPING_FOLDER);
             });
         }
+    }
+
+    @SuppressWarnings("ClickableViewAccessibility")
+    static void bindDraggableViewHolder(ViewHolder viewHolder, ItemTouchHelper itemTouchHelper) {
+        BookmarkRow row = (BookmarkRow) viewHolder.itemView;
+        row.setDragHandleOnTouchListener((v, event) -> {
+            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                itemTouchHelper.startDrag(viewHolder);
+            }
+            return true;
+        });
     }
 }

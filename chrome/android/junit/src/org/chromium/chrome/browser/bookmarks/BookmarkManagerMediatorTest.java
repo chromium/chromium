@@ -4,11 +4,17 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.MockitoHelper.doRunnable;
 
@@ -19,12 +25,13 @@ import android.view.accessibility.AccessibilityManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -44,6 +51,9 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
+import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DragListener;
+import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DraggabilityProvider;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -51,8 +61,10 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 /** Unit tests for {@link BookmarkManagerMediator}. */
 @Batch(Batch.UNIT_TESTS)
@@ -69,44 +81,60 @@ public class BookmarkManagerMediatorTest {
     public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Mock
-    BookmarkModel mBookmarkModel;
+    private BookmarkModel mBookmarkModel;
     @Mock
-    BookmarkOpener mBookmarkOpener;
+    private BookmarkOpener mBookmarkOpener;
     @Mock
-    SelectableListLayout<BookmarkId> mSelectableListLayout;
+    private SelectableListLayout<BookmarkId> mSelectableListLayout;
     @Mock
-    SelectionDelegate<BookmarkId> mSelectionDelegate;
+    private SelectionDelegate<BookmarkId> mSelectionDelegate;
     @Mock
-    RecyclerView mRecyclerView;
+    private RecyclerView mRecyclerView;
     @Mock
-    LargeIconBridge mLargeIconBridge;
+    private LargeIconBridge mLargeIconBridge;
     @Mock
-    BookmarkUiObserver mBookmarkUiObserver;
+    private BookmarkUiObserver mBookmarkUiObserver;
     @Mock
-    Profile mProfile;
+    private Profile mProfile;
     @Mock
-    SyncService mSyncService;
+    private SyncService mSyncService;
     @Mock
-    IdentityServicesProvider mIdentityServicesProvider;
+    private IdentityServicesProvider mIdentityServicesProvider;
     @Mock
-    SigninManager mSigninManager;
+    private SigninManager mSigninManager;
     @Mock
-    IdentityManager mIdentityManager;
+    private IdentityManager mIdentityManager;
     @Mock
-    AccountManagerFacade mAccountManagerFacade;
+    private AccountManagerFacade mAccountManagerFacade;
     @Mock
-    BookmarkUndoController mBookmarkUndoController;
+    private BookmarkUndoController mBookmarkUndoController;
     @Mock
     AccessibilityManager mAccessibilityManager;
+    @Mock
+    private DragReorderableRecyclerViewAdapter mDragReorderableRecyclerViewAdapter;
 
-    final ObservableSupplierImpl<Boolean> mBackPressStateSupplier = new ObservableSupplierImpl<>();
-    final ObservableSupplierImpl<Boolean> mSelectableListLayoutHandleBackPressChangedSupplier =
+    @Captor
+    private ArgumentCaptor<BookmarkModelObserver> mBookmarkModelObserverArgumentCaptor;
+    @Captor
+    private ArgumentCaptor<DragListener> mDragListenerArgumentCaptor;
+
+    private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
-    final BookmarkId mFolderId = new BookmarkId(/*id=*/1, BookmarkType.NORMAL);
-    final BookmarkId mFolder2Id = new BookmarkId(/*id=*/2, BookmarkType.NORMAL);
+    private final ObservableSupplierImpl<Boolean>
+            mSelectableListLayoutHandleBackPressChangedSupplier = new ObservableSupplierImpl<>();
+    private final BookmarkId mFolderId1 = new BookmarkId(/*id=*/1, BookmarkType.NORMAL);
+    private final BookmarkId mFolderId2 = new BookmarkId(/*id=*/2, BookmarkType.NORMAL);
+    private final BookmarkId mFolderId3 = new BookmarkId(/*id=*/3, BookmarkType.NORMAL);
+    private final ModelList mModelList = new ModelList();
 
     private Activity mActivity;
     private BookmarkManagerMediator mMediator;
+    private final BookmarkItem mFolderItem1 =
+            new BookmarkItem(mFolderId1, "Folder1", null, true, null, true, false, 0, false);
+    private final BookmarkItem mFolderItem2 =
+            new BookmarkItem(mFolderId2, "Folder2", null, true, mFolderId1, true, false, 0, false);
+    private final BookmarkItem mFolderItem3 =
+            new BookmarkItem(mFolderId3, "Folder3", null, true, mFolderId1, true, false, 0, false);
 
     @Before
     public void setUp() {
@@ -115,10 +143,12 @@ public class BookmarkManagerMediatorTest {
 
             // Setup BookmarkModel.
             doReturn(true).when(mBookmarkModel).doesBookmarkExist(any());
-            doReturn(Arrays.asList(mFolder2Id)).when(mBookmarkModel).getChildIDs(mFolderId);
-            BookmarkItem bookmarkItem =
-                    new BookmarkItem(mFolderId, "Folder", null, true, null, true, false, 0, false);
-            doReturn(bookmarkItem).when(mBookmarkModel).getBookmarkById(any());
+            doReturn(Arrays.asList(mFolderId2, mFolderId3))
+                    .when(mBookmarkModel)
+                    .getChildIDs(mFolderId1);
+            doReturn(mFolderItem1).when(mBookmarkModel).getBookmarkById(mFolderId1);
+            doReturn(mFolderItem2).when(mBookmarkModel).getBookmarkById(mFolderId2);
+            doReturn(mFolderItem3).when(mBookmarkModel).getBookmarkById(mFolderId3);
 
             // Setup SelectableListLayout.
             doReturn(mActivity).when(mSelectableListLayout).getContext();
@@ -141,12 +171,11 @@ public class BookmarkManagerMediatorTest {
             doReturn(mIdentityManager).when(mSigninManager).getIdentityManager();
             AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
 
-            BookmarkItemsAdapter bookmarkItemsAdapter =
-                    new BookmarkItemsAdapter(mActivity, (a, b) -> null, (a, b, c) -> {});
             mMediator = new BookmarkManagerMediator(mActivity, mBookmarkModel, mBookmarkOpener,
-                    mSelectableListLayout, mSelectionDelegate, mRecyclerView, bookmarkItemsAdapter,
-                    mLargeIconBridge, /*isDialogUi=*/true, /*isIncognito=*/false,
-                    mBackPressStateSupplier, mProfile, mBookmarkUndoController);
+                    mSelectableListLayout, mSelectionDelegate, mRecyclerView,
+                    mDragReorderableRecyclerViewAdapter, mLargeIconBridge, /*isDialogUi=*/true,
+                    /*isIncognito=*/false, mBackPressStateSupplier, mProfile,
+                    mBookmarkUndoController, mModelList);
             mMediator.addUiObserver(mBookmarkUiObserver);
         });
     }
@@ -158,16 +187,16 @@ public class BookmarkManagerMediatorTest {
     @Test
     public void initAndLoadBookmarkModel() {
         finishLoading();
-        Assert.assertEquals(BookmarkUiMode.LOADING, mMediator.getCurrentUiMode());
+        assertEquals(BookmarkUiMode.LOADING, mMediator.getCurrentUiMode());
     }
 
     @Test
     public void setUrlBeforeModelLoaded() {
         // Setting a URL prior to the model loading should set the state for when it loads.
-        mMediator.updateForUrl("chrome-native://bookmarks/folder/" + mFolderId.getId());
+        mMediator.updateForUrl("chrome-native://bookmarks/folder/" + mFolderId1.getId());
 
         finishLoading();
-        Assert.assertEquals(BookmarkUiMode.FOLDER, mMediator.getCurrentUiMode());
+        assertEquals(BookmarkUiMode.FOLDER, mMediator.getCurrentUiMode());
     }
 
     @Test
@@ -203,7 +232,7 @@ public class BookmarkManagerMediatorTest {
 
         doReturn(true).when(mSelectableListLayout).onBackPressed();
 
-        Assert.assertTrue(mMediator.onBackPressed());
+        assertTrue(mMediator.onBackPressed());
     }
 
     @Test
@@ -211,23 +240,90 @@ public class BookmarkManagerMediatorTest {
         finishLoading();
 
         mMediator.clearStateStackForTesting();
-        Assert.assertFalse(mMediator.onBackPressed());
+        assertFalse(mMediator.onBackPressed());
     }
 
     @Test
     public void onBackPressed_SingleStateStack() {
         finishLoading();
 
-        Assert.assertFalse(mMediator.onBackPressed());
+        assertFalse(mMediator.onBackPressed());
     }
 
     @Test
     public void onBackPressed_MultipleStateStack() {
         finishLoading();
 
-        mMediator.openFolder(mFolderId);
-        mMediator.openFolder(mFolder2Id);
-        Assert.assertTrue(mMediator.onBackPressed());
+        mMediator.openFolder(mFolderId1);
+        mMediator.openFolder(mFolderId2);
+        assertTrue(mMediator.onBackPressed());
+    }
+
+    @Test
+    public void testMoveDownUp() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+
+        mMediator.moveDownOne(mFolderId2);
+        verify(mBookmarkModel)
+                .reorderBookmarks(mFolderId1, new long[] {mFolderId3.getId(), mFolderId2.getId()});
+
+        mMediator.moveUpOne(mFolderId2);
+        verify(mBookmarkModel)
+                .reorderBookmarks(mFolderId1, new long[] {mFolderId2.getId(), mFolderId3.getId()});
+    }
+
+    @Test
+    public void testDrag() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        DraggabilityProvider draggabilityProvider = mMediator.getDraggabilityProvider();
+        assertTrue(draggabilityProvider.isPassivelyDraggable(mModelList.get(0).model));
+        assertFalse(draggabilityProvider.isActivelyDraggable(mModelList.get(0).model));
+
+        when(mSelectionDelegate.isItemSelected(mFolderId2)).thenReturn(true);
+        assertTrue(draggabilityProvider.isActivelyDraggable(mModelList.get(0).model));
+
+        mModelList.move(0, 1);
+        verify(mDragReorderableRecyclerViewAdapter)
+                .addDragListener(mDragListenerArgumentCaptor.capture());
+        mDragListenerArgumentCaptor.getValue().onSwap();
+        verify(mBookmarkModel)
+                .reorderBookmarks(mFolderId1, new long[] {mFolderId3.getId(), mFolderId2.getId()});
+    }
+
+    @Test
+    public void testSearch() {
+        when(mBookmarkModel.searchBookmarks(anyString(), anyInt()))
+                .thenReturn(Collections.singletonList(mFolderId3));
+        finishLoading();
+
+        mMediator.openFolder(mFolderId1);
+        assertEquals(2, mModelList.size());
+
+        mMediator.search("3");
+        assertEquals(1, mModelList.size());
+
+        mMediator.closeSearchUi();
+        assertEquals(2, mModelList.size());
+    }
+
+    @Test
+    public void testBookmarkRemoved() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        assertEquals(2, mModelList.size());
+
+        doReturn(Arrays.asList(mFolderId3)).when(mBookmarkModel).getChildIDs(mFolderId1);
+        verify(mBookmarkModel, times(2))
+                .addObserver(mBookmarkModelObserverArgumentCaptor.capture());
+        for (BookmarkModelObserver bookmarkModelObserver :
+                mBookmarkModelObserverArgumentCaptor.getAllValues()) {
+            bookmarkModelObserver.bookmarkNodeRemoved(
+                    mFolderItem1, 0, mFolderItem2, /*isDoingExtensiveChanges*/ false);
+        }
+
+        assertEquals(1, mModelList.size());
     }
 
     @Test

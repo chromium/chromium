@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.RecyclerView.ViewHolder;
-
 import org.chromium.base.Callback;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -25,10 +22,6 @@ class BookmarkManagerProperties {
             new WritableObjectPropertyKey<>();
     static final WritableIntPropertyKey LOCATION = new WritableIntPropertyKey();
     static final WritableBooleanPropertyKey IS_FROM_FILTER_VIEW = new WritableBooleanPropertyKey();
-    static final WritableObjectPropertyKey<ItemTouchHelper> ITEM_TOUCH_HELPER =
-            new WritableObjectPropertyKey<>();
-    static final WritableObjectPropertyKey<ViewHolder> VIEW_HOLDER =
-            new WritableObjectPropertyKey<>();
     static final WritableBooleanPropertyKey IS_HIGHLIGHTED = new WritableBooleanPropertyKey();
     // TODO(https://crbug.com/1416611): Rework this property to not just expose functionality.
     static final WritableObjectPropertyKey<Runnable> CLEAR_HIGHLIGHT =
@@ -38,6 +31,5 @@ class BookmarkManagerProperties {
             new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {BOOKMARK_PROMO_HEADER, BOOKMARK_LIST_ENTRY, BOOKMARK_ID,
-            LOCATION, IS_FROM_FILTER_VIEW, ITEM_TOUCH_HELPER, VIEW_HOLDER, IS_HIGHLIGHTED,
-            CLEAR_HIGHLIGHT, OPEN_FOLDER};
+            LOCATION, IS_FROM_FILTER_VIEW, IS_HIGHLIGHTED, CLEAR_HIGHLIGHT, OPEN_FOLDER};
 }
