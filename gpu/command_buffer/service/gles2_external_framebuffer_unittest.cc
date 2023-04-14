@@ -224,10 +224,8 @@ std::string TestParamToString(
 INSTANTIATE_TEST_SUITE_P(
     ,
     GLES2ExternalFrameBufferTest,
-    ::testing::Combine(::testing::Values(viz::SharedImageFormat::SinglePlane(
-                                             viz::ResourceFormat::RGBA_8888),
-                                         viz::SharedImageFormat::SinglePlane(
-                                             viz::ResourceFormat::RGBX_8888)),
+    ::testing::Combine(::testing::Values(viz::SinglePlaneFormat::kRGBA_8888,
+                                         viz::SinglePlaneFormat::kRGBX_8888),
                        ::testing::Values(0, 8),
                        ::testing::Bool(),
                        ::testing::Bool(),
