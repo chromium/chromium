@@ -2097,6 +2097,8 @@ if (enable_java_templates) {
   #
   #   resource_values_filter_rules: (optional)
   #
+  #   no_xml_namespaces: (optional)
+  #
   #   png_to_webp: (optional)
   #     If true, convert all PNG resources (except 9-patch files) to WebP.
   #
@@ -2175,6 +2177,9 @@ if (enable_java_templates) {
       "--srcjar-out",
       rebase_path(_final_srcjar_path, root_build_dir),
     ]
+    if (defined(invoker.no_xml_namespaces) && invoker.no_xml_namespaces) {
+      _args += [ "--no-xml-namespaces" ]
+    }
     if (defined(invoker.version_code)) {
       _args += [
         "--version-code",
