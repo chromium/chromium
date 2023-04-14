@@ -48,6 +48,11 @@ BASE_FEATURE(kAutofillAccountProfileStorage,
              "AutofillAccountProfileStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Determines if users located in an unsupported country (based on GeoIP) are
+// eligible to write to the account storage.
+const base::FeatureParam<bool> kAutofillAccountProfileStorageFromUnsupportedIPs{
+    &kAutofillAccountProfileStorage, "allow_writes_from_unsupported_ips", true};
+
 // TODO(crbug.com/1135188): Remove this feature flag after the explicit save
 // prompts for address profiles is complete.
 // When enabled, address profile save problem will contain a dropdown for

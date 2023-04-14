@@ -229,6 +229,10 @@ class ProfileImportProcess {
   // a merge candidate in case there is a confirmable merge.
   void DetermineProfileImportType();
 
+  // For new profile imports, sets the source of the `import_candidate_`
+  // correctly, depending on the user's account storage eligiblity.
+  void DetermineSourceOfImportCandidate();
+
   // If the observed profile is a duplicate (modulo silent updates) of an
   // existing `kLocalOrSyncable` profile, eligible users are prompted to change
   // its storage location to `kAccount`.
@@ -237,6 +241,7 @@ class ProfileImportProcess {
   // - `migration_candidate` not set yet.
   // - The User eligible for account profile storage.
   // - `profile` is of source `kLocalOrSyncable` and not blocked for migration.
+  // - The `profile`'s country isn't set to an unsupported country.
   // - Not only silent updates are allowed.
   void MaybeSetMigrationCandidate(
       absl::optional<AutofillProfile>& migration_candidate,

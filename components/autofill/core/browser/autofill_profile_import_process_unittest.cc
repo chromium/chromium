@@ -973,6 +973,7 @@ TEST_F(AutofillProfileImportProcessTest,
 
 // Tests that for eligible users, new profiles are of source kAccount.
 TEST_F(AutofillProfileImportProcessTest, NewProfileSource) {
+  // Ineligible user.
   {
     personal_data_manager_.SetIsEligibleForAddressAccountStorage(false);
     ProfileImportProcess import_data(test::StandardProfile(), "en_US", url_,
@@ -982,6 +983,7 @@ TEST_F(AutofillProfileImportProcessTest, NewProfileSource) {
               AutofillProfile::Source::kLocalOrSyncable);
   }
 
+  // Eligible user.
   {
     personal_data_manager_.SetIsEligibleForAddressAccountStorage(true);
     ProfileImportProcess import_data(test::StandardProfile(), "en_US", url_,
@@ -989,6 +991,15 @@ TEST_F(AutofillProfileImportProcessTest, NewProfileSource) {
                                      /*allow_only_silent_updates=*/false);
     EXPECT_EQ(import_data.import_candidate()->source(),
               AutofillProfile::Source::kAccount);
+
+    // Profiles with an ineligible country are not stored in the account.
+    AutofillProfile ineligible_profile = test::StandardProfile();
+    ineligible_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"SD");
+    import_data = ProfileImportProcess(ineligible_profile, "en_US", url_,
+                                       &personal_data_manager_,
+                                       /*allow_only_silent_updates=*/false);
+    EXPECT_EQ(import_data.import_candidate()->source(),
+              AutofillProfile::Source::kLocalOrSyncable);
   }
 }
 
@@ -1073,11 +1084,27 @@ TEST_F(AutofillProfileImportProcessTest,
 }
 
 // Expect that no migration is offered for ineligible users.
-TEST_F(AutofillProfileImportProcessTest, MigrateProfileToAccount_NonEligible) {
+TEST_F(AutofillProfileImportProcessTest,
+       MigrateProfileToAccount_IneligibleUser) {
   const AutofillProfile profile = test::StandardProfile();
   std::vector<AutofillProfile> existing_profiles = {profile};
   personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
   personal_data_manager_.SetIsEligibleForAddressAccountStorage(false);
+
+  ProfileImportProcess import_data(
+      /*observed_profile=*/profile, "en_US", url_, &personal_data_manager_,
+      /*allow_only_silent_updates=*/false);
+  EXPECT_EQ(import_data.import_type(),
+            AutofillProfileImportType::kDuplicateImport);
+}
+
+// Expect that no migration is offered for ineligible profiles.
+TEST_F(AutofillProfileImportProcessTest,
+       MigrateProfileToAccount_IneligibleProfile) {
+  AutofillProfile profile = test::StandardProfile();
+  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"KP");
+  std::vector<AutofillProfile> existing_profiles = {profile};
+  personal_data_manager_.SetProfilesForAllSources(&existing_profiles);
 
   ProfileImportProcess import_data(
       /*observed_profile=*/profile, "en_US", url_, &personal_data_manager_,

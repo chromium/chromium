@@ -213,6 +213,11 @@ class PersonalDataManager : public KeyedService,
   // Autofill address profiles to their account.
   virtual bool IsEligibleForAddressAccountStorage() const;
 
+  // Users based in unsupported countries and profiles with a country value set
+  // to an unsupported country are not eligible for account storage. This
+  // function determines if the `country_code` is eligible.
+  bool IsCountryEligibleForAccountStorage(base::StringPiece country_code) const;
+
   // Adds `iban` to the web database as a local IBAN. Returns the guid of
   // `iban` if the add is successful, or an empty string otherwise.
   // Below conditions should be met before adding `iban` to the database:

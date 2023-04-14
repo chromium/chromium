@@ -5774,4 +5774,38 @@ TEST_F(PersonalDataManagerTest, AddAndGetUpiId) {
   EXPECT_THAT(all_upi_ids, testing::ElementsAre(upi_id));
 }
 
+TEST_F(PersonalDataManagerTest, IsEligibleForAddressAccountStorage) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{base::test::FeatureRefAndParams(
+           features::kAutofillAccountProfilesUnionView, {})},
+       {base::test::FeatureRefAndParams(
+           features::kAutofillAccountProfileStorage,
+           {{features::kAutofillAccountProfileStorageFromUnsupportedIPs.name,
+             "false"}})}},
+      /*disabled_features=*/{});
+
+  // No Sync, no account storage.
+  personal_data_->SetSyncServiceForTest(nullptr);
+  EXPECT_FALSE(personal_data_->IsEligibleForAddressAccountStorage());
+
+  // Fake the Sync service. All data types are running by default.
+  syncer::TestSyncService sync_service;
+  personal_data_->SetSyncServiceForTest(&sync_service);
+  EXPECT_TRUE(personal_data_->IsEligibleForAddressAccountStorage());
+
+  // Being located in an unsupported country makes the user ineligible.
+  personal_data_->set_variations_country_code_for_testing("CU");
+  EXPECT_FALSE(personal_data_->IsEligibleForAddressAccountStorage());
+
+  // Unregister the Sync observer.
+  personal_data_->OnSyncShutdown(&sync_service);
+}
+
+TEST_F(PersonalDataManagerTest, IsCountryEligibleForAccountStorage) {
+  EXPECT_TRUE(personal_data_->IsCountryEligibleForAccountStorage("AT"));
+  EXPECT_FALSE(personal_data_->IsCountryEligibleForAccountStorage("IR"));
+}
+
 }  // namespace autofill
