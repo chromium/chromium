@@ -131,14 +131,10 @@ CGFloat const kTableViewCornerRadius = 10;
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  _row = indexPath.row;
+
   if (_tableViewIsMinimized) {
     _tableViewIsMinimized = NO;
-
-    _row = indexPath.row;
-
-    // To be used later to show the checkmark icon next to the selected
-    // suggestion.
-    [_tableViewController.tableView reloadData];
 
     // Update table view height.
     __weak __typeof(self) weakSelf = self;
@@ -146,7 +142,12 @@ CGFloat const kTableViewCornerRadius = 10;
                      animations:^{
                        [weakSelf expandTableView];
                      }];
+
+    [self expand];
   }
+
+  // Refresh cells to show the checkmark icon next to the selected suggestion.
+  [_tableViewController.tableView reloadData];
 }
 
 #pragma mark - UITableViewDataSource
@@ -166,9 +167,14 @@ CGFloat const kTableViewCornerRadius = 10;
       [tableView dequeueReusableCellWithIdentifier:@"cell"];
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
+  // Note that both the credentials and URLs will use middle truncation, as it
+  // generally makes it easier to differentiate between different ones, without
+  // having to resort to displaying multiple lines to show the full username
+  // and URL.
   cell.titleLabel.text = [self suggestionAtRow:indexPath.row];
-  cell.textLabel.lineBreakMode = NSLineBreakByTruncatingHead;
+  cell.titleLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
   cell.URLLabel.text = [self descriptionAtRow:indexPath.row];
+  cell.URLLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
   cell.URLLabel.hidden = NO;
 
   cell.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
@@ -339,8 +345,50 @@ CGFloat const kTableViewCornerRadius = 10;
 
 // Returns the initial height of the bottom sheet.
 - (CGFloat)initialHeight {
-  // Initial size for the bottom sheet while showing a single row.
+  // Initial height for the bottom sheet while showing a single row.
   return kBaseHeightForBottomSheet + [self rowHeight];
+}
+
+// Returns the desired height for the bottom sheet (can be larger than the
+// screen).
+- (CGFloat)fullHeight {
+  // Desired height for the bottom sheet while showing all rows.
+  return kBaseHeightForBottomSheet + ([self rowHeight] * _suggestions.count);
+}
+
+// Performs the expand bottom sheet animation.
+- (void)expand {
+  UISheetPresentationController* presentationController =
+      self.sheetPresentationController;
+  CGFloat screenHeight = [[UIScreen mainScreen] bounds].size.height;
+  CGFloat fullHeight = [self fullHeight];
+  if (@available(iOS 16, *)) {
+    if (fullHeight < screenHeight) {
+      // Expand to custom size (only available for iOS 16+).
+      auto fullHeightBlock = ^CGFloat(
+          id<UISheetPresentationControllerDetentResolutionContext> context) {
+        return fullHeight;
+      };
+      UISheetPresentationControllerDetent* customDetentExpand =
+          [UISheetPresentationControllerDetent
+              customDetentWithIdentifier:@"customDetentExpand"
+                                resolver:fullHeightBlock];
+      NSMutableArray* currentDetents =
+          [presentationController.detents mutableCopy];
+      [currentDetents addObject:customDetentExpand];
+      presentationController.detents = [currentDetents copy];
+      [presentationController animateChanges:^{
+        presentationController.selectedDetentIdentifier = @"customDetentExpand";
+      }];
+      return;
+    }
+  }
+
+  // Expand to large detent.
+  [presentationController animateChanges:^{
+    presentationController.selectedDetentIdentifier =
+        UISheetPresentationControllerDetentIdentifierLarge;
+  }];
 }
 
 @end
