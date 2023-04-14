@@ -6101,7 +6101,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstPartySets.Database.InitStatus"
-    enum="FirstPartySetsDatabaseInitStatus" expires_after="2023-08-20">
+    enum="FirstPartySetsDatabaseInitStatus" expires_after="M124">
   <owner>shuuran@google.com</owner>
   <owner>kaustubhag@google.com</owner>
   <summary>
@@ -6111,7 +6111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstPartySets.Initialization.ClearSiteDataOutcome"
-    enum="BooleanSuccess" expires_after="M115">
+    enum="BooleanSuccess" expires_after="M124">
   <owner>shuuran@google.com</owner>
   <owner>kaustubhag@google.com</owner>
   <summary>
@@ -6132,7 +6132,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstPartySets.NavigationThrottle.ResumeOnTimeout"
-    enum="BooleanTimedOut" expires_after="2023-08-20">
+    enum="BooleanTimedOut" expires_after="M124">
   <owner>shuuran@google.com</owner>
   <owner>kaustubhag@google.com</owner>
   <summary>
