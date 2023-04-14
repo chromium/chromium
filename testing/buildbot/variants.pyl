@@ -582,8 +582,8 @@
   'CROS_HANA_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'hana',
-      'cros_chrome_version': '114.0.5692.0',
-      'cros_img': 'hana-release/R114-15410.0.0',
+      'cros_chrome_version': '114.0.5703.0',
+      'cros_img': 'hana-release/R114-15416.0.0',
     },
     'enabled': False,
     'identifier': 'HANA_RELEASE_DEV',
