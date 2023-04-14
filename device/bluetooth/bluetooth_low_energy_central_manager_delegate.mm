@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "device/bluetooth/bluetooth_low_energy_adapter_apple.h"
 #include "device/bluetooth/bluetooth_low_energy_discovery_manager_mac.h"
 
@@ -31,7 +32,11 @@ class BluetoothLowEnergyCentralManagerBridge {
                                              rssi);
   }
 
-  void UpdatedState() {
+  void UpdatedState(bool powered) {
+#if BUILDFLAG(IS_IOS)
+    // On Mac, the Bluetooth classic code notifies the power changed.
+    adapter_->NotifyAdapterPoweredChanged(powered);
+#endif
     discovery_manager_->TryStartDiscovery();
     adapter_->LowEnergyCentralManagerUpdatedState();
   }
@@ -82,7 +87,7 @@ class BluetoothLowEnergyCentralManagerBridge {
 
 - (void)centralManagerDidUpdateState:(CBCentralManager*)central {
   // Notifies when the powered state of the central manager changed.
-  _bridge->UpdatedState();
+  _bridge->UpdatedState(central.state == CBManagerStatePoweredOn);
 }
 
 - (void)centralManager:(CBCentralManager*)central
