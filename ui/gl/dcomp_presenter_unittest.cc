@@ -21,6 +21,8 @@
 #include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/test/sk_color_eq.h"
 #include "ui/gl/dc_layer_overlay_params.h"
 #include "ui/gl/direct_composition_child_surface_win.h"
 #include "ui/gl/direct_composition_support.h"
@@ -107,14 +109,15 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> CreateNV12Texture(
   return texture;
 }
 
+// The precise colors may differ depending on the video processor, so allow a
+// margin for error.
+const int kMaxColorChannelDeviation = 10;
+
 bool AreColorsSimilar(int a, int b) {
-  // The precise colors may differ depending on the video processor, so allow
-  // a margin for error.
-  const int kMargin = 10;
-  return abs(SkColorGetA(a) - SkColorGetA(b)) < kMargin &&
-         abs(SkColorGetR(a) - SkColorGetR(b)) < kMargin &&
-         abs(SkColorGetG(a) - SkColorGetG(b)) < kMargin &&
-         abs(SkColorGetB(a) - SkColorGetB(b)) < kMargin;
+  return abs(SkColorGetA(a) - SkColorGetA(b)) < kMaxColorChannelDeviation &&
+         abs(SkColorGetR(a) - SkColorGetR(b)) < kMaxColorChannelDeviation &&
+         abs(SkColorGetG(a) - SkColorGetG(b)) < kMaxColorChannelDeviation &&
+         abs(SkColorGetB(a) - SkColorGetB(b)) < kMaxColorChannelDeviation;
 }
 
 }  // namespace
@@ -1174,6 +1177,97 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
         << std::hex << "Expected " << expected_color << " Actual "
         << actual_color;
   }
+}
+
+// Test that the overlay quad rect's offset is affected by its transform.
+TEST_F(DCompPresenterPixelTest, QuadOffsetAppliedAfterTransform) {
+  if (!presenter_) {
+    return;
+  }
+  // Fails on AMD RX 5500 XT. https://crbug.com/1152565.
+  if (context_ && context_->GetVersionInfo() &&
+      context_->GetVersionInfo()->driver_vendor.find("AMD") !=
+          std::string::npos) {
+    return;
+  }
+
+  // Our overlay quad rect is at 0,50 50x50 and scaled down by 1/2. Since we
+  // expect the transform to affect the quad rect offset, we expect the output
+  // rect to be at 0,25 25x25.
+  const gfx::Rect quad_rect(gfx::Point(0, 50), gfx::Size(50, 50));
+  const gfx::Transform quad_to_root_transform(
+      gfx::AxisTransform2d(0.5, gfx::Vector2dF()));
+
+  Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device =
+      GetDirectCompositionDevice();
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      QueryD3D11DeviceObjectFromANGLE();
+  ASSERT_TRUE(d3d11_device);
+
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
+  d3d11_device->GetImmediateContext(&context);
+  ASSERT_TRUE(context);
+
+  gfx::Size window_size(100, 100);
+  EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+  EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
+
+  InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
+
+  Microsoft::WRL::ComPtr<IDCompositionSurface> surface;
+  ASSERT_HRESULT_SUCCEEDED(dcomp_device->CreateSurface(
+      quad_rect.width(), quad_rect.height(), DXGI_FORMAT_B8G8R8A8_UNORM,
+      DXGI_ALPHA_MODE_IGNORE, &surface));
+  RECT update_rect = D2D1::Rect(0, 0, quad_rect.width(), quad_rect.height());
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> update_texture;
+  POINT update_offset;
+  ASSERT_HRESULT_SUCCEEDED(surface->BeginDraw(
+      &update_rect, IID_PPV_ARGS(&update_texture), &update_offset));
+  Microsoft::WRL::ComPtr<ID3D11RenderTargetView> rtv;
+  ASSERT_HRESULT_SUCCEEDED(d3d11_device->CreateRenderTargetView(
+      update_texture.Get(), nullptr, &rtv));
+  context->ClearRenderTargetView(rtv.Get(), SkColors::kRed.vec());
+  ASSERT_HRESULT_SUCCEEDED(surface->EndDraw());
+
+  auto dc_layer_params = std::make_unique<DCLayerOverlayParams>();
+  dc_layer_params->overlay_image =
+      DCLayerOverlayImage(quad_rect.size(), surface);
+  dc_layer_params->content_rect = gfx::Rect(quad_rect.size());
+  dc_layer_params->quad_rect = quad_rect;
+  dc_layer_params->transform = quad_to_root_transform;
+  dc_layer_params->color_space = gfx::ColorSpace::CreateSRGB();
+  dc_layer_params->z_order = 1;
+
+  presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+
+  // We expect DComp to display the overlay with the same bounds as if viz were
+  // to composite it.
+  const gfx::Rect mapped_quad_rect = quad_to_root_transform.MapRect(quad_rect);
+
+  // Check the top edge of the scaled overlay
+  EXPECT_SKCOLOR_CLOSE(
+      SK_ColorBLACK,
+      GLTestHelper::ReadBackWindowPixel(
+          window_.hwnd(), gfx::Point(0, mapped_quad_rect.y() - 1)),
+      kMaxColorChannelDeviation);
+  EXPECT_SKCOLOR_CLOSE(SK_ColorRED,
+                       GLTestHelper::ReadBackWindowPixel(
+                           window_.hwnd(), gfx::Point(0, mapped_quad_rect.y())),
+                       kMaxColorChannelDeviation);
+
+  // Check the bottom edge of the scaled overlay
+  EXPECT_SKCOLOR_CLOSE(
+      SK_ColorRED,
+      GLTestHelper::ReadBackWindowPixel(
+          window_.hwnd(), gfx::Point(0, mapped_quad_rect.bottom() - 1)),
+      kMaxColorChannelDeviation);
+  EXPECT_SKCOLOR_CLOSE(
+      SK_ColorBLACK,
+      GLTestHelper::ReadBackWindowPixel(
+          window_.hwnd(), gfx::Point(0, mapped_quad_rect.bottom())),
+      kMaxColorChannelDeviation);
 }
 
 class DCompPresenterBufferCountTest : public DCompPresenterTest,

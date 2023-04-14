@@ -222,12 +222,18 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     needs_commit = true;
 
     // All the visual are created together on the first |Update|.
-    DCHECK(!content_visual_);
+    CHECK(!transform_visual_);
+    CHECK(!content_visual_);
+
     hr = dcomp_device->CreateVisual(&clip_visual_);
+    CHECK_EQ(hr, S_OK);
+    hr = dcomp_device->CreateVisual(&transform_visual_);
     CHECK_EQ(hr, S_OK);
     hr = dcomp_device->CreateVisual(&content_visual_);
     CHECK_EQ(hr, S_OK);
-    hr = clip_visual_->AddVisual(content_visual_.Get(), FALSE, nullptr);
+    hr = clip_visual_->AddVisual(transform_visual_.Get(), FALSE, nullptr);
+    CHECK_EQ(hr, S_OK);
+    hr = transform_visual_->AddVisual(content_visual_.Get(), FALSE, nullptr);
     CHECK_EQ(hr, S_OK);
   }
 
@@ -249,19 +255,6 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     }
   }
 
-  if (offset_ != quad_rect_offset) {
-    offset_ = quad_rect_offset;
-    needs_commit = true;
-
-    // Visual offset is applied before transform so it behaves similar to how
-    // the compositor uses transform to map quad rect in layer space to target
-    // space.
-    hr = content_visual_->SetOffsetX(offset_.x());
-    CHECK_EQ(hr, S_OK);
-    hr = content_visual_->SetOffsetY(offset_.y());
-    CHECK_EQ(hr, S_OK);
-  }
-
   if (transform_ != quad_to_root_transform) {
     transform_ = quad_to_root_transform;
     needs_commit = true;
@@ -272,7 +265,20 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
         D2D1::Matrix3x2F(transform_.rc(0, 0), transform_.rc(1, 0),  //
                          transform_.rc(0, 1), transform_.rc(1, 1),  //
                          transform_.rc(0, 3), transform_.rc(1, 3));
-    hr = content_visual_->SetTransform(matrix);
+    hr = transform_visual_->SetTransform(matrix);
+    CHECK_EQ(hr, S_OK);
+  }
+
+  if (offset_ != quad_rect_offset) {
+    offset_ = quad_rect_offset;
+    needs_commit = true;
+
+    // Visual offset is applied after transform so it is affected by the
+    // transform, which is consistent with how the compositor maps quad rects to
+    // their target space.
+    hr = content_visual_->SetOffsetX(offset_.x());
+    CHECK_EQ(hr, S_OK);
+    hr = content_visual_->SetOffsetY(offset_.y());
     CHECK_EQ(hr, S_OK);
   }
 
