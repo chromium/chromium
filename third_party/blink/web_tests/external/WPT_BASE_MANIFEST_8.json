@@ -134574,7 +134574,7 @@
        ]
       ],
       "independent-formatting-context.html": [
-       "888b23c2f621e1abfa027a4f42cbebb00db89656",
+       "5a76ac2d6dea91a0d13de29d9192aaf8df3ae350",
        [
         null,
         [
@@ -269714,11 +269714,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "fe78dca2986ab43159260076f87bf1723c27762c",
+     "672433b52e6c2a8b106eea7f3b2ff5740512b408",
      []
     ],
     "mtime.json": [
-     "e07ac2fdbfc482b33fc3f4dd04000e4ee4a56f7d",
+     "e9c7411915628908c44bded998b4568fa3325d6a",
      []
     ]
    },
@@ -274032,20 +274032,12 @@
       "90ed0a78576edc041caaa2ae70c319837152b726",
       []
      ],
-     "observer-in-dedicated-worker.js": [
-      "a30edd0a33ede1a1f628c356c92b768ed31e3e2f",
-      []
-     ],
-     "observer-in-shared-worker.js": [
-      "f69eadaacee6324edd021f1f20a245e5dd720cbc",
-      []
-     ],
      "pressure-helpers.js": [
       "5234cf2d78c90d559d3cfd8ee1b86d9b3fa97861",
       []
      ],
      "support-iframe.html": [
-      "57e18b77f62dbae3425e9f8b59b4d43c439ea709",
+      "6b2b3097926b192df23c3e21dd19742bb19e69d4",
       []
      ]
     }
@@ -304708,7 +304700,7 @@
        []
       ],
       "independent-formatting-context-ref.html": [
-       "79b90c340d844568014a3062ea35b2c087044ead",
+       "fe842b2823832e9feaae3534eab8220dd65cf129",
        []
       ],
       "independent-formatting-context.html.ini": [
@@ -378023,7 +378015,7 @@
       []
      ],
      "mock-pressure-service.js": [
-      "e41464eefc32e154e29e48085a770b908e926437",
+      "21811ed52da2cd4f6782b390d848d0085d0849cc",
       []
      ],
      "mock-pressure-service.js.headers": [
@@ -378424,7 +378416,7 @@
      []
     ],
     "orientation-reading.html.ini": [
-     "a84e655e4a21b4d98482f0565a79c3a217f5559f",
+     "939808a85f01196730f935abbd9d8b76fb387123",
      []
     ],
     "resources": {
@@ -422737,17 +422729,10 @@
     ]
    },
    "compute-pressure": {
-    "compute_pressure_basic.tentative.https.window.js": [
-     "e2d9a0f05bc99a7e798c6ca71a152f72481f5c49",
+    "compute_pressure_basic.tentative.https.any.js": [
+     "18b8985cf51c2c9874af273ceeb38eb697df3345",
      [
-      "compute-pressure/compute_pressure_basic.tentative.https.window.html",
-      {}
-     ]
-    ],
-    "compute_pressure_basic_async.tentative.https.window.js": [
-     "a70ffa98b130d3298b0f7f428ae027992058ff55",
-     [
-      "compute-pressure/compute_pressure_basic_async.tentative.https.window.html",
+      "compute-pressure/compute_pressure_basic.tentative.https.any.html",
       {
        "script_metadata": [
         [
@@ -422761,6 +422746,58 @@
         [
          "script",
          "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_basic.tentative.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_basic.tentative.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
         ]
        ],
        "timeout": "long"
@@ -422768,7 +422805,7 @@
      ]
     ],
     "compute_pressure_cross_origin_focus_control.tentative.https.window.js": [
-     "f88c9fdf64e3afdae60b06fd658256841e9a5283",
+     "950334d6fc57f324b61cede416920534ccce76aa",
      [
       "compute-pressure/compute_pressure_cross_origin_focus_control.tentative.https.window.html",
       {
@@ -422780,6 +422817,14 @@
         [
          "script",
          "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
         ]
        ],
        "timeout": "long"
@@ -422787,37 +422832,16 @@
      ]
     ],
     "compute_pressure_detached_iframe.tentative.https.html": [
-     "3b0a5504e536acf9426476122f59b7c8ed24b150",
+     "5511a147048d610125a0d0d485367b88e4e5a70e",
      [
       null,
       {}
      ]
     ],
-    "compute_pressure_disconnect.tentative.https.window.js": [
-     "c9950f2dc84d2ad7001df440b598d0730fe3cfb9",
+    "compute_pressure_disconnect.tentative.https.any.js": [
+     "1d188fad8b8e1cd2123e320d99943c408be55fcd",
      [
-      "compute-pressure/compute_pressure_disconnect.tentative.https.window.html",
-      {}
-     ]
-    ],
-    "compute_pressure_disconnect_idempotent.tentative.https.window.js": [
-     "72021fd2708b6aab870e133f744cf53ebd61f194",
-     [
-      "compute-pressure/compute_pressure_disconnect_idempotent.tentative.https.window.html",
-      {}
-     ]
-    ],
-    "compute_pressure_disconnect_immediately.tentative.https.window.js": [
-     "1abe84d57202ba568d4c1fa459b355e591582a77",
-     [
-      "compute-pressure/compute_pressure_disconnect_immediately.tentative.https.window.html",
-      {}
-     ]
-    ],
-    "compute_pressure_duplicate_updates.tentative.https.window.js": [
-     "6318c0e88fb4336bef892727eac07b6a3c15d67e",
-     [
-      "compute-pressure/compute_pressure_duplicate_updates.tentative.https.window.html",
+      "compute-pressure/compute_pressure_disconnect.tentative.https.any.html",
       {
        "script_metadata": [
         [
@@ -422827,15 +422851,16 @@
         [
          "script",
          "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
         ]
        ]
       }
-     ]
-    ],
-    "compute_pressure_factors.tentative.https.window.js": [
-     "fc2775559647ab6e06b9167ecae608c17d52c709",
+     ],
      [
-      "compute-pressure/compute_pressure_factors.tentative.https.window.html",
+      "compute-pressure/compute_pressure_disconnect.tentative.https.any.sharedworker.html",
       {
        "script_metadata": [
         [
@@ -422845,48 +422870,468 @@
         [
          "script",
          "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_disconnect.tentative.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
         ]
        ]
       }
      ]
     ],
-    "compute_pressure_multiple.tentative.https.window.js": [
-     "6015ae1f81bc495e642a7482757934fa1c1a1924",
+    "compute_pressure_disconnect_idempotent.tentative.https.any.js": [
+     "2f6421ee11711f8d1768cc19d233346440f16f7f",
      [
-      "compute-pressure/compute_pressure_multiple.tentative.https.window.html",
-      {}
+      "compute-pressure/compute_pressure_disconnect_idempotent.tentative.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_disconnect_idempotent.tentative.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_disconnect_idempotent.tentative.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
      ]
     ],
-    "compute_pressure_multiple_across_iframes.tentative.https.window.js": [
-     "838b9a17a00f2bf14f8443673fac1fbc4560e6fe",
+    "compute_pressure_disconnect_immediately.tentative.https.any.js": [
+     "b96ebd802e666bcd0230406da3435d8969484037",
      [
-      "compute-pressure/compute_pressure_multiple_across_iframes.tentative.https.window.html",
-      {}
+      "compute-pressure/compute_pressure_disconnect_immediately.tentative.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_disconnect_immediately.tentative.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_disconnect_immediately.tentative.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
      ]
     ],
-    "compute_pressure_observe_idempotent.tentative.https.window.js": [
-     "e60115fee87c15cb25c55382e418e7611514c892",
+    "compute_pressure_duplicate_updates.tentative.https.any.js": [
+     "b5d7690d18295b82bf052faa3a7c93cc5ecc024a",
      [
-      "compute-pressure/compute_pressure_observe_idempotent.tentative.https.window.html",
-      {}
+      "compute-pressure/compute_pressure_duplicate_updates.tentative.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_duplicate_updates.tentative.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_duplicate_updates.tentative.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
      ]
     ],
-    "compute_pressure_observe_unobserve_failure.tentative.https.window.js": [
-     "c32649da5c3dde260d74c0ab6bbeb275143d385d",
+    "compute_pressure_factors.tentative.https.any.js": [
+     "7486a70f91170c180ea12f8a0acee46a2626b640",
      [
-      "compute-pressure/compute_pressure_observe_unobserve_failure.tentative.https.window.html",
-      {}
+      "compute-pressure/compute_pressure_factors.tentative.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_factors.tentative.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_factors.tentative.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
      ]
     ],
-    "compute_pressure_options.tentative.https.window.js": [
-     "d142ecc088187e60bcdbbd5a94b81c1d37c89331",
+    "compute_pressure_multiple.tentative.https.any.js": [
+     "c8cef5beca0cba5b26ba897d16f90b08caa1c40d",
      [
-      "compute-pressure/compute_pressure_options.tentative.https.window.html",
-      {}
+      "compute-pressure/compute_pressure_multiple.tentative.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_multiple.tentative.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_multiple.tentative.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "compute_pressure_observe_idempotent.tentative.https.any.js": [
+     "5dc3804b2f7ea21f5e189351ea0194f30d6f536d",
+     [
+      "compute-pressure/compute_pressure_observe_idempotent.tentative.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_observe_idempotent.tentative.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_observe_idempotent.tentative.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "compute_pressure_observe_unobserve_failure.tentative.https.any.js": [
+     "8eafeb356d815728719b61aee9e9ee704b79bdad",
+     [
+      "compute-pressure/compute_pressure_observe_unobserve_failure.tentative.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_observe_unobserve_failure.tentative.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_observe_unobserve_failure.tentative.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "compute_pressure_options.tentative.https.any.js": [
+     "69999819d962fbf1841d87a817aed1ac23767f17",
+     [
+      "compute-pressure/compute_pressure_options.tentative.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_options.tentative.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_options.tentative.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
      ]
     ],
     "compute_pressure_privacy_test.tentative.https.window.js": [
-     "d33f6ef09ad1681a2803fc0fda8315dcd80e39f9",
+     "113f4bdf79be9325df22f859c819558ab37429f5",
      [
       "compute-pressure/compute_pressure_privacy_test.tentative.https.window.html",
       {
@@ -422918,6 +423363,14 @@
         [
          "script",
          "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
         ]
        ],
        "timeout": "long"
@@ -422925,25 +423378,15 @@
      ]
     ],
     "compute_pressure_same_origin_focus_control.tentative.https.window.js": [
-     "746f119f249c8c1a7d6451a5672823d011adf22e",
+     "7df0be5c47d161fe4cadcba937f875a0a0cba320",
      [
       "compute-pressure/compute_pressure_same_origin_focus_control.tentative.https.window.html",
-      {}
-     ]
-    ],
-    "compute_pressure_supported_sources.tentative.https.window.js": [
-     "2a69e731e7f9f7c5c0b54ea3b7bc9202bda57f16",
-     [
-      "compute-pressure/compute_pressure_supported_sources.tentative.https.window.html",
-      {}
-     ]
-    ],
-    "compute_pressure_take_records.tentative.https.window.js": [
-     "d294a7e80fd7e4cfcf4bbf5962f9014e1826e331",
-     [
-      "compute-pressure/compute_pressure_take_records.tentative.https.window.html",
       {
        "script_metadata": [
+        [
+         "timeout",
+         "long"
+        ],
         [
          "script",
          "/resources/test-only-api.js"
@@ -422952,32 +423395,51 @@
          "script",
          "resources/pressure-helpers.js"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ]
     ],
-    "compute_pressure_timestamp.tentative.https.window.js": [
-     "aae56180aa3014e6faaa20d2dc421d9393e0ca42",
+    "compute_pressure_supported_sources.tentative.https.any.js": [
+     "63f2666cca69c9ed69b1449fb5c336854d11967d",
      [
-      "compute-pressure/compute_pressure_timestamp.tentative.https.window.html",
+      "compute-pressure/compute_pressure_supported_sources.tentative.https.any.html",
       {
        "script_metadata": [
         [
-         "script",
-         "/resources/test-only-api.js"
-        ],
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_supported_sources.tentative.https.any.sharedworker.html",
+      {
+       "script_metadata": [
         [
-         "script",
-         "resources/pressure-helpers.js"
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_supported_sources.tentative.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
         ]
        ]
       }
      ]
     ],
-    "compute_pressure_update_toJSON.tentative.https.window.js": [
-     "f21cd464c6630eec60b89ead8510081c4b77d0fa",
+    "compute_pressure_take_records.tentative.https.any.js": [
+     "d93c9b5c886f9d57def646c052f5ea1cce627ea5",
      [
-      "compute-pressure/compute_pressure_update_toJSON.tentative.https.window.html",
+      "compute-pressure/compute_pressure_take_records.tentative.https.any.html",
       {
        "script_metadata": [
         [
@@ -422987,6 +423449,168 @@
         [
          "script",
          "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_take_records.tentative.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_take_records.tentative.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "compute_pressure_timestamp.tentative.https.any.js": [
+     "f283caa6baebbe531b1fdddb2add2b761b7ad083",
+     [
+      "compute-pressure/compute_pressure_timestamp.tentative.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_timestamp.tentative.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_timestamp.tentative.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "compute_pressure_update_toJSON.tentative.https.any.js": [
+     "c1cd240a3bc52b4b9dc79cb594d48ebdd7f64ec7",
+     [
+      "compute-pressure/compute_pressure_update_toJSON.tentative.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_update_toJSON.tentative.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "compute-pressure/compute_pressure_update_toJSON.tentative.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/pressure-helpers.js"
+        ],
+        [
+         "global",
+         "window,dedicatedworker,sharedworker"
         ]
        ]
       }
@@ -433472,6 +434096,13 @@
      ],
      "anchor-name-multicol-004.html": [
       "881578a4639e44abd04dfe7ead64345727e43cb2",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-non-oof-inherit.html": [
+      "75f98a1ebfe0e6b61008e2152bea88228829af08",
       [
        null,
        {}
@@ -593846,7 +594477,7 @@
      ]
     ],
     "orientation-reading.html": [
-     "0bebb6723a384fc112358418d783e72a762940e2",
+     "90bbb8071dacf704c5a66b564268af4ee4f92354",
      [
       null,
       {
