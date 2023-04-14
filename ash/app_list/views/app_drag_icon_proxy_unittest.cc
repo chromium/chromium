@@ -124,11 +124,11 @@ TEST_F(AppDragIconProxyTest, BlurSetsRoundedCorners) {
 
   // The background should be circular.
   EXPECT_EQ(gfx::RoundedCornersF(25.0f).ToString(),
-            drag_icon_proxy->GetImageLayerForTesting()
+            drag_icon_proxy->GetBlurredLayerForTesting()
                 ->rounded_corner_radii()
                 .ToString());
   EXPECT_EQ(30.0f,
-            drag_icon_proxy->GetImageLayerForTesting()->background_blur());
+            drag_icon_proxy->GetBlurredLayerForTesting()->background_blur());
 
   // Test that background corner radii are scaled with the image.
   drag_icon_proxy = std::make_unique<AppDragIconProxy>(
@@ -141,11 +141,11 @@ TEST_F(AppDragIconProxyTest, BlurSetsRoundedCorners) {
 
   // The background should be circular.
   EXPECT_EQ(gfx::RoundedCornersF(50.0f).ToString(),
-            drag_icon_proxy->GetImageLayerForTesting()
+            drag_icon_proxy->GetBlurredLayerForTesting()
                 ->rounded_corner_radii()
                 .ToString());
   EXPECT_EQ(30.0f,
-            drag_icon_proxy->GetImageLayerForTesting()->background_blur());
+            drag_icon_proxy->GetBlurredLayerForTesting()->background_blur());
 }
 
 TEST_F(AppDragIconProxyTest, AnimateBoundsForClosure) {

@@ -4,6 +4,7 @@
 
 #include "ash/app_list/views/app_drag_icon_proxy.h"
 
+#include <memory>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -13,6 +14,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_owner.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -80,12 +82,32 @@ AppDragIconProxy::AppDragIconProxy(
 
   shadow_->SetContentBounds(gfx::Rect(shadow_offset, scaled_shadow_size));
 
-  if (is_folder_icon && !features::IsAppCollectionFolderRefreshEnabled()) {
-    const float radius = size.width() / 2.0f;
-    drag_image->layer()->SetRoundedCornerRadius(
-        {radius, radius, radius, radius});
-    drag_image->layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    drag_image->layer()->SetBackdropFilterQuality(
+  if (is_folder_icon) {
+    ui::Layer* blurred_layer;
+    float corner_radius;
+
+    if (features::IsAppCollectionFolderRefreshEnabled()) {
+      // For the refreshed icon, the blur should be only added on the background
+      // circle, where none of any exising layer is bounded to that area.
+      // Therefore, the `blurred_background_layer_` is needed here to explicitly
+      // blur the background of the icon.
+      blurred_background_layer_ =
+          std::make_unique<ui::LayerOwner>(std::make_unique<ui::Layer>());
+      blurred_layer = blurred_background_layer_->layer();
+      drag_image->AddLayerToRegion(blurred_layer, views::LayerRegion::kBelow);
+      blurred_layer->SetBounds(shadow_->GetContentBounds());
+      corner_radius = shadow_->GetContentBounds().width() / 2.0f;
+    } else {
+      // For the clipped drag icon, the `drag_image` layer can be used for
+      // blurring as the whole clipped area needs to be blurred.
+      blurred_layer = drag_image->layer();
+      corner_radius = size.width() / 2.0f;
+    }
+
+    blurred_layer->SetRoundedCornerRadius(
+        {corner_radius, corner_radius, corner_radius, corner_radius});
+    blurred_layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    blurred_layer->SetBackdropFilterQuality(
         ColorProvider::kBackgroundBlurQuality);
   }
 
@@ -166,6 +188,12 @@ ui::Layer* AppDragIconProxy::GetImageLayerForTesting() {
 
 views::Widget* AppDragIconProxy::GetWidgetForTesting() {
   return drag_image_widget_.get();
+}
+
+ui::Layer* AppDragIconProxy::GetBlurredLayerForTesting() {
+  return features::IsAppCollectionFolderRefreshEnabled()
+             ? blurred_background_layer_->layer()
+             : GetImageLayerForTesting();  // IN-TEST
 }
 
 void AppDragIconProxy::OnProxyAnimationCompleted() {

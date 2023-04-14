@@ -24,6 +24,7 @@ class Rect;
 
 namespace ui {
 class Layer;
+class LayerOwner;
 }  // namespace ui
 
 namespace ash {
@@ -83,6 +84,9 @@ class AppDragIconProxy {
     return shadow_->GetContentBounds();
   }
 
+  // Returns the layer that is used to blur the background.
+  ui::Layer* GetBlurredLayerForTesting();
+
  private:
   void OnProxyAnimationCompleted();
 
@@ -91,6 +95,10 @@ class AppDragIconProxy {
   bool closing_widget_ = false;
 
   std::unique_ptr<SystemShadow> shadow_;
+
+  // A layer that is used to blur the background of the dragged icon. Only used
+  // for refreshed folder icons.
+  std::unique_ptr<ui::LayerOwner> blurred_background_layer_;
 
   // The widget used to display the drag image.
   views::UniqueWidgetPtr drag_image_widget_;
