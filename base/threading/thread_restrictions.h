@@ -216,6 +216,9 @@ class BrowserGpuChannelHostFactory;
 class BrowserMainLoop;
 class BrowserProcessIOThread;
 class BrowserTestBase;
+#if BUILDFLAG(IS_IOS)
+class ContentMainRunnerImpl;
+#endif  // BUILDFLAG(IS_IOS)
 class DesktopCaptureDevice;
 class DWriteFontCollectionProxy;
 class DWriteFontProxyImpl;
@@ -1003,25 +1006,13 @@ class BASE_EXPORT PermanentThreadAllowance {
   friend class base::TestCustomDisallow;
   friend class content::BrowserMainLoop;
   friend class content::BrowserTestBase;
+#if BUILDFLAG(IS_IOS)
+  friend class content::ContentMainRunnerImpl;
+#endif  // BUILDFLAG(IS_IOS)
   friend class web::WebMainLoop;
 
   static void AllowBlocking() EMPTY_BODY_IF_DCHECK_IS_OFF;
   static void AllowBaseSyncPrimitives() EMPTY_BODY_IF_DCHECK_IS_OFF;
-};
-
-// Similar to PermanentThreadAllowance but separate because it's dangerous and
-// should have even fewer friends.
-class BASE_EXPORT PermanentSingletonAllowance {
- public:
-  // Class is merely a namespace-with-friends.
-  PermanentSingletonAllowance() = delete;
-
- private:
-  // Re-allow singletons on this thread. Since //base APIs DisallowSingleton()
-  // when they risk running past shutdown, this should only be called in rare
-  // cases where the caller knows the process will be killed rather than
-  // shutdown.
-  static void AllowSingleton() EMPTY_BODY_IF_DCHECK_IS_OFF;
 };
 
 #undef INLINE_OR_NOT_TAIL_CALLED
