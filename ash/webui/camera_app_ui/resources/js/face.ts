@@ -4,6 +4,7 @@
 
 import {assertInstanceof, assertNotReached} from './assert.js';
 import * as dom from './dom.js';
+import {DeviceOperator} from './mojo/device_operator.js';
 import {Resolution} from './type.js';
 
 // G-yellow-600 with alpha = 0.8
@@ -38,16 +39,33 @@ export class FaceOverlay {
 
   private readonly ctx: CanvasRenderingContext2D;
 
+  private readonly orientationListener = () => {
+    this.updateOrientation();
+  };
+
   /**
    * @param activeArraySize The active array size of the device.
    * @param orientation Counter-clockwise angles to apply rotation to
    *     the face rectangles.
    */
   constructor(
-      private readonly activeArraySize: Resolution,
-      private readonly orientation: number) {
+      private readonly activeArraySize: Resolution, private orientation: number,
+      private readonly deviceId: string) {
     this.ctx = assertInstanceof(
         this.canvas.getContext('2d'), CanvasRenderingContext2D);
+    window.screen.orientation.addEventListener(
+        'change', this.orientationListener);
+  }
+
+  /**
+   * Updates orientation.
+   */
+  async updateOrientation(): Promise<void> {
+    const deviceOperator = DeviceOperator.getInstance();
+    if (deviceOperator) {
+      this.orientation =
+          await deviceOperator.getCameraFrameRotation(this.deviceId);
+    }
   }
 
   /**
@@ -61,7 +79,6 @@ export class FaceOverlay {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     // TODO(b/178344897): Handle zoomed preview.
-    // TODO(b/178344897): Handle screen orientation dynamically.
 
     this.ctx.strokeStyle = RECT_COLOR;
     for (let i = 0; i < rects.length; i += 4) {
@@ -112,7 +129,17 @@ export class FaceOverlay {
   /**
    * Clears all rectangles.
    */
-  clear(): void {
+  clearRects(): void {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  /**
+   * Removes updateOrientation from the event listener and clears all
+   * rectangles.
+   */
+  clear(): void {
+    this.clearRects();
+    window.screen.orientation.removeEventListener(
+        'change', this.orientationListener);
   }
 }

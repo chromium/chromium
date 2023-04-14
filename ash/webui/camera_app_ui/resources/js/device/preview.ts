@@ -562,8 +562,8 @@ export class Preview {
     const activeArraySize = await deviceOperator.getActiveArraySize(deviceId);
     const cameraFrameRotation =
         await deviceOperator.getCameraFrameRotation(deviceId);
-    this.faceOverlay =
-        new FaceOverlay(activeArraySize, (360 - cameraFrameRotation) % 360);
+    this.faceOverlay = new FaceOverlay(
+        activeArraySize, (360 - cameraFrameRotation) % 360, deviceId);
 
     const updateFace =
         (mode: AndroidStatisticsFaceDetectMode, rects: number[]) => {
@@ -573,7 +573,7 @@ export class Preview {
                   .ANDROID_STATISTICS_FACE_DETECT_MODE_OFF) {
             dom.get('#preview-num-faces', HTMLDivElement).style.display =
                 'none';
-            this.faceOverlay.clear();
+            this.faceOverlay.clearRects();
             return;
           }
           assert(rects.length % 4 === 0);
