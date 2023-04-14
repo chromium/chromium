@@ -289,7 +289,7 @@ void MediaFoundationAudioDecoder::Reset(base::OnceClosure reset_cb) {
   if (hr != S_OK) {
     DLOG(ERROR) << "Reset failed with \"" << PrintHr(hr) << "\"";
   }
-  std::move(reset_cb).Run();
+  base::BindPostTaskToCurrentDefault(std::move(reset_cb)).Run();
 }
 
 bool MediaFoundationAudioDecoder::NeedsBitstreamConversion() const {
