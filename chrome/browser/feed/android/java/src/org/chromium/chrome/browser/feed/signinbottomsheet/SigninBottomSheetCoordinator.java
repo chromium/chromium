@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.feed.signinbottomsheet;
 import android.accounts.Account;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -35,14 +36,17 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
     private final SigninManager mSigninManager;
     private boolean mSetTestToast;
     private AccountPickerBottomSheetCoordinator mAccountPickerBottomSheetCoordinator;
+    private final Runnable mOnSigninSuccessCallback;
 
-    public SigninBottomSheetCoordinator(
-            WindowAndroid windowAndroid, BottomSheetController controller, Profile profile) {
+    public SigninBottomSheetCoordinator(WindowAndroid windowAndroid,
+            BottomSheetController controller, Profile profile,
+            @Nullable Runnable onSigninSuccessCallback) {
         mWindowAndroid = windowAndroid;
         mController = controller;
         mProfile = profile;
         mSigninManager = IdentityServicesProvider.get().getSigninManager(mProfile);
         mSetTestToast = false;
+        mOnSigninSuccessCallback = onSigninSuccessCallback;
     }
 
     @Override
@@ -58,6 +62,9 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
                 RecordHistogram.recordBooleanHistogram(
                         "ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful", true);
                 mController.hideContent(mController.getCurrentSheetContent(), true);
+                if (mOnSigninSuccessCallback != null) {
+                    mOnSigninSuccessCallback.run();
+                }
             }
 
             @Override
