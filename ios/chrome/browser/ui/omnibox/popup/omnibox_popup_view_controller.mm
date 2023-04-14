@@ -376,7 +376,12 @@ BOOL ShouldDismissKeyboardOnScroll() {
   UITapGestureRecognizer* debugGestureRecognizer =
       [[UITapGestureRecognizer alloc] initWithTarget:self
                                               action:@selector(showDebugUI)];
+#if TARGET_OS_SIMULATOR
+  // One tap for easy trigger on simulator.
+  debugGestureRecognizer.numberOfTapsRequired = 1;
+#else
   debugGestureRecognizer.numberOfTapsRequired = 2;
+#endif
   debugGestureRecognizer.numberOfTouchesRequired = 2;
   [self.view addGestureRecognizer:debugGestureRecognizer];
 }
