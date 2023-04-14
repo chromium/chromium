@@ -173,6 +173,13 @@ export class SearchBoxElement extends SearchBoxElementBase {
     return this.searchResults.length !== 0;
   }
 
+  /**
+   * @return Length of the search results array.
+   */
+  private getListLength(): number {
+    return this.searchResults.length;
+  }
+
   private getCurrentQuery(): string {
     return strictQuery('#search', this.shadowRoot, CrToolbarSearchFieldElement)
         .getSearchInput()

@@ -4,6 +4,7 @@
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../text_accelerator.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -46,10 +47,23 @@ export class SearchResultRowElement extends SearchResultRowElementBase {
       selected: {
         type: Boolean,
         reflectToAttribute: true,
+        observer: 'makeA11yAnnouncementIfSelectedAndUnfocused',
       },
+
+      /** Aria label for the row. */
+      ariaLabel: {
+        type: String,
+        computed: 'computeAriaLabel(searchResult)',
+        reflectToAttribute: true,
+      },
+
+      /** Number of rows in the list this row is part of. */
+      listLength: Number,
     };
   }
 
+  override ariaLabel: string;
+  listLength: number;
   searchResult: MojoSearchResult;
   searchQuery: string;
   selected: boolean;
@@ -141,6 +155,29 @@ export class SearchResultRowElement extends SearchResultRowElementBase {
         mojoString16ToString(
             this.searchResult.acceleratorLayoutInfo.description),
         this.searchQuery);
+  }
+
+  /**
+   * @return Aria label string for ChromeVox to verbalize.
+   */
+  private computeAriaLabel(): string {
+    return this.i18n(
+        'searchResultSelectedAriaLabel', this.focusRowIndex + 1,
+        this.listLength,
+        mojoString16ToString(
+            this.searchResult.acceleratorLayoutInfo.description));
+  }
+
+  private makeA11yAnnouncementIfSelectedAndUnfocused(): void {
+    if (!this.selected || this.lastFocused) {
+      // Do not alert the user if the result is not selected, or
+      // the list is focused, defer to aria tags instead.
+      return;
+    }
+
+    // The selected item is normally not focused when selected, the
+    // selected search result should be verbalized as it changes.
+    getAnnouncerInstance().announce(this.ariaLabel);
   }
 }
 

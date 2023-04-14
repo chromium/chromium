@@ -114,6 +114,8 @@
             search-query="[[getCurrentQuery(searchResults)]]"
             last-focused="{{lastFocused}}"
             list-blurred="{{listBlurred}}"
+            list-length="[[getListLength(searchResults)]]"
+            focus-row-index="[[index]]"
             on-navigated-to-result-route="onNavigatedToResultRowRoute"
             tabindex$="[[getRowTabIndex(item, selectedItem,
                 shouldShowDropdown)]]"
