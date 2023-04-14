@@ -9508,6 +9508,8 @@ if (!is_android) {
     }
     if (enable_dice_support || is_chromeos_lacros) {
       sources += [
+        "../browser/ui/startup/first_run_test_util.cc",
+        "../browser/ui/startup/first_run_test_util.h",
         "../browser/ui/views/profiles/profile_picker_test_base.cc",
         "../browser/ui/views/profiles/profile_picker_test_base.h",
       ]

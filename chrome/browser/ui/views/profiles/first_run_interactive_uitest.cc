@@ -3,101 +3,140 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/startup/first_run_service.h"
+#include "chrome/browser/ui/startup/first_run_test_util.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_interactive_uitest_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
+#include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/variations/active_field_trials.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 
 #if !BUILDFLAG(ENABLE_DICE_SUPPORT)
 #error "Unsupported platform"
 #endif
 
-class FirstRunInteractiveUiTest : public ProfilePickerInteractiveUiTestBase {
+class FirstRunInteractiveUiTest
+    : public FirstRunServiceBrowserTestBase,
+      public WithProfilePickerInteractiveUiTestHelpers {
  public:
   FirstRunInteractiveUiTest() = default;
   ~FirstRunInteractiveUiTest() override = default;
 
+ protected:
+  // FirstRunServiceBrowserTestBase:
   void SetUpInProcessBrowserTestFixture() override {
-    ProfilePickerTestBase::SetUpInProcessBrowserTestFixture();
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &FirstRunInteractiveUiTest::OnWillCreateBrowserContextServices,
-                base::Unretained(this)));
+    FirstRunServiceBrowserTestBase::SetUpInProcessBrowserTestFixture();
+    url_loader_factory_helper_.SetUp();
   }
 
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    // Clear the previous cookie responses (if any) before using it for a new
-    // profile (as test_url_loader_factory() is shared across profiles).
-    test_url_loader_factory()->ClearResponses();
-    ChromeSigninClientFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
-                                     test_url_loader_factory()));
+  content::EvalJsResult EvalJsInPickerContents(const std::string& script) {
+    CHECK(view());
+    CHECK(view()->GetPickerContents());
+    return content::EvalJs(view()->GetPickerContents(), script);
   }
 
   network::TestURLLoaderFactory* test_url_loader_factory() {
-    return &test_url_loader_factory_;
+    return url_loader_factory_helper_.test_url_loader_factory();
+  }
+
+  void SimulateSignInAndWaitForSyncOptInPage() {
+    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile());
+    AccountInfo account_info = signin::MakeAccountAvailableWithCookies(
+        identity_manager, test_url_loader_factory(), "joe.consumer@gmail.com",
+        signin::GetTestGaiaIdForEmail("joe.consumer@gmail.com"));
+    signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+    WaitForLoadStop(AppendSyncConfirmationQueryParams(
+        GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow));
   }
 
  private:
-  network::TestURLLoaderFactory test_url_loader_factory_;
-  base::CallbackListSubscription create_services_subscription_;
-
-  base::test::ScopedFeatureList scoped_feature_list_{kForYouFre};
+  ChromeSigninClientWithURLLoaderHelper url_loader_factory_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, CloseWindow) {
+  base::test::TestFuture<bool> proceed_future;
   base::HistogramTester histogram_tester;
-  base::MockCallback<ProfilePicker::FirstRunExitedCallback>
-      first_run_exited_callback;
-  ProfilePicker::Show(ProfilePicker::Params::ForFirstRun(
-      browser()->profile()->GetPath(), first_run_exited_callback.Get()));
 
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
+                                      proceed_future.GetCallback());
   WaitForPickerWidgetCreated();
   WaitForLoadStop(GURL(chrome::kChromeUIIntroURL));
 
-  EXPECT_CALL(first_run_exited_callback,
-              Run(ProfilePicker::FirstRunExitStatus::kQuitAtEnd));
   SendCloseWindowKeyboardCommand();
   WaitForPickerClosed();
+  EXPECT_EQ(kForYouFreCloseShouldProceed.Get(), proceed_future.Get());
 
+  // Checking the expected metrics from this flow.
   histogram_tester.ExpectUniqueSample(
       "Signin.SignIn.Offered",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
-  histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
+  histogram_tester.ExpectBucketCount(
+      "ProfilePicker.FirstRun.ExitStatus",
+      ProfilePicker::FirstRunExitStatus::kQuitAtEnd, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, SignInAndSync) {
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest,
+                       CloseChromeWithKeyboardShortcut) {
+  base::test::TestFuture<bool> proceed_future;
   base::HistogramTester histogram_tester;
   base::MockCallback<ProfilePicker::FirstRunExitedCallback>
       first_run_exited_callback;
-  Profile* profile = browser()->profile();
 
-  ProfilePicker::Show(ProfilePicker::Params::ForFirstRun(
-      profile->GetPath(), first_run_exited_callback.Get()));
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+  fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
+                                      proceed_future.GetCallback());
+  WaitForPickerWidgetCreated();
+
+  SendQuitAppKeyboardCommand();
+  WaitForPickerClosed();
+
+  EXPECT_FALSE(proceed_future.Get());
+  histogram_tester.ExpectBucketCount(
+      "ProfilePicker.FirstRun.ExitStatus",
+      ProfilePicker::FirstRunExitStatus::kAbandonedFlow, 1);
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, SignInAndSync) {
+  base::test::TestFuture<bool> proceed_future;
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+  fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
+                                      proceed_future.GetCallback());
 
   WaitForPickerWidgetCreated();
+  EXPECT_FALSE(GetFirstRunFinishedPrefValue());
+
   WaitForLoadStop(GURL(chrome::kChromeUIIntroURL));
   histogram_tester.ExpectUniqueSample(
       "Signin.SignIn.Offered",
@@ -113,13 +152,8 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, SignInAndSync) {
       "Signin.SignIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
 
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  AccountInfo account_info = signin::MakeAccountAvailableWithCookies(
-      identity_manager, test_url_loader_factory(), "joe.consumer@gmail.com",
-      signin::GetTestGaiaIdForEmail("joe.consumer@gmail.com"));
-  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
-  WaitForLoadStop(AppendSyncConfirmationQueryParams(
-      GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow));
+  SimulateSignInAndWaitForSyncOptInPage();
+
   histogram_tester.ExpectUniqueSample(
       "Signin.SignIn.Completed",
       signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER, 1);
@@ -127,19 +161,81 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, SignInAndSync) {
       "Signin.SyncOptIn.Started",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
 
-  base::RunLoop run_loop;
-  EXPECT_CALL(first_run_exited_callback,
-              Run(ProfilePicker::FirstRunExitStatus::kCompleted))
-      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
-  LoginUIServiceFactory::GetForProfile(profile)->SyncConfirmationUIClosed(
+  LoginUIServiceFactory::GetForProfile(profile())->SyncConfirmationUIClosed(
       LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
 
   WaitForPickerClosed();
-  run_loop.Run();
 
   histogram_tester.ExpectUniqueSample(
       "Signin.SyncOptIn.Completed",
       signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+
+  EXPECT_TRUE(proceed_future.Get());
+
+  EXPECT_TRUE(GetFirstRunFinishedPrefValue());
+  EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());
+
+  // Re-assessment of all metrics from this flow, and check for no
+  // double-logs.
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Started",
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Completed",
+      signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SyncOptIn.Started",
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SyncOptIn.Completed",
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ProfilePicker.FirstRun.ExitStatus",
+      ProfilePicker::FirstRunExitStatus::kCompleted, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, DeclineSync) {
+  base::test::TestFuture<bool> proceed_future;
+  base::HistogramTester histogram_tester;
+
+  fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
+                                      proceed_future.GetCallback());
+
+  WaitForPickerWidgetCreated();
+  WaitForLoadStop(GURL(chrome::kChromeUIIntroURL));
+
+  web_contents()->GetWebUI()->ProcessWebUIMessage(
+      web_contents()->GetURL(), "continueWithAccount", base::Value::List());
+  WaitForLoadStop(GetSigninChromeSyncDiceUrl());
+
+  SimulateSignInAndWaitForSyncOptInPage();
+
+  LoginUIServiceFactory::GetForProfile(profile())->SyncConfirmationUIClosed(
+      LoginUIService::ABORT_SYNC);
+  WaitForPickerClosed();
+
+  EXPECT_TRUE(proceed_future.Get());
+
+  // Checking the expected metrics from this flow.
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Started",
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Completed",
+      signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SyncOptIn.Started",
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+  histogram_tester.ExpectTotalCount("Signin.SyncOptIn.Completed", 0);
+  histogram_tester.ExpectUniqueSample(
+      "ProfilePicker.FirstRun.ExitStatus",
+      ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 }
 
 // TODO(crbug.com/1433000): Flaky on win-asan
@@ -153,40 +249,50 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, SignInAndSync) {
 IN_PROC_BROWSER_TEST_F(
     FirstRunInteractiveUiTest,
     MAYBE_ButtonsAreDisabledOnClickAndEnabledOnNavigateBack) {
-  const char kAreButtonsDisabledJSString[] =
+  const char kAreButtonsDisabledScript[] =
       "(() => {"
       "  const introApp = document.querySelector('intro-app');"
       "  const signInPromo = "
-      "introApp.shadowRoot.querySelector('sign-in-promo');"
-      "  return "
-      "signInPromo.shadowRoot.querySelector('#acceptSignInButton').disabled;"
+      "      introApp.shadowRoot.querySelector('sign-in-promo');"
+      "  return signInPromo.shadowRoot"
+      "      .querySelector('#acceptSignInButton').disabled;"
       "})();";
 
-  const char kClickSignInButtonJSString[] =
+  const char kClickIntroButtonScriptTemplate[] =
       "(() => {"
       "  const introApp = document.querySelector('intro-app');"
       "  const signInPromo = "
-      "introApp.shadowRoot.querySelector('sign-in-promo');"
-      "signInPromo.shadowRoot.querySelector('#acceptSignInButton').click();"
-      "return true;"
+      "      introApp.shadowRoot.querySelector('sign-in-promo');"
+      "  signInPromo.shadowRoot.querySelector('%s').click();"
+      "  return true;"
       "})();";
 
-  base::RunLoop run_loop;
-  Profile* profile = browser()->profile();
+  const std::string kClickSignInScript = base::StringPrintf(
+      kClickIntroButtonScriptTemplate, "#acceptSignInButton");
 
-  ProfilePicker::Show(ProfilePicker::Params::ForFirstRun(
-      profile->GetPath(), base::IgnoreArgs<ProfilePicker::FirstRunExitStatus>(
-                              run_loop.QuitClosure())));
+  const std::string kClickDontSignInScript = base::StringPrintf(
+      kClickIntroButtonScriptTemplate, "#declineSignInButton");
+
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<bool> proceed_future;
+
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+  fre_service()->OpenFirstRunIfNeeded(FirstRunService::EntryPoint::kOther,
+                                      proceed_future.GetCallback());
 
   WaitForPickerWidgetCreated();
   WaitForLoadStop(GURL(chrome::kChromeUIIntroURL));
 
-  EXPECT_EQ(true, content::EvalJs(view()->GetPickerContents(),
-                                  kClickSignInButtonJSString));
-
+  // Advance to the sign-in page. We actually click the button instead
+  // of sending a WebUI message to exercise disabling the buttons.
+  EXPECT_EQ(true, EvalJsInPickerContents(kClickSignInScript));
   WaitForLoadStop(GetSigninChromeSyncDiceUrl());
-  EXPECT_EQ(true, content::EvalJs(view()->GetPickerContents(),
-                                  kAreButtonsDisabledJSString));
+
+  // The buttons on the intro page should be disabled.
+  // We deliberately target the picker's own web contents to run
+  // the script, not the currently active web contents from the webview, to
+  // get the intro instead of the sign-in page.
+  EXPECT_EQ(true, EvalJsInPickerContents(kAreButtonsDisabledScript));
 
   SendBackKeyboardCommand();
 
@@ -216,9 +322,18 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(true, content::EvalJs(view()->GetPickerContents(),
                                   kEnsureButtonEnabledScript));
 
-  view()->GetPickerContents()->GetWebUI()->ProcessWebUIMessage(
-      view()->GetPickerContents()->GetURL(), "continueWithoutAccount",
-      base::Value::List());
+  EXPECT_EQ(true, EvalJsInPickerContents(kClickDontSignInScript));
   WaitForPickerClosed();
-  run_loop.Run();
+  EXPECT_EQ(kForYouFreCloseShouldProceed.Get(), proceed_future.Get());
+
+  // Checking the expected metrics from this flow.
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Offered",
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Started",
+      signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ProfilePicker.FirstRun.ExitStatus",
+      ProfilePicker::FirstRunExitStatus::kCompleted, 1);
 }

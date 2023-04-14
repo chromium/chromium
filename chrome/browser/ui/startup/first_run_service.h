@@ -178,7 +178,7 @@ class FirstRunServiceFactory : public ProfileKeyedServiceFactory {
 
  private:
   friend class base::NoDestructor<FirstRunServiceFactory>;
-  friend class FirstRunServiceBrowserTest;
+  friend class FirstRunServiceBrowserTestBase;
 
   FirstRunServiceFactory();
   ~FirstRunServiceFactory() override;

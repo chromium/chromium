@@ -7,16 +7,47 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/ui/startup/first_run_test_util.h"
+#include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !BUILDFLAG(ENABLE_DICE_SUPPORT)
 #error "Unsupported platform"
 #endif
+
+class FirstRunServiceTest : public testing::Test {
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+};
+
+TEST_F(FirstRunServiceTest, ShouldOpenFirstRun) {
+  TestingProfileManager profile_manager{TestingBrowserProcess::GetGlobal()};
+  ASSERT_TRUE(profile_manager.SetUp());
+
+  auto* profile = profile_manager.CreateTestingProfile("Test Profile");
+  EXPECT_TRUE(ShouldOpenFirstRun(profile));
+
+  SetIsFirstRun(false);
+  EXPECT_FALSE(ShouldOpenFirstRun(profile));
+
+  SetIsFirstRun(true);
+  EXPECT_TRUE(ShouldOpenFirstRun(profile));
+
+  g_browser_process->local_state()->SetBoolean(prefs::kFirstRunFinished, true);
+  EXPECT_FALSE(ShouldOpenFirstRun(profile));
+}
 
 struct FirstRunFieldTrialTestParams {
   double entropy_value;

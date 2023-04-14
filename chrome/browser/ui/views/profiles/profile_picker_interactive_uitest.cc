@@ -57,7 +57,8 @@ class WidgetBoundsChangeWaiter : public views::WidgetObserver {
 }  // namespace
 
 class ProfilePickerInteractiveUiTest
-    : public ProfilePickerInteractiveUiTestBase {
+    : public InProcessBrowserTest,
+      public WithProfilePickerInteractiveUiTestHelpers {
  public:
   ProfilePickerInteractiveUiTest() = default;
   ~ProfilePickerInteractiveUiTest() override = default;

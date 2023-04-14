@@ -11,8 +11,10 @@ namespace ui {
 enum KeyboardCode;
 }
 
-// Helper to write interactive ui tests focused on `ProfilePickerView`.
-class ProfilePickerInteractiveUiTestBase : public ProfilePickerTestBase {
+// Mixin adding helpers to write interactive ui tests focused on
+// `ProfilePickerView`.
+class WithProfilePickerInteractiveUiTestHelpers
+    : public WithProfilePickerTestHelpers {
  public:
   void SendCloseWindowKeyboardCommand();
 

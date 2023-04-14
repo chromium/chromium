@@ -13,7 +13,8 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/widget/widget.h"
 
-void ProfilePickerInteractiveUiTestBase::SendCloseWindowKeyboardCommand() {
+void WithProfilePickerInteractiveUiTestHelpers::
+    SendCloseWindowKeyboardCommand() {
   // Close window using keyboard.
 #if BUILDFLAG(IS_MAC)
   // Use Cmd-W on Mac.
@@ -29,7 +30,7 @@ void ProfilePickerInteractiveUiTestBase::SendCloseWindowKeyboardCommand() {
   SendKeyPress(ui::VKEY_W, control, shift, /*alt=*/false, command);
 }
 
-void ProfilePickerInteractiveUiTestBase::SendBackKeyboardCommand() {
+void WithProfilePickerInteractiveUiTestHelpers::SendBackKeyboardCommand() {
   // Close window using keyboard.
 #if BUILDFLAG(IS_MAC)
   // Use Cmd-[ on Mac.
@@ -45,7 +46,8 @@ void ProfilePickerInteractiveUiTestBase::SendBackKeyboardCommand() {
   SendKeyPress(key, /*control=*/false, /*shift=*/false, alt, command);
 }
 
-void ProfilePickerInteractiveUiTestBase::SendToggleFullscreenKeyboardCommand() {
+void WithProfilePickerInteractiveUiTestHelpers::
+    SendToggleFullscreenKeyboardCommand() {
 // Toggle fullscreen with keyboard.
 #if BUILDFLAG(IS_MAC)
   // Use Cmd-Ctrl-F on Mac.
@@ -62,18 +64,19 @@ void ProfilePickerInteractiveUiTestBase::SendToggleFullscreenKeyboardCommand() {
 }
 
 #if BUILDFLAG(IS_MAC)
-void ProfilePickerInteractiveUiTestBase::SendQuitAppKeyboardCommand() {
+void WithProfilePickerInteractiveUiTestHelpers::SendQuitAppKeyboardCommand() {
   // Send Cmd-Q.
   SendKeyPress(ui::VKEY_Q, /*control=*/false, /*shift=*/false, /*alt=*/false,
                /*command=*/true);
 }
 #endif
 
-void ProfilePickerInteractiveUiTestBase::SendKeyPress(ui::KeyboardCode key,
-                                                      bool control,
-                                                      bool shift,
-                                                      bool alt,
-                                                      bool command) {
+void WithProfilePickerInteractiveUiTestHelpers::SendKeyPress(
+    ui::KeyboardCode key,
+    bool control,
+    bool shift,
+    bool alt,
+    bool command) {
 #if BUILDFLAG(IS_MAC)
   // Mac needs the widget to get focused (once again) for
   // SendKeyPressToWindowSync to work. A test-only particularity, pressing the
