@@ -22,6 +22,7 @@ namespace {
 
 using chromeos::network_config::mojom::ApnPropertiesPtr;
 using chromeos::network_config::mojom::ApnState;
+using chromeos::network_config::mojom::ApnType;
 using chromeos::network_config::mojom::ManagedApnPropertiesPtr;
 
 void OnSetShillCustomApnListSuccess() {}
@@ -275,10 +276,24 @@ void ApnMigrator::OnGetManagedProperties(
       }
       remote_cros_network_config_->CreateCustomApn(
           guid, std::move(pre_revamp_custom_apn));
+    } else if (last_connected_attach_apn && last_connected_default_apn &&
+               pre_revamp_custom_apn->access_point_name ==
+                   (*last_connected_attach_apn)->access_point_name &&
+               pre_revamp_custom_apn->access_point_name ==
+                   (*last_connected_default_apn)->access_point_name) {
+      NET_LOG(EVENT)
+          << "Network's last connected default APN and attach APN match the "
+             "saved custom APN, migrating APN: "
+          << guid << " in the Enabled state with Apn types Attach and Default";
+
+      pre_revamp_custom_apn->state = ApnState::kEnabled;
+      pre_revamp_custom_apn->apn_types = {ApnType::kAttach, ApnType::kDefault};
+      remote_cros_network_config_->CreateCustomApn(
+          guid, std::move(pre_revamp_custom_apn));
     }
-  }
   // TODO(b/162365553): Implement other cases of |last_connected_attach_apn|
   // and |last_connected_default_apn|.
+  }
 
   managed_cellular_pref_handler_->AddApnMigratedIccid(iccid);
   iccids_in_migration_.erase(iccid);
