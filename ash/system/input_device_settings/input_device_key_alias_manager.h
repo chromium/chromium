@@ -5,9 +5,19 @@
 #ifndef ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_KEY_ALIAS_MANAGER_H_
 #define ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_KEY_ALIAS_MANAGER_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+#include "base/strings/string_piece_forward.h"
+#include "ui/events/devices/input_device.h"
 
 namespace ash {
+
+using PrimaryDeviceKeyToAliasesMap =
+    base::flat_map<std::string, base::flat_set<std::string>>;
+using AliasToPrimaryDeviceKeyMap = base::flat_map<std::string, std::string>;
 
 class ASH_EXPORT InputDeviceKeyAliasManager {
  public:
@@ -16,6 +26,20 @@ class ASH_EXPORT InputDeviceKeyAliasManager {
   InputDeviceKeyAliasManager& operator=(const InputDeviceKeyAliasManager&) =
       delete;
   ~InputDeviceKeyAliasManager();
+  // Builds the device key for `device` and checks to see if it's an alias
+  // to a device's primary key or not before returning.
+  std::string GetAliasedDeviceKey(const ui::InputDevice& device);
+  // Uses `primary_device_key` to retrieve all aliased device keys for a given
+  // device.
+  const base::flat_set<std::string>* GetAliasesForPrimaryDeviceKey(
+      base::StringPiece primary_device_key) const;
+
+  void AddDeviceKeyPair(const std::string& primary_key,
+                        const std::string& aliased_key);
+
+ private:
+  PrimaryDeviceKeyToAliasesMap primary_key_to_aliases_map_;
+  AliasToPrimaryDeviceKeyMap alias_to_primary_key_map_;
 };
 
 }  // namespace ash

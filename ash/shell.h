@@ -153,6 +153,7 @@ class ColorEnhancementController;
 class HoldingSpaceController;
 class HumanPresenceOrientationController;
 class ImeControllerImpl;
+class InputDeviceKeyAliasManager;
 class InputDeviceSettingsControllerImpl;
 class InputDeviceSettingsDispatcher;
 class InputDeviceTracker;
@@ -496,6 +497,11 @@ class ASH_EXPORT Shell : public SessionObserver,
   EventRewriterControllerImpl* event_rewriter_controller() {
     return event_rewriter_controller_.get();
   }
+
+  InputDeviceKeyAliasManager* input_device_key_alias_manager() {
+    return input_device_key_alias_manager_.get();
+  }
+
   InputDeviceSettingsControllerImpl* input_device_settings_controller() {
     return input_device_settings_controller_.get();
   }
@@ -892,6 +898,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<InputDeviceTracker> input_device_tracker_;
   std::unique_ptr<KeyboardModifierMetricsRecorder>
       keyboard_modifier_metrics_recorder_;
+  std::unique_ptr<InputDeviceKeyAliasManager> input_device_key_alias_manager_;
   std::unique_ptr<UserMetricsRecorder> user_metrics_recorder_;
 
   std::unique_ptr<AshAcceleratorConfiguration> ash_accelerator_configuration_;

@@ -12,6 +12,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_key_alias_manager.h"
 #include "ash/system/input_device_settings/input_device_notifier.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_policy_handler.h"
@@ -60,7 +61,9 @@ mojom::KeyboardPtr BuildMojomKeyboard(const ui::InputDevice& keyboard) {
   mojom::KeyboardPtr mojom_keyboard = mojom::Keyboard::New();
   mojom_keyboard->id = keyboard.id;
   mojom_keyboard->name = keyboard.name;
-  mojom_keyboard->device_key = BuildDeviceKey(keyboard);
+  mojom_keyboard->device_key =
+      Shell::Get()->input_device_key_alias_manager()->GetAliasedDeviceKey(
+          keyboard);
   mojom_keyboard->is_external =
       keyboard.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
   // Enable only when flag is enabled to avoid crashing while problem is
@@ -77,7 +80,9 @@ mojom::MousePtr BuildMojomMouse(const ui::InputDevice& mouse) {
   mojom::MousePtr mojom_mouse = mojom::Mouse::New();
   mojom_mouse->id = mouse.id;
   mojom_mouse->name = mouse.name;
-  mojom_mouse->device_key = BuildDeviceKey(mouse);
+  mojom_mouse->device_key =
+      Shell::Get()->input_device_key_alias_manager()->GetAliasedDeviceKey(
+          mouse);
   mojom_mouse->is_external =
       mouse.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
   return mojom_mouse;
@@ -87,7 +92,9 @@ mojom::TouchpadPtr BuildMojomTouchpad(const ui::InputDevice& touchpad) {
   mojom::TouchpadPtr mojom_touchpad = mojom::Touchpad::New();
   mojom_touchpad->id = touchpad.id;
   mojom_touchpad->name = touchpad.name;
-  mojom_touchpad->device_key = BuildDeviceKey(touchpad);
+  mojom_touchpad->device_key =
+      Shell::Get()->input_device_key_alias_manager()->GetAliasedDeviceKey(
+          touchpad);
   mojom_touchpad->is_external =
       touchpad.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
   return mojom_touchpad;
@@ -98,7 +105,9 @@ mojom::PointingStickPtr BuildMojomPointingStick(
   mojom::PointingStickPtr mojom_pointing_stick = mojom::PointingStick::New();
   mojom_pointing_stick->id = touchpad.id;
   mojom_pointing_stick->name = touchpad.name;
-  mojom_pointing_stick->device_key = BuildDeviceKey(touchpad);
+  mojom_pointing_stick->device_key =
+      Shell::Get()->input_device_key_alias_manager()->GetAliasedDeviceKey(
+          touchpad);
   mojom_pointing_stick->is_external =
       touchpad.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
   return mojom_pointing_stick;
