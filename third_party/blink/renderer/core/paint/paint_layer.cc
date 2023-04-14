@@ -2006,7 +2006,12 @@ bool PaintLayer::HitTestClippedOutByClipPath(
   DCHECK(IsSelfPaintingLayer());
 
   PhysicalOffset origin;
-  ConvertToLayerCoords(&root_layer, origin);
+  if (RuntimeEnabledFeatures::RemoveConvertToLayerCoordsEnabled()) {
+    origin = GetLayoutObject().LocalToAncestorPoint(
+        origin, &root_layer.GetLayoutObject());
+  } else {
+    ConvertToLayerCoords(&root_layer, origin);
+  }
 
   gfx::PointF point(hit_test_location.Point() - origin);
   gfx::RectF reference_box =
