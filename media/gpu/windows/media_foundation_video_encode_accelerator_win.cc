@@ -203,10 +203,18 @@ bool IsSvcSupported(IMFActivate* activate, VideoCodec codec) {
   Microsoft::WRL::ComPtr<IMFTransform> encoder;
   Microsoft::WRL::ComPtr<ICodecAPI> codec_api;
   HRESULT hr = activate->ActivateObject(IID_PPV_ARGS(&encoder));
-  RETURN_ON_HR_FAILURE(hr, "Failed to activate encoder", false);
+  if (FAILED(hr)) {
+    // Log to VLOG since errors are expected as part of GetSupportedProfiles().
+    DVLOG(2) << "Failed to activate encoder: " << PrintHr(hr);
+    return false;
+  }
 
   hr = encoder.As(&codec_api);
-  RETURN_ON_HR_FAILURE(hr, "Failed to get encoder as CodecAPI", false);
+  if (FAILED(hr)) {
+    // Log to VLOG since errors are expected as part of GetSupportedProfiles().
+    DVLOG(2) << "Failed to get encoder as CodecAPI: " << PrintHr(hr);
+    return false;
+  }
 
   if (codec_api->IsSupported(&CODECAPI_AVEncVideoTemporalLayerCount) != S_OK) {
     return false;
@@ -237,10 +245,15 @@ uint32_t EnumerateHardwareEncoders(VideoCodec codec, IMFActivate*** activates) {
   output_info.guidSubtype = VideoCodecToMFSubtype(codec);
 
   uint32_t count = 0;
-  RETURN_ON_HR_FAILURE(
-      MFTEnumEx(MFT_CATEGORY_VIDEO_ENCODER, flags, &input_info, &output_info,
-                activates, &count),
-      "Failed to enumerate hardware encoders for " << GetCodecName(codec), 0);
+  auto hr = MFTEnumEx(MFT_CATEGORY_VIDEO_ENCODER, flags, &input_info,
+                      &output_info, activates, &count);
+  if (FAILED(hr)) {
+    // Log to VLOG since errors are expected as part of GetSupportedProfiles().
+    DVLOG(2) << "Failed to enumerate hardware encoders for "
+             << GetCodecName(codec) << ": " << PrintHr(hr);
+    return 0;
+  }
+
   return count;
 }
 
