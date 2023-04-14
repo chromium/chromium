@@ -160,7 +160,12 @@ void SavedTabGroupModelListener::OnBrowserAdded(Browser* browser) {
     return;
   }
 
+  if (observed_browsers_.contains(browser)) {
+    return;
+  }
+
   browser->tab_strip_model()->AddObserver(this);
+  observed_browsers_.insert(browser);
 }
 
 void SavedTabGroupModelListener::OnBrowserRemoved(Browser* browser) {
@@ -169,4 +174,6 @@ void SavedTabGroupModelListener::OnBrowserRemoved(Browser* browser) {
   }
 
   browser->tab_strip_model()->RemoveObserver(this);
+  CHECK(observed_browsers_.contains(browser));
+  observed_browsers_.erase(browser);
 }
