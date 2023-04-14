@@ -53,8 +53,8 @@ VideoDecoder::VideoDecoder(std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
 VideoDecoder::~VideoDecoder() = default;
 
 void VideoDecoder::NegotiateCAPTUREFormat() {
-  constexpr uint32_t kPreferredFormats[] = {V4L2_PIX_FMT_NV12,
-                                            V4L2_PIX_FMT_MM21};
+  constexpr uint32_t kPreferredFormats[] = {
+      V4L2_PIX_FMT_NV12, V4L2_PIX_FMT_MM21, V4L2_PIX_FMT_MT2T};
 
   struct v4l2_format fmt;
 
@@ -105,10 +105,12 @@ void VideoDecoder::NegotiateCAPTUREFormat() {
   LOG_ASSERT((V4L2_PIX_FMT_MM21 == fourcc &&
               CAPTURE_queue_->num_planes() == fmt.fmt.pix_mp.num_planes) ||
              (V4L2_PIX_FMT_NV12 == fourcc &&
+              CAPTURE_queue_->num_planes() == fmt.fmt.pix_mp.num_planes) ||
+             (V4L2_PIX_FMT_MT2T == fourcc &&
               CAPTURE_queue_->num_planes() == fmt.fmt.pix_mp.num_planes))
       << media::FourccToString(fourcc)
       << " does not have the correct number of planes: "
-      << fmt.fmt.pix_mp.num_planes;
+      << static_cast<uint32_t>(fmt.fmt.pix_mp.num_planes);
 }
 
 void VideoDecoder::Initialize(bool resolution_changed) {
@@ -235,8 +237,8 @@ void VideoDecoder::ConvertToYUV(std::vector<uint8_t>& dest_y,
                                 uint32_t fourcc) {
   const gfx::Size half_dest_size((dest_size.width() + 1) / 2,
                                  (dest_size.height() + 1) / 2);
-  const uint32_t dest_y_stride = dest_size.width();
-  const uint32_t dest_uv_stride = half_dest_size.width();
+  const uint32_t dest_full_stride = dest_size.width();
+  const uint32_t dest_half_stride = half_dest_size.width();
 
   dest_y.resize(dest_size.GetArea());
   dest_u.resize(half_dest_size.GetArea());
@@ -250,9 +252,9 @@ void VideoDecoder::ConvertToYUV(std::vector<uint8_t>& dest_y,
     const uint8_t* src_uv = src + src_size.width() * src_size.height();
 
     libyuv::NV12ToI420(src, src_size.width(), src_uv, src_size.width(),
-                       &dest_y[0], dest_y_stride, &dest_u[0], dest_uv_stride,
-                       &dest_v[0], dest_uv_stride, dest_size.width(),
-                       dest_size.height());
+                       &dest_y[0], dest_full_stride, &dest_u[0],
+                       dest_half_stride, &dest_v[0], dest_half_stride,
+                       dest_size.width(), dest_size.height());
   } else if (fourcc == V4L2_PIX_FMT_MM21) {
     CHECK_EQ(planes.size(), 2u)
         << "MM21 should have exactly 2 planes but CAPTURE queue does not.";
@@ -260,9 +262,37 @@ void VideoDecoder::ConvertToYUV(std::vector<uint8_t>& dest_y,
     const uint8_t* src_uv = static_cast<uint8_t*>(planes[1].start_addr);
 
     libyuv::MM21ToI420(src_y, src_size.width(), src_uv, src_size.width(),
-                       &dest_y[0], dest_y_stride, &dest_u[0], dest_uv_stride,
-                       &dest_v[0], dest_uv_stride, dest_size.width(),
-                       dest_size.height());
+                       &dest_y[0], dest_full_stride, &dest_u[0],
+                       dest_half_stride, &dest_v[0], dest_half_stride,
+                       dest_size.width(), dest_size.height());
+  } else if (fourcc == V4L2_PIX_FMT_MT2T) {
+    CHECK_EQ(planes.size(), 2u)
+        << "MT2T should have exactly 2 planes but CAPTURE queue does not.";
+
+    const uint8_t* src_y = static_cast<uint8_t*>(planes[0].start_addr);
+    const uint8_t* src_uv = static_cast<uint8_t*>(planes[1].start_addr);
+
+    dest_y.resize(dest_size.GetArea() * 2);
+    dest_u.resize(half_dest_size.GetArea() * 2);
+    dest_v.resize(half_dest_size.GetArea() * 2);
+
+    std::vector<uint16_t> tmp_y(dest_size.GetArea());
+    std::vector<uint16_t> tmp_uv(dest_size.GetArea());
+
+    // stride is 5/4 because MT2T is a packed 10bit format
+    const uint32_t src_stride_mt2t = (src_size.width() * 5) >> 2;
+
+    libyuv::MT2TToP010(src_y, src_stride_mt2t, src_uv, src_stride_mt2t,
+                       &tmp_y[0], dest_full_stride, &tmp_uv[0],
+                       dest_full_stride, dest_size.width(), dest_size.height());
+
+    libyuv::P010ToI010(
+        &tmp_y[0], dest_full_stride, &tmp_uv[0], dest_full_stride,
+        reinterpret_cast<uint16_t*>(&dest_y[0]), dest_full_stride,
+        reinterpret_cast<uint16_t*>(&dest_u[0]), dest_half_stride,
+        reinterpret_cast<uint16_t*>(&dest_v[0]), dest_half_stride,
+        dest_size.width(), dest_size.height());
+
   } else {
     LOG(FATAL) << "Unsupported CAPTURE queue format";
   }
