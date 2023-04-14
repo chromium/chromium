@@ -58369,6 +58369,7 @@ from previous Chrome versions.
   <int value="-1948236151" label="DrawPredictedInkPoint:disabled"/>
   <int value="-1946595906" label="enable-push-api-background-mode"/>
   <int value="-1946522787" label="VrCustomTabBrowsing:disabled"/>
+  <int value="-1946496305" label="TailoredSecurityUpdatedMessages:enabled"/>
   <int value="-1946367770" label="SyncWifiConfigurations:enabled"/>
   <int value="-1946057753" label="GaiaIdCacheInAccountManagerFacade:disabled"/>
   <int value="-1945601266" label="freeze-user-agent"/>
@@ -61178,6 +61179,7 @@ from previous Chrome versions.
   <int value="-446220201" label="EnableIncognitoShortcutOnDesktop:enabled"/>
   <int value="-444867364" label="Metal:enabled"/>
   <int value="-442352394" label="IframeOneGoogleBar:disabled"/>
+  <int value="-441840790" label="TailoredSecurityUpdatedMessages:disabled"/>
   <int value="-438529902" label="CaptivePortalErrorPage:enabled"/>
   <int value="-438379844" label="SwapSideVolumeButtonsForOrientation:enabled"/>
   <int value="-438348502" label="LogUrlScoringSignals:disabled"/>

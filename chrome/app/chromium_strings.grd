@@ -1526,6 +1526,9 @@ Permissions you've already given to websites and apps may apply to this account.
       <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_DESCRIPTION" desc="Description shown in the message shown when a user changes their account-level tailored security setting encouraging them to enable Enhanced Safe Browsing">
         Enhanced protection does more to block phishing and malware
       </message>
+      <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_DESCRIPTION_UPDATED" desc="Description shown in the message shown when a user changes their account-level tailored security setting encouraging them to enable Enhanced Safe Browsing">
+        Enhanced Safe Browsing does more to protect you against dangerous websites and downloads
+      </message>
       <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_ACCEPT" desc="Accept button shown in the message shown when a user changes their account-level tailored security setting encouraging them to enable Enhanced Safe Browsing">
         Continue
       </message>

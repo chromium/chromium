@@ -254,6 +254,10 @@ BASE_FEATURE(kTailoredSecurityIntegration,
 #endif
 );
 
+BASE_FEATURE(kTailoredSecurityUpdatedMessages,
+             "TailoredSecurityUpdatedMessages",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kThreatDomDetailsTagAndAttributeFeature,
              "ThreatDomDetailsTagAttributes",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -8016,6 +8016,12 @@ const FeatureEntry kFeatureEntries[] = {
          "EsbIphBubbleAndCollapseSettingsVariations")},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+    {"enable-tailored-security-updated-messages",
+     flag_descriptions::kEnableTailoredSecurityUpdatedMessagesName,
+     flag_descriptions::kEnableTailoredSecurityUpdatedMessagesDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(safe_browsing::kTailoredSecurityUpdatedMessages)},
+
 #if !BUILDFLAG(IS_ANDROID)
     {"sct-auditing", flag_descriptions::kSCTAuditingName,
      flag_descriptions::kSCTAuditingDescription, kOsDesktop,

@@ -13,9 +13,11 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/google_chrome_strings.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/messages/android/message_enums.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_outcome.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -102,8 +104,14 @@ TailoredSecurityUnconsentedMessageAndroid::
   message_->SetTitle(l10n_util::GetStringUTF16(message_title));
   message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(primary_button));
   if (!is_in_flow_) {
-    message_->SetDescription(l10n_util::GetStringUTF16(
-        IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_DESCRIPTION));
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kTailoredSecurityUpdatedMessages)) {
+      message_->SetDescription(l10n_util::GetStringUTF16(
+          IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_DESCRIPTION_UPDATED));
+    } else {
+      message_->SetDescription(l10n_util::GetStringUTF16(
+          IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_DESCRIPTION));
+    }
   }
 
   if (is_in_flow_) {
