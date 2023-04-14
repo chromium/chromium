@@ -62,15 +62,16 @@ class InfobarSaveAddressProfileTableViewControllerTest
 
   NSDictionary* GetDataForMigrationModal() {
     NSDictionary* prefs = @{
-      kAddressPrefKey : @"Test Envelope Address",
-      kPhonePrefKey : @"Test Phone Number",
-      kEmailPrefKey : @"Test Email Address",
+      kAddressPrefKey : @"",
+      kPhonePrefKey : @"",
+      kEmailPrefKey : @"",
       kCurrentAddressProfileSavedPrefKey : @(false),
       kIsUpdateModalPrefKey : @(false),
       kProfileDataDiffKey : @{},
       kUpdateModalDescriptionKey : @"",
       kSyncingUserEmailKey : @"test@gmail.com",
-      kIsMigrationToAccountKey : @(true)
+      kIsMigrationToAccountKey : @(true),
+      kProfileDescriptionForMigrationPromptKey : @"Test"
     };
     return prefs;
   }
@@ -193,18 +194,19 @@ TEST_F(InfobarSaveAddressProfileTableViewControllerTest,
       setupModalViewControllerWithPrefs:GetDataForMigrationModal()];
   [save_view_controller viewDidLoad];
 
-  CheckTitleWithId(IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_PROMPT_TITLE);
+  CheckTitleWithId(IDS_IOS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_TITLE);
   EXPECT_EQ(1, NumberOfSections());
-  EXPECT_EQ(5, NumberOfItemsInSection(0));
-  CheckTextCellText(@"Test Envelope Address", 0, 0);
-  CheckTextCellText(@"Test Email Address", 0, 1);
-  CheckTextCellText(@"Test Phone Number", 0, 2);
+  EXPECT_EQ(4, NumberOfItemsInSection(0));
   CheckTextCellText(
-      l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER,
-                              u"test@gmail.com"),
-      0, 3);
+      @"This address is saved only to Chrome. To use it across Google "
+      @"products, save it in your Google Account, test@gmail.com.",
+      0, 0);
+  CheckTextCellText(@"Test", 0, 1);
   CheckTextButtonCellButtonTextWithId(
-      IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL, 0, 4);
+      IDS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_OK_BUTTON_LABEL, 0, 2);
+  CheckTextButtonCellButtonTextWithId(
+      IDS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_CANCEL_BUTTON_LABEL, 0,
+      3);
 }
 
 // Tests that the modal has been initialized  for updating the data of a Google

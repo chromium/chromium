@@ -364,6 +364,12 @@
   <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL" desc="Label of the OK button in the prompt that offers the user to update an existing address.">
     Update
   </message>
+  <message name="IDS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_OK_BUTTON_LABEL" desc="Label of the OK button in the prompt that offers the user the prompt to migrate the profile to the account.">
+    Save in Account
+  </message>
+  <message name="IDS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_CANCEL_BUTTON_LABEL" desc="Label of the No thanks button in the prompt that offers the user the prompt to migrate the profile to the account.">
+    No Thanks
+  </message>
   <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_NEW_VALUES_SECTION_LABEL" meaning="In the address update prompt" desc="Label shown next to the section that displays the new address values in the prompt that offers the user to update an existing address." formatter_data="android_java">
     New
   </message>
@@ -422,6 +428,9 @@
     </message>
     <message name="IDS_IOS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE" desc="In Title Case: Title shown at the top of modal dialog that offers the user to update an existing address." meaning="In Title Case for iOS">
       Update Address
+    </message>
+    <message name="IDS_IOS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_TITLE" desc="In Title Case: Title shown at the top of modal dialog that offers the user to migrate the profile to account." meaning="In Title Case for iOS">
+      Save Address in Account
     </message>
     <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_MESSAGE_SUBTITLE" desc="Subtitle shown in the messages UI view when a new profile is asked to be saved in the Google Account">
        In your Google Account, <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>

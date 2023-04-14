@@ -43,6 +43,8 @@ SaveAddressProfileModalRequestConfig::SaveAddressProfileModalRequestConfig(
   is_migration_to_account_ = delegate->IsMigrationToAccount();
   syncing_user_email_ = delegate->SyncingUserEmail();
   is_profile_an_account_profile_ = delegate->IsProfileAnAccountProfile();
+  profile_description_for_migration_prompt_ =
+      delegate->GetProfileDescriptionForMigrationPrompt();
 }
 
 SaveAddressProfileModalRequestConfig::~SaveAddressProfileModalRequestConfig() =
