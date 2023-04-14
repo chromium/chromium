@@ -243,6 +243,7 @@
   E_CPONLY(kColorOmniboxText) \
   E_CPONLY(kColorOmniboxTextDimmed) \
   /* Page Info colors */ \
+  E_CPONLY(kColorPageActionIcon) \
   E_CPONLY(kColorPageActionIconHover) \
   E_CPONLY(kColorPageActionIconPressed) \
   E_CPONLY(kColorPageInfoBackground) \

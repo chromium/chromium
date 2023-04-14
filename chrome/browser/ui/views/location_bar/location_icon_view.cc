@@ -25,6 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -75,9 +76,10 @@ LocationIconView::LocationIconView(
     views::InkDrop::Get(this)->SetLayerRegion(views::LayerRegion::kAbove);
     views::InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
         [](views::View* host) -> std::unique_ptr<views::InkDropRipple> {
-          const SkColor pressed_color = host->GetColorProvider()->GetColor(
-              ui::kColorSysStateRippleNeutralOnSubtle);
+          const SkColor pressed_color =
+              host->GetColorProvider()->GetColor(kColorPageInfoIconPressed);
           const float pressed_alpha = SkColorGetA(pressed_color);
+
           return std::make_unique<views::FloodFillInkDropRipple>(
               views::InkDrop::Get(host), host->size(),
               host->GetLocalBounds().CenterPoint(),
@@ -88,9 +90,10 @@ LocationIconView::LocationIconView(
 
     views::InkDrop::Get(this)->SetCreateHighlightCallback(base::BindRepeating(
         [](views::View* host) {
-          const SkColor hover_color = host->GetColorProvider()->GetColor(
-              ui::kColorSysStateHoverDimBlendProtection);
+          const SkColor hover_color =
+              host->GetColorProvider()->GetColor(kColorPageInfoIconHover);
           const float hover_alpha = SkColorGetA(hover_color);
+
           auto ink_drop_highlight = std::make_unique<views::InkDropHighlight>(
               host->size(), host->height() / 2,
               gfx::PointF(host->GetLocalBounds().CenterPoint()),
@@ -300,8 +303,7 @@ void LocationIconView::UpdateIcon() {
 void LocationIconView::UpdateBackground() {
   if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
     SetBackground(views::CreateRoundedRectBackground(
-        GetColorProvider()->GetColor(ui::kColorSysBaseContainerElevated),
-        height() / 2));
+        GetColorProvider()->GetColor(kColorPageInfoBackground), height() / 2));
   }
 }
 

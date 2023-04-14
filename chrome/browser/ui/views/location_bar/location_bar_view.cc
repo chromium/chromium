@@ -346,7 +346,7 @@ void LocationBarView::Init() {
     params.types_enabled.push_back(PageActionIconType::kBookmarkStar);
 
   params.icon_color = OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
-                          ? ui::kColorSysOnSurfaceSubtle
+                          ? color_provider->GetColor(kColorPageActionIcon)
                           : icon_color;
   params.between_icon_spacing =
       OmniboxFieldTrial::IsChromeRefreshIconsEnabled() ? 8 : 0;
@@ -798,8 +798,10 @@ void LocationBarView::OnThemeChanged() {
   if (!IsInitialized())
     return;
 
-  const SkColor icon_color =
-      GetColorProvider()->GetColor(kColorOmniboxResultsIcon);
+  const SkColor icon_color = GetColorProvider()->GetColor(
+      OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+          ? kColorPageActionIcon
+          : kColorOmniboxResultsIcon);
   page_action_icon_controller_->SetIconColor(icon_color);
   for (ContentSettingImageView* image_view : content_setting_views_)
     image_view->SetIconColor(icon_color);
