@@ -24,17 +24,17 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {StatusAction, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PrivacyPageVisibility} from '../page_visibility.js';
 import {SettingsSignoutDialogElement} from '../people_page/signout_dialog.js';
-import {StatusAction, SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 
 import {getTemplate} from './personalization_options.html.js';
-import {MetricsReporting, PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
 
 
 export interface SettingsPersonalizationOptionsElement {

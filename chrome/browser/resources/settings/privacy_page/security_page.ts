@@ -14,16 +14,18 @@ import '../icons.html.js';
 import '../settings_shared.css.js';
 import '../simple_confirmation_dialog.js';
 
+import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from 'chrome://resources/cr_components/settings_prefs/prefs_types.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // <if expr="is_chromeos or chrome_root_store_supported">
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 // </if>
+
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
@@ -34,7 +36,6 @@ import {routes} from '../route.js';
 import {Route, RouteObserverMixin, Router} from '../router.js';
 
 import {SettingsCollapseRadioButtonElement} from './collapse_radio_button.js';
-import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
 import {getTemplate} from './security_page.html.js';
 
 /**

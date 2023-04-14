@@ -12,9 +12,10 @@ import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../settings_shared.css.js';
 
-import {assert} from '//resources/js/assert_ts.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from '//resources/js/assert_ts.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 
 // <if expr="is_chromeos">
 import {loadTimeData} from '../i18n_setup.js';
@@ -22,7 +23,6 @@ import {loadTimeData} from '../i18n_setup.js';
 
 import {Route, Router} from '../router.js';
 
-import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from './sync_browser_proxy.js';
 import {getTemplate} from './sync_controls.html.js';
 
 /**

@@ -13,7 +13,7 @@ import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './profile_info_browser_proxy.js';
+import '/shared/settings/people_page/profile_info_browser_proxy.js';
 import '../icons.html.js';
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '../settings_shared.css.js';
@@ -22,13 +22,13 @@ import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert_ts.js';
 import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {Router} from '../router.js';
 
 import {getTemplate} from './sync_account_control.html.js';
-import {StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
 
 export const MAX_SIGNIN_PROMO_IMPRESSION: number = 10;
 

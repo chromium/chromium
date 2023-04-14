@@ -12,12 +12,11 @@ import './search_engine_entry.css.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 
+import {ExtensionControlBrowserProxy, ExtensionControlBrowserProxyImpl} from '/shared/settings/extension_control_browser_proxy.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {ExtensionControlBrowserProxy, ExtensionControlBrowserProxyImpl} from '../extension_control_browser_proxy.js';
 
 import {getTemplate} from './omnibox_extension_entry.html.js';
 import {SearchEngine} from './search_engines_browser_proxy.js';

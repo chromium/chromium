@@ -20,6 +20,7 @@ import '../settings_shared.css.js';
 import '../site_settings/settings_category_default_radio_group.js';
 import './privacy_guide/privacy_guide_dialog.js';
 
+import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -41,7 +42,6 @@ import {NotificationPermission, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefs
 
 import {PrivacyGuideAvailabilityMixin} from './privacy_guide/privacy_guide_availability_mixin.js';
 import {getTemplate} from './privacy_page.html.js';
-import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
 
 interface BlockAutoplayStatus {
   enabled: boolean;

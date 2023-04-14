@@ -22,6 +22,7 @@ import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 
+import {StoredAccount, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -32,7 +33,6 @@ import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {StoredAccount, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, Router} from '../router.js';
 

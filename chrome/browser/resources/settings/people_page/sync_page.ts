@@ -31,6 +31,7 @@ import {assert, assertNotReached} from '//resources/js/assert_ts.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {IronCollapseElement} from '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {flush, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 
 import {FocusConfig} from '../focus_config.js';
@@ -41,7 +42,6 @@ import {SettingsPersonalizationOptionsElement} from '../privacy_page/personaliza
 
 import {RouteObserverMixin, Router} from '../router.js';
 
-import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from './sync_browser_proxy.js';
 // <if expr="chromeos_ash">
 import {SettingsSyncEncryptionOptionsElement} from './sync_encryption_options.js';
 // </if>

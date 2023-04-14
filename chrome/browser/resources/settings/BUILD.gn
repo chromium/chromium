@@ -274,10 +274,8 @@ build_webui("build") {
   # -----------------non_web_component_files start ----------------------------
 
   non_web_component_files = [
-    "a11y_page/captions_browser_proxy.ts",
     "about_page/about_page_browser_proxy.ts",
     "appearance_page/appearance_browser_proxy.ts",
-    "appearance_page/fonts_browser_proxy.ts",
     "autofill_page/address_edit_dialog_components.ts",
     "autofill_page/autofill_manager_proxy.ts",
     "autofill_page/merge_passwords_store_copies_mixin.ts",
@@ -296,7 +294,6 @@ build_webui("build") {
     "controls/settings_idle_load.ts",
     "downloads_page/downloads_browser_proxy.ts",
     "ensure_lazy_loaded.ts",
-    "extension_control_browser_proxy.ts",
     "focus_config.ts",
     "global_scroll_target_mixin.ts",
     "hats_browser_proxy.ts",
@@ -306,14 +303,11 @@ build_webui("build") {
     "on_startup_page/on_startup_browser_proxy.ts",
     "on_startup_page/startup_urls_page_browser_proxy.ts",
     "page_visibility.ts",
-    "people_page/sync_browser_proxy.ts",
-    "people_page/profile_info_browser_proxy.ts",
     "performance_page/performance_browser_proxy.ts",
     "performance_page/performance_metrics_proxy.ts",
     "privacy_page/privacy_guide/constants.ts",
     "privacy_page/privacy_guide/privacy_guide_availability_mixin.ts",
     "privacy_page/privacy_guide/privacy_guide_browser_proxy.ts",
-    "privacy_page/privacy_page_browser_proxy.ts",
     "privacy_page/privacy_sandbox/privacy_sandbox_browser_proxy.ts",
     "privacy_page/security_keys_browser_proxy.ts",
     "privacy_sandbox/icons.html.ts",

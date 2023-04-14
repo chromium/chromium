@@ -32,6 +32,7 @@ import './passwords_import_dialog.js';
 import './passwords_shared.css.js';
 import './avatar_icon.js';
 
+import {SyncBrowserProxyImpl, TrustedVaultBannerState} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -50,7 +51,6 @@ import {FocusConfig} from '../focus_config.js';
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
-import {SyncBrowserProxyImpl, TrustedVaultBannerState} from '../people_page/sync_browser_proxy.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, Router} from '../router.js';
 

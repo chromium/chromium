@@ -22,6 +22,8 @@ import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
+import {ProfileInfo, ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
+import {StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 // <if expr="chromeos_ash">
 import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_picture/png.js';
 // </if>
@@ -45,8 +47,6 @@ import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js
 // </if>
 
 import {getTemplate} from './people_page.html.js';
-import {ProfileInfo, ProfileInfoBrowserProxyImpl} from './profile_info_browser_proxy.js';
-import {StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
 
 export interface SettingsPeoplePageElement {
   $: {

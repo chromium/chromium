@@ -84,6 +84,11 @@ import './languages_page/edit_dictionary_page.js';
 
 // </if>
 
+// <if expr="not is_chromeos">
+export {CaptionsBrowserProxy, CaptionsBrowserProxyImpl, LiveCaptionLanguageList} from '/shared/settings/a11y_page/captions_browser_proxy.js';
+// </if>
+
+export {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from '/shared/settings/appearance_page/fonts_browser_proxy.js';
 export {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 export {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -94,13 +99,11 @@ export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_
 export {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 export {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 // <if expr="not is_chromeos">
-export {CaptionsBrowserProxy, CaptionsBrowserProxyImpl, LiveCaptionLanguageList} from './a11y_page/captions_browser_proxy.js';
 export {SettingsLiveCaptionElement} from './a11y_page/live_caption_section.js';
 export {SettingsLiveTranslateElement} from './a11y_page/live_translate_section.js';
 // </if>
 
 export {SettingsAppearanceFontsPageElement} from './appearance_page/appearance_fonts_page.js';
-export {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from './appearance_page/fonts_browser_proxy.js';
 export {CountryDetailManager, CountryDetailManagerImpl, SettingsAddressEditDialogElement} from './autofill_page/address_edit_dialog.js';
 export {SettingsAddressRemoveConfirmationDialogElement} from './autofill_page/address_remove_confirmation_dialog.js';
 export {AutofillManagerImpl, AutofillManagerProxy, PersonalDataChangedListener} from './autofill_page/autofill_manager_proxy.js';
