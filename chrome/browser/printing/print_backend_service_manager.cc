@@ -209,6 +209,8 @@ void PrintBackendServiceManager::EnumeratePrinters(
                std::move(callback));
 
   LogCallToRemote("EnumeratePrinters", context);
+  // Safe to use base::Unretained(this) since `this` is a global singleton
+  // which never goes away.
   service->EnumeratePrinters(
       base::BindOnce(&PrintBackendServiceManager::OnDidEnumeratePrinters,
                      base::Unretained(this), std::move(context)));
@@ -227,6 +229,8 @@ void PrintBackendServiceManager::FetchCapabilities(
   SetCrashKeys(printer_name);
 
   LogCallToRemote("FetchCapabilities", context);
+  // Safe to use base::Unretained(this) since `this` is a global singleton
+  // which never goes away.
   service->FetchCapabilities(
       printer_name,
       base::BindOnce(&PrintBackendServiceManager::OnDidFetchCapabilities,
@@ -244,6 +248,8 @@ void PrintBackendServiceManager::GetDefaultPrinterName(
       context.remote_id, context.saved_callback_id, std::move(callback));
 
   LogCallToRemote("GetDefaultPrinterName", context);
+  // Safe to use base::Unretained(this) since `this` is a global singleton
+  // which never goes away.
   service->GetDefaultPrinterName(
       base::BindOnce(&PrintBackendServiceManager::OnDidGetDefaultPrinterName,
                      base::Unretained(this), std::move(context)));
@@ -265,6 +271,8 @@ void PrintBackendServiceManager::GetPrinterSemanticCapsAndDefaults(
   SetCrashKeys(printer_name);
 
   LogCallToRemote("GetPrinterSemanticCapsAndDefaults", context);
+  // Safe to use base::Unretained(this) since `this` is a global singleton
+  // which never goes away.
   service->GetPrinterSemanticCapsAndDefaults(
       printer_name,
       base::BindOnce(
@@ -326,6 +334,8 @@ void PrintBackendServiceManager::UseDefaultSettings(
                std::move(callback));
 
   LogCallToRemote("UseDefaultSettings", context);
+  // Safe to use base::Unretained(this) since `this` is a global singleton
+  // which never goes away.
   service->UseDefaultSettings(
       *context_id,
       base::BindOnce(&PrintBackendServiceManager::OnDidUseDefaultSettings,
@@ -349,6 +359,8 @@ void PrintBackendServiceManager::AskUserForSettings(
                std::move(callback));
 
   LogCallToRemote("AskUserForSettings", context);
+  // Safe to use base::Unretained(this) since `this` is a global singleton
+  // which never goes away.
   service->AskUserForSettings(
       *context_id, max_pages, has_selection, is_scripted,
       base::BindOnce(&PrintBackendServiceManager::OnDidAskUserForSettings,
@@ -379,6 +391,8 @@ void PrintBackendServiceManager::UpdatePrintSettings(
   SetCrashKeys(printer_name);
 
   LogCallToRemote("UpdatePrintSettings", context);
+  // Safe to use base::Unretained(this) since `this` is a global singleton
+  // which never goes away.
   service->UpdatePrintSettings(
       *context_id, std::move(job_settings),
       base::BindOnce(&PrintBackendServiceManager::OnDidUpdatePrintSettings,
@@ -406,6 +420,8 @@ void PrintBackendServiceManager::StartPrinting(
   SetCrashKeys(printer_name);
 
   LogCallToRemote("StartPrinting", context);
+  // Safe to use base::Unretained(this) since `this` is a global singleton
+  // which never goes away.
   service->StartPrinting(
       *context_id, document_cookie, document_name,
 #if !BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
@@ -438,6 +454,8 @@ void PrintBackendServiceManager::RenderPrintedPage(
   const uint32_t page_index = page.page_number() - 1;
 
   LogCallToRemote("RenderPrintedPage", context);
+  // Safe to use base::Unretained(this) since `this` is a global singleton
+  // which never goes away.
   service->RenderPrintedPage(
       document_cookie, page_index, page_data_type,
       std::move(serialized_page_data), page.page_size(),
@@ -466,6 +484,8 @@ void PrintBackendServiceManager::RenderPrintedDocument(
   SetCrashKeys(printer_name);
 
   LogCallToRemote("RenderPrintedDocument", context);
+  // Safe to use base::Unretained(this) since `this` is a global singleton
+  // which never goes away.
   service->RenderPrintedDocument(
       document_cookie, page_count, data_type, std::move(serialized_data),
       base::BindOnce(&PrintBackendServiceManager::OnDidRenderPrintedDocument,
@@ -488,6 +508,8 @@ void PrintBackendServiceManager::DocumentDone(
   SetCrashKeys(printer_name);
 
   LogCallToRemote("DocumentDone", context);
+  // Safe to use base::Unretained(this) since `this` is a global singleton
+  // which never goes away.
   service->DocumentDone(
       document_cookie,
       base::BindOnce(&PrintBackendServiceManager::OnDidDocumentDone,
@@ -510,6 +532,8 @@ void PrintBackendServiceManager::Cancel(
   SetCrashKeys(printer_name);
 
   LogCallToRemote("Cancel", context);
+  // Safe to use base::Unretained(this) since `this` is a global singleton
+  // which never goes away.
   service->Cancel(document_cookie,
                   base::BindOnce(&PrintBackendServiceManager::OnDidCancel,
                                  base::Unretained(this), std::move(context)));
@@ -537,6 +561,8 @@ void PrintBackendServiceManager::
 void PrintBackendServiceManager::SetServiceForTesting(
     mojo::Remote<mojom::PrintBackendService>* remote) {
   sandboxed_service_remote_for_test_ = remote;
+  // Safe to use base::Unretained(this) since `this` is a global singleton
+  // which never goes away.
   sandboxed_service_remote_for_test_->set_disconnect_handler(base::BindOnce(
       &PrintBackendServiceManager::OnRemoteDisconnected, base::Unretained(this),
       /*sandboxed=*/true,
@@ -546,6 +572,8 @@ void PrintBackendServiceManager::SetServiceForTesting(
 void PrintBackendServiceManager::SetServiceForFallbackTesting(
     mojo::Remote<mojom::PrintBackendService>* remote) {
   unsandboxed_service_remote_for_test_ = remote;
+  // Safe to use base::Unretained(this) since `this` is a global singleton
+  // which never goes away.
   unsandboxed_service_remote_for_test_->set_disconnect_handler(base::BindOnce(
       &PrintBackendServiceManager::OnRemoteDisconnected, base::Unretained(this),
       /*sandboxed=*/false,
@@ -1007,6 +1035,8 @@ void PrintBackendServiceManager::SetServiceIdleHandler(
   DVLOG(1) << "Updating idle timeout for "
            << (sandboxed ? "sandboxed" : "unsandboxed")
            << " print backend service id `" << remote_id << "` to " << timeout;
+  // Safe to use base::Unretained(this) since `this` is a global singleton
+  // which never goes away.
   service.set_idle_handler(
       kNoClientsRegisteredResetOnIdleTimeout,
       base::BindRepeating(&PrintBackendServiceManager::OnIdleTimeout,
