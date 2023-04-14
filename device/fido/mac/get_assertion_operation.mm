@@ -95,7 +95,7 @@ void GetAssertionOperation::PromptTouchIdDone(bool success) {
 
   // Re-fetch credentials with the now evaluated LAContext, so that making
   // signatures does not trigger yet another Touch ID prompt.
-  credential_store_->set_authentication_context(
+  credential_store_->SetAuthenticationContext(
       touch_id_context_->authentication_context());
 
   absl::optional<std::list<Credential>> credentials =

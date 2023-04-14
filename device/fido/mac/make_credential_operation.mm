@@ -82,7 +82,7 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
   // Setting an authentication context authorizes credentials returned from the
   // credential store for signing without triggering yet another Touch ID
   // prompt.
-  credential_store_->set_authentication_context(
+  credential_store_->SetAuthenticationContext(
       touch_id_context_->authentication_context());
 
   CreateCredential(/*has_uv=*/true);

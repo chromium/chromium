@@ -15,6 +15,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/mac/scoped_nsobject.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
@@ -197,9 +198,19 @@ bool Credential::RequiresUvForSignature() const {
   return metadata.version < CredentialMetadata::Version::kV4;
 }
 
+struct TouchIdCredentialStore::ObjCStorage {
+  base::scoped_nsobject<LAContext> authentication_context_;
+};
+
 TouchIdCredentialStore::TouchIdCredentialStore(AuthenticatorConfig config)
-    : config_(std::move(config)) {}
+    : config_(std::move(config)),
+      objc_storage_(std::make_unique<ObjCStorage>()) {}
 TouchIdCredentialStore::~TouchIdCredentialStore() = default;
+
+void TouchIdCredentialStore::SetAuthenticationContext(
+    LAContext* authentication_context) {
+  objc_storage_->authentication_context_.reset([authentication_context retain]);
+}
 
 absl::optional<std::pair<Credential, base::ScopedCFTypeRef<SecKeyRef>>>
 TouchIdCredentialStore::CreateCredential(
@@ -250,9 +261,9 @@ TouchIdCredentialStore::CreateCredential(
       SecAccessControlCreateWithFlags(
           kCFAllocatorDefault, kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
           flags, nullptr));
-  if (authentication_context_) {
+  if (objc_storage_->authentication_context_) {
     CFDictionarySetValue(private_key_params, kSecUseAuthenticationContext,
-                         authentication_context_);
+                         objc_storage_->authentication_context_);
   }
   base::ScopedCFTypeRef<CFErrorRef> cferr;
   base::ScopedCFTypeRef<SecKeyRef> private_key =
@@ -329,9 +340,9 @@ TouchIdCredentialStore::CreateCredentialLegacyCredentialForTesting(
           kCFAllocatorDefault, kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
           kSecAccessControlPrivateKeyUsage | kSecAccessControlUserPresence,
           nullptr));
-  if (authentication_context_) {
+  if (objc_storage_->authentication_context_) {
     CFDictionarySetValue(private_key_params, kSecUseAuthenticationContext,
-                         authentication_context_);
+                         objc_storage_->authentication_context_);
   }
   base::ScopedCFTypeRef<CFErrorRef> cferr;
   base::ScopedCFTypeRef<SecKeyRef> private_key =
@@ -492,9 +503,9 @@ TouchIdCredentialStore::FindCredentialsImpl(
   // `kSecAttrLabel` attribute wouldn't match the encoded RP ID.
   base::ScopedCFTypeRef<CFMutableDictionaryRef> query =
       DefaultKeychainQuery(config_, rp_id);
-  if (authentication_context_) {
+  if (objc_storage_->authentication_context_) {
     CFDictionarySetValue(query, kSecUseAuthenticationContext,
-                         authentication_context_);
+                         objc_storage_->authentication_context_);
   }
   CFDictionarySetValue(query, kSecReturnRef, @YES);
   CFDictionarySetValue(query, kSecReturnAttributes, @YES);
