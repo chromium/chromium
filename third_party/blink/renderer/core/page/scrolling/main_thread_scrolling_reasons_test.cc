@@ -486,10 +486,18 @@ TEST_P(NonCompositedMainThreadScrollingReasonsTest,
        CantPaintScrollingBackgroundTest) {
   TestNonCompositedReasons(
       "cant-paint-scrolling-background",
-      RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()
-          ? cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText
-          : cc::MainThreadScrollingReason::
-                kCantPaintScrollingBackgroundAndLCDText);
+      cc::MainThreadScrollingReason::kBackgroundNeedsRepaintOnScroll |
+          (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()
+               ? cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText
+               : cc::MainThreadScrollingReason::
+                     kCantPaintScrollingBackgroundAndLCDText));
+}
+
+TEST_P(NonCompositedMainThreadScrollingReasonsTest,
+       BackgroundNeedsRepaintOnScroll) {
+  TestNonCompositedReasons(
+      "needs-repaint-on-scroll",
+      cc::MainThreadScrollingReason::kBackgroundNeedsRepaintOnScroll);
 }
 
 TEST_P(NonCompositedMainThreadScrollingReasonsTest, ClipTest) {

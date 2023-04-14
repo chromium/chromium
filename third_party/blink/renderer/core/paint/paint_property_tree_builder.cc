@@ -2305,13 +2305,9 @@ FragmentPaintPropertyTreeBuilder::GetMainThreadScrollingReasons() const {
   if (full_context_.scroll_unification_enabled) {
     reasons |= scrollable_area->GetNonCompositedMainThreadScrollingReasons();
   }
-  // TODO(wangxianzhu): Enable this code to fix the bug of lagging update of
-  // background that needs repaint during composited scroll.
-  /*
   if (scrollable_area->BackgroundNeedsRepaintOnScroll()) {
     reasons |= cc::MainThreadScrollingReason::kBackgroundNeedsRepaintOnScroll;
   }
-  */
   return reasons;
 }
 
