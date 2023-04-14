@@ -72,6 +72,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_coordinator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_helper.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
@@ -807,6 +808,18 @@
   self.baseViewController.incognitoTabsContextMenuProvider =
       self.incognitoTabContextMenuHelper;
 
+  if (IsInactiveTabsEnabled()) {
+    self.inactiveTabsCoordinator = [[InactiveTabsCoordinator alloc]
+        initWithBaseViewController:self.baseViewController
+                           browser:_inactiveBrowser
+                          delegate:self
+                      menuProvider:self.regularTabContextMenuHelper];
+    [self.inactiveTabsCoordinator start];
+
+    baseViewController.inactiveTabsDelegate =
+        self.inactiveTabsCoordinator.gridCommandsHandler;
+  }
+
   // TODO(crbug.com/845192) : Remove RecentTabsTableViewController dependency on
   // ChromeBrowserState so that we don't need to expose the view controller.
   baseViewController.remoteTabsViewController.browser = self.regularBrowser;
@@ -1119,17 +1132,6 @@
 
 - (void)showInactiveTabs {
   DCHECK(IsInactiveTabsEnabled());
-
-  if (!self.inactiveTabsCoordinator) {
-    self.inactiveTabsCoordinator = [[InactiveTabsCoordinator alloc]
-        initWithBaseViewController:self.baseViewController
-                           browser:_inactiveBrowser];
-    self.inactiveTabsCoordinator.delegate = self;
-    self.inactiveTabsCoordinator.menuProvider =
-        self.regularTabContextMenuHelper;
-    [self.inactiveTabsCoordinator start];
-  }
-
   [self.inactiveTabsCoordinator show];
 }
 

@@ -130,6 +130,7 @@ enum class TabGridPageConfiguration {
 
 // Delegates send updates from the UI layer to the model layer.
 @property(nonatomic, weak) id<GridCommands> regularTabsDelegate;
+@property(nonatomic, weak) id<GridCommands> inactiveTabsDelegate;
 @property(nonatomic, weak) id<GridCommands> incognitoTabsDelegate;
 @property(nonatomic, weak) id<TabCollectionCommands> pinnedTabsDelegate;
 

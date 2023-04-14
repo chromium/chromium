@@ -7,37 +7,47 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
 
 @protocol InactiveTabsCommands;
 @protocol InactiveTabsInfoConsumer;
 class PrefService;
-@class SnapshotCache;
+class SnapshotBrowserAgent;
+class SessionRestorationBrowserAgent;
 @protocol TabCollectionConsumer;
 class WebStateList;
 
+namespace sessions {
+class TabRestoreService;
+}  // namespace sessions
+
 // This mediator provides data to the Inactive Tabs grid and handles
 // interactions.
-@interface InactiveTabsMediator : NSObject <GridImageDataSource>
+@interface InactiveTabsMediator : NSObject <GridCommands, GridImageDataSource>
 
-// Initializer with `consumer` as the receiver of `webStateList` updates.
-- (instancetype)
-    initWithConsumer:
-        (id<TabCollectionConsumer, InactiveTabsInfoConsumer>)consumer
-      commandHandler:(id<InactiveTabsCommands>)commandHandler
-        webStateList:(WebStateList*)webStateList
-         prefService:(PrefService*)prefService
-       snapshotCache:(SnapshotCache*)snapshotCache NS_DESIGNATED_INITIALIZER;
+// Initializer with:
+// `consumer` as the receiver of `webStateList` updates.
+// `prefService` the preference service from the application context.
+// `sessionRestorationAgent` the session restoration browser agent from the
+// inactive browser. `snapshotAgent` the snapshot browser agent from the
+// inactive browser. `tabRestoreService` the service that holds the recently
+// closed tabs.
+- (instancetype)initWithConsumer:
+                    (id<TabCollectionConsumer, InactiveTabsInfoConsumer>)
+                        consumer
+                  commandHandler:(id<InactiveTabsCommands>)commandHandler
+                    webStateList:(WebStateList*)webStateList
+                     prefService:(PrefService*)prefService
+         sessionRestorationAgent:
+             (SessionRestorationBrowserAgent*)sessionRestorationAgent
+                   snapshotAgent:(SnapshotBrowserAgent*)snapshotAgent
+               tabRestoreService:(sessions::TabRestoreService*)tabRestoreService
+    NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Returns the number of items pushed to the consumer.
 - (NSInteger)numberOfItems;
-
-// Tells the receiver to close the item with the `itemID` identifier.
-- (void)closeItemWithID:(NSString*)itemID;
-
-// Tells the receiver to close all items of the web state list.
-- (void)closeAllItems;
 
 // Disconnects the mediator.
 - (void)disconnect;

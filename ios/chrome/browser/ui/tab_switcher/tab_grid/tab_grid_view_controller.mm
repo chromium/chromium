@@ -563,6 +563,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     self.tabGridMode = TabGridModeNormal;
   }
   [self.regularTabsDelegate discardSavedClosedItems];
+  [self.inactiveTabsDelegate discardSavedClosedItems];
   // When the view disappears, the toolbar alpha should be set to 0; either as
   // part of the animation, or directly with -hideToolbars.
   if (animated && self.transitionCoordinator) {
@@ -2808,13 +2809,23 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)undoCloseAllItemsForRegularTabs {
+  // This was saved as a stack: first save the inactive tabs, then the active
+  // tabs. So undo in the reverse order: first undo the active tabs, then the
+  // inactive tabs.
   [self.regularTabsDelegate undoCloseAllItems];
+  [self.inactiveTabsDelegate undoCloseAllItems];
+
   self.undoCloseAllAvailable = NO;
   [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
 }
 
 - (void)saveAndCloseAllItemsForRegularTabs {
+  // This was saved as a stack: first save the inactive tabs, then the active
+  // tabs. So undo in the reverse order: first undo the active tabs, then the
+  // inactive tabs.
+  [self.inactiveTabsDelegate saveAndCloseAllItems];
   [self.regularTabsDelegate saveAndCloseAllItems];
+
   self.undoCloseAllAvailable = YES;
   [self configureCloseAllButtonForCurrentPageAndUndoAvailability];
 }
