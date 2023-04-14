@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 10
+// Next min version: 11
 
 module cros.mojom;
 
@@ -117,6 +117,13 @@ interface CameraHalDispatcher {
   [MinVersion=6] RegisterSensorClientWithToken@6(
       pending_remote<chromeos.sensors.mojom.SensorHalClient> client,
       mojo_base.mojom.UnguessableToken auth_token) => (int32 result);
+
+  // Workaround for cros-camera service to request other services via
+  // mojo service manager.
+  // TODO(b/258095854): Remove this once camera mojo network is migrated to
+  // mojo service manager.
+  [MinVersion=10] BindServiceToMojoServiceManager@7(string service_name,
+      handle<message_pipe> receiver);
 };
 
 // The CrOS camera HAL v3 Mojo server.
