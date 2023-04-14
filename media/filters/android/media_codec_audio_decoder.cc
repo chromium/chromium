@@ -199,6 +199,11 @@ void MediaCodecAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   DecodeCB bound_decode_cb =
       base::BindPostTaskToCurrentDefault(std::move(decode_cb));
 
+  if (!DecoderBuffer::DoSubsamplesMatch(*buffer)) {
+    std::move(bound_decode_cb).Run(DecoderStatus::Codes::kFailed);
+    return;
+  }
+
   if (!buffer->end_of_stream() && buffer->timestamp() == kNoTimestamp) {
     DVLOG(2) << __func__ << " " << buffer->AsHumanReadableString()
              << ": no timestamp, skipping this buffer";

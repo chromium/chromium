@@ -775,6 +775,12 @@ void MediaCodecVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
+
+  if (!DecoderBuffer::DoSubsamplesMatch(*buffer)) {
+    std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
+    return;
+  }
+
   pending_decodes_.emplace_back(std::move(buffer), std::move(decode_cb));
 
   if (state_ == State::kInitializing) {

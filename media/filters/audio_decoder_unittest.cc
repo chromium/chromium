@@ -682,6 +682,12 @@ TEST_P(AudioDecoderTest, ProduceAudioSamples) {
   }
 }
 
+TEST_P(AudioDecoderTest, DecodeMismatchedSubsamples) {
+  ASSERT_NO_FATAL_FAILURE(Initialize());
+  DecodeBuffer(CreateMismatchedBufferForTest());
+  EXPECT_TRUE(!last_decode_status().is_ok());
+}
+
 TEST_P(AudioDecoderTest, Decode) {
   ASSERT_NO_FATAL_FAILURE(Initialize());
   Decode();

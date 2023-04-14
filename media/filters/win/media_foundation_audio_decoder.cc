@@ -180,6 +180,11 @@ void MediaFoundationAudioDecoder::Initialize(const AudioDecoderConfig& config,
 
 void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                          DecodeCB decode_cb) {
+  if (!DecoderBuffer::DoSubsamplesMatch(*buffer)) {
+    std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
+    return;
+  }
+
   if (buffer->end_of_stream()) {
     switch (decoder_->ProcessMessage(MFT_MESSAGE_COMMAND_DRAIN, 0)) {
       case S_OK: {

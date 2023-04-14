@@ -119,6 +119,11 @@ void FFmpegAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   DecodeCB decode_cb_bound =
       base::BindPostTaskToCurrentDefault(std::move(decode_cb));
 
+  if (!DecoderBuffer::DoSubsamplesMatch(*buffer)) {
+    std::move(decode_cb_bound).Run(DecoderStatus::Codes::kFailed);
+    return;
+  }
+
   if (state_ == DecoderState::kError) {
     std::move(decode_cb_bound).Run(DecoderStatus::Codes::kFailed);
     return;

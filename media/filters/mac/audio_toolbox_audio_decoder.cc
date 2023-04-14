@@ -190,6 +190,11 @@ void AudioToolboxAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     return;
   }
 
+  if (!DecoderBuffer::DoSubsamplesMatch(*buffer)) {
+    std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
+    return;
+  }
+
   InputData input_data;
   input_data.buffer = buffer.get();
   if (!buffer->end_of_stream())

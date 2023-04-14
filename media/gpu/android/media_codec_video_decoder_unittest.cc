@@ -455,6 +455,12 @@ TEST_P(MediaCodecVideoDecoderTest, CodecFailuresAreAnError) {
   PumpCodec();
 }
 
+TEST_P(MediaCodecVideoDecoderTest, MismatchedSubsamplesIsAnError) {
+  Initialize(TestVideoConfig::Large(codec_));
+  EXPECT_CALL(decode_cb_, Run(HasStatusCode(DecoderStatus::Codes::kFailed)));
+  mcvd_->Decode(CreateMismatchedBufferForTest(), decode_cb_.Get());
+}
+
 TEST_P(MediaCodecVideoDecoderTest, AfterInitCompletesTheCodecIsPolled) {
   auto* codec =
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
