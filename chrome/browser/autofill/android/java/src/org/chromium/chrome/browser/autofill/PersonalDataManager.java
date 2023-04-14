@@ -1319,6 +1319,21 @@ public class PersonalDataManager {
     }
 
     /**
+     * @return Whether the Autofill feature for payment methods mandatory reauth is enabled.
+     */
+    public static boolean isAutofillPaymentMethodsMandatoryReauthEnabled() {
+        return getPrefService().getBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH);
+    }
+
+    /**
+     * Enables or disables the Autofill feature for payment methods mandatory reauth.
+     * @param enable True to enable payment methods mandatory reauth, false otherwise.
+     */
+    public static void setAutofillPaymentMethodsMandatoryReauth(boolean enable) {
+        getPrefService().setBoolean(Pref.AUTOFILL_PAYMENT_METHODS_MANDATORY_REAUTH, enable);
+    }
+
+    /**
      * @return Whether the Autofill feature is managed.
      */
     public static boolean isAutofillManaged() {
