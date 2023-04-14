@@ -374,6 +374,10 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Register pref used to determine if the Price Tracking UI has been shown.
   registry->RegisterBooleanPref(prefs::kPriceNotificationsHasBeenShown, false);
 
+  // Register pref used to count the number of consecutive times the password
+  // bottom sheet has been dismissed.
+  registry->RegisterIntegerPref(prefs::kIosPasswordBottomSheetDismissCount, 0);
+
   // Register pref used to determine if Browser Lockdown Mode is enabled.
   registry->RegisterBooleanPref(prefs::kBrowserLockdownModeEnabled, false);
 

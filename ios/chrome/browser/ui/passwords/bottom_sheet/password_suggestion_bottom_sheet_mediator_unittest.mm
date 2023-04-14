@@ -198,6 +198,7 @@ class PasswordSuggestionBottomSheetMediatorTest : public PlatformTest {
         initWithWebStateList:&web_state_list_
                faviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
                                  chrome_browser_state_.get())
+                 prefService:chrome_browser_state_->GetPrefs()
                       params:params_];
   }
 

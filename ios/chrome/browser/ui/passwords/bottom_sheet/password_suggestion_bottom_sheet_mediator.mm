@@ -7,9 +7,11 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/web_state_list/active_web_state_observation_forwarder.h"
@@ -55,18 +57,23 @@
   // FaviconLoader is a keyed service that uses LargeIconService to retrieve
   // favicon images.
   raw_ptr<FaviconLoader> _faviconLoader;
+
+  // Preference service from the application context.
+  PrefService* _prefService;
 }
 
 @synthesize defaultGlobeIconAttributes = _defaultGlobeIconAttributes;
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                        faviconLoader:(FaviconLoader*)faviconLoader
+                         prefService:(PrefService*)prefService
                               params:
                                   (const autofill::FormActivityParams&)params {
   if (self = [super init]) {
     _needsRefocus = true;
     _frameId = params.frame_id;
     _faviconLoader = faviconLoader;
+    _prefService = prefService;
 
     _webStateList = webStateList;
     web::WebState* activeWebState = _webStateList->GetActiveWebState();
@@ -101,6 +108,7 @@
 }
 
 - (void)disconnect {
+  _prefService = nullptr;
   _faviconLoader = nullptr;
   _webStateList = nullptr;
   _forwarder = nullptr;
@@ -130,6 +138,8 @@
 
 - (void)refocus {
   if (_needsRefocus && _webStateList) {
+    [self incrementDismissCount];
+
     web::WebState* activeWebState = _webStateList->GetActiveWebState();
     web::WebFrame* frame = web::GetWebFrameWithId(activeWebState, _frameId);
     BottomSheetTabHelper::FromWebState(activeWebState)
@@ -211,6 +221,16 @@
                                 kDesiredMediumFaviconSizePt)];
   }
   return _defaultGlobeIconAttributes;
+}
+
+// Increments the dismiss count preference.
+- (void)incrementDismissCount {
+  if (_prefService) {
+    _prefService->SetInteger(
+        prefs::kIosPasswordBottomSheetDismissCount,
+        _prefService->GetInteger(prefs::kIosPasswordBottomSheetDismissCount) +
+            1);
+  }
 }
 
 @end

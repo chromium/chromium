@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_coordinator.h"
 
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_mediator.h"
@@ -39,6 +40,7 @@
         initWithWebStateList:browser->GetWebStateList()
                faviconLoader:IOSChromeFaviconLoaderFactory::GetForBrowserState(
                                  browser->GetBrowserState())
+                 prefService:browser->GetBrowserState()->GetPrefs()
                       params:params];
     self.viewController.delegate = self.mediator;
 
