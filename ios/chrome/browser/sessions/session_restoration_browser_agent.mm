@@ -193,11 +193,11 @@ bool SessionRestorationBrowserAgent::RestoreSessionWindow(
     // An "unrealized" WebState has no pending load. Checking for realization
     // before accessing the NavigationManager prevents accidental realization
     // of the WebState.
-    const bool hasPendingLoad =
+    const bool has_pending_load =
         web_state->IsRealized() &&
         web_state->GetNavigationManager()->GetPendingItem() != nullptr;
 
-    if (!hasPendingLoad &&
+    if (!has_pending_load &&
         (web_state->GetLastCommittedURL() == kChromeUINewTabURL)) {
       web_state_list_->CloseWebStateAt(0, WebStateList::CLOSE_USER_ACTION);
       closed_ntp_tab = true;

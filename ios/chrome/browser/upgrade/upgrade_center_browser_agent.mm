@@ -47,11 +47,11 @@ void UpgradeCenterBrowserAgent::WebStateInsertedAt(WebStateList* web_state_list,
   // happen after a new WebState has added and finished initial navigation. If
   // this happens earlier, the initial navigation may end up clearing the
   // infobar(s) that are just added.
-  infobars::InfoBarManager* infoBarManager =
+  infobars::InfoBarManager* info_bar_manager =
       InfoBarManagerImpl::FromWebState(web_state);
-  NSString* tabID = web_state->GetStableIdentifier();
+  NSString* tab_id = web_state->GetStableIdentifier();
 
-  [upgrade_center_ addInfoBarToManager:infoBarManager forTabId:tabID];
+  [upgrade_center_ addInfoBarToManager:info_bar_manager forTabId:tab_id];
 }
 
 void UpgradeCenterBrowserAgent::WillDetachWebStateAt(

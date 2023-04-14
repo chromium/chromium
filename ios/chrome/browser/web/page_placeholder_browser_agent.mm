@@ -48,8 +48,8 @@ void PagePlaceholderBrowserAgent::CancelPagePlaceholder() {
 
     int web_state_list_size = web_state_list_ ? web_state_list_->count() : 0;
     for (int index = 0; index < web_state_list_size; ++index) {
-      web::WebState* webStateAtIndex = web_state_list_->GetWebStateAt(index);
-      PagePlaceholderTabHelper::FromWebState(webStateAtIndex)
+      web::WebState* web_state_at_index = web_state_list_->GetWebStateAt(index);
+      PagePlaceholderTabHelper::FromWebState(web_state_at_index)
           ->CancelPlaceholderForNextNavigation();
     }
   }

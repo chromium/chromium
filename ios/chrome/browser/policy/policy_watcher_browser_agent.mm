@@ -187,9 +187,9 @@ void PolicyWatcherBrowserAgent::OnSignOutComplete() {
   SceneState* scene_state =
       SceneStateBrowserAgent::FromBrowser(browser_)->GetSceneState();
   sign_out_in_progress_ = false;
-  BOOL sceneIsActive =
+  BOOL scene_is_active =
       scene_state.activationLevel >= SceneActivationLevelForegroundActive;
-  if (sceneIsActive) {
+  if (scene_is_active) {
     // Try to show the signout prompt in all cases: if there is a sign
     // in in progress, the UI will prevent the prompt from showing.
     [handler_ showForceSignedOutPrompt];

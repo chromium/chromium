@@ -149,11 +149,11 @@ web::UserAgentType WebNavigationBrowserAgent::UserAgentType(
   if (!web_state) {
     return web::UserAgentType::NONE;
   }
-  web::NavigationItem* visibleItem =
+  web::NavigationItem* visible_item =
       web_state->GetNavigationManager()->GetVisibleItem();
-  if (!visibleItem) {
+  if (!visible_item) {
     return web::UserAgentType::NONE;
   }
 
-  return visibleItem->GetUserAgentType();
+  return visible_item->GetUserAgentType();
 }
