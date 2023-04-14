@@ -139,11 +139,6 @@ bool IsUserAmbientModeEnabled() {
          pref_service->GetBoolean(ambient::prefs::kAmbientModeEnabled);
 }
 
-bool IsAmbientModeAllowed() {
-  return ash::features::IsAmbientModeManagedScreensaverEnabled() ||
-         AmbientClient::Get()->IsAmbientModeAllowed();
-}
-
 bool IsAmbientModeManagedScreensaverEnabled() {
   // TODO(fahadmansoor): Consider adding additional client side checks to
   // keep behavior consistent with the consumer ambient mode.
@@ -404,7 +399,7 @@ void AmbientController::OnLockStateChanged(bool locked) {
 
 void AmbientController::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
-  if (!IsAmbientModeAllowed() || GetPrimaryUserPrefService() != pref_service) {
+  if (GetPrimaryUserPrefService() != pref_service) {
     return;
   }
 
@@ -413,17 +408,25 @@ void AmbientController::OnActiveUserPrefServiceChanged(
   if (pref_change_registrar_)
     return;
 
-  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(pref_service);
+  bool ambient_mode_allowed = AmbientClient::Get()->IsAmbientModeAllowed();
+  bool managed_screensaver_flag_enabled =
+      ash::features::IsAmbientModeManagedScreensaverEnabled();
 
-  pref_change_registrar_->Add(
-      ambient::prefs::kAmbientModeEnabled,
-      base::BindRepeating(&AmbientController::OnEnabledPrefChanged,
-                          weak_ptr_factory_.GetWeakPtr()));
+  if (ambient_mode_allowed || managed_screensaver_flag_enabled) {
+    pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+    pref_change_registrar_->Init(pref_service);
+  }
 
-  OnEnabledPrefChanged();
+  if (ambient_mode_allowed) {
+    pref_change_registrar_->Add(
+        ambient::prefs::kAmbientModeEnabled,
+        base::BindRepeating(&AmbientController::OnEnabledPrefChanged,
+                            weak_ptr_factory_.GetWeakPtr()));
 
-  if (ash::features::IsAmbientModeManagedScreensaverEnabled()) {
+    OnEnabledPrefChanged();
+  }
+
+  if (managed_screensaver_flag_enabled) {
     pref_change_registrar_->Add(
         ambient::prefs::kAmbientModeManagedScreensaverEnabled,
         base::BindRepeating(

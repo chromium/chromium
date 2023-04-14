@@ -55,8 +55,8 @@ class AmbientAshTestBase : public AshTestBase {
   // Enables/disables ambient mode for the currently active user session.
   void SetAmbientModeEnabled(bool enabled);
 
-  // Enables/disabled the managed ambient mode for the currently active user
-  // session.
+  // Enables/disables the managed ambient mode pref in the currently active pref
+  // service.
   void SetAmbientModeManagedScreensaverEnabled(bool enabled);
 
   // Sets the |AmbientUiSettings| to use when ShowAmbientScreen() is called.
