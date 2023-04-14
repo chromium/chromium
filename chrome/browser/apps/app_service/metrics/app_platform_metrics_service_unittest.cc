@@ -2215,6 +2215,30 @@ TEST_P(AppPlatformMetricsServiceTest,
       Eq(kAppRunningDuration));
 }
 
+TEST_P(AppPlatformMetricsServiceTest, ShouldNotPersistUsageDataIfSyncDisabled) {
+  // Disable sync state.
+  sync_service()->SetDisableReasons(
+      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+
+  // Create a new window for the app.
+  auto window = std::make_unique<aura::Window>(nullptr);
+  window->Init(ui::LAYER_NOT_DRAWN);
+
+  // Set the window active state and simulate app usage.
+  static constexpr char kAppId[] = "a";
+  const base::UnguessableToken& kInstanceId = base::UnguessableToken::Create();
+  ModifyInstance(kInstanceId, kAppId, window.get(),
+                 ::apps::InstanceState::kActive);
+  static constexpr base::TimeDelta kAppRunningDuration = base::Minutes(5);
+  task_environment_.FastForwardBy(kAppRunningDuration);
+
+  // Close app window to stop tracking further usage and verify usage info is
+  // not persisted in the pref store.
+  ModifyInstance(kInstanceId, kAppId, window.get(),
+                 ::apps::InstanceState::kDestroyed);
+  ASSERT_TRUE(GetPrefService()->GetDict(kAppUsageTime).empty());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          AppPlatformMetricsServiceTest,
                          testing::Bool() /* IsLacrosPrimary */);
