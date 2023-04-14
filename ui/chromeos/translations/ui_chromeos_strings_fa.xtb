@@ -10,8 +10,8 @@
 <translation id="1062407476771304334">جایگزینی</translation>
 <translation id="1119447706177454957">خطای داخلی</translation>
 <translation id="1120073797882051782">هانگول روماجا</translation>
-<translation id="112387589102719461">‏انگلیسی (آمریکایی) با صفحه‌کلید «برنامه‌نویس Dvorak»</translation>
-<translation id="1134697384939541955">انگلیسی (آمریکایی) با صفحه‌کلید گسترده</translation>
+<translation id="112387589102719461">‏انگلیسی (امریکایی) با صفحه‌کلید «برنامه‌نویس Dvorak»</translation>
+<translation id="1134697384939541955">انگلیسی (امریکایی) با صفحه‌کلید گسترده</translation>
 <translation id="1138691154716715755">اوایل این ماه</translation>
 <translation id="1150565364351027703">عینک آفتابی</translation>
 <translation id="115443833402798225">هانگول آهنماتائه</translation>
@@ -56,7 +56,7 @@
 <translation id="1482884275703521657">فنلاندی</translation>
 <translation id="148466539719134488">سوئیسی</translation>
 <translation id="1497522201463361063">تغییرنام «<ph name="FILE_NAME" />» ممکن نیست.<ph name="ERROR_MESSAGE" /></translation>
-<translation id="1499943022354839699">‏انگلیسی (آمریکایی) با صفحه‌کلید Dvorak</translation>
+<translation id="1499943022354839699">‏انگلیسی (امریکایی) با صفحه‌کلید Dvorak</translation>
 <translation id="1515909359182093592"><ph name="INPUT_LABEL" /> - میزبان</translation>
 <translation id="1521655867290435174">‏کاربرگ‌نگار Google</translation>
 <translation id="1538729222189715449">‏درحال باز کردن فایل‌های Linux…</translation>
@@ -307,7 +307,7 @@
 <translation id="3548125359243647069">پین نادرست دفعات زیادی وارد شده است.</translation>
 <translation id="3549797760399244642">‏رفتن به drive.google.com…</translation>
 <translation id="3553048479571901246">‏برای باز کردن فایل‌ها با <ph name="APP_NAME" />، ابتدا آن‌ها را در پوشه فایل‌های Windows کپی کنید.</translation>
-<translation id="3556731189587832921">انگلیسی (آمریکایی) با صفحه‌کلید بین‌المللی رایانه</translation>
+<translation id="3556731189587832921">انگلیسی (امریکایی) با صفحه‌کلید بین‌المللی رایانه</translation>
 <translation id="3557414470514932909">درحال انتقال <ph name="FILE_NAME" /> به «حذف‌شده‌ها»</translation>
 <translation id="3567221313191587603">فایلی انتخاب کنید و برای دسترسی آفلاین به فایل‌هایتان، <ph name="OFFLINE_CHECKBOX_NAME" /> را روشن کنید.</translation>
 <translation id="357479282490346887">لیتوانیایی</translation>
@@ -362,7 +362,7 @@
 <translation id="3975895378829046965">بنگلا (آوایی)</translation>
 <translation id="3999574733850440202">‏فایل‌های Microsoft اخیراً بازشده به OneDrive منتقل شده‌اند</translation>
 <translation id="4002066346123236978">عنوان</translation>
-<translation id="4017788180641807848">‏انگلیسی (آمریکایی) با صفحه‌کلید Workman</translation>
+<translation id="4017788180641807848">‏انگلیسی (امریکایی) با صفحه‌کلید Workman</translation>
 <translation id="4019998208269143058">سنجاق کردن به «فایل‌های سریع»</translation>
 <translation id="4040753847560036377">‏PUK نادرست است</translation>
 <translation id="4057991113334098539">فعالسازی...</translation>
@@ -423,7 +423,7 @@
 <translation id="4477002475007461989">رومانیایی</translation>
 <translation id="4477219268485577442">آوایی بلغاری</translation>
 <translation id="4508265954913339219">فعالسازی انجام نشد</translation>
-<translation id="4509667233588080747">‏انگلیسی (آمریکایی) با صفحه‌کلید بین‌المللی Workman</translation>
+<translation id="4509667233588080747">‏انگلیسی (امریکایی) با صفحه‌کلید بین‌المللی Workman</translation>
 <translation id="4522570452068850558">جزئیات</translation>
 <translation id="4527800702232535228">‏این پوشه با Parallels Desktop هم‌رسانی می‌شود</translation>
 <translation id="4552678318981539154">خرید فضای ذخیره بیشتر</translation>
@@ -883,7 +883,7 @@
 <translation id="7969525169268594403">اسلوونیایی</translation>
 <translation id="7972920761225148017">فرانسوی (سوئیس)</translation>
 <translation id="7973962044839454485">‏اصالت‌سنجی PPP به دلیل نام کاربری یا گذرواژه نادرست انجام نشد</translation>
-<translation id="7980421588063892270">‏انگلیسی (آمریکایی) با صفحه‌کلید Colemak</translation>
+<translation id="7980421588063892270">‏انگلیسی (امریکایی) با صفحه‌کلید Colemak</translation>
 <translation id="8000066093800657092">بدون شبکه</translation>
 <translation id="8008366997883261463">جک راسل تریر</translation>
 <translation id="8028993641010258682">اندازه</translation>
@@ -1030,7 +1030,7 @@
 <translation id="9153934054460603056">ذخیره شناسه و رمز عبور</translation>
 <translation id="9171921933192916600">کتاب‌باز</translation>
 <translation id="9172592259078059678">نویسه‌گردانی گجراتی</translation>
-<translation id="9173120999827300720">انگلیسی (آمریکایی) با صفحه‌کلید بین‌المللی</translation>
+<translation id="9173120999827300720">انگلیسی (امریکایی) با صفحه‌کلید بین‌المللی</translation>
 <translation id="9183302530794969518">‏سندنگار Google</translation>
 <translation id="9189836632794948435">قزاقی</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> مورد استخراج شد.</translation>

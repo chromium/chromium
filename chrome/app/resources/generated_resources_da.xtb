@@ -7860,7 +7860,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7943349879009553083">Ikke tilgængeligt i gæstetilstand</translation>
 <translation id="7943368935008348579">Download PDF-filer</translation>
 <translation id="7943837619101191061">Tilføj placering...</translation>
-<translation id="7944772052836377867">Synkronisering skal bekræfte din identitet</translation>
+<translation id="7944772052836377867">Synkronisering skal verificere din identitet</translation>
 <translation id="7945031593909029181">"<ph name="CHROME_EXTENSION_NAME" />" vil oprette forbindelse</translation>
 <translation id="7945703887991230167">Foretrukken stemme</translation>
 <translation id="7946586320617670168">Oprindelsen skal være sikker</translation>
@@ -7990,7 +7990,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8049705080247101012">Google har markeret "<ph name="EXTENSION_NAME" />" som skadelig, og installationen blev forhindret</translation>
 <translation id="8049948037269924837">Omvendt rulning på touchplade</translation>
 <translation id="8050038245906040378">Microsoft-signering af kommerciel kode</translation>
-<translation id="8050191834453426339">Bekræft igen</translation>
+<translation id="8050191834453426339">Verificer igen</translation>
 <translation id="8051193500142930381">Funktioner, der skal bruge et kamera, fungerer ikke</translation>
 <translation id="8051390370038326517">Tillad altid, at <ph name="HOST" /> kan få fuld kontrol over MIDI-enheder</translation>
 <translation id="8053278772142718589">PKCS #12-filer</translation>

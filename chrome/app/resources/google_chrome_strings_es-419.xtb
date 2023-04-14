@@ -149,7 +149,7 @@
 <translation id="3622797965165704966">Ahora es más sencillo utilizar Chrome con la cuenta de Google y en computadoras compartidas.</translation>
 <translation id="3673813398384385993">Chrome detectó que "<ph name="EXTENSION_NAME" />" contiene software malicioso.</translation>
 <translation id="3703994572283698466">Chrome OS funciona gracias a <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicional, como <ph name="BEGIN_LINK_LINUX_OSS" />el entorno de desarrollo de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
-<translation id="3716540481907974026">Versión de Chrome OS Flex</translation>
+<translation id="3716540481907974026">Versión de ChromeOS Flex</translation>
 <translation id="3718181793972440140">Esta acción borrará 1 elemento de este dispositivo. Si más adelante deseas recuperar los datos, accede a tu cuenta en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">La extensión "<ph name="EXTENSION_NAME" />" cambió la página que se muestra al iniciar Chrome.</translation>
 <translation id="3744202345691150878">Obtener ayuda con Chrome OS</translation>
@@ -214,7 +214,7 @@
 <translation id="495931528404527476">En Chrome</translation>
 <translation id="4969674060580488087">Chrome OS Flex no pudo sincronizar los datos porque la información de acceso de la cuenta está desactualizada.</translation>
 <translation id="4970761609246024540">Te damos la bienvenida a los perfiles de Chrome</translation>
-<translation id="4970880042055371251">Versión de Chrome OS</translation>
+<translation id="4970880042055371251">Versión de ChromeOS</translation>
 <translation id="4970947549776831107">Chrome bloqueó este archivo porque este tipo de archivo es peligroso</translation>
 <translation id="4990567037958725628">Google Chrome Canario</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{El administrador cierra Chrome automáticamente si no lo usas durante 1 minuto. Se borran los datos de navegación. Esto puede incluir el historial, los datos de Autocompletar y las descargas.}other{El administrador cierra Chrome automáticamente si no lo usas durante # minutos. Se borran los datos de navegación. Esto puede incluir el historial, los datos de Autocompletar y las descargas.}}</translation>
