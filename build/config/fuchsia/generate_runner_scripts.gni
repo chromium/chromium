@@ -15,7 +15,7 @@ declare_args() {
   # Sets the Fuchsia Amber repository which will be used by default by the
   # generated installation scripts. If not specified, then no default directory
   # will be used.
-  default_fuchsia_build_dir_for_installation = ""
+  default_fuchsia_out_dir = ""
 
   # Sets the Fuchsia device node name which will be used by default by the
   # generated runner scripts. If not specficed, then no default node name will
@@ -62,9 +62,8 @@ declare_args() {
 #                      --package - the path to a .FAR package to install.
 #                      --package_name - the name of the package to use as an
 #                                       entry point.
-#   include_fuchsia_build_dir: If true, adds
-#                              |default_fuchsia_build_dir_for_installation|
-#                              to executable_args (when set in GN args).
+#   include_fuchsia_out_dir: If true, adds |default_fuchsia_out_dir|
+#                            to executable_args (when set in GN args).
 template("fuchsia_run_script_with_packages") {
   if (defined(invoker.package_name)) {
     _pkg_shortname = invoker.package_name
@@ -82,7 +81,7 @@ template("fuchsia_run_script_with_packages") {
                                  "executable",
                                  "executable_args",
                                  "data",
-                                 "include_fuchsia_build_dir",
+                                 "include_fuchsia_out_dir",
                                  "target",
                                ])
 
@@ -127,11 +126,11 @@ template("fuchsia_run_script_with_packages") {
       executable_args = []
     }
 
-    if (defined(include_fuchsia_build_dir) && include_fuchsia_build_dir &&
-        default_fuchsia_build_dir_for_installation != "") {
+    if (defined(include_fuchsia_out_dir) && include_fuchsia_out_dir &&
+        default_fuchsia_out_dir != "") {
       executable_args += [
         "--fuchsia-out-dir",
-        default_fuchsia_build_dir_for_installation,
+        default_fuchsia_out_dir,
       ]
     }
   }
@@ -175,7 +174,7 @@ template("fuchsia_package_installer") {
       pkg_shortname,
     ]
     output_name_format = "deploy_%package%"
-    include_fuchsia_build_dir = true
+    include_fuchsia_out_dir = true
   }
 }
 

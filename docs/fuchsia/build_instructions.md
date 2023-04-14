@@ -276,7 +276,7 @@ Documentation for the underlying testing scripts work can be found
 If you have a Fuchsia checkout and build, there are GN arguments in Chromium
 that make working with both Fuchsia and Chromium checkouts easier.
 
-* `default_fuchsia_build_dir_for_installation`. Point this to an output
+* `default_fuchsia_out_dir`. Point this to an output
   directory in Fuchsia. For instance. `/path/to/src/fuchsia/out/qemu-x64`. This
   will automatically add the `--fuchsia-out-dir` flag to wrapper scripts.
 * `default_fuchsia_device_node_name`. Set this to a Fuchsia device node name.
