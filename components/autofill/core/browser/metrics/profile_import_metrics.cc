@@ -196,4 +196,22 @@ void LogUpdateProfileNumberOfAffectedFields(
       number_of_edited_fields, /*exclusive_max=*/15);
 }
 
+void LogProfileMigrationImportDecision(
+    AutofillClient::SaveAddressProfileOfferUserDecision decision) {
+  base::UmaHistogramEnumeration("Autofill.ProfileImport.MigrateProfileDecision",
+                                decision);
+}
+
+void LogProfileMigrationEditedType(ServerFieldType edited_type) {
+  base::UmaHistogramEnumeration(
+      "Autofill.ProfileImport.MigrateProfileEditedType",
+      ConvertSettingsVisibleFieldTypeForMetrics(edited_type));
+}
+
+void LogProfileMigrationNumberOfEditedFields(int number_of_edited_fields) {
+  base::UmaHistogramExactLinear(
+      "Autofill.ProfileImport.MigrateProfileNumberOfEditedFields",
+      number_of_edited_fields, /*exclusive_max=*/15);
+}
+
 }  // namespace autofill::autofill_metrics

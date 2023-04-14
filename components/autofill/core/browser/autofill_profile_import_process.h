@@ -242,6 +242,14 @@ class ProfileImportProcess {
       absl::optional<AutofillProfile>& migration_candidate,
       const AutofillProfile& profile) const;
 
+  // Computes the settings-visible profile difference between the
+  // `import_candidate_` and the `confirmed_import_candidate_`. Logs all edited
+  // types and the number of edited fields to UMA histograms, depending on the
+  // import type.
+  // Returns the number of edited fields.
+  // If the user didn't edit any fields (or wasn't prompted), this is a no-op.
+  int CollectedEditedTypeHistograms() const;
+
   // An id to identify an import request.
   AutofillProfileImportId import_id_;
 

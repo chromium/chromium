@@ -40,16 +40,22 @@ constexpr char kNewProfileEditsHistogram[] =
     "Autofill.ProfileImport.NewProfileEditedType";
 constexpr char kProfileUpdateEditsHistogram[] =
     "Autofill.ProfileImport.UpdateProfileEditedType";
+constexpr char kProfileMigrationEditsHistogram[] =
+    "Autofill.ProfileImport.MigrateProfileEditedType";
 constexpr char kProfileUpdateAffectedTypesHistogram[] =
     "Autofill.ProfileImport.UpdateProfileAffectedType";
 constexpr char kNewProfileDecisionHistogram[] =
     "Autofill.ProfileImport.NewProfileDecision";
 constexpr char kProfileUpdateDecisionHistogram[] =
     "Autofill.ProfileImport.UpdateProfileDecision";
+constexpr char kProfileMigrationDecisionHistogram[] =
+    "Autofill.ProfileImport.MigrateProfileDecision";
 constexpr char kNewProfileNumberOfEditsHistogram[] =
     "Autofill.ProfileImport.NewProfileNumberOfEditedFields";
 constexpr char kProfileUpdateNumberOfEditsHistogram[] =
     "Autofill.ProfileImport.UpdateProfileNumberOfEditedFields";
+constexpr char kProfileMigrationNumberOfEditsHistogram[] =
+    "Autofill.ProfileImport.MigrateProfileNumberOfEditedFields";
 constexpr char kProfileUpdateNumberOfAffectedTypesHistogram[] =
     "Autofill.ProfileImport.UpdateProfileNumberOfAffectedFields";
 
@@ -373,20 +379,31 @@ void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
   constexpr ImportHistogramNames update_profile_histograms = {
       kProfileUpdateDecisionHistogram, kProfileUpdateEditsHistogram,
       kProfileUpdateNumberOfEditsHistogram};
+  constexpr ImportHistogramNames migrate_profile_histograms = {
+      kProfileMigrationDecisionHistogram, kProfileMigrationEditsHistogram,
+      kProfileMigrationNumberOfEditsHistogram};
 
-  // If the import was neither a new profile or a confirmable merge, test that
-  // the corresponding histograms are unchanged.
-  if (!IsNewProfile(test_scenario) && !IsConfirmableMerge(test_scenario)) {
+  // If the import was not a new profile, confirmable merge or migration, test
+  // that the corresponding histograms are unchanged.
+  if (!IsNewProfile(test_scenario) && !IsConfirmableMerge(test_scenario) &&
+      !IsMigration(test_scenario)) {
     new_profile_histograms.ExpectAllEmpty(histogram_tester);
     update_profile_histograms.ExpectAllEmpty(histogram_tester);
+    migrate_profile_histograms.ExpectAllEmpty(histogram_tester);
     return;
   }
-  // The import cannot be a new profile and update profile at the same time.
-  DCHECK(!IsNewProfile(test_scenario) || !IsConfirmableMerge(test_scenario));
+  // The import can only be one of {new, updated, migrated} profile at once.
+  ASSERT_EQ(
+      base::ranges::count(std::vector<bool>{IsNewProfile(test_scenario),
+                                            IsConfirmableMerge(test_scenario),
+                                            IsMigration(test_scenario)},
+                          true),
+      1);
 
   const ImportHistogramNames& affected_histograms =
-      IsNewProfile(test_scenario) ? new_profile_histograms
-                                  : update_profile_histograms;
+      IsNewProfile(test_scenario)         ? new_profile_histograms
+      : IsConfirmableMerge(test_scenario) ? update_profile_histograms
+                                          : migrate_profile_histograms;
   // Expect records in the affected histograms.
   histogram_tester.ExpectUniqueSample(affected_histograms.decision,
                                       test_scenario.user_decision, 1);
@@ -405,7 +422,8 @@ void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
 
   // Expect no records in all unaffected histograms.
   for (const ImportHistogramNames* histograms :
-       {&new_profile_histograms, &update_profile_histograms}) {
+       {&new_profile_histograms, &update_profile_histograms,
+        &migrate_profile_histograms}) {
     if (histograms != &affected_histograms) {
       histograms->ExpectAllEmpty(histogram_tester);
     }
