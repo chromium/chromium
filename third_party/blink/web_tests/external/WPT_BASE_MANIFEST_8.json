@@ -269714,11 +269714,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "672433b52e6c2a8b106eea7f3b2ff5740512b408",
+     "e55cd124d39ad1ab5daf39e37543f26d5e8ae438",
      []
     ],
     "mtime.json": [
-     "e9c7411915628908c44bded998b4568fa3325d6a",
+     "6670a09d734e72889df6f47c5d1a999d5afe3431",
      []
     ]
    },
@@ -304880,7 +304880,7 @@
        []
       ],
       "subgrid-baseline-001.html.ini": [
-       "c181d4a8d962469dd2f1764ca1bb7918d899ba2a",
+       "485cf09ea623fae040d850c84cb09c8271940650",
        []
       ],
       "subgrid-baseline-002-ref.html": [
@@ -326335,6 +326335,10 @@
        "304d4c2af7e769febddfd16955e7f7c7f07a9f4f",
        []
       ],
+      "kind-of-widget-fallback-color-input-background-position-001.html.ini": [
+       "e8f2f52f31837aaa0dd3f388b6489c660af5ca87",
+       []
+      ],
       "kind-of-widget-fallback-color-input-border-block-end-color-001.html.ini": [
        "ff428f0d2fb4cb85deecd123c54dcef65c487207",
        []
@@ -326455,6 +326459,10 @@
        "a99265efc1f46bdb74c46fab4e8aeaae7f49ad78",
        []
       ],
+      "kind-of-widget-fallback-input-reset-border-end-end-radius-001.html.ini": [
+       "0d57390a693bd6e3996478bca6da9c10e6b64d75",
+       []
+      ],
       "kind-of-widget-fallback-input-reset-border-image-source-001.html.ini": [
        "a911df1e36bb92f5c4da85931bc273900eb17c2c",
        []
@@ -326544,7 +326552,7 @@
        []
       ],
       "kind-of-widget-fallback-input-search-border-top-color-001.html.ini": [
-       "77f434e3149bb27cabde9fe6c394f35175ee3ee3",
+       "f0d1caa42a7209d6c186bdd7bc6497629b96f69b",
        []
       ],
       "kind-of-widget-fallback-input-search-border-top-left-radius-001.html.ini": [
@@ -326707,8 +326715,16 @@
        "8ea1424e8d0d268bbdc7b5373d1c6f87b5bd62bd",
        []
       ],
+      "kind-of-widget-fallback-input-submit-border-image-slice-001.html.ini": [
+       "0c26f7d54b41705a6994f5d340ea8c490861273b",
+       []
+      ],
       "kind-of-widget-fallback-input-submit-border-image-source-001.html.ini": [
        "b73f367d4b01e102866bb57c8226b0d4685824c6",
+       []
+      ],
+      "kind-of-widget-fallback-input-submit-border-image-width-001.html.ini": [
+       "95e5eac43bb15d20e4f1ddf5226048d666a8bdc4",
        []
       ],
       "kind-of-widget-fallback-input-submit-border-inline-end-style-001.html.ini": [
@@ -327065,6 +327081,10 @@
       ],
       "kind-of-widget-fallback-textarea-border-bottom-color-001.html.ini": [
        "ab60e58a77d9675b81f14d905d3c84971d0901df",
+       []
+      ],
+      "kind-of-widget-fallback-textarea-border-bottom-right-radius-001.html.ini": [
+       "ed4debca2fb0123edadd978b63c9c28362ba3d57",
        []
       ],
       "kind-of-widget-fallback-textarea-border-bottom-style-001.html.ini": [
@@ -368598,7 +368618,7 @@
      []
     ],
     "cross-origin-iframe.sub.html.ini": [
-     "fd7b32d74ea54735da38c1b2bec1dc4f9f47954b",
+     "89dc46716c2b8e0f4685c83e4dba22ece1bcc6c3",
      []
     ],
     "idlharness.window-expected.txt": [
@@ -390744,7 +390764,7 @@
      []
     ],
     "prelu.https.any.js.ini": [
-     "9cf6e47b28341aed6d84753a0068f943ff0ecd40",
+     "bc4a57987192f46a65f5209048546d800b21f1f6",
      []
     ],
     "reduction.https.any-expected.txt": [
@@ -390870,7 +390890,7 @@
        []
       ],
       "prelu.json": [
-       "f3855b0f4e19b4e8b70b8fafb0a5f32b733ee7bd",
+       "e1bf67826195d27c62115d0806493fe5db97c04b",
        []
       ],
       "reduce_max.json": [
@@ -390917,6 +390937,10 @@
        "52ea57c7632d0d27b1745ddd4e983c37becf9832",
        []
       ],
+      "softsign.json": [
+       "e3208b18ad49a64dbbeb6a939dc69d2ea5ab3c43",
+       []
+      ],
       "split.json": [
        "e4216003c02f7fa8174d2d2734217477ca975407",
        []
@@ -390943,7 +390967,7 @@
       ]
      },
      "utils.js": [
-      "a91dfa04c6e7b38cb1d461edef7cbb72edaa65ba",
+      "427b47e28cc2f9aeae42e9ed6fbf6b36128c9a0b",
       []
      ]
     },
@@ -390965,6 +390989,10 @@
     ],
     "softmax.https.any.js.ini": [
      "a8a6b6b1405075fa6be9163df14a2c24dee34b4a",
+     []
+    ],
+    "softsign.https.any.js.ini": [
+     "1975679ad23458ddcea1198691b6806a395a5830",
      []
     ],
     "split.https.any-expected.txt": [
@@ -446692,7 +446720,7 @@
      },
      "text-box-trim": {
       "text-box-trim-valid.html": [
-       "1ce4ceb107409896d3f9e1d000f226c3afb5fcb2",
+       "61622774f6f33054ad97e74dde0b020619eb1d02",
        [
         null,
         {}
@@ -632664,6 +632692,57 @@
         [
          "title",
          "test WebNN API softmax operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "softsign.https.any.js": [
+     "61a7d5365fabca290eaeb400c961a107558e17ed",
+     [
+      "webnn/softsign.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API softsign operation"
+        ],
+        [
+         "global",
+         "window,dedicatedworker"
+        ],
+        [
+         "script",
+         "./resources/utils.js"
+        ],
+        [
+         "timeout",
+         "long"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "webnn/softsign.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "test WebNN API softsign operation"
         ],
         [
          "global",
