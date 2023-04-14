@@ -6,9 +6,12 @@
 
 #include <algorithm>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/shadow_value.h"
 
 namespace {
@@ -69,9 +72,16 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
     case INSETS_TOAST:
       return gfx::Insets::VH(0, kHarmonyLayoutUnit);
     case INSETS_OMNIBOX_PILL_BUTTON:
-      return touch_ui
-                 ? gfx::Insets::VH(kHarmonyLayoutUnit / 2, kHarmonyLayoutUnit)
-                 : gfx::Insets::VH(5, 12);
+      if ((base::FeatureList::IsEnabled(omnibox::kCr2023ActionChips) ||
+           features::GetChromeRefresh2023Level() ==
+               features::ChromeRefresh2023Level::kLevel2) &&
+          !touch_ui) {
+        return gfx::Insets::VH(4, 8);
+      } else {
+        return touch_ui
+                   ? gfx::Insets::VH(kHarmonyLayoutUnit / 2, kHarmonyLayoutUnit)
+                   : gfx::Insets::VH(5, 12);
+      }
     case INSETS_PAGE_INFO_HOVER_BUTTON: {
       const gfx::Insets insets =
           LayoutProvider::GetInsetsMetric(views::INSETS_LABEL_BUTTON);

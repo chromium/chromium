@@ -5758,6 +5758,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kUniformRowHeight,
                                     kOmniboxSuggestionHeightVariations,
                                     "Uniform Omnibox Suggest Heights")},
+    {"omnibox-cr23-action-chips",
+     flag_descriptions::kOmniboxCR23ActionChipsName,
+     flag_descriptions::kOmniboxCR23ActionChipsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kCr2023ActionChips)},
 
     {"omnibox-cr23-expanded-state-height",
      flag_descriptions::kOmniboxCR23ExpandedStateHeightName,

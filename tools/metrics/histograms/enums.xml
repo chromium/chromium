@@ -62680,6 +62680,7 @@ from previous Chrome versions.
   <int value="359896413" label="SplitPartiallyOccludedQuads:disabled"/>
   <int value="359918746"
       label="AutofillEnableVirtualCardsRiskBasedAuthentication:disabled"/>
+  <int value="359941469" label="Cr2023ActionChips:disabled"/>
   <int value="360391863" label="NTPOfflineBadge:enabled"/>
   <int value="360599302" label="enable-gpu-rasterization"/>
   <int value="360697704" label="UseSyncInvalidations:enabled"/>
@@ -62866,6 +62867,7 @@ from previous Chrome versions.
   <int value="458410433" label="disable-views-rect-based-targeting"/>
   <int value="460136092" label="MidiManagerAndroid:disabled"/>
   <int value="460475728" label="wake-on-wifi-packet"/>
+  <int value="460478987" label="Cr2023ActionChips:enabled"/>
   <int value="461523297"
       label="UsernameFirstFlowFallbackCrowdsourcing:enabled"/>
   <int value="461641589" label="WebAppWindowControlsOverlay:disabled"/>

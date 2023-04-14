@@ -88,6 +88,7 @@ BASE_DECLARE_FEATURE(kDomainSuggestions);
 // Suggestions UI - these affect the UI or function of the suggestions popup.
 BASE_DECLARE_FEATURE(kAdaptiveSuggestionsCount);
 BASE_DECLARE_FEATURE(kClipboardSuggestionContentHidden);
+BASE_DECLARE_FEATURE(kCr2023ActionChips);
 BASE_DECLARE_FEATURE(kSuggestionAnswersColorReverse);
 BASE_DECLARE_FEATURE(kMostVisitedTiles);
 BASE_DECLARE_FEATURE(kRichAutocompletion);

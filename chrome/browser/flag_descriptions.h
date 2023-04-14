@@ -1181,6 +1181,9 @@ extern const char kOmniboxClosePopupWithEscapeDescription[];
 extern const char kOmniboxConsumesImeInsetsName[];
 extern const char kOmniboxConsumesImeInsetsDescription[];
 
+extern const char kOmniboxCR23ActionChipsName[];
+extern const char kOmniboxCR23ActionChipsDescription[];
+
 extern const char kOmniboxCR23ExpandedStateColorsName[];
 extern const char kOmniboxCR23ExpandedStateColorsDescription[];
 

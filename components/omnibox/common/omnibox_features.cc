@@ -357,6 +357,12 @@ BASE_FEATURE(kClipboardSuggestionContentHidden,
              "ClipboardSuggestionContentHidden",
              enabled_by_default_android_only);
 
+// If enabled, uses Chrome Refresh 2023 Action Chips in the omnibox suggestion
+// popup.
+BASE_FEATURE(kCr2023ActionChips,
+             "Cr2023ActionChips",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, finance ticker answer from omnibox will reverse the color for
 // stock ticker. only colors being swapped are those that represent "growth" and
 // "loss" to represent colors red and green in a way that is appropriate for a

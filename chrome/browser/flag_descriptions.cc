@@ -2099,6 +2099,10 @@ const char kOmniboxConsumesImeInsetsDescription[] =
     "When enabled, the Android Omnibox will directly handle IME (keyboard) "
     "inset changes while visible.";
 
+const char kOmniboxCR23ActionChipsName[] = "Omnibox CR 2023 Action Chips";
+const char kOmniboxCR23ActionChipsDescription[] =
+    "Updates Omnibox Action Chips to comply with CR23 guidelines.";
+
 const char kOmniboxCR23ExpandedStateColorsName[] =
     "Omnibox Expanded State Colors";
 const char kOmniboxCR23ExpandedStateColorsDescription[] =
