@@ -1530,7 +1530,8 @@ NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
 
   // Fetching the canonical URL is asynchronous (and happen on a background
   // thread), so the operation can be started before the UI is dismissed.
-  reading_list::AddToReadingListUsingCanonicalUrl(self.dispatcher, webState);
+  reading_list::AddToReadingListUsingCanonicalUrl(self.readingListBrowserAgent,
+                                                  webState);
 
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
 }

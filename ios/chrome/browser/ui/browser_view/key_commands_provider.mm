@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/find_in_page/abstract_find_tab_helper.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
+#import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/public/commands/bookmark_add_command.h"
@@ -533,8 +534,9 @@ using base::UserMetricsAction;
   NSString* title = tab_util::GetTabTitle(currentWebState);
   ReadingListAddCommand* command =
       [[ReadingListAddCommand alloc] initWithURL:URL title:title];
-  // TODO(crbug.com/1272540): Migrate to the new API once available.
-  [_dispatcher addToReadingList:command];
+  ReadingListBrowserAgent* readingListBrowserAgent =
+      ReadingListBrowserAgent::FromBrowser(_browser.get());
+  readingListBrowserAgent->AddURLsToReadingList(command.URLs);
 }
 
 - (void)keyCommand_showReadingList {

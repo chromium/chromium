@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
+#import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -231,11 +232,11 @@ enum class IOSOverflowMenuActionType {
                                                       forContentSizeCategory:
                                                           contentSizeCategory];
 
-      self.overflowMenuMediator.dispatcher = static_cast<
-          id<ActivityServiceCommands, ApplicationCommands, BrowserCommands,
-             BrowserCoordinatorCommands, FindInPageCommands,
-             PriceNotificationsCommands, TextZoomCommands>>(
-          self.browser->GetCommandDispatcher());
+      self.overflowMenuMediator.dispatcher =
+          static_cast<id<ActivityServiceCommands, ApplicationCommands,
+                         BrowserCoordinatorCommands, FindInPageCommands,
+                         PriceNotificationsCommands, TextZoomCommands>>(
+              self.browser->GetCommandDispatcher());
       self.overflowMenuMediator.bookmarksCommandsHandler = HandlerForProtocol(
           self.browser->GetCommandDispatcher(), BookmarksCommands);
       self.overflowMenuMediator.pageInfoCommandsHandler = HandlerForProtocol(
@@ -268,7 +269,8 @@ enum class IOSOverflowMenuActionType {
       self.overflowMenuMediator.promosManager =
           PromosManagerFactory::GetForBrowserState(
               self.browser->GetBrowserState());
-
+      self.overflowMenuMediator.readingListBrowserAgent =
+          ReadingListBrowserAgent::FromBrowser(self.browser);
       if (IsWebChannelsEnabled()) {
         self.overflowMenuMediator.followBrowserAgent =
             FollowBrowserAgent::FromBrowser(self.browser);
@@ -360,8 +362,8 @@ enum class IOSOverflowMenuActionType {
       feature_engagement::TrackerFactory::GetForBrowserState(
           self.browser->GetBrowserState());
   self.mediator.webStateList = self.browser->GetWebStateList();
-  self.mediator.browserCommandsHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), BrowserCommands);
+  self.mediator.readingListBrowserAgent =
+      ReadingListBrowserAgent::FromBrowser(self.browser);
   self.mediator.lensCommandsHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
   self.mediator.bookmarkModel =

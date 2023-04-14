@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/main/browser_util.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
@@ -1229,11 +1230,9 @@
 - (void)addToReadingListURL:(const GURL&)URL title:(NSString*)title {
   ReadingListAddCommand* command =
       [[ReadingListAddCommand alloc] initWithURL:URL title:title];
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands
-  // protocol clean up.
-  id<BrowserCommands> readingListAdder = static_cast<id<BrowserCommands>>(
-      self.regularBrowser->GetCommandDispatcher());
-  [readingListAdder addToReadingList:command];
+  ReadingListBrowserAgent* readingListBrowserAgent =
+      ReadingListBrowserAgent::FromBrowser(self.regularBrowser);
+  readingListBrowserAgent->AddURLsToReadingList(command.URLs);
 }
 
 - (void)bookmarkURL:(const GURL&)URL title:(NSString*)title {

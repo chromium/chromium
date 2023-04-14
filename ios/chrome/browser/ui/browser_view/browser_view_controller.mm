@@ -2848,8 +2848,7 @@ enum HeaderBehaviour {
 
 #pragma mark - BrowserCommands
 
-// TODO(crbug.com/1272540): Remove this command and factor it into a model
-// update helper function as part of the reading list API.
+// TODO(crbug.com/1272540): Remove this command after updating ios_internal.
 - (void)addToReadingList:(ReadingListAddCommand*)command {
   self.readingListBrowserAgent->AddURLsToReadingList(command.URLs);
 }

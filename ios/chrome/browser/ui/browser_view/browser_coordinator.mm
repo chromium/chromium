@@ -729,8 +729,7 @@ enum class ToolbarKind {
   _keyCommandsProvider =
       [[KeyCommandsProvider alloc] initWithBrowser:self.browser];
   _keyCommandsProvider.dispatcher =
-      static_cast<id<ApplicationCommands, BrowserCommands, FindInPageCommands>>(
-          _dispatcher);
+      static_cast<id<ApplicationCommands, FindInPageCommands>>(_dispatcher);
   _keyCommandsProvider.omniboxHandler =
       static_cast<id<OmniboxCommands>>(_dispatcher);
   _keyCommandsProvider.bookmarksCommandsHandler =

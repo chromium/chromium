@@ -721,23 +721,6 @@ TEST_F(KeyCommandsProviderTest, AddToReadingList_DoesntAddWhenNTP) {
   [provider_ keyCommand_addToReadingList];
 }
 
-// Verifies that the correct URL is added to Reading List.
-TEST_F(KeyCommandsProviderTest, AddToReadingList_AddURL) {
-  id handler = OCMStrictProtocolMock(@protocol(BrowserCommands));
-  provider_.dispatcher = handler;
-  GURL url = GURL("https://e.test");
-  id addCommand = [OCMArg checkWithBlock:^BOOL(ReadingListAddCommand* command) {
-    return command.URLs.count == 1 && command.URLs.firstObject.URL == url;
-  }];
-  OCMExpect([provider_.dispatcher addToReadingList:addCommand]);
-  web::FakeWebState* web_state = InsertNewWebState(0);
-  web_state->SetCurrentURL(url);
-
-  [provider_ keyCommand_addToReadingList];
-
-  [handler verify];
-}
-
 // Verifies that showing the tab at a given index is a no-op when there are no
 // tabs.
 TEST_F(KeyCommandsProviderTest, ShowTabAtIndex_NoTab) {

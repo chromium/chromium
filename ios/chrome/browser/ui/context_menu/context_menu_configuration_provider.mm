@@ -15,12 +15,12 @@
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
@@ -189,11 +189,12 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
                 if (!strongSelf)
                   return;
 
-                id<BrowserCommands> handler = static_cast<id<BrowserCommands>>(
-                    strongSelf.browser->GetCommandDispatcher());
-                [handler addToReadingList:[[ReadingListAddCommand alloc]
-                                              initWithURL:linkURL
-                                                    title:innerText]];
+                ReadingListAddCommand* command =
+                    [[ReadingListAddCommand alloc] initWithURL:linkURL
+                                                         title:innerText];
+                ReadingListBrowserAgent* readingListBrowserAgent =
+                    ReadingListBrowserAgent::FromBrowser(self.browser);
+                readingListBrowserAgent->AddURLsToReadingList(command.URLs);
               }];
           [menuElements addObject:addToReadingList];
         }

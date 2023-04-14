@@ -44,7 +44,6 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
@@ -579,7 +578,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   if (!webState)
     return;
 
-  reading_list::AddToReadingListUsingCanonicalUrl(self.browserCommandsHandler,
+  reading_list::AddToReadingListUsingCanonicalUrl(self.readingListBrowserAgent,
                                                   webState);
 }
 

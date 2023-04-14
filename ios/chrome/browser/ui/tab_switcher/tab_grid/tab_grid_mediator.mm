@@ -30,12 +30,12 @@
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/main/browser_util.h"
+#import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/public/commands/bookmark_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -179,8 +179,6 @@ void RecordTabGridCloseTabsCount(int count) {
 @property(nonatomic, readonly) ChromeBrowserState* browserState;
 // The UI consumer to which updates are made.
 @property(nonatomic, weak) id<TabCollectionConsumer> consumer;
-// Handler for reading list command.
-@property(nonatomic, weak) id<BrowserCommands> readingListHandler;
 // The saved session window just before close all tabs is called.
 @property(nonatomic, strong) SessionWindowIOS* closedSessionWindow;
 // The number of tabs in `closedSessionWindow` that are synced by
@@ -238,18 +236,12 @@ void RecordTabGridCloseTabsCount(int count) {
   [self.snapshotCache removeObserver:self];
   _scopedWebStateListObservation->RemoveAllObservations();
   _scopedWebStateObservation->RemoveAllObservations();
-  _readingListHandler = nullptr;
 
   _browser = browser;
 
   _webStateList = browser ? browser->GetWebStateList() : nullptr;
   _browserState = browser ? browser->GetBrowserState() : nullptr;
-  if (_browser) {
-    // TODO(crbug.com/1045047): Use HandlerForProtocol after commands
-    // protocol clean up.
-    _readingListHandler =
-        static_cast<id<BrowserCommands>>(_browser->GetCommandDispatcher());
-  }
+
   [self.snapshotCache addObserver:self];
 
   if (_webStateList) {
@@ -1153,9 +1145,6 @@ void RecordTabGridCloseTabsCount(int count) {
 }
 
 - (void)addItemsToReadingList:(NSArray<NSString*>*)items {
-  if (!_readingListHandler) {
-    return;
-  }
   [self.delegate dismissPopovers];
 
   base::UmaHistogramCounts100("IOS.TabGrid.Selection.AddToReadingList",
@@ -1165,7 +1154,9 @@ void RecordTabGridCloseTabsCount(int count) {
 
   ReadingListAddCommand* command =
       [[ReadingListAddCommand alloc] initWithURLs:URLs];
-  [_readingListHandler addToReadingList:command];
+  ReadingListBrowserAgent* readingListBrowserAgent =
+      ReadingListBrowserAgent::FromBrowser(self.browser);
+  readingListBrowserAgent->AddURLsToReadingList(command.URLs);
 }
 
 - (void)addItemsToBookmarks:(NSArray<NSString*>*)items {

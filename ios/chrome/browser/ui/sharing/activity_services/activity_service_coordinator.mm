@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -49,9 +50,8 @@ const char kMimeTypePDF[] = "application/pdf";
 
 @interface ActivityServiceCoordinator ()
 
-@property(nonatomic, weak)
-    id<BrowserCommands, BrowserCoordinatorCommands, FindInPageCommands>
-        handler;
+@property(nonatomic, weak) id<BrowserCoordinatorCommands, FindInPageCommands>
+    handler;
 
 @property(nonatomic, strong) ActivityServiceMediator* mediator;
 
@@ -81,9 +81,9 @@ const char kMimeTypePDF[] = "application/pdf";
 #pragma mark - Public methods
 
 - (void)start {
-  self.handler = static_cast<
-      id<BrowserCommands, BrowserCoordinatorCommands, FindInPageCommands>>(
-      self.browser->GetCommandDispatcher());
+  self.handler =
+      static_cast<id<BrowserCoordinatorCommands, FindInPageCommands>>(
+          self.browser->GetCommandDispatcher());
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   self.incognito = browserState->IsOffTheRecord();
@@ -94,6 +94,8 @@ const char kMimeTypePDF[] = "application/pdf";
       self.browser->GetCommandDispatcher(), BookmarksCommands);
   WebNavigationBrowserAgent* agent =
       WebNavigationBrowserAgent::FromBrowser(self.browser);
+  ReadingListBrowserAgent* readingListBrowserAgent =
+      ReadingListBrowserAgent::FromBrowser(self.browser);
   self.mediator =
       [[ActivityServiceMediator alloc] initWithHandler:self.handler
                                       bookmarksHandler:bookmarksHandler
@@ -101,7 +103,8 @@ const char kMimeTypePDF[] = "application/pdf";
                                            prefService:browserState->GetPrefs()
                                          bookmarkModel:bookmarkModel
                                     baseViewController:self.baseViewController
-                                       navigationAgent:agent];
+                                       navigationAgent:agent
+                               readingListBrowserAgent:readingListBrowserAgent];
 
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();

@@ -15,7 +15,6 @@ class BookmarkModel;
 }
 
 @protocol BookmarksCommands;
-@protocol BrowserCommands;
 @protocol BrowserCoordinatorCommands;
 @class ChromeActivityImageSource;
 @protocol ChromeActivityItemSource;
@@ -24,6 +23,7 @@ class BookmarkModel;
 @class DefaultBrowserPromoNonModalScheduler;
 @protocol FindInPageCommands;
 class PrefService;
+class ReadingListBrowserAgent;
 @protocol QRGenerationCommands;
 @class ShareImageData;
 @class ShareToData;
@@ -39,15 +39,16 @@ class WebNavigationBrowserAgent;
 // read settings and policies, and a `bookmarkModel` to retrieve bookmark
 // states.
 // `baseViewController` can be passed to activities which need to present VCs.
-- (instancetype)initWithHandler:(id<BrowserCommands,
-                                    BrowserCoordinatorCommands,
-                                    FindInPageCommands>)handler
+- (instancetype)initWithHandler:
+                    (id<BrowserCoordinatorCommands, FindInPageCommands>)handler
                bookmarksHandler:(id<BookmarksCommands>)bookmarksHandler
             qrGenerationHandler:(id<QRGenerationCommands>)qrGenerationHandler
                     prefService:(PrefService*)prefService
                   bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
              baseViewController:(UIViewController*)baseViewController
                 navigationAgent:(WebNavigationBrowserAgent*)agent
+        readingListBrowserAgent:
+            (ReadingListBrowserAgent*)readingListBrowserAgent
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

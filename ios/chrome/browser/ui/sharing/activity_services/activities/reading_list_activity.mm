@@ -7,7 +7,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -28,23 +28,20 @@ NSString* const kReadingListActivityType =
 @interface ReadingListActivity () {
   GURL _activityURL;
   NSString* _title;
+  ReadingListBrowserAgent* _readingListBrowserAgent;
 }
-
-@property(nonatomic, weak, readonly) id<BrowserCommands> dispatcher;
 
 @end
 
 @implementation ReadingListActivity
 
-@synthesize dispatcher = _dispatcher;
-
 - (instancetype)initWithURL:(const GURL&)activityURL
                       title:(NSString*)title
-                 dispatcher:(id<BrowserCommands>)dispatcher {
+    readingListBrowserAgent:(ReadingListBrowserAgent*)readingListBrowserAgent {
   if (self = [super init]) {
-    _dispatcher = dispatcher;
     _activityURL = activityURL;
     _title = [title copy];
+    _readingListBrowserAgent = readingListBrowserAgent;
   }
   return self;
 }
@@ -79,7 +76,7 @@ NSString* const kReadingListActivityType =
       _title ? _title : base::SysUTF8ToNSString(_activityURL.host());
   ReadingListAddCommand* command =
       [[ReadingListAddCommand alloc] initWithURL:_activityURL title:title];
-  [_dispatcher addToReadingList:command];
+  _readingListBrowserAgent->AddURLsToReadingList(command.URLs);
 }
 
 @end

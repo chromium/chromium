@@ -17,6 +17,7 @@ source_set("context_menu") {
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/search_engines:search_engines_util",
     "//ios/chrome/browser/shared/coordinator/alert",
