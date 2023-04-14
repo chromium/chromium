@@ -15,6 +15,7 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 import './passwords_shared.css.js';
+import './password_preview_item.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
@@ -135,9 +136,16 @@ export class PasswordsImportDialogElement extends
         type: Boolean,
         value: false,
       },
+
+      conflictsSelectedForReplace_: {
+        type: Array,
+        value: [],
+      },
+
       shouldDisableReplaceButton_: {
         type: Boolean,
-        value: true,
+        computed: 'computeShouldDisableReplaceButton_(' +
+            'conflictsSelectedForReplace_, inProgress_)',
       },
     };
   }
@@ -149,7 +157,9 @@ export class PasswordsImportDialogElement extends
   private results_: chrome.passwordsPrivate.ImportResults|null;
   private descriptionText_: TrustedHTML;
   private failedImportsWithKnownErrors_: chrome.passwordsPrivate.ImportEntry[];
+  private conflicts_: chrome.passwordsPrivate.ImportEntry[];
   private shouldDisableReplaceButton_: boolean;
+  private conflictsSelectedForReplace_: number[];
   private failedImportsSummary_: string;
   private conflictsTitle_: string;
   private enablePasswordsImportM2_: boolean;
@@ -186,6 +196,10 @@ export class PasswordsImportDialogElement extends
           this.i18nAdvanced('importPasswordsDescriptionDevice');
     }
     this.dialogState = ImportDialogState.START;
+  }
+
+  private computeConflictsListClass_(): string {
+    return this.inProgress_ ? 'disabled-conflicts-list' : '';
   }
 
   private isState_(state: ImportDialogState): boolean {
@@ -235,6 +249,28 @@ export class PasswordsImportDialogElement extends
     return this.isState_(ImportDialogState.START) && this.isAccountStoreUser;
   }
 
+  private getSelectedIds_(): number[] {
+    const checkboxes = this.$.conflictsList.querySelectorAll('cr-checkbox');
+    const selectedPasswords: number[] = [];
+    checkboxes.forEach((checkbox: CrCheckboxElement) => {
+      if (checkbox.checked) {
+        selectedPasswords.push(Number(checkbox.dataset['id']));
+      }
+    });
+    return selectedPasswords;
+  }
+
+  /**
+   * Handler for ticking conflicting password checkbox.
+   */
+  private onPasswordSelectedChange_(): void {
+    this.conflictsSelectedForReplace_ = this.getSelectedIds_();
+  }
+
+  private computeShouldDisableReplaceButton_(): boolean {
+    return this.inProgress_ || !this.conflictsSelectedForReplace_.length;
+  }
+
   /**
    * Handler for clicking the 'chooseFile' button. It triggers import flow.
    */
@@ -266,9 +302,8 @@ export class PasswordsImportDialogElement extends
   private async onReplaceClick_() {
     assert(this.isState_(ImportDialogState.CONFLICTS));
     this.inProgress_ = true;
-    // TODO(crbug/1417650): Compute selectedIds based on the ticked checkboxes.
-    const selectedIds: number[] = [];
-    this.results_ = await this.passwordManager_.continueImport(selectedIds);
+    this.results_ = await this.passwordManager_.continueImport(
+        this.conflictsSelectedForReplace_);
     this.processResults_();
   }
 
@@ -288,6 +323,7 @@ export class PasswordsImportDialogElement extends
             await PluralStringProxyImpl.getInstance().getPluralString(
                 'importPasswordsConflictsTitle',
                 this.results_.displayedEntries.length);
+        this.conflicts_ = this.results_.displayedEntries;
         this.dialogState = ImportDialogState.CONFLICTS;
         return;
       case chrome.passwordsPrivate.ImportResultsStatus.MAX_FILE_SIZE:
