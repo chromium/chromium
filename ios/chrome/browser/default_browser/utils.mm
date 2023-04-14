@@ -16,6 +16,7 @@
 #import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/settings/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
@@ -132,7 +133,8 @@ constexpr base::TimeDelta kMaximumTimeBetweenFirstPartyAppLaunches =
     base::Days(7);
 
 // Maximum time representing one user session.
-constexpr base::TimeDelta kMaximumTimeOneUserSession = base::Hours(6);
+const base::TimeDelta kMaximumTimeOneUserSession =
+    base::Seconds(GetFeedUnseenRefreshThresholdInSeconds());
 
 // Maximum time range between valid user URL pastes to notify the FET.
 constexpr base::TimeDelta kMaximumTimeBetweenValidURLPastes = base::Days(7);
