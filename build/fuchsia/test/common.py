@@ -75,35 +75,17 @@ def _state_string_to_state(state_str: str) -> TargetState:
     raise NotImplementedError(f'State {state_str} not supported')
 
 
-def _retry(count: int, sleep: Optional[int] = None):
-    def first_func(func):
-        def wrapper(*args, **kwargs):
-            exception = None
-            for _ in range(count):
-                try:
-                    return func(*args, **kwargs)
-                # pylint: disable=broad-except
-                except Exception as generic_exception:
-                    exception = generic_exception
-                    logging.warning('Function %s failed. Retrying...',
-                                    str(func))
-                    if sleep:
-                        time.sleep(sleep)
-                # pylint: enable=broad-except
-            raise exception
-
-        return wrapper
-
-    return first_func
-
-
-@_retry(count=3, sleep=30)
-def get_target_state(target_id: Optional[str]) -> TargetState:
+def get_target_state(target_id: Optional[str],
+                     serial_num: Optional[str],
+                     num_attempts: int = 1) -> TargetState:
     """Return state of target or the default target.
 
     Args:
         target_id: Optional nodename of the target. If not given, default target
         is used.
+        serial_num: Optional serial number of target. Only usable if device is
+        in fastboot.
+        num_attempts: Optional number of times to attempt getting status.
 
     Returns:
         TargetState of the given node, if found.
@@ -112,24 +94,29 @@ def get_target_state(target_id: Optional[str]) -> TargetState:
         RuntimeError: If target cannot be found, or default target is not
             defined if |target_id| is not given.
     """
-    targets = json.loads(
-        run_ffx_command(('target', 'list'),
-                        configs=[_ENABLE_ZEDBOOT],
-                        check=True,
-                        capture_output=True,
-                        json_out=True).stdout.strip())
-    for target in targets:
-        if target_id is None and target['is_default']:
-            return _state_string_to_state(target['target_state'])
-        if target_id == target['nodename']:
-            return _state_string_to_state(target['target_state'])
+    for _ in range(num_attempts):
+        targets = json.loads(
+            run_ffx_command(('target', 'list'),
+                            check=True,
+                            configs=[_ENABLE_ZEDBOOT],
+                            capture_output=True,
+                            json_out=True).stdout.strip())
+        for target in targets:
+            if target_id is None and target['is_default']:
+                return _state_string_to_state(target['target_state'])
+            if target_id == target['nodename']:
+                return _state_string_to_state(target['target_state'])
+            if serial_num == target['serial']:
+                # Should only return Fastboot.
+                return _state_string_to_state(target['target_state'])
+        time.sleep(10)
 
     # Could not find a state for given target.
     error_target = target_id
     if target_id is None:
         error_target = 'default target'
 
-    raise RuntimeError(f'Could not find state for {error_target}')
+    raise RuntimeError(f'Could not find state for {error_target}.')
 
 
 def set_ffx_isolate_dir(isolate_dir: str) -> None:
@@ -483,6 +470,7 @@ def get_system_info(target: Optional[str] = None) -> Tuple[str, str]:
 
 def boot_device(target_id: Optional[str],
                 mode: BootMode,
+                serial_num: Optional[str] = None,
                 must_boot: bool = False) -> None:
     """Boot device into desired mode, with fallback to SSH on failure.
 
@@ -492,9 +480,9 @@ def boot_device(target_id: Optional[str],
         must_boot: Forces device to boot, regardless of current state.
     """
     # Skip boot call if already in the state and not skipping check.
+    state = get_target_state(target_id, serial_num, num_attempts=3)
+    wanted_state = _BOOTMODE_TO_STATE.get(mode)
     if not must_boot:
-        state = get_target_state(target_id)
-        wanted_state = _BOOTMODE_TO_STATE.get(mode)
         logging.debug('Current state %s. Want state %s', str(state),
                       str(wanted_state))
         must_boot = state != wanted_state
@@ -503,28 +491,66 @@ def boot_device(target_id: Optional[str],
         logging.debug('Skipping boot - already in good state')
         return
 
-    _boot_device_ffx(target_id, mode)
-
-    exception = None
-    for _ in range(30):
-        try:
-            state = get_target_state(target_id)
-            if state == wanted_state:
-                return
-            raise RuntimeError('Mode is not correct. Expected '
-                               f'{wanted_state}, got {state}')
-        except RuntimeError as runtime_e:
-            exception = runtime_e
-            time.sleep(2)
-    if exception:
-        # Fallback to SSH, with no retry if we tried with ffx.
-        if state != _BOOTMODE_TO_STATE.get(mode):
-            _boot_device_dm(target_id, mode)
+    def _reboot(reboot_cmd, current_state: TargetState):
+        reboot_cmd()
+        # Check that we transition out of current state.
+        for _ in range(30):
+            try:
+                local_state = get_target_state(target_id, serial_num)
+                if local_state != current_state:
+                    # Changed states - can continue
+                    break
+            except RuntimeError:
+                logging.debug('Device disconnected...')
+                if current_state != TargetState.DISCONNECTED:
+                    # Changed states - can continue
+                    break
+            finally:
+                time.sleep(2)
         else:
-            raise exception
+            logging.warning(
+                'Device did not change from initial state. Exiting early')
+            return local_state or TargetState.DISCONNECTED
+
+        # Now we want to transition to the new state.
+        for _ in range(90):
+            try:
+                local_state = get_target_state(target_id, serial_num)
+                if local_state == wanted_state:
+                    return local_state
+            except RuntimeError:
+                logging.warning('Could not find target state.'
+                                ' Sleeping then retrying...')
+            finally:
+                time.sleep(2)
+        return local_state or TargetState.DISCONNECTED
+
+    state = _reboot(
+        (lambda: _boot_device_ffx(target_id, serial_num, state, mode)), state)
+
+    if state == TargetState.DISCONNECTED:
+        raise RuntimeError('Target could not be found!')
+
+    if state == wanted_state:
+        return
+
+    logging.warning(
+        'Booting with FFX to %s did not succeed. Attempting with DM', mode)
+
+    # Fallback to SSH, with no retry if we tried with ffx.:
+    _boot_device_dm(target_id, serial_num, state, mode)
+    state = _reboot(
+        (lambda: _boot_device_dm(target_id, serial_num, state, mode)), state)
+
+    if state != wanted_state:
+        raise RuntimeError(
+            f'Could not get device to desired state. Wanted {wanted_state},'
+            f' got {state}')
+    logging.debug('Got desired state: %s', state)
 
 
-def _boot_device_ffx(target_id: Optional[str], mode: BootMode):
+def _boot_device_ffx(target_id: Optional[str], serial_num: Optional[str],
+                     current_state: TargetState, mode: BootMode):
     cmd = ['target', 'reboot']
     if mode == BootMode.REGULAR:
         logging.info('Triggering regular boot')
@@ -535,17 +561,27 @@ def _boot_device_ffx(target_id: Optional[str], mode: BootMode):
     else:
         raise NotImplementedError(f'BootMode {mode} not supported')
 
-    run_ffx_command(cmd,
-                    target_id=target_id,
-                    configs=[_ENABLE_ZEDBOOT],
-                    check=False)
+    logging.debug('FFX reboot with command [%s]', ' '.join(cmd))
+    if current_state == TargetState.FASTBOOT:
+
+        run_ffx_command(cmd,
+                        configs=[_ENABLE_ZEDBOOT],
+                        target_id=serial_num,
+                        check=False)
+    else:
+        run_ffx_command(cmd,
+                        configs=[_ENABLE_ZEDBOOT],
+                        target_id=target_id,
+                        check=False)
 
 
-def _boot_device_dm(target_id: Optional[str], mode: BootMode):
+def _boot_device_dm(target_id: Optional[str], serial_num: Optional[str],
+                    current_state: TargetState, mode: BootMode):
     # Can only use DM if device is in regular boot.
-    state = get_target_state(target_id)
-    if state != TargetState.PRODUCT:
-        _boot_device_ffx(target_id, mode.REGULAR)
+    if current_state != TargetState.PRODUCT:
+        # Boot to regular.
+        _boot_device_ffx(target_id, serial_num, current_state,
+                         BootMode.REGULAR)
         if mode == BootMode.REGULAR:
             return
 
@@ -564,4 +600,5 @@ def _boot_device_dm(target_id: Optional[str], mode: BootMode):
 
     # Boot commands can fail due to SSH connections timeout.
     full_cmd = ssh_prefix + ['--', 'dm', reboot_cmd]
+    logging.debug('DM reboot with command [%s]', ' '.join(full_cmd))
     subprocess.run(full_cmd, check=False)
