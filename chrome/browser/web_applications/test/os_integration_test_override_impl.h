@@ -27,6 +27,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/containers/flat_map.h"
+#include "base/test/test_reg_util_win.h"
 #endif
 
 class Profile;
@@ -268,6 +269,10 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
   base::ScopedTempDir application_menu_;
   base::ScopedTempDir quick_launch_;
   base::ScopedTempDir startup_;
+
+  // This is used to ensure any registry changes by this test don't affect other
+  // parts of the the trybot and are cleaned up.
+  registry_util::RegistryOverrideManager registry_override_;
 
   // Records all ShellLinkItems for a given AppUserModelId for handling
   // shortcuts menu registration.

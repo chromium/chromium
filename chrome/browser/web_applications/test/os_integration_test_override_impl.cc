@@ -737,6 +737,16 @@ OsIntegrationTestOverrideImpl::OsIntegrationTestOverrideImpl(
   });
   SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(std::move(callback));
 #endif
+
+#if BUILDFLAG(IS_WIN)
+  registry_override_.OverrideRegistry(HKEY_CURRENT_USER);
+  base::win::RegKey key;
+  // In a real registry, this key would exist, but since we're using
+  // hive override, it's empty, so we create this key.
+  key.Create(HKEY_CURRENT_USER,
+             L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall",
+             KEY_SET_VALUE);
+#endif
 }
 
 OsIntegrationTestOverrideImpl::~OsIntegrationTestOverrideImpl() {
