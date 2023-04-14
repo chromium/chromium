@@ -678,6 +678,116 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 #pragma mark - Action sheet callbacks
 
+// Returns contextual menu for a bookmark node with `nodeID` at `indexPath`.
+- (UIMenu*)bookmarkNodeContextualMenuWithID:(int64_t)nodeID
+                                  indexPath:(NSIndexPath*)indexPath
+                                canEditNode:(BOOL)canEditNode {
+  const BookmarkNode* bookmarkNode = [self nodeAtIndexPath:indexPath];
+  DCHECK_EQ(bookmarkNode->id(), nodeID);
+  DCHECK_EQ(bookmarkNode->type(), BookmarkNode::URL);
+  GURL nodeURL = bookmarkNode->url();
+  // Record that this context menu was shown to the user.
+  RecordMenuShown(MenuScenarioHistogram::kBookmarkEntry);
+  BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
+      initWithBrowser:self.browser
+             scenario:MenuScenarioHistogram::kBookmarkEntry];
+  NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
+  __weak __typeof(self) weakSelf = self;
+  // Add open URL menu item.
+  UIAction* openAction = [actionFactory actionToOpenInNewTabWithBlock:^{
+    if ([weakSelf isIncognitoForced]) {
+      return;
+    }
+    [weakSelf openAllURLs:{nodeURL} inIncognito:NO newTab:YES];
+  }];
+  if ([self isIncognitoForced]) {
+    openAction.attributes = UIMenuElementAttributesDisabled;
+  }
+  [menuElements addObject:openAction];
+  // Add open URL in incognito menu item.
+  UIAction* openInIncognito =
+      [actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
+        if (![weakSelf isIncognitoAvailable]) {
+          return;
+        }
+        [weakSelf openAllURLs:{nodeURL} inIncognito:YES newTab:YES];
+      }];
+  if (![self isIncognitoAvailable]) {
+    openInIncognito.attributes = UIMenuElementAttributesDisabled;
+  }
+  [menuElements addObject:openInIncognito];
+  // Add open URL in new window menu item.
+  if (base::ios::IsMultipleScenesSupported()) {
+    [menuElements
+        addObject:
+            [actionFactory
+                actionToOpenInNewWindowWithURL:nodeURL
+                                activityOrigin:WindowActivityBookmarksOrigin]];
+  }
+  [menuElements addObject:[actionFactory actionToCopyURL:nodeURL]];
+  // Add edit menu item.
+  UIAction* editAction = [actionFactory actionToEditWithBlock:^{
+    __strong __typeof(weakSelf) strongSelf = weakSelf;
+    [strongSelf editBookmarkNodeWithID:nodeID];
+  }];
+  [menuElements addObject:editAction];
+  // Add share menu item.
+  [menuElements addObject:[actionFactory actionToShareWithBlock:^{
+                  __strong __typeof(weakSelf) strongSelf = weakSelf;
+                  [strongSelf shareBookmarkNodeWithID:nodeID
+                                            indexPath:indexPath];
+                }]];
+  // Add delete menu item.
+  UIAction* deleteAction = [actionFactory actionToDeleteWithBlock:^{
+    __strong __typeof(weakSelf) strongSelf = weakSelf;
+    std::set<int64_t> nodeIDs{nodeID};
+    [strongSelf deleteBookmarkNodesWithIDs:nodeIDs
+                                userAction:"MobileBookmarkManagerEntryDeleted"];
+  }];
+  [menuElements addObject:deleteAction];
+  // Disable Edit and Delete if the node cannot be edited.
+  if (!canEditNode) {
+    editAction.attributes = UIMenuElementAttributesDisabled;
+    deleteAction.attributes = UIMenuElementAttributesDisabled;
+  }
+  return [UIMenu menuWithTitle:@"" children:menuElements];
+}
+
+// Returns contextual menu for a folder node with `nodeID` at `indexPath`.
+- (UIMenu*)folderNodeContextualMenuWithID:(int64_t)nodeID
+                                indexPath:(NSIndexPath*)indexPath
+                              canEditNode:(BOOL)canEditNode {
+  const BookmarkNode* folderNode = [self nodeAtIndexPath:indexPath];
+  DCHECK_EQ(folderNode->type(), BookmarkNode::FOLDER);
+  DCHECK_EQ(folderNode->id(), nodeID);
+  // Record that this context menu was shown to the user.
+  RecordMenuShown(MenuScenarioHistogram::kBookmarkFolder);
+  ActionFactory* actionFactory = [[ActionFactory alloc]
+      initWithScenario:MenuScenarioHistogram::kBookmarkFolder];
+  NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
+  // Add edit menu item.
+  __weak __typeof(self) weakSelf = self;
+  UIAction* editAction = [actionFactory actionToEditWithBlock:^{
+    __strong __typeof(weakSelf) strongSelf = weakSelf;
+    [strongSelf editFolderNodeWithID:nodeID];
+  }];
+  [menuElements addObject:editAction];
+  // Add move menu item.
+  UIAction* moveAction = [actionFactory actionToMoveFolderWithBlock:^{
+    __strong __typeof(weakSelf) strongSelf = weakSelf;
+    std::set<int64_t> nodeIDs{nodeID};
+    [strongSelf moveBookmarkNodeWithIDs:nodeIDs
+                             userAction:"MobileBookmarkManagerMoveToFolder"];
+  }];
+  [menuElements addObject:moveAction];
+  // Disable Edit and Move if the node cannot be edited.
+  if (!canEditNode) {
+    editAction.attributes = UIMenuElementAttributesDisabled;
+    moveAction.attributes = UIMenuElementAttributesDisabled;
+  }
+  return [UIMenu menuWithTitle:@"" children:menuElements];
+}
+
 // Opens the folder move editor for the given node IDs.
 - (void)moveBookmarkNodeWithIDs:(std::set<int64_t>)nodeIDs
                      userAction:(const char*)userAction {
@@ -2401,7 +2511,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     // Don't show the context menu when currently in editing mode.
     return nil;
   }
-
   if (![self canShowContextMenuFor:indexPath]) {
     return nil;
   }
@@ -2417,125 +2526,18 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   int64_t nodeId = node->id();
   __weak BookmarksHomeViewController* weakSelf = self;
   if (node->is_url()) {
-    GURL nodeURL = node->url();
     actionProvider = ^(NSArray<UIMenuElement*>* suggestedActions) {
-      BookmarksHomeViewController* strongSelf = weakSelf;
-      if (!strongSelf) {
-        return [UIMenu menuWithTitle:@"" children:@[]];
-      }
-
-      // Record that this context menu was shown to the user.
-      RecordMenuShown(MenuScenarioHistogram::kBookmarkEntry);
-
-      BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
-          initWithBrowser:strongSelf.browser
-                 scenario:MenuScenarioHistogram::kBookmarkEntry];
-
-      NSMutableArray<UIMenuElement*>* menuElements =
-          [[NSMutableArray alloc] init];
-
-      UIAction* openAction = [actionFactory actionToOpenInNewTabWithBlock:^{
-        if ([weakSelf isIncognitoForced]) {
-          return;
-        }
-        [weakSelf openAllURLs:{nodeURL} inIncognito:NO newTab:YES];
-      }];
-      if ([self isIncognitoForced]) {
-        openAction.attributes = UIMenuElementAttributesDisabled;
-      }
-      [menuElements addObject:openAction];
-
-      UIAction* openInIncognito =
-          [actionFactory actionToOpenInNewIncognitoTabWithBlock:^{
-            if (![weakSelf isIncognitoAvailable]) {
-              return;
-            }
-            [weakSelf openAllURLs:{nodeURL} inIncognito:YES newTab:YES];
-          }];
-      if (![self isIncognitoAvailable]) {
-        openInIncognito.attributes = UIMenuElementAttributesDisabled;
-      }
-      [menuElements addObject:openInIncognito];
-
-      if (base::ios::IsMultipleScenesSupported()) {
-        [menuElements
-            addObject:[actionFactory
-                          actionToOpenInNewWindowWithURL:nodeURL
-                                          activityOrigin:
-                                              WindowActivityBookmarksOrigin]];
-      }
-
-      [menuElements addObject:[actionFactory actionToCopyURL:nodeURL]];
-
-      UIAction* editAction = [actionFactory actionToEditWithBlock:^{
-        BookmarksHomeViewController* innerStrongSelf = weakSelf;
-        [innerStrongSelf editBookmarkNodeWithID:nodeId];
-      }];
-      [menuElements addObject:editAction];
-
-      [menuElements addObject:[actionFactory actionToShareWithBlock:^{
-                      BookmarksHomeViewController* innerStrongSelf = weakSelf;
-                      [innerStrongSelf shareBookmarkNodeWithID:nodeId
-                                                     indexPath:indexPath];
-                    }]];
-
-      UIAction* deleteAction = [actionFactory actionToDeleteWithBlock:^{
-        BookmarksHomeViewController* innerStrongSelf = weakSelf;
-        std::set<int64_t> nodeIDs{nodeId};
-        [innerStrongSelf
-            deleteBookmarkNodesWithIDs:nodeIDs
-                            userAction:"MobileBookmarkManagerEntryDeleted"];
-      }];
-      [menuElements addObject:deleteAction];
-
-      // Disable Edit and Delete if the node cannot be edited.
-      if (!canEditNode) {
-        editAction.attributes = UIMenuElementAttributesDisabled;
-        deleteAction.attributes = UIMenuElementAttributesDisabled;
-      }
-
-      return [UIMenu menuWithTitle:@"" children:menuElements];
+      return [weakSelf bookmarkNodeContextualMenuWithID:nodeId
+                                              indexPath:indexPath
+                                            canEditNode:canEditNode];
     };
   } else if (node->is_folder()) {
     actionProvider = ^(NSArray<UIMenuElement*>* suggestedActions) {
-      BookmarksHomeViewController* strongSelf = weakSelf;
-      if (!strongSelf) {
-        return [UIMenu menuWithTitle:@"" children:@[]];
-      }
-
-      // Record that this context menu was shown to the user.
-      RecordMenuShown(MenuScenarioHistogram::kBookmarkFolder);
-
-      ActionFactory* actionFactory = [[ActionFactory alloc]
-          initWithScenario:MenuScenarioHistogram::kBookmarkFolder];
-
-      NSMutableArray<UIMenuElement*>* menuElements =
-          [[NSMutableArray alloc] init];
-
-      UIAction* editAction = [actionFactory actionToEditWithBlock:^{
-        BookmarksHomeViewController* innerStrongSelf = weakSelf;
-        [innerStrongSelf editFolderNodeWithID:nodeId];
-      }];
-      UIAction* moveAction = [actionFactory actionToMoveFolderWithBlock:^{
-        BookmarksHomeViewController* innerStrongSelf = weakSelf;
-        std::set<int64_t> nodeIDs{nodeId};
-        [innerStrongSelf
-            moveBookmarkNodeWithIDs:nodeIDs
-                         userAction:"MobileBookmarkManagerMoveToFolder"];
-      }];
-
-      if (!canEditNode) {
-        editAction.attributes = UIMenuElementAttributesDisabled;
-        moveAction.attributes = UIMenuElementAttributesDisabled;
-      }
-
-      [menuElements addObject:editAction];
-      [menuElements addObject:moveAction];
-
-      return [UIMenu menuWithTitle:@"" children:menuElements];
+      return [weakSelf folderNodeContextualMenuWithID:nodeId
+                                            indexPath:indexPath
+                                          canEditNode:canEditNode];
     };
   }
-
   return
       [UIContextMenuConfiguration configurationWithIdentifier:nil
                                               previewProvider:nil
