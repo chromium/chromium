@@ -149,9 +149,16 @@ PresentationController::GetPresentationService() {
         GetSupplementable()->GetTaskRunner(TaskType::kPresentation);
     GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
         presentation_service_remote_.BindNewPipeAndPassReceiver(task_runner));
-    presentation_service_remote_->SetController(
-        presentation_controller_receiver_.BindNewPipeAndPassRemote(
-            task_runner));
+
+    // Note: `presentation_controller_receiver_` should always be unbound in
+    // production. But sometimes it might be bound during tests, as it means the
+    // controller remote was unbound, the controller receiver remains bound and
+    // the controller hasn't been GCed.
+    if (!presentation_controller_receiver_.is_bound()) {
+      presentation_service_remote_->SetController(
+          presentation_controller_receiver_.BindNewPipeAndPassRemote(
+              task_runner));
+    }
   }
   return presentation_service_remote_;
 }
