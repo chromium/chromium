@@ -16,6 +16,7 @@
 #include "base/win/core_winrt_util.h"
 #include "base/win/hstring_reference.h"
 #include "base/win/scoped_hstring.h"
+#include "base/win/windows_version.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -76,6 +77,11 @@ class PenIdBrowserTest : public InProcessBrowserTest {
 };
 
 void PenIdBrowserTest::SetUpOnMainThread() {
+  if (base::win::GetVersion() < base::win::Version::WIN10_21H2 ||
+      (base::win::GetVersion() == base::win::Version::WIN10_21H2 &&
+       base::win::OSInfo::GetInstance()->version_number().patch < 1503)) {
+    GTEST_SKIP() << "Pen Device Api not supported on this machine";
+  }
   https_server_.reset(
       new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS));
   https_server_->ServeFilesFromSourceDirectory("chrome/test/data");
