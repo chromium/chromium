@@ -2153,13 +2153,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Vpd.UnknownKeys" units="units" expires_after="M85">
-  <owner>tnagel@chromium.org</owner>
-  <summary>
-    Number of unknown RW_VPD entries on Chrome OS, sent once per boot.
-  </summary>
-</histogram>
-
 <histogram name="Platform.WiFiDeviceCount" units="wifi devices"
     expires_after="2023-12-01">
   <owner>norvez@chromium.org</owner>
