@@ -399,7 +399,13 @@ class NonCompositedMainThreadScrollingReasonsTest
     if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
       return GetScrollNode(scrollable_area)->main_thread_scrolling_reasons;
     }
-    return scrollable_area.GetNonCompositedMainThreadScrollingReasons();
+    return scrollable_area.GetNonCompositedMainThreadScrollingReasons() |
+           scrollable_area.GetLayoutBox()
+               ->FirstFragment()
+               .PaintProperties()
+               ->ScrollTranslation()
+               ->ScrollNode()
+               ->GetMainThreadScrollingReasons();
   }
 
   void TestNonCompositedReasons(const AtomicString& style_class,

@@ -66663,6 +66663,8 @@ from previous Chrome versions.
   <int value="12" label="Non-invertible transform (obsolete)"/>
   <int value="13" label="Blocking wheel event handler region"/>
   <int value="14" label="Blocking touch event handler region"/>
+  <int value="15" label="Prefer non-composited scrolling"/>
+  <int value="16" label="Background needs repaint on scroll"/>
 </enum>
 
 <enum name="MakeChromeDefaultResult">

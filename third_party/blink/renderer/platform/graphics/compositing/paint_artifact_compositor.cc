@@ -209,9 +209,6 @@ bool PaintArtifactCompositor::ComputeNeedsCompositedScrolling(
   if (scroll_translation.HasDirectCompositingReasons()) {
     return true;
   }
-  if (RuntimeEnabledFeatures::PreferNonCompositedScrollingEnabled()) {
-    return false;
-  }
   // Don't automatically composite non-user-scrollable scrollers.
   if (!scroll_translation.ScrollNode()->UserScrollableHorizontal() &&
       !scroll_translation.ScrollNode()->UserScrollableVertical()) {

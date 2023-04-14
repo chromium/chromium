@@ -538,39 +538,45 @@ void PaintLayerScrollableArea::InvalidatePaintForScrollOffsetChange() {
   auto* box = GetLayoutBox();
   auto* frame_view = box->GetFrameView();
   frame_view->InvalidateBackgroundAttachmentFixedDescendantsOnScroll(*box);
-
-  if (!box->BackgroundNeedsFullPaintInvalidation()) {
-    auto background_paint_location = box->GetBackgroundPaintLocation();
-    bool background_paint_in_border_box =
-        background_paint_location & kBackgroundPaintInBorderBoxSpace;
-    bool background_paint_in_scrolling_contents =
-        background_paint_location & kBackgroundPaintInContentsSpace;
-
-    // Invalidate background on scroll if needed.
-    // Fixed attachment background has been dealt with in
-    // frame_view->InvalidateBackgroundAttachmentFixedDescendantsOnScroll().
-    const auto& background_layers = box->StyleRef().BackgroundLayers();
-    if (background_layers.AnyLayerHasLocalAttachmentImage() &&
-        background_paint_in_border_box) {
-      // Local-attachment background image scrolls, so needs invalidation if it
-      // paints in non-scrolling space.
-      box->SetBackgroundNeedsFullPaintInvalidation();
-    } else if (background_layers.AnyLayerHasDefaultAttachmentImage() &&
-               background_paint_in_scrolling_contents) {
-      // Normal attachment background image doesn't scroll, so needs
-      // invalidation if it paints in scrolling contents.
-      box->SetBackgroundNeedsFullPaintInvalidation();
-    } else if (background_layers.AnyLayerHasLocalAttachment() &&
-               background_layers.AnyLayerUsesContentBox() &&
-               background_paint_in_border_box &&
-               (box->PaddingLeft() || box->PaddingTop() ||
-                box->PaddingRight() || box->PaddingBottom())) {
-      // Local attachment content box background needs invalidation if there is
-      // padding because the content area can change on scroll (e.g. the top
-      // padding can disappear when the box scrolls to the bottom).
-      box->SetBackgroundNeedsFullPaintInvalidation();
-    }
+  if (!box->BackgroundNeedsFullPaintInvalidation() &&
+      BackgroundNeedsRepaintOnScroll()) {
+    box->SetBackgroundNeedsFullPaintInvalidation();
   }
+}
+
+// See the comment in .h about background-attachment:fixed.
+bool PaintLayerScrollableArea::BackgroundNeedsRepaintOnScroll() const {
+  const auto* box = GetLayoutBox();
+  auto background_paint_location = box->GetBackgroundPaintLocation();
+  bool background_paint_in_border_box =
+      background_paint_location & kBackgroundPaintInBorderBoxSpace;
+  bool background_paint_in_scrolling_contents =
+      background_paint_location & kBackgroundPaintInContentsSpace;
+
+  const auto& background_layers = box->StyleRef().BackgroundLayers();
+  if (background_layers.AnyLayerHasLocalAttachmentImage() &&
+      background_paint_in_border_box) {
+    // Local-attachment background image scrolls, so needs invalidation if it
+    // paints in non-scrolling space.
+    return true;
+  }
+  if (background_layers.AnyLayerHasDefaultAttachmentImage() &&
+      background_paint_in_scrolling_contents) {
+    // Normal attachment background image doesn't scroll, so needs
+    // invalidation if it paints in scrolling contents.
+    return true;
+  }
+  if (background_layers.AnyLayerHasLocalAttachment() &&
+      background_layers.AnyLayerUsesContentBox() &&
+      background_paint_in_border_box &&
+      (box->PaddingLeft() || box->PaddingTop() || box->PaddingRight() ||
+       box->PaddingBottom())) {
+    // Local attachment content box background needs invalidation if there is
+    // padding because the content area can change on scroll (e.g. the top
+    // padding can disappear when the box scrolls to the bottom).
+    return true;
+  }
+  return false;
 }
 
 gfx::Vector2d PaintLayerScrollableArea::ScrollOffsetInt() const {
@@ -2423,6 +2429,9 @@ bool PaintLayerScrollableArea::ShouldScrollOnMainThread() const {
 }
 
 bool PaintLayerScrollableArea::PrefersNonCompositedScrolling() const {
+  if (RuntimeEnabledFeatures::PreferNonCompositedScrollingEnabled()) {
+    return true;
+  }
   if (Node* node = GetLayoutBox()->GetNode()) {
     if (IsA<HTMLSelectElement>(node)) {
       return true;
@@ -2474,10 +2483,9 @@ bool PaintLayerScrollableArea::ComputeNeedsCompositedScrollingInternal(
   if (force_prefer_compositing_to_lcd_text) {
     return true;
   }
-  if (RuntimeEnabledFeatures::PreferNonCompositedScrollingEnabled()) {
-    return false;
-  }
   if (PrefersNonCompositedScrolling()) {
+    non_composited_main_thread_scrolling_reasons_ =
+        cc::MainThreadScrollingReason::kPreferNonCompositedScrolling;
     return false;
   }
 

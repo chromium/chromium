@@ -2300,11 +2300,19 @@ FragmentPaintPropertyTreeBuilder::GetMainThreadScrollingReasons() const {
   DCHECK(IsA<LayoutBox>(object_));
   auto* scrollable_area = To<LayoutBox>(object_).GetScrollableArea();
   DCHECK(scrollable_area);
-  if (!full_context_.scroll_unification_enabled) {
-    return full_context_.global_main_thread_scrolling_reasons;
+  MainThreadScrollingReasons reasons =
+      full_context_.global_main_thread_scrolling_reasons;
+  if (full_context_.scroll_unification_enabled) {
+    reasons |= scrollable_area->GetNonCompositedMainThreadScrollingReasons();
   }
-  return full_context_.global_main_thread_scrolling_reasons |
-         scrollable_area->GetNonCompositedMainThreadScrollingReasons();
+  // TODO(wangxianzhu): Enable this code to fix the bug of lagging update of
+  // background that needs repaint during composited scroll.
+  /*
+  if (scrollable_area->BackgroundNeedsRepaintOnScroll()) {
+    reasons |= cc::MainThreadScrollingReason::kBackgroundNeedsRepaintOnScroll;
+  }
+  */
+  return reasons;
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {

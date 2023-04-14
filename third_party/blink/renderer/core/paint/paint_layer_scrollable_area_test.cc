@@ -788,11 +788,6 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
 
 TEST_P(MAYBE_PaintLayerScrollableAreaTest,
        ScrollWithLocalAttachmentBackgroundInScrollingContents) {
-  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    // TODO(crbug.com/1414885): Fix this test.
-    return;
-  }
-
   SetBodyInnerHTML(R"HTML(
     <style>
       #scroller {
@@ -814,11 +809,8 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
             scroller->ComputeBackgroundPaintLocationIfComposited());
   EXPECT_EQ(kBackgroundPaintInContentsSpace,
             scroller->GetBackgroundPaintLocation());
-  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    EXPECT_FALSE(UsesCompositedScrolling(scroller));
-  } else {
-    EXPECT_TRUE(UsesCompositedScrolling(scroller));
-  }
+  EXPECT_FALSE(scrollable_area->BackgroundNeedsRepaintOnScroll());
+  EXPECT_TRUE(UsesCompositedScrolling(scroller));
 
   // Programmatically changing the scroll offset.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
@@ -882,6 +874,7 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
             scroller->ComputeBackgroundPaintLocationIfComposited());
   EXPECT_EQ(kBackgroundPaintInBothSpaces,
             scroller->GetBackgroundPaintLocation());
+  EXPECT_TRUE(scrollable_area->BackgroundNeedsRepaintOnScroll());
 
   // Programmatically changing the scroll offset.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 1),
@@ -1052,6 +1045,47 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest,
   EXPECT_FALSE(GetLayoutView().ShouldDoFullPaintInvalidation());
   EXPECT_FALSE(GetLayoutView().BackgroundNeedsFullPaintInvalidation());
   EXPECT_FALSE(GetLayoutView().NeedsPaintPropertyUpdate());
+}
+
+TEST_P(MAYBE_PaintLayerScrollableAreaTest,
+       ViewScrollWithScrollAttachmentBackground) {
+  SetPreferCompositingToLCDText(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>html { background: linear-gradient(black, white) scroll; }</style>
+    <div style="height: 3000px"></div>
+  )HTML");
+
+  // background-attachment: scroll on the view is equivalent to local.
+  EXPECT_EQ(kBackgroundPaintInContentsSpace,
+            GetLayoutView().GetBackgroundPaintLocation());
+  auto* view_scrollable_area = GetLayoutView().GetScrollableArea();
+  EXPECT_FALSE(view_scrollable_area->BackgroundNeedsRepaintOnScroll());
+  view_scrollable_area->SetScrollOffset(
+      ScrollOffset(0, 1), mojom::blink::ScrollType::kProgrammatic);
+  EXPECT_FALSE(GetLayoutView().ShouldDoFullPaintInvalidation());
+  EXPECT_FALSE(GetLayoutView().BackgroundNeedsFullPaintInvalidation());
+  EXPECT_TRUE(GetLayoutView().NeedsPaintPropertyUpdate());
+  UpdateAllLifecyclePhasesForTest();
+}
+
+TEST_P(MAYBE_PaintLayerScrollableAreaTest,
+       ViewScrollWithLocalAttachmentBackground) {
+  SetPreferCompositingToLCDText(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>html { background: linear-gradient(black, white) local; }</style>
+    <div style="height: 3000px"></div>
+  )HTML");
+
+  EXPECT_EQ(kBackgroundPaintInContentsSpace,
+            GetLayoutView().GetBackgroundPaintLocation());
+  auto* view_scrollable_area = GetLayoutView().GetScrollableArea();
+  EXPECT_FALSE(view_scrollable_area->BackgroundNeedsRepaintOnScroll());
+  view_scrollable_area->SetScrollOffset(
+      ScrollOffset(0, 1), mojom::blink::ScrollType::kProgrammatic);
+  EXPECT_FALSE(GetLayoutView().ShouldDoFullPaintInvalidation());
+  EXPECT_FALSE(GetLayoutView().BackgroundNeedsFullPaintInvalidation());
+  EXPECT_TRUE(GetLayoutView().NeedsPaintPropertyUpdate());
+  UpdateAllLifecyclePhasesForTest();
 }
 
 TEST_P(MAYBE_PaintLayerScrollableAreaTest, HitTestOverlayScrollbars) {
@@ -1600,11 +1634,6 @@ TEST_P(MAYBE_PaintLayerScrollableAreaTest, RemoveAddResizerWithoutScrollbars) {
 }
 
 TEST_P(MAYBE_PaintLayerScrollableAreaTest, UsedColorSchemeRootScrollbarsDark) {
-  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
-    // TODO(crbug.com/1414885): Fix this test.
-    return;
-  }
-
   USE_NON_OVERLAY_SCROLLBARS();
 
   SetHtmlInnerHTML(R"HTML(

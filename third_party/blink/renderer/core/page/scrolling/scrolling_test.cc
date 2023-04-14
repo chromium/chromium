@@ -2487,11 +2487,7 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForInputBox) {
   auto* scrollable_area = ScrollableAreaByDOMElementId("textinput");
   const auto* scroll_node = ScrollNodeForScrollableArea(scrollable_area);
   ASSERT_TRUE(scroll_node);
-  ASSERT_EQ(RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()
-                ? cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText
-                // No main thread scrolling reasons for non-composited
-                // scrollable input/select.
-                : cc::MainThreadScrollingReason::kNotScrollingOnMain,
+  EXPECT_EQ(cc::MainThreadScrollingReason::kPreferNonCompositedScrolling,
             scroll_node->main_thread_scrolling_reasons);
   EXPECT_FALSE(scroll_node->is_composited);
 }

@@ -515,6 +515,11 @@ class CORE_EXPORT PaintLayerScrollableArea final
     return non_composited_main_thread_scrolling_reasons_;
   }
 
+  // This function doesn't check background-attachment:fixed backgrounds
+  // because it's not enough to invalidate all affected fixed backgrounds.
+  // See LocalFrameView::InvalidateBackgroundAttachmentFixedDescendantsOnScroll.
+  bool BackgroundNeedsRepaintOnScroll() const;
+
   ScrollbarTheme& GetPageScrollbarTheme() const override;
 
   // Return the thickness of the existing scrollbar; or, if there is no
