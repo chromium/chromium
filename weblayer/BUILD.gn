@@ -836,32 +836,6 @@ if (is_android) {
     ]
   }
 
-  # Lib used in standalone WebView which allows manual JNI registration.
-  static_library("weblayer_lib_webview") {
-    public_deps = [ ":weblayer_lib_base" ]
-    deps = [
-      "//base",
-      "//weblayer/browser/java:jni",
-      "//weblayer/browser/java:weblayer_jni_registration($default_toolchain)",
-    ]
-    sources = [
-      "browser/web_view_compatibility_helper_impl.cc",
-      "browser/web_view_compatibility_helper_impl.h",
-    ]
-    defines = [ "WEBLAYER_MANUAL_JNI_REGISTRATION" ]
-
-    # Explicit dependency required for JNI registration to be able to
-    # find the native side functions.
-    if (is_component_build) {
-      deps += [
-        "//components/browser_ui/photo_picker/android",
-        "//device/gamepad",
-        "//media/midi",
-        "//ui/events/devices",
-      ]
-    }
-  }
-
   static_library("weblayer_lib_webview_test") {
     testonly = true
     public_deps = [ ":weblayer_lib_base" ]
@@ -869,13 +843,7 @@ if (is_android) {
       ":weblayer_android_test_jni_impl",
       "//base",
       "//weblayer/browser/java:jni",
-      "//weblayer/browser/java:weblayer_jni_registration($default_toolchain)",
     ]
-    sources = [
-      "browser/web_view_compatibility_helper_impl.cc",
-      "browser/web_view_compatibility_helper_impl.h",
-    ]
-    defines = [ "WEBLAYER_MANUAL_JNI_REGISTRATION" ]
 
     # Explicit dependency required for JNI registration to be able to
     # find the native side functions.
@@ -893,10 +861,6 @@ if (is_android) {
   static_library("weblayer_lib") {
     public_deps = [ ":weblayer_lib_base" ]
     deps = [ "//weblayer/browser/java:jni" ]
-    sources = [
-      "browser/web_view_compatibility_helper_impl.cc",
-      "browser/web_view_compatibility_helper_impl.h",
-    ]
   }
 
   shared_library("libweblayer_test") {
@@ -907,7 +871,6 @@ if (is_android) {
       "//base",
       "//components/android_autofill/browser/test_support:native",
       "//content/public/app",
-      "//weblayer/browser/java:test_weblayer_jni_registration($default_toolchain)",
     ]
     configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
     configs += [ "//build/config/android:hide_all_but_jni" ]
