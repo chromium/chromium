@@ -83,14 +83,10 @@ class DownloadDisplayController : public FullscreenObserver,
   // |show_animation| specifies whether a small animated arrow should be shown.
   virtual void OnNewItem(bool show_animation);
   // Called from bubble controller when an item is updated, with |is_done|
-  // indicating if it was marked done, |is_pending_deep_scanning| indicating
-  // whether it is dangerous and pending deep scanning, and with
-  // |may_show_details| indicating whether the partial view can be shown.
-  // (Whether the partial view is actually shown may depend on the state of the
-  // other downloads.)
-  virtual void OnUpdatedItem(bool is_done,
-                             bool is_pending_deep_scanning,
-                             bool may_show_details);
+  // indicating if it was marked done, and with |may_show_details| indicating
+  // whether the partial view can be shown. (Whether the partial view is
+  // actually shown may depend on the state of the other downloads.)
+  virtual void OnUpdatedItem(bool is_done, bool may_show_details);
   // Called from bubble controller when an item is deleted.
   virtual void OnRemovedItem(const ContentId& id);
 

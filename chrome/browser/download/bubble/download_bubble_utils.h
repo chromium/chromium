@@ -29,9 +29,7 @@ bool IsPendingDeepScanning(const DownloadUIModel* model);
 
 // Whether the download is considered in-progress from the UI's point of view.
 // Consider dangerous downloads as completed, because we don't want to encourage
-// users to interact with them. However, consider downloads pending scanning as
-// in progress, because we do want users to scan potential dangerous downloads.
-// Items that are paused count as in-progress.
+// users to interact with them. Items that are paused count as in-progress.
 bool IsItemInProgress(const download::DownloadItem* item);
 bool IsItemInProgress(const offline_items_collection::OfflineItem& item);
 bool IsModelInProgress(const DownloadUIModel* model);
