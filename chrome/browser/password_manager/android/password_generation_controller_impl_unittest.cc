@@ -40,6 +40,7 @@ using base::ASCIIToUTF16;
 using password_manager::MockPasswordStoreInterface;
 using password_manager::PasswordForm;
 using testing::_;
+using testing::AtMost;
 using testing::ByMove;
 using testing::Eq;
 using testing::Mock;
@@ -171,6 +172,8 @@ class PasswordGenerationControllerTest
         test_pwd_manager_client_.get());
     mock_password_manager_driver_ =
         std::make_unique<NiceMock<MockPasswordManagerDriver>>();
+    mock_another_password_manager_driver_ =
+        std::make_unique<NiceMock<MockPasswordManagerDriver>>();
 
     // TODO(crbug.com/969051): Remove once kAutofillKeyboardAccessory is
     // enabled.
@@ -182,6 +185,11 @@ class PasswordGenerationControllerTest
     ON_CALL(*mock_password_manager_driver_, GetPasswordManager())
         .WillByDefault(Return(password_manager_.get()));
     ON_CALL(*mock_password_manager_driver_, GetPasswordAutofillManager())
+        .WillByDefault(Return(password_autofill_manager_.get()));
+    ON_CALL(*mock_another_password_manager_driver_, GetPasswordManager())
+        .WillByDefault(Return(password_manager_.get()));
+    ON_CALL(*mock_another_password_manager_driver_,
+            GetPasswordAutofillManager())
         .WillByDefault(Return(password_autofill_manager_.get()));
 
     mock_generation_helper_ =
@@ -219,6 +227,8 @@ class PasswordGenerationControllerTest
 
   std::unique_ptr<NiceMock<MockPasswordManagerDriver>>
       mock_password_manager_driver_;
+  std::unique_ptr<NiceMock<MockPasswordManagerDriver>>
+      mock_another_password_manager_driver_;
   std::unique_ptr<NiceMock<MockPasswordGenerationHelper>>
       mock_generation_helper_;
   std::unique_ptr<NiceMock<MockPasswordGenerationDialogView>> mock_dialog_;
@@ -243,7 +253,7 @@ void PasswordGenerationControllerTest::InitializeAutomaticGeneration(
               OnAutomaticGenerationStatusChanged(true));
 
   controller()->OnAutomaticGenerationAvailable(
-      mock_password_manager_driver_.get(), GetTestGenerationUIData1(),
+      mock_password_manager_driver_->AsWeakPtr(), GetTestGenerationUIData1(),
       gfx::RectF(100, 20));
 
   ON_CALL(*mock_generation_helper_, GeneratePassword(_, _, _, _))
@@ -272,7 +282,7 @@ TEST_F(PasswordGenerationControllerTest, RelaysAutomaticGenerationAvailable) {
   EXPECT_CALL(mock_manual_filling_controller_,
               OnAutomaticGenerationStatusChanged(true));
   controller()->OnAutomaticGenerationAvailable(
-      mock_password_manager_driver_.get(), GetTestGenerationUIData1(),
+      mock_password_manager_driver_->AsWeakPtr(), GetTestGenerationUIData1(),
       gfx::RectF(100, 20));
 }
 
@@ -286,11 +296,12 @@ TEST_F(PasswordGenerationControllerTest,
               OnAutomaticGenerationStatusChanged(true))
       .Times(2);
   controller()->OnAutomaticGenerationAvailable(
-      mock_password_manager_driver_.get(), GetTestGenerationUIData1(),
+      mock_password_manager_driver_->AsWeakPtr(), GetTestGenerationUIData1(),
       gfx::RectF(100, 20));
   PasswordGenerationUIData new_ui_data = GetTestGenerationUIData2();
   controller()->OnAutomaticGenerationAvailable(
-      mock_password_manager_driver_.get(), new_ui_data, gfx::RectF(100, 20));
+      mock_password_manager_driver_->AsWeakPtr(), new_ui_data,
+      gfx::RectF(100, 20));
 
   autofill::FormSignature form_signature =
       autofill::CalculateFormSignature(new_ui_data.form_data);
@@ -323,7 +334,7 @@ TEST_F(PasswordGenerationControllerTest,
   EXPECT_CALL(mock_manual_filling_controller_,
               OnAutomaticGenerationStatusChanged(true));
   controller()->OnAutomaticGenerationAvailable(
-      mock_password_manager_driver_.get(), GetTestGenerationUIData1(),
+      mock_password_manager_driver_->AsWeakPtr(), GetTestGenerationUIData1(),
       gfx::RectF(100, 20));
 
   EXPECT_CALL(mock_manual_filling_controller_,
@@ -387,13 +398,18 @@ TEST_F(PasswordGenerationControllerTest,
 }
 
 TEST_F(PasswordGenerationControllerTest,
-       RejectAutomaticAvailableForNonActiveFrame) {
+       SetActiveFrameOnAutomaticGenerationAvailable) {
+  // TODO(crbug.com/1421753): Refactor PasswordGenerationController so that
+  // OnAutomaticGenerationStatusChanged would be called only once. Right now
+  // it's called twice: the first call resets the manual filling controller
+  // status and the second one sets it according to the focused input.
   EXPECT_CALL(mock_manual_filling_controller_,
               OnAutomaticGenerationStatusChanged(_))
-      .Times(0);
-  MockPasswordManagerDriver wrong_driver;
+      .Times(AtMost(2));
+
   controller()->OnAutomaticGenerationAvailable(
-      &wrong_driver, GetTestGenerationUIData2(), gfx::RectF(100, 20));
+      mock_another_password_manager_driver_->AsWeakPtr(),
+      GetTestGenerationUIData2(), gfx::RectF(100, 20));
 }
 
 TEST_F(PasswordGenerationControllerTest,
@@ -438,7 +454,7 @@ TEST_F(PasswordGenerationControllerTest, HidesDialogWhenFocusChanges) {
   EXPECT_CALL(*raw_dialog_view, Destroy());
   controller()->FocusedInputChanged(
       FocusedFieldType::kFillableUsernameField,
-      base::AsWeakPtr(mock_password_manager_driver_.get()));
+      mock_another_password_manager_driver_->AsWeakPtr());
   Mock::VerifyAndClearExpectations(raw_dialog_view);
 }
 
@@ -497,7 +513,7 @@ TEST_F(PasswordGenerationControllerTest, DontShowManualDialogIfFocusChanged) {
               OnAutomaticGenerationStatusChanged(false));
   controller()->FocusedInputChanged(
       FocusedFieldType::kFillablePasswordField,
-      base::AsWeakPtr(mock_password_manager_driver_.get()));
+      mock_another_password_manager_driver_->AsWeakPtr());
   EXPECT_CALL(mock_dialog_factory(), Run).Times(0);
   controller()->ShowManualGenerationDialog(mock_password_manager_driver_.get(),
                                            GetTestGenerationUIData1());

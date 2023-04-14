@@ -80,13 +80,17 @@ PasswordGenerationControllerImpl::GetActiveFrameDriver() const {
 }
 
 void PasswordGenerationControllerImpl::OnAutomaticGenerationAvailable(
-    const password_manager::PasswordManagerDriver* target_frame_driver,
+    base::WeakPtr<password_manager::PasswordManagerDriver> target_frame_driver,
     const autofill::password_generation::PasswordGenerationUIData& ui_data,
     gfx::RectF element_bounds_in_screen_space) {
-  if (!IsActiveFrameDriver(target_frame_driver))
-    return;
-  DCHECK(!dialog_view_);
+  // We can't be sure that the active frame driver would be set in the
+  // FocusedInputChanged by now, because there is a race condition. The roots
+  // of the OnAutomaticGenerationAvailable and FocusedInputChanged calls are
+  // the same in the renderer. So we need to set it here too.
+  FocusedInputChanged(autofill::mojom::FocusedFieldType::kFillablePasswordField,
+                      std::move(target_frame_driver));
 
+  CHECK(!dialog_view_);
   active_frame_driver_->GetPasswordManager()
       ->SetGenerationElementAndTypeForForm(
           active_frame_driver_.get(), ui_data.form_data.unique_renderer_id,
@@ -125,6 +129,11 @@ void PasswordGenerationControllerImpl::FocusedInputChanged(
     base::WeakPtr<password_manager::PasswordManagerDriver> driver) {
   TRACE_EVENT0("passwords",
                "PasswordGenerationControllerImpl::FocusedInputChanged");
+  // It's probably a duplicate notification.
+  if (IsActiveFrameDriver(driver.get()) &&
+      focused_field_type == FocusedFieldType::kFillablePasswordField) {
+    return;
+  }
   ResetState();
   if (focused_field_type == FocusedFieldType::kFillablePasswordField)
     active_frame_driver_ = std::move(driver);
