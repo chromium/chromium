@@ -240,15 +240,11 @@ IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, DeclineSync) {
 
 // TODO(crbug.com/1433000): Flaky on win-asan
 #if defined(ADDRESS_SANITIZER)
-#define MAYBE_ButtonsAreDisabledOnClickAndEnabledOnNavigateBack \
-  DISABLED_ButtonsAreDisabledOnClickAndEnabledOnNavigateBack
+#define MAYBE_PeekAndDeclineSignIn DISABLED_PeekAndDeclineSignIn
 #else
-#define MAYBE_ButtonsAreDisabledOnClickAndEnabledOnNavigateBack \
-  ButtonsAreDisabledOnClickAndEnabledOnNavigateBack
+#define MAYBE_PeekAndDeclineSignIn PeekAndDeclineSignIn
 #endif
-IN_PROC_BROWSER_TEST_F(
-    FirstRunInteractiveUiTest,
-    MAYBE_ButtonsAreDisabledOnClickAndEnabledOnNavigateBack) {
+IN_PROC_BROWSER_TEST_F(FirstRunInteractiveUiTest, MAYBE_PeekAndDeclineSignIn) {
   const char kAreButtonsDisabledScript[] =
       "(() => {"
       "  const introApp = document.querySelector('intro-app');"

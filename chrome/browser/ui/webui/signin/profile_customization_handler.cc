@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
+#include "chrome/browser/ui/signin/profile_customization_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -134,17 +135,18 @@ void ProfileCustomizationHandler::HandleDone(const base::Value::List& args) {
 
   base::TrimWhitespace(profile_name, base::TRIM_ALL, &profile_name);
   DCHECK(!profile_name.empty());
-  GetProfileEntry()->SetLocalProfileName(profile_name,
-                                         /*is_default_name=*/false);
-  // Local profile is created at first as ephemeral and this is changed when
-  // customization is successfully completed.
+
   const GURL& url = web_ui()->GetWebContents()->GetVisibleURL();
   if (GetProfileCustomizationStyle(url) ==
       ProfileCustomizationStyle::kLocalProfileCreation) {
-    GetProfileEntry()->SetIsOmitted(false);
-    if (!profile_->GetPrefs()->GetBoolean(prefs::kForceEphemeralProfiles)) {
-      GetProfileEntry()->SetIsEphemeral(false);
-    }
+    // The local profile is created at first as ephemeral and its creation is
+    // finalized when customization is successfully completed.
+    FinalizeNewProfileSetup(profile_, profile_name, /*is_default_name=*/false);
+  } else {
+    // TODO(crbug.com/1432944): Look into whether this branch should be also
+    // covered by calling FinalizeNewProfileSetup().
+    GetProfileEntry()->SetLocalProfileName(profile_name,
+                                           /*is_default_name=*/false);
   }
 
   if (completion_callback_)

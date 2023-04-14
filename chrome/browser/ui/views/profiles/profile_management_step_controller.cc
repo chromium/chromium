@@ -13,7 +13,8 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/ui/views/profiles/profile_management_utils.h"
+#include "chrome/browser/ui/signin/profile_customization_util.h"
+#include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 
@@ -188,7 +189,8 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
         ProfileMetrics::ADD_NEW_PROFILE_PICKER_SIGNED_IN);
 
     FinalizeNewProfileSetup(profile_,
-                            profiles::GetDefaultNameForNewEnterpriseProfile());
+                            profiles::GetDefaultNameForNewEnterpriseProfile(),
+                            /*is_default_name=*/true);
 
     auto continue_callback = PostHostClearedCallback(
         base::BindOnce(&FinishSamlSignInStepController::ContinueSAMLSignin,

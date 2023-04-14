@@ -12,7 +12,7 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
-#include "chrome/browser/ui/views/profiles/profile_management_utils.h"
+#include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 
 ProfileManagementFlowController::ProfileManagementFlowController(
