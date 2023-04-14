@@ -5,7 +5,6 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<!--- TODO(b/275071728): revert style to android:TextAppearance -->
 <TextView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -19,5 +18,5 @@ found in the LICENSE file.
     android:paddingBottom="4dp"
     android:gravity="center_vertical"
     android:text="@string/signin_add_account_to_device"
-    style="@style/TextAppearance.TextLarge.Primary"
+    android:textAppearance="@style/TextAppearance.TextLarge.Primary"
     app:drawableStartCompat="@drawable/ic_person_add_40dp" />

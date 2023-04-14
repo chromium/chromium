@@ -66,7 +66,9 @@ found in the LICENSE file.
     </style>
 
     <!-- Used by Chrome and Content -->
-    <style name="TextAppearance" parent="android:TextAppearance" tools:ignore="UnusedResources" />
+    <style name="TextAppearance" parent="android:TextAppearance" tools:ignore="UnusedResources">
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
     <!-- Used by Chrome and Content -->
     <style name="TextAppearance.RobotoMediumStyle" tools:ignore="UnusedResources">
         <item name="android:fontFamily">sans-serif-medium</item>
