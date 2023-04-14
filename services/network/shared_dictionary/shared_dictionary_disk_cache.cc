@@ -138,8 +138,12 @@ void SharedDictionaryDiskCache::DidCreateBackend(
     backend_ = std::move(result.backend);
   }
   auto tasks = std::move(pending_disk_cache_tasks_);
+  base::WeakPtr<SharedDictionaryDiskCache> weak_ptr = GetWeakPtr();
   for (auto& task : tasks) {
     std::move(task).Run();
+    if (!weak_ptr) {
+      return;
+    }
   }
 }
 

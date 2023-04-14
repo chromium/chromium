@@ -309,6 +309,21 @@ TEST_F(SharedDictionaryDiskCacheTest,
   EXPECT_EQ(net::ERR_FAILED, ClearAll(disk_cache.get()));
 }
 
+TEST_F(SharedDictionaryDiskCacheTest, DeletedWhileRuningDidCreateBackend) {
+  // Corrupt the disk cache so that the callback is called synchronously.
+  CorruptDiskCache();
+
+  std::unique_ptr<SharedDictionaryDiskCache> disk_cache = CreateDiskCache();
+
+  // Test that UAF doesn't happen when `disk_cache` is synchronously deleted in
+  // the callback.
+  disk_cache->DoomEntry(
+      kTestKey, base::BindLambdaForTesting([&](int) { disk_cache.reset(); }));
+  disk_cache->DoomEntry(kTestKey,
+                        base::BindOnce([](int) { ASSERT_TRUE(false); }));
+  FlushCacheTasks();
+}
+
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace network
