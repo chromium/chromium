@@ -2580,6 +2580,11 @@ const char kPasswordImportName[] = "Password import";
 const char kPasswordImportDescription[] =
     "Import functionality in password settings.";
 
+const char kPasswordsImportM2Name[] = "Passwords Import M2";
+const char kPasswordsImportM2Description[] =
+    "Extends passwords import flow in password settings with conflict "
+    "resolution functionality.";
+
 const char kPasswordStrengthIndicatorName[] = "Password strength indicator";
 const char kPasswordStrengthIndicatorDescription[] =
     "Enables password strength indicator when typing a password during a "
@@ -4621,11 +4626,6 @@ const char kPasswordsGroupingDescription[] =
 const char kPasswordManagerRedesignName[] = "Password Manager new UI";
 const char kPasswordManagerRedesignDescription[] =
     "Enables new Password Manager UI on Desktop";
-
-const char kPasswordsImportM2Name[] = "Passwords Import M2";
-const char kPasswordsImportM2Description[] =
-    "Extends passwords import flow in password settings with conflict "
-    "resolution functionality.";
 
 const char kRealboxSecondaryZeroSuggestName[] =
     "Enables showing secondary zero-prefix suggestions in NTP realbox.";

@@ -180,15 +180,13 @@ BASE_FEATURE(kPasswordImport,
              "PasswordImport",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPasswordsImportM2,
+             "PasswordsImportM2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 BASE_FEATURE(kPasswordManagerRedesign,
              "PasswordManagerRedesign",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-BASE_FEATURE(kPasswordsImportM2,
-             "PasswordsImportM2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 

@@ -33,18 +33,20 @@ struct NotesImportMetrics {
   size_t notes_concatenations_per_file_count = 0;
 };
 
-struct ImportedPasswords {
-  ImportedPasswords();
-  ImportedPasswords(ImportedPasswords&& other);
-  ~ImportedPasswords();
+struct IncomingPasswords {
+  IncomingPasswords();
+  IncomingPasswords(IncomingPasswords&& other);
+  ~IncomingPasswords();
 
-  ImportedPasswords& operator=(ImportedPasswords&& other);
+  IncomingPasswords& operator=(IncomingPasswords&& other);
 
   // Passwords that should be added to the store.
   std::vector<password_manager::CredentialUIEntry> add_credentials;
   // Passwords that should be updated in the store.
   std::vector<password_manager::PasswordForm> edit_forms;
 };
+
+struct ConflictsResolutionCache;
 
 class SavedPasswordsPresenter;
 
@@ -53,7 +55,28 @@ class SavedPasswordsPresenter;
 class PasswordImporter {
  public:
   static constexpr size_t MAX_PASSWORDS_PER_IMPORT = 3000;
+  // TODO(crbug/1417650): Use constant from
+  // components/password_manager/core/common/password_manager_constants.h
   static constexpr size_t MAX_NOTE_LENGTH = 1000;
+
+  enum State {
+    // The object has just been created, but the import process has not been
+    // launched yet. Or the import has finished with some errors and the object
+    // has switched to the initial state.
+    kNotStarted = 0,
+    // PasswordImporter is busy, while the user is waiting for a response from
+    // it. In case of new import requests, the user should receive an
+    // IMPORT_ALREADY_ACTIVE error.
+    kInProgress = 1,
+    // Conflicts were found in the selected file. PasswordImporter is waiting
+    // for the user to select which passwords to replace or to cancel the
+    // import. In case of new import requests the current state should be
+    // returned.
+    kConflicts = 2,
+    // Import has successufly finished with no errors. PasswordImporter is
+    // waiting for the user to decide if they want to delete the file.
+    kFinished = 3,
+  };
 
   // ConsumePasswordsCallback is the type of the processing function for parsed
   // passwords.
@@ -62,6 +85,9 @@ class PasswordImporter {
 
   using ImportResultsCallback =
       base::OnceCallback<void(const password_manager::ImportResults&)>;
+
+  using DeleteFileCallback =
+      base::RepeatingCallback<bool(const base::FilePath&)>;
 
   explicit PasswordImporter(SavedPasswordsPresenter* presenter);
   PasswordImporter(const PasswordImporter&) = delete;
@@ -74,8 +100,22 @@ class PasswordImporter {
   // The only supported file format is CSV.
   void Import(const base::FilePath& path,
               password_manager::PasswordForm::Store to_store,
-              ImportResultsCallback results_callback,
-              base::OnceClosure cleanup_callback);
+              ImportResultsCallback results_callback);
+
+  // Resumes the import process when user has selected which passwords to
+  // replace. The caller earlier received an array with conflicting
+  // ImportEntry's that are displayed to the user, the ids of the selected items
+  // correspond to indices of credentials in `conflicts_cache_->conflicts`.
+  // |selected_ids|: The indices of passwords that need to be replaced.
+  // |results_callback| is used to return import summary back to the user.
+  void ContinueImport(const std::vector<int>& selected_ids,
+                      ImportResultsCallback results_callback);
+
+  // Triggers the deletion of the imported file at `file_path_` when the
+  // importer is in the kFinished state.
+  void DeleteFile();
+
+  bool IsState(PasswordImporter::State state) const { return state_ == state; }
 
   // Returns the file extensions corresponding to supported formats.
   static std::vector<std::vector<base::FilePath::StringType>>
@@ -85,7 +125,9 @@ class PasswordImporter {
   void SetServiceForTesting(
       mojo::PendingRemote<mojom::CSVPasswordParser> parser);
 
-  bool IsRunning() const { return import_started_; }
+  void SetDeleteFileForTesting(DeleteFileCallback delete_callback) {
+    delete_function_ = std::move(delete_callback);
+  }
 
  private:
   // Parses passwords from |input| using a mojo sandbox process and
@@ -100,27 +142,36 @@ class PasswordImporter {
                         ImportResultsCallback results_callback,
                         password_manager::mojom::CSVPasswordSequencePtr seq);
 
-  // Triggers the processes for adding and updating `imported_passwords`.
+  // Triggers the processes for adding and updating `incoming_passwords`.
   void ExecuteImport(ImportResultsCallback results_callback,
                      ImportResults results,
+                     IncomingPasswords incoming_passwords,
                      base::Time start_time,
-                     ImportedPasswords imported_passwords);
+                     size_t conflicts_count);
 
   // Runs `results_callback` with aggregate results `results_` after all
   // imported passwords were added and updated.
   // Also, reports import results metrics.
   void ImportFinished(ImportResultsCallback results_callback,
                       ImportResults results,
-                      base::Time start_time);
+                      base::Time start_time,
+                      size_t conflicts_count);
 
   const mojo::Remote<mojom::CSVPasswordParser>& GetParser();
 
   mojo::Remote<mojom::CSVPasswordParser> parser_;
 
-  bool import_started_ = false;
+  PasswordImporter::State state_ = kNotStarted;
 
   // Path of the imported file.
   base::FilePath file_path_;
+
+  // Used to cache intermediate results of the import during kConflicts state.
+  std::unique_ptr<ConflictsResolutionCache> conflicts_cache_;
+
+  // The function which does the actual deleting of a file. It should wrap
+  // base::DeleteFile, unless it's changed for testing purposes.
+  DeleteFileCallback delete_function_;
 
   const raw_ptr<SavedPasswordsPresenter> presenter_;
 
