@@ -83,6 +83,19 @@ const base::FeatureParam<int>
 const base::FeatureParam<int> kHeuristicMemorySaverMinimumMinutesInBackground{
     &kHeuristicMemorySaver, "minimum_minutes_in_background", 120};
 
+BASE_FEATURE(kHighEfficiencyMultistateMode,
+             "HighEfficiencyMultistateMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDiscardedTabTreatment,
+             "DiscardedTabTreatment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMemoryUsageInHovercards,
+             "MemoryUsageInHovercards",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDiscardExceptionsImprovements,
+             "DiscardExceptionsImprovements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif
 
 BASE_FEATURE(kBFCachePerformanceManagerPolicy,

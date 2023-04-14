@@ -90,6 +90,18 @@ extern const base::FeatureParam<int>
 extern const base::FeatureParam<int>
     kHeuristicMemorySaverMinimumMinutesInBackground;
 
+// Round 2 Performance Controls features
+
+// This enables the UI for the multi-state version of high efficiency mode.
+BASE_DECLARE_FEATURE(kHighEfficiencyMultistateMode);
+// This shows more information about discarded tabs in the tab strip and
+// hovercards.
+BASE_DECLARE_FEATURE(kDiscardedTabTreatment);
+// This displays active memory usage in hovercards.
+BASE_DECLARE_FEATURE(kMemoryUsageInHovercards);
+// This enables improved UI for adding site exceptions for tab discarding.
+BASE_DECLARE_FEATURE(kDiscardExceptionsImprovements);
+
 #endif
 
 // Policy that evicts the BFCache of pages that become non visible or the
