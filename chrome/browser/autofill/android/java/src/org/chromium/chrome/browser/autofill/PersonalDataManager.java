@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.autofill;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.text.format.DateUtils;
 
@@ -1404,25 +1405,36 @@ public class PersonalDataManager {
 
     /**
      * Return the card art image for the given `customImageUrl`.
-     *
+     * @param context required to get resources.
      * @param customImageUrl  URL of the image. If the image is available, it is returned, otherwise
      *         it is fetched from this URL.
+     * @param widthId Resource id of the width spec.
+     * @param heightId Resource id of the height spec.
+     * @param cornerRadiusId Resource id of the corner radius spec.
      * @return Bitmap if found in the local cache, else return null.
      */
     public Bitmap getCustomImageForAutofillSuggestionIfAvailable(
-            GURL customImageUrl, float cornerRadius) {
-        if (mCreditCardArtImages.containsKey(customImageUrl.getSpec())) {
-            return mCreditCardArtImages.get(customImageUrl.getSpec());
+            Context context, GURL customImageUrl, int widthId, int heightId, int cornerRadiusId) {
+        Resources res = context.getResources();
+        int width = res.getDimensionPixelSize(widthId);
+        int height = res.getDimensionPixelSize(heightId);
+        float cornerRadius = res.getDimension(cornerRadiusId);
+        GURL urlWithParams =
+                AutofillUiUtils.getCreditCardIconUrlWithParams(customImageUrl, width, height);
+
+        if (mCreditCardArtImages.containsKey(urlWithParams.getSpec())) {
+            return mCreditCardArtImages.get(urlWithParams.getSpec());
         }
         // Schedule the fetching of image and return null so that the UI thread does not have to
         // wait and can show the default network icon.
-        fetchImage(customImageUrl, bitmap -> {
+        fetchImage(urlWithParams, bitmap -> {
             // TODO (crbug.com/1410418): Log image fetching failure metrics.
             // If the image fetching was unsuccessful, silently return.
             if (bitmap == null) return;
 
-            mCreditCardArtImages.put(customImageUrl.getSpec(),
-                    AutofillUiUtils.getRoundedBitmapWithBorder(bitmap, cornerRadius,
+            mCreditCardArtImages.put(urlWithParams.getSpec(),
+                    AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(bitmap, width, height,
+                            cornerRadius,
                             ChromeFeatureList.isEnabled(
                                     ChromeFeatureList
                                             .AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)));

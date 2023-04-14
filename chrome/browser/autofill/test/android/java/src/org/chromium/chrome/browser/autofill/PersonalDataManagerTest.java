@@ -33,6 +33,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.ValueWithStatus;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.video_tutorials.test.TestImageFetcher;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.browser.Features;
@@ -210,7 +211,13 @@ public class PersonalDataManagerTest {
     @Feature({"Autofill"})
     public void testCreditCardWithCardArtUrl_imageDownloaded() throws TimeoutException {
         Context context = ContextUtils.getApplicationContext();
+
+        int widthId = R.dimen.settings_page_card_icon_width;
+        int width = context.getResources().getDimensionPixelSize(widthId);
+        int heightId = R.dimen.settings_page_card_icon_height;
+        int height = context.getResources().getDimensionPixelSize(heightId);
         int cornerRadiusId = R.dimen.card_art_corner_radius;
+        float cornerRadius = context.getResources().getDimensionPixelSize(cornerRadiusId);
         GURL cardArtUrl = new GURL("http://google.com/test.png");
         CreditCard cardWithCardArtUrl = new CreditCard(/* guid= */ "serverGuid", /* origin= */ "",
                 /* isLocal= */ false, /* isCached= */ false, "John Doe Server", "41111111111111111",
@@ -222,10 +229,26 @@ public class PersonalDataManagerTest {
         mHelper.addServerCreditCard(cardWithCardArtUrl);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertEquals(TEST_CARD_ART_IMAGE,
+            // On the first attempt, the card arts are only fetched from the server, they're not
+            // rendered (crbug.com/1384128).
+            assertEquals(null,
                     PersonalDataManager.getInstance()
-                            .getCustomImageForAutofillSuggestionIfAvailable(cardArtUrl,
-                                    context.getResources().getDimension(cornerRadiusId)));
+                            .getCustomImageForAutofillSuggestionIfAvailable(
+                                    ContextUtils.getApplicationContext(), cardArtUrl, widthId,
+                                    heightId, cornerRadiusId));
+            assertTrue(
+                    AutofillUiUtils
+                            .resizeAndAddRoundedCornersAndGreyBorder(TEST_CARD_ART_IMAGE, width,
+                                    height, cornerRadius,
+                                    /* addRoundedCornersAndGreyBorder= */
+                                    ChromeFeatureList.isEnabled(
+                                            ChromeFeatureList
+                                                    .AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES))
+                            .sameAs(PersonalDataManager.getInstance()
+                                            .getCustomImageForAutofillSuggestionIfAvailable(
+                                                    ContextUtils.getApplicationContext(),
+                                                    cardArtUrl, widthId, heightId,
+                                                    cornerRadiusId)));
         });
     }
 
@@ -239,7 +262,7 @@ public class PersonalDataManagerTest {
         int heightPixels = 20;
 
         // For virtual card icon, the URL should not be updated. For card art icon, the URL should
-        // be updated as `cardArtUrl=w{width}-h{height}-n`.
+        // be updated as `cardArtUrl=w{width}-h{height}`.
         assertThat(AutofillUiUtils.getCreditCardIconUrlWithParams(
                            capitalOneIconUrl, widthPixels, heightPixels))
                 .isEqualTo(capitalOneIconUrl);
@@ -250,7 +273,6 @@ public class PersonalDataManagerTest {
                                             .append(widthPixels)
                                             .append("-h")
                                             .append(heightPixels)
-                                            .append("-n")
                                             .toString()));
     }
 
@@ -663,16 +685,18 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
+    @Features.EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)
     public void
     testGetCardIcon_customIconUrlAvailable_customIconCachedOnFirstCallAndReturnedOnSecondCall()
             throws TimeoutException {
         Context context = ContextUtils.getApplicationContext();
-        int widthId = R.dimen.autofill_dropdown_icon_width;
-        int heightId = R.dimen.autofill_dropdown_icon_height;
+
+        int widthId = R.dimen.settings_page_card_icon_width;
+        int width = context.getResources().getDimensionPixelSize(widthId);
+        int heightId = R.dimen.settings_page_card_icon_height;
+        int height = context.getResources().getDimensionPixelSize(heightId);
         int cornerRadiusId = R.dimen.card_art_corner_radius;
-        Bitmap scaledTestCardArtImage = Bitmap.createScaledBitmap(TEST_CARD_ART_IMAGE,
-                context.getResources().getDimensionPixelSize(widthId),
-                context.getResources().getDimensionPixelSize(heightId), true);
+        float cornerRadius = context.getResources().getDimensionPixelSize(cornerRadiusId);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // The first call to get the custom icon only fetches and caches the icon. It returns
@@ -683,15 +707,19 @@ public class PersonalDataManagerTest {
                             .sameAs(((BitmapDrawable) AutofillUiUtils.getCardIcon(context,
                                              new GURL("http://google.com/test.png"),
                                              R.drawable.mc_card, widthId, heightId, cornerRadiusId,
-                                             true))
+                                             /* showCustomIcon= */ true))
                                             .getBitmap()));
 
             // The custom icon is already cached, and gets returned.
-            assertTrue(scaledTestCardArtImage.sameAs(
-                    ((BitmapDrawable) AutofillUiUtils.getCardIcon(context,
-                             new GURL("http://google.com/test.png"), R.drawable.mc_card, widthId,
-                             heightId, cornerRadiusId, true))
-                            .getBitmap()));
+            assertTrue(AutofillUiUtils
+                               .resizeAndAddRoundedCornersAndGreyBorder(TEST_CARD_ART_IMAGE, width,
+                                       height, cornerRadius,
+                                       /* addRoundedCornersAndGreyBorder= */ true)
+                               .sameAs(((BitmapDrawable) AutofillUiUtils.getCardIcon(context,
+                                                new GURL("http://google.com/test.png"),
+                                                R.drawable.mc_card, widthId, heightId,
+                                                cornerRadiusId, /* showCustomIcon= */ true))
+                                               .getBitmap()));
         });
     }
 
