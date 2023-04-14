@@ -35,6 +35,8 @@ declare_args() {
   }
 }
 
+chrome_public_test_manifest_package = "org.chromium.chrome.tests"
+
 default_chrome_public_jinja_variables = [
   "channel=$android_channel",
   "enable_cardboard=$enable_cardboard",
@@ -119,6 +121,8 @@ template("split_manifest_template") {
 #   android_app_bundle_module(), depending on the target type.
 #
 template("chrome_common_apk_or_module_tmpl") {
+  forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+
   _target_type = invoker.target_type
   assert(_target_type == "android_apk" ||
          _target_type == "android_app_bundle_module" ||
@@ -127,6 +131,11 @@ template("chrome_common_apk_or_module_tmpl") {
   _is_monochrome = defined(invoker.is_monochrome) && invoker.is_monochrome
   _is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
   _is_bundle = _target_type == "android_app_bundle_module"
+  _is_test = _target_type == "instrumentation_test_apk"
+
+  if (_is_test) {
+    testonly = true
+  }
 
   _is_64_bit_browser =
       android_64bit_target_cpu &&
@@ -165,6 +174,8 @@ template("chrome_common_apk_or_module_tmpl") {
 
   if (defined(invoker.manifest_package)) {
     _manifest_package = invoker.manifest_package
+  } else if (_is_test && !_is_monochrome) {
+    _manifest_package = chrome_public_test_manifest_package
   } else {
     _manifest_package = chrome_public_manifest_package
   }
@@ -208,6 +219,15 @@ template("chrome_common_apk_or_module_tmpl") {
         "force_32_bit=$_force_32_bit",
         "include_arcore_manifest_flag=$enable_arcore",
       ]
+    }
+    if (_is_test) {
+      includes += [ input ]
+      input = "//chrome/android/javatests/AndroidManifest.xml"
+      if (_is_monochrome) {
+        includes += [ input ]
+        input = "//chrome/android/javatests/AndroidManifest_monochrome.xml"
+        variables += [ "test_manifest_package=$_manifest_package" ]
+      }
     }
     if (defined(invoker.jinja_input)) {
       includes += [ input ]
@@ -321,15 +341,19 @@ template("chrome_common_apk_or_module_tmpl") {
     resource_exclusion_regex += "|${_material_package}/xml.*badge_"
 
     if (!is_java_debug) {
-      # Android supports webp transparent resources properly since API level 18,
-      # so this can only be activated for modern ones (which target API >= 21).
-      png_to_webp = true
+      # TODO(crbug.com/993340): Update test goldens with webp versions of images.
+      if (!_is_test) {
+        png_to_webp = true
+      }
 
       proguard_enabled = true
       proguard_configs = [ "//chrome/android/proguard/main.flags" ]
       if (_is_monochrome) {
         proguard_configs +=
             [ "//android_webview/nonembedded/java/proguard.flags" ]
+      }
+      if (_is_test) {
+        proguard_configs += [ "//chrome/android/proguard/apk_for_test.flags" ]
       }
       if (defined(invoker.proguard_configs)) {
         proguard_configs += invoker.proguard_configs
@@ -467,6 +491,9 @@ template("chrome_common_apk_or_module_tmpl") {
       } else {
         deps += [ "//chrome/android:delegate_public_impl_java" ]
       }
+      if (_is_test) {
+        deps += [ "//chrome/android:chrome_public_base_module_java_for_test" ]
+      }
     }
 
     # https://crbug.com/1415351
@@ -487,7 +514,9 @@ template("chrome_common_apk_or_module_tmpl") {
         add_unwind_tables_in_chrome_32bit_apk &&
         (target_cpu == "arm" ||
          (target_cpu == "arm64" && !_is_64_bit_browser))) {
-      if (_is_monochrome || _is_trichrome) {
+      if (_is_test) {
+        deps += [ "//chrome/android:libchromefortest_unwind_table_assets" ]
+      } else if (_is_monochrome || _is_trichrome) {
         deps += [ "//chrome/android:libmonochrome_unwind_table_assets" ]
       } else {
         deps += [ "//chrome/android:libchrome_unwind_table_assets" ]
@@ -525,6 +554,8 @@ template("chrome_common_apk_or_module_tmpl") {
 
     if (defined(invoker.shared_libraries)) {
       shared_libraries += invoker.shared_libraries
+    } else if (_is_test) {
+      shared_libraries += [ "//chrome/android:libchromefortest" ]
     } else if (_is_monochrome) {
       if (android_64bit_target_cpu) {
         # Build //android_webview:monochrome with the opposite bitness that
@@ -675,10 +706,21 @@ template("chrome_common_apk_or_module_tmpl") {
       }
     }
 
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    if (_is_test) {
+      bundles_supported = true
+      deps += [ "//third_party/androidx:androidx_test_runner_java" ]
+
+      # For EmbeddedTestServer.
+      additional_apks = [ "//net/android:net_test_support_apk" ]
+      if (defined(invoker.additional_apks)) {
+        additional_apks += invoker.additional_apks
+      }
+    }
+
     forward_variables_from(invoker,
                            "*",
                            TESTONLY_AND_VISIBILITY + [
+                                 "additional_apks",
                                  "assert_no_deps",
                                  "data_deps",
                                  "deps",
@@ -699,6 +741,15 @@ template("chrome_common_apk_or_module_tmpl") {
 template("chrome_public_apk_or_module_tmpl") {
   chrome_common_apk_or_module_tmpl(target_name) {
     add_upstream_only_deps = true
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+  }
+}
+
+template("chrome_public_test_apk_tmpl") {
+  chrome_common_apk_or_module_tmpl(target_name) {
+    add_upstream_only_deps = true
+    target_type = "instrumentation_test_apk"
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
   }
