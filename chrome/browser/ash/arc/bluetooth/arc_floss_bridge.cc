@@ -9,6 +9,8 @@
 #include "ash/components/arc/bluetooth/bluetooth_type_converters.h"
 #include "base/functional/callback_helpers.h"
 #include "base/guid.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/arc/bluetooth/arc_floss_bridge.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "device/bluetooth/floss/floss_dbus_manager.h"
@@ -164,11 +166,48 @@ void ArcFlossBridge::RemoveSdpRecord(uint32_t service_handle,
       std::move(response_callback), service_handle);
 }
 
+namespace {
+
+void OnNoOpBtifResult(
+    floss::DBusResult<floss::FlossDBusClient::BtifStatus> result) {}
+
+floss::FlossSocketManager::Security GetSecureFromFlags(
+    const mojom::BluetoothSocketFlagsPtr flags) {
+  // From Floss's masking logic secure = encrypt+auth
+  return (flags->encrypt && flags->auth)
+             ? floss::FlossSocketManager::Security::kSecure
+             : floss::FlossSocketManager::Security::kInsecure;
+}
+
+}  // namespace
+
+void ArcFlossBridge::OnCloseBluetoothListeningSocketComplete(
+    BluetoothListeningSocket* socket,
+    floss::DBusResult<floss::FlossDBusClient::BtifStatus> result) {
+  // We are not going to keep the socket around regardless of whether Floss
+  // succeeded, but we give it a chance.
+  listening_sockets_.erase(socket);
+}
+
 void ArcFlossBridge::CloseBluetoothListeningSocket(
-    BluetoothListeningSocket* ptr) {}
+    BluetoothListeningSocket* ptr) {
+  if (!listening_sockets_.contains(ptr)) {
+    return;
+  }
+
+  floss::ResponseCallback<floss::FlossAdapterClient::BtifStatus>
+      response_callback = base::BindOnce(
+          &ArcFlossBridge::OnCloseBluetoothListeningSocketComplete,
+          weak_factory_.GetWeakPtr(), ptr);
+  floss::FlossDBusManager::Get()->GetSocketManager()->Close(
+      listening_sockets_[ptr].second, std::move(response_callback));
+}
 
 void ArcFlossBridge::CloseBluetoothConnectingSocket(
-    BluetoothConnectingSocket* ptr) {}
+    BluetoothConnectingSocket* ptr) {
+  auto found = connecting_sockets_.find(ptr);
+  connecting_sockets_.erase(found);
+}
 
 void ArcFlossBridge::SdpSearchComplete(
     const floss::FlossDeviceId device,
@@ -223,12 +262,52 @@ void ArcFlossBridge::SendCachedDevices() const {
         GetDeviceProperties(mojom::BluetoothPropertyType::ALL, device));
   }
 }
+
 void ArcFlossBridge::CreateBluetoothListenSocket(
     mojom::BluetoothSocketType type,
     mojom::BluetoothSocketFlagsPtr flags,
     int port,
     ArcFlossBridge::BluetoothSocketListenCallback callback) {
-  NOTIMPLEMENTED();
+  if (!AdapterReadyAndRegistered()) {
+    return;
+  }
+  auto sock_wrapper = std::make_unique<BluetoothListeningSocket>();
+  sock_wrapper->sock_type = type;
+  auto connection_accepted_callback =
+      base::BindRepeating(&ArcFlossBridge::OnConnectionAccepted,
+                          weak_factory_.GetWeakPtr(), sock_wrapper.get());
+  switch (type) {
+    case mojom::BluetoothSocketType::TYPE_RFCOMM: {
+      std::move(callback).Run(
+          mojom::BluetoothStatus::FAIL, /*port=*/0,
+          mojo::PendingReceiver<mojom::BluetoothListenSocketClient>());
+      return;
+    }
+    case mojom::BluetoothSocketType::TYPE_L2CAP_LE: {
+      int socket_ready_callback_id = next_socket_ready_callback_id_++;
+      socket_ready_callbacks_.insert_or_assign(socket_ready_callback_id,
+                                               std::move(callback));
+      auto connection_state_changed_callback = base::BindRepeating(
+          &ArcFlossBridge::OnConnectionStateChanged, weak_factory_.GetWeakPtr(),
+          sock_wrapper.get(), socket_ready_callback_id);
+      floss::ResponseCallback<floss::FlossDBusClient::BtifStatus>
+          response_callback =
+              base::BindOnce(&ArcFlossBridge::OnCreateListenSocketCallback,
+                             weak_factory_.GetWeakPtr(),
+                             std::move(sock_wrapper), socket_ready_callback_id);
+      floss::FlossDBusManager::Get()->GetSocketManager()->ListenUsingL2capLe(
+          GetSecureFromFlags(std::move(flags)), std::move(response_callback),
+          std::move(connection_state_changed_callback),
+          std::move(connection_accepted_callback));
+      break;
+    }
+    default: {
+      std::move(callback).Run(
+          mojom::BluetoothStatus::FAIL, /*port=*/0,
+          mojo::PendingReceiver<mojom::BluetoothListenSocketClient>());
+      return;
+    }
+  }
 }
 
 void ArcFlossBridge::CreateBluetoothConnectSocket(
@@ -237,7 +316,245 @@ void ArcFlossBridge::CreateBluetoothConnectSocket(
     mojom::BluetoothAddressPtr addr,
     int port,
     ArcFlossBridge::BluetoothSocketConnectCallback callback) {
-  NOTIMPLEMENTED();
+  if (!AdapterReadyAndRegistered()) {
+    return;
+  }
+  const floss::FlossDeviceId remote_device =
+      floss::FlossDeviceId({.address = addr->To<std::string>(), .name = ""});
+  auto sock_wrapper = std::make_unique<BluetoothConnectingSocket>();
+  sock_wrapper->sock_type = type;
+  switch (type) {
+    case mojom::BluetoothSocketType::TYPE_RFCOMM: {
+      std::move(callback).Run(
+          mojom::BluetoothStatus::FAIL,
+          mojo::PendingReceiver<mojom::BluetoothConnectSocketClient>());
+      break;
+    }
+    case mojom::BluetoothSocketType::TYPE_L2CAP_LE: {
+      floss::FlossDBusManager::Get()->GetSocketManager()->ConnectUsingL2capLe(
+          remote_device, port, GetSecureFromFlags(std::move(flags)),
+          base::BindOnce(&ArcFlossBridge::OnCreateConnectSocketCallback,
+                         weak_factory_.GetWeakPtr(), std::move(sock_wrapper),
+                         std::move(callback)));
+      break;
+    }
+    default: {
+      std::move(callback).Run(
+          mojom::BluetoothStatus::FAIL,
+          mojo::PendingReceiver<mojom::BluetoothConnectSocketClient>());
+      return;
+    }
+  }
+}
+
+void ArcFlossBridge::OnCreateListenSocketCallback(
+    std::unique_ptr<ArcBluetoothBridge::BluetoothListeningSocket> sock_wrapper,
+    int socket_ready_callback_id,
+    floss::DBusResult<floss::FlossDBusClient::BtifStatus> result) {
+  ArcBluetoothBridge::BluetoothListeningSocket* sock_wrapper_to_pass =
+      sock_wrapper.get();
+  listening_sockets_.insert_or_assign(
+      sock_wrapper.get(),
+      std::make_pair(std::move(sock_wrapper), empty_socket_id_));
+  if (!result.has_value()) {
+    CompleteListenSocketReady(socket_ready_callback_id,
+                              mojom::BluetoothStatus::FAIL,
+                              sock_wrapper_to_pass);
+    return;
+  }
+
+  if (*result != floss::FlossDBusClient::BtifStatus::kSuccess) {
+    CompleteListenSocketReady(socket_ready_callback_id,
+                              mojom::BluetoothStatus::FAIL,
+                              sock_wrapper_to_pass);
+    return;
+  }
+}
+
+void ArcFlossBridge::OnCreateConnectSocketCallback(
+    std::unique_ptr<ArcBluetoothBridge::BluetoothConnectingSocket> sock_wrapper,
+    ArcFlossBridge::BluetoothSocketConnectCallback callback,
+    floss::FlossDBusClient::BtifStatus status,
+    absl::optional<floss::FlossSocketManager::FlossSocket>&& socket) {
+  if (status != floss::FlossDBusClient::BtifStatus::kSuccess) {
+    std::move(callback).Run(
+        mojom::BluetoothStatus::FAIL,
+        mojo::PendingReceiver<mojom::BluetoothConnectSocketClient>());
+    return;
+  }
+
+  if (!socket || !socket->fd) {
+    std::move(callback).Run(
+        mojom::BluetoothStatus::FAIL,
+        mojo::PendingReceiver<mojom::BluetoothConnectSocketClient>());
+    return;
+  }
+
+  sock_wrapper->file = std::move(socket->fd.value());
+  std::move(callback).Run(mojom::BluetoothStatus::SUCCESS,
+                          sock_wrapper->remote.BindNewPipeAndPassReceiver());
+  auto connection = mojom::BluetoothSocketConnection::New();
+  mojo::ScopedHandle handle = mojo::WrapPlatformHandle(
+      mojo::PlatformHandle(std::move(sock_wrapper->file)));
+  connection->sock = std::move(handle);
+  switch (sock_wrapper->sock_type) {
+    case mojom::BluetoothSocketType::TYPE_RFCOMM:
+    case mojom::BluetoothSocketType::TYPE_L2CAP_LE:
+      connection->addr = mojom::BluetoothAddress::From<std::string>(
+          socket->remote_device.address);
+      connection->port = socket->port;
+      break;
+    default:
+      LOG(ERROR) << "Unknown socket type " << sock_wrapper->sock_type;
+      return;
+  }
+  sock_wrapper->remote->OnConnected(std::move(connection));
+  connecting_sockets_.insert(std::move(sock_wrapper));
+}
+
+void ArcFlossBridge::OnConnectionStateChanged(
+    ArcBluetoothBridge::BluetoothListeningSocket* sock_wrapper,
+    int socket_ready_callback_id,
+    floss::FlossSocketManager::ServerSocketState state,
+    floss::FlossSocketManager::FlossListeningSocket socket,
+    floss::FlossSocketManager::BtifStatus status) {
+  if (!sock_wrapper) {
+    // sock_wrapper has been disposed (or worse), nothing to do, but resolve
+    // callback with failure if it is still around.
+    CompleteListenSocketReady(socket_ready_callback_id,
+                              mojom::BluetoothStatus::FAIL, sock_wrapper,
+                              socket);
+    return;
+  }
+
+  if (status != floss::FlossSocketManager::BtifStatus::kSuccess) {
+    LOG(ERROR) << "Received OnConnectionStateChanged callback with "
+                  "non-Success status: "
+               << static_cast<int>(status);
+    CompleteListenSocketReady(socket_ready_callback_id,
+                              mojom::BluetoothStatus::FAIL, sock_wrapper,
+                              socket);
+    return;
+  }
+
+  if (state != floss::FlossSocketManager::ServerSocketState::kReady) {
+    // Socket isn't ready for accepting connections, nothing to do
+    return;
+  }
+
+  // At this point we may assume that listening socket creation was a
+  // success. Let CompleteListenSocketReady know if it doesn't already.
+  CompleteListenSocketReady(socket_ready_callback_id,
+                            mojom::BluetoothStatus::SUCCESS, sock_wrapper,
+                            socket);
+  if (!AdapterReadyAndRegistered()) {
+    return;
+  }
+
+  floss::ResponseCallback<floss::FlossDBusClient::BtifStatus>
+      response_callback = base::BindOnce(&OnNoOpBtifResult);
+  // TODO: figure out the correct timeout here
+  floss::FlossDBusManager::Get()->GetSocketManager()->Accept(
+      socket.id, 0, std::move(response_callback));
+}
+
+void ArcFlossBridge::OnConnectionAccepted(
+    const ArcBluetoothBridge::BluetoothListeningSocket* sock_wrapper,
+    floss::FlossSocketManager::FlossSocket&& socket) {
+  if (!sock_wrapper) {
+    // sock_wrapper has been disposed (or worse), nothing to do
+    return;
+  }
+
+  if (!socket.is_valid() || !socket.fd.has_value()) {
+    LOG(ERROR) << "New socket connection was accepted with invalid socket";
+    return;
+  }
+
+  mojo::ScopedHandle handle =
+      mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(*socket.fd)));
+  auto connection = mojom::BluetoothSocketConnection::New();
+  connection->sock = std::move(handle);
+  connection->addr =
+      mojom::BluetoothAddress::From(socket.remote_device.address);
+  connection->port = socket.port;
+  switch (socket.type) {
+    case floss::FlossSocketManager::SocketType::kRfcomm:
+    case floss::FlossSocketManager::SocketType::kL2cap:
+      sock_wrapper->remote->OnAccepted(std::move(connection));
+      break;
+    default:
+      return;
+  }
+}
+
+int ArcFlossBridge::GetPortOrChannel(
+    ArcBluetoothBridge::BluetoothListeningSocket* sock_wrapper,
+    floss::FlossSocketManager::FlossListeningSocket socket) {
+  switch (sock_wrapper->sock_type) {
+    case mojom::BluetoothSocketType::TYPE_RFCOMM:
+      if (!socket.channel) {
+        return 0;
+      }
+      return *socket.channel;
+    case mojom::BluetoothSocketType::TYPE_L2CAP_LE:
+      if (!socket.psm) {
+        return 0;
+      }
+      return *socket.psm;
+    default:
+      return 0;
+  }
+}
+
+void ArcFlossBridge::CompleteListenSocketReady(
+    int socket_ready_callback_id,
+    mojom::BluetoothStatus status,
+    ArcBluetoothBridge::BluetoothListeningSocket* sock_wrapper) {
+  CompleteListenSocketReady(socket_ready_callback_id, status,
+                            /*port_or_channel*/ 0, sock_wrapper);
+}
+
+void ArcFlossBridge::CompleteListenSocketReady(
+    int socket_ready_callback_id,
+    mojom::BluetoothStatus status,
+    int port_or_channel,
+    ArcBluetoothBridge::BluetoothListeningSocket* sock_wrapper) {
+  if (!socket_ready_callbacks_.contains(socket_ready_callback_id)) {
+    return;
+  }
+
+  BluetoothSocketListenCallback callback =
+      std::move(socket_ready_callbacks_[socket_ready_callback_id]);
+  socket_ready_callbacks_.erase(socket_ready_callback_id);
+  if (status != mojom::BluetoothStatus::SUCCESS) {
+    std::move(callback).Run(
+        mojom::BluetoothStatus::FAIL, /*port=*/0,
+        mojo::PendingReceiver<mojom::BluetoothListenSocketClient>());
+  } else {
+    std::move(callback).Run(mojom::BluetoothStatus::SUCCESS, port_or_channel,
+                            sock_wrapper->remote.BindNewPipeAndPassReceiver());
+    sock_wrapper->remote.set_disconnect_handler(
+        base::BindOnce(&ArcFlossBridge::CloseBluetoothListeningSocket,
+                       weak_factory_.GetWeakPtr(), sock_wrapper));
+  }
+}
+
+void ArcFlossBridge::CompleteListenSocketReady(
+    int socket_ready_callback_id,
+    mojom::BluetoothStatus status,
+    ArcBluetoothBridge::BluetoothListeningSocket* sock_wrapper,
+    floss::FlossSocketManager::FlossListeningSocket socket) {
+  if (!socket_ready_callbacks_.contains(socket_ready_callback_id)) {
+    return;
+  }
+  if (!listening_sockets_.contains(sock_wrapper)) {
+    return;
+  }
+  listening_sockets_[sock_wrapper].second = socket.id;
+  CompleteListenSocketReady(socket_ready_callback_id, status,
+                            GetPortOrChannel(sock_wrapper, socket),
+                            sock_wrapper);
 }
 
 void ArcFlossBridge::CompleteCreateSdpRecord(

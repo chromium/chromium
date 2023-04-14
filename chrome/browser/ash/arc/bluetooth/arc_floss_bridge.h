@@ -68,19 +68,15 @@ class ArcFlossBridge : public ArcBluetoothBridge,
       device::BluetoothUUID uuid,
       arc::mojom::BluetoothCreateSdpRecordResultPtr result);
 
- private:
-  bool AdapterReadyAndRegistered();
-
-  // Map of SDP record UUIDs to CreateSdpRecordCallback for SdpRecordCreated to
-  // use to resolve CreateSdpRecord calls.
-  base::flat_map<device::BluetoothUUID, CreateSdpRecordCallback>
-      create_sdp_record_callbacks_{};
-
   void CreateBluetoothListenSocket(
       mojom::BluetoothSocketType type,
       mojom::BluetoothSocketFlagsPtr flags,
       int port,
       BluetoothSocketListenCallback callback) override;
+
+  void OnCloseBluetoothListeningSocketComplete(
+      BluetoothListeningSocket* socket,
+      floss::DBusResult<floss::FlossDBusClient::BtifStatus> result);
 
   void CreateBluetoothConnectSocket(
       mojom::BluetoothSocketType type,
@@ -88,6 +84,85 @@ class ArcFlossBridge : public ArcBluetoothBridge,
       mojom::BluetoothAddressPtr addr,
       int port,
       BluetoothSocketConnectCallback callback) override;
+
+  void OnCreateListenSocketCallback(
+      std::unique_ptr<ArcBluetoothBridge::BluetoothListeningSocket>
+          sock_wrapper,
+      int socket_ready_id,
+      floss::DBusResult<floss::FlossDBusClient::BtifStatus> result);
+
+  void OnCreateConnectSocketCallback(
+      std::unique_ptr<ArcBluetoothBridge::BluetoothConnectingSocket>
+          sock_wrapper,
+      ArcFlossBridge::BluetoothSocketConnectCallback callback,
+      floss::FlossDBusClient::BtifStatus status,
+      absl::optional<floss::FlossSocketManager::FlossSocket>&& socket);
+
+  void OnBtifError(const std::string& error_message);
+
+  void OnBtifSuccess();
+
+  void OnConnectionStateChanged(
+      ArcBluetoothBridge::BluetoothListeningSocket* sock_wrapper,
+      int socket_ready_id,
+      floss::FlossSocketManager::ServerSocketState state,
+      floss::FlossSocketManager::FlossListeningSocket socket,
+      floss::FlossSocketManager::BtifStatus status);
+
+  void OnConnectionAccepted(
+      const ArcBluetoothBridge::BluetoothListeningSocket* sock_wrapper,
+      floss::FlossSocketManager::FlossSocket&& socket);
+
+  int GetPortOrChannel(
+      ArcBluetoothBridge::BluetoothListeningSocket* sock_wrapper,
+      floss::FlossSocketManager::FlossListeningSocket socket);
+
+  void CompleteListenSocketReady(
+      int socket_ready_id,
+      mojom::BluetoothStatus status,
+      int port_or_channel,
+      ArcBluetoothBridge::BluetoothListeningSocket* sock_wrapper);
+
+  void CompleteListenSocketReady(
+      int socket_ready_id,
+      mojom::BluetoothStatus status,
+      ArcBluetoothBridge::BluetoothListeningSocket* sock_wrapper);
+
+  void CompleteListenSocketReady(
+      int socket_ready_id,
+      mojom::BluetoothStatus status,
+      ArcBluetoothBridge::BluetoothListeningSocket* sock_wrapper,
+      floss::FlossSocketManager::FlossListeningSocket socket);
+
+ private:
+  bool AdapterReadyAndRegistered();
+
+  // Map of socket_ready_id -> listen callback
+  base::flat_map<int, BluetoothSocketListenCallback> socket_ready_callbacks_{};
+  // The next callback id to use. Starts at a non-zero number for easier
+  // debugging.
+  int next_socket_ready_callback_id_{42};
+
+  // Map of SDP record UUIDs to CreateSdpRecordCallback for SdpRecordCreated to
+  // use to resolve CreateSdpRecord calls.
+  base::flat_map<device::BluetoothUUID, CreateSdpRecordCallback>
+      create_sdp_record_callbacks_{};
+
+  // Lookup for mapping listening socket pointers to SocketIds so they can be
+  // closed with Floss.
+  base::flat_map<
+      ArcBluetoothBridge::BluetoothListeningSocket*,
+      std::pair<std::unique_ptr<ArcBluetoothBridge::BluetoothListeningSocket>,
+                floss::FlossSocketManager::SocketId>>
+      listening_sockets_{};
+  // Default SocketId until a real one is obtained.
+  static constexpr floss::FlossSocketManager::SocketId empty_socket_id_ = 0;
+
+  // Floss doesn't require us to close connecting sockets through it so we don't
+  // need to keep the SocketId.
+  std::set<std::unique_ptr<BluetoothConnectingSocket>,
+           base::UniquePtrComparator>
+      connecting_sockets_;
 
   // WeakPtrFactory to use for callbacks.
   base::WeakPtrFactory<ArcFlossBridge> weak_factory_{this};
