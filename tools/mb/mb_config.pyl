@@ -260,6 +260,7 @@
       'Dawn Android arm DEPS Release (Pixel 4)': 'dawn_tests_android_release_trybot_reclient',
       'Dawn Android arm Release (Pixel 4)': 'dawn_tests_android_release_trybot_reclient',
 
+      'Dawn Linux TSAN Release': 'dawn_tests_tsan_release_bot_dcheck_always_on_reclient',
       'Dawn Linux x64 Builder': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
       'Dawn Linux x64 DEPS Builder': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
 
@@ -1162,6 +1163,7 @@
       'dawn-android-arm-deps-rel': 'dawn_tests_android_release_trybot_reclient',
       'dawn-linux-x64-deps-rel': 'dawn_tests_with_desktop_gl_release_trybot_reclient',
       'dawn-mac-x64-deps-rel': 'dawn_tests_release_trybot_reclient',
+      'dawn-try-linux-tsan-rel': 'dawn_tests_tsan_release_trybot_reclient',
       'dawn-try-mac-amd-exp': 'dawn_tests_release_trybot_reclient',
       'dawn-try-mac-intel-exp': 'dawn_tests_release_trybot_reclient',
       'dawn-try-win-x64-intel-exp': 'dawn_tests_release_trybot_reclient',
@@ -2541,6 +2543,14 @@
 
     'dawn_tests_release_trybot_x86_reclient': [
       'dawn_tests', 'release_trybot_reclient', 'x86',
+    ],
+
+    'dawn_tests_tsan_release_bot_dcheck_always_on_reclient': [
+      'dawn_tests', 'tsan', 'release_trybot_minimal_symbols_reclient',
+    ],
+
+    'dawn_tests_tsan_release_trybot_reclient': [
+      'dawn_tests', 'tsan', 'release_trybot_reclient',
     ],
 
     'dawn_tests_with_desktop_gl_release_trybot_reclient': [

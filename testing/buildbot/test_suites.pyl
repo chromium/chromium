@@ -6233,6 +6233,10 @@
       'gpu_dawn_web_platform_webgpu_cts_force_swiftshader',
     ],
 
+    'gpu_dawn_tsan_gtests': [
+      'gpu_dawn_gtests',
+    ],
+
     'gpu_desktop_mac_gtests': [
       'gpu_angle_unit_gtests',
       'gpu_common_gtests_passthrough',

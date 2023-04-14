@@ -212,6 +212,17 @@ try_.builder(
 )
 
 try_.builder(
+    name = "dawn-try-linux-tsan-rel",
+    mirrors = [
+        "ci/Dawn Linux TSAN Release",
+    ],
+    pool = "luci.chromium.gpu.linux.nvidia.try",
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
+)
+
+try_.builder(
     name = "dawn-try-mac-amd-exp",
     mirrors = [
         "ci/Dawn Mac x64 Builder",
