@@ -534,6 +534,19 @@ wtf_size_t NGGridLayoutTrackCollection::GetSetTrackCount(
   return sets_geometry_[set_index + 1].track_count;
 }
 
+LayoutUnit NGGridLayoutTrackCollection::StartExtraMargin(
+    wtf_size_t set_index) const {
+  return set_index ? accumulated_gutter_size_delta_ / 2
+                   : accumulated_start_extra_margin_;
+}
+
+LayoutUnit NGGridLayoutTrackCollection::EndExtraMargin(
+    wtf_size_t set_index) const {
+  return (set_index < sets_geometry_.size() - 1)
+             ? accumulated_gutter_size_delta_ / 2
+             : accumulated_end_extra_margin_;
+}
+
 LayoutUnit NGGridLayoutTrackCollection::MajorBaseline(
     wtf_size_t set_index) const {
   if (!baselines_) {
@@ -661,6 +674,19 @@ NGGridLayoutTrackCollection::CreateSubgridTrackCollection(
                              subgrid_border_scrollbar_padding.inline_end
                        : subgrid_margin.block_end +
                              subgrid_border_scrollbar_padding.block_end;
+
+    // Accumulate the extra margin from the spanned sets in the parent track
+    // collection and this subgrid's margins and gutter size delta.
+    subgrid_track_collection.accumulated_gutter_size_delta_ =
+        subgrid_gutter_size_delta + accumulated_gutter_size_delta_;
+
+    subgrid_track_collection.accumulated_start_extra_margin_ =
+        subgrid_margin_start + subgrid_border_scrollbar_padding_start +
+        StartExtraMargin(begin_set_index);
+
+    subgrid_track_collection.accumulated_end_extra_margin_ =
+        subgrid_margin_border_scrollbar_padding_end +
+        EndExtraMargin(end_set_index);
 
     auto& subgrid_sets_geometry = subgrid_track_collection.sets_geometry_;
 

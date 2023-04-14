@@ -1060,8 +1060,8 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
           : CreateConstraintSpaceForMeasure(subgridded_item, track_direction);
 
   LayoutUnit baseline_shim;
-  auto CalculateBaselineShim = [&](const LayoutUnit baseline) -> void {
-    const LayoutUnit track_baseline =
+  auto CalculateBaselineShim = [&](LayoutUnit baseline) -> void {
+    const auto track_baseline =
         Baseline(sizing_subtree.LayoutData(), *grid_item, track_direction);
 
     if (track_baseline == LayoutUnit::Min())
@@ -1116,7 +1116,7 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
       grid_item->is_sizing_dependent_on_block_size = true;
     }
 
-    const LayoutUnit content_size =
+    const auto content_size =
         is_min_content ? result.sizes.min_size : result.sizes.max_size;
 
     if (grid_item->IsBaselineAlignedForDirection(track_direction)) {
@@ -1178,9 +1178,17 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
     return baseline_fragment.BlockSize() + baseline_shim;
   };
 
+  const auto& [begin_set_index, end_set_index] =
+      subgridded_item->SetIndices(track_direction);
+  const auto& track_collection =
+      is_for_columns ? subgridded_item.ParentLayoutData().Columns()
+                     : subgridded_item.ParentLayoutData().Rows();
+
   const auto margins = ComputeMarginsFor(space, item_style, ConstraintSpace());
-  const LayoutUnit margin_sum =
-      is_for_columns ? margins.InlineSum() : margins.BlockSum();
+  const auto margin_sum =
+      (is_for_columns ? margins.InlineSum() : margins.BlockSum()) +
+      track_collection.StartExtraMargin(begin_set_index) +
+      track_collection.EndExtraMargin(end_set_index);
 
   LayoutUnit contribution;
   switch (contribution_type) {
@@ -1257,15 +1265,9 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
                              ? MinContentSize()
                              : BlockContributionSize();
 
-          const auto& set_indices =
-              subgridded_item->SetIndices(track_direction);
-          const auto& track_collection =
-              is_for_columns ? subgridded_item.ParentLayoutData().Columns()
-                             : subgridded_item.ParentLayoutData().Rows();
-
           auto spanned_tracks_definite_max_size =
-              track_collection.ComputeSetSpanSize(set_indices.begin,
-                                                  set_indices.end);
+              track_collection.ComputeSetSpanSize(begin_set_index,
+                                                  end_set_index);
 
           if (spanned_tracks_definite_max_size != kIndefiniteSize) {
             // Further clamp the minimum size to less than or equal to the
