@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import android.app.Activity;
 
 import androidx.test.InstrumentationRegistry;
@@ -185,7 +187,7 @@ public class TabbedModeTabPersistencePolicyTest {
         final CallbackHelper callbackSignal = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             policy.cleanupInstanceState(id, (result) -> {
-                Assert.assertThat(result,
+                assertThat(result,
                         Matchers.containsInAnyOrder(
                                 TabStateFileManager.getTabStateFilename(4, false),
                                 TabStateFileManager.getTabStateFilename(12, true),

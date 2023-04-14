@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.app.appmenu;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -1198,7 +1200,7 @@ public class AppMenuPropertiesDelegateUnitTest {
             }
         }
 
-        Assert.assertThat("Populated menu items were:" + getMenuTitles(menu), actualItems,
+        assertThat("Populated menu items were:" + getMenuTitles(menu), actualItems,
                 Matchers.containsInAnyOrder(expectedItems));
     }
 
@@ -1225,8 +1227,8 @@ public class AppMenuPropertiesDelegateUnitTest {
             }
         }
 
-        Assert.assertThat("Populated action bar items were:" + getMenuTitles(actionBar),
-                actualItems, Matchers.containsInAnyOrder(expectedItems));
+        assertThat("Populated action bar items were:" + getMenuTitles(actionBar), actualItems,
+                Matchers.containsInAnyOrder(expectedItems));
     }
 
     private void assertMenuItemsHaveIcons(Menu menu, Integer... expectedItems) {
@@ -1237,7 +1239,7 @@ public class AppMenuPropertiesDelegateUnitTest {
             }
         }
 
-        Assert.assertThat("menu items with icons were:" + getMenuTitles(menu), actualItems,
+        assertThat("menu items with icons were:" + getMenuTitles(menu), actualItems,
                 Matchers.containsInAnyOrder(expectedItems));
     }
 

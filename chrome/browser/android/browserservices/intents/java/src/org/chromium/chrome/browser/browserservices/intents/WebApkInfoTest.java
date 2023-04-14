@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.browserservices.intents;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
@@ -660,7 +662,7 @@ public class WebApkInfoTest {
         ShareData shareData = info.shareData();
         Assert.assertNotNull(shareData);
         Assert.assertNotNull(shareData.uris);
-        Assert.assertThat(shareData.uris, Matchers.contains(sharedFileUri));
+        assertThat(shareData.uris, Matchers.contains(sharedFileUri));
     }
 
     /**
@@ -690,7 +692,7 @@ public class WebApkInfoTest {
         ShareData shareData = info.shareData();
         Assert.assertNotNull(shareData);
         Assert.assertNotNull(shareData.uris);
-        Assert.assertThat(shareData.uris, Matchers.contains(sharedFileUri));
+        assertThat(shareData.uris, Matchers.contains(sharedFileUri));
     }
 
     /**

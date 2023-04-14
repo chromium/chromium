@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.entity;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -133,7 +135,7 @@ public class EntitySuggestionProcessorUnitTest {
         processSuggestion(suggHelper);
 
         Assert.assertNotNull(suggHelper.getIcon());
-        Assert.assertThat(suggHelper.getIcon(), instanceOf(BitmapDrawable.class));
+        assertThat(suggHelper.getIcon(), instanceOf(BitmapDrawable.class));
     }
 
     @Test
@@ -142,7 +144,7 @@ public class EntitySuggestionProcessorUnitTest {
         SuggestionTestHelper suggHelper = createSuggestion("", "", "#fedcba", SEARCH_URL);
         processSuggestion(suggHelper);
 
-        Assert.assertThat(suggHelper.getIcon(), instanceOf(ColorDrawable.class));
+        assertThat(suggHelper.getIcon(), instanceOf(ColorDrawable.class));
         ColorDrawable icon = (ColorDrawable) suggHelper.getIcon();
         Assert.assertEquals(icon.getColor(), 0xfffedcba);
     }
@@ -153,7 +155,7 @@ public class EntitySuggestionProcessorUnitTest {
         SuggestionTestHelper suggHelper = createSuggestion("", "", "red", SEARCH_URL);
         processSuggestion(suggHelper);
 
-        Assert.assertThat(suggHelper.getIcon(), instanceOf(ColorDrawable.class));
+        assertThat(suggHelper.getIcon(), instanceOf(ColorDrawable.class));
         ColorDrawable icon = (ColorDrawable) suggHelper.getIcon();
         Assert.assertEquals(icon.getColor(), Color.RED);
     }
@@ -164,15 +166,15 @@ public class EntitySuggestionProcessorUnitTest {
         // Note, fallback is the bitmap drawable representing a search loupe.
         SuggestionTestHelper suggHelper = createSuggestion("", "", "", SEARCH_URL);
         processSuggestion(suggHelper);
-        Assert.assertThat(suggHelper.getIcon(), instanceOf(BitmapDrawable.class));
+        assertThat(suggHelper.getIcon(), instanceOf(BitmapDrawable.class));
 
         suggHelper = createSuggestion("", "", "#", SEARCH_URL);
         processSuggestion(suggHelper);
-        Assert.assertThat(suggHelper.getIcon(), instanceOf(BitmapDrawable.class));
+        assertThat(suggHelper.getIcon(), instanceOf(BitmapDrawable.class));
 
         suggHelper = createSuggestion("", "", "invalid", SEARCH_URL);
         processSuggestion(suggHelper);
-        Assert.assertThat(suggHelper.getIcon(), instanceOf(BitmapDrawable.class));
+        assertThat(suggHelper.getIcon(), instanceOf(BitmapDrawable.class));
     }
 
     @Test
@@ -184,9 +186,9 @@ public class EntitySuggestionProcessorUnitTest {
         final ArgumentCaptor<Callback<Bitmap>> callback = ArgumentCaptor.forClass(Callback.class);
         verify(mImageFetcher).fetchImage(eq(createParams(WEB_URL.getSpec())), callback.capture());
 
-        Assert.assertThat(suggHelper.getIcon(), instanceOf(ColorDrawable.class));
+        assertThat(suggHelper.getIcon(), instanceOf(ColorDrawable.class));
         callback.getValue().onResult(mBitmap);
-        Assert.assertThat(suggHelper.getIcon(), instanceOf(BitmapDrawable.class));
+        assertThat(suggHelper.getIcon(), instanceOf(BitmapDrawable.class));
         Assert.assertEquals(mBitmap, ((BitmapDrawable) suggHelper.getIcon()).getBitmap());
     }
 
@@ -234,9 +236,9 @@ public class EntitySuggestionProcessorUnitTest {
         Assert.assertNotEquals(icon2, newIcon2);
         Assert.assertNotEquals(icon3, newIcon3);
 
-        Assert.assertThat(newIcon1, instanceOf(BitmapDrawable.class));
-        Assert.assertThat(newIcon2, instanceOf(BitmapDrawable.class));
-        Assert.assertThat(newIcon3, instanceOf(BitmapDrawable.class));
+        assertThat(newIcon1, instanceOf(BitmapDrawable.class));
+        assertThat(newIcon2, instanceOf(BitmapDrawable.class));
+        assertThat(newIcon3, instanceOf(BitmapDrawable.class));
 
         Assert.assertEquals(mBitmap, ((BitmapDrawable) newIcon1).getBitmap());
         Assert.assertEquals(mBitmap, ((BitmapDrawable) newIcon2).getBitmap());
@@ -257,7 +259,7 @@ public class EntitySuggestionProcessorUnitTest {
         final Drawable newIcon = suggHelper.getIcon();
 
         Assert.assertEquals(oldIcon, newIcon);
-        Assert.assertThat(oldIcon, instanceOf(BitmapDrawable.class));
+        assertThat(oldIcon, instanceOf(BitmapDrawable.class));
     }
 
     @Test
@@ -274,7 +276,7 @@ public class EntitySuggestionProcessorUnitTest {
         final Drawable newIcon = suggHelper.getIcon();
 
         Assert.assertEquals(oldIcon, newIcon);
-        Assert.assertThat(oldIcon, instanceOf(ColorDrawable.class));
+        assertThat(oldIcon, instanceOf(ColorDrawable.class));
     }
 
     @Test

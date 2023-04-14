@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.recent_tabs;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import static org.hamcrest.Matchers.instanceOf;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -78,7 +80,7 @@ public class RestoreTabsMediatorUnitTest {
     public void testRestoreTabsMediator_initCreatesValidDefaultModel() {
         Assert.assertEquals(mModel.get(VISIBLE), false);
         Assert.assertNotNull(mModel.get(HOME_SCREEN_DELEGATE));
-        Assert.assertThat(mModel.get(HOME_SCREEN_DELEGATE),
+        assertThat(mModel.get(HOME_SCREEN_DELEGATE),
                 instanceOf(RestoreTabsPromoScreenCoordinator.Delegate.class));
         Assert.assertNotNull(mModel.get(DETAIL_SCREEN_BACK_CLICK_HANDLER));
         Assert.assertEquals(mModel.get(CURRENT_SCREEN), HOME_SCREEN);
@@ -247,7 +249,7 @@ public class RestoreTabsMediatorUnitTest {
         Assert.assertEquals(
                 mModel.get(DETAIL_SCREEN_MODEL_LIST), mModel.get(REVIEW_TABS_MODEL_LIST));
         Assert.assertNotNull(mModel.get(REVIEW_TABS_SCREEN_DELEGATE));
-        Assert.assertThat(mModel.get(REVIEW_TABS_SCREEN_DELEGATE),
+        assertThat(mModel.get(REVIEW_TABS_SCREEN_DELEGATE),
                 instanceOf(RestoreTabsDetailScreenCoordinator.Delegate.class));
         Assert.assertEquals(mModel.get(CURRENT_SCREEN), REVIEW_TABS_SCREEN);
     }

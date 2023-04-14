@@ -60,6 +60,7 @@ robolectric_library("junit") {
     "//chrome/browser/recent_tabs:java",
     "//chrome/browser/tabmodel:java",
     "//components/feature_engagement/public:public_java",
+    "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit:junit",

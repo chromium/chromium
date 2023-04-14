@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.externalnav;
 
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import android.app.Activity;
@@ -604,9 +605,9 @@ public class UrlOverridingTest {
 
         PropertyModel message = getCurrentExternalNavigationMessage();
         Assert.assertNotNull(message);
-        Assert.assertThat(message.get(MessageBannerProperties.TITLE),
+        assertThat(message.get(MessageBannerProperties.TITLE),
                 Matchers.containsString(label.toString()));
-        Assert.assertThat(message.get(MessageBannerProperties.DESCRIPTION).toString(),
+        assertThat(message.get(MessageBannerProperties.DESCRIPTION).toString(),
                 Matchers.containsString(label.toString()));
         Assert.assertNotNull(message.get(MessageBannerProperties.ICON));
     }

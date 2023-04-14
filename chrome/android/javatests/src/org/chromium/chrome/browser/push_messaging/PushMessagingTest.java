@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.push_messaging;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.os.Bundle;
@@ -257,7 +259,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
         // After grace runs out a default notification will be shown.
         sendPushAndWaitForCallback(appIdAndSenderId);
         NotificationEntry notificationEntry = mNotificationTestRule.waitForNotification();
-        Assert.assertThat(
+        assertThat(
                 notificationEntry.tag, Matchers.containsString("user_visible_auto_notification"));
 
         // When another push does show a notification, the default notification is automatically

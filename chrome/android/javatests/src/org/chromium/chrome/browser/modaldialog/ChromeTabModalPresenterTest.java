@@ -9,6 +9,7 @@ import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -155,7 +156,7 @@ public class ChromeTabModalPresenterTest {
         ensureDialogContainerVisible();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertThat(containerParent.indexOfChild(dialogContainer),
+            assertThat(containerParent.indexOfChild(dialogContainer),
                     Matchers.greaterThan(containerParent.indexOfChild(controlContainer)));
         });
 
@@ -165,7 +166,7 @@ public class ChromeTabModalPresenterTest {
         mOmnibox.requestFocus();
         mTestObserver.onUrlFocusChangedCallback.waitForCallback(callCount);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertThat(containerParent.indexOfChild(dialogContainer),
+            assertThat(containerParent.indexOfChild(dialogContainer),
                     Matchers.lessThan(containerParent.indexOfChild(controlContainer)));
         });
 
@@ -174,7 +175,7 @@ public class ChromeTabModalPresenterTest {
         mOmnibox.clearFocus();
         mTestObserver.onUrlFocusChangedCallback.waitForCallback(callCount);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertThat(containerParent.indexOfChild(dialogContainer),
+            assertThat(containerParent.indexOfChild(dialogContainer),
                     Matchers.greaterThan(containerParent.indexOfChild(controlContainer)));
         });
 
