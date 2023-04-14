@@ -178,6 +178,7 @@
 <translation id="2218443599109088993">Одзумирај</translation>
 <translation id="2230173723195178503">Веб-страницата е вчитана</translation>
 <translation id="2239626343334228536">Се чистат податоците од прелистувањето…</translation>
+<translation id="2242467532204595597">Користете Chrome секогаш кога ќе допрете линкови во пораки, документи и други апликации.</translation>
 <translation id="22508856139286506">Отфрлени предупредувања (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Мени → Историја</translation>
 <translation id="2256933947031277845">Вашата организација ви дозволува да се најавите само со одредени сметки.</translation>
@@ -206,6 +207,7 @@
 <translation id="2411749908844615428">{count,plural, =1{{count} зачувана адреса достапна над тастатурата.}one{{count} зачувана адреса достапни над тастатурата.}other{{count} зачувани адреси достапни над тастатурата.}}</translation>
 <translation id="2421004566762153674">Се блокираат колачиња од трети страни</translation>
 <translation id="2421044535038393232">Продолжи со изменување</translation>
+<translation id="2423077901494354337">Сега ќе го извлекувате максимумот од Chrome на вашиот уред.</translation>
 <translation id="2434405374328098816">Веќе зачувавте лозинка за „<ph name="USERNAME" />“ на <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Прикажи ја лозинката</translation>
 <translation id="2451654228769116489">Прикачи картичка</translation>
@@ -578,6 +580,7 @@
 <translation id="4860895144060829044">Повикајте</translation>
 <translation id="4872323082491632254">Проверувај лозинки</translation>
 <translation id="4881695831933465202">Отвори</translation>
+<translation id="488785315393301722">Прикажи детали</translation>
 <translation id="4894963374040315706">Ова ви овозможува да пребарувате со вашиот глас</translation>
 <translation id="4901778704868714008">Зачувај…</translation>
 <translation id="4904877109095351937">Означи како прочитано</translation>
@@ -608,6 +611,7 @@
 <translation id="5118764316110575523">Исклучено</translation>
 <translation id="5119391094379141756">Изберете Chrome</translation>
 <translation id="5121618895923301719">Веќе го следите производов. Страницава е зачувана во <ph name="BEGIN_LINK" />Мобилни обележувачи<ph name="END_LINK" />.</translation>
+<translation id="5126465625664020024">Најавување и синхронизација</translation>
 <translation id="5132942445612118989">Синхронизирајте ги лозинките, историјата и друго на сите уреди</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} слаба лозинка}one{{COUNT} слаба лозинка}other{{COUNT} слаби лозинки}}</translation>
 <translation id="5149188072385105201">Додајте лозинка…</translation>
@@ -797,6 +801,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6346549652287021269">Дали да се започне ново преземање?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Адресава ќе се избрише од вашата сметка на Google (<ph name="USER_EMAIL" />) и од уредов.}one{Адресиве ќе се избришат од вашата сметка на Google (<ph name="USER_EMAIL" />) и од уредов.}other{Адресиве ќе се избришат од вашата сметка на Google (<ph name="USER_EMAIL" />) и од уредов.}}</translation>
 <translation id="634878792104344809">Синхронизирајте ги вашите лозинки, историја и друго на сите ваши уреди</translation>
+<translation id="6348855835728304880">Пристапувајте до вашите лозинки и друго на Chrome на други апликации на уредов.</translation>
 <translation id="6355820205320395730">Слабите лозинки се лесни за погаѓање. Уверете се дека создавате силни лозинки. <ph name="BEGIN_LINK" />Погледнете повеќе совети за безбедност.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Следете го <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Нема инкогнито картички</translation>
@@ -915,7 +920,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6945221475159498467">Избери</translation>
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="6973630695168034713">Папки</translation>
-<translation id="6975148662438928529">Бевте одјавени од сметката <ph name="USER_NAME" /> како дел од ресетирањето на вашиот iPad. Допрете „Продолжи“ подолу за да се најавите.</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6988572888918530647">Управувајте со сметката на Google</translation>
 <translation id="6989674195860388998">Сменете во „Поставки“…</translation>
@@ -948,6 +952,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7221173315674413369">Истражете нови функции и совети во „Што има ново“</translation>
 <translation id="7223102419539744003">Затвори ја картичката</translation>
 <translation id="722454870747268814">Нова инкогнито картичка</translation>
+<translation id="723787869754590019">Користење Chrome за „Автоматско пополнување“</translation>
 <translation id="7265758999917665941">Никогаш за овој сајт</translation>
 <translation id="7272437679830969316">Не може да се потврди вашиот идентитет. Лозинката не е копирана.</translation>
 <translation id="7291368939935408496">Се подготвуваат лозинките…</translation>
@@ -1149,14 +1154,14 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8663764600409216912">Користите лозинки што се тешки за погаѓање</translation>
 <translation id="8668210798914567634">Страницава е зачувана во вашиот „Список за читање“.</translation>
 <translation id="8680787084697685621">Деталите за најавување на сметка се застарени.</translation>
+<translation id="868773710103052534">Подготвени сте</translation>
 <translation id="8693663554456874301">{count,plural, =1{Затвори ја картичката}one{Затвори ги картичките}other{Затвори ги картичките}}</translation>
 <translation id="8703536910991780768">Лозинките изгледаат силно</translation>
-<translation id="8706588385081740091">Лозинки</translation>
 <translation id="8717864919010420084">Копирај го линкот</translation>
 <translation id="8721297211384281569">Мени со алатки</translation>
 <translation id="8725066075913043281">Обидете се повторно</translation>
+<translation id="8727043961453758442">Извлекување на максимумот од Chrome</translation>
 <translation id="8730621377337864115">Готово</translation>
-<translation id="8731388423028622182">Бевте одјавени од сметката <ph name="USER_NAME" /> како дел од ресетирањето на вашиот iPhone. Допрете „Продолжи“ подолу за да се најавите.</translation>
 <translation id="87371078663613140">Истражете ги опциите во лентата со мени</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count} зачуван профил достапен над тастатурата.}one{{count} зачуван профил достапни над тастатурата.}other{{count} зачувани профили достапни над тастатурата.}}</translation>
 <translation id="8741995161408053644">Вашата сметка на Google можеби има други форми од историјата на прелистување на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
@@ -1203,6 +1208,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8976414606286374109">Картичките се зачувуваат во вашата сметка на Google.</translation>
 <translation id="8981454092730389528">Контроли на активност на Google</translation>
 <translation id="8985320356172329008">Најавени сте на Google како</translation>
+<translation id="8986567980592931173">Најавете се со сметката на Google за да ги синхронизирате вашите лозинки, историја и друго.</translation>
 <translation id="8998289560386111590">Не е достапен на вашиот уред</translation>
 <translation id="9000089900434778519">Вашиот пребарувач е <ph name="DSE_NAME" />. Погледнете го неговото упатство за бришење на историјата на пребарување доколку е применливо.</translation>
 <translation id="9008201768610948239">Игнорирај</translation>

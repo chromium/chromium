@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Evo još nekih korisnih resursa:</translation>
 <translation id="1905710495812624430">Premašen je maksimalni broj pokušaja.</translation>
 <translation id="1908234395526491708">Neuspeli UDP zahtevi</translation>
+<translation id="1923388006036088459">Boje za naglašavanje</translation>
 <translation id="1947737735496445907">Odštampano</translation>
 <translation id="1951012854035635156">Pomoćnik</translation>
 <translation id="1962550982027027473">Podrazumevani naziv pristupne tačke je obavezan</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Preuzimanje je dovršeno</translation>
 <translation id="3969602104473960991">Chrome OS lozinka je ažurirana</translation>
 <translation id="397105322502079400">Izračunavanje...</translation>
+<translation id="3974175076798940554">Sada su dostupni ekskluzivni elementi za Chromebook Plus</translation>
 <translation id="39823212440917567">Zadaci štampanja stariji od <ph name="NUMBER_OF_DAYS" /> dana se uklanjaju</translation>
 <translation id="3993704782688964914">Uređaj <ph name="DEVICE_NAME" /> je ažuriran</translation>
 <translation id="4003384961948020559">Nije uspelo – izlaz je pun</translation>
@@ -515,6 +517,7 @@
 <translation id="5423849171846380976">Aktivirano</translation>
 <translation id="5430931332414098647">Trenutno privezivanje</translation>
 <translation id="5431318178759467895">U boji</translation>
+<translation id="5456936324019847994">Povezivanje sa omogućenim prilagođenim nazivima pristupnih tačaka nije uspelo. Zatražite više informacija od mobilnog operatera.</translation>
 <translation id="5457599981699367932">Pregledajte kao gost</translation>
 <translation id="54609108002486618">Upravljani</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Preostaje {0} pokušaj}one{Preostaje {0} pokušaj}few{Preostaju {0} pokušaja}other{Preostaje {0} pokušaja}}</translation>
@@ -845,6 +848,7 @@
 <translation id="8352772353338965963">Dodajte nalog za višestruko prijavljivanje. Svim prijavljenim nalozima se može pristupiti bez lozinke, pa ovu funkciju treba koristiti samo sa pouzdanim nalozima.</translation>
 <translation id="8364946094152050673">Prazni serveri za imena</translation>
 <translation id="8372477600026034341">Dodatni hostovi</translation>
+<translation id="8373046809163484087">Koristite skupove boja koji se podudaraju sa pozadinom</translation>
 <translation id="8380114448424469341">Fiksirajte prozor na polovini ekrana (<ph name="DIRECTION" />)</translation>
 <translation id="8395584934117017006">Preduzeće upravlja ovim <ph name="DEVICE_TYPE" /> uređajem</translation>
 <translation id="8398927464629426868">Stopa po kojoj se uređaj trenutno puni ili prazni</translation>
@@ -864,6 +868,7 @@
 <translation id="8503813439785031346">Korisničko ime</translation>
 <translation id="8503836310948963452">Još samo par minuta…</translation>
 <translation id="8508640263392900755">Detalji naziva pristupne tačke</translation>
+<translation id="8522687886059337719">Sada imate pristup novim <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />pozadinama<ph name="END_LINK_WALLPAPER_SUBPAGE" /> i <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />čuvaru ekrana<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Mobilni operater može da zatraži ovu opciju radi povezivanja na mrežu. Obratite se mobilnom operateru za detalje.</translation>

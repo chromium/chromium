@@ -117,6 +117,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1090541560108055381">Before pairing, make sure that this code is the same on both devices</translation>
 <translation id="1091767800771861448">Press ESCAPE to skip (Non-official builds only).</translation>
 <translation id="1093457606523402488">Visible Networks:</translation>
+<translation id="1094219634413363886">You'll see a notification if recording starts on this managed device</translation>
 <translation id="1095761715416917775">Make sure that you can always access your sync data</translation>
 <translation id="1095879482467973146">Google Password Manager on the web</translation>
 <translation id="109647177154844434">Uninstalling Parallels Desktop will delete your Windows image. This includes its applications, settings and data. Are you sure that you wish to continue?</translation>
@@ -3139,6 +3140,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="369489984217678710">Passwords and other sign-in data</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Security checks are complete. Your data will be uploaded.}=1{Security checks are complete. Your file will be uploaded.}other{Security checks are complete. Your files will be uploaded.}}</translation>
 <translation id="3696817060563289264">Text recognition files downloaded</translation>
+<translation id="3697716475445175867">last opened</translation>
 <translation id="3698471669415859717">Review complete</translation>
 <translation id="3698825735945432002">Filter type</translation>
 <translation id="3699624789011381381">Email address</translation>
@@ -3867,6 +3869,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4340125850502689798">Invalid username</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> wants to communicate with the app "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4340799661701629185">Don't allow sites to send notifications</translation>
+<translation id="4341280816303414009">Your screen might be recorded</translation>
 <translation id="4341577178275615435">To turn caret browsing on or off, use the shortcut F7</translation>
 <translation id="4341905082470253054">Checking TPM status…</translation>
 <translation id="434198521554309404">Fast. Secure. Effortless.</translation>
@@ -4008,7 +4011,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4453430595102511050">Touch the fingerprint sensor at the top right corner of your keyboard. Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Search <ph name="SEARCH_ENGINE_NAME" /> or type a URL</translation>
 <translation id="4457472090507035117">Select current voice:</translation>
-<translation id="4458535500699390320">While this tab was inactive, memory saver freed up memory for other tasks. You can change this at any time in settings.</translation>
 <translation id="4459169140545916303">Active <ph name="DEVICE_LAST_ACTIVATED_TIME" /> days ago</translation>
 <translation id="4460014764210899310">Ungroup</translation>
 <translation id="4461483878391246134">Add languages to never offer translation</translation>
@@ -5691,6 +5693,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5979421442488174909">&amp;Translate to <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">To bookmark pages, click the star in the address bar</translation>
 <translation id="5981362776161841923">To allow an extension, change your default setting below.</translation>
+<translation id="5982578203375898585">Show downloads when they're done</translation>
 <translation id="5984222099446776634">Recently Visited</translation>
 <translation id="5985458664595100876">Invalid URL format. Supported formats are \\server\share and smb://server/share.</translation>
 <translation id="598810097218913399">Remove assignment</translation>
@@ -6367,6 +6370,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6596816719288285829">IP Address</translation>
 <translation id="6597017209724497268">Samples</translation>
 <translation id="6597331566371766302">The following extensions were blocked by your administrator:</translation>
+<translation id="659894938503552850">newest</translation>
 <translation id="6601262427770154296">Manage user dictionaries</translation>
 <translation id="6601612474695404578">Some sites use third-party cookies to load their pages. If a site isn't working, you can try allowing cookies.</translation>
 <translation id="6602937173026466876">Access your printers</translation>
@@ -8150,6 +8154,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8161293209665121583">Reader mode for web pages</translation>
 <translation id="8161604891089629425">Outline font</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Move Tab to New Window}other{Move Tabs to New Window}}</translation>
+<translation id="8163708146810922598">oldest</translation>
 <translation id="8165997195302308593">Crostini port forwarding</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{a phone number}other{# phone numbers}}</translation>
 <translation id="8168071266284693455">Your bookmarks, passwords, history and more are synced on all your devices</translation>
@@ -8664,6 +8669,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8637688295594795546">System update available. Preparing to download…</translation>
 <translation id="8639047128869322042">Checking for harmful software…</translation>
 <translation id="8639635302972078117">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account.</translation>
+<translation id="8640575194957831802">Last opened</translation>
 <translation id="8642900771896232685">2 seconds</translation>
 <translation id="8642947597466641025">Make Text Larger</translation>
 <translation id="8643403533759285912">Delete group</translation>

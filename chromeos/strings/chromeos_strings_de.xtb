@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Hier findest du hilfreiches Infomaterial:</translation>
 <translation id="1905710495812624430">Die maximal zulässige Anzahl an Versuchen wurde überschritten.</translation>
 <translation id="1908234395526491708">Fehlgeschlagene UDP-Anfragen</translation>
+<translation id="1923388006036088459">Akzentfarben</translation>
 <translation id="1947737735496445907">Gedruckt</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">Ein Standard-APN ist erforderlich</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Download abgeschlossen</translation>
 <translation id="3969602104473960991">Das Passwort für Chrome OS wurde aktualisiert</translation>
 <translation id="397105322502079400">Wird berechnet...</translation>
+<translation id="3974175076798940554">Exklusive Chromebook Plus-Assets sind jetzt verfügbar</translation>
 <translation id="39823212440917567">Druckaufträge, die älter als <ph name="NUMBER_OF_DAYS" /> Tage sind, werden entfernt</translation>
 <translation id="3993704782688964914">„<ph name="DEVICE_NAME" />“ ist jetzt auf dem neuesten Stand</translation>
 <translation id="4003384961948020559">Fehlgeschlagen – Ausgabefach ist voll</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">Füge ein Konto für die Mehrfachanmeldung hinzu. Du kannst auf alle angemeldeten Konten zugreifen, ohne ein Passwort eingeben zu müssen. Verwende diese Funktion daher nur mit vertrauenswürdigen Konten.</translation>
 <translation id="8364946094152050673">Kein Nameserver</translation>
 <translation id="8372477600026034341">Zusätzliche Hosts</translation>
+<translation id="8373046809163484087">Farbpaletten passend zum Hintergrund verwenden</translation>
 <translation id="8380114448424469341">Fenster an dieser Hälfte des Bildschirms fixieren: <ph name="DIRECTION" /></translation>
 <translation id="8395584934117017006">Dieses Gerät (<ph name="DEVICE_TYPE" />) wird von einem Unternehmen verwaltet</translation>
 <translation id="8398927464629426868">Die Stromstärke, mit der das Gerät momentan geladen oder entladen wird</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">Nutzername</translation>
 <translation id="8503836310948963452">Nur noch ein paar Minuten…</translation>
 <translation id="8508640263392900755">APN-Details</translation>
+<translation id="8522687886059337719">Du hast jetzt Zugriff auf neue <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />Hintergründe<ph name="END_LINK_WALLPAPER_SUBPAGE" /> und <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />Bildschirmschoner<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Dein Mobilfunkanbieter verlangt möglicherweise diese Option, damit du dich mit seinem Netzwerk verbinden kannst. Weitere Informationen erhältst du bei deinem Mobilfunkanbieter.</translation>

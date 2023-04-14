@@ -580,6 +580,7 @@
 <translation id="4860895144060829044">撥號</translation>
 <translation id="4872323082491632254">檢查密碼</translation>
 <translation id="4881695831933465202">開啟</translation>
+<translation id="488785315393301722">顯示詳細資料</translation>
 <translation id="4894963374040315706">這項操作可以讓你使用語音搜尋功能查詢資訊</translation>
 <translation id="4901778704868714008">儲存...</translation>
 <translation id="4904877109095351937">標示為已讀取</translation>
@@ -919,7 +920,6 @@
 <translation id="6945221475159498467">選取</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6973630695168034713">資料夾</translation>
-<translation id="6975148662438928529">你已在重設 iPad 時登出帳戶 (<ph name="USER_NAME" />)，輕觸下方的「繼續」即可登入。</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6988572888918530647">管理你的 Google 帳戶</translation>
 <translation id="6989674195860388998">切換至「設定」…</translation>
@@ -1157,13 +1157,11 @@
 <translation id="868773710103052534">大功告成！</translation>
 <translation id="8693663554456874301">{count,plural, =1{關閉分頁}other{關閉多個分頁}}</translation>
 <translation id="8703536910991780768">你的密碼強度夠高</translation>
-<translation id="8706588385081740091">密碼</translation>
 <translation id="8717864919010420084">複製連結</translation>
 <translation id="8721297211384281569">工具選單</translation>
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8727043961453758442">充分運用 Chrome 的各項功能</translation>
 <translation id="8730621377337864115">完成</translation>
-<translation id="8731388423028622182">你已在重設 iPhone 時登出帳戶 (<ph name="USER_NAME" />)，輕觸下方的「繼續」即可登入。</translation>
 <translation id="87371078663613140">瀏覽選單列中的選項</translation>
 <translation id="8737620822084008350">{count,plural, =1{鍵盤上方顯示 {count} 筆已儲存的個人資料。}other{鍵盤上方顯示 {count} 筆已儲存的個人資料。}}</translation>
 <translation id="8741995161408053644">您仍可前往 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 存取 Google 帳戶中保存的各種瀏覽記錄。</translation>

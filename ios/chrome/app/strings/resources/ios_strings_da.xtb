@@ -580,6 +580,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="4860895144060829044">Ring op</translation>
 <translation id="4872323082491632254">Tjek adgangskoder</translation>
 <translation id="4881695831933465202">Åbn</translation>
+<translation id="488785315393301722">Se info</translation>
 <translation id="4894963374040315706">Det giver dig mulighed for at søge ved hjælp af stemmen</translation>
 <translation id="4901778704868714008">Gem...</translation>
 <translation id="4904877109095351937">Markér som læst</translation>
@@ -616,7 +617,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5149188072385105201">Tilføj adgangskode…</translation>
 <translation id="5150492518600715772">Send til din enhed</translation>
 <translation id="5168414296986405587">Udviklet til iPadOS</translation>
-<translation id="5173088371991956744">Synkronisering skal bekræfte din identitet</translation>
+<translation id="5173088371991956744">Synkronisering skal verificere din identitet</translation>
 <translation id="5176312250994681348">Behold den seneste adgangskode</translation>
 <translation id="51802232683641391">{count,plural, =1{Vil du se den fane, du havde åben i Android?}one{Vil du se den fane, du havde åben i Android?}other{Vil du se de faner, du havde åbne i Android?}}</translation>
 <translation id="5181140330217080051">Downloader</translation>
@@ -919,7 +920,6 @@ Når du er i Inkognito, kan websites ikke bruge cookies til at se din browserhis
 <translation id="6945221475159498467">Vælg</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Mapper</translation>
-<translation id="6975148662438928529">Du blev logget ud af din konto <ph name="USER_NAME" /> som en del af nulstillingen af din iPad. Tryk på Fortsæt nedenfor for at logge ind.</translation>
 <translation id="6979158407327259162">Google Drev</translation>
 <translation id="6988572888918530647">Administrer din Google-konto</translation>
 <translation id="6989674195860388998">Skift i Indstillinger…</translation>
@@ -1157,13 +1157,11 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="868773710103052534">Så er det klaret</translation>
 <translation id="8693663554456874301">{count,plural, =1{Luk fane}one{Luk fane}other{Luk faner}}</translation>
 <translation id="8703536910991780768">Dine adgangskoder ser stærke ud</translation>
-<translation id="8706588385081740091">Adgangskoder</translation>
 <translation id="8717864919010420084">Kopiér link</translation>
 <translation id="8721297211384281569">Menuen Værktøjer</translation>
 <translation id="8725066075913043281">Forsøg igen</translation>
 <translation id="8727043961453758442">Få mest muligt ud af Chrome</translation>
 <translation id="8730621377337864115">Udfør</translation>
-<translation id="8731388423028622182">Du blev logget ud af din konto <ph name="USER_NAME" /> som en del af nulstillingen af din iPhone. Tryk på Fortsæt nedenfor for at logge ind.</translation>
 <translation id="87371078663613140">Se valgmulighederne i menulinjen</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count} gemt profil er tilgængelig over dit tastatur.}one{{count} gemt profil er tilgængelig over dit tastatur.}other{{count} gemte profiler er tilgængelige over dit tastatur.}}</translation>
 <translation id="8741995161408053644">Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

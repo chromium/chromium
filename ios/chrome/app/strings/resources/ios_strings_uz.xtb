@@ -580,6 +580,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="4860895144060829044">Chaqiruv</translation>
 <translation id="4872323082491632254">Parollarni tekshiring</translation>
 <translation id="4881695831933465202">Ochish</translation>
+<translation id="488785315393301722">Tafsilotlarini ko‘rsatish</translation>
 <translation id="4894963374040315706">Ovoz bilan qidirish imkonini beradi</translation>
 <translation id="4901778704868714008">Saqlash...</translation>
 <translation id="4904877109095351937">O‘qildi deb belgilash</translation>
@@ -919,7 +920,6 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="6945221475159498467">Tanlash</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Jildlar</translation>
-<translation id="6975148662438928529">iPad qurilmasini tiklash mobaynida <ph name="USER_NAME" /> hisobingizdan chiqarildingiz. Hisobga kirish uchun quyida davom etish ustiga bosing.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Google hisobingizni boshqaring</translation>
 <translation id="6989674195860388998">Sozlamalar orqali almashtirish…</translation>
@@ -1157,13 +1157,11 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="868773710103052534">Hammasi tayyor</translation>
 <translation id="8693663554456874301">{count,plural, =1{Varaqni yopish}other{Varaqlarni yopish}}</translation>
 <translation id="8703536910991780768">Parollaringiz ishonchli darajada</translation>
-<translation id="8706588385081740091">Parollar</translation>
 <translation id="8717864919010420084">Havolani nusxalash</translation>
 <translation id="8721297211384281569">“Vositalar” menyusi</translation>
 <translation id="8725066075913043281">Qayta urinib ko‘ring</translation>
 <translation id="8727043961453758442">Chromedan unumli foydalaning</translation>
 <translation id="8730621377337864115">Tayyor</translation>
-<translation id="8731388423028622182">iPhone qurilmasini tiklash mobaynida <ph name="USER_NAME" /> hisobingizdan chiqarildingiz. Hisobga kirish uchun quyida davom etish ustiga bosing.</translation>
 <translation id="87371078663613140">Menyu paneli bandlari bilan tanishing</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count} ta saqlangan profil klaviatura ustida chiqadi.}other{{count} ta saqlangan profil klaviatura ustida chiqadi.}}</translation>
 <translation id="8741995161408053644">Google hisobingiz orqali bajargan internetdagi faoliyatingizni <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> orqali ko‘rishingiz mumkin.</translation>

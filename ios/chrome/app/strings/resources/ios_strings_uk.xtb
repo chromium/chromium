@@ -580,6 +580,7 @@
 <translation id="4860895144060829044">Зателефонувати</translation>
 <translation id="4872323082491632254">Перевірка паролів</translation>
 <translation id="4881695831933465202">Відкрити</translation>
+<translation id="488785315393301722">Показати деталі</translation>
 <translation id="4894963374040315706">Так ви зможете шукати голосом</translation>
 <translation id="4901778704868714008">Зберегти…</translation>
 <translation id="4904877109095351937">Позначити як прочитані</translation>
@@ -919,7 +920,6 @@
 <translation id="6945221475159498467">Вибрати</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Папки</translation>
-<translation id="6975148662438928529">Ви вийшли з облікового запису <ph name="USER_NAME" />, коли було скинуто налаштування iPad. Щоб увійти, натисніть "Продовжити" нижче.</translation>
 <translation id="6979158407327259162">Диск Google</translation>
 <translation id="6988572888918530647">Керуйте обліковим записом Google</translation>
 <translation id="6989674195860388998">Змінити веб-переглядач у налаштуваннях…</translation>
@@ -1157,13 +1157,11 @@
 <translation id="868773710103052534">Готово</translation>
 <translation id="8693663554456874301">{count,plural, =1{Закрити вкладку}one{Закрити вкладки}few{Закрити вкладки}many{Закрити вкладки}other{Закрити вкладки}}</translation>
 <translation id="8703536910991780768">Ваші паролі надійні</translation>
-<translation id="8706588385081740091">Паролі</translation>
 <translation id="8717864919010420084">Скопіювати посилання</translation>
 <translation id="8721297211384281569">Меню інструментів</translation>
 <translation id="8725066075913043281">Повторити спробу</translation>
 <translation id="8727043961453758442">Користуйтеся всіма можливостями Chrome</translation>
 <translation id="8730621377337864115">Готово</translation>
-<translation id="8731388423028622182">Ви вийшли з облікового запису <ph name="USER_NAME" />, коли було скинуто налаштування iPhone. Щоб увійти, натисніть "Продовжити" нижче.</translation>
 <translation id="87371078663613140">Перегляньте варіанти на панелі меню</translation>
 <translation id="8737620822084008350">{count,plural, =1{Над клавіатурою показується {count} збережений профіль.}one{Над клавіатурою показується {count} збережений профіль.}few{Над клавіатурою показуються {count} збережені профілі.}many{Над клавіатурою показуються {count} збережених профілів.}other{Над клавіатурою показуються {count} збереженого профілю.}}</translation>
 <translation id="8741995161408053644">Історія веб-перегляду може також зберігатися у вашому обліковому записі Google на сторінці <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

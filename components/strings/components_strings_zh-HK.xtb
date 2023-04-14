@@ -2105,6 +2105,7 @@
 <translation id="6165508094623778733">瞭解更多資料</translation>
 <translation id="6167577165590485365">上次嘗試擷取時間：</translation>
 <translation id="6169916984152623906">現在您可私下瀏覽了。共用此裝置的其他使用者將無法看到您的活動，但您下載的檔案和加入的書籤仍會儲存在裝置上。</translation>
+<translation id="617256461084925519">Google Chrome 正嘗試驗證您的身份，以便為您填入付款資料。</translation>
 <translation id="6177128806592000436">您與此網站的連線並非完全安全</translation>
 <translation id="6177531123306197852">C2 信封</translation>
 <translation id="6180316780098470077">重試間隔</translation>
@@ -2656,6 +2657,7 @@
 <translation id="7518003948725431193">找不到這個網址的網頁：<ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">隱藏咗「<ph name="SECTION" />」部分</translation>
+<translation id="752189128961566325">您可在不同的 Google 產品中使用地址</translation>
 <translation id="7523408071729642236">製造業</translation>
 <translation id="7526934274050461096">您並未與這個網站建立私人連線。</translation>
 <translation id="7529884293139707752">在家自學</translation>
@@ -2883,6 +2885,7 @@
 <translation id="8057711352706143257">無法正確安裝「<ph name="SOFTWARE_NAME" />」，解除安裝「<ph name="SOFTWARE_NAME" />」通常能修正相關問題。<ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058009102480785916">食品生產</translation>
 <translation id="8058603697124206642">不需要</translation>
+<translation id="8064892030280197386">驗證您的身份，以便為您填入付款資料。</translation>
 <translation id="8066225060526005217">由 Cookie 設定管理</translation>
 <translation id="8067872629359326442">您剛才在欺詐網站上輸入了密碼。Chromium 可以就此提供協助。如需變更密碼或通知 Google 您的帳戶可能面臨風險，請按 [保護帳戶]。</translation>
 <translation id="8070439594494267500">應用程式圖示</translation>

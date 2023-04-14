@@ -580,6 +580,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="4860895144060829044">Tawagan</translation>
 <translation id="4872323082491632254">Suriin ang Mga Password</translation>
 <translation id="4881695831933465202">Buksan</translation>
+<translation id="488785315393301722">Ipakita ang Mga Detalye</translation>
 <translation id="4894963374040315706">Binibigyang-daan ka nitong makapaghanap gamit ang iyong boses</translation>
 <translation id="4901778704868714008">I-save...</translation>
 <translation id="4904877109095351937">Markahan Bilang Nabasa Na</translation>
@@ -919,7 +920,6 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="6945221475159498467">Pumili</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Mga Folder</translation>
-<translation id="6975148662438928529">Na-sign out ka sa iyong account na <ph name="USER_NAME" /> bilang bahagi ng pag-reset ng iyong iPad. I-tap ang magpatuloy sa ibaba para mag-sign in.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Pamahalaan ang Iyong Google Account</translation>
 <translation id="6989674195860388998">Lumipat sa Mga Setting…</translation>
@@ -1157,13 +1157,11 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="868773710103052534">Handa Ka Na</translation>
 <translation id="8693663554456874301">{count,plural, =1{Isara ang Tab}one{Isara ang Mga Tab}other{Isara ang Mga Tab}}</translation>
 <translation id="8703536910991780768">Mahirap Hulaan ang Password Mo</translation>
-<translation id="8706588385081740091">Mga Password</translation>
 <translation id="8717864919010420084">Kopyahin ang Link</translation>
 <translation id="8721297211384281569">Menu ng Mga Tool</translation>
 <translation id="8725066075913043281">Muling subukan</translation>
 <translation id="8727043961453758442">Sulitin ang Chrome</translation>
 <translation id="8730621377337864115">Tapos na</translation>
-<translation id="8731388423028622182">Na-sign out ka sa iyong account na <ph name="USER_NAME" /> bilang bahagi ng pag-reset ng iyong iPhone. I-tap ang magpatuloy sa ibaba para mag-sign in.</translation>
 <translation id="87371078663613140">I-explore ang mga opsyon sa menu bar</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count} na-save na profile ang available sas itaas ng iyong keyboard.}one{{count} na-save na profile ang available sa itaas ng iyong keyboard.}other{{count} na na-save na profile ang available sa itaas ng iyong keyboard.}}</translation>
 <translation id="8741995161408053644">Maaaring may iba pang mga uri ng history ng pag-browse ang iyong Google Account sa <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

@@ -580,6 +580,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="4860895144060829044">Galw</translation>
 <translation id="4872323082491632254">Gwirio Cyfrineiriau</translation>
 <translation id="4881695831933465202">Agor</translation>
+<translation id="488785315393301722">Dangos Manylion</translation>
 <translation id="4894963374040315706">Mae hyn yn eich galluogi i chwilio gan ddefnyddio'ch llais</translation>
 <translation id="4901778704868714008">Cadw...</translation>
 <translation id="4904877109095351937">Marcio fel wedi'i Ddarllen</translation>
@@ -919,7 +920,6 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="6945221475159498467">Dewis</translation>
 <translation id="6965382102122355670">Iawn</translation>
 <translation id="6973630695168034713">Ffolderi</translation>
-<translation id="6975148662438928529">Cawsoch eich allgofnodi o'ch cyfrif <ph name="USER_NAME" /> fel rhan o'ch ailosodiad iPad. Tapiwch parhau isod i fewngofnodi.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Rheoli'ch Cyfrif Google</translation>
 <translation id="6989674195860388998">Newid yn y Gosodiadau…</translation>
@@ -1157,13 +1157,11 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="868773710103052534">Rydych yn Barod i Fynd</translation>
 <translation id="8693663554456874301">{count,plural, =1{Cau'r Tab}zero{Cau'r Tabiau}two{Cau'r Tabiau}few{Cau'r Tabiau}many{Cau'r Tabiau}other{Cau'r Tabiau}}</translation>
 <translation id="8703536910991780768">Mae'ch Cyfrineiriau'n edrych yn Gryf</translation>
-<translation id="8706588385081740091">Cyfrineiriau</translation>
 <translation id="8717864919010420084">Copïo'r Ddolen</translation>
 <translation id="8721297211384281569">Dewislen Offer</translation>
 <translation id="8725066075913043281">Rhoi cynnig arall arni</translation>
 <translation id="8727043961453758442">Manteisio i'r eithaf ar Chrome</translation>
 <translation id="8730621377337864115">Wedi gorffen</translation>
-<translation id="8731388423028622182">Cawsoch eich allgofnodi o'ch cyfrif <ph name="USER_NAME" /> fel rhan o'ch ailosodiad iPhone. Tapiwch parhau isod i fewngofnodi.</translation>
 <translation id="87371078663613140">Archwiliwch yr opsiynau yn y bar dewislen</translation>
 <translation id="8737620822084008350">{count,plural, =1{Mae {count} proffil sydd wedi'i gadw ar gael uwchben eich bysellfwrdd.}zero{Mae {count} proffil sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}two{Mae {count} broffil sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}few{Mae {count} phroffil sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}many{Mae {count} phroffil sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}other{Mae {count} proffil sydd wedi'u cadw ar gael uwchben eich bysellfwrdd.}}</translation>
 <translation id="8741995161408053644">Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

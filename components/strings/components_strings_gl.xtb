@@ -364,6 +364,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1801812870656502108">Detalles da tarxeta virtual</translation>
 <translation id="1803020234906945288">Alimentación saudable</translation>
 <translation id="1803351196216024260">Pode pedirche permiso para utilizar o micrófono</translation>
+<translation id="1806174020048213474">Esta aplicación está solicitando permiso para instalar credenciais de acceso wifi. Despois da configuración, o dispositivo <ph name="DEVICE_TYPE" /> conectarase automaticamente ás redes wifi participantes. Para quitalas, desinstala a aplicación.</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1807528111851433570">Folla de inicio</translation>
 <translation id="180991881384371158">O CVC está na parte traseira da tarxeta. Son os últimos 3 díxitos que están no recanto superior dereito da caixa de sinaturas.</translation>
@@ -1335,6 +1336,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4270541775497538019">Amontoador 6</translation>
 <translation id="4274173425554582601">Informática e electrónica</translation>
 <translation id="4275830172053184480">Reinicia o dispositivo</translation>
+<translation id="4276974990916607331">Non, grazas</translation>
 <translation id="4277028893293644418">Restablecer contrasinal</translation>
 <translation id="4277937682389409325">Enderezo local</translation>
 <translation id="4278390842282768270">Permitida</translation>
@@ -1695,6 +1697,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5129534298163637277">Cadro de diálogo de confirmación</translation>
 <translation id="5135404736266831032">Xestiona os enderezos…</translation>
 <translation id="5136841603454277753">Mete o código correcto</translation>
+<translation id="5137761395480718572">Esta aplicación está solicitando permiso para instalar credenciais de acceso wifi. Despois da configuración, o dispositivo <ph name="DEVICE_TYPE" /> conectarase automaticamente ás redes wifi participantes. Para quitar as credenciais, desinstala a aplicación. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">A tarxeta virtual non está dispoñible neste intres. Ponte en contacto co teu banco</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
 <translation id="5145883236150621069">Código de erro presente na resposta da política</translation>
@@ -1751,6 +1754,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5273881944177595304">Aplicacións web e ferramentas en liña</translation>
 <translation id="5274025349362408263">Libros e literatura</translation>
 <translation id="5279286380302340275">Xestionar descargas</translation>
+<translation id="5279453600310613955">Non, grazas</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Propiedades do documento</translation>
 <translation id="528468243742722775">Final</translation>
@@ -2243,6 +2247,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6529173248185917884">Sétimo rolo</translation>
 <translation id="6529602333819889595">&amp;Refacer eliminación</translation>
 <translation id="6535751101619004418">Divisas e cambio de moeda estranxeira</translation>
+<translation id="6536221421038631327">Se quitas unha subscrición a Passpoint do teu dispositivo (<ph name="DEVICE_TYPE" />), quitaranse tamén as redes asociadas. Ponte en contacto con <ph name="FRIENDLY_NAME" /> para facer cambios no teu plan de subscrición. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">Fondos mutuos</translation>
 <translation id="6545864417968258051">Busca de dispositivos Bluetooth</translation>
 <translation id="6547208576736763147">Dúas perforacións na parte esquerda</translation>
@@ -3338,6 +3343,7 @@ Detalles adicionais:
 <translation id="9219103736887031265">Imaxes</translation>
 <translation id="922152298093051471">Personalizar Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">Queres permitir que a aplicación <ph name="APP_NAME" /> configure as redes wifi?</translation>
 <translation id="936602727769022409">Poderías perder o acceso á túa Conta de Google. Chromium recoméndache que cambies de contrasinal agora. Deberás iniciar sesión.</translation>
 <translation id="937457230470581909">Zoos, acuarios e reservas naturais</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Que datos se utilizan?<ph name="END_BOLD" /> Os temas dos anuncios baséanse no teu historial de navegación recente, que é unha lista dos sitios que visitaches usando Chrome neste dispositivo.</translation>

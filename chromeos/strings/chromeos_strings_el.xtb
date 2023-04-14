@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Ακολουθούν μερικοί ακόμη χρήσιμοι πόροι:</translation>
 <translation id="1905710495812624430">Έγινε υπέρβαση του μέγιστου αριθμού επιτρεπόμενων προσπαθειών.</translation>
 <translation id="1908234395526491708">Σφάλματα αιτήματος UDP</translation>
+<translation id="1923388006036088459">Χρώματα έμφασης</translation>
 <translation id="1947737735496445907">Εκτυπώθηκε</translation>
 <translation id="1951012854035635156">Βοηθός</translation>
 <translation id="1962550982027027473">Απαιτείται προεπιλεγμένο APN</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Ολοκλήρωση λήψης</translation>
 <translation id="3969602104473960991">Ο κωδικός πρόσβασης του Chrome OS ενημερώθηκε</translation>
 <translation id="397105322502079400">Υπολογισμός…</translation>
+<translation id="3974175076798940554">Διατίθενται πλέον αποκλειστικά στοιχεία για το Chromebook Plus</translation>
 <translation id="39823212440917567">Οι εργασίες εκτύπωσης που είναι παλαιότερες των <ph name="NUMBER_OF_DAYS" /> ημερών θα καταργηθούν.</translation>
 <translation id="3993704782688964914">Η συσκευή <ph name="DEVICE_NAME" /> είναι ενημερωμένη</translation>
 <translation id="4003384961948020559">Σφάλμα - Το σημείο εξόδου είναι γεμάτο</translation>
@@ -515,6 +517,7 @@
 <translation id="5423849171846380976">Ενεργοποιημένο</translation>
 <translation id="5430931332414098647">Άμεση σύνδεση</translation>
 <translation id="5431318178759467895">Χρώμα</translation>
+<translation id="5456936324019847994">Δεν είναι δυνατή η σύνδεση σε κάποιο ενεργό προσαρμοσμένο APN. Επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας για περισσότερες πληροφορίες.</translation>
 <translation id="5457599981699367932">Περιήγηση ως επισκέπτης</translation>
 <translation id="54609108002486618">Διαχειριζόμενη</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Απομένει {0} προσπάθεια}other{Απομένουν {0} προσπάθειες}}</translation>
@@ -570,6 +573,7 @@
 <translation id="5931523347251946569">Το αρχείο δεν βρέθηκε</translation>
 <translation id="5939518447894949180">Επαναφορά</translation>
 <translation id="594552776027197022">Δημιουργία τυχαίου ζεύγους κλειδιών</translation>
+<translation id="5946538341867151940">Δεν έχετε συνδεθεί ακόμα. Εάν η εταιρεία κινητής τηλεφωνίας προτείνει ένα προσαρμοσμένο APN, εισαγάγετε τις πληροφορίες του APN επιλέγοντας "+ Νέο APN"</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Προεπιλεγμένη ταπετσαρία</translation>
 <translation id="6017514345406065928">Πράσινο</translation>
@@ -845,6 +849,7 @@
 <translation id="8352772353338965963">Προσθέστε έναν λογαριασμό στη σύνδεση σε πολλούς λογαριασμούς. Όλοι οι συνδεδεμένοι λογαριασμοί μπορούν να προσπελαστούν χωρίς κωδικό πρόσβασης, επομένως αυτή η δυνατότητα πρέπει να χρησιμοποιείται μόνο με αξιόπιστους λογαριασμούς.</translation>
 <translation id="8364946094152050673">Κενά ονόματα διακομιστών</translation>
 <translation id="8372477600026034341">Επιπλέον κεντρικοί υπολογιστές</translation>
+<translation id="8373046809163484087">Χρησιμοποιήστε σύνολα χρωμάτων που ταιριάζουν με την ταπετσαρία σας</translation>
 <translation id="8380114448424469341">Αγκύρωση παραθύρου στο <ph name="DIRECTION" /> μισό μέρος της οθόνης</translation>
 <translation id="8395584934117017006">Η διαχείριση αυτής της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από επιχείρηση.</translation>
 <translation id="8398927464629426868">Ο ρυθμός με τον οποίο φορτίζεται ή εκφορτίζεται η συσκευή αυτήν τη στιγμή.</translation>
@@ -864,6 +869,7 @@
 <translation id="8503813439785031346">Όνομα χρήστη</translation>
 <translation id="8503836310948963452">Απομένουν λίγα μόνο λεπτά…</translation>
 <translation id="8508640263392900755">Λεπτομέρειες APN</translation>
+<translation id="8522687886059337719">Έχετε πλέον πρόσβαση σε νέες <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ταπετσαρίες<ph name="END_LINK_WALLPAPER_SUBPAGE" /> και στην <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />προστασία οθόνης<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Αυτή η επιλογή μπορεί να απαιτείται από την εταιρεία κινητής τηλεφωνίας σας για σύνδεση στο δίκτυό της. Επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας που χρησιμοποιείτε για λεπτομέρειες.</translation>

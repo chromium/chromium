@@ -580,6 +580,7 @@
 <translation id="4860895144060829044">કૉલ કરો</translation>
 <translation id="4872323082491632254">પાસવર્ડ ચેક કરો</translation>
 <translation id="4881695831933465202">ખોલો</translation>
+<translation id="488785315393301722">વિગતો બતાવો</translation>
 <translation id="4894963374040315706">આ તમને તમારા વૉઇસનો ઉપયોગ કરીને શોધવા દે છે</translation>
 <translation id="4901778704868714008">સાચવો...</translation>
 <translation id="4904877109095351937">વાંચેલ તરીકે ચિહ્નિત કરો</translation>
@@ -919,7 +920,6 @@
 <translation id="6945221475159498467">પસંદ કરો</translation>
 <translation id="6965382102122355670">બરાબર, સમજાઇ ગયું</translation>
 <translation id="6973630695168034713">ફોલ્ડર્સ</translation>
-<translation id="6975148662438928529">તમારી iPad રીસેટ પ્રક્રિયાના ભાગ તરીકે તમારા એકાઉન્ટ <ph name="USER_NAME" />માંથી તમને સાઇન આઉટ કરવામાં આવ્યા હતા. સાઇન ઇન કરવા માટે નીચે ચાલુ રાખો બટન પર ટૅપ કરો.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">તમારા Google એકાઉન્ટને મેનેજ કરો</translation>
 <translation id="6989674195860388998">સેટિંગ પર સ્વિચ કરો…</translation>
@@ -1157,13 +1157,11 @@
 <translation id="868773710103052534">તમે પૂર્ણ રીતે સજ્જ છો</translation>
 <translation id="8693663554456874301">{count,plural, =1{ટૅબ બંધ કરો}one{ટૅબ બંધ કરો}other{ટૅબ બંધ કરો}}</translation>
 <translation id="8703536910991780768">તમારા પાસવર્ડ સશક્ત જણાય છે</translation>
-<translation id="8706588385081740091">પાસવર્ડ</translation>
 <translation id="8717864919010420084">લિંકની કૉપિ કરો</translation>
 <translation id="8721297211384281569">સાધન મેનૂ</translation>
 <translation id="8725066075913043281">ફરી પ્રયાસ કરો</translation>
 <translation id="8727043961453758442">Chromeનો વધુને વધુ લાભ મેળવો</translation>
 <translation id="8730621377337864115">થઈ ગયું</translation>
-<translation id="8731388423028622182">તમારી iPhone રીસેટ પ્રક્રિયાના ભાગ તરીકે તમારા એકાઉન્ટ <ph name="USER_NAME" />માંથી તમને સાઇન આઉટ કરવામાં આવ્યા હતા. સાઇન ઇન કરવા માટે નીચે ચાલુ રાખો બટન પર ટૅપ કરો.</translation>
 <translation id="87371078663613140">મેનૂ બારના વિકલ્પો વિશે શોધખોળ કરો</translation>
 <translation id="8737620822084008350">{count,plural, =1{તમારા કીબોર્ડ પર {count} સાચવેલી પ્રોફાઇલ ઉપલબ્ધ છે.}one{તમારા કીબોર્ડ પર {count} સાચવેલી પ્રોફાઇલ ઉપલબ્ધ છે.}other{તમારા કીબોર્ડ પર {count} સાચવેલી પ્રોફાઇલ ઉપલબ્ધ છે.}}</translation>
 <translation id="8741995161408053644">તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે.</translation>

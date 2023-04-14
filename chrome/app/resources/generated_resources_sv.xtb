@@ -3605,7 +3605,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4078738236287221428">Alltid</translation>
 <translation id="4078903002989614318">Sorterings- och listalternativ</translation>
 <translation id="4079140982534148664">Använd förbättrad stavningskontroll</translation>
-<translation id="4084682180776658562">Infoga bokmärke</translation>
+<translation id="4084682180776658562">Lägg till bokmärke</translation>
 <translation id="4084835346725913160">Stäng <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript är blockerat på den här sidan.</translation>
 <translation id="4087089424473531098">Skapade tillägget:
@@ -4010,7 +4010,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4453430595102511050">Tryck på fingeravtryckssensorn uppe till höger på tangentbordet. Din fingeravtrycksdata lagras på ett säkert sätt och lämnar aldrig din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Sök på <ph name="SEARCH_ENGINE_NAME" /> eller skriv en webbadress</translation>
 <translation id="4457472090507035117">Välj den aktuella rösten:</translation>
-<translation id="4458535500699390320">När den här fliken var inaktiv frigjorde minnessparläget minne för andra uppgifter. Du kan när som helst ändra detta i inställningarna.</translation>
 <translation id="4459169140545916303">Aktiv för <ph name="DEVICE_LAST_ACTIVATED_TIME" /> dagar sedan</translation>
 <translation id="4460014764210899310">Ta bort gruppering</translation>
 <translation id="4461483878391246134">Lägg till språk som översättning aldrig ska erbjudas för</translation>

@@ -1072,6 +1072,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5976112937189445008">Prem Retorn per gravar la finestra</translation>
 <translation id="5978382165065462689">Es comparteix el control de la pantalla mitjançant l'Assistència remota.</translation>
 <translation id="5980301590375426705">Tanca com a convidat</translation>
+<translation id="5983567367406220847">A causa de la inactivitat, el punt d'accés Wi‐Fi s'ha desactivat.</translation>
 <translation id="598407983968395253">Utilitza la plantilla</translation>
 <translation id="598882571027504733">Per obtenir l'actualització, reinicia Chromebook amb el teclat connectat.</translation>
 <translation id="6002179289567220515">Has utilitzat l'interruptor físic per desactivar una càmera. També pots desactivar l'accés a totes les càmeres.</translation>
@@ -1371,6 +1372,7 @@ Instal·lació nova</translation>
 <translation id="7452560014878697800">Una aplicació està utilitzant la càmera</translation>
 <translation id="7453330308669753048">El resultat de l'historial de cerques s'ha suprimit</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> per completar la càrrega</translation>
+<translation id="7459485586006128091">A causa d'un error intern, el punt d'accés Wi‐Fi s'ha desactivat. Prova de tornar a connectar-te d'aquí a uns quants minuts.</translation>
 <translation id="7461924472993315131">Fixa</translation>
 <translation id="746232733191930409">Mode de gravació de pantalla</translation>
 <translation id="7466449121337984263">Toca el sensor</translation>
@@ -1444,6 +1446,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="776344839111254542">Fes clic per veure els detalls de l'actualització</translation>
 <translation id="7768784765476638775">Escolta la selecció</translation>
 <translation id="7769299611924763557">El teu GIF estarà a punt aviat</translation>
+<translation id="7773536009433685931">Activa la Wi-Fi</translation>
 <translation id="7780094051999721182">dreceres</translation>
 <translation id="7780159184141939021">Gira la pantalla</translation>
 <translation id="7796735576426975947">S'ha amagat una altra notificació</translation>

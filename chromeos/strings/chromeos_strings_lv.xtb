@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Tālāk ir norādīti daži citi noderīgi resursi.</translation>
 <translation id="1905710495812624430">Ir pārsniegts maksimālais atļautais mēģinājumu skaits.</translation>
 <translation id="1908234395526491708">UDP pieprasījumu kļūmes</translation>
+<translation id="1923388006036088459">Izcēluma krāsas</translation>
 <translation id="1947737735496445907">Izdrukāts</translation>
 <translation id="1951012854035635156">Asistents</translation>
 <translation id="1962550982027027473">Jānorāda noklusējuma APN.</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Lejupielāde pabeigta</translation>
 <translation id="3969602104473960991">Chrome OS parole ir atjaunināta</translation>
 <translation id="397105322502079400">Aprēķina...</translation>
+<translation id="3974175076798940554">Tagad ir pieejami ekskluzīvi Chromebook Plus līdzekļi</translation>
 <translation id="39823212440917567">Drukas uzdevumi, kas ir vecāki par <ph name="NUMBER_OF_DAYS" /> dienām, tiks noņemti</translation>
 <translation id="3993704782688964914">Jūsu ierīce “<ph name="DEVICE_NAME" />” tagad ir atjaunināta</translation>
 <translation id="4003384961948020559">Neizdevās — izvades paliktnis pilns</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">Pievienojiet kontu vairākkārtējās pierakstīšanās funkcijai. Visiem kontiem, kuros esat pierakstījies, varēs piekļūt, neievadot paroli, tāpēc šī funkcija ir jāizmanto tikai uzticamiem kontiem.</translation>
 <translation id="8364946094152050673">Tukši nosaukumu serveri</translation>
 <translation id="8372477600026034341">Citi mitinātāji</translation>
+<translation id="8373046809163484087">Izmantojiet savai fona tapetei atbilstošas krāsu kopas.</translation>
 <translation id="8380114448424469341">Dokot logu šajā ekrāna pusē: <ph name="DIRECTION" /></translation>
 <translation id="8395584934117017006">Šo <ph name="DEVICE_TYPE" /> ierīci pārvalda uzņēmums.</translation>
 <translation id="8398927464629426868">Ātrums, ar kādu pašlaik notiek ierīces uzlāde vai izlāde.</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">Lietotājvārds</translation>
 <translation id="8503836310948963452">Vēl tikai dažas minūtes...</translation>
 <translation id="8508640263392900755">Informācija par APN</translation>
+<translation id="8522687886059337719">Tagad varat piekļūt jaunām <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fona tapetēm<ph name="END_LINK_WALLPAPER_SUBPAGE" /> un <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ekrānsaudzētājam<ph name="END_LINK_SCREENSAVER_SUBPAGE" />.</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Jūsu mobilo sakaru operators var pieprasīt šīs opcijas izmantošanu, lai varētu izveidot savienojumu ar attiecīgā operatora tīklu. Lai iegūtu detalizētu informāciju, sazinieties ar savu mobilo sakaru operatoru.</translation>

@@ -321,6 +321,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="3131206671572504478">Blokiraj sve</translation>
 <translation id="313283613037595347">Izradite novu anonimnu karticu.</translation>
 <translation id="3146109040683991651">Postavi Chrome kao zadani preglednik</translation>
+<translation id="3152169319860972623">Provjera zaporki pregledava vaše spremljene zaporke i upozorava vas na sva online kršenja. <ph name="BEGIN_LINK" />Saznajte više.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Spremi karticu</translation>
 <translation id="3157387275655328056">Dodaj na popis za čitanje</translation>
 <translation id="3157684681743766797">Označi sve...</translation>
@@ -581,6 +582,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="4860895144060829044">Poziv</translation>
 <translation id="4872323082491632254">Provjera zaporki</translation>
 <translation id="4881695831933465202">Otvori</translation>
+<translation id="488785315393301722">Pokaži pojedinosti</translation>
 <translation id="4894963374040315706">To vam omogućuje glasovno pretraživanje.</translation>
 <translation id="4901778704868714008">Spremi...</translation>
 <translation id="4904877109095351937">Označi kao pročitano</translation>
@@ -920,7 +922,6 @@ Dok ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće za u
 <translation id="6945221475159498467">Odaberi</translation>
 <translation id="6965382102122355670">U redu</translation>
 <translation id="6973630695168034713">Mape</translation>
-<translation id="6975148662438928529">Odjavljeni ste s računa <ph name="USER_NAME" /> pri vraćanju iPada na zadano. U nastavku dodirnite Nastavi da biste se prijavili.</translation>
 <translation id="6979158407327259162">Google disk</translation>
 <translation id="6988572888918530647">Upravljajte svojim Google računom</translation>
 <translation id="6989674195860388998">Promijenite u postavkama…</translation>
@@ -1159,13 +1160,11 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="868773710103052534">Spremni ste</translation>
 <translation id="8693663554456874301">{count,plural, =1{Zatvori karticu}one{Zatvori kartice}few{Zatvori kartice}other{Zatvori kartice}}</translation>
 <translation id="8703536910991780768">Vaše zaporke izgledaju snažno</translation>
-<translation id="8706588385081740091">Zaporke</translation>
 <translation id="8717864919010420084">Kopiraj vezu</translation>
 <translation id="8721297211384281569">Izbornik alata</translation>
 <translation id="8725066075913043281">Pokušajte ponovo</translation>
 <translation id="8727043961453758442">Iskoristite sve prednosti preglednika Chrome</translation>
 <translation id="8730621377337864115">Gotovo</translation>
-<translation id="8731388423028622182">Odjavljeni ste s računa <ph name="USER_NAME" /> pri vraćanju iPhonea na zadano. U nastavku dodirnite Nastavi da biste se prijavili.</translation>
 <translation id="87371078663613140">Istražite opcije na traci izbornika</translation>
 <translation id="8737620822084008350">{count,plural, =1{Iznad tipkovnice dostupan je {count} spremljeni profil.}one{Iznad tipkovnice dostupan je {count} spremljeni profil.}few{Iznad tipkovnice dostupna su {count} spremljena profila.}other{Iznad tipkovnice dostupno je {count} spremljenih profila.}}</translation>
 <translation id="8741995161408053644">Na Google računu možda postoje drugi oblici povijesti pregledavanja na stranici <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

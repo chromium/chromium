@@ -517,7 +517,7 @@
 <translation id="5423849171846380976">Aktivirano</translation>
 <translation id="5430931332414098647">Trenutno dijeljenje internetske veze</translation>
 <translation id="5431318178759467895">Boja</translation>
-<translation id="5456936324019847994">Povezivanje s omogućenim prilagođenim APN-ovima nije moguće. Za više informacije obratite se mobilnom operateru.</translation>
+<translation id="5456936324019847994">Nije se moguće povezati ni s jednim omogućenim prilagođenim APN-om. Kontaktirajte mobilnog operatera za više informacija.</translation>
 <translation id="5457599981699367932">Pregledajte kao gost</translation>
 <translation id="54609108002486618">Upravljani</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Preostao je još {0} pokušaj}one{Preostao je još {0} pokušaj}few{Preostala su još {0} pokušaja}other{Preostalo je još {0} pokušaja}}</translation>
@@ -573,6 +573,7 @@
 <translation id="5931523347251946569">Fajl nije pronađen</translation>
 <translation id="5939518447894949180">Vrati na zadano</translation>
 <translation id="594552776027197022">Generiraj nasumično odabrani par ključeva</translation>
+<translation id="5946538341867151940">Još uvijek se niste povezali. Ako mobilni operater preporučuje prilagođeni APN, unesite informacije o APN-u odabirom dugmeta "Dodaj novi APN"</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Zadana pozadinska slika</translation>
 <translation id="6017514345406065928">Zelena</translation>

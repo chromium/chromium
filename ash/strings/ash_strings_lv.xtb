@@ -1072,6 +1072,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5976112937189445008">Lai ierakstītu loga saturu, nospiediet taustiņu Enter</translation>
 <translation id="5978382165065462689">Ekrāna pārvaldības koplietošana, izmantojot attālo palīdzību.</translation>
 <translation id="5980301590375426705">Aizvērt viesa sesiju</translation>
+<translation id="5983567367406220847">Tīklājs tika izslēgts neaktivitātes dēļ.</translation>
 <translation id="598407983968395253">Izmantot veidni</translation>
 <translation id="598882571027504733">Lai iegūtu atjauninājumu, restartējiet savu Chromebook datoru ar pievienoto tastatūru.</translation>
 <translation id="6002179289567220515">Jūs izmantojāt fizisko slēdzi, lai izslēgtu vienu kameru. Varat arī izslēgt piekļuvi visām kamerām.</translation>
@@ -1374,6 +1375,7 @@ Jauna instalācija</translation>
 <translation id="7452560014878697800">Jūsu kameru izmanto lietojumprogramma</translation>
 <translation id="7453330308669753048">Meklēšanas vēstures rezultāts ir noņemts</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | Atlikušais laiks līdz pilnai uzlādei: <ph name="TIME" /></translation>
+<translation id="7459485586006128091">Tīklājs tika izslēgts iekšējas kļūdas dēļ. Pēc dažām minūtēm mēģiniet atkārtoti izveidot savienojumu.</translation>
 <translation id="7461924472993315131">Piespraust</translation>
 <translation id="746232733191930409">Ekrāna ierakstīšanas režīms</translation>
 <translation id="7466449121337984263">Lūdzu, pieskarieties sensoram.</translation>
@@ -1447,6 +1449,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="776344839111254542">Noklikšķiniet, lai skatītu atjauninājuma datus.</translation>
 <translation id="7768784765476638775">Atlasīt, lai izrunātu</translation>
 <translation id="7769299611924763557">Jūsu GIF attēls drīz būs gatavs</translation>
+<translation id="7773536009433685931">Tā vietā ieslēgt Wi-Fi</translation>
 <translation id="7780094051999721182">saīsnes</translation>
 <translation id="7780159184141939021">Ekrāna pagriešana</translation>
 <translation id="7796735576426975947">Paslēpts jauns paziņojums</translation>

@@ -2148,6 +2148,7 @@
 <translation id="2804043232879091219">ବିକଳ୍ପ ବ୍ରାଉଜର୍ ଖୋଲାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="2804667941345577550">ଖୋଲାଥିବା ଟାବ୍‌ଗୁଡ଼ିକ ସମେତ ଆପଣ ଏହି ସାଇଟ୍‌ରୁ ସାଇନ୍ ଆଉଟ୍ ହୋଇଯିବେ।</translation>
 <translation id="2804680522274557040">କ୍ୟାମେରା ବନ୍ଦ କରାଯାଇଛି</translation>
+<translation id="2804742109948581745">ପାଖାପାଖି</translation>
 <translation id="2805539617243680210">ଆପଣ ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ପ୍ରସ୍ତୁତ ଅଛନ୍ତି!</translation>
 <translation id="2805646850212350655">Microsoft ଏନ୍‌କ୍ରିପ୍ଟିଂ ଫାଇଲ୍ ସିଷ୍ଟମ୍</translation>
 <translation id="2805756323405976993">ଆପ୍ସ</translation>
@@ -3989,7 +3990,6 @@
 <translation id="4453430595102511050">ଆପଣଙ୍କ କୀବୋର୍ଡର ଶୀର୍ଷ ଡାହାଣ କୋଣରେ ଥିବା ଟିପଚିହ୍ନ ସେନ୍ସରକୁ ସ୍ପର୍ଶ କରନ୍ତୁ। ଆପଣଙ୍କ ଟିପଚିହ୍ନ ଡାଟାକୁ ସୁରକ୍ଷିତ ଭାବେ ଷ୍ଟୋର କରାଯାଇଛି ଏବଂ ଏହାକୁ କେବେ ବି ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />ରୁ କାଢ଼ି ଦିଆଯାଏ ନାହିଁ।</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" />ରେ ଖୋଜନ୍ତୁ କିମ୍ବା ଏକ URL ଲେଖନ୍ତୁ</translation>
 <translation id="4457472090507035117">ବର୍ତ୍ତମାନର ସ୍ୱରକୁ ଚୟନ କରନ୍ତୁ:</translation>
-<translation id="4458535500699390320">ଏହି ଟାବଟି ନିଷ୍କ୍ରିୟ ଥିବା ସମୟରେ, ମେମୋରୀ ସେଭର ଅନ୍ୟ ଟାସ୍କଗୁଡ଼ିକ ପାଇଁ ମେମୋରୀ ଖାଲି କରିଛି। ଆପଣ ଯେ କୌଣସି ସମୟରେ ସେଟିଂସରେ ଏହାକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> ଦିନ ପୂର୍ବେ ସକ୍ରିୟ ଥିଲା</translation>
 <translation id="4460014764210899310">ଅଣଗୋଷ୍ଠୀ କରନ୍ତୁ</translation>
 <translation id="4461483878391246134">କେବେ ବି ଅନୁବାଦ ଅଫର ନକରିବା ପାଇଁ ଭାଷାଗୁଡ଼ିକୁ ଯୋଗ କରନ୍ତୁ</translation>
@@ -4641,6 +4641,7 @@
 <translation id="5056950756634735043">କଣ୍ଟେନର୍ ସହ ସଂଯୋଗ କରାଯାଉଛି</translation>
 <translation id="5057110919553308744">ଆପଣ ଯେତେବେଳେ ଏକ୍ସଟେନ୍‍ସନ୍‍କୁ କ୍ଲିକ୍ କରିବେ</translation>
 <translation id="5059241099014281248">ସାଇନ୍-ଇନ୍ ପ୍ରତିବନ୍ଧିତ କରନ୍ତୁ</translation>
+<translation id="5059429103770496207">ଡିସପ୍ଲେ ଷ୍ଟାଇଲ</translation>
 <translation id="5059526285558225588">କଣ ସେୟାର୍ କରିବେ ତାହା ବାଛନ୍ତୁ</translation>
 <translation id="5060332552815861872">ସେଭ୍ କରିବା ପାଇଁ 1ଟି ପ୍ରିଣ୍ଟର୍ ଉପଲବ୍ଧ ଅଛି।</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{ଏହି ଫୋଲ୍ଡର୍‌ରେ ଗୋଟିଏ ବୁକ୍‌ମାର୍କ ଅଛି। ଆପଣ ଏହାକୁ ଡିଲିଟ୍ କରିବାକୁ ନିଶ୍ଚିତ କି?}other{ଏହି ଫୋଲ୍ଡର୍‌ରେ #ଟି ବୁକ୍‌ମାର୍କ ଅଛି। ଆପଣ ଏହାକୁ ଡିଲିଟ୍ କରିବାକୁ ନିଶ୍ଚିତ କି?}}</translation>
@@ -4926,7 +4927,7 @@
 <translation id="5315738755890845852">ଅତିରିକ୍ତ କୁଟିଳ ବନ୍ଧନୀ: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">ସଞ୍ଚୟ</translation>
 <translation id="5319359161174645648">Google Chromeକୁ ସୁପାରିଶ କରୁଛି</translation>
-<translation id="5319712128756744240">ନୂଆ ଡିଭାଇସକୁ ପେୟାର୍ କରନ୍ତୁ</translation>
+<translation id="5319712128756744240">ନୂଆ ଡିଭାଇସକୁ ପେୟାର କରନ୍ତୁ</translation>
 <translation id="5320135788267874712">ନୂଆ ଡିଭାଇସର ନାମ</translation>
 <translation id="532247166573571973">ସର୍ଭର୍ ହୁଏତ ପହଞ୍ଚଯୋଗ୍ୟ ନୁହେଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="5324300749339591280">ଆପଗୁଡ଼ିକର ତାଲିକା</translation>

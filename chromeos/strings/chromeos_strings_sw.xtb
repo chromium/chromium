@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Hizi ni baadhi ya nyenzo zingine muhimu:</translation>
 <translation id="1905710495812624430">Idadi ya juu ya majaribio yanayoruhusiwa.</translation>
 <translation id="1908234395526491708">Maombi ya UDP ambayo hayakufaulu</translation>
+<translation id="1923388006036088459">Rangi za msisitizo</translation>
 <translation id="1947737735496445907">Imechapishwa</translation>
 <translation id="1951012854035635156">Mratibu</translation>
 <translation id="1962550982027027473">APN chaguomsingi inahitajika</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Faili imekamilika kupakuliwa</translation>
 <translation id="3969602104473960991">Nenosiri la Mfumo wa Uendeshaji wa Chrome limesasishwa</translation>
 <translation id="397105322502079400">Inakokotoa...</translation>
+<translation id="3974175076798940554">Vipengee vya kipekee vya Chromebook Plus sasa vinapatikana</translation>
 <translation id="39823212440917567">Kazi za kuchapisha zilizohifadhiwa kwa zaidi ya siku <ph name="NUMBER_OF_DAYS" /> zitaondolewa</translation>
 <translation id="3993704782688964914">Sasa <ph name="DEVICE_NAME" /> imesasishwa</translation>
 <translation id="4003384961948020559">Haijakamilika - Sehemu ya kutoa karatasi imejaa</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">Ongeza akaunti ya uwezo wa kuingia katika akaunti nyingi kwa wakati mmoja. Akaunti zote zilizoingiwa zinaweza kufikiwa bila nenosiri, hivyo kipengee hiki lazima kitumike kwenye akaunti zinazoaminika pekee.</translation>
 <translation id="8364946094152050673">Seva za majina hazina kitu</translation>
 <translation id="8372477600026034341">Seva pangishi za ziada</translation>
+<translation id="8373046809163484087">Tumia rangi zinazolingana na mandhari yako</translation>
 <translation id="8380114448424469341">Dirisha la kupachika kwenye sehemu nusu ya <ph name="DIRECTION" /> ya skrini</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> hii inasimamiwa na biashara</translation>
 <translation id="8398927464629426868">Kiwango cha sasa cha kifaa cha kuchaji au kutumia chaji</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">Jina la mtumiaji</translation>
 <translation id="8503836310948963452">Dakika chache tu...</translation>
 <translation id="8508640263392900755">Maelezo ya APN</translation>
+<translation id="8522687886059337719">Sasa unaweza kufikia <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />mandhari<ph name="END_LINK_WALLPAPER_SUBPAGE" /> na <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />taswira mpya za skrini<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Huenda mtoa huduma wako akahitaji chaguo hili ili uweze kuunganisha kwenye mtandao wake. Wasiliana na mtoa huduma wako ili upate maelezo.</translation>

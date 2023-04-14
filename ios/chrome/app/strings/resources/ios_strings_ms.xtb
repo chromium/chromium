@@ -321,6 +321,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3131206671572504478">Sekat Semua</translation>
 <translation id="313283613037595347">Buat tab Inkognito baharu.</translation>
 <translation id="3146109040683991651">Tetapkan Chrome sebagai Penyemak Imbas Lalai</translation>
+<translation id="3152169319860972623">Semakan Kata Laluan menyemak kata laluan anda yang disimpan dan memberi anda amaran tentang sebarang pelanggaran dalam talian. <ph name="BEGIN_LINK" />Ketahui lebih lanjut.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Simpan Kad</translation>
 <translation id="3157387275655328056">Tambahkan pada Senarai Bacaan</translation>
 <translation id="3157684681743766797">Tandakan Semua...</translation>
@@ -353,6 +354,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3324193307694657476">Alamat 2</translation>
 <translation id="3328459813621383194">Alihkan Tab Tidak Aktif</translation>
 <translation id="3328801116991980348">Maklumat tapak</translation>
+<translation id="3344485292736684439">{count,plural, =1{Penanda halaman disimpan pada "{title}" dalam akaun anda, {email}}other{Penanda halaman disimpan pada "{title}" dalam akaun anda, {email}}}</translation>
 <translation id="3371831930909698441">Terjemah tersedia. Pilihan tersedia berhampiran bahagian bawah skrin.</translation>
 <translation id="3377063233124932127">Kini penanda halaman, kata laluan anda yang disimpan dan pelbagai lagi berada di bahagian atas.</translation>
 <translation id="3393920035788932672">Pop Timbul Dibenarkn</translation>
@@ -580,6 +582,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="4860895144060829044">Hubungi</translation>
 <translation id="4872323082491632254">Semak Kata Laluan</translation>
 <translation id="4881695831933465202">Buka</translation>
+<translation id="488785315393301722">Tunjukkan Butiran</translation>
 <translation id="4894963374040315706">Langkah ini membolehkan anda membuat carian menggunakan suara anda</translation>
 <translation id="4901778704868714008">Simpan...</translation>
 <translation id="4904877109095351937">Tandakan Dibaca</translation>
@@ -919,7 +922,6 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Folder</translation>
-<translation id="6975148662438928529">Anda telah dilog keluar daripada akaun <ph name="USER_NAME" /> anda sebagai sebahagian daripada tetapan semula iPad anda. Ketik teruskan di bawah untuk log masuk.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Urus Google Account Anda</translation>
 <translation id="6989674195860388998">Tukar dalam Tetapan…</translation>
@@ -1032,6 +1034,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7840771868269352570">Item yang anda pilih akan dialih keluar.</translation>
 <translation id="7845466610722898">Paparkan Senarai Bacaan</translation>
 <translation id="784551991304901159">Untuk melihat kandungan, pilih Hidupkan daripada menu</translation>
+<translation id="7846158885638438868">{count,plural, =1{Ditanda halaman pada "{title}"}other{Ditanda halaman pada "{title}"}}</translation>
 <translation id="7853202427316060426">Aktiviti</translation>
 <translation id="7856733331829174190">Tidak Dapat Memuat Turun</translation>
 <translation id="785938070103630874">Buka Kata Laluan, Kaedah Pembayaran atau Alamat dan Pelbagai Lagi</translation>
@@ -1157,13 +1160,11 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="868773710103052534">Selesai</translation>
 <translation id="8693663554456874301">{count,plural, =1{Tutup Tab}other{Tutup Tab}}</translation>
 <translation id="8703536910991780768">Kata Laluan Anda kelihatan Kukuh</translation>
-<translation id="8706588385081740091">Kata laluan</translation>
 <translation id="8717864919010420084">Salin Pautan</translation>
 <translation id="8721297211384281569">Menu Alat</translation>
 <translation id="8725066075913043281">Cuba lagi</translation>
 <translation id="8727043961453758442">Manfaatkan Chrome sepenuhnya</translation>
 <translation id="8730621377337864115">Selesai</translation>
-<translation id="8731388423028622182">Anda telah dilog keluar daripada akaun <ph name="USER_NAME" /> anda sebagai sebahagian daripada tetapan semula iPhone anda. Ketik teruskan di bawah untuk log masuk.</translation>
 <translation id="87371078663613140">Teroka pilihan dalam bar menu</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count} profil yang disimpan tersedia di sebelah atas papan kekunci anda.}other{{count} profil yang disimpan tersedia di sebelah atas papan kekunci anda.}}</translation>
 <translation id="8741995161408053644">Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain di <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

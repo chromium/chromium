@@ -364,6 +364,7 @@
 <translation id="1801812870656502108">Détails de la carte virtuelle</translation>
 <translation id="1803020234906945288">Alimentation saine</translation>
 <translation id="1803351196216024260">Les sites peuvent demander à utiliser votre microphone</translation>
+<translation id="1806174020048213474">Cette application demande l'autorisation d'installer les authentifiants Wi-Fi. Après la configuration, votre <ph name="DEVICE_TYPE" /> se connectera automatiquement aux réseaux Wi-Fi participants. Pour supprimer ces authentifiant, désinstallez l'application.</translation>
 <translation id="1807246157184219062">Clair</translation>
 <translation id="1807528111851433570">Feuille de début</translation>
 <translation id="180991881384371158">Votre code CVC se trouve au dos de votre carte. Il s'agit des trois derniers chiffres en haut à droite de la case de signature.</translation>
@@ -1335,6 +1336,7 @@
 <translation id="4270541775497538019">Empileur 6</translation>
 <translation id="4274173425554582601">Ordinateurs et électronique</translation>
 <translation id="4275830172053184480">Redémarrer l'appareil</translation>
+<translation id="4276974990916607331">Non merci</translation>
 <translation id="4277028893293644418">Réinitialiser le mot de passe</translation>
 <translation id="4277937682389409325">Adresse locale</translation>
 <translation id="4278390842282768270">Autorisé</translation>
@@ -1695,6 +1697,7 @@
 <translation id="5129534298163637277">Boîte de dialogue de confirmation</translation>
 <translation id="5135404736266831032">Gérer les adresses</translation>
 <translation id="5136841603454277753">Entrez le bon code</translation>
+<translation id="5137761395480718572">Cette application demande l'autorisation d'installer les authentifiants Wi-Fi. Après la configuration, votre <ph name="DEVICE_TYPE" /> se connectera automatiquement aux réseaux Wi-Fi participants. Pour supprimer ces authentifiants, désinstallez l'application. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">Votre carte virtuelle n'est pas accessible pour le moment, veuillez communiquer avec votre banque</translation>
 <translation id="5138227688689900538">Afficher moins</translation>
 <translation id="5145883236150621069">Code d'erreur présent dans la réponse de la politique</translation>
@@ -1751,6 +1754,7 @@
 <translation id="5273881944177595304">Applications Web et outils en ligne</translation>
 <translation id="5274025349362408263">Livres et littérature</translation>
 <translation id="5279286380302340275">Gérer les téléchargements</translation>
+<translation id="5279453600310613955">Non merci</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Propriétés du document</translation>
 <translation id="528468243742722775">Fin</translation>
@@ -2243,6 +2247,7 @@
 <translation id="6529173248185917884">Septième rouleau</translation>
 <translation id="6529602333819889595">&amp;Rétablir la suppression</translation>
 <translation id="6535751101619004418">Devises et opérations de change</translation>
+<translation id="6536221421038631327">La suppression d'un abonnement Passpoint de votre <ph name="DEVICE_TYPE" /> retirera les réseaux associés. Contactez « <ph name="FRIENDLY_NAME" /> » pour apporter des modifications à votre forfait d'abonnement. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">Fonds communs de placement</translation>
 <translation id="6545864417968258051">Recherche d'appareils Bluetooth</translation>
 <translation id="6547208576736763147">Double perforation à gauche</translation>
@@ -3338,6 +3343,7 @@ Détails supplémentaires :
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Personnaliser Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">Autoriser l'application <ph name="APP_NAME" /> à configurer des réseaux Wi-Fi?</translation>
 <translation id="936602727769022409">Vous risquez de perdre l'accès à votre compte Google. Chromium recommande de modifier votre mot de passe immédiatement. Vous serez invité à vous connecter.</translation>
 <translation id="937457230470581909">Zoos, aquariums et réserves naturelles</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Quelles données sont utilisées :<ph name="END_BOLD" /> Vos sujets d'annonces sont basés sur votre historique de navigation récent, soit une liste des sites que vous avez visités à l'aide de Chrome sur cet appareil.</translation>

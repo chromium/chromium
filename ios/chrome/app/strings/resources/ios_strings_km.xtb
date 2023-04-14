@@ -582,6 +582,7 @@
 <translation id="4860895144060829044">ហៅ</translation>
 <translation id="4872323082491632254">ពិនិត្យពាក្យសម្ងាត់</translation>
 <translation id="4881695831933465202">បើក</translation>
+<translation id="488785315393301722">បង្ហាញព័ត៌មានលំអិត</translation>
 <translation id="4894963374040315706">វាអនុញ្ញាតឱ្យអ្នកធ្វើការស្វែងរកដោយប្រើសំឡេងរបស់អ្នក</translation>
 <translation id="4901778704868714008">រក្សាទុក...</translation>
 <translation id="4904877109095351937">សម្គាល់​ថា​បាន​អាន</translation>
@@ -921,7 +922,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6945221475159498467">ជ្រើសរើស</translation>
 <translation id="6965382102122355670">យល់ព្រម</translation>
 <translation id="6973630695168034713">ថតឯកសារ</translation>
-<translation id="6975148662438928529">អ្នកបានចេញ​ពីគណនី​របស់អ្នក <ph name="USER_NAME" /> ដែលជាផ្នែកមួយ​នៃការកំណត់ iPad របស់អ្នកឡើងវិញ។ ចុច "បន្ត" ខាងក្រោម ដើម្បីចូល។</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">គ្រប់គ្រង​គណនី Google របស់​អ្នក</translation>
 <translation id="6989674195860388998">ប្ដូរនៅក្នុង​ការកំណត់…</translation>
@@ -1160,13 +1160,11 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="868773710103052534">រួចរាល់អស់ហើយ</translation>
 <translation id="8693663554456874301">{count,plural, =1{បិទផ្ទាំង}other{បិទផ្ទាំង}}</translation>
 <translation id="8703536910991780768">ពាក្យសម្ងាត់របស់អ្នកមើលទៅខ្លាំងហើយ</translation>
-<translation id="8706588385081740091">ពាក្យ​សម្ងាត់</translation>
 <translation id="8717864919010420084">ចម្លងតំណ</translation>
 <translation id="8721297211384281569">ម៉ឺនុយឧបករណ៍</translation>
 <translation id="8725066075913043281">ព្យាយាមម្តងទៀត</translation>
 <translation id="8727043961453758442">ទទួល​បាន​អត្ថប្រយោជន៍​ច្រើន​បំផុត​ពី Chrome</translation>
 <translation id="8730621377337864115">រួចរាល់</translation>
-<translation id="8731388423028622182">អ្នកបានចេញ​ពីគណនី​របស់អ្នក <ph name="USER_NAME" /> ដែលជាផ្នែកមួយ​នៃការកំណត់ iPhone របស់អ្នកឡើងវិញ។ ចុច "បន្ត" ខាងក្រោម ដើម្បីចូល។</translation>
 <translation id="87371078663613140">រុករក​ជម្រើស​នៅក្នុង​របារម៉ឺនុយ</translation>
 <translation id="8737620822084008350">{count,plural, =1{មាន​កម្រងព័ត៌មាន​ដែល​បាន​រក្សាទុក {count} នៅ​លើ​ក្ដារចុច​របស់​អ្នក។}other{មាន​កម្រងព័ត៌មាន​ដែល​បាន​រក្សាទុក {count} នៅ​លើ​ក្ដារចុច​របស់​អ្នក។}}</translation>
 <translation id="8741995161408053644">គណនី Google របស់អ្នកអាចនឹងមានទម្រង់ប្រវត្តិរុករកផ្សេងទៀតនៅ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /></translation>

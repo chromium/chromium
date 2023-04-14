@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">已啟用</translation>
 <translation id="5430931332414098647">即時網絡共享</translation>
 <translation id="5431318178759467895">顏色</translation>
+<translation id="5456936324019847994">無法連線至任何已啟用的自訂 APN。請聯絡流動網絡供應商以瞭解詳情。</translation>
 <translation id="5457599981699367932">以訪客身分瀏覽</translation>
 <translation id="54609108002486618">受管理</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{剩餘嘗試次數：{0} 次}other{剩餘嘗試次數：{0} 次}}</translation>

@@ -1069,6 +1069,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5976112937189445008">Premi Invio per registrare la finestra</translation>
 <translation id="5978382165065462689">Condividi il controllo dello schermo tramite Assistenza remota.</translation>
 <translation id="5980301590375426705">Esci come Ospite</translation>
+<translation id="5983567367406220847">L'hotspot è stato disattivato per inattività.</translation>
 <translation id="598407983968395253">Utilizza modello</translation>
 <translation id="598882571027504733">Per scaricare l'aggiornamento, riavvia il Chromebook con la tastiera collegata.</translation>
 <translation id="6002179289567220515">Hai utilizzato il sensore fisico per spegnere una videocamera. Puoi anche disattivare l'accesso per tutte le videocamere.</translation>
@@ -1371,6 +1372,7 @@ Nuova installazione</translation>
 <translation id="7452560014878697800">Un'applicazione sta utilizzando la fotocamera</translation>
 <translation id="7453330308669753048">Risultato della cronologia delle ricerche rimosso</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> alla ricarica completa</translation>
+<translation id="7459485586006128091">L'hotspot è stato disattivato a causa di un errore interno. Prova a riconnetterti tra qualche minuto.</translation>
 <translation id="7461924472993315131">Blocca</translation>
 <translation id="746232733191930409">Modalità Registrazione dello schermo</translation>
 <translation id="7466449121337984263">Tocca il sensore</translation>
@@ -1444,6 +1446,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="776344839111254542">Fai clic per visualizzare i dettagli dell'aggiornamento</translation>
 <translation id="7768784765476638775">Seleziona per ascoltare</translation>
 <translation id="7769299611924763557">La tua GIF sarà pronta a breve</translation>
+<translation id="7773536009433685931">Attiva invece il Wi-Fi</translation>
 <translation id="7780094051999721182">scorciatoie</translation>
 <translation id="7780159184141939021">Ruota lo schermo</translation>
 <translation id="7796735576426975947">Nuova notifica nascosta</translation>

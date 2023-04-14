@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Aquí tienes otros recursos útiles:</translation>
 <translation id="1905710495812624430">Se ha superado el máximo de intentos permitidos.</translation>
 <translation id="1908234395526491708">Errores de solicitud UDP</translation>
+<translation id="1923388006036088459">Colores destacados</translation>
 <translation id="1947737735496445907">Impreso</translation>
 <translation id="1951012854035635156">Asistente</translation>
 <translation id="1962550982027027473">Se requiere un APN predeterminado</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3969602104473960991">Contraseña de ChromeOS actualizada</translation>
 <translation id="397105322502079400">Calculando...</translation>
+<translation id="3974175076798940554">Recursos exclusivos de Chromebook Plus ya disponibles</translation>
 <translation id="39823212440917567">Los trabajos de impresión con más de <ph name="NUMBER_OF_DAYS" /> días de antigüedad se eliminarán</translation>
 <translation id="3993704782688964914">Tu <ph name="DEVICE_NAME" /> está actualizado</translation>
 <translation id="4003384961948020559">No se ha podido imprimir - Salida llena</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">Se puede añadir una cuenta al inicio de sesión múltiple y acceder a todas las cuentas en las que se haya iniciado sesión sin una contraseña, por lo que esta función solo se debe utilizar con cuentas de confianza.</translation>
 <translation id="8364946094152050673">Servidores de nombres vacíos</translation>
 <translation id="8372477600026034341">Hosts adicionales</translation>
+<translation id="8373046809163484087">Usa conjuntos de colores que combinen con tu fondo de pantalla</translation>
 <translation id="8380114448424469341">Anclar ventana en la mitad <ph name="DIRECTION" /> de la pantalla</translation>
 <translation id="8395584934117017006">Este dispositivo <ph name="DEVICE_TYPE" /> lo gestiona una empresa</translation>
 <translation id="8398927464629426868">La velocidad a la que se carga o descarga el dispositivo en este momento</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="8503836310948963452">Solo unos minutos más...</translation>
 <translation id="8508640263392900755">Detalles de APN</translation>
+<translation id="8522687886059337719">Ahora tienes acceso a nuevos <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fondos de pantalla<ph name="END_LINK_WALLPAPER_SUBPAGE" /> y <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />salvapantallas<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Es posible que tu operador requiera esta opción para conectarte a su red. Ponte en contacto con tu operador para obtener más información al respecto.</translation>

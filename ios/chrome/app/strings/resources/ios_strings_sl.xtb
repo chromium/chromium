@@ -580,6 +580,7 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="4860895144060829044">Pokličite</translation>
 <translation id="4872323082491632254">Preverjanje gesel</translation>
 <translation id="4881695831933465202">Odpri</translation>
+<translation id="488785315393301722">Pokaži podrobnosti</translation>
 <translation id="4894963374040315706">To vam omogoča iskanje z glasom.</translation>
 <translation id="4901778704868714008">Shrani ...</translation>
 <translation id="4904877109095351937">Označi kot prebrano</translation>
@@ -919,7 +920,6 @@ Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za
 <translation id="6945221475159498467">Izberi</translation>
 <translation id="6965382102122355670">V redu</translation>
 <translation id="6973630695168034713">Mape</translation>
-<translation id="6975148662438928529">Zaradi ponastavitve iPada ste bili odjavljeni iz računa <ph name="USER_NAME" />. Spodaj se dotaknite gumba za nadaljevanje, če se želite prijaviti.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Upravljanje računa Google</translation>
 <translation id="6989674195860388998">Preklop v nastavitvah …</translation>
@@ -1157,13 +1157,11 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="868773710103052534">Vse je pripravljeno</translation>
 <translation id="8693663554456874301">{count,plural, =1{Zapiranje zavihka}one{Zapiranje zavihkov}two{Zapiranje zavihkov}few{Zapiranje zavihkov}other{Zapiranje zavihkov}}</translation>
 <translation id="8703536910991780768">Vaša gesla so videti zapletena</translation>
-<translation id="8706588385081740091">Gesla</translation>
 <translation id="8717864919010420084">Kopiraj povezavo</translation>
 <translation id="8721297211384281569">Meni »Orodja«</translation>
 <translation id="8725066075913043281">Poskusite znova</translation>
 <translation id="8727043961453758442">Izkoristite Chrome na najboljši način</translation>
 <translation id="8730621377337864115">Končano</translation>
-<translation id="8731388423028622182">Zaradi ponastavitve iPhona ste bili odjavljeni iz računa <ph name="USER_NAME" />. Spodaj se dotaknite gumba za nadaljevanje, če se želite prijaviti.</translation>
 <translation id="87371078663613140">Raziščite možnosti v menijski vrstici</translation>
 <translation id="8737620822084008350">{count,plural, =1{Nad tipkovnico je na voljo {count} shranjen profil.}one{Nad tipkovnico je na voljo {count} shranjen profil.}two{Nad tipkovnico sta na voljo {count} shranjena profila.}few{Nad tipkovnico so na voljo {count} shranjeni profili.}other{Nad tipkovnico je na voljo {count} shranjenih profilov.}}</translation>
 <translation id="8741995161408053644">V Google Računu so morda druge vrste zgodovine brskanja na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

@@ -580,6 +580,7 @@
 <translation id="4860895144060829044">വിളിക്കുക</translation>
 <translation id="4872323082491632254">പാസ്‌വേഡുകൾ പരിശോധിക്കുക</translation>
 <translation id="4881695831933465202">തുറക്കുക</translation>
+<translation id="488785315393301722">വിശദാംശങ്ങൾ‌ കാണിക്കുക</translation>
 <translation id="4894963374040315706">നിങ്ങളുടെ ശബ്‌ദം ഉപയോഗിച്ച് തിരയാൻ ഇത് നിങ്ങളെ അനുവദിക്കുന്നു</translation>
 <translation id="4901778704868714008">സംരക്ഷിക്കുക...</translation>
 <translation id="4904877109095351937">വായിച്ചതായി അടയാളപ്പെടുത്തുക</translation>
@@ -919,7 +920,6 @@
 <translation id="6945221475159498467">തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6965382102122355670">ശരി</translation>
 <translation id="6973630695168034713">ഫോൾഡറുകൾ</translation>
-<translation id="6975148662438928529">iPad റീസെറ്റ് ചെയ്യുന്നതിന്റെ ഭാഗമായി <ph name="USER_NAME" /> എന്ന അക്കൗണ്ടിൽ നിന്ന് നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്തു. സൈൻ ഇൻ ചെയ്യാൻ ചുവടെയുള്ള 'തുടരുക' ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">നിങ്ങളുടെ Google അക്കൗണ്ട് മാനേജ് ചെയ്യുക</translation>
 <translation id="6989674195860388998">ക്രമീകരണത്തിൽ മാറ്റുക…</translation>
@@ -1157,13 +1157,11 @@
 <translation id="868773710103052534">നിങ്ങൾ തയ്യാറാണ്</translation>
 <translation id="8693663554456874301">{count,plural, =1{ടാബ് അടയ്‌ക്കുക}other{ടാബുകള്‍ അടയ്ക്കുക}}</translation>
 <translation id="8703536910991780768">നിങ്ങളുടെ പാസ്‌വേഡുകൾ ശക്തമാണെന്ന് തോന്നുന്നു</translation>
-<translation id="8706588385081740091">പാസ്‌വേഡുകൾ</translation>
 <translation id="8717864919010420084">ലിങ്ക് പകർത്തുക</translation>
 <translation id="8721297211384281569">ഉപകരണ മെനു</translation>
 <translation id="8725066075913043281">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="8727043961453758442">Chrome പരമാവധി പ്രയോജനപ്പെടുത്തുക</translation>
 <translation id="8730621377337864115">പൂർത്തിയാക്കി</translation>
-<translation id="8731388423028622182">iPhone റീസെറ്റ് ചെയ്യുന്നതിന്റെ ഭാഗമായി <ph name="USER_NAME" /> എന്ന അക്കൗണ്ടിൽ നിന്ന് നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്തു. സൈൻ ഇൻ ചെയ്യാൻ ചുവടെയുള്ള 'തുടരുക' ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="87371078663613140">മെനു ബാറിലെ ഓപ്ഷനുകൾ അടുത്തറിയുക</translation>
 <translation id="8737620822084008350">{count,plural, =1{നിങ്ങളുടെ കീബോർഡിന് മുകളിൽ {count} സംരക്ഷിച്ച പ്രൊഫൈൽ ലഭ്യമാണ്.}other{നിങ്ങളുടെ കീബോർഡിന് മുകളിൽ {count} സംരക്ഷിച്ച പ്രൊഫൈലുകൾ ലഭ്യമാണ്.}}</translation>
 <translation id="8741995161408053644">നിങ്ങളുടെ Google അക്കൗണ്ടിന് <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> എന്നതിൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രമുണ്ടായിരിക്കാം.</translation>

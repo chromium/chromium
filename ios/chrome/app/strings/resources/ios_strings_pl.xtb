@@ -321,6 +321,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3131206671572504478">Blokuj wszystkie</translation>
 <translation id="313283613037595347">Utwórz nową kartę incognito.</translation>
 <translation id="3146109040683991651">Ustaw Chrome jako przeglądarkę domyślną</translation>
+<translation id="3152169319860972623">Sprawdzanie haseł sprawdza Twoje zapisane hasła i ostrzega Cię o wszelkich naruszeniach bezpieczeństwa online. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Zapisz kartę</translation>
 <translation id="3157387275655328056">Dodaj do listy Do przeczytania</translation>
 <translation id="3157684681743766797">Oznacz wszystko…</translation>
@@ -353,6 +354,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3324193307694657476">Adres 2</translation>
 <translation id="3328459813621383194">Przenieś nieaktywne karty</translation>
 <translation id="3328801116991980348">Informacje o witrynie</translation>
+<translation id="3344485292736684439">{count,plural, =1{Zakładka została zapisana w folderze „{title}” na Twoim koncie {email}}few{Zakładki zostały zapisane w folderze „{title}” na Twoim koncie {email}}many{Zakładki zostały zapisane w folderze „{title}” na Twoim koncie {email}}other{Zakładki zostały zapisane w folderze „{title}” na Twoim koncie {email}}}</translation>
 <translation id="3371831930909698441">Dostępne jest tłumaczenie. Opcje znajdują się u dołu ekranu.</translation>
 <translation id="3377063233124932127">Zapisane zakładki, hasła i inne elementy będą widoczne u góry.</translation>
 <translation id="3393920035788932672">Pop-upy akceptowane</translation>
@@ -580,6 +582,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="4860895144060829044">Zadzwoń</translation>
 <translation id="4872323082491632254">Sprawdź hasła</translation>
 <translation id="4881695831933465202">Otwórz</translation>
+<translation id="488785315393301722">Pokaż szczegóły</translation>
 <translation id="4894963374040315706">Umożliwia wyszukiwanie głosowe</translation>
 <translation id="4901778704868714008">Zapisz...</translation>
 <translation id="4904877109095351937">Oznacz jako przeczytane</translation>
@@ -919,7 +922,6 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="6945221475159498467">Wybierz</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Foldery</translation>
-<translation id="6975148662438928529">W ramach resetowania iPada nastąpiło wylogowanie z konta <ph name="USER_NAME" />. Aby się zalogować, poniżej kliknij Dalej.</translation>
 <translation id="6979158407327259162">Dysk Google</translation>
 <translation id="6988572888918530647">Zarządzaj kontem Google</translation>
 <translation id="6989674195860388998">Przełącz w ustawieniach…</translation>
@@ -1032,6 +1034,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7840771868269352570">Wybrane elementy zostaną usunięte.</translation>
 <translation id="7845466610722898">Pokaż listę Do przeczytania</translation>
 <translation id="784551991304901159">Aby zobaczyć zawartość, wybierz w menu opcję Włącz</translation>
+<translation id="7846158885638438868">{count,plural, =1{Utworzono zakładkę w folderze „{title}”}few{Utworzono zakładki w folderze „{title}”}many{Utworzono zakładki w folderze „{title}”}other{Utworzono zakładki w folderze „{title}”}}</translation>
 <translation id="7853202427316060426">Aktywność</translation>
 <translation id="7856733331829174190">Nie udało się pobrać pliku</translation>
 <translation id="785938070103630874">Otwórz sekcje Hasła, Formy płatności lub Adres i inne</translation>
@@ -1157,13 +1160,11 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="868773710103052534">Wszystko gotowe</translation>
 <translation id="8693663554456874301">{count,plural, =1{Zamknij kartę}few{Zamknij karty}many{Zamknij karty}other{Zamknij karty}}</translation>
 <translation id="8703536910991780768">Twoje hasła wyglądają na silne</translation>
-<translation id="8706588385081740091">Hasła</translation>
 <translation id="8717864919010420084">Skopiuj link</translation>
 <translation id="8721297211384281569">Menu Narzędzia</translation>
 <translation id="8725066075913043281">Spróbuj ponownie</translation>
 <translation id="8727043961453758442">W pełni wykorzystuj potencjał Chrome</translation>
 <translation id="8730621377337864115">Gotowe</translation>
-<translation id="8731388423028622182">W ramach resetowania iPhone'a nastąpiło wylogowanie z konta <ph name="USER_NAME" />. Aby się zalogować, poniżej kliknij Dalej.</translation>
 <translation id="87371078663613140">Zapoznaj się z opcjami na pasku menu</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count} zapisany profil dostępny nad klawiaturą.}few{{count} zapisane profile dostępne nad klawiaturą.}many{{count} zapisanych profili dostępnych nad klawiaturą.}other{{count} zapisanego profilu dostępnego nad klawiaturą.}}</translation>
 <translation id="8741995161408053644">Inne rodzaje historii przeglądania mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

@@ -580,6 +580,7 @@ Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om te begi
 <translation id="4860895144060829044">Bel</translation>
 <translation id="4872323082491632254">Gaan wagwoorde na</translation>
 <translation id="4881695831933465202">Maak oop</translation>
+<translation id="488785315393301722">Wys besonderhede</translation>
 <translation id="4894963374040315706">Dit maak dit vir jou moontlik om met jou stem te soek</translation>
 <translation id="4901778704868714008">Stoor …</translation>
 <translation id="4904877109095351937">Merk as gelees</translation>
@@ -919,7 +920,6 @@ Terwyl jy in Incognito is, kan werwe nie webkoekies gebruik om jou blaai-aktiwit
 <translation id="6945221475159498467">Kies</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Vouers</translation>
-<translation id="6975148662438928529">Jy is as deel van jou iPad-terugstelling uit jou rekening <ph name="USER_NAME" /> afgemeld. Tik hieronder op gaan voort om aan te meld.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Bestuur jou Google-rekening</translation>
 <translation id="6989674195860388998">Skakel oor na Instellings …</translation>
@@ -1157,13 +1157,11 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="868773710103052534">Jy is gereed</translation>
 <translation id="8693663554456874301">{count,plural, =1{Maak oortjie toe}other{Maak oortjies toe}}</translation>
 <translation id="8703536910991780768">Jou wagwoorde lyk sterk</translation>
-<translation id="8706588385081740091">Wagwoorde</translation>
 <translation id="8717864919010420084">Kopieer skakel</translation>
 <translation id="8721297211384281569">Nutsgoedkieslys</translation>
 <translation id="8725066075913043281">Probeer weer</translation>
 <translation id="8727043961453758442">Benut Chrome ten beste</translation>
 <translation id="8730621377337864115">Gedoen</translation>
-<translation id="8731388423028622182">Jy is as deel van jou iPhone-terugstelling uit jou rekening <ph name="USER_NAME" /> afgemeld. Tik hieronder op gaan voort om aan te meld.</translation>
 <translation id="87371078663613140">Verken die opsies op die kieslysbalk</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count} gestoorde portefeulje is bo jou sleutelbord beskikbaar.}other{{count} gestoorde portefeuljes is bo jou sleutelbord beskikbaar.}}</translation>
 <translation id="8741995161408053644">Jou Google-rekening kan dalk ander vorme van blaaigeskiedenis hê by <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

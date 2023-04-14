@@ -579,6 +579,7 @@
 <translation id="4860895144060829044">Дуудлага</translation>
 <translation id="4872323082491632254">Нууц үгнүүдийг шалгах</translation>
 <translation id="4881695831933465202">Нээх</translation>
+<translation id="488785315393301722">Дэлгэрэнгүй мэдээллийг харуул</translation>
 <translation id="4894963374040315706">Энэ нь танд дуу хоолойгоо ашиглан хайх боломжийг олгоно</translation>
 <translation id="4901778704868714008">Хадгалах...</translation>
 <translation id="4904877109095351937">Уншсан гэж тэмдэглэх</translation>
@@ -918,7 +919,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6945221475159498467">Сонгох</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Хавтас</translation>
-<translation id="6975148662438928529">Таны iPad-г шинэчлэх явцад таныг <ph name="USER_NAME" /> бүртгэлээс тань гаргасан. Нэвтрэхийн тулд доорх үргэлжлүүлэх дээр товшино уу.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Google бүртгэлээ удирдах</translation>
 <translation id="6989674195860388998">Тохиргоо хэсэгт сэлгэх…</translation>
@@ -1156,13 +1156,11 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="868773710103052534">Тохируулж дууслаа</translation>
 <translation id="8693663554456874301">{count,plural, =1{Табыг хаах}other{Табуудыг хаах}}</translation>
 <translation id="8703536910991780768">Таны нууц үгнүүд сайн харагдаж байна</translation>
-<translation id="8706588385081740091">Нууц үгнүүд</translation>
 <translation id="8717864919010420084">Холбоосыг хуулах</translation>
 <translation id="8721297211384281569">Хэрэгслүүд цэс</translation>
 <translation id="8725066075913043281">Дахин оролдож үзнэ үү.</translation>
 <translation id="8727043961453758442">Chrome-г бүрэн ашиглаарай</translation>
 <translation id="8730621377337864115">хийсэн</translation>
-<translation id="8731388423028622182">Таны iPhone-г шинэчлэх явцад таныг <ph name="USER_NAME" /> бүртгэлээс тань гаргасан. Нэвтрэхийн тулд доорх үргэлжлүүлэх дээр товшино уу.</translation>
 <translation id="87371078663613140">Цэсийн талбар дахь сонголтыг судална уу</translation>
 <translation id="8737620822084008350">{count,plural, =1{Таны гарын дээр хадгалсан {count} профайл боломжтой байна.}other{Таны гарын дээр хадгалсан {count} профайл боломжтой байна.}}</translation>
 <translation id="8741995161408053644">Таны Google Бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />-д хайлтын түүхийн өөр хэлбэртэй байна.</translation>

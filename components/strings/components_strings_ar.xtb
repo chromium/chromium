@@ -364,6 +364,7 @@
 <translation id="1801812870656502108">تفاصيل البطاقة الافتراضية</translation>
 <translation id="1803020234906945288">تغذية صحية</translation>
 <translation id="1803351196216024260">السماح للموقع الإلكتروني بطلب استخدام الميكروفون</translation>
+<translation id="1806174020048213474">‏يطلب هذا التطبيق إذنًا لتثبيت بيانات اعتماد شبكات Wi-Fi. بعد الإعداد، سيتم تلقائيًا توصيل جهاز <ph name="DEVICE_TYPE" /> بشبكات Wi-Fi المُستخدَمة. لإزالة بيانات الاعتماد هذه، عليك إلغاء تثبيت التطبيق.</translation>
 <translation id="1807246157184219062">فاتح</translation>
 <translation id="1807528111851433570">ورقة البداية</translation>
 <translation id="180991881384371158">‏يظهر رمز التحقّق من البطاقة (CVC) في الجهة الخلفية من بطاقتك. إنّه الرمز المكوّن من آخر 3 أرقام في أعلى يمين مربع التوقيع.</translation>
@@ -1337,6 +1338,7 @@
 <translation id="4270541775497538019">المكدِّس 6</translation>
 <translation id="4274173425554582601">أجهزة كمبيوتر وإلكترونيات</translation>
 <translation id="4275830172053184480">إعادة تشغيل جهازك</translation>
+<translation id="4276974990916607331">لا، شكرًا</translation>
 <translation id="4277028893293644418">إعادة ضبط كلمة المرور</translation>
 <translation id="4277937682389409325">العنوان المحلي</translation>
 <translation id="4278390842282768270">مسموح به</translation>
@@ -1699,6 +1701,7 @@
 <translation id="5129534298163637277">مربع حوار التأكيد</translation>
 <translation id="5135404736266831032">إدارة العناوين...</translation>
 <translation id="5136841603454277753">يُرجى إدخال رمز صالح.</translation>
+<translation id="5137761395480718572">‏يطلب هذا التطبيق إذنًا لتثبيت بيانات اعتماد شبكات Wi-Fi. بعد الإعداد، سيتم تلقائيًا توصيل جهاز <ph name="DEVICE_TYPE" /> بشبكات Wi-Fi المُستخدَمة. لإزالة بيانات الاعتماد هذه، عليك إلغاء تثبيت التطبيق. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">البطاقة الافتراضية غير متوفّرة حاليًا. يُرجى التواصل مع المصرف.</translation>
 <translation id="5138227688689900538">عرض أقل</translation>
 <translation id="5145883236150621069">يوجد رمز خطأ في استجابة السياسة</translation>
@@ -1755,6 +1758,7 @@
 <translation id="5273881944177595304">تطبيقات ويب وأدوات على الإنترنت</translation>
 <translation id="5274025349362408263">كتب وأدب</translation>
 <translation id="5279286380302340275">إدارة التنزيلات</translation>
+<translation id="5279453600310613955">لا، شكرًا</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">خصائص المستند</translation>
 <translation id="528468243742722775">‏مفتاح End</translation>
@@ -2248,6 +2252,7 @@
 <translation id="6529173248185917884">اللفافة السابعة</translation>
 <translation id="6529602333819889595">إعادة الح&amp;ذف</translation>
 <translation id="6535751101619004418">عملات وأسعار صرف</translation>
+<translation id="6536221421038631327">عند إزالة الاشتراك في نقطة المرور على جهاز <ph name="DEVICE_TYPE" />، ستتم إزالة الشبكات المرتبطة بها. يمكنك التواصل مع "<ph name="FRIENDLY_NAME" />" لتغيير خطة اشتراكك. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">صناديق استثمار مشتركة</translation>
 <translation id="6545864417968258051">البحث عن بلوتوث</translation>
 <translation id="6547208576736763147">عمل ثقبَين يسارًا</translation>
@@ -3346,6 +3351,7 @@
 <translation id="9219103736887031265">الصور</translation>
 <translation id="922152298093051471">‏تخصيص Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">‏هل تريد منح "<ph name="APP_NAME" />" إذنًا بإعداد شبكات Wi-Fi؟</translation>
 <translation id="936602727769022409">‏قد لا تتمكّن من الوصول إلى حسابك على Google. لذا ينصح Chromium بتغيير كلمة مرورك الآن. وسيُطلَب منك تسجيل الدخول.</translation>
 <translation id="937457230470581909">حدائق حيوان وأحواض سمك ومحميات</translation>
 <translation id="937804173274050966">‏<ph name="BEGIN_BOLD" />البيانات المستخدَمة:<ph name="END_BOLD" /> تستند مواضيع الإعلانات إلى سجلّ تصفُّحك الأخير الذي يتضمّن قائمة بالمواقع الإلكترونية التي انتقَلْت إليها باستخدام Chrome على هذا الجهاز.</translation>

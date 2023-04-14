@@ -580,6 +580,7 @@
 <translation id="4860895144060829044">תרימו טלפון</translation>
 <translation id="4872323082491632254">בדיקת הסיסמאות</translation>
 <translation id="4881695831933465202">פתיחה</translation>
+<translation id="488785315393301722">הצגת פרטים</translation>
 <translation id="4894963374040315706">כך תהיה לך אפשרות לבצע חיפוש באמצעות הקול</translation>
 <translation id="4901778704868714008">שמירה...</translation>
 <translation id="4904877109095351937">סימון כ'נקרא'</translation>
@@ -919,7 +920,6 @@
 <translation id="6945221475159498467">בחירה</translation>
 <translation id="6965382102122355670">אישור</translation>
 <translation id="6973630695168034713">תיקיות</translation>
-<translation id="6975148662438928529">‏המערכת הוציאה אותך מהחשבון <ph name="USER_NAME" /> במסגרת האיפוס של iPad. כדי להיכנס שוב לחשבון, יש להקיש על 'המשך' למטה.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">‏ניהול חשבון Google שלך</translation>
 <translation id="6989674195860388998">לשינוי בהגדרות…</translation>
@@ -1157,13 +1157,11 @@
 <translation id="868773710103052534">הכול מוכן</translation>
 <translation id="8693663554456874301">{count,plural, =1{סגירת הכרטיסייה}one{סגירת הכרטיסיות}two{סגירת הכרטיסיות}other{סגירת הכרטיסיות}}</translation>
 <translation id="8703536910991780768">הסיסמאות נראות חזקות</translation>
-<translation id="8706588385081740091">סיסמאות</translation>
 <translation id="8717864919010420084">העתקת הקישור</translation>
 <translation id="8721297211384281569">התפריט 'כלים'</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>
 <translation id="8727043961453758442">‏נהנים מהמיטב של Chrome</translation>
 <translation id="8730621377337864115">בוצע</translation>
-<translation id="8731388423028622182">‏המערכת הוציאה אותך מהחשבון <ph name="USER_NAME" /> במסגרת האיפוס של iPhone. כדי להיכנס שוב לחשבון, יש להקיש על 'המשך' למטה.</translation>
 <translation id="87371078663613140">בודקים את האפשרויות בסרגל התפריטים</translation>
 <translation id="8737620822084008350">{count,plural, =1{פרופיל שמור אחד ({count}) זמין מעל המקלדת.}one{{count} פרופילים שמורים זמינים מעל המקלדת.}two{{count} פרופילים שמורים זמינים מעל המקלדת.}other{{count} פרופילים שמורים זמינים מעל המקלדת.}}</translation>
 <translation id="8741995161408053644">‏ייתכן שיהיה אפשר לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

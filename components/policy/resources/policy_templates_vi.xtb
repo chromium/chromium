@@ -4827,6 +4827,13 @@ Lưu ý: Chính sách này không áp dụng cho bản nâng cấp HSTS.</transl
 <translation id="5448022937220253000">Chọn điều sẽ xảy ra với dữ liệu người dùng sau khi tắt <ph name="LACROS_NAME" /></translation>
 <translation id="5449690328792750354">Sẽ cung cấp API Event.path.</translation>
 <translation id="5452024130413254050">Kiểm soát việc máy ảo sử dụng cấu hình này có quyền truy cập vào vTPM hay không, giá trị mặc định là false và <ph name="FORCE_SHUTDOWN_IF_MORE_RESTRICTED" /> nếu không được đặt.</translation>
+<translation id="5452167809842762761">Chính sách này đã bị xoá trong phiên bản M114. Chính sách này được phân phối cho CECPQ2 bị vô hiệu hoá, nhưng CECPQ2 đã bị vô hiệu hoá theo mặc định và sẽ được thay thế bằng KEM hậu lượng tử đã chọn của NIST (Kyber), một lần nữa được kết hợp với thoả thuận về khoá cũ tiêu chuẩn của chúng tôi (X25519).
+
+Nếu bạn đặt chính sách này thành bật hoặc không thiết lập chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ tuân theo quy trình phát hành mặc định dành cho CECPQ2 (một thuật toán của thoả thuận về khoá hậu lượng tử trong TLS).
+
+      CECPQ2 sẽ tạo ra các thông báo TLS (Bảo mật tầng truyền tải) ở phạm vi lớn hơn. Trong một số ít trường hợp, thuật toán này có thể gây ra lỗi cho phần cứng kết nối mạng nào đó. Bạn có thể đặt chính sách này thành False (Sai) để vô hiệu hoá thuật toán CECPQ2 trong lúc khắc phục các sự cố kết nối mạng.
+
+      Chính sách này chỉ là biện pháp tạm thời và sẽ bị xoá trong phiên bản <ph name="PRODUCT_NAME" /> trong tương lai.</translation>
 <translation id="5454128917282602937">Khi người dùng chuyển đổi giữa các thiết bị <ph name="PRODUCT_OS_NAME" />, dịch vụ <ph name="PRODUCT_NAME" /> phiên bản 2 sẽ khởi chạy các cửa sổ trình duyệt và ứng dụng từ thiết bị trước đó sang thiết bị mới.
 Nếu bạn đặt chính sách này thành Bật, hệ thống sẽ tự động mở các cửa sổ trình duyệt và ứng dụng trên thiết bị <ph name="PRODUCT_OS_NAME" /> được sử dụng gần đây nhất của người dùng hiện tại sau khi họ đăng nhập.
 Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính sách này, chế độ cài đặt khôi phục hoàn toàn sẽ xác định những phần sẽ mở ra khi người dùng đăng nhập.</translation>

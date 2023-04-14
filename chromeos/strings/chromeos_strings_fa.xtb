@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">در اینجا منابع مفید دیگری ارائه شده است:</translation>
 <translation id="1905710495812624430">به حداکثر تعداد مجاز تلاش رسیده‌اید.</translation>
 <translation id="1908234395526491708">‏خطاهای درخواست UDP</translation>
+<translation id="1923388006036088459">رنگ‌های ثانویه</translation>
 <translation id="1947737735496445907">چاپ‌شده</translation>
 <translation id="1951012854035635156">دستیار</translation>
 <translation id="1962550982027027473">‏APN پیش‌فرض لازم است.</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">بارگیری کامل شد</translation>
 <translation id="3969602104473960991">‏گذرواژه ChromeOS به‌روزرسانی شد</translation>
 <translation id="397105322502079400">در حال محاسبه…</translation>
+<translation id="3974175076798940554">‏دارایی‌های Chromebook Plus اختصاصی اکنون دردسترس است</translation>
 <translation id="39823212440917567">کارهای چاپ قدیمی‌تر از <ph name="NUMBER_OF_DAYS" /> روز برداشته می‌شوند</translation>
 <translation id="3993704782688964914">اکنون <ph name="DEVICE_NAME" /> شما به‌روز است</translation>
 <translation id="4003384961948020559">انجام نشد - خروجی پُر است</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">افزودن یک حساب برای ورود چندگانه به سیستم. کلیه حساب‌هایی که به سیستم وارد شده‌اند بدون گذرواژه قابل دسترسی هستند، بنابراین این قابلیت فقط باید با حساب‌های مورداعتماد استفاده شود.</translation>
 <translation id="8364946094152050673">سرورهای نام دامنه خالی است</translation>
 <translation id="8372477600026034341">میزبان‌های اضافی</translation>
+<translation id="8373046809163484087">از مجموعه‌های رنگ مطابق با کاغذدیواری‌تان استفاده کنید</translation>
 <translation id="8380114448424469341">پنجره را از نیمه سمت <ph name="DIRECTION" /> صفحه‌نمایش روی پایه قرار دهید</translation>
 <translation id="8395584934117017006">این <ph name="DEVICE_TYPE" /> تحت‌مدیریت سازمان است</translation>
 <translation id="8398927464629426868">سرعت شارژ یا تخلیه شارژ دستگاه درحال‌حاضر</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">نام کاربری</translation>
 <translation id="8503836310948963452">فقط چند دقیقه دیگر…</translation>
 <translation id="8508640263392900755">‏جزئیات APN</translation>
+<translation id="8522687886059337719">اکنون به <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />کاغذدیواری‌ها<ph name="END_LINK_WALLPAPER_SUBPAGE" /> و <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />محافظ صفحه<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> جدید دسترسی دارید</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">ممکن است شرکت مخابراتی‌تان برای اتصال به شبکه خود به این گزینه نیاز داشته باشد. برای اطلاع از جزئیات با شرکت مخابراتی تماس بگیرید.</translation>

@@ -353,6 +353,7 @@
 <translation id="3324193307694657476">2. ред за адресу</translation>
 <translation id="3328459813621383194">Премести неактивне картице</translation>
 <translation id="3328801116991980348">Информације о сајту</translation>
+<translation id="3344485292736684439">{count,plural, =1{Обележивач је сачуван у фолдеру {title} на налогу, {email}}one{Обележивачи су сачувани у фолдеру {title} на налогу, {email}}few{Обележивачи су сачувани у фолдеру {title} на налогу, {email}}other{Обележивачи су сачувани у фолдеру {title} на налогу, {email}}}</translation>
 <translation id="3371831930909698441">Преводилац је доступан. Опције су доступне у дну екрана.</translation>
 <translation id="3377063233124932127">Сада су сачувани обележивачи, лозинке и друго у врху.</translation>
 <translation id="3393920035788932672">Дозвољени искачући прозори</translation>
@@ -580,6 +581,7 @@
 <translation id="4860895144060829044">Позовите</translation>
 <translation id="4872323082491632254">Проверите лозинке</translation>
 <translation id="4881695831933465202">Отвори</translation>
+<translation id="488785315393301722">Прикажи детаље</translation>
 <translation id="4894963374040315706">Ово вам омогућава да претражујете помоћу гласа</translation>
 <translation id="4901778704868714008">Сачувај...</translation>
 <translation id="4904877109095351937">Означи као прочитано</translation>
@@ -919,7 +921,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6945221475159498467">Изабери</translation>
 <translation id="6965382102122355670">Потврди</translation>
 <translation id="6973630695168034713">Директоријуми</translation>
-<translation id="6975148662438928529">Одјављени сте са налога <ph name="USER_NAME" /> у склопу ресетовања на iPad-у. Додирните Настави у наставку да бисте се пријавили.</translation>
 <translation id="6979158407327259162">Google диск</translation>
 <translation id="6988572888918530647">Управљајте Google налогом</translation>
 <translation id="6989674195860388998">Промените у Подешавањима…</translation>
@@ -1032,6 +1033,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7840771868269352570">Ставке које сте изабрали ће бити уклоњене.</translation>
 <translation id="7845466610722898">Приказује листу за читање</translation>
 <translation id="784551991304901159">Да бисте видели садржај, изаберите Укључи у менију</translation>
+<translation id="7846158885638438868">{count,plural, =1{Обележивач је додат у фолдер {title}}one{Обележивачи су додати у фолдер {title}}few{Обележивачи су додати у фолдер {title}}other{Обележивачи су додати у фолдер {title}}}</translation>
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7856733331829174190">Преузимање није успело</translation>
 <translation id="785938070103630874">Отворите лозинке, начине плаћања или адресу и друго</translation>
@@ -1157,13 +1159,11 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="868773710103052534">Спремни сте</translation>
 <translation id="8693663554456874301">{count,plural, =1{Затвори картицу}one{Затвори картице}few{Затвори картице}other{Затвори картице}}</translation>
 <translation id="8703536910991780768">Изгледа да су лозинке јаке</translation>
-<translation id="8706588385081740091">Лозинке</translation>
 <translation id="8717864919010420084">Копирај линк</translation>
 <translation id="8721297211384281569">Мени Алатке</translation>
 <translation id="8725066075913043281">Пробајте поново</translation>
 <translation id="8727043961453758442">Искористите све предности Chrome-а</translation>
 <translation id="8730621377337864115">Готово</translation>
-<translation id="8731388423028622182">Одјављени сте са налога <ph name="USER_NAME" /> у склопу ресетовања iPhone-а. Додирните Настави у наставку да бисте се пријавили.</translation>
 <translation id="87371078663613140">Истражите опције на траци менија</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count} сачувани профил је доступан изнад тастатуре.}one{{count} сачувани профил је доступан изнад тастатуре.}few{{count} сачувана профила су доступна изнад тастатуре.}other{{count} сачуваних профила је доступно изнад тастатуре.}}</translation>
 <translation id="8741995161408053644">Google налог има друге облике историје прегледања на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

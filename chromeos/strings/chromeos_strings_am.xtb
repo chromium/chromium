@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">አንዳንድ ሌሎች አጋዥ ግብዓቶች እዚህ አሉ፦</translation>
 <translation id="1905710495812624430">የሚፈቀደው ከፍተኛ የሙከራዎች ብዛት ታልፏል።</translation>
 <translation id="1908234395526491708">የ UDP ጥያቄ አለመሳካቶች</translation>
+<translation id="1923388006036088459">የማድመቂያ ቀለሞች</translation>
 <translation id="1947737735496445907">ታትሟል</translation>
 <translation id="1951012854035635156">ረዳት</translation>
 <translation id="1962550982027027473">ነባሪ ኤፒኤን ያስፈልጋል</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">ማውረድ ተጠናቅቋል</translation>
 <translation id="3969602104473960991">የChromeOS የይለፍ ቃል ተዘምኗል</translation>
 <translation id="397105322502079400">በማስላት ላይ...</translation>
+<translation id="3974175076798940554">ለሚመለከተው የተወሰኑ የChromebook Plus ንብረቶች አሁን ይገኛሉ</translation>
 <translation id="39823212440917567">ከ<ph name="NUMBER_OF_DAYS" /> ቀኖች በላይ ዕድሜ ያላቸው የህትመት ሥራዎች ይወገዳሉ</translation>
 <translation id="3993704782688964914">የእርስዎ <ph name="DEVICE_NAME" /> አሁን የተዘመነ ነው</translation>
 <translation id="4003384961948020559">አልተሳካም - ውፅዓት ሞልቷል</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">አንድ መለያ ባለብዙ መለያ መግቢያ ላይ ያክሉ። ሁሉም የተገባባቸው መለያዎች ያለይለፍ ቃል ሊደረስባቸው ይችላሉ፣ ስለዚህ ይህ ባህሪ በታመኑ መለያዎች ላይ ብቻ ነው መጠቀም ያለባቸው።</translation>
 <translation id="8364946094152050673">ባዶ የስም አገልጋዮች</translation>
 <translation id="8372477600026034341">ተጨማሪ አስተናጋጆች</translation>
+<translation id="8373046809163484087">ከልጣፍዎ ጋር የሚመሳሰሉ የቀለም ስብስቦችን ይጠቀሙ</translation>
 <translation id="8380114448424469341">መስኮትን በ<ph name="DIRECTION" /> የማያ ገጹ አጋማሽ ላይ ትከል</translation>
 <translation id="8395584934117017006">ይህ <ph name="DEVICE_TYPE" /> በድርጅት የሚተዳደር ነው</translation>
 <translation id="8398927464629426868">መሣሪያው በአሁኑ ጊዜ ኃይል እየሞላ ወይም እያስወገደ ያለበት ፍጥነት</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">የተጣቃሚ ስም</translation>
 <translation id="8503836310948963452">ጥቂት ተጨማሪ ደቂቃዎች ብቻ...</translation>
 <translation id="8508640263392900755">የኤፒኤን ዝርዝሮች</translation>
+<translation id="8522687886059337719">አሁን <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />የልጣፎች<ph name="END_LINK_WALLPAPER_SUBPAGE" /> እና <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />የማያ ገጽ ቆጣቢ<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> መዳረሻ አለዎት</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">አገልግሎት አቅራቢዎ ከአውታረ መረቡ ጋር ለመገናኘት ይህን አማራጭ ሊፈልግ ይችላል። ለዝርዝሮች አገልግሎት አቅራቢዎን ያነጋግሩ።</translation>

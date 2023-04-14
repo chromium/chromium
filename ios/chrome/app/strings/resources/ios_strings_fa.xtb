@@ -580,6 +580,7 @@
 <translation id="4860895144060829044">تماس</translation>
 <translation id="4872323082491632254">بررسی گذرواژه‌ها</translation>
 <translation id="4881695831933465202">باز کردن</translation>
+<translation id="488785315393301722">نمایش جزئیات</translation>
 <translation id="4894963374040315706">با این اجازه می‌توانید با صدایتان جستجو کنید</translation>
 <translation id="4901778704868714008">ذخیره...</translation>
 <translation id="4904877109095351937">علامت‌گذاری به‌عنوان خوانده‌شده</translation>
@@ -919,7 +920,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6945221475159498467">انتخاب</translation>
 <translation id="6965382102122355670">قبول</translation>
 <translation id="6973630695168034713">پوشه‌ها</translation>
-<translation id="6975148662438928529">‏به‌عنوان بخشی از بازنشانی iPad، از سیستم حساب <ph name="USER_NAME" /> خارج شده‌اید. برای ورود به سیستم، روی Continue (ادامه) در زیر ضربه بزنید.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">‏مدیریت «حساب Google»</translation>
 <translation id="6989674195860388998">تغییر در «تنظیمات»…</translation>
@@ -1157,13 +1157,11 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="868773710103052534">کاملاً آماده‌اید</translation>
 <translation id="8693663554456874301">{count,plural, =1{بستن برگه}one{بستن برگه}other{بستن برگه‌ها}}</translation>
 <translation id="8703536910991780768">گذرواژه‌هایتان قوی به‌نظر می‌رسد</translation>
-<translation id="8706588385081740091">گذرواژه‌ها</translation>
 <translation id="8717864919010420084">کپی پیوند</translation>
 <translation id="8721297211384281569">منوی ابزارها</translation>
 <translation id="8725066075913043281">سعی مجدد</translation>
 <translation id="8727043961453758442">‏بیشترین بهره را از Chrome ببرید</translation>
 <translation id="8730621377337864115">تمام</translation>
-<translation id="8731388423028622182">‏به‌عنوان بخشی از بازنشانی iPhone، از سیستم حساب <ph name="USER_NAME" /> خارج شده‌اید. برای ورود به سیستم، روی Continue (ادامه) در زیر ضربه بزنید.</translation>
 <translation id="87371078663613140">گزینه‌ها را در نوار منو کاوش کنید</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count} نمایه ذخیره‌شده در بالای صفحه‌کلید موجود است.}one{{count} نمایه ذخیره‌شده در بالای صفحه‌کلید موجود است.}other{{count} نمایه ذخیره‌شده در بالای صفحه‌کلید موجود است.}}</translation>
 <translation id="8741995161408053644">‏ممکن است حساب Google شما اشکال سابقه مرور دیگری در <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> داشته باشد.</translation>

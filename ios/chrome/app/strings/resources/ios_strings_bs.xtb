@@ -321,6 +321,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3131206671572504478">Blokiraj sve</translation>
 <translation id="313283613037595347">Kreiranje nove anonimne kartice.</translation>
 <translation id="3146109040683991651">Postavite Chrome kao zadani preglednik</translation>
+<translation id="3152169319860972623">Provjera lozinke pregleda sačuvane lozinke i upozorava vas o online kršenjima. <ph name="BEGIN_LINK" />Saznajte više.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Sačuvajte karticu</translation>
 <translation id="3157387275655328056">Dodaj na Listu za čitanje</translation>
 <translation id="3157684681743766797">Označi sve…</translation>
@@ -353,7 +354,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3324193307694657476">2. red za adresu</translation>
 <translation id="3328459813621383194">Premještanje neaktivnih kartica</translation>
 <translation id="3328801116991980348">Informacije o web lokaciji</translation>
-<translation id="3344485292736684439">{count,plural, =1{Oznaka je spremljena u "{title}" na vašem računu, {email}}one{Oznake spremljene na "{title}" na vašem računu, {email}}few{Oznake spremljene na "{title}" na vašem računu, {email}}other{Oznake spremljene na "{title}" na vašem računu, {email}}}</translation>
+<translation id="3344485292736684439">{count,plural, =1{Oznaka je sačuvana u folder "{title}" na računu {email}}one{Oznake su sačuvane u folder "{title}" na računu {email}}few{Oznake su sačuvane u folder "{title}" na računu {email}}other{Oznake su sačuvane u folder "{title}" na računu {email}}}</translation>
 <translation id="3371831930909698441">Dostupan je Prevodilac. Opcije su dostupne pri dnu ekrana.</translation>
 <translation id="3377063233124932127">Vaše sačuvane oznake, lozinke i drugo su sada na vrhu prikaza.</translation>
 <translation id="3393920035788932672">Skočni prozori su dozvoljeni</translation>
@@ -581,6 +582,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />poništite sinhronizaciju<p
 <translation id="4860895144060829044">Pozovi</translation>
 <translation id="4872323082491632254">Provjerite lozinke</translation>
 <translation id="4881695831933465202">Otvori</translation>
+<translation id="488785315393301722">Prikaži detalje</translation>
 <translation id="4894963374040315706">To vam omogućava da brže pretražujete pomoću glasa</translation>
 <translation id="4901778704868714008">Sačuvaj...</translation>
 <translation id="4904877109095351937">Označi kao pročitano</translation>
@@ -920,7 +922,6 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="6945221475159498467">Odaberi</translation>
 <translation id="6965382102122355670">Uredu</translation>
 <translation id="6973630695168034713">Folderi</translation>
-<translation id="6975148662438928529">Bili ste odjavljeni sa svog računa <ph name="USER_NAME" /> tokom vraćanja iPada na zadano. Dodirnite Nastavi u nastavku da se prijavite.</translation>
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6988572888918530647">Upravljanje Google računom</translation>
 <translation id="6989674195860388998">Prebacite u Postavkama…</translation>
@@ -1033,7 +1034,7 @@ U anonimnom načinu rada web lokacije ne mogu koristiti kolačiće da vide vašu
 <translation id="7840771868269352570">Stavke koje ste odabrali će biti uklonjene.</translation>
 <translation id="7845466610722898">Prikaz Liste za čitanje</translation>
 <translation id="784551991304901159">Da prikažete sadržaj, u meniju odaberite Uključi</translation>
-<translation id="7846158885638438868">{count,plural, =1{Označeno u "{title}"}one{Označeno u "{title}"}few{Označeno u "{title}"}other{Označeno u "{title}"}}</translation>
+<translation id="7846158885638438868">{count,plural, =1{Oznaka je sačuvana u folder "{title}"}one{Oznake su sačuvane u folder "{title}"}few{Oznake su sačuvane u folder "{title}"}other{Oznake su sačuvane u folder "{title}"}}</translation>
 <translation id="7853202427316060426">Aktivnost</translation>
 <translation id="7856733331829174190">Preuzimanje nije uspjelo</translation>
 <translation id="785938070103630874">Otvorite lozinke, načine plaćanja ili adresu i još mnogo toga</translation>
@@ -1159,13 +1160,11 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="868773710103052534">Spremni ste</translation>
 <translation id="8693663554456874301">{count,plural, =1{Zatvori karticu}one{Zatvori kartice}few{Zatvori kartice}other{Zatvori kartice}}</translation>
 <translation id="8703536910991780768">Vaše lozinke izgledaju jake</translation>
-<translation id="8706588385081740091">Lozinke</translation>
 <translation id="8717864919010420084">Kopiraj link</translation>
 <translation id="8721297211384281569">Meni alata</translation>
 <translation id="8725066075913043281">Pokušaj ponovo</translation>
 <translation id="8727043961453758442">Iskoristite sve prednosti Chromea</translation>
 <translation id="8730621377337864115">Gotovo</translation>
-<translation id="8731388423028622182">Bili ste odjavljeni sa svog računa <ph name="USER_NAME" /> tokom vraćanja iPhonea na zadano. Dodirnite Nastavi u nastavku da se prijavite.</translation>
 <translation id="87371078663613140">Istražite opcije u traci menija</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count} sačuvan profil je dostupan iznad tastature.}one{{count} sačuvan profil je dostupan iznad tastature.}few{{count} sačuvana profila su dostupna iznad tastature.}other{{count} sačuvanih profila su dostupna iznad tastature.}}</translation>
 <translation id="8741995161408053644">Vaš Google račun može imati druge oblike historije pregledanja na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

@@ -580,6 +580,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="4860895144060829044">Skambinti</translation>
 <translation id="4872323082491632254">Patikrinti slaptažodžius</translation>
 <translation id="4881695831933465202">Atidaryti</translation>
+<translation id="488785315393301722">Rodyti išsamią informaciją</translation>
 <translation id="4894963374040315706">Galite ieškoti balsu</translation>
 <translation id="4901778704868714008">Išsaugoti...</translation>
 <translation id="4904877109095351937">Pažymėti kaip skaitytus</translation>
@@ -919,7 +920,6 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="6945221475159498467">Pasirinkti</translation>
 <translation id="6965382102122355670">Gerai</translation>
 <translation id="6973630695168034713">Aplankai</translation>
-<translation id="6975148662438928529">Buvote atjungti nuo paskyros <ph name="USER_NAME" /> nustatant „iPad“ iš naujo. Toliau palieskite „Tęsti“, kad prisijungtumėte.</translation>
 <translation id="6979158407327259162">„Google“ diskas</translation>
 <translation id="6988572888918530647">„Google“ paskyros tvarkymas</translation>
 <translation id="6989674195860388998">Perjungti nustatymuose…</translation>
@@ -1157,13 +1157,11 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="868773710103052534">Viskas nustatyta</translation>
 <translation id="8693663554456874301">{count,plural, =1{Uždaryti skirtuką}one{Uždaryti skirtukus}few{Uždaryti skirtukus}many{Uždaryti skirtukus}other{Uždaryti skirtukus}}</translation>
 <translation id="8703536910991780768">Jūsų slaptažodžiai atrodo sudėtingi</translation>
-<translation id="8706588385081740091">Slaptažodžiai</translation>
 <translation id="8717864919010420084">Kopijuoti nuorodą</translation>
 <translation id="8721297211384281569">Įrankių meniu</translation>
 <translation id="8725066075913043281">Bandyti dar kartą</translation>
 <translation id="8727043961453758442">Išnaudokite visas „Chrome“ galimybes</translation>
 <translation id="8730621377337864115">Atlikta</translation>
-<translation id="8731388423028622182">Buvote atjungti nuo paskyros <ph name="USER_NAME" /> nustatant „iPhone“ iš naujo. Toliau palieskite „Tęsti“, kad prisijungtumėte.</translation>
 <translation id="87371078663613140">Naršykite parinktis meniu juostoje</translation>
 <translation id="8737620822084008350">{count,plural, =1{Virš klaviatūros pasiekiamas {count} išsaugotas profilis.}one{Virš klaviatūros pasiekiamas {count} išsaugotas profilis.}few{Virš klaviatūros pasiekiami {count} išsaugoti profiliai.}many{Virš klaviatūros pasiekiama {count} išsaugoto profilio.}other{Virš klaviatūros pasiekiama {count} išsaugotų profilių.}}</translation>
 <translation id="8741995161408053644">Adresu <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> gali būti pateikta kitų formų jūsų „Google“ paskyros istorija.</translation>

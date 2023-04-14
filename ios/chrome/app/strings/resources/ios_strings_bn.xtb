@@ -178,6 +178,7 @@
 <translation id="2218443599109088993">ছোট করে দেখুন</translation>
 <translation id="2230173723195178503">Webpage loaded</translation>
 <translation id="2239626343334228536">ব্রাউজিং ডেটা মোছা হচ্ছে…</translation>
+<translation id="2242467532204595597">মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপের লিঙ্কে ট্যাপ করার সময় Chrome ব্যবহার করুন।</translation>
 <translation id="22508856139286506">সতর্কতা বাতিল করা হয়েছে (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">মেনু → ইতিহাস</translation>
 <translation id="2256933947031277845">আপনার সংস্থা আপনাকে শুধু কিছু নির্দিষ্ট অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করার অনুমতি দিয়েছে।</translation>
@@ -206,6 +207,7 @@
 <translation id="2411749908844615428">{count,plural, =1{{count}টি সেভ করা ঠিকানা আপনার কীবোর্ডের উপর দেখানো হবে।}one{{count}টি সেভ করা ঠিকানা আপনার কীবোর্ডের উপর দেখানো হবে।}other{{count}টি সেভ করা ঠিকানা আপনার কীবোর্ডের উপর দেখানো হবে।}}</translation>
 <translation id="2421004566762153674">থার্ড-পার্টি কুকি ব্লক করুন</translation>
 <translation id="2421044535038393232">এডিট করতে থাকুন</translation>
+<translation id="2423077901494354337">এখন আপনার ডিভাইসেই Chrome থেকে সবচেয়ে বেশি সুবিধা লাভ করতে পারবেন।</translation>
 <translation id="2434405374328098816">আপনি আগে থেকেই "<ph name="USERNAME" />"-এর জন্য <ph name="WEBSITE" />-এ পাসওয়ার্ড সেভ করেছেন</translation>
 <translation id="2435457462613246316">পাসওয়ার্ড দেখান</translation>
 <translation id="2451654228769116489">ট্যাব পিন করুন</translation>
@@ -351,6 +353,7 @@
 <translation id="3324193307694657476">ঠিকানা ২</translation>
 <translation id="3328459813621383194">আরও ইনঅ্যাক্টিভ ট্যাব</translation>
 <translation id="3328801116991980348">সাইট তথ্য</translation>
+<translation id="3344485292736684439">{count,plural, =1{আপনার অ্যাকাউন্ট {email}-এর মধ্যে, "{title}"-এ বুকমার্ক সেভ করা হয়েছে}one{আপনার অ্যাকাউন্ট {email}-এর মধ্যে, "{title}"-এ বুকমার্ক সেভ করা হয়েছে}other{আপনার অ্যাকাউন্ট {email}-এর মধ্যে, "{title}"-এ বুকমার্ক সেভ করা হয়েছে}}</translation>
 <translation id="3371831930909698441">অনুবাদ পাওয়া যাচ্ছে। স্ক্রিনের একটু নিচের দিকে বিকল্পগুলি দেওয়া আছে।</translation>
 <translation id="3377063233124932127">আপনার সেভ করা বুকমার্ক, পাসওয়ার্ড এবং আরও অনেক কিছু এখন উপরে থাকবে।</translation>
 <translation id="3393920035788932672">মঞ্জুরিপ্রাপ্ত পপ-আপ</translation>
@@ -578,6 +581,7 @@
 <translation id="4860895144060829044">কল করুন</translation>
 <translation id="4872323082491632254">পাসওয়ার্ড চেক করা</translation>
 <translation id="4881695831933465202">খুলুন</translation>
+<translation id="488785315393301722">বিশদ বিবরণ দেখান</translation>
 <translation id="4894963374040315706">এটি আপনার ভয়েস ব্যবহার করে আরও দ্রুত সার্চ করতে দেয়</translation>
 <translation id="4901778704868714008">সেভ করুন...</translation>
 <translation id="4904877109095351937">পঠিত হিসেবে চিহ্নিত করুন</translation>
@@ -799,6 +803,7 @@
 <translation id="6346549652287021269">নতুন ডাউনলোড শুরু করবেন?</translation>
 <translation id="6347953390226388422">{count,plural, =1{এই ডিভাইস ও আপনার Google অ্যাকাউন্ট (<ph name="USER_EMAIL" />) থেকে এই ঠিকানা মুছে ফেলা হবে।}one{এই ডিভাইস ও আপনার Google অ্যাকাউন্ট (<ph name="USER_EMAIL" />) থেকে এইসব ঠিকানা মুছে ফেলা হবে।}other{এই ডিভাইস ও আপনার Google অ্যাকাউন্ট (<ph name="USER_EMAIL" />) থেকে এইসব ঠিকানা মুছে ফেলা হবে।}}</translation>
 <translation id="634878792104344809">আপনার সমস্ত ডিভাইসে বুকমার্ক, পাসওয়ার্ড, ইতিহাস এবং আরও অনেক কিছু সিঙ্ক করুন</translation>
+<translation id="6348855835728304880">এই ডিভাইসে অন্যান্য অ্যাপ জুড়ে আপনার Chrome পাসওয়ার্ড এবং আরও অনেক কিছু অ্যাক্সেস করুন।</translation>
 <translation id="6355820205320395730">দুর্বল পাসওয়ার্ড সহজেই অনুমান করা যায়। শক্তিশালী পাসওয়ার্ড তৈরি করছেন কিনা তা ভাল করে দেখে নিন। <ph name="BEGIN_LINK" />নিরাপত্তা সংক্রান্ত আরও পরামর্শ দেখুন।<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243"><ph name="DOMAIN_NAME" /> ফলো করুন</translation>
 <translation id="6362362396625799311">কোনো ছদ্মবেশী ট্যাব নেই</translation>
@@ -917,7 +922,6 @@
 <translation id="6945221475159498467">নির্বাচন</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6973630695168034713">ফোল্ডারগুলি</translation>
-<translation id="6975148662438928529">আপনার iPad রিসেটের অংশ হিসেবে আপনার অ্যাকাউন্ট <ph name="USER_NAME" /> থেকে সাইন-আউট হয়ে গেছেন। সাইন-ইন করার জন্য নিচে 'চালিয়ে যান' বোতামে ট্যাপ করুন।</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">আপনার Google অ্যাকাউন্ট ম্যানেজ করুন</translation>
 <translation id="6989674195860388998">"সেটিংস"-এ যান…</translation>
@@ -950,6 +954,7 @@
 <translation id="7221173315674413369">'নতুন' বিভাগে নতুন ফিচার এবং পরামর্শ এক্সপ্লোর করুন</translation>
 <translation id="7223102419539744003">'ট্যাব' বন্ধ করুন</translation>
 <translation id="722454870747268814">নতুন ছদ্মবেশী ট্যাব</translation>
+<translation id="723787869754590019">অটোফিলের জন্য Chrome ব্যবহার করুন</translation>
 <translation id="7265758999917665941">এই সাইটের জন্য কখনই নয়</translation>
 <translation id="7272437679830969316">আপনার পরিচয় যাচাই করা যাবে না। পাসওয়ার্ড কপি করা হয়নি।</translation>
 <translation id="7291368939935408496">পাসওয়ার্ড তৈরি করা হচ্ছে...</translation>
@@ -1029,6 +1034,7 @@
 <translation id="7840771868269352570">আপনার বেছে নেওয়া আইটেমগুলি সরানো হবে।</translation>
 <translation id="7845466610722898">পড়ার তালিকা দেখান</translation>
 <translation id="784551991304901159">কন্টেন্ট দেখার জন্য, 'মেনু থেকে চালু করুন' বিকল্প বেছে নিন</translation>
+<translation id="7846158885638438868">{count,plural, =1{বুকমার্ক "{title}"-এ যোগ করা হয়েছে}one{বুকমার্ক "{title}"-এ যোগ করা হয়েছে}other{বুকমার্ক "{title}"-এ যোগ করা হয়েছে}}</translation>
 <translation id="7853202427316060426">ক্রিয়াকলাপ</translation>
 <translation id="7856733331829174190">ডাউনলোড করা যায়নি</translation>
 <translation id="785938070103630874">পাসওয়ার্ড, পেমেন্ট পদ্ধতি, অ্যাড্রেস এবং আরও অনেক কিছু খুলুন</translation>
@@ -1151,14 +1157,14 @@
 <translation id="8663764600409216912">আপনি যেসব পাসওয়ার্ড ব্যবহার করছেন তা অনুমান করা কঠিন বলে মনে হচ্ছে</translation>
 <translation id="8668210798914567634">এই পৃষ্ঠাটি আপনার পড়ার তালিকায় সংরক্ষণ করা হয়েছে।</translation>
 <translation id="8680787084697685621">অ্যাকাউন্ট সাইন-ইনের বিশদ বিবরণের তারিখ সীমার বাইরে৷</translation>
+<translation id="868773710103052534">আপনি একদম রেডি</translation>
 <translation id="8693663554456874301">{count,plural, =1{'ট্যাব' বন্ধ করুন}one{'ট্যাব' বন্ধ করুন}other{'ট্যাব' বন্ধ করুন}}</translation>
 <translation id="8703536910991780768">আপনার ব্যবহার করা পাসওয়ার্ড শক্তিশালী বলে মনে হচ্ছ</translation>
-<translation id="8706588385081740091">পাসওয়ার্ড</translation>
 <translation id="8717864919010420084">লিঙ্কটি কপি করুন</translation>
 <translation id="8721297211384281569">টুল মেনু</translation>
 <translation id="8725066075913043281">আবার চেষ্টা করুন</translation>
+<translation id="8727043961453758442">Chrome থেকে সবচেয়ে বেশি সুবিধা পান</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>
-<translation id="8731388423028622182">আপনার iPhone রিসেটের অংশ হিসেবে আপনার অ্যাকাউন্ট <ph name="USER_NAME" /> থেকে সাইন-আউট হয়ে গেছেন। সাইন-ইন করার জন্য নিচে 'চালিয়ে যান' বোতামে ট্যাপ করুন।</translation>
 <translation id="87371078663613140">মেনু বারে বিকল্প দেখুন</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count}টি সেভ করা প্রোফাইল আপনার কীবোর্ডের উপর দেখানো হবে।}one{{count}টি সেভ করা প্রোফাইল আপনার কীবোর্ডের উপর দেখানো হবে।}other{{count}টি সেভ করা প্রোফাইল আপনার কীবোর্ডের উপর দেখানো হবে।}}</translation>
 <translation id="8741995161408053644"><ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />-এ আপনার Google অ্যাকাউন্টের অন্যান্য ধরনের ব্রাউজিং ইতিহাস থাকতে পারে।</translation>
@@ -1205,6 +1211,7 @@
 <translation id="8976414606286374109">কার্ড আপনার Google অ্যাকাউন্টে সেভ করা হয়।</translation>
 <translation id="8981454092730389528">Google অ্যাক্টিভিটির নিয়ন্ত্রণগুলি</translation>
 <translation id="8985320356172329008">এই হিসেবে Google-এ সাইন-ইন করেছেন</translation>
+<translation id="8986567980592931173">আপনার পাসওয়ার্ড, ইতিহাস এবং আরও অনেক কিছু সিঙ্ক করতে Google অ্যাকাউন্ট দিয়ে সাইন-ইন করুন।</translation>
 <translation id="8998289560386111590">আপনার ডিভাইসে উপলভ্য নয়</translation>
 <translation id="9000089900434778519"><ph name="DSE_NAME" /> হল আপনার সার্চ ইঞ্জিনের নাম। এক্ষেত্রে প্রযোজ্য হলে, আপনার সার্চ ইতিহাস মোছার জন্য সেটির নির্দেশাবলী দেখুন।</translation>
 <translation id="9008201768610948239">উপেক্ষা করুন</translation>

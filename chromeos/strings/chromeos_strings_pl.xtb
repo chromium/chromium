@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">Aktywowano</translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Kolor</translation>
+<translation id="5456936324019847994">Nie można się połączyć z żadnym włączonym niestandardowym punktem APN. Aby dowiedzieć się więcej, skontaktuj się z operatorem komórkowym.</translation>
 <translation id="5457599981699367932">Przeglądaj jako gość</translation>
 <translation id="54609108002486618">Zarządzany</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Pozostała {0} próba}few{Pozostały {0} próby}many{Pozostało {0} prób}other{Pozostało {0} próby}}</translation>
@@ -572,6 +573,7 @@
 <translation id="5931523347251946569">Nie znaleziono pliku</translation>
 <translation id="5939518447894949180">Resetuj</translation>
 <translation id="594552776027197022">Wygeneruj losową parę kluczy</translation>
+<translation id="5946538341867151940">Nie masz jeszcze połączenia. Jeśli Twój operator komórkowy zaleca niestandardowy punkt APN, wpisz informacje o APN, wybierając „+ Nowy APN”</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Domyślna tapeta</translation>
 <translation id="6017514345406065928">Zielony</translation>

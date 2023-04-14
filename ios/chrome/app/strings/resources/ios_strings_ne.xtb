@@ -580,6 +580,7 @@
 <translation id="4860895144060829044">कल गर्नुहोस्</translation>
 <translation id="4872323082491632254">पासवर्डहरू जाँच्नुहोस्</translation>
 <translation id="4881695831933465202">खोल्नुहोस्</translation>
+<translation id="488785315393301722">विवरणहरू देखाउनुहोस्</translation>
 <translation id="4894963374040315706">तपाईंले माइक्रोफोन प्रयोग गर्न दिनुभयो भने तपाईं आफ्नो आवाज प्रयोग गरी खोज्न सक्नुहुन्छ</translation>
 <translation id="4901778704868714008">सेभ गर्नुहोस्...</translation>
 <translation id="4904877109095351937">पढिसकिएको भनी चिन्ह लगाउनुहोस्</translation>
@@ -919,7 +920,6 @@
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
 <translation id="6965382102122355670">ठिक छ</translation>
 <translation id="6973630695168034713">फोल्डरहरू</translation>
-<translation id="6975148662438928529">तपाईंको iPad रिसेट गरिएका कारण तपाईंलाई तपाईंको <ph name="USER_NAME" /> खाताबाट साइन आउट गरिएको थियो। साइन इन गर्न तल दिइएको "जारी राख्नुहोस्" मा ट्याप गर्नुहोस्।</translation>
 <translation id="6979158407327259162">Google ड्राइभ</translation>
 <translation id="6988572888918530647">आफ्नो Google खाताको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="6989674195860388998">सेटिङमा गई डिफल्ट ब्राउजर बदल्नुहोस्…</translation>
@@ -1157,13 +1157,11 @@
 <translation id="868773710103052534">तपाईं पूर्ण रूपमा तयार हुनुहुन्छ</translation>
 <translation id="8693663554456874301">{count,plural, =1{ट्याब बन्द गर्नुहोस्}other{ट्याबहरू बन्द गर्नुहोस्}}</translation>
 <translation id="8703536910991780768">तपाईंका पासवर्डहरू भरपर्दा देखिन्छन्</translation>
-<translation id="8706588385081740091">पासवर्डहरू</translation>
 <translation id="8717864919010420084">लिंक प्रतिलिपि गर्नुहोस्</translation>
 <translation id="8721297211384281569">उपकरणहरू मेनु</translation>
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="8727043961453758442">Chrome बाट बढीभन्दा बढी फाइदा लिनुहोस्</translation>
 <translation id="8730621377337864115">गरियो</translation>
-<translation id="8731388423028622182">तपाईंको iPhone रिसेट गरिएका कारण तपाईंलाई तपाईंको <ph name="USER_NAME" /> खाताबाट साइन आउट गरिएको थियो। साइन इन गर्न तल दिइएको "जारी राख्नुहोस्" मा ट्याप गर्नुहोस्।</translation>
 <translation id="87371078663613140">मेनु बारमा भएका विकल्पहरूका बारेमा जान्नुहोस्</translation>
 <translation id="8737620822084008350">{count,plural, =1{तपाईंको किबोर्डको माथिल्लो भागमा {count} वटा सेभ गरिएको प्रोफाइल उपलब्ध छ।}other{तपाईंको किबोर्डको माथिल्लो भागमा {count} वटा सेभ गरिएको प्रोफाइल उपलब्ध छ।}}</translation>
 <translation id="8741995161408053644"><ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> मा तपाईँको Google खातामा अझै पनि ब्राउजिङको इतिहासका अन्य ढाँचाहरू उपलब्ध हुन सक्छन्।</translation>

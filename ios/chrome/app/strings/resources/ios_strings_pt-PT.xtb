@@ -321,6 +321,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3131206671572504478">Bloquear tudo</translation>
 <translation id="313283613037595347">Crie um novo separador de navegação anónima.</translation>
 <translation id="3146109040683991651">Definir o Chrome como o navegador predefinido</translation>
+<translation id="3152169319860972623">A Verificação de Palavra-passe verifica as suas palavras-passe guardadas e avisa sobre eventuais violações online. <ph name="BEGIN_LINK" />Saiba mais.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Guardar cartão</translation>
 <translation id="3157387275655328056">Adicionar à lista de leitura</translation>
 <translation id="3157684681743766797">Marcar tudo…</translation>
@@ -580,6 +581,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="4860895144060829044">Telefonar</translation>
 <translation id="4872323082491632254">Verifique palavras-passe</translation>
 <translation id="4881695831933465202">Abrir</translation>
+<translation id="488785315393301722">Mostrar Detalhes</translation>
 <translation id="4894963374040315706">Isto permite-lhe pesquisar com a sua voz</translation>
 <translation id="4901778704868714008">Guardar…</translation>
 <translation id="4904877109095351937">Marcar como lidas</translation>
@@ -919,7 +921,6 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Pastas</translation>
-<translation id="6975148662438928529">Como parte da reposição do iPad, a sua sessão na conta <ph name="USER_NAME" /> foi terminada. Toque em Continuar abaixo para iniciar sessão.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Faça a gestão da sua Conta Google</translation>
 <translation id="6989674195860388998">Alterar nas Definições…</translation>
@@ -1157,13 +1158,11 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="868773710103052534">Está tudo pronto</translation>
 <translation id="8693663554456874301">{count,plural, =1{Fechar o separador}other{Fechar os separadores}}</translation>
 <translation id="8703536910991780768">As suas palavras-passe parecem fortes</translation>
-<translation id="8706588385081740091">Palavras-passe</translation>
 <translation id="8717864919010420084">Copiar link</translation>
 <translation id="8721297211384281569">Menu Ferramentas</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8727043961453758442">Tire o máximo partido do Chrome</translation>
 <translation id="8730621377337864115">Concluído</translation>
-<translation id="8731388423028622182">Como parte da reposição do iPhone, a sua sessão na conta <ph name="USER_NAME" /> foi terminada. Toque em Continuar abaixo para iniciar sessão.</translation>
 <translation id="87371078663613140">Explore as opções na barra de menu</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count} perfil guardado disponível acima do teclado.}other{{count} perfis guardados disponíveis acima do teclado.}}</translation>
 <translation id="8741995161408053644">A sua Conta Google pode ter outras formas do histórico de navegação em <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

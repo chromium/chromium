@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Iată alte resurse utile:</translation>
 <translation id="1905710495812624430">Ai depășit numărul maxim de încercări permise.</translation>
 <translation id="1908234395526491708">Erori de solicitare UDP</translation>
+<translation id="1923388006036088459">Culori de evidențiere</translation>
 <translation id="1947737735496445907">Printată</translation>
 <translation id="1951012854035635156">Asistent</translation>
 <translation id="1962550982027027473">Este necesar un APN prestabilit</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Descărcare finalizată</translation>
 <translation id="3969602104473960991">Parola sistemului de operare Chrome a fost actualizată</translation>
 <translation id="397105322502079400">Se calculează...</translation>
+<translation id="3974175076798940554">Acum sunt disponibile elemente exclusive Chromebook Plus</translation>
 <translation id="39823212440917567">Sarcinile de printare mai vechi de <ph name="NUMBER_OF_DAYS" /> zile vor fi eliminate</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> este actualizat</translation>
 <translation id="4003384961948020559">Nereușită – Tavă de ieșire plină</translation>
@@ -515,6 +517,7 @@
 <translation id="5423849171846380976">Activat</translation>
 <translation id="5430931332414098647">Tethering instantaneu</translation>
 <translation id="5431318178759467895">Color</translation>
+<translation id="5456936324019847994">Nu se poate conecta la niciun APN personalizat activat. Contactează operatorul de telefonie mobilă pentru informații suplimentare.</translation>
 <translation id="5457599981699367932">Navighează ca invitat</translation>
 <translation id="54609108002486618">Gestionat</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} încercare rămasă}few{{0} încercări rămase}other{{0} de încercări rămase}}</translation>
@@ -570,6 +573,7 @@
 <translation id="5931523347251946569">Fișierul nu a fost găsit</translation>
 <translation id="5939518447894949180">Resetează</translation>
 <translation id="594552776027197022">Generează o pereche de chei aleatorie</translation>
+<translation id="5946538341867151940">Nu te-ai conectat încă. Dacă operatorul de telefonie mobilă recomandă un APN personalizat, introdu informațiile APN selectând „+ APN nou”</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Imagine de fundal prestabilită</translation>
 <translation id="6017514345406065928">Verde</translation>
@@ -845,6 +849,7 @@
 <translation id="8352772353338965963">Adăugați un cont pentru conectarea multiplă. Conturile conectate pot fi accesate fără parolă, prin urmare, această funcție trebuie folosită numai cu conturile de încredere.</translation>
 <translation id="8364946094152050673">Serverele de nume sunt goale</translation>
 <translation id="8372477600026034341">Gazde suplimentare</translation>
+<translation id="8373046809163484087">Folosește seturi de culori care se potrivesc cu imaginea de fundal</translation>
 <translation id="8380114448424469341">Andochează fereastra pe jumătatea <ph name="DIRECTION" /> din ecran</translation>
 <translation id="8395584934117017006">Acest <ph name="DEVICE_TYPE" /> este gestionat de companie</translation>
 <translation id="8398927464629426868">Rata de încărcare sau de descărcare a dispozitivului</translation>
@@ -864,6 +869,7 @@
 <translation id="8503813439785031346">Nume de utilizator</translation>
 <translation id="8503836310948963452">Mai sunt câteva minute…</translation>
 <translation id="8508640263392900755">Detalii APN</translation>
+<translation id="8522687886059337719">Acum ai acces la noi <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />imagini de fundal<ph name="END_LINK_WALLPAPER_SUBPAGE" /> și <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />screensavere<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Operatorul poate solicita această opțiune ca să te conectezi la rețeaua respectivă. Contactează operatorul pentru detalii.</translation>

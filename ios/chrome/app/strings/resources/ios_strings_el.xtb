@@ -321,6 +321,7 @@
 <translation id="3131206671572504478">Αποκλεισμός όλων</translation>
 <translation id="313283613037595347">Δημιουργία νέας καρτέλας ανώνυμης περιήγησης.</translation>
 <translation id="3146109040683991651">Ορισμός του Chrome ως προεπιλεγμένου προγράμματος περιήγησης</translation>
+<translation id="3152169319860972623">Ο Έλεγχος κωδικού πρόσβασης ελέγχει τους αποθηκευμένους κωδικούς πρόσβασης και σας προειδοποιεί για τυχόν παραβιάσεις στο διαδίκτυο. <ph name="BEGIN_LINK" />Μάθετε περισσότερα.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Αποθήκευση κάρτας</translation>
 <translation id="3157387275655328056">Προσθήκη στη λίστα ανάγνωσης</translation>
 <translation id="3157684681743766797">Επισήμανση όλων…</translation>
@@ -353,6 +354,7 @@
 <translation id="3324193307694657476">Διεύθυνση 2</translation>
 <translation id="3328459813621383194">Μετακίνηση ανενεργών καρτελών</translation>
 <translation id="3328801116991980348">Πληροφορίες ιστοτόπου</translation>
+<translation id="3344485292736684439">{count,plural, =1{Ο σελιδοδείκτης αποθηκεύτηκε στον φάκελο {title} στον λογαριασμό {email}}other{Οι σελιδοδείκτες αποθηκεύτηκαν στον φάκελο{title} στον λογαριασμό {email}}}</translation>
 <translation id="3371831930909698441">Διατίθεται μετάφραση. Διαθέσιμες επιλογές κοντά στο κάτω μέρος της οθόνης.</translation>
 <translation id="3377063233124932127">Πλέον οι αποθηκευμένοι σελιδοδείκτες, κωδικοί πρόσβασης και άλλα δεδομένα βρίσκονται στο επάνω μέρος.</translation>
 <translation id="3393920035788932672">Επιτρέπ. τα αναδυόμ.</translation>
@@ -580,6 +582,7 @@
 <translation id="4860895144060829044">Κλήση</translation>
 <translation id="4872323082491632254">Έλεγχος κωδικών πρόσβασης</translation>
 <translation id="4881695831933465202">Άνοιγμα</translation>
+<translation id="488785315393301722">Εμφάνιση λεπτομερειών</translation>
 <translation id="4894963374040315706">Σας επιτρέπει να πραγματοποιείτε αναζήτηση με φωνητικές εντολές.</translation>
 <translation id="4901778704868714008">Αποθήκευση…</translation>
 <translation id="4904877109095351937">Επισήμ. ως αναγνωσμένων</translation>
@@ -920,7 +923,6 @@
 <translation id="6945221475159498467">Επιλογή</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Φάκελοι</translation>
-<translation id="6975148662438928529">Αποσυνδεθήκατε από τον λογαριασμό σας <ph name="USER_NAME" /> στο πλαίσιο της επαναφοράς του iPad. Πατήστε συνέχεια παρακάτω για να συνδεθείτε.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Διαχείριση Λογαριασμού Google</translation>
 <translation id="6989674195860388998">Κάντε την αλλαγή στις Ρυθμίσεις…</translation>
@@ -1033,6 +1035,7 @@
 <translation id="7840771868269352570">Τα στοιχεία που επιλέξατε θα καταργηθούν.</translation>
 <translation id="7845466610722898">Εμφάνιση λίστας ανάγνωσης</translation>
 <translation id="784551991304901159">Για εμφάνιση περιεχομένου, από το μενού, επιλέξτε Ενεργοποίηση</translation>
+<translation id="7846158885638438868">{count,plural, =1{Ο σελιδοδείκτης προστέθηκε στον φάκελο {title}}other{Οι σελιδοδείκτες προστέθηκαν στον φάκελο {title}}}</translation>
 <translation id="7853202427316060426">Δραστηριότητα</translation>
 <translation id="7856733331829174190">Δεν ήταν δυνατή η λήψη</translation>
 <translation id="785938070103630874">Ανοίξτε τους κωδικούς πρόσβασης, τους τρόπους πληρωμής, τη διεύθυνση και άλλα</translation>
@@ -1158,13 +1161,11 @@
 <translation id="868773710103052534">Όλα έτοιμα</translation>
 <translation id="8693663554456874301">{count,plural, =1{Κλείσιμο καρτέλας}other{Κλείσιμο καρτελών}}</translation>
 <translation id="8703536910991780768">Οι κωδικοί πρόσβασής σας φαίνονται ισχυροί</translation>
-<translation id="8706588385081740091">Κωδικοί πρόσβασης</translation>
 <translation id="8717864919010420084">Αντιγραφή συνδέσμου</translation>
 <translation id="8721297211384281569">Μενού εργαλείων</translation>
 <translation id="8725066075913043281">Προσπαθήστε ξανά</translation>
 <translation id="8727043961453758442">Αξιοποιήστε πλήρως το Chrome</translation>
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>
-<translation id="8731388423028622182">Αποσυνδεθήκατε από τον λογαριασμό σας <ph name="USER_NAME" /> στο πλαίσιο της επαναφοράς του iPhone. Πατήστε συνέχεια παρακάτω για να συνδεθείτε.</translation>
 <translation id="87371078663613140">Εξερευνήστε τις επιλογές στη γραμμή μενού</translation>
 <translation id="8737620822084008350">{count,plural, =1{Διατίθεται {count} αποθηκευμένο προφίλ πάνω από το πληκτρολόγιο.}other{Διατίθενται {count} αποθηκευμένα προφίλ πάνω από το πληκτρολόγιο.}}</translation>
 <translation id="8741995161408053644">Ο Λογαριασμός σας Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

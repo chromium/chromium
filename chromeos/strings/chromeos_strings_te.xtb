@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">కొన్ని ఇతర సహాయకరమైన రిసోర్స్‌లు ఇవిగోండి:</translation>
 <translation id="1905710495812624430">అనుమతించిన గరిష్ట ప్రయత్నాలు మించిపోయారు.</translation>
 <translation id="1908234395526491708">UDP రిక్వెస్ట్ వైఫల్యాలు</translation>
+<translation id="1923388006036088459">యాక్సెంట్ రంగు</translation>
 <translation id="1947737735496445907">ప్రింట్ అయింది</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">ఆటోమేటిక్ సెట్టింగ్ APN అవసరం</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">డౌన్‌లోడ్ పూర్తయింది</translation>
 <translation id="3969602104473960991">ChromeOS పాస్‌వర్డ్ అప్‌డేట్ చేయబడింది</translation>
 <translation id="397105322502079400">గణిస్తోంది...</translation>
+<translation id="3974175076798940554">ప్రత్యేకమైన Chromebook Plus అస్సెట్‌లు ఇప్పుడు అందుబాటులో ఉన్నాయి</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> రోజులకు పైగా ఉన్న ప్రింట్ టాస్క్‌లు తీసివేయబడతాయి</translation>
 <translation id="3993704782688964914">మీ <ph name="DEVICE_NAME" /> ఇప్పుడు అప్‌డేట్ అయ్యి ఉంది</translation>
 <translation id="4003384961948020559">విఫలమైంది - అవుట్‌పుట్, ప్రింటింగ్ జాబ్‌లతో నిండి ఉంది</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">బహుళ సైన్ ఇన్ కోసం ఖాతాను జోడించండి. అన్ని సైన్ ఇన్ చేసిన ఖాతాలను పాస్‌వర్డ్ లేకుండానే యాక్సెస్‌ చేయవచ్చు. కాబ‌ట్టి ఈ ఫీచ‌ర్‌ను విశ్వసనీయ ఖాతాలతో మాత్రమే ఉపయోగించాలి.</translation>
 <translation id="8364946094152050673">ఖాళీ పేరు సర్వర్‌లు</translation>
 <translation id="8372477600026034341">అదనపు హోస్ట్‌లు</translation>
+<translation id="8373046809163484087">మీ వాల్‌పేపర్‌కు మ్యాచ్ అయ్యే రంగు సెట్‌లను ఉపయోగించండి</translation>
 <translation id="8380114448424469341">స్క్రీన్ యొక్క <ph name="DIRECTION" /> వైపున సగంలో విండోను డాక్ చేయండి</translation>
 <translation id="8395584934117017006">ఈ <ph name="DEVICE_TYPE" /> ఎంటర్‌ప్రైజ్ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="8398927464629426868">పరికరం ప్రస్తుతం ఛార్జ్ అవుతున్న లేదా డిశ్చార్జ్ అవుతున్న రేట్</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">యూజర్‌పేరు</translation>
 <translation id="8503836310948963452">మరికొన్ని నిమిషాలు మాత్రమే…</translation>
 <translation id="8508640263392900755">APN వివరాలు</translation>
+<translation id="8522687886059337719">మీరు ఇప్పుడు కొత్త <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />వాల్‌పేపర్‌లు<ph name="END_LINK_WALLPAPER_SUBPAGE" />, <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />స్క్రీన్ సేవర్‌<ph name="END_LINK_SCREENSAVER_SUBPAGE" />కు యాక్సెస్ కలిగి ఉన్నారు</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">వారి నెట్‌వర్క్‌కు కనెక్ట్ అవ్వడానికి మీ క్యారియర్‌కు ఈ ఆప్షన్ అవసరం పడవచ్చు. వివరాల కోసం మీ క్యారియర్‌ను సంప్రదించండి.</translation>

@@ -580,6 +580,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="4860895144060829044">Helistage</translation>
 <translation id="4872323082491632254">Paroolide kontrollimine</translation>
 <translation id="4881695831933465202">Ava</translation>
+<translation id="488785315393301722">Üksikasjade kuvamine</translation>
 <translation id="4894963374040315706">See võimaldab hääle abil otsida</translation>
 <translation id="4901778704868714008">Salvesta …</translation>
 <translation id="4904877109095351937">Märgi loetuks</translation>
@@ -919,7 +920,6 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="6945221475159498467">Vali</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Kaustad</translation>
-<translation id="6975148662438928529">Teid logiti iPadi lähtestamise raames teie kontolt <ph name="USER_NAME" /> välja. Sisselogimiseks puudutage allpool käsku Jätka.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Google'i konto haldamine</translation>
 <translation id="6989674195860388998">Muutke Seadetes …</translation>
@@ -1157,13 +1157,11 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="868773710103052534">Ongi valmis!</translation>
 <translation id="8693663554456874301">{count,plural, =1{Sule vaheleht}other{Sule vahelehed}}</translation>
 <translation id="8703536910991780768">Teie paroolid on tugevad</translation>
-<translation id="8706588385081740091">Paroolid</translation>
 <translation id="8717864919010420084">Kopeeri link</translation>
 <translation id="8721297211384281569">Menüü Tööriistad</translation>
 <translation id="8725066075913043281">Proovi uuesti</translation>
 <translation id="8727043961453758442">Kasutage Chrome'i parimal moel</translation>
 <translation id="8730621377337864115">Valmis</translation>
-<translation id="8731388423028622182">Teid logiti iPhone'i lähtestamise raames teie kontolt <ph name="USER_NAME" /> välja. Sisselogimiseks puudutage allpool käsku Jätka.</translation>
 <translation id="87371078663613140">Menüüribal olevate valikute avastamine</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count} salvestatud profiil on klaviatuuri kohal saadaval.}other{{count} salvestatud profiili on klaviatuuri kohal saadaval.}}</translation>
 <translation id="8741995161408053644">Aadressil <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> võib teie Google'i kontol olla muus vormis sirvimisajalugu.</translation>

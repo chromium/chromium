@@ -580,6 +580,7 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="4860895144060829044">Shaya</translation>
 <translation id="4872323082491632254">Hlola amaphasiwedi</translation>
 <translation id="4881695831933465202">Vula</translation>
+<translation id="488785315393301722">Bonisa imininingwane</translation>
 <translation id="4894963374040315706">Lokhu kukuvumela ukuthi useshe usebenzisa izwi lakho</translation>
 <translation id="4901778704868714008">Londoloza...</translation>
 <translation id="4904877109095351937">Maka njengokufundiwe</translation>
@@ -919,7 +920,6 @@ Lapho uku-Incognito, amasayithi awakwazi ukusebenzisa amakhukhi wakho ukubona um
 <translation id="6945221475159498467">Khetha</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Amafolda</translation>
-<translation id="6975148662438928529">Ukhishwe ngemvume ku-akhawunti yakho ye-<ph name="USER_NAME" /> njengengxenye yokusetha kabusha i-iPad yakho. Thepha okuthi qhubeka ngezansi ukuze ungene ngemvume.</translation>
 <translation id="6979158407327259162">I-Google Drayivu</translation>
 <translation id="6988572888918530647">Phatha i-akhawunti yakho ye-Google</translation>
 <translation id="6989674195860388998">Shintsha Kumasethingi…</translation>
@@ -1157,13 +1157,11 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="868773710103052534">Usumi ngomumo</translation>
 <translation id="8693663554456874301">{count,plural, =1{Vala Ithebhu}one{Vala Amathebhu}other{Vala Amathebhu}}</translation>
 <translation id="8703536910991780768">Amaphasiwedi Akho abukeka Eqinile</translation>
-<translation id="8706588385081740091">Amaphasiwedi</translation>
 <translation id="8717864919010420084">Kopisha isixhumanisi</translation>
 <translation id="8721297211384281569">Imenyu yamathuluzi</translation>
 <translation id="8725066075913043281">Zama futhi</translation>
 <translation id="8727043961453758442">Zuza okuningi ku-Chrome</translation>
 <translation id="8730621377337864115">Kwenziwe</translation>
-<translation id="8731388423028622182">Ukhishwe ngemvume ku-akhawunti yakho ye-<ph name="USER_NAME" /> njengengxenye yokusetha kabusha i-iPhone yakho. Thepha okuthi qhubeka ngezansi ukuze ungene ngemvume.</translation>
 <translation id="87371078663613140">Hlola izinketho kubha yemenyu</translation>
 <translation id="8737620822084008350">{count,plural, =1{Iphrofayela eli-{count} elilondoloziwe litholakala ngaphezu kwekhibhodi yakho.}one{Amaphrofayela angu-{count} alondoloziwe atholakala ngaphezu kwekhibhodi yakho.}other{Amaphrofayela angu-{count} alondoloziwe atholakala ngaphezu kwekhibhodi yakho.}}</translation>
 <translation id="8741995161408053644">I-akhawunti yakho ye-Google ingahle ibe namanye amafomu omlando wokuphequlula ku-<ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

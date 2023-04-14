@@ -353,6 +353,7 @@
 <translation id="3324193307694657476">地址行 2</translation>
 <translation id="3328459813621383194">移動閒置分頁</translation>
 <translation id="3328801116991980348">網站資料</translation>
+<translation id="3344485292736684439">{count,plural, =1{書籤已儲存至您帳戶 ({email}) 中的「{title}」}other{書籤已儲存至您帳戶 ({email}) 中的「{title}」}}</translation>
 <translation id="3371831930909698441">有可以用嘅翻譯。你可以喺接近畫面底部附近搵到選項。</translation>
 <translation id="3377063233124932127">您儲存的書籤、密碼等內容現在會在頂端顯示。</translation>
 <translation id="3393920035788932672">已允許彈出式視窗</translation>
@@ -580,6 +581,7 @@
 <translation id="4860895144060829044">撥號</translation>
 <translation id="4872323082491632254">檢查密碼</translation>
 <translation id="4881695831933465202">開啟</translation>
+<translation id="488785315393301722">顯示詳情</translation>
 <translation id="4894963374040315706">這樣您便可使用語音搜尋功能查詢資訊</translation>
 <translation id="4901778704868714008">儲存…</translation>
 <translation id="4904877109095351937">標示為已閱讀</translation>
@@ -917,7 +919,6 @@
 <translation id="6945221475159498467">選取</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6973630695168034713">資料夾</translation>
-<translation id="6975148662438928529">您已在重設 iPad 時登出帳戶 (<ph name="USER_NAME" />)，輕按下方的 [繼續] 即可登入。</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
 <translation id="6988572888918530647">管理您的 Google 帳戶</translation>
 <translation id="6989674195860388998">切換至「設定」…</translation>
@@ -1030,6 +1031,7 @@
 <translation id="7840771868269352570">您選取的項目將會被移除。</translation>
 <translation id="7845466610722898">顯示閱讀清單</translation>
 <translation id="784551991304901159">如要查看內容，請從選單中選取「開啟」</translation>
+<translation id="7846158885638438868">{count,plural, =1{已將書籤加入「{title}」}other{已將書籤加入「{title}」}}</translation>
 <translation id="7853202427316060426">活動</translation>
 <translation id="7856733331829174190">無法下載</translation>
 <translation id="785938070103630874">開啟密碼、付款方法或地址等等</translation>
@@ -1155,13 +1157,11 @@
 <translation id="868773710103052534">大功告成！</translation>
 <translation id="8693663554456874301">{count,plural, =1{關閉單一分頁}other{關閉多個分頁}}</translation>
 <translation id="8703536910991780768">您的密碼看來安全度高</translation>
-<translation id="8706588385081740091">密碼</translation>
 <translation id="8717864919010420084">複製連結</translation>
 <translation id="8721297211384281569">工具選單</translation>
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8727043961453758442">充分運用 Chrome 的功能</translation>
 <translation id="8730621377337864115">完成</translation>
-<translation id="8731388423028622182">您已在重設 iPhone 時登出帳戶 (<ph name="USER_NAME" />)，輕按下方的 [繼續] 即可登入。</translation>
 <translation id="87371078663613140">瀏覽選單列中的選項</translation>
 <translation id="8737620822084008350">{count,plural, =1{有 {count} 個可以用嘅個人檔案儲存咗喺鍵盤上面。}other{有 {count} 個可以用嘅個人檔案儲存咗喺鍵盤上面。}}</translation>
 <translation id="8741995161408053644">您的 Google 帳戶在 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 上可能有其他形式的瀏覽記錄。</translation>

@@ -580,6 +580,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4860895144060829044">전화걸기</translation>
 <translation id="4872323082491632254">비밀번호 확인</translation>
 <translation id="4881695831933465202">열기</translation>
+<translation id="488785315393301722">세부정보 표시</translation>
 <translation id="4894963374040315706">액세스를 허용하면 음성으로 검색할 수 있습니다.</translation>
 <translation id="4901778704868714008">저장...</translation>
 <translation id="4904877109095351937">읽음으로 표시</translation>
@@ -919,7 +920,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6945221475159498467">선택</translation>
 <translation id="6965382102122355670">확인</translation>
 <translation id="6973630695168034713">폴더</translation>
-<translation id="6975148662438928529">iPad 재설정 중 <ph name="USER_NAME" /> 계정에서 로그아웃되었습니다. 아래에서 '계속'을 탭하여 로그인하세요.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Google 계정 관리</translation>
 <translation id="6989674195860388998">설정에서 전환…</translation>
@@ -1157,13 +1157,11 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="868773710103052534">모두 완료되었습니다</translation>
 <translation id="8693663554456874301">{count,plural, =1{탭 닫기}other{탭 닫기}}</translation>
 <translation id="8703536910991780768">안전한 비밀번호</translation>
-<translation id="8706588385081740091">비밀번호</translation>
 <translation id="8717864919010420084">링크 복사</translation>
 <translation id="8721297211384281569">도구 메뉴</translation>
 <translation id="8725066075913043281">다시 시도하세요</translation>
 <translation id="8727043961453758442">Chrome 최대한 활용하기</translation>
 <translation id="8730621377337864115">완료</translation>
-<translation id="8731388423028622182">iPhone 재설정 중 <ph name="USER_NAME" /> 계정에서 로그아웃되었습니다. 아래에서 '계속'을 탭하여 로그인하세요.</translation>
 <translation id="87371078663613140">메뉴 바의 옵션 살펴보기</translation>
 <translation id="8737620822084008350">{count,plural, =1{키보드 위에 저장된 프로필 {count}개가 있습니다.}other{키보드 위에 저장된 프로필 {count}개가 있습니다.}}</translation>
 <translation id="8741995161408053644"><ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />에서 내 Google 계정에 있는 다른 형식의 탐색 기록을 확인할 수 있습니다.</translation>

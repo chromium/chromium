@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Nazi ezinye izinsiza eziwusizo:</translation>
 <translation id="1905710495812624430">Imizamo emikhulu evunyelwe idluliwe.</translation>
 <translation id="1908234395526491708">Ukwehluleka kwesicelo se-UDP</translation>
+<translation id="1923388006036088459">Imibala ye-accent</translation>
 <translation id="1947737735496445907">Kuphrintiwe</translation>
 <translation id="1951012854035635156">Umsizi</translation>
 <translation id="1962550982027027473">I-APN ezenzakalelayo iyadingeka</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Ukulanda kuqedile</translation>
 <translation id="3969602104473960991">Iphasiwedi ye-ChromeOS ibuyekeziwe</translation>
 <translation id="397105322502079400">Iyabala...</translation>
+<translation id="3974175076798940554">Amafa e-Chromebook Plus Ekhethekile manje ayatholakala</translation>
 <translation id="39823212440917567">Imisebenzi yokuphrinta engaphezu kwezinsuku ezingu-<ph name="NUMBER_OF_DAYS" /> izosuswa</translation>
 <translation id="3993704782688964914">I-<ph name="DEVICE_NAME" /> yakho manje isesikhathini samanje</translation>
 <translation id="4003384961948020559">Yehlulekile - Okukhiphayo kugcwele</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">Engeza i-akhawunti ekungeneni ngemvume okuningi. Wonke ama-akhawunti angene ngemvume angafinyelelwa ngaphandle kwephasiwedi, ngakho-ke lesi sici kumele sisetshenziswe kuphela nama-akhawunti athenjiwe.</translation>
 <translation id="8364946094152050673">Amaseva wegama angenalutho</translation>
 <translation id="8372477600026034341">Abasingathi abangeziwe</translation>
+<translation id="8373046809163484087">Sebenzisa amasethi ombala afana nesithombe sakho sangemuva</translation>
 <translation id="8380114448424469341">Dokha iwindi engxenyeni ye-<ph name="DIRECTION" /> yesikrini</translation>
 <translation id="8395584934117017006">Le <ph name="DEVICE_TYPE" /> iphethwe yibhizinisi</translation>
 <translation id="8398927464629426868">Linganisela lapho idivayisi ishaja noma ingashaji</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">Igama lomsebenzisi</translation>
 <translation id="8503836310948963452">Amaninithi ambalwa nje asele…</translation>
 <translation id="8508640263392900755">Imininingwane ye-APN</translation>
+<translation id="8522687886059337719">Manje usungakwazi ukufinyelela <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />izithombe zangemuva<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ezintsha kanye <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />nesigcinisikrini<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">I-Crosvm</translation>
 <translation id="8557447961879934694">I-WPA2</translation>
 <translation id="8575298406870537639">Inkampani yenethiwekhi yakho idinga le nketho ukuze ixhume kunethiwekhi yayo. Xhumana nenkampani yakho yenethiwekhi mayelana nemininingwane.</translation>

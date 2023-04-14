@@ -46,6 +46,7 @@
 <translation id="1038462104119736705">Linux 用の推奨される空き容量は <ph name="INSTALL_SIZE" /> 以上です。空き容量を増やすには、デバイスからファイルを削除してください。</translation>
 <translation id="1038643060055067718">行数:</translation>
 <translation id="1039337018183941703">ファイルが無効であるか壊れています</translation>
+<translation id="1040761927998636252">「<ph name="URL" />」の名前のないブックマーク</translation>
 <translation id="1041175011127912238">このページは応答していません</translation>
 <translation id="1041263367839475438">使用可能なデバイス</translation>
 <translation id="1042174272890264476">お使いのパソコンには <ph name="SHORT_PRODUCT_NAME" /> の RLZ ライブラリも組み込まれています。RLZ は、個人を特定できないタグを割り当てて、特定の販促キャンペーンで生じた検索や <ph name="SHORT_PRODUCT_NAME" /> の利用状況を計測します。これらのラベルは <ph name="PRODUCT_NAME" /> で Google 検索キーワード内に表示されることがあります。</translation>
@@ -3985,7 +3986,6 @@
 <translation id="4453430595102511050">キーボードの右上にある指紋認証センサーをタップしてください。指紋データは <ph name="DEVICE_TYPE" /> にのみ安全に保存されます。</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" /> で検索するか、URL を入力してください</translation>
 <translation id="4457472090507035117">現在の音声を選択:</translation>
-<translation id="4458535500699390320">このタブがアクティブでないときに、メモリセーバーがメモリを他のタスクに解放しました。これは [設定] でいつでも変更できます。</translation>
 <translation id="4459169140545916303">最終同期: <ph name="DEVICE_LAST_ACTIVATED_TIME" /> 日前</translation>
 <translation id="4460014764210899310">グループを解除</translation>
 <translation id="4461483878391246134">翻訳しない言語を追加</translation>

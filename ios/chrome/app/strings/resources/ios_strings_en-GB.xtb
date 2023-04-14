@@ -321,6 +321,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3131206671572504478">Block all</translation>
 <translation id="313283613037595347">Create new Incognito tab.</translation>
 <translation id="3146109040683991651">Set Chrome as default browser</translation>
+<translation id="3152169319860972623">Password Checkup reviews your saved passwords and warns you of any online breaches. <ph name="BEGIN_LINK" />Learn more.<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">Save Card</translation>
 <translation id="3157387275655328056">Add to reading list</translation>
 <translation id="3157684681743766797">Mark All…</translation>
@@ -353,6 +354,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3324193307694657476">Address 2</translation>
 <translation id="3328459813621383194">Move inactive tabs</translation>
 <translation id="3328801116991980348">Site information</translation>
+<translation id="3344485292736684439">{count,plural, =1{Bookmark saved to ‘{title}’ in your account, {email}}other{Bookmarks saved to ‘{title}’ in your account, {email}}}</translation>
 <translation id="3371831930909698441">Translate is available. Options available near bottom of the screen.</translation>
 <translation id="3377063233124932127">Now your saved bookmarks, passwords and more are at the top.</translation>
 <translation id="3393920035788932672">Pop-ups Allowed</translation>
@@ -580,6 +582,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4860895144060829044">Call</translation>
 <translation id="4872323082491632254">Check passwords</translation>
 <translation id="4881695831933465202">Open</translation>
+<translation id="488785315393301722">Show details</translation>
 <translation id="4894963374040315706">This lets you search using your voice</translation>
 <translation id="4901778704868714008">Save...</translation>
 <translation id="4904877109095351937">Mark Read</translation>
@@ -919,7 +922,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="6945221475159498467">Select</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Folders</translation>
-<translation id="6975148662438928529">You were signed out of your account <ph name="USER_NAME" /> as part of your iPad reset. Tap continue below to sign in.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Manage your Google Account</translation>
 <translation id="6989674195860388998">Switch in settings…</translation>
@@ -1032,6 +1034,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7840771868269352570">The items that you selected will be removed.</translation>
 <translation id="7845466610722898">Show reading list</translation>
 <translation id="784551991304901159">To see content, select 'Turn On' from the menu</translation>
+<translation id="7846158885638438868">{count,plural, =1{Bookmarked to ‘{title}’}other{Bookmarked to ‘{title}’}}</translation>
 <translation id="7853202427316060426">Activity</translation>
 <translation id="7856733331829174190">Couldn't download</translation>
 <translation id="785938070103630874">Open passwords, payment methods or address and more</translation>
@@ -1157,13 +1160,11 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="868773710103052534">You're ready!</translation>
 <translation id="8693663554456874301">{count,plural, =1{Close tab}other{Close tabs}}</translation>
 <translation id="8703536910991780768">Your passwords look strong</translation>
-<translation id="8706588385081740091">Passwords</translation>
 <translation id="8717864919010420084">Copy link</translation>
 <translation id="8721297211384281569">Tools Menu</translation>
 <translation id="8725066075913043281">Try again</translation>
 <translation id="8727043961453758442">Get the most out of Chrome</translation>
 <translation id="8730621377337864115">Done</translation>
-<translation id="8731388423028622182">You were signed out of your account <ph name="USER_NAME" /> as part of your iPhone reset. Tap continue below to sign in.</translation>
 <translation id="87371078663613140">Explore the options in the menu bar</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count} saved profile available above your keyboard.}other{{count} saved profiles available above your keyboard.}}</translation>
 <translation id="8741995161408053644">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

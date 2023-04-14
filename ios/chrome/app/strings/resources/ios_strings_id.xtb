@@ -580,6 +580,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="4860895144060829044">Telepon</translation>
 <translation id="4872323082491632254">Periksa Sandi</translation>
 <translation id="4881695831933465202">Buka</translation>
+<translation id="488785315393301722">Tampilkan Detail</translation>
 <translation id="4894963374040315706">Hal ini memungkinkan Anda menelusuri menggunakan suara</translation>
 <translation id="4901778704868714008">Simpan...</translation>
 <translation id="4904877109095351937">Tandai Sudah Dibaca</translation>
@@ -919,7 +920,6 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="6965382102122355670">Oke</translation>
 <translation id="6973630695168034713">Folder</translation>
-<translation id="6975148662438928529">Anda telah logout dari akun <ph name="USER_NAME" /> sebagai bagian dari proses reset iPad. Ketuk lanjutkan di bawah untuk login.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Kelola Akun Google Anda</translation>
 <translation id="6989674195860388998">Ubah di Setelan …</translation>
@@ -1157,13 +1157,11 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="868773710103052534">Anda Sudah Siap</translation>
 <translation id="8693663554456874301">{count,plural, =1{Tutup Tab}other{Tutup Tab}}</translation>
 <translation id="8703536910991780768">Sandi Anda tampak Kuat</translation>
-<translation id="8706588385081740091">Sandi</translation>
 <translation id="8717864919010420084">Salin Link</translation>
 <translation id="8721297211384281569">Menu Alat</translation>
 <translation id="8725066075913043281">Coba lagi</translation>
 <translation id="8727043961453758442">Maksimalkan penggunaan Chrome</translation>
 <translation id="8730621377337864115">Selesai</translation>
-<translation id="8731388423028622182">Anda telah logout dari akun <ph name="USER_NAME" /> sebagai bagian dari proses reset iPhone. Ketuk lanjutkan di bawah untuk login.</translation>
 <translation id="87371078663613140">Jelajahi opsi di panel menu</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count} profil tersimpan tersedia di atas keyboard Anda.}other{{count} profil tersimpan tersedia di atas keyboard Anda.}}</translation>
 <translation id="8741995161408053644">Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

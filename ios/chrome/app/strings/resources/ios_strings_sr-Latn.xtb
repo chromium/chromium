@@ -353,6 +353,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="3324193307694657476">2. red za adresu</translation>
 <translation id="3328459813621383194">Premesti neaktivne kartice</translation>
 <translation id="3328801116991980348">Informacije o sajtu</translation>
+<translation id="3344485292736684439">{count,plural, =1{Obeleživač je sačuvan u folderu {title} na nalogu, {email}}one{Obeleživači su sačuvani u folderu {title} na nalogu, {email}}few{Obeleživači su sačuvani u folderu {title} na nalogu, {email}}other{Obeleživači su sačuvani u folderu {title} na nalogu, {email}}}</translation>
 <translation id="3371831930909698441">Prevodilac je dostupan. Opcije su dostupne u dnu ekrana.</translation>
 <translation id="3377063233124932127">Sada su sačuvani obeleživači, lozinke i drugo u vrhu.</translation>
 <translation id="3393920035788932672">Dozvoljeni iskačući prozori</translation>
@@ -580,6 +581,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="4860895144060829044">Pozovite</translation>
 <translation id="4872323082491632254">Proverite lozinke</translation>
 <translation id="4881695831933465202">Otvori</translation>
+<translation id="488785315393301722">Prikaži detalje</translation>
 <translation id="4894963374040315706">Ovo vam omogućava da pretražujete pomoću glasa</translation>
 <translation id="4901778704868714008">Sačuvaj...</translation>
 <translation id="4904877109095351937">Označi kao pročitano</translation>
@@ -919,7 +921,6 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="6945221475159498467">Izaberi</translation>
 <translation id="6965382102122355670">Potvrdi</translation>
 <translation id="6973630695168034713">Direktorijumi</translation>
-<translation id="6975148662438928529">Odjavljeni ste sa naloga <ph name="USER_NAME" /> u sklopu resetovanja na iPad-u. Dodirnite Nastavi u nastavku da biste se prijavili.</translation>
 <translation id="6979158407327259162">Google disk</translation>
 <translation id="6988572888918530647">Upravljajte Google nalogom</translation>
 <translation id="6989674195860388998">Promenite u Podešavanjima…</translation>
@@ -1032,6 +1033,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7840771868269352570">Stavke koje ste izabrali će biti uklonjene.</translation>
 <translation id="7845466610722898">Prikazuje listu za čitanje</translation>
 <translation id="784551991304901159">Da biste videli sadržaj, izaberite Uključi u meniju</translation>
+<translation id="7846158885638438868">{count,plural, =1{Obeleživač je dodat u folder {title}}one{Obeleživači su dodati u folder {title}}few{Obeleživači su dodati u folder {title}}other{Obeleživači su dodati u folder {title}}}</translation>
 <translation id="7853202427316060426">Aktivnost</translation>
 <translation id="7856733331829174190">Preuzimanje nije uspelo</translation>
 <translation id="785938070103630874">Otvorite lozinke, načine plaćanja ili adresu i drugo</translation>
@@ -1157,13 +1159,11 @@ Sajtovi mogu da koriste kolačiće da bi videli vaše aktivnosti pregledanja na
 <translation id="868773710103052534">Spremni ste</translation>
 <translation id="8693663554456874301">{count,plural, =1{Zatvori karticu}one{Zatvori kartice}few{Zatvori kartice}other{Zatvori kartice}}</translation>
 <translation id="8703536910991780768">Izgleda da su lozinke jake</translation>
-<translation id="8706588385081740091">Lozinke</translation>
 <translation id="8717864919010420084">Kopiraj link</translation>
 <translation id="8721297211384281569">Meni Alatke</translation>
 <translation id="8725066075913043281">Probajte ponovo</translation>
 <translation id="8727043961453758442">Iskoristite sve prednosti Chrome-a</translation>
 <translation id="8730621377337864115">Gotovo</translation>
-<translation id="8731388423028622182">Odjavljeni ste sa naloga <ph name="USER_NAME" /> u sklopu resetovanja iPhone-a. Dodirnite Nastavi u nastavku da biste se prijavili.</translation>
 <translation id="87371078663613140">Istražite opcije na traci menija</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count} sačuvani profil je dostupan iznad tastature.}one{{count} sačuvani profil je dostupan iznad tastature.}few{{count} sačuvana profila su dostupna iznad tastature.}other{{count} sačuvanih profila je dostupno iznad tastature.}}</translation>
 <translation id="8741995161408053644">Google nalog ima druge oblike istorije pregledanja na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

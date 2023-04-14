@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">A continuació trobaràs altres recursos útils:</translation>
 <translation id="1905710495812624430">S'ha superat el nombre màxim d'intents permesos.</translation>
 <translation id="1908234395526491708">Errors en la sol·licitud d'UDP</translation>
+<translation id="1923388006036088459">Colors d'èmfasi</translation>
 <translation id="1947737735496445907">Imprès</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1962550982027027473">Es necessita un APN predeterminat</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
 <translation id="3969602104473960991">S'ha actualitzat la contrasenya de Chrome OS</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
+<translation id="3974175076798940554">Els recursos exclusius per a Chromebook Plus ja estan disponibles</translation>
 <translation id="39823212440917567">Se suprimiran les tasques d'impressió amb una antiguitat superior a <ph name="NUMBER_OF_DAYS" /> dies</translation>
 <translation id="3993704782688964914">El dispositiu <ph name="DEVICE_NAME" /> s'acaba d'actualitzar</translation>
 <translation id="4003384961948020559">Error: safata de sortida plena</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">Afegiu un compte per a l'inici de sessió múltiple. Es pot accedir a tots el comptes registrats sense contrasenya, de manera que només hauríeu d'utilitzar aquesta funció en comptes de confiança.</translation>
 <translation id="8364946094152050673">Servidors de noms buits</translation>
 <translation id="8372477600026034341">Amfitrions addicionals</translation>
+<translation id="8373046809163484087">Utilitza conjunts de colors que encaixin amb el teu fons de pantalla</translation>
 <translation id="8380114448424469341">Ancora la finestra a la meitat <ph name="DIRECTION" /> de la pantalla</translation>
 <translation id="8395584934117017006">Aquest <ph name="DEVICE_TYPE" /> està gestionat per una empresa</translation>
 <translation id="8398927464629426868">El percentatge al qual s'està carregant o descarregant el dispositiu actualment</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">Nom d'usuari</translation>
 <translation id="8503836310948963452">Només queden uns quants minuts...</translation>
 <translation id="8508640263392900755">Detalls de l'APN</translation>
+<translation id="8522687886059337719">Ara tens accés als nous <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fons de pantalla<ph name="END_LINK_WALLPAPER_SUBPAGE" /> i <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />estalvis de pantalla<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">El teu operador pot requerir aquesta opció per connectar-te a la seva xarxa. Contacta-hi per obtenir-ne més informació.</translation>

@@ -580,6 +580,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="4860895144060829044">Volajte</translation>
 <translation id="4872323082491632254">Kontrola hesiel</translation>
 <translation id="4881695831933465202">Otvoriť</translation>
+<translation id="488785315393301722">Zobraziť podrobnosti</translation>
 <translation id="4894963374040315706">Umožňuje vyhľadávať hlasom</translation>
 <translation id="4901778704868714008">Uložiť...</translation>
 <translation id="4904877109095351937">Označiť ako prečítané</translation>
@@ -919,7 +920,6 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="6945221475159498467">Vybrať</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Priečinky</translation>
-<translation id="6975148662438928529">V rámci resetovania iPadu vás systém odhlásili z účtu <ph name="USER_NAME" />. Ak sa chcete prihlásiť, klepnite na Pokračovať nižšie.</translation>
 <translation id="6979158407327259162">Disk Google</translation>
 <translation id="6988572888918530647">Spravovať účet Google</translation>
 <translation id="6989674195860388998">Prepnúť v Nastaveniach…</translation>
@@ -1157,13 +1157,11 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="868773710103052534">Všetko je nastavené</translation>
 <translation id="8693663554456874301">{count,plural, =1{Zavrieť kartu}few{Zavrieť karty}many{Close Tabs}other{Zavrieť karty}}</translation>
 <translation id="8703536910991780768">Zdá sa, že vaše heslá sú silné</translation>
-<translation id="8706588385081740091">Heslá</translation>
 <translation id="8717864919010420084">Kopírovať odkaz</translation>
 <translation id="8721297211384281569">Ponuka Nástroje</translation>
 <translation id="8725066075913043281">Skúsiť znova</translation>
 <translation id="8727043961453758442">Využivajte Chrome naplno</translation>
 <translation id="8730621377337864115">Hotovo</translation>
-<translation id="8731388423028622182">V rámci resetovania iPhonu vás systém odhlásili z účtu <ph name="USER_NAME" />. Ak sa chcete prihlásiť, klepnite na Pokračovať nižšie.</translation>
 <translation id="87371078663613140">Preskúmajte možnosti na paneli s ponukami</translation>
 <translation id="8737620822084008350">{count,plural, =1{Nad klávesnicou je k dispozícii {count} uložený profil.}few{Nad klávesnicou sú k dispozícii {count} uložené profily.}many{{count} saved profiles available above your keyboard.}other{Nad klávesnicou je k dispozícii {count} uložených profilov.}}</translation>
 <translation id="8741995161408053644">Váš účet Google môže mať ďalšie formy histórie prehliadania na adrese <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

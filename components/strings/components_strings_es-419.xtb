@@ -364,6 +364,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1801812870656502108">Detalles de la tarjeta virtual</translation>
 <translation id="1803020234906945288">Nutrición saludable</translation>
 <translation id="1803351196216024260">Puede solicitar permiso para usar el micrófono</translation>
+<translation id="1806174020048213474">Esta app solicita permiso para instalar credenciales de Wi-Fi. Después de la configuración, tu <ph name="DEVICE_TYPE" /> se conectará automáticamente a las redes Wi-Fi participantes. Para quitar estas credenciales, desinstala la app.</translation>
 <translation id="1807246157184219062">Claro</translation>
 <translation id="1807528111851433570">Hoja de inicio</translation>
 <translation id="180991881384371158">El CVC está en el dorso de la tarjeta. Son los últimos 3 dígitos que se encuentran en la parte superior derecha del cuadro de firma.</translation>
@@ -1336,6 +1337,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4270541775497538019">Apilador 6</translation>
 <translation id="4274173425554582601">Informática y electrónica</translation>
 <translation id="4275830172053184480">Reiniciar tu dispositivo</translation>
+<translation id="4276974990916607331">No, gracias</translation>
 <translation id="4277028893293644418">Restablecer contraseña</translation>
 <translation id="4277937682389409325">Dirección local</translation>
 <translation id="4278390842282768270">Permitido</translation>
@@ -1696,6 +1698,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5129534298163637277">Diálogo de confirmación</translation>
 <translation id="5135404736266831032">Administrar direcciones…</translation>
 <translation id="5136841603454277753">Ingresa el código correcto.</translation>
+<translation id="5137761395480718572">Esta app solicita permiso para instalar credenciales de Wi-Fi. Después de la configuración, tu <ph name="DEVICE_TYPE" /> se conectará automáticamente a las redes Wi-Fi participantes. Para quitar estas credenciales, desinstala la app. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">La tarjeta virtual no está disponible ahora mismo; comunícate con tu banco.</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
 <translation id="5145883236150621069">Código de error en la respuesta de la política</translation>
@@ -1752,6 +1755,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5273881944177595304">Aplicaciones web y herramientas en línea</translation>
 <translation id="5274025349362408263">Libros y literatura</translation>
 <translation id="5279286380302340275">Administrar las descargas</translation>
+<translation id="5279453600310613955">No, gracias</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Propiedades del documento</translation>
 <translation id="528468243742722775">Finalizar</translation>
@@ -2244,6 +2248,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6529173248185917884">Séptimo rollo</translation>
 <translation id="6529602333819889595">&amp;Rehacer Eliminar</translation>
 <translation id="6535751101619004418">Monedas y mercado de divisas</translation>
+<translation id="6536221421038631327">Si quitas una suscripción a Passpoint de tu <ph name="DEVICE_TYPE" />, también se quitarán las redes asociadas. Comunícate con "<ph name="FRIENDLY_NAME" />" para hacer cambios en tu plan de suscripción. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">Fondos comunes de inversión</translation>
 <translation id="6545864417968258051">Búsqueda de dispositivos Bluetooth</translation>
 <translation id="6547208576736763147">Perforación doble a la izquierda</translation>
@@ -3340,6 +3345,7 @@ Detalles adicionales:
 <translation id="9219103736887031265">Imágenes</translation>
 <translation id="922152298093051471">Personalizar Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">¿Quieres permitir que la app de <ph name="APP_NAME" /> configure redes Wi-Fi?</translation>
 <translation id="936602727769022409">Podrías perder el acceso a tu Cuenta de Google. Chromium te recomienda cambiar la contraseña ahora. Deberás acceder a la cuenta.</translation>
 <translation id="937457230470581909">Zoológicos, acuarios y reservas</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Qué datos se usan:<ph name="END_BOLD" /> Tus temas de anuncios se basan en tu historial de navegación reciente, una lista de los sitios que visitaste con Chrome en este dispositivo.</translation>

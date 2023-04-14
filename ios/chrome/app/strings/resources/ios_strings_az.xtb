@@ -580,6 +580,7 @@ Ayarı dəyişmək üçün <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlay�
 <translation id="4860895144060829044">Zəng</translation>
 <translation id="4872323082491632254">Parolları yoxlayın</translation>
 <translation id="4881695831933465202">Açın</translation>
+<translation id="488785315393301722">Detalları göstər</translation>
 <translation id="4894963374040315706">Səsinizi istifadə edərək axtarış etməyə icazə verir</translation>
 <translation id="4901778704868714008">Yadda saxlayın...</translation>
 <translation id="4904877109095351937">Oxunmuş Kimi Qeyd Edin</translation>
@@ -919,7 +920,6 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="6945221475159498467">Seçin</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Qovluqlar</translation>
-<translation id="6975148662438928529">iPad sıfırlamasının bir hissəsi olaraq <ph name="USER_NAME" /> hesabınızdan çıxdınız. Daxil olmaq üçün aşağıda "davam edin" seçiminə toxunun.</translation>
 <translation id="6979158407327259162">Google Disk</translation>
 <translation id="6988572888918530647">Google Hesabını İdarə Edin</translation>
 <translation id="6989674195860388998">Ayarlarda keçirin…</translation>
@@ -1157,13 +1157,11 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="868773710103052534">Hər şey hazırdır</translation>
 <translation id="8693663554456874301">{count,plural, =1{Tabı bağlayın}other{Tabları bağlayın}}</translation>
 <translation id="8703536910991780768">Parollar güclü görünür</translation>
-<translation id="8706588385081740091">Parollar</translation>
 <translation id="8717864919010420084">Linki Kopyalayın</translation>
 <translation id="8721297211384281569">Alətlər Menyusu</translation>
 <translation id="8725066075913043281">Yenidən cəhd edin</translation>
 <translation id="8727043961453758442">Chrome-dan maksimum yararlanın</translation>
 <translation id="8730621377337864115">Tamamdır</translation>
-<translation id="8731388423028622182">iPhone sıfırlamasının bir hissəsi olaraq <ph name="USER_NAME" /> hesabınızdan çıxdınız. Daxil olmaq üçün aşağıda "davam edin" seçiminə toxunun.</translation>
 <translation id="87371078663613140">Menyu panelində seçimləri araşdırın</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count} yaddaşda saxlanılmış profil klaviaturanızın yuxarısında əlçatandır.}other{{count} yaddaşda saxlanılmış profil klaviaturanızın yuxarısında əlçatandır.}}</translation>
 <translation id="8741995161408053644"><ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> bölməsində Google Hesabının axtarış tarixçəsinin digər formaları ola bilər.</translation>

@@ -581,6 +581,7 @@
 <translation id="4860895144060829044">ဖုန်းခေါ်ရန်</translation>
 <translation id="4872323082491632254">စကားဝှက်များ စစ်ဆေးခြင်း</translation>
 <translation id="4881695831933465202">ဖွင့်</translation>
+<translation id="488785315393301722">အသေးစိတ်များကို ပြရန်</translation>
 <translation id="4894963374040315706">၎င်းက သင့်အသံဖြင့် ရှာဖွေခွင့်ပြုသည်</translation>
 <translation id="4901778704868714008">သိမ်းရန်...</translation>
 <translation id="4904877109095351937">ဖတ်ပြီးကြောင်း အမှတ်အသားလုပ်ရန်</translation>
@@ -919,7 +920,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6945221475159498467">ရွေးရန်</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">ဖိုင်တွဲ</translation>
-<translation id="6975148662438928529">သင့် iPad ပြင်ဆင်သတ်မှတ်မှု၏ လုပ်ဆောင်ချက်တစ်ခုအနေဖြင့် သင့်အကောင့် <ph name="USER_NAME" /> မှ ထွက်သွားသည်။ လက်မှတ်ထိုးဝင်ရန် အောက်ရှိရှေ့ဆက်ရန်ကို တို့ပါ။</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">သင့် Google Account ကို စီမံခြင်း</translation>
 <translation id="6989674195860388998">‘ဆက်တင်များ’ တွင် ပြောင်းရန်…</translation>
@@ -1157,13 +1157,11 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="868773710103052534">အသင့်ဖြစ်နေပါပြီ</translation>
 <translation id="8693663554456874301">{count,plural, =1{တဘ် ပိတ်ရန်}other{တဘ်များ ပိတ်ရန်}}</translation>
 <translation id="8703536910991780768">သင့်စကားဝှက်များက လုံခြုံမှုမြင့်ပုံရသည်</translation>
-<translation id="8706588385081740091">စကားဝှက်များ</translation>
 <translation id="8717864919010420084">လင့်ခ်မိတ္တူကူးရန်</translation>
 <translation id="8721297211384281569">ကိရိယာမီနျူး</translation>
 <translation id="8725066075913043281">ထပ် စမ်းကြည့်ရန်</translation>
 <translation id="8727043961453758442">Chrome ကို အကောင်းဆုံးအသုံးချခြင်း</translation>
 <translation id="8730621377337864115">ပြီးပါပြီ</translation>
-<translation id="8731388423028622182">သင့် iPhone ပြင်ဆင်သတ်မှတ်မှု၏ လုပ်ဆောင်ချက်တစ်ခုအနေဖြင့် သင့်အကောင့် <ph name="USER_NAME" /> မှ ထွက်သွားသည်။ လက်မှတ်ထိုးဝင်ရန် အောက်ရှိရှေ့ဆက်ရန်ကို တို့ပါ။</translation>
 <translation id="87371078663613140">မီနူးဘားရှိ ရွေးချယ်စရာများကို လေ့လာပါ</translation>
 <translation id="8737620822084008350">{count,plural, =1{သိမ်းထားသော ပရိုဖိုင် {count} ခု သင့်ကီးဘုတ်ပေါ်တွင် ရနိုင်သည်။}other{သိမ်းထားသော ပရိုဖိုင် {count} ခု သင့်ကီးဘုတ်ပေါ်တွင် ရနိုင်သည်။}}</translation>
 <translation id="8741995161408053644"><ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> ၌ သင့် Google အကောင့်၏ အခြားသော အင်တာနက်အသုံးပြုမှု မှတ်တမ်းများ ရှိနိုင်သည်။</translation>

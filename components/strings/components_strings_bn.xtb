@@ -364,6 +364,7 @@
 <translation id="1801812870656502108">ভার্চুয়াল কার্ডের বিবরণ</translation>
 <translation id="1803020234906945288">স্বাস্থ্যকর খাদ্যাভ্যাস</translation>
 <translation id="1803351196216024260">মাইক্রোফোন ব্যবহার করতে অনুমতি চাইতে পারে</translation>
+<translation id="1806174020048213474">এই অ্যাপটি ওয়াই-ফাই ক্রেডেনশিয়াল ইনস্টল করার জন্য অনুমতি চাইছে। সেট-আপ হয়ে গেলে, আপনার <ph name="DEVICE_TYPE" /> অটোমেটিক অংশগ্রহণকারী ওয়াই ফাই নেটওয়ার্কের সাথে কানেক্ট হয়ে যাবে। এই ক্রেডেনশিয়ালগুলি সরিয়ে দেওয়ার জন্য, অ্যাপ আনইনস্টল করুন।</translation>
 <translation id="1807246157184219062">আলো</translation>
 <translation id="1807528111851433570">শুরুর শিট</translation>
 <translation id="180991881384371158">আপনার CVC কার্ডের পিছনে আছে। আপনার সিগনেচার বক্সের উপরের ডানদিকে শেষ ৩টি সংখ্যা হল CVC নম্বর।</translation>
@@ -1336,6 +1337,7 @@
 <translation id="4270541775497538019">স্ট্যাকার ৬</translation>
 <translation id="4274173425554582601">কম্পিউটার ও ইলেক্ট্রনিক্স</translation>
 <translation id="4275830172053184480">আপনার ডিভাইস বন্ধ করে চালু করুন</translation>
+<translation id="4276974990916607331">না থাক</translation>
 <translation id="4277028893293644418">পাসওয়ার্ড রিসেট করুন</translation>
 <translation id="4277937682389409325">স্থানীয় ঠিকানা</translation>
 <translation id="4278390842282768270">মঞ্জুরিপ্রাপ্ত</translation>
@@ -1696,6 +1698,7 @@
 <translation id="5129534298163637277">কনফার্মেশন ডায়ালগ</translation>
 <translation id="5135404736266831032">ঠিকানাগুলি পরিচালনা করুন...</translation>
 <translation id="5136841603454277753">সঠিক কোড লিখুন</translation>
+<translation id="5137761395480718572">এই অ্যাপটি ওয়াই-ফাই ক্রেডেনশিয়াল ইনস্টল করার জন্য অনুমতি চাইছে। সেট-আপ হয়ে গেলে, আপনার <ph name="DEVICE_TYPE" /> অটোমেটিক অংশগ্রহণকারী ওয়াই ফাই নেটওয়ার্কের সাথে কানেক্ট হয়ে যাবে। এই ক্রেডেনশিয়ালগুলি সরিয়ে দেওয়ার জন্য, অ্যাপ আনইনস্টল করুন। <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">ভার্চুয়াল কার্ড এই মুহূর্তে উপলভ্য নেই, আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন</translation>
 <translation id="5138227688689900538">কম দেখুন</translation>
 <translation id="5145883236150621069">নীতি প্রতিক্রিয়ার মধ্যে ত্রুটি কোড উপস্থিত</translation>
@@ -1752,6 +1755,7 @@
 <translation id="5273881944177595304">ওয়েব অ্যাপ্লিকেশন ও অনলাইন টুল</translation>
 <translation id="5274025349362408263">বই ও সাহিত্য</translation>
 <translation id="5279286380302340275">ডাউনলোড ম্যানেজ করুন</translation>
+<translation id="5279453600310613955">না থাক</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">ডকুমেন্ট প্রপার্টি</translation>
 <translation id="528468243742722775">শেষ</translation>
@@ -2102,6 +2106,7 @@
 <translation id="6165508094623778733">আরও জানুন</translation>
 <translation id="6167577165590485365">শেষবার যখন ফেচ করার চেষ্টা করা হয়েছিল:</translation>
 <translation id="6169916984152623906">এখন আপনি গোপনভাবে ব্রাউজ করতে পারেন এবং অন্য যেসব বক্তি এই ডিভাইস ব্যবহার করেন তারা আপনার অ্যাক্টিভিটি দেখতে পাবেন না। তবে, আপনার ডাউনলোড এবং বুকমার্কগুলি সেভ করা হবে।</translation>
+<translation id="617256461084925519">Google Chrome আপনার পরিচয় যাচাই করার চেষ্টা করছে যাতে আপনার পেমেন্ট সংক্রান্ত তথ্য পূরণ করা যায়।</translation>
 <translation id="6177128806592000436">এই সাইটে আপনার সংযোগ নিরাপদ নয়</translation>
 <translation id="6177531123306197852">এনভেলপ C2</translation>
 <translation id="6180316780098470077">কতক্ষণ পর আবার চেষ্টা করা যাবে</translation>
@@ -2244,6 +2249,7 @@
 <translation id="6529173248185917884">Seventh Roll</translation>
 <translation id="6529602333819889595">&amp;মুছে ফেলাকে আবার করুন</translation>
 <translation id="6535751101619004418">মুদ্রা ও বৈদেশিক মুদ্রাবিনিময়</translation>
+<translation id="6536221421038631327">আপনার <ph name="DEVICE_TYPE" /> থেকে একটি পাসপয়েন্ট সাবস্ক্রিপশন সরানো হলে সংশ্লিষ্ট নেটওয়ার্কগুলি মুছে যাবে। আপনার সাবস্ক্রিপশন প্ল্যানে পরিবর্তন করার জন্য "<ph name="FRIENDLY_NAME" />"-এর সাথে যোগাযোগ করুন। <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">মিউচুয়াল ফান্ড</translation>
 <translation id="6545864417968258051">ব্লুটুথ স্ক্যানিং</translation>
 <translation id="6547208576736763147">বাঁদিকে ডুয়াল পাঞ্চ</translation>
@@ -2652,6 +2658,7 @@
 <translation id="7518003948725431193">No webpage was found for the web address: <ph name="URL" /></translation>
 <translation id="7521387064766892559">জাভাস্ক্রিপ্ট</translation>
 <translation id="7521825010239864438">"<ph name="SECTION" />" বিভাগটি লুকানো আছে</translation>
+<translation id="752189128961566325">আপনি বিভিন্ন Google প্রোডাক্ট জুড়ে এটি ব্যবহার করতে পারবেন</translation>
 <translation id="7523408071729642236">ম্যানুফ্যাকচারিং</translation>
 <translation id="7526934274050461096">এই সাইটে আপনার সংযোগ ব্যক্তিগত নয়</translation>
 <translation id="7529884293139707752">হোমস্কুলিং</translation>
@@ -2879,6 +2886,7 @@
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" সঠিকভাবে কনফিগার হয়নি। সাধারণত "<ph name="SOFTWARE_NAME" />" আন-ইনস্টল করা হলে সমস্যার সমাধান হয়ে যায়। <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058009102480785916">খাদ্য উৎপাদন</translation>
 <translation id="8058603697124206642">প্রয়োজন নেই</translation>
+<translation id="8064892030280197386">আপনার পরিচয় যাচাই করার চেষ্টা করছে যাতে আপনার পেমেন্ট সংক্রান্ত তথ্য পূরণ করা যায়।</translation>
 <translation id="8066225060526005217">কুকি সেটিংস দ্বারা ম্যানেজ করা হয়েছে</translation>
 <translation id="8067872629359326442">আপনি এখনই প্রতারণামূলক একটি সাইটে আপনার পাসওয়ার্ড লিখেছেন। Chromium সাহায্য করবে। আপনার অ্যাকাউন্টের নিরাপত্তা লঙ্ঘনের সম্ভাবনা এড়ানোর জন্য পাসওয়ার্ড পরিবর্তন করতে এবং Google-কে বিজ্ঞপ্তি দিয়ে জানাতে 'অ্যাকাউন্ট সুরক্ষিত রাখুন' বিকল্পে ক্লিক করুন।</translation>
 <translation id="8070439594494267500">অ্যাপ আইকন</translation>
@@ -3339,6 +3347,7 @@
 <translation id="9219103736887031265">Images</translation>
 <translation id="922152298093051471">Chrome কাস্টমাইজ করুন</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385"><ph name="APP_NAME" /> অ্যাপকে ওয়াই ফাই নেটওয়ার্ক সেট-আপ করার অনুমতি দেবেন?</translation>
 <translation id="936602727769022409">আপনি আপনার Google অ্যাকাউন্টে অ্যাক্সেস হারাতে পারেন। Chromium-এর প্রস্তাব হল যে আপনি আপনার পাসওয়ার্ড এখনই পরিবর্তন করুন। আপনাকে আবার সাইন-ইন করতে বলা হবে।</translation>
 <translation id="937457230470581909">চিড়িয়াখানা, অ্যাকোয়ারিয়াম এবং সংরক্ষণ</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />কোন ডেটা ব্যবহার করা হয়:<ph name="END_BOLD" /> বিজ্ঞাপনের বিষয়গুলি আপনার সাম্প্রতিক ব্রাউজিং ইতিহাসের উপর ভিত্তি করে বেছে নেওয়া হয়। এক্ষেত্রে তা হল, ডিভাইসে Chrome ব্যবহার করে আপনি যেসব সাইট ভিজিট করেছেন তার একটি তালিকা।</translation>

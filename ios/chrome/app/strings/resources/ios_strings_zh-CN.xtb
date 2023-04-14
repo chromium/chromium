@@ -353,6 +353,7 @@
 <translation id="3324193307694657476">地址第2行</translation>
 <translation id="3328459813621383194">移动闲置标签页</translation>
 <translation id="3328801116991980348">网站信息</translation>
+<translation id="3344485292736684439">{count,plural, =1{已将书签保存到帐号 {email} 中的“{title}”}other{已将书签保存到帐号 {email} 中的“{title}”}}</translation>
 <translation id="3371831930909698441">可以翻译。选项位于屏幕底部附近。</translation>
 <translation id="3377063233124932127">现在，您已保存的书签、密码等信息会显示在顶部。</translation>
 <translation id="3393920035788932672">允许显示弹出式窗口</translation>
@@ -580,6 +581,7 @@
 <translation id="4860895144060829044">拨打</translation>
 <translation id="4872323082491632254">检查密码</translation>
 <translation id="4881695831933465202">打开</translation>
+<translation id="488785315393301722">显示详细信息</translation>
 <translation id="4894963374040315706">这样您就可以使用语音进行搜索</translation>
 <translation id="4901778704868714008">保存…</translation>
 <translation id="4904877109095351937">标记为已读</translation>
@@ -919,7 +921,6 @@
 <translation id="6945221475159498467">选择</translation>
 <translation id="6965382102122355670">确定</translation>
 <translation id="6973630695168034713">文件夹</translation>
-<translation id="6975148662438928529">您在 iPad 重置过程中退出了帐号 <ph name="USER_NAME" />。点按下方的“继续”即可登录。</translation>
 <translation id="6979158407327259162">Google 云端硬盘</translation>
 <translation id="6988572888918530647">管理 Google 帐号</translation>
 <translation id="6989674195860388998">在“设置”中切换…</translation>
@@ -1032,6 +1033,7 @@
 <translation id="7840771868269352570">系统将会移除您所选的各项内容。</translation>
 <translation id="7845466610722898">显示阅读清单</translation>
 <translation id="784551991304901159">如需查看内容，请从菜单中选择“开启”</translation>
+<translation id="7846158885638438868">{count,plural, =1{已将书签添加到“{title}”}other{已将书签添加到“{title}”}}</translation>
 <translation id="7853202427316060426">活动</translation>
 <translation id="7856733331829174190">无法下载</translation>
 <translation id="785938070103630874">打开“密码”“付款方式”或“地址”等</translation>
@@ -1157,13 +1159,11 @@
 <translation id="868773710103052534">大功告成！</translation>
 <translation id="8693663554456874301">{count,plural, =1{关闭这个标签页}other{关闭这些标签页}}</translation>
 <translation id="8703536910991780768">您的密码看似安全系数较高</translation>
-<translation id="8706588385081740091">密码</translation>
 <translation id="8717864919010420084">复制链接</translation>
 <translation id="8721297211384281569">工具菜单</translation>
 <translation id="8725066075913043281">重试</translation>
 <translation id="8727043961453758442">充分利用 Chrome</translation>
 <translation id="8730621377337864115">完成</translation>
-<translation id="8731388423028622182">您在 iPhone 重置过程中退出了帐号 <ph name="USER_NAME" />。点按下方的“继续”即可登录。</translation>
 <translation id="87371078663613140">浏览菜单栏中的选项</translation>
 <translation id="8737620822084008350">{count,plural, =1{键盘上方显示了 {count} 份已保存的个人资料。}other{键盘上方显示了 {count} 份已保存的个人资料。}}</translation>
 <translation id="8741995161408053644">您的 Google 帐号在 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>

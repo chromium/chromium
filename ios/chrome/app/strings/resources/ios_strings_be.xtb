@@ -580,6 +580,7 @@
 <translation id="4860895144060829044">Выклік</translation>
 <translation id="4872323082491632254">Праверка пароляў</translation>
 <translation id="4881695831933465202">Адкрыць</translation>
+<translation id="488785315393301722">Паказаць падрабязнасці</translation>
 <translation id="4894963374040315706">Гэта дае магчымасць выконваць пошук пры дапамозе голасу</translation>
 <translation id="4901778704868714008">Захаваць...</translation>
 <translation id="4904877109095351937">Пазначыць як прачытанае</translation>
@@ -919,7 +920,6 @@
 <translation id="6945221475159498467">Выбраць</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6973630695168034713">Папкі</translation>
-<translation id="6975148662438928529">У выніку скіду налад iPad адбыўся выхад з уліковага запісу <ph name="USER_NAME" />. Каб увайсці ў яго, націсніце Continue ("Працягнуць") ніжэй.</translation>
 <translation id="6979158407327259162">Google Дыск</translation>
 <translation id="6988572888918530647">Кіраванне Уліковым запісам Google</translation>
 <translation id="6989674195860388998">Задаць іншы браўзер у наладах…</translation>
@@ -1157,13 +1157,11 @@
 <translation id="868773710103052534">Усё гатова</translation>
 <translation id="8693663554456874301">{count,plural, =1{Закрыць укладку}one{Закрыць укладкі}few{Закрыць укладкі}many{Закрыць укладкі}other{Закрыць укладкі}}</translation>
 <translation id="8703536910991780768">Вы выкарыстоўваеце надзейныя паролі</translation>
-<translation id="8706588385081740091">Паролі</translation>
 <translation id="8717864919010420084">Скапіраваць спасылку</translation>
 <translation id="8721297211384281569">Меню "Інструменты"</translation>
 <translation id="8725066075913043281">Паўтарыць спробу</translation>
 <translation id="8727043961453758442">Карыстайцеся ўсімі магчымасцямі Chrome</translation>
 <translation id="8730621377337864115">Гатова</translation>
-<translation id="8731388423028622182">У выніку скіду налад iPhone адбыўся выхад з уліковага запісу <ph name="USER_NAME" />. Каб увайсці ў яго, націсніце Continue ("Працягнуць") ніжэй.</translation>
 <translation id="87371078663613140">Азнаёмцеся з даступнымі варыянтамі ў панэлі меню</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count} захаваны профіль паказваецца над клавіятурай.}one{{count} захаваны профіль паказваецца над клавіятурай.}few{{count} захаваныя профілі паказваюцца над клавіятурай.}many{{count} захаваных профіляў паказваюцца над клавіятурай.}other{{count} захаванага профілю паказваюцца над клавіятурай.}}</translation>
 <translation id="8741995161408053644">На сайце <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> размешчаны іншыя формы запісу гісторыі прагляду сайтаў для вашага Уліковага запісу Google.</translation>

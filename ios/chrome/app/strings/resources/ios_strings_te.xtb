@@ -580,6 +580,7 @@
 <translation id="4860895144060829044">కాల్ చేయండి</translation>
 <translation id="4872323082491632254">పాస్‌వర్డ్‌లను చెక్ చేయండి</translation>
 <translation id="4881695831933465202">తెరువు</translation>
+<translation id="488785315393301722">వివరాలను చూపించు</translation>
 <translation id="4894963374040315706">మీ వాయిస్‌ను ఉపయోగించి సెర్చ్ చేయడానికి ఇది అనుమతిస్తుంది</translation>
 <translation id="4901778704868714008">సేవ్ చేయండి...</translation>
 <translation id="4904877109095351937">చదివినట్లు గుర్తు పెట్టు</translation>
@@ -919,7 +920,6 @@
 <translation id="6945221475159498467">ఎంచుకోండి</translation>
 <translation id="6965382102122355670">సరే</translation>
 <translation id="6973630695168034713">ఫోల్డర్‌లు</translation>
-<translation id="6975148662438928529">మీ iPad రీసెట్ ప్రాసెస్‌లో భాగంగా మీరు మీ <ph name="USER_NAME" /> ఖాతా నుండి సైన్ అవుట్ చేయబడ్డారు. సైన్ ఇన్ చేయడానికి దిగువున ఉన్న కొనసాగించండి ఆప్షన్‌ను ట్యాప్ చేయండి.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">మీ Google ఖాతాను మేనేజ్ చేయండి</translation>
 <translation id="6989674195860388998">సెట్టింగ్‌లలో స్విచ్ చేయి…</translation>
@@ -1157,13 +1157,11 @@
 <translation id="868773710103052534">మీరు అంతా పూర్తి చేశారు</translation>
 <translation id="8693663554456874301">{count,plural, =1{ట్యాబ్‌ను మూసివేయి}other{ట్యాబ్‌లను మూసివేయి}}</translation>
 <translation id="8703536910991780768">మీ పాస్‌వర్డ్‌లు శక్తివంతమైనవిగా కనిపిస్తున్నాయి</translation>
-<translation id="8706588385081740091">పాస్‌వర్డ్‌లు</translation>
 <translation id="8717864919010420084">లింక్‌ని కాపీ చేయి</translation>
 <translation id="8721297211384281569">సాధనాల మెనూ</translation>
 <translation id="8725066075913043281">మళ్ళీ ప్రయత్నించండి</translation>
 <translation id="8727043961453758442">Chrome నుండి అత్యధిక ప్రయోజనాలను పొందండి</translation>
 <translation id="8730621377337864115">పూర్తయింది</translation>
-<translation id="8731388423028622182">మీ iPhone రీసెట్ ప్రాసెస్‌లో భాగంగా మీరు మీ <ph name="USER_NAME" /> ఖాతా నుండి సైన్ అవుట్ చేయబడ్డారు. సైన్ ఇన్ చేయడానికి దిగువున ఉన్న కొనసాగించండి ఆప్షన్‌ను ట్యాప్ చేయండి.</translation>
 <translation id="87371078663613140">మెనూ బార్‌లోని ఆప్షన్‌లను అన్వేషించండి</translation>
 <translation id="8737620822084008350">{count,plural, =1{సేవ్ చేసిన {count} ప్రొఫైల్ మీ కీబోర్డ్ పైన అందుబాటులో ఉంది.}other{సేవ్ చేసిన {count} ప్రొఫైళ్లు మీ కీబోర్డ్ పైన అందుబాటులో ఉన్నాయి.}}</translation>
 <translation id="8741995161408053644"><ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />వద్ద మీ Google ఖాతాలో ఇతర బ్రౌజింగ్ హిస్టరీ రకాలు ఉండవచ్చు.</translation>

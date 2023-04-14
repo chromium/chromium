@@ -321,6 +321,7 @@
 <translation id="3131206671572504478">سبھی کو مسدود کریں</translation>
 <translation id="313283613037595347">نیا پوشیدگی ٹیب بنائیں۔</translation>
 <translation id="3146109040683991651">‏Chrome کو ڈيفالٹ براؤزر کے بطور سیٹ کریں</translation>
+<translation id="3152169319860972623">پاس ورڈ چیک اپ آپ کے محفوظ کردہ پاس ورڈز کا جائزہ لیتا ہے اور آپ کو کسی بھی آن لائن خلاف ورزی سے متنبہ کرتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں۔<ph name="END_LINK" /></translation>
 <translation id="3153862085237805241">کارڈ محفوظ کریں</translation>
 <translation id="3157387275655328056">پڑھنے کی فہرست میں شامل کریں</translation>
 <translation id="3157684681743766797">سبھی کو نشان زد کریں…</translation>
@@ -580,6 +581,7 @@
 <translation id="4860895144060829044">کال کریں</translation>
 <translation id="4872323082491632254">پاس ورڈز چیک کریں</translation>
 <translation id="4881695831933465202">کھولیں</translation>
+<translation id="488785315393301722">تفصیلات دکھائیں</translation>
 <translation id="4894963374040315706">یہ آپ کو اپنی آواز کا استعمال کر کے تلاش کرنے کی اجازت دیتا ہے</translation>
 <translation id="4901778704868714008">محفوظ کریں...</translation>
 <translation id="4904877109095351937">پڑھے ہوئے کے بطور نشان زد کریں</translation>
@@ -919,7 +921,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6945221475159498467">منتخب کریں</translation>
 <translation id="6965382102122355670">ٹھیک ہے</translation>
 <translation id="6973630695168034713">فولڈرز</translation>
-<translation id="6975148662438928529">‏آپ اپنے iPad ری سیٹ کے حصے کے طور پر اپنے اکاؤنٹ <ph name="USER_NAME" /> سے سائن آؤٹ ہو گئے تھے۔ سائن ان کرنے کے لیے نیچے جاری رکھیں پر تھپتھپائیں۔</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">‏اپنے Google اکاؤنٹ کا نظم کریں</translation>
 <translation id="6989674195860388998">ترتیبات میں سوئچ کریں…</translation>
@@ -1157,13 +1158,11 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="868773710103052534">آپ پوری طرح سے تیار ہیں</translation>
 <translation id="8693663554456874301">{count,plural, =1{ٹیب بند کریں}other{ٹیبز بند کریں}}</translation>
 <translation id="8703536910991780768">آپ کے پاس ورڈز مضبوط لگ رہے ہیں</translation>
-<translation id="8706588385081740091">پاس ورڈز</translation>
 <translation id="8717864919010420084">لنک کاپی کریں</translation>
 <translation id="8721297211384281569">ٹولز مینیو</translation>
 <translation id="8725066075913043281">دوبارہ کوشش کریں</translation>
 <translation id="8727043961453758442">‏Chrome سے زیادہ سے زیادہ فائدہ اٹھائیں</translation>
 <translation id="8730621377337864115">ہوگیا</translation>
-<translation id="8731388423028622182">‏آپ اپنے iPhone ری سیٹ کے حصے کے طور پر اپنے اکاؤنٹ <ph name="USER_NAME" /> سے سائن آؤٹ ہو گئے تھے۔ سائن ان کرنے کے لیے نیچے جاری رکھیں پر تھپتھپائیں۔</translation>
 <translation id="87371078663613140">مینیو بار میں موجود اختیارات کو دریافت کریں</translation>
 <translation id="8737620822084008350">{count,plural, =1{آپ کے کی بورڈ کے اوپر {count} محفوظ کردہ پروفائل دستیاب ہے۔}other{آپ کے کی بورڈ کے اوپر {count} محفوظ کردہ پروفائلز دستیاب ہیں۔}}</translation>
 <translation id="8741995161408053644">‏ممکن ہے کہ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر فارمز موجود ہوں۔</translation>

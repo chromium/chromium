@@ -1073,6 +1073,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5976112937189445008">Pulsa Intro para grabar la ventana</translation>
 <translation id="5978382165065462689">Compartiendo control de la pantalla a través de Asistencia remota.</translation>
 <translation id="5980301590375426705">Cerrar como invitado</translation>
+<translation id="5983567367406220847">Se ha desactivado el punto de acceso por inactividad.</translation>
 <translation id="598407983968395253">Utilizar plantilla</translation>
 <translation id="598882571027504733">Para recibir la actualización, reinicia tu Chromebook con el teclado conectado.</translation>
 <translation id="6002179289567220515">Has usado el interruptor físico para desactivar 1 cámara. También puedes desactivar el acceso a todas las cámaras.</translation>
@@ -1375,6 +1376,7 @@ Nueva instalación</translation>
 <translation id="7452560014878697800">Una aplicación está usando tu cámara</translation>
 <translation id="7453330308669753048">Resultado del historial de búsqueda eliminado</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> hasta completar la carga</translation>
+<translation id="7459485586006128091">Debido a un error interno, se ha desactivado el punto de acceso. Prueba a conectarte de nuevo dentro de unos minutos.</translation>
 <translation id="7461924472993315131">Fijar</translation>
 <translation id="746232733191930409">Modo de grabación de pantalla</translation>
 <translation id="7466449121337984263">Toca el sensor</translation>
@@ -1448,6 +1450,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="776344839111254542">Haz clic para ver los detalles de la actualización</translation>
 <translation id="7768784765476638775">Enunciar selección</translation>
 <translation id="7769299611924763557">Tu GIF estará listo en breve</translation>
+<translation id="7773536009433685931">Activar Wi‐Fi en su lugar</translation>
 <translation id="7780094051999721182">accesos directos</translation>
 <translation id="7780159184141939021">Girar pantalla</translation>
 <translation id="7796735576426975947">Nueva notificación oculta</translation>

@@ -178,6 +178,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2218443599109088993">Alejar</translation>
 <translation id="2230173723195178503">Se cargó la página web</translation>
 <translation id="2239626343334228536">Borrando datos de navegación…</translation>
+<translation id="2242467532204595597">Usa Chrome cada vez que presiones vínculos que aparecen en mensajes, documentos y otras apps.</translation>
 <translation id="22508856139286506">Advertencias descartadas (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menú → Historial</translation>
 <translation id="2256933947031277845">Tu organización te permite acceder solo con determinadas cuentas.</translation>
@@ -206,6 +207,7 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="2411749908844615428">{count,plural, =1{Hay {count} dirección guardada disponible sobre el teclado.}other{Hay {count} direcciones guardadas disponibles sobre el teclado.}}</translation>
 <translation id="2421004566762153674">Se están bloqueando las cookies de terceros</translation>
 <translation id="2421044535038393232">Seguir editando</translation>
+<translation id="2423077901494354337">Ahora puedes aprovechar Chrome al máximo en tu dispositivo.</translation>
 <translation id="2434405374328098816">Ya guardaste una contraseña para "<ph name="USERNAME" />" en <ph name="WEBSITE" /></translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
 <translation id="2451654228769116489">Fijar pestaña</translation>
@@ -578,6 +580,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="4860895144060829044">Llamar</translation>
 <translation id="4872323082491632254">Revisar contraseñas</translation>
 <translation id="4881695831933465202">Abrir</translation>
+<translation id="488785315393301722">Mostrar detalles</translation>
 <translation id="4894963374040315706">Te permite realizar búsquedas con tu voz</translation>
 <translation id="4901778704868714008">Guardar…</translation>
 <translation id="4904877109095351937">Marcar como leídas</translation>
@@ -798,6 +801,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6346549652287021269">¿Comenzar una descarga nueva?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Esta dirección se borrará de tu Cuenta de Google (<ph name="USER_EMAIL" />) y de este dispositivo.}other{Estas direcciones se borrarán de tu Cuenta de Google (<ph name="USER_EMAIL" />) y de este dispositivo.}}</translation>
 <translation id="634878792104344809">Sincroniza tus contraseñas, historial y mucho más en todos tus dispositivos</translation>
+<translation id="6348855835728304880">Accede a tus contraseñas de Chrome y más en otras apps de este dispositivo.</translation>
 <translation id="6355820205320395730">Las contraseñas poco seguras son fáciles de adivinar. Asegúrate de crear contraseñas seguras. <ph name="BEGIN_LINK" />Obtén más sugerencias de seguridad.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Seguir a <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">No hay pestañas de incógnito</translation>
@@ -916,7 +920,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6973630695168034713">Carpetas</translation>
-<translation id="6975148662438928529">Saliste de tu cuenta <ph name="USER_NAME" /> como parte del restablecimiento de tu iPad. Presiona Continuar para acceder.</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Administrar tu Cuenta de Google</translation>
 <translation id="6989674195860388998">Cambiar en Configuración…</translation>
@@ -949,6 +952,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7221173315674413369">Explora nuevas funciones y sugerencias en Novedades</translation>
 <translation id="7223102419539744003">Cerrar pestaña</translation>
 <translation id="722454870747268814">Nueva pestaña de incógnito</translation>
+<translation id="723787869754590019">Usa Chrome para autocompletar</translation>
 <translation id="7265758999917665941">Nunca para este sitio</translation>
 <translation id="7272437679830969316">No se puede verificar tu identidad. La contraseña no se copió.</translation>
 <translation id="7291368939935408496">Preparando las contraseñas…</translation>
@@ -1150,14 +1154,14 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8663764600409216912">Usas contraseñas que parecen difíciles de adivinar</translation>
 <translation id="8668210798914567634">Esta página se guardó en tu lista de lectura.</translation>
 <translation id="8680787084697685621">Los datos de inicio de cuenta están desactualizados</translation>
+<translation id="868773710103052534">Ya está todo listo</translation>
 <translation id="8693663554456874301">{count,plural, =1{Cerrar pestaña}other{Cerrar pestañas}}</translation>
 <translation id="8703536910991780768">Tus cont. parecen seguras</translation>
-<translation id="8706588385081740091">Contraseñas</translation>
 <translation id="8717864919010420084">Copiar vínculo</translation>
 <translation id="8721297211384281569">Menú "Herramientas"</translation>
 <translation id="8725066075913043281">Intentar nuevamente</translation>
+<translation id="8727043961453758442">Aprovecha Chrome al máximo</translation>
 <translation id="8730621377337864115">Listo</translation>
-<translation id="8731388423028622182">Saliste de tu cuenta <ph name="USER_NAME" /> como parte del restablecimiento de tu iPhone. Presiona Continuar para acceder.</translation>
 <translation id="87371078663613140">Explora las opciones en la barra de menú.</translation>
 <translation id="8737620822084008350">{count,plural, =1{Hay {count} perfil guardado disponible sobre el teclado.}other{Hay {count} perfiles guardados disponibles sobre el teclado.}}</translation>
 <translation id="8741995161408053644">Es posible que tu cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
@@ -1204,6 +1208,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8976414606286374109">Las tarjetas se guardan en tu Cuenta de Google.</translation>
 <translation id="8981454092730389528">Controles de actividad de Google</translation>
 <translation id="8985320356172329008">Accediste a Google como</translation>
+<translation id="8986567980592931173">Accede con tu Cuenta de Google para sincronizar tus contraseñas, historial y más.</translation>
 <translation id="8998289560386111590">No está disponible en tu dispositivo</translation>
 <translation id="9000089900434778519">Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para borrar el historial de búsqueda (si corresponde).</translation>
 <translation id="9008201768610948239">Ignorar</translation>

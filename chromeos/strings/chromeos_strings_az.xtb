@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Digər faydalı resurslar:</translation>
 <translation id="1905710495812624430">Maksimum icazə verilən cəhdlər bitdi</translation>
 <translation id="1908234395526491708">Alınmayan UDP sorğuları</translation>
+<translation id="1923388006036088459">Vurğu rəngləri</translation>
 <translation id="1947737735496445907">Çap edilib</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1962550982027027473">Defolt APN tələb olunur</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Endirmə tamamdır</translation>
 <translation id="3969602104473960991">ChromeOS parolu güncəllənib</translation>
 <translation id="397105322502079400">Hesablanır...</translation>
+<translation id="3974175076798940554">Eksklüziv Chromebook Plus aktivləri artıq əlçatandır</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> gündən köhnə çap işləri silinəcək</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> cihazının indi güncəldir</translation>
 <translation id="4003384961948020559">Alınmadı - Çap xidməti doludur</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">Çoxsaylı giriş üçün hesab əlavə edin. Bu hesablara parolsuz daxil olmaq olar, ona görə də bu funksiya yalnız güvənilən hesablar ilə işlədilməlidir.</translation>
 <translation id="8364946094152050673">Boş ad serverləri</translation>
 <translation id="8372477600026034341">Əlavə hostlar</translation>
+<translation id="8373046809163484087">Divar kağızına uyğun rəng qruplarından istifadə edin</translation>
 <translation id="8380114448424469341">Pəncərəni ekranın <ph name="DIRECTION" /> yarısına əlavə edin</translation>
 <translation id="8395584934117017006">Bu <ph name="DEVICE_TYPE" /> müəssisə tərəfindən idarə edilir</translation>
 <translation id="8398927464629426868">Cihazın hazırda şarj və ya deşarj olma sürəti</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">İstifadəçi adı</translation>
 <translation id="8503836310948963452">Bir neçə dəqiqə daha...</translation>
 <translation id="8508640263392900755">APN detalları</translation>
+<translation id="8522687886059337719">Artıq yeni <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />divar kağızlarına<ph name="END_LINK_WALLPAPER_SUBPAGE" /> və <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ekran qoruyucusuna<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> giriş imkanınız var</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Operatorunuz şəbəkəsinə qoşulmaq üçün bu seçimi tələb edə bilər. Ətraflı məlumat üçün operatorunuzla əlaqə saxlayın.</translation>

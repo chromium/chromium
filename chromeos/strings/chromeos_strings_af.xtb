@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Hier is nog ’n paar nuttige hulpbronne:</translation>
 <translation id="1905710495812624430">Maksimum toegelate pogings is oorskry.</translation>
 <translation id="1908234395526491708">Mislukte UDP-versoeke</translation>
+<translation id="1923388006036088459">Aksentkleure</translation>
 <translation id="1947737735496445907">Gedruk</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1962550982027027473">’n Verstek-APN word vereis</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Aflaai is voltooi</translation>
 <translation id="3969602104473960991">Chrome-bedryfstelselwagwoord is opgedateer</translation>
 <translation id="397105322502079400">Bereken tans …</translation>
+<translation id="3974175076798940554">Eksklusiewe Chromebook Plus-bates is nou beskikbaar</translation>
 <translation id="39823212440917567">Druktake ouer as <ph name="NUMBER_OF_DAYS" /> dae sal verwyder word</translation>
 <translation id="3993704782688964914">Jou <ph name="DEVICE_NAME" /> is nou bygewerk</translation>
 <translation id="4003384961948020559">Misluk – Uitvoer is vol</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">Voeg 'n rekening by meervuldige aanmelding. Daar kan sonder 'n wagwoord by alle aangemelde rekeninge ingegaan word, en daarom moet hierdie kenmerk net met vertroude rekeninge gebruik word.</translation>
 <translation id="8364946094152050673">Leë naambedieners</translation>
 <translation id="8372477600026034341">Ekstra gashere</translation>
+<translation id="8373046809163484087">Gebruik kleurstelle wat by jou muurpapier pas</translation>
 <translation id="8380114448424469341">Dok venster op die <ph name="DIRECTION" />-helfte van die skerm</translation>
 <translation id="8395584934117017006">Hierdie <ph name="DEVICE_TYPE" /> word deur 'n onderneming bestuur</translation>
 <translation id="8398927464629426868">Die koers waarteen die toestel tans laai of ontlaai</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">Gebruikernaam</translation>
 <translation id="8503836310948963452">Net 'n paar minute …</translation>
 <translation id="8508640263392900755">APN-besonderhede</translation>
+<translation id="8522687886059337719">Jy het nou toegang tot nuwe <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />muurpapiere<ph name="END_LINK_WALLPAPER_SUBPAGE" /> en <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />sluimerskerm<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Jou selfoonmaatskappy kan hierdie opsie vereis om aan hul netwerk te koppel. Kontak jou selfoonmaatskappy vir besonderhede.</translation>

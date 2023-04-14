@@ -178,6 +178,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2218443599109088993">Zvogëlo</translation>
 <translation id="2230173723195178503">Faqja e uebit u ngarkua</translation>
 <translation id="2239626343334228536">Të dhënat e shfletimit po pastrohen...</translation>
+<translation id="2242467532204595597">Përdore Chrome sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
 <translation id="22508856139286506">Paralajmërimet e hequra (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menyja → Historiku</translation>
 <translation id="2256933947031277845">Organizata jote të lejon të identifikohesh vetëm me llogari të caktuara.</translation>
@@ -206,6 +207,7 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="2411749908844615428">{count,plural, =1{{count} adresë e ruajtur e disponueshme mbi tastierën tënde.}other{{count} adresa të ruajtura të disponueshme mbi tastierën tënde.}}</translation>
 <translation id="2421004566762153674">Bllokimi i kukive të palëve të treta</translation>
 <translation id="2421044535038393232">Vazhdo modifikimin</translation>
+<translation id="2423077901494354337">Tani do të përfitosh më shumë nga Chrome në pajisjen tënde.</translation>
 <translation id="2434405374328098816">Ke ruajtur tashmë një fjalëkalim për "<ph name="USERNAME" />" në <ph name="WEBSITE" />.</translation>
 <translation id="2435457462613246316">Shfaq fjalëkalimin</translation>
 <translation id="2451654228769116489">Gozhdo skedën</translation>
@@ -578,6 +580,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="4860895144060829044">Telefono</translation>
 <translation id="4872323082491632254">Kontrollo fjalëkalimet</translation>
 <translation id="4881695831933465202">Hap</translation>
+<translation id="488785315393301722">Shfaq detajet</translation>
 <translation id="4894963374040315706">Kjo të lejon të kërkosh me anë të zërit</translation>
 <translation id="4901778704868714008">Ruaj...</translation>
 <translation id="4904877109095351937">Shëno si të lexuara</translation>
@@ -608,6 +611,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5118764316110575523">Joaktiv</translation>
 <translation id="5119391094379141756">Zgjidh Chrome</translation>
 <translation id="5121618895923301719">Po e monitoron tashmë këtë produkt. Kjo faqe është ruajtur te <ph name="BEGIN_LINK" />Faqeshënuesit për celular<ph name="END_LINK" />.</translation>
+<translation id="5126465625664020024">Identifikohu dhe sinkronizo</translation>
 <translation id="5132942445612118989">Sinkronizo fjalëkalimet, historikun etj. në të gjitha pajisjet</translation>
 <translation id="5142890110117755815">{COUNT,plural, =1{{COUNT} fjalëkalim i dobët}other{{COUNT} fjalëkalime të dobëta}}</translation>
 <translation id="5149188072385105201">Shto fjalëkalimin...</translation>
@@ -797,6 +801,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6346549652287021269">Të niset shkarkim i ri?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Kjo adresë do të fshihet nga "Llogaria jote e Google" (<ph name="USER_EMAIL" />) dhe nga kjo pajisje.}other{Këto adresa do të fshihen nga "Llogaria jote e Google" (<ph name="USER_EMAIL" />) dhe nga kjo pajisje.}}</translation>
 <translation id="634878792104344809">Sinkronizo fjalëkalimet, historikun tënd etj. në të gjitha pajisjet e tua</translation>
+<translation id="6348855835728304880">Qasu te fjalëkalimet e tua të Chrome dhe më shumë nëpër aplikacione të tjera në këtë pajisje.</translation>
 <translation id="6355820205320395730">Fjalëkalimet e dobëta mund të gjenden me lehtësi. Sigurohu që po krijon fjalëkalime të forta. <ph name="BEGIN_LINK" />Shiko më shumë këshilla sigurie.<ph name="END_LINK" /></translation>
 <translation id="6361848730467328243">Ndiq <ph name="DOMAIN_NAME" /></translation>
 <translation id="6362362396625799311">Asnjë skedë "e fshehtë"</translation>
@@ -915,7 +920,6 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="6945221475159498467">Përzgjidhe</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6973630695168034713">Dosjet</translation>
-<translation id="6975148662438928529">Ke dalë nga llogaria jote <ph name="USER_NAME" /> si pjesë e rivendosjes së iPad. Trokit te "Vazhdo" më poshtë për t'u identifikuar.</translation>
 <translation id="6979158407327259162">Disku i Google</translation>
 <translation id="6988572888918530647">Menaxho "Llogarinë tënde të Google"</translation>
 <translation id="6989674195860388998">Kalo te "Cilësimet"…</translation>
@@ -948,6 +952,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7221173315674413369">Eksploro këshillat dhe veçoritë e reja te "Ç'të reja ka"</translation>
 <translation id="7223102419539744003">Mbylle skedën</translation>
 <translation id="722454870747268814">Skedë e re "e fshehtë"</translation>
+<translation id="723787869754590019">Përdore Chrome për "Plotësimin automatik"</translation>
 <translation id="7265758999917665941">Asnjëherë për këtë faqe</translation>
 <translation id="7272437679830969316">Nuk mund të verifikohet identiteti yt. Fjalëkalimi nuk u kopjua.</translation>
 <translation id="7291368939935408496">Po përgatit fjalëkalimet...</translation>
@@ -1149,14 +1154,14 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8663764600409216912">Po përdor fjalëkalime që duken të vështira për t'u hamendësuar</translation>
 <translation id="8668210798914567634">Kjo faqe është ruajtur në "Listën tënde të leximit".</translation>
 <translation id="8680787084697685621">Detajet e identifikimit të llogarisë nuk janë të përditësuara.</translation>
+<translation id="868773710103052534">Je plotësisht gati</translation>
 <translation id="8693663554456874301">{count,plural, =1{Mbylle skedën}other{Mbylli skedat}}</translation>
 <translation id="8703536910991780768">Fjalëkalimet e tua duken të forta</translation>
-<translation id="8706588385081740091">Fjalëkalimet</translation>
 <translation id="8717864919010420084">Kopjo lidhjen</translation>
 <translation id="8721297211384281569">Menyja e veglave</translation>
 <translation id="8725066075913043281">Provo sërish</translation>
+<translation id="8727043961453758442">Përfito sa më shumë nga Chrome</translation>
 <translation id="8730621377337864115">U krye</translation>
-<translation id="8731388423028622182">Ke dalë nga llogaria jote <ph name="USER_NAME" /> si pjesë e rivendosjes së telefonit iPhone. Trokit te "Vazhdo" më poshtë për t'u identifikuar.</translation>
 <translation id="87371078663613140">Eksploro opsionet në shiritin e menysë</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count} profil i ruajtur i disponueshëm mbi tastierën tënde.}other{{count} profile të ruajtura të disponueshme mbi tastierën tënde.}}</translation>
 <translation id="8741995161408053644">Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
@@ -1203,6 +1208,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8976414606286374109">Kartat ruhen në "Llogarinë tënde të Google".</translation>
 <translation id="8981454092730389528">Kontrollet e aktivitetit të Google</translation>
 <translation id="8985320356172329008">Je identifikuar në Google si</translation>
+<translation id="8986567980592931173">Identifikohu me "Llogarinë tënde të Google" për të sinkronizuar fjalëkalimet, historikun tënd etj.</translation>
 <translation id="8998289560386111590">Nuk ofrohet në pajisjen tënde</translation>
 <translation id="9000089900434778519">Motori yt i kërkimit është <ph name="DSE_NAME" />. Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimit, nëse është e vlefshme.</translation>
 <translation id="9008201768610948239">Shpërfill</translation>

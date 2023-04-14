@@ -580,6 +580,7 @@
 <translation id="4860895144060829044">Обаждане</translation>
 <translation id="4872323082491632254">Проверка на паролите</translation>
 <translation id="4881695831933465202">Отваряне</translation>
+<translation id="488785315393301722">Показване на подробностите</translation>
 <translation id="4894963374040315706">Това ви позволява да търсите посредством гласа си</translation>
 <translation id="4901778704868714008">Запазване...</translation>
 <translation id="4904877109095351937">Означаване като прочетено</translation>
@@ -919,7 +920,6 @@
 <translation id="6945221475159498467">Избиране</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">Папки</translation>
-<translation id="6975148662438928529">Излязохте от профила си <ph name="USER_NAME" /> при нулирането на своя iPad. Докоснете бутона за продължаване по-долу, за да влезете отново.</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6988572888918530647">Управление на профила ви в Google</translation>
 <translation id="6989674195860388998">Промяна от настройките…</translation>
@@ -1157,13 +1157,11 @@
 <translation id="868773710103052534">Готово</translation>
 <translation id="8693663554456874301">{count,plural, =1{Затваряне на раздела}other{Затваряне на разделите}}</translation>
 <translation id="8703536910991780768">Паролите ви изглеждат надеждни</translation>
-<translation id="8706588385081740091">Пароли</translation>
 <translation id="8717864919010420084">Копиране на връзката</translation>
 <translation id="8721297211384281569">Меню „Инструменти“</translation>
 <translation id="8725066075913043281">Опитайте отново</translation>
 <translation id="8727043961453758442">Възползвайте се максимално от Chrome</translation>
 <translation id="8730621377337864115">Готово</translation>
-<translation id="8731388423028622182">Излязохте от профила си <ph name="USER_NAME" /> при нулирането на своя iPhone. Докоснете бутона за продължаване по-долу, за да влезете отново.</translation>
 <translation id="87371078663613140">Разгледайте опциите в лентата с менюта.</translation>
 <translation id="8737620822084008350">{count,plural, =1{{count} запазен потребителски профил е налице над клавиатурата ви.}other{{count} запазени потребителски профила са налице над клавиатурата ви.}}</translation>
 <translation id="8741995161408053644">Възможно е в профила ви в Google да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>

@@ -580,6 +580,7 @@
 <translation id="4860895144060829044">通話</translation>
 <translation id="4872323082491632254">パスワードを確認</translation>
 <translation id="4881695831933465202">開く</translation>
+<translation id="488785315393301722">詳細を表示</translation>
 <translation id="4894963374040315706">音声を使って検索できます</translation>
 <translation id="4901778704868714008">保存...</translation>
 <translation id="4904877109095351937">既読にする</translation>
@@ -919,7 +920,6 @@
 <translation id="6945221475159498467">選択</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6973630695168034713">フォルダ</translation>
-<translation id="6975148662438928529">iPad をリセットしている途中で、アカウント <ph name="USER_NAME" /> からログアウトしました。下の [続行] をタップしてログインしてください。</translation>
 <translation id="6979158407327259162">Google ドライブ</translation>
 <translation id="6988572888918530647">Google アカウントを管理する</translation>
 <translation id="6989674195860388998">設定で切り替えています…</translation>
@@ -1157,13 +1157,11 @@
 <translation id="868773710103052534">設定が完了しました</translation>
 <translation id="8693663554456874301">{count,plural, =1{タブを閉じる}other{タブを閉じる}}</translation>
 <translation id="8703536910991780768">安全なパスワードが使用されています</translation>
-<translation id="8706588385081740091">パスワード</translation>
 <translation id="8717864919010420084">リンクをコピー</translation>
 <translation id="8721297211384281569">ツールメニュー</translation>
 <translation id="8725066075913043281">やり直し</translation>
 <translation id="8727043961453758442">Chrome を最大限に活用</translation>
 <translation id="8730621377337864115">完了</translation>
-<translation id="8731388423028622182">iPhone をリセットしている途中で、アカウント <ph name="USER_NAME" /> からログアウトしました。下の [続行] をタップしてログインしてください。</translation>
 <translation id="87371078663613140">メニューバーのオプションを確認します</translation>
 <translation id="8737620822084008350">{count,plural, =1{キーボードの上部に保存済みのプロフィールが {count} 件表示されています。}other{キーボードの上部に保存済みのプロフィールが {count} 件表示されています。}}</translation>
 <translation id="8741995161408053644">Google アカウントでの他の形式の閲覧履歴が <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> に残ることがあります。</translation>

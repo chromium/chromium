@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Allpool on veel kasulikke allikaid</translation>
 <translation id="1905710495812624430">Katsete maksimaalne arv on ületatud.</translation>
 <translation id="1908234395526491708">UDP-taotluste vead</translation>
+<translation id="1923388006036088459">Aktsentvärvid</translation>
 <translation id="1947737735496445907">Prinditud</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1962550982027027473">Nõutav on vaike-APN.</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Allalaadimine on lõpule viidud</translation>
 <translation id="3969602104473960991">Chrome OS-i parooli värskendati</translation>
 <translation id="397105322502079400">Arvutamine ...</translation>
+<translation id="3974175076798940554">Eksklusiivsed Chromebook Plusi varad on nüüd saadaval</translation>
 <translation id="39823212440917567">Prinditööd, mis on vanemad kui <ph name="NUMBER_OF_DAYS" /> päeva, eemaldatakse</translation>
 <translation id="3993704782688964914">Teie <ph name="DEVICE_NAME" /> on nüüd ajakohane</translation>
 <translation id="4003384961948020559">Ebaõnnestus – väljastusala on täis</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">Lisage mitmele kontole sisselogimiseks konto. Kõigile kontodele, kuhu on sisse logitud, pääseb juurde ilma paroolita, seega soovitame seda funktsiooni kasutada vaid usaldusväärsete kontodega.</translation>
 <translation id="8364946094152050673">Tühjad nimeserverid</translation>
 <translation id="8372477600026034341">Lisahostid</translation>
+<translation id="8373046809163484087">Kasutage värvilahendusi, mis sobivad teie taustapildiga</translation>
 <translation id="8380114448424469341">Doki aken ekraani <ph name="DIRECTION" /> poolele</translation>
 <translation id="8395584934117017006">Seda seadet <ph name="DEVICE_TYPE" /> haldab ettevõte</translation>
 <translation id="8398927464629426868">Praegune seadme laadimise või tühjenemise kiirus</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">Kasutajanimi</translation>
 <translation id="8503836310948963452">Veel mõni minut …</translation>
 <translation id="8508640263392900755">APN-i üksikasjad</translation>
+<translation id="8522687886059337719">Teil on nüüd juurdepääs uutele <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />taustapiltidele<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ja <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />ekraanisäästjatele<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Teie operaator võib võrguga ühendamiseks seda valikut nõuda. Lisateavet küsige operaatorilt.</translation>

@@ -1072,6 +1072,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5976112937189445008">Appuyez sur Entrée pour enregistrer la fenêtre</translation>
 <translation id="5978382165065462689">Partage du contrôle de votre écran au moyen de l’assistance à distance.</translation>
 <translation id="5980301590375426705">Fermer sess. invité</translation>
+<translation id="5983567367406220847">En raison d'inactivité, le point d'accès sans fil a été désactivé.</translation>
 <translation id="598407983968395253">Utiliser le modèle</translation>
 <translation id="598882571027504733">Pour télécharger la mise à jour, redémarrez votre Chromebook avec le clavier associé.</translation>
 <translation id="6002179289567220515">Vous avez utilisé le commutateur physique pour éteindre un appareil photo. Vous pouvez également désactiver l'accès pour tous les appareils photo.</translation>
@@ -1374,6 +1375,7 @@ Nouvelle installation</translation>
 <translation id="7452560014878697800">Une application utilise votre caméra</translation>
 <translation id="7453330308669753048">Résultat de l'historique de recherche retiré</translation>
 <translation id="7455047553373871740"><ph name="BATTERY_PERCENTAGE" /> % - <ph name="TIME" /> avant le chargement complet</translation>
+<translation id="7459485586006128091">En raison d'une erreur interne, le point d'accès sans fil a été désactivé. Essayez de vous reconnecter dans quelques minutes.</translation>
 <translation id="7461924472993315131">NIP</translation>
 <translation id="746232733191930409">Mode d'enregistrement de l'écran</translation>
 <translation id="7466449121337984263">Veuillez toucher le capteur</translation>
@@ -1447,6 +1449,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="776344839111254542">Cliquez pour afficher les détails de la mise à jour</translation>
 <translation id="7768784765476638775">Sélectionner pour énoncer</translation>
 <translation id="7769299611924763557">Votre GIF sera bientôt prêt</translation>
+<translation id="7773536009433685931">Activez plutôt le Wi-Fi</translation>
 <translation id="7780094051999721182">raccourcis</translation>
 <translation id="7780159184141939021">Faire pivoter l'écran</translation>
 <translation id="7796735576426975947">Nouvelle notification masquée</translation>

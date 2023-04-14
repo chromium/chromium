@@ -364,6 +364,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1801812870656502108">Detalls de la targeta virtual</translation>
 <translation id="1803020234906945288">Alimentació saludable</translation>
 <translation id="1803351196216024260">Pot demanar permís per utilitzar el micròfon</translation>
+<translation id="1806174020048213474">Aquesta aplicació demana permís per instal·lar les credencials de la Wi-Fi. En finalitzar la configuració, <ph name="DEVICE_TYPE" /> es connectarà automàticament a les xarxes Wi-Fi disponibles. Per suprimir aquestes credencials, desinstal·la l'aplicació.</translation>
 <translation id="1807246157184219062">Clar</translation>
 <translation id="1807528111851433570">Full inicial</translation>
 <translation id="180991881384371158">El CVC és al revers de la targeta. Són els 3 darrers dígits que hi ha a la part superior dreta del quadre de signatura.</translation>
@@ -1335,6 +1336,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4270541775497538019">Apiladora 6</translation>
 <translation id="4274173425554582601">Informàtica i electrònica</translation>
 <translation id="4275830172053184480">Reinici del dispositiu</translation>
+<translation id="4276974990916607331">No, gràcies</translation>
 <translation id="4277028893293644418">Restableix la contrasenya</translation>
 <translation id="4277937682389409325">Adreça local</translation>
 <translation id="4278390842282768270">Permès</translation>
@@ -1695,6 +1697,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5129534298163637277">Quadre de diàleg de confirmació</translation>
 <translation id="5135404736266831032">Gestiona les adreces...</translation>
 <translation id="5136841603454277753">Introdueix el codi correcte</translation>
+<translation id="5137761395480718572">Aquesta aplicació demana permís per instal·lar les credencials de la Wi-Fi. En finalitzar la configuració, <ph name="DEVICE_TYPE" /> es connectarà automàticament a les xarxes Wi-Fi disponibles. Per suprimir aquestes credencials, desinstal·la l'aplicació. <ph name="LEARN_MORE" />.</translation>
 <translation id="5138014172396933048">La targeta virtual no està disponible en aquests moments. Contacta amb el teu banc.</translation>
 <translation id="5138227688689900538">Mostra'n menys</translation>
 <translation id="5145883236150621069">Hi ha un codi d'error en la resposta a la política</translation>
@@ -1751,6 +1754,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5273881944177595304">Eines en línia i aplicacions web</translation>
 <translation id="5274025349362408263">Llibres i literatura</translation>
 <translation id="5279286380302340275">Gestiona les baixades</translation>
+<translation id="5279453600310613955">No, gràcies</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Propietats del document</translation>
 <translation id="528468243742722775">Finalitza</translation>
@@ -1789,6 +1793,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5344579389779391559">És possible que aquesta pàgina provi de fer-te algun càrrec</translation>
 <translation id="5347645913823149105">Botó Personalitza els tipus de lletra a Chrome: prem Retorn per personalitzar la lletra tipogràfica i les mides de la font a Chrome</translation>
 <translation id="5355557959165512791">En aquest moment no pots visitar <ph name="SITE" /> perquè se li ha revocat el certificat. Els atacs i els errors de xarxa acostumen a ser temporals, o sigui que probablement la pàgina funcionarà més endavant.</translation>
+<translation id="5356345925629253198">Pots utilitzar les adreces desades en tots els productes de Google. Aquesta adreça es desarà al teu Compte de Google (<ph name="ACCOUNT" />).</translation>
 <translation id="5357848622083956825">Arts visuals i disseny</translation>
 <translation id="536296301121032821">No s'ha pogut emmagatzemar la configuració de la política</translation>
 <translation id="5363309033720083897">Port en sèrie admès pel teu administrador</translation>
@@ -2243,6 +2248,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6529173248185917884">Setè corró</translation>
 <translation id="6529602333819889595">&amp;Refés la supressió</translation>
 <translation id="6535751101619004418">Monedes i canvi de divisa</translation>
+<translation id="6536221421038631327">En suprimir una subscripció de Passpoint del teu <ph name="DEVICE_TYPE" />, se suprimiran les xarxes associades. Contacta amb <ph name="FRIENDLY_NAME" /> per fer canvis al pla de subscripció. <ph name="LEARN_MORE" /></translation>
 <translation id="6540534463546766581">Fons d'inversió</translation>
 <translation id="6545864417968258051">Cerca de dispositius Bluetooth</translation>
 <translation id="6547208576736763147">Encunyació doble a l'esquerra</translation>
@@ -3338,6 +3344,7 @@ Detalls addicionals:
 <translation id="9219103736887031265">Imatges</translation>
 <translation id="922152298093051471">Personalitza Chrome</translation>
 <translation id="933712198907837967">Diners Club</translation>
+<translation id="934634059306213385">Vols permetre que l'aplicació <ph name="APP_NAME" /> configuri xarxes Wi‐Fi?</translation>
 <translation id="936602727769022409">Podries perdre l'accés al Compte de Google. Chromium et recomana que canviïs la contrasenya ara. Se't demanarà que iniciïs la sessió.</translation>
 <translation id="937457230470581909">Zoològics, aquaris i reserves naturals</translation>
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Quines dades s'utilitzen<ph name="END_BOLD" />: els temes d'anuncis es basen en el teu historial de navegació recent, que és una llista dels llocs web que has visitat amb Chrome en aquest dispositiu.</translation>
