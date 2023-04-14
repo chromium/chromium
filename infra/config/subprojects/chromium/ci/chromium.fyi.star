@@ -1564,6 +1564,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
             config = "chromium",
             apply_configs = [
                 "android",
+                "checkout_siso",
                 "chromium_no_telemetry_dependencies",
             ],
         ),
@@ -1643,6 +1644,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
+                "checkout_siso",
                 "chromium_no_telemetry_dependencies",
             ],
         ),
@@ -1717,6 +1719,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         gclient_config = builder_config.gclient_config(
             config = "chromium",
             apply_configs = [
+                "checkout_siso",
                 "chromium_no_telemetry_dependencies",
             ],
         ),
