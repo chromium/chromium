@@ -14,7 +14,6 @@
 #include "ash/ambient/ambient_ui_launcher.h"
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/ambient_video_ui_launcher.h"
-#include "ash/ambient/ambient_weather_controller.h"
 #include "ash/ambient/metrics/ambient_multi_screen_metrics_recorder.h"
 #include "ash/ambient/model/ambient_animation_photo_config.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
@@ -1110,6 +1109,7 @@ void AmbientController::StopScreensaver() {
     ambient_ui_launcher_->Finalize();
     return;
   }
+  weather_refresher_.reset();
   DCHECK(ambient_photo_controller_);
   ambient_photo_controller_->StopScreenUpdate();
 }
@@ -1140,6 +1140,9 @@ void AmbientController::MaybeStartScreenSaver() {
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
     StartRefreshingImages();
+    // TODO(b/274164306): Move `weather_refresher_` to `AmbientUiLauncher`
+    // implementation for slideshow and animation themes.
+    weather_refresher_ = ambient_weather_controller_->CreateScopedRefresher();
   }
 }
 

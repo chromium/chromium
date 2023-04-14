@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/ambient/ambient_controller.h"
-#include "ash/ambient/ambient_weather_controller.h"
 #include "ash/glanceables/glanceables_delegate.h"
 #include "ash/glanceables/glanceables_view.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -114,6 +113,7 @@ void GlanceablesController::DestroyUi() {
   widget_.reset();
   view_ = nullptr;
   delegate_->OnGlanceablesClosed();
+  weather_refresher_.reset();
 }
 
 void GlanceablesController::OnWindowActivated(
@@ -139,10 +139,10 @@ void GlanceablesController::OnTabletModeStarted() {
 
 void GlanceablesController::FetchData() {
   // GlanceablesWeatherView observes the weather model for updates.
-  Shell::Get()
-      ->ambient_controller()
-      ->ambient_weather_controller()
-      ->FetchWeather();
+  weather_refresher_ = Shell::Get()
+                           ->ambient_controller()
+                           ->ambient_weather_controller()
+                           ->CreateScopedRefresher();
 
   Shell::Get()->system_tray_model()->calendar_model()->FetchEvents(
       start_of_month_utc_);

@@ -14,6 +14,7 @@
 #include "ash/ambient/ambient_photo_controller.h"
 #include "ash/ambient/ambient_ui_launcher.h"
 #include "ash/ambient/ambient_view_delegate_impl.h"
+#include "ash/ambient/ambient_weather_controller.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
@@ -60,7 +61,6 @@ class AmbientContainerView;
 class AmbientMultiScreenMetricsRecorder;
 class AmbientPhotoController;
 class AmbientUiSettings;
-class AmbientWeatherController;
 
 // Class to handle all ambient mode functionalities.
 class ASH_EXPORT AmbientController
@@ -285,6 +285,7 @@ class ASH_EXPORT AmbientController
 
   base::ScopedObservation<BacklightsForcedOffSetter, ScreenBacklightObserver>
       backlights_forced_off_observation_{this};
+  std::unique_ptr<AmbientWeatherController::ScopedRefresher> weather_refresher_;
 
   // Observes user profile prefs for ambient.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
