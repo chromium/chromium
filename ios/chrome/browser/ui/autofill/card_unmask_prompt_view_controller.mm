@@ -66,7 +66,8 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   // Button displayed on the right side of the navigation bar.
   // Tapping it sends the data in the prompt for verification.
   UIBarButtonItem* _confirmButton;
-  // Owns `self`.
+  // Owns `self`. A value of nullptr means the view controller is dismissed or
+  // about to be dismissed.
   autofill::CardUnmaskPromptViewBridge* _bridge;  // weak
   // Model of the CVC input cell.
   TableViewTextEditItem* _CVCInputItem;
@@ -102,6 +103,10 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+
+  if (_bridge == nullptr) {
+    return;
+  }
 
   // Default inset inherited from `super` is for cells that display icons.
   // Using smaller inset.
@@ -142,6 +147,10 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 
 - (void)loadModel {
   [super loadModel];
+
+  if (_bridge == nullptr) {
+    return;
+  }
 
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierHeader];
@@ -197,22 +206,34 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   [self presentViewController:errorAlert animated:YES completion:nil];
 }
 
+- (void)disconnectFromBridge {
+  _bridge = nullptr;
+}
+
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
+  if (_bridge == nullptr) {
+    return;
+  }
   // Notify bridge that UI was dismissed.
   _bridge->NavigationControllerDismissed();
-  _bridge = nullptr;
 }
 
 #pragma mark - Actions
 
 - (void)onCancelTapped {
-  _bridge->PerformClose();
+  if (_bridge) {
+    _bridge->PerformClose();
+  }
 }
 
 - (void)onVerifyTapped {
+  if (_bridge == nullptr) {
+    return;
+  }
+
   autofill::CardUnmaskPromptController* controller = _bridge->GetController();
 
   NSString* CVC = _CVCInputItem.textFieldValue;
@@ -313,6 +334,10 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 
 // Returns a new confirm button for the navigation bar.
 - (UIBarButtonItem*)createConfirmButton {
+  if (_bridge == nullptr) {
+    return nil;
+  }
+
   NSString* confirmButtonText =
       base::SysUTF16ToNSString(_bridge->GetController()->GetOkButtonLabel());
   UIBarButtonItem* confirmButton =
@@ -334,6 +359,10 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 
 // Returns the model for the CVC input cell.
 - (TableViewTextEditItem*)createCVCInputItem {
+  if (_bridge == nullptr) {
+    return nil;
+  }
+
   autofill::CardUnmaskPromptController* controller = _bridge->GetController();
 
   TableViewTextEditItem* CVCInputItem =
@@ -408,6 +437,10 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 // The actual correctness of the CVC is verified by the server when the form is
 // submitted.
 - (BOOL)isCVCInputValid {
+  if (_bridge == nullptr) {
+    return NO;
+  }
+
   return _bridge->GetController()->InputCvcIsValid(
       base::SysNSStringToUTF16(_CVCInputItem.textFieldValue));
 }
@@ -416,6 +449,10 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 // the expiration date input is not being displayed. The actual correctness of
 // the expiration date is verified by the server when the form is submitted.
 - (BOOL)isExpirationInputValid {
+  if (_bridge == nullptr) {
+    return NO;
+  }
+
   if (!_expirationDateInputItem) {
     return YES;
   }
@@ -435,6 +472,10 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 // Updates `self` after the error alert was dismissed.
 // When `closeOnDismiss` is YES, `self` is dismissed.
 - (void)onErrorAlertDismissedAndShouldCloseOnDismiss:(BOOL)closeOnDismiss {
+  if (_bridge == nullptr) {
+    return;
+  }
+
   if (closeOnDismiss) {
     _bridge->PerformClose();
     return;
@@ -453,6 +494,9 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 
 // Helper method that fetches the instructions from the Controller.
 - (NSString*)instructions {
+  if (_bridge == nullptr) {
+    return nil;
+  }
   autofill::CardUnmaskPromptController* controller = _bridge->GetController();
   return base::SysUTF16ToNSString(controller->GetInstructionsMessage());
 }
@@ -568,6 +612,9 @@ const char kFooterDummyLinkTarget[] = "about:blank";
 #pragma mark - TableViewLinkHeaderFooterDelegate
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
+  if (_bridge == nullptr) {
+    return;
+  }
   // Notify Controller about the Expiration Date Form being shown so it updates
   // its state accordingly.
   _bridge->GetController()->NewCardLinkClicked();

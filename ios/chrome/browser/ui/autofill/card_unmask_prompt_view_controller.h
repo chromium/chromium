@@ -37,5 +37,8 @@ class CardUnmaskPromptViewBridge;
 - (void)showErrorAlertWithMessage:(NSString*)message
                    closeOnDismiss:(BOOL)closeOnDismiss;
 
+// Called when the bridge is about to be deallocated.
+- (void)disconnectFromBridge;
+
 @end
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_CARD_UNMASK_PROMPT_VIEW_CONTROLLER_H_
