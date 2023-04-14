@@ -1,0 +1,21 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("dynamic_color") {
+  sources = [
+    "palette.cc",
+    "palette.h",
+    "palette_factory.cc",
+    "palette_factory.h",
+  ]
+
+  defines = [ "IS_DYNAMIC_COLOR_IMPL" ]
+
+  deps = [
+    "//base",
+    "//skia",
+    "//third_party/material_color_utilities",
+    "//ui/color:color_headers",
+  ]
+}

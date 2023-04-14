@@ -50,6 +50,13 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
     // Native system renders the browser frame. Currently GTK only.
     kNative,
   };
+  // The type of color palette that is generated.
+  enum class SchemeVariant {
+    kTonalSpot,
+    kNeutral,
+    kVibrant,
+    kExpressive,
+  };
 
   class COMPONENT_EXPORT(COLOR) InitializerSupplier {
    public:
