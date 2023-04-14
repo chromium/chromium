@@ -595,6 +595,7 @@ void BluetoothDeviceFloss::UpgradeToFullDiscovery() {
 }
 
 void BluetoothDeviceFloss::DisconnectGatt() {
+  svc_resolved_ = false;
   FlossDBusManager::Get()->GetGattManagerClient()->Disconnect(base::DoNothing(),
                                                               address_);
 }
@@ -838,8 +839,10 @@ void BluetoothDeviceFloss::GattSearchComplete(
 
   svc_resolved_ = true;
 
-  // Replace the previous gatt services.
-  gatt_services_.clear();
+  // Copy the GATT services list here and clear the original so that when we
+  // send GattServiceRemoved(), GetGattServices() returns no services.
+  GattServiceMap gatt_services_swapped;
+  gatt_services_swapped.swap(gatt_services_);
 
   for (const auto& service : services) {
     BLUETOOTH_LOG(EVENT) << "Adding new remote GATT service for device: "
