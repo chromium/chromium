@@ -77,6 +77,36 @@ class StyleResolverTest : public PageTestBase {
   bool IsUseCounted(mojom::WebFeature feature) {
     return GetDocument().IsUseCounted(feature);
   }
+
+  // Access protected inset and sizing property getters
+  const Length& GetTop(const ComputedStyle& style) const { return style.Top(); }
+  const Length& GetBottom(const ComputedStyle& style) const {
+    return style.Bottom();
+  }
+  const Length& GetLeft(const ComputedStyle& style) const {
+    return style.Left();
+  }
+  const Length& GetRight(const ComputedStyle& style) const {
+    return style.Right();
+  }
+  const Length& GetWidth(const ComputedStyle& style) const {
+    return style.Width();
+  }
+  const Length& GetMinWidth(const ComputedStyle& style) const {
+    return style.MinWidth();
+  }
+  const Length& GetMaxWidth(const ComputedStyle& style) const {
+    return style.MaxWidth();
+  }
+  const Length& GetHeight(const ComputedStyle& style) const {
+    return style.Height();
+  }
+  const Length& GetMinHeight(const ComputedStyle& style) const {
+    return style.MinHeight();
+  }
+  const Length& GetMaxHeight(const ComputedStyle& style) const {
+    return style.MaxHeight();
+  }
 };
 
 class StyleResolverTestCQ : public StyleResolverTest {
@@ -2669,26 +2699,26 @@ TEST_F(StyleResolverTest, PositionFallbackStylesBasic) {
   Element* target = GetElementById("target");
   const ComputedStyle* base_style = target->GetComputedStyle();
   ASSERT_TRUE(base_style);
-  EXPECT_EQ(Length::Auto(), base_style->Top());
-  EXPECT_EQ(Length::Auto(), base_style->Left());
+  EXPECT_EQ(Length::Auto(), GetTop(*base_style));
+  EXPECT_EQ(Length::Auto(), GetLeft(*base_style));
 
   const ComputedStyle* try1 = target->StyleForPositionFallback(0);
   ASSERT_TRUE(try1);
-  EXPECT_EQ(Length::Auto(), try1->Top());
-  EXPECT_EQ(Length::Fixed(100), try1->Left());
+  EXPECT_EQ(Length::Auto(), GetTop(*try1));
+  EXPECT_EQ(Length::Fixed(100), GetLeft(*try1));
 
   const ComputedStyle* try2 = target->StyleForPositionFallback(1);
   ASSERT_TRUE(try2);
-  EXPECT_EQ(Length::Fixed(100), try2->Top());
-  EXPECT_EQ(Length::Auto(), try2->Left());
+  EXPECT_EQ(Length::Fixed(100), GetTop(*try2));
+  EXPECT_EQ(Length::Auto(), GetLeft(*try2));
 
   // Shorthand should also work
   const ComputedStyle* try3 = target->StyleForPositionFallback(2);
   ASSERT_TRUE(try3);
-  EXPECT_EQ(Length::Fixed(50), try3->Top());
-  EXPECT_EQ(Length::Fixed(50), try3->Left());
-  EXPECT_EQ(Length::Fixed(50), try3->Bottom());
-  EXPECT_EQ(Length::Fixed(50), try3->Right());
+  EXPECT_EQ(Length::Fixed(50), GetTop(*try3));
+  EXPECT_EQ(Length::Fixed(50), GetLeft(*try3));
+  EXPECT_EQ(Length::Fixed(50), GetBottom(*try3));
+  EXPECT_EQ(Length::Fixed(50), GetRight(*try3));
 
   // Returns nullptr when index is out of bound.
   EXPECT_FALSE(target->StyleForPositionFallback(3));
@@ -2738,26 +2768,26 @@ TEST_F(StyleResolverTest, PositionFallbackStylesResolveLogicalProperties) {
   Element* target = GetElementById("target");
   const ComputedStyle* base_style = target->GetComputedStyle();
   ASSERT_TRUE(base_style);
-  EXPECT_EQ(Length::Fixed(50), base_style->Top());
-  EXPECT_EQ(Length::Fixed(50), base_style->Left());
-  EXPECT_EQ(Length::Fixed(50), base_style->Bottom());
-  EXPECT_EQ(Length::Fixed(50), base_style->Right());
+  EXPECT_EQ(Length::Fixed(50), GetTop(*base_style));
+  EXPECT_EQ(Length::Fixed(50), GetLeft(*base_style));
+  EXPECT_EQ(Length::Fixed(50), GetBottom(*base_style));
+  EXPECT_EQ(Length::Fixed(50), GetRight(*base_style));
 
   // 'inset-inline-start' should resolve to 'bottom'
   const ComputedStyle* try1 = target->StyleForPositionFallback(0);
   ASSERT_TRUE(try1);
-  EXPECT_EQ(Length::Fixed(50), try1->Top());
-  EXPECT_EQ(Length::Fixed(50), try1->Left());
-  EXPECT_EQ(Length::Fixed(100), try1->Bottom());
-  EXPECT_EQ(Length::Fixed(50), try1->Right());
+  EXPECT_EQ(Length::Fixed(50), GetTop(*try1));
+  EXPECT_EQ(Length::Fixed(50), GetLeft(*try1));
+  EXPECT_EQ(Length::Fixed(100), GetBottom(*try1));
+  EXPECT_EQ(Length::Fixed(50), GetRight(*try1));
 
   // 'inset-block' with two parameters should set 'right' and then 'left'
   const ComputedStyle* try2 = target->StyleForPositionFallback(1);
   ASSERT_TRUE(try2);
-  EXPECT_EQ(Length::Fixed(50), try2->Top());
-  EXPECT_EQ(Length::Fixed(90), try2->Left());
-  EXPECT_EQ(Length::Fixed(50), try2->Bottom());
-  EXPECT_EQ(Length::Fixed(100), try2->Right());
+  EXPECT_EQ(Length::Fixed(50), GetTop(*try2));
+  EXPECT_EQ(Length::Fixed(90), GetLeft(*try2));
+  EXPECT_EQ(Length::Fixed(50), GetBottom(*try2));
+  EXPECT_EQ(Length::Fixed(100), GetRight(*try2));
 
   EXPECT_FALSE(target->StyleForPositionFallback(2));
 }
@@ -2784,12 +2814,12 @@ TEST_F(StyleResolverTest, PositionFallbackStylesResolveRelativeLengthUnits) {
   Element* target = GetElementById("target");
   const ComputedStyle* base_style = target->GetComputedStyle();
   ASSERT_TRUE(base_style);
-  EXPECT_EQ(Length::Auto(), base_style->Top());
+  EXPECT_EQ(Length::Auto(), GetTop(*base_style));
 
   // '2em' should resolve to '40px'
   const ComputedStyle* try1 = target->StyleForPositionFallback(0);
   ASSERT_TRUE(try1);
-  EXPECT_EQ(Length::Fixed(40), try1->Top());
+  EXPECT_EQ(Length::Fixed(40), GetTop(*try1));
 
   EXPECT_FALSE(target->StyleForPositionFallback(1));
 }
@@ -2820,12 +2850,12 @@ TEST_F(StyleResolverTest, PositionFallbackStylesInBeforePseudoElement) {
 
   const ComputedStyle* base_style = before->GetComputedStyle();
   ASSERT_TRUE(base_style);
-  EXPECT_EQ(Length::Auto(), base_style->Top());
+  EXPECT_EQ(Length::Auto(), GetTop(*base_style));
 
   // 'position-fallback' applies to ::before pseudo-element.
   const ComputedStyle* try1 = before->StyleForPositionFallback(0);
   ASSERT_TRUE(try1);
-  EXPECT_EQ(Length::Fixed(50), try1->Top());
+  EXPECT_EQ(Length::Fixed(50), GetTop(*try1));
 
   EXPECT_FALSE(before->StyleForPositionFallback(1));
 }
@@ -2861,31 +2891,31 @@ TEST_F(StyleResolverTest, PositionFallbackStylesCSSWideKeywords) {
   Element* target = GetElementById("target");
   const ComputedStyle* base_style = target->GetComputedStyle();
   ASSERT_TRUE(base_style);
-  EXPECT_EQ(Length::Fixed(50), base_style->Top());
-  EXPECT_EQ(Length::Fixed(50), base_style->Left());
-  EXPECT_EQ(Length::Fixed(50), base_style->Bottom());
-  EXPECT_EQ(Length::Fixed(50), base_style->Right());
+  EXPECT_EQ(Length::Fixed(50), GetTop(*base_style));
+  EXPECT_EQ(Length::Fixed(50), GetLeft(*base_style));
+  EXPECT_EQ(Length::Fixed(50), GetBottom(*base_style));
+  EXPECT_EQ(Length::Fixed(50), GetRight(*base_style));
 
   const ComputedStyle* try1 = target->StyleForPositionFallback(0);
   ASSERT_TRUE(try1);
-  EXPECT_EQ(Length::Auto(), try1->Top());
-  EXPECT_EQ(Length::Fixed(50), try1->Left());
-  EXPECT_EQ(Length::Fixed(50), try1->Bottom());
-  EXPECT_EQ(Length::Fixed(50), try1->Right());
+  EXPECT_EQ(Length::Auto(), GetTop(*try1));
+  EXPECT_EQ(Length::Fixed(50), GetLeft(*try1));
+  EXPECT_EQ(Length::Fixed(50), GetBottom(*try1));
+  EXPECT_EQ(Length::Fixed(50), GetRight(*try1));
 
   const ComputedStyle* try2 = target->StyleForPositionFallback(1);
   ASSERT_TRUE(try2);
-  EXPECT_EQ(Length::Fixed(50), try2->Top());
-  EXPECT_EQ(Length::Fixed(100), try2->Left());
-  EXPECT_EQ(Length::Fixed(50), try2->Bottom());
-  EXPECT_EQ(Length::Fixed(50), try2->Right());
+  EXPECT_EQ(Length::Fixed(50), GetTop(*try2));
+  EXPECT_EQ(Length::Fixed(100), GetLeft(*try2));
+  EXPECT_EQ(Length::Fixed(50), GetBottom(*try2));
+  EXPECT_EQ(Length::Fixed(50), GetRight(*try2));
 
   const ComputedStyle* try3 = target->StyleForPositionFallback(2);
   ASSERT_TRUE(try3);
-  EXPECT_EQ(Length::Fixed(50), try3->Top());
-  EXPECT_EQ(Length::Fixed(50), try3->Left());
-  EXPECT_EQ(Length::Fixed(50), try3->Bottom());
-  EXPECT_EQ(Length::Auto(), try3->Right());
+  EXPECT_EQ(Length::Fixed(50), GetTop(*try3));
+  EXPECT_EQ(Length::Fixed(50), GetLeft(*try3));
+  EXPECT_EQ(Length::Fixed(50), GetBottom(*try3));
+  EXPECT_EQ(Length::Auto(), GetRight(*try3));
 
   EXPECT_FALSE(target->StyleForPositionFallback(3));
 }
@@ -2916,13 +2946,13 @@ TEST_F(StyleResolverTest, PositionFallbackPropertyValueChange) {
   {
     const ComputedStyle* base_style = target->GetComputedStyle();
     ASSERT_TRUE(base_style);
-    EXPECT_EQ(Length::Auto(), base_style->Top());
-    EXPECT_EQ(Length::Auto(), base_style->Left());
+    EXPECT_EQ(Length::Auto(), GetTop(*base_style));
+    EXPECT_EQ(Length::Auto(), GetLeft(*base_style));
 
     const ComputedStyle* fallback = target->StyleForPositionFallback(0);
     ASSERT_TRUE(fallback);
-    EXPECT_EQ(Length::Fixed(100), fallback->Top());
-    EXPECT_EQ(Length::Auto(), fallback->Left());
+    EXPECT_EQ(Length::Fixed(100), GetTop(*fallback));
+    EXPECT_EQ(Length::Auto(), GetLeft(*fallback));
 
     EXPECT_FALSE(target->StyleForPositionFallback(1));
   }
@@ -2933,14 +2963,14 @@ TEST_F(StyleResolverTest, PositionFallbackPropertyValueChange) {
   {
     const ComputedStyle* base_style = target->GetComputedStyle();
     ASSERT_TRUE(base_style);
-    EXPECT_EQ(Length::Auto(), base_style->Top());
-    EXPECT_EQ(Length::Auto(), base_style->Left());
+    EXPECT_EQ(Length::Auto(), GetTop(*base_style));
+    EXPECT_EQ(Length::Auto(), GetLeft(*base_style));
 
     const ComputedStyle* fallback = target->StyleForPositionFallback(0);
     ASSERT_TRUE(fallback);
     ASSERT_TRUE(fallback);
-    EXPECT_EQ(Length::Auto(), fallback->Top());
-    EXPECT_EQ(Length::Fixed(100), fallback->Left());
+    EXPECT_EQ(Length::Auto(), GetTop(*fallback));
+    EXPECT_EQ(Length::Fixed(100), GetLeft(*fallback));
 
     EXPECT_FALSE(target->StyleForPositionFallback(1));
   }
@@ -3155,12 +3185,12 @@ TEST_F(StyleResolverTest, ScopedAnchorFunction) {
     Element* right = shadow->getElementById("right");
 
     EXPECT_EQ(&GetDocument(),
-              GetAnchorQueryTreeScope(left->ComputedStyleRef().Left()));
+              GetAnchorQueryTreeScope(GetLeft(left->ComputedStyleRef())));
     EXPECT_EQ(&GetDocument(),
-              GetAnchorQueryTreeScope(right->ComputedStyleRef().Right()));
-    EXPECT_EQ(shadow, GetAnchorQueryTreeScope(top->ComputedStyleRef().Top()));
+              GetAnchorQueryTreeScope(GetRight(right->ComputedStyleRef())));
+    EXPECT_EQ(shadow, GetAnchorQueryTreeScope(GetTop(top->ComputedStyleRef())));
     EXPECT_EQ(shadow,
-              GetAnchorQueryTreeScope(bottom->ComputedStyleRef().Bottom()));
+              GetAnchorQueryTreeScope(GetBottom(bottom->ComputedStyleRef())));
   }
 
   {
@@ -3171,14 +3201,14 @@ TEST_F(StyleResolverTest, ScopedAnchorFunction) {
     Element* block_start = shadow->getElementById("block-start");
     Element* inline_end = shadow->getElementById("inline-end");
 
-    EXPECT_EQ(&GetDocument(),
-              GetAnchorQueryTreeScope(inline_start->ComputedStyleRef().Left()));
-    EXPECT_EQ(&GetDocument(),
-              GetAnchorQueryTreeScope(inline_end->ComputedStyleRef().Right()));
+    EXPECT_EQ(&GetDocument(), GetAnchorQueryTreeScope(
+                                  GetLeft(inline_start->ComputedStyleRef())));
+    EXPECT_EQ(&GetDocument(), GetAnchorQueryTreeScope(
+                                  GetRight(inline_end->ComputedStyleRef())));
     EXPECT_EQ(shadow,
-              GetAnchorQueryTreeScope(block_start->ComputedStyleRef().Top()));
-    EXPECT_EQ(shadow,
-              GetAnchorQueryTreeScope(block_end->ComputedStyleRef().Bottom()));
+              GetAnchorQueryTreeScope(GetTop(block_start->ComputedStyleRef())));
+    EXPECT_EQ(shadow, GetAnchorQueryTreeScope(
+                          GetBottom(block_end->ComputedStyleRef())));
   }
 }
 
@@ -3230,17 +3260,17 @@ TEST_F(StyleResolverTest, ScopedAnchorSizeFunction) {
   Element* max_height = shadow2->getElementById("max-height");
 
   EXPECT_EQ(&GetDocument(),
-            GetAnchorQueryTreeScope(width->ComputedStyleRef().Width()));
+            GetAnchorQueryTreeScope(GetWidth(width->ComputedStyleRef())));
   EXPECT_EQ(shadow1,
-            GetAnchorQueryTreeScope(height->ComputedStyleRef().Height()));
-  EXPECT_EQ(&GetDocument(),
-            GetAnchorQueryTreeScope(min_width->ComputedStyleRef().MinWidth()));
-  EXPECT_EQ(shadow2,
-            GetAnchorQueryTreeScope(max_width->ComputedStyleRef().MaxWidth()));
-  EXPECT_EQ(shadow2, GetAnchorQueryTreeScope(
-                         min_height->ComputedStyleRef().MinHeight()));
+            GetAnchorQueryTreeScope(GetHeight(height->ComputedStyleRef())));
   EXPECT_EQ(&GetDocument(), GetAnchorQueryTreeScope(
-                                max_height->ComputedStyleRef().MaxHeight()));
+                                GetMinWidth(min_width->ComputedStyleRef())));
+  EXPECT_EQ(shadow2, GetAnchorQueryTreeScope(
+                         GetMaxWidth(max_width->ComputedStyleRef())));
+  EXPECT_EQ(shadow2, GetAnchorQueryTreeScope(
+                         GetMinHeight(min_height->ComputedStyleRef())));
+  EXPECT_EQ(&GetDocument(), GetAnchorQueryTreeScope(
+                                GetMaxHeight(max_height->ComputedStyleRef())));
 }
 
 TEST_F(StyleResolverTestCQ, CanAffectAnimationsMPC) {

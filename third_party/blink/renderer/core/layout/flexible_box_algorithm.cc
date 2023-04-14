@@ -762,8 +762,8 @@ FlexLayoutAlgorithm::ContentAlignmentNormalBehavior() {
 bool FlexLayoutAlgorithm::ShouldApplyMinSizeAutoForChild(
     const LayoutBox& child) const {
   // css-flexbox section 4.5
-  const Length& min = IsHorizontalFlow() ? child.StyleRef().MinWidth()
-                                         : child.StyleRef().MinHeight();
+  const Length& min = IsHorizontalFlow() ? child.StyleRef().UsedMinWidth()
+                                         : child.StyleRef().UsedMinHeight();
   bool main_axis_is_childs_block_axis =
       IsHorizontalFlow() != child.StyleRef().IsHorizontalWritingMode();
   bool intrinsic_in_childs_block_axis =

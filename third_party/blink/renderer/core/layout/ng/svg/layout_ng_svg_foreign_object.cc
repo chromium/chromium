@@ -111,8 +111,8 @@ void LayoutNGSVGForeignObject::UpdateBlockLayout(bool relayout_children) {
   const ComputedStyle& style = StyleRef();
   gfx::Vector2dF origin =
       length_context.ResolveLengthPair(style.X(), style.Y(), style);
-  gfx::Vector2dF size =
-      length_context.ResolveLengthPair(style.Width(), style.Height(), style);
+  gfx::Vector2dF size = length_context.ResolveLengthPair(
+      style.UsedWidth(), style.UsedHeight(), style);
   // SetRect() will clamp negative width/height to zero.
   viewport_.SetRect(origin.x(), origin.y(), size.x(), size.y());
 

@@ -48,8 +48,8 @@ void LayoutSVGRect::UpdateShapeFromElement() {
   const ComputedStyle& style = StyleRef();
   gfx::Vector2dF origin =
       length_context.ResolveLengthPair(style.X(), style.Y(), style);
-  gfx::Vector2dF size =
-      length_context.ResolveLengthPair(style.Width(), style.Height(), style);
+  gfx::Vector2dF size = length_context.ResolveLengthPair(
+      style.UsedWidth(), style.UsedHeight(), style);
   // Spec: "A negative value is an error." gfx::Rect::SetRect() clamps negative
   // width/height to 0.
   fill_bounding_box_.SetRect(origin.x(), origin.y(), size.x(), size.y());

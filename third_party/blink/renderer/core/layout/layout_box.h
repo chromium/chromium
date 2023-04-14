@@ -524,10 +524,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     const ComputedStyle& style = StyleRef();
     if (style.AspectRatio().IsAuto() || !IsOutOfFlowPositioned())
       return false;
-    if (style.Width().IsAuto() && style.Height().IsAuto() &&
+    if (style.UsedWidth().IsAuto() && style.UsedHeight().IsAuto() &&
         !style.LogicalTop().IsAuto() && !style.LogicalBottom().IsAuto() &&
-        (style.LogicalLeft().IsAuto() || style.LogicalRight().IsAuto()))
+        (style.LogicalLeft().IsAuto() || style.LogicalRight().IsAuto())) {
       return true;
+    }
     return false;
   }
 

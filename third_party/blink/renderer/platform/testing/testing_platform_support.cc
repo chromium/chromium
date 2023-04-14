@@ -43,6 +43,7 @@
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_platform.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
@@ -209,6 +210,7 @@ ScopedUnittestsEnvironmentSetup::ScopedUnittestsEnvironmentSetup(int argc,
 
   WTF::Partitions::Initialize();
   WTF::Initialize();
+  Length::Initialize();
 
   // This must be called after WTF::Initialize(), because ThreadSpecific<>
   // used in this function depends on WTF::IsMainThread().

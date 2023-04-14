@@ -3759,7 +3759,7 @@ void LayoutBox::ComputeMarginsForDirection(MarginDirection flow_direction,
   // width of the containing block, then any 'auto' values for 'margin-left' or
   // 'margin-right' are, for the following rules, treated as zero.
   LayoutUnit margin_box_width =
-      child_width + (!StyleRef().Width().IsAuto()
+      child_width + (!StyleRef().UsedWidth().IsAuto()
                          ? margin_start_width + margin_end_width
                          : LayoutUnit());
 
@@ -4439,8 +4439,8 @@ LayoutUnit LayoutBox::AvailableLogicalHeightUsing(
   // https://bugs.webkit.org/show_bug.cgi?id=46500
   auto* curr_layout_block = DynamicTo<LayoutBlock>(this);
   if (curr_layout_block && IsOutOfFlowPositioned() &&
-      StyleRef().Height().IsAuto() &&
-      !(StyleRef().Top().IsAuto() || StyleRef().Bottom().IsAuto())) {
+      StyleRef().UsedHeight().IsAuto() &&
+      !(StyleRef().UsedTop().IsAuto() || StyleRef().UsedBottom().IsAuto())) {
     LayoutBlock* block = const_cast<LayoutBlock*>(curr_layout_block);
     LogicalExtentComputedValues computed_values;
     block->ComputeLogicalHeight(block->LogicalHeight(), LayoutUnit(),

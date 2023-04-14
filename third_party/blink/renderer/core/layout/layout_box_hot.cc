@@ -25,8 +25,9 @@ bool LayoutBox::ShrinkToAvoidFloats() const {
     return false;
 
   // Only auto width objects can possibly shrink to avoid floats.
-  if (!StyleRef().Width().IsAuto())
+  if (!StyleRef().UsedWidth().IsAuto()) {
     return false;
+  }
 
   // If the containing block is LayoutNG, we will not let legacy layout deal
   // with positioning of floats or sizing of auto-width new formatting context

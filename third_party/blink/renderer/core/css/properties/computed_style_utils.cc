@@ -577,22 +577,22 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
   bool is_right_or_bottom;
   switch (property.PropertyID()) {
     case CSSPropertyID::kLeft:
-      positions = std::make_pair(&style.Left(), &style.Right());
+      positions = std::make_pair(&style.UsedLeft(), &style.UsedRight());
       is_horizontal_property = true;
       is_right_or_bottom = false;
       break;
     case CSSPropertyID::kRight:
-      positions = std::make_pair(&style.Right(), &style.Left());
+      positions = std::make_pair(&style.UsedRight(), &style.UsedLeft());
       is_horizontal_property = true;
       is_right_or_bottom = true;
       break;
     case CSSPropertyID::kTop:
-      positions = std::make_pair(&style.Top(), &style.Bottom());
+      positions = std::make_pair(&style.UsedTop(), &style.UsedBottom());
       is_horizontal_property = false;
       is_right_or_bottom = false;
       break;
     case CSSPropertyID::kBottom:
-      positions = std::make_pair(&style.Bottom(), &style.Top());
+      positions = std::make_pair(&style.UsedBottom(), &style.UsedTop());
       is_horizontal_property = false;
       is_right_or_bottom = true;
       break;

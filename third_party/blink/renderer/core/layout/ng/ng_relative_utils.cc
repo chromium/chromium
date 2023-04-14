@@ -35,13 +35,13 @@ LogicalOffset ComputeRelativeOffset(
   };
 
   absl::optional<LayoutUnit> left =
-      ResolveInset(child_style.Left(), physical_size.width);
+      ResolveInset(child_style.UsedLeft(), physical_size.width);
   absl::optional<LayoutUnit> right =
-      ResolveInset(child_style.Right(), physical_size.width);
+      ResolveInset(child_style.UsedRight(), physical_size.width);
   absl::optional<LayoutUnit> top =
-      ResolveInset(child_style.Top(), physical_size.height);
+      ResolveInset(child_style.UsedTop(), physical_size.height);
   absl::optional<LayoutUnit> bottom =
-      ResolveInset(child_style.Bottom(), physical_size.height);
+      ResolveInset(child_style.UsedBottom(), physical_size.height);
 
   // Common case optimization.
   if (!left && !right && !top && !bottom)
