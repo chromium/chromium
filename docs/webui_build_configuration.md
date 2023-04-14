@@ -473,6 +473,7 @@ copy("copy_mojo")
 ts_library("build_ts")
 merge_js_source_maps("merge_source_maps")
 optimize_webui("build_bundle")
+minify_js("build_min_js")
 generate_grd("build_grd")
 generate_grd("build_grdp")
 grit("resources")
@@ -536,6 +537,8 @@ optimize: Specifies whether any optimization steps will be used, defaults to
           invoked with the |minify| flag on, to minify HTML/CSS code.
           If |optimize_webui_in_files| is provided then optimize_webui() will be
           invoked to bundle+minify JS code (using Rollup and Terser).
+          If |optimize_webui_in_files| is not provided then minify_js() will be
+          invoked to minify JS code (using Terser).
           |optimize_webui_host| must be specified if |optimize_webui_in_files|
           is provided.
 optimize_webui_excludes: See |excludes| in optimize_webui(). Optional.
