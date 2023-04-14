@@ -109,10 +109,12 @@ ThumbnailCache::ThumbnailCache(size_t default_cache_size,
                                bool use_approximation_thumbnail,
                                bool save_jpeg_thumbnails,
                                double jpeg_aspect_ratio)
-    : file_sequenced_task_runner_(
+    : etc1_file_sequenced_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
-      etc1_helper_(GetCacheDirectory(), file_sequenced_task_runner_),
-      jpeg_helper_(GetCacheDirectory(), file_sequenced_task_runner_),
+      jpeg_file_sequenced_task_runner_(
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
+      etc1_helper_(GetCacheDirectory(), etc1_file_sequenced_task_runner_),
+      jpeg_helper_(GetCacheDirectory(), jpeg_file_sequenced_task_runner_),
       compression_queue_max_size_(compression_queue_max_size),
       write_queue_max_size_(write_queue_max_size),
       use_approximation_thumbnail_(use_approximation_thumbnail),

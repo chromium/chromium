@@ -160,9 +160,12 @@ class ThumbnailCache : ThumbnailDelegate {
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level);
 
-  // TODO(ckitagawa): Look into making this USER_VISIBLE for at least a subset
-  // of tasks.
-  const scoped_refptr<base::SequencedTaskRunner> file_sequenced_task_runner_;
+  // TODO(crbug/1402843): Look into making these USER_VISIBLE. They do look
+  // visually jarring if late.
+  const scoped_refptr<base::SequencedTaskRunner>
+      etc1_file_sequenced_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner>
+      jpeg_file_sequenced_task_runner_;
   thumbnail::Etc1ThumbnailHelper etc1_helper_;
   thumbnail::JpegThumbnailHelper jpeg_helper_;
 
@@ -172,6 +175,8 @@ class ThumbnailCache : ThumbnailDelegate {
   const bool save_jpeg_thumbnails_;
   base::TimeDelta capture_min_request_time_ms_;
 
+  // TODO(crbug/1402843): Determine if these limits are still relevant.
+  // Remove or tune accordingly (i.e. split by jpeg and etc1).
   size_t compression_tasks_count_;
   size_t write_tasks_count_;
   bool read_in_progress_;

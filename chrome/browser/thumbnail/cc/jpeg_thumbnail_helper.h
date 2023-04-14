@@ -6,7 +6,8 @@
 #define CHROME_BROWSER_THUMBNAIL_CC_JPEG_THUMBNAIL_HELPER_H_
 
 #include "base/files/file_path.h"
-#include "base/memory/weak_ptr.h"
+#include "base/functional/callback_forward.h"
+#include "base/task/task_runner.h"
 #include "chrome/browser/thumbnail/cc/thumbnail.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -35,6 +36,7 @@ class JpegThumbnailHelper {
   void Write(thumbnail::TabId tab_id,
              std::vector<uint8_t> compressed_data,
              base::OnceClosure post_write_task);
+
   // `post_read_task` will run on the thread that created this
   // JpegThumbnailHelper.
   void Read(thumbnail::TabId tab_id,
