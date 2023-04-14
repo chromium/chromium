@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 365 tests; 363 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 370 tests; 368 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS onabort: must be on the appropriate locations for GlobalEventHandlers
 PASS onabort: the default value must be null
 PASS onabort: the content attribute must be compiled into a function as the corresponding property
@@ -20,6 +20,11 @@ PASS onbeforematch: the default value must be null
 FAIL onbeforematch: the content attribute must be compiled into a function as the corresponding property assert_equals: The onbeforematch property must be a function expected "function" but got "object"
 FAIL onbeforematch: dynamic changes on the attribute assert_equals: The onbeforematch property must be a function (set attribute) expected "function" but got "object"
 PASS onbeforematch: dispatching an Event at a <math> element must trigger element.onbeforematch
+PASS onbeforetoggle: must be on the appropriate locations for GlobalEventHandlers
+PASS onbeforetoggle: the default value must be null
+PASS onbeforetoggle: the content attribute must be compiled into a function as the corresponding property
+PASS onbeforetoggle: dynamic changes on the attribute
+PASS onbeforetoggle: dispatching an Event at a <math> element must trigger element.onbeforetoggle
 PASS onblur: must be on the appropriate locations for GlobalEventHandlers
 PASS onblur: the default value must be null
 PASS onblur: the content attribute must be compiled into a function as the corresponding property

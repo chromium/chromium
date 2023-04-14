@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 108 tests; 105 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 110 tests; 105 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -41,12 +41,13 @@ PASS Selection interface: attribute focusOffset
 PASS Selection interface: attribute isCollapsed
 PASS Selection interface: attribute rangeCount
 PASS Selection interface: attribute type
+FAIL Selection interface: attribute direction assert_true: The prototype object must have a property "direction" expected true got false
 PASS Selection interface: operation getRangeAt(unsigned long)
 PASS Selection interface: operation addRange(Range)
 PASS Selection interface: operation removeRange(Range)
 PASS Selection interface: operation removeAllRanges()
 PASS Selection interface: operation empty()
-FAIL Selection interface: operation getComposedRange(ShadowRoot...) assert_own_property: interface prototype object missing non-static operation expected property "getComposedRange" missing
+FAIL Selection interface: operation getComposedRanges(ShadowRoot...) assert_own_property: interface prototype object missing non-static operation expected property "getComposedRanges" missing
 PASS Selection interface: operation collapse(Node?, optional unsigned long)
 PASS Selection interface: operation setPosition(Node?, optional unsigned long)
 PASS Selection interface: operation collapseToStart()
@@ -67,6 +68,7 @@ PASS Selection interface: getSelection() must inherit property "focusOffset" wit
 PASS Selection interface: getSelection() must inherit property "isCollapsed" with the proper type
 PASS Selection interface: getSelection() must inherit property "rangeCount" with the proper type
 PASS Selection interface: getSelection() must inherit property "type" with the proper type
+FAIL Selection interface: getSelection() must inherit property "direction" with the proper type assert_inherits: property "direction" not found in prototype chain
 PASS Selection interface: getSelection() must inherit property "getRangeAt(unsigned long)" with the proper type
 PASS Selection interface: calling getRangeAt(unsigned long) on getSelection() with too few arguments must throw TypeError
 PASS Selection interface: getSelection() must inherit property "addRange(Range)" with the proper type
@@ -75,8 +77,8 @@ PASS Selection interface: getSelection() must inherit property "removeRange(Rang
 PASS Selection interface: calling removeRange(Range) on getSelection() with too few arguments must throw TypeError
 PASS Selection interface: getSelection() must inherit property "removeAllRanges()" with the proper type
 PASS Selection interface: getSelection() must inherit property "empty()" with the proper type
-FAIL Selection interface: getSelection() must inherit property "getComposedRange(ShadowRoot...)" with the proper type assert_inherits: property "getComposedRange" not found in prototype chain
-FAIL Selection interface: calling getComposedRange(ShadowRoot...) on getSelection() with too few arguments must throw TypeError assert_inherits: property "getComposedRange" not found in prototype chain
+FAIL Selection interface: getSelection() must inherit property "getComposedRanges(ShadowRoot...)" with the proper type assert_inherits: property "getComposedRanges" not found in prototype chain
+FAIL Selection interface: calling getComposedRanges(ShadowRoot...) on getSelection() with too few arguments must throw TypeError assert_inherits: property "getComposedRanges" not found in prototype chain
 PASS Selection interface: getSelection() must inherit property "collapse(Node?, optional unsigned long)" with the proper type
 PASS Selection interface: calling collapse(Node?, optional unsigned long) on getSelection() with too few arguments must throw TypeError
 PASS Selection interface: getSelection() must inherit property "setPosition(Node?, optional unsigned long)" with the proper type

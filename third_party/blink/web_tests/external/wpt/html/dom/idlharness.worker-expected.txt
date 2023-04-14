@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 746 tests; 737 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 749 tests; 740 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -89,6 +89,8 @@ PASS HTMLStyleElement includes LinkStyle: member names are unique
 PASS HTMLBodyElement includes WindowEventHandlers: member names are unique
 PASS HTMLAnchorElement includes HTMLHyperlinkElementUtils: member names are unique
 PASS HTMLAreaElement includes HTMLHyperlinkElementUtils: member names are unique
+PASS HTMLInputElement includes PopoverInvokerElement: member names are unique
+PASS HTMLButtonElement includes PopoverInvokerElement: member names are unique
 PASS CanvasRenderingContext2D includes CanvasState: member names are unique
 PASS CanvasRenderingContext2D includes CanvasTransform: member names are unique
 PASS CanvasRenderingContext2D includes CanvasCompositing: member names are unique
@@ -425,6 +427,7 @@ PASS DataTransfer interface: existence and properties of interface object
 PASS DataTransferItemList interface: existence and properties of interface object
 PASS DataTransferItem interface: existence and properties of interface object
 PASS DragEvent interface: existence and properties of interface object
+PASS ToggleEvent interface: existence and properties of interface object
 PASS Window interface: existence and properties of interface object
 PASS BarProp interface: existence and properties of interface object
 PASS Location interface: existence and properties of interface object

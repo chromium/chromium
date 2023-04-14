@@ -1,11 +1,11 @@
 This is a testharness.js-based test.
-Found 311 tests; 301 PASS, 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 311 tests; 309 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
-FAIL AudioDecoder interface: existence and properties of interface object assert_equals: prototype of self's property "AudioDecoder" is not Function.prototype expected function "function () { [native code] }" but got function "function EventTarget() { [native code] }"
+PASS AudioDecoder interface: existence and properties of interface object
 PASS AudioDecoder interface object length
 PASS AudioDecoder interface object name
-FAIL AudioDecoder interface: existence and properties of interface prototype object assert_equals: prototype of AudioDecoder.prototype is not Object.prototype expected object "[object Object]" but got object "[object EventTarget]"
+PASS AudioDecoder interface: existence and properties of interface prototype object
 PASS AudioDecoder interface: existence and properties of interface prototype object's "constructor" property
 PASS AudioDecoder interface: existence and properties of interface prototype object's @@unscopables property
 PASS AudioDecoder interface: attribute state
@@ -31,10 +31,10 @@ PASS AudioDecoder interface: new AudioDecoder(defaultCodecInit) must inherit pro
 PASS AudioDecoder interface: new AudioDecoder(defaultCodecInit) must inherit property "close()" with the proper type
 PASS AudioDecoder interface: new AudioDecoder(defaultCodecInit) must inherit property "isConfigSupported(AudioDecoderConfig)" with the proper type
 PASS AudioDecoder interface: calling isConfigSupported(AudioDecoderConfig) on new AudioDecoder(defaultCodecInit) with too few arguments must throw TypeError
-FAIL VideoDecoder interface: existence and properties of interface object assert_equals: prototype of self's property "VideoDecoder" is not Function.prototype expected function "function () { [native code] }" but got function "function EventTarget() { [native code] }"
+PASS VideoDecoder interface: existence and properties of interface object
 PASS VideoDecoder interface object length
 PASS VideoDecoder interface object name
-FAIL VideoDecoder interface: existence and properties of interface prototype object assert_equals: prototype of VideoDecoder.prototype is not Object.prototype expected object "[object Object]" but got object "[object EventTarget]"
+PASS VideoDecoder interface: existence and properties of interface prototype object
 PASS VideoDecoder interface: existence and properties of interface prototype object's "constructor" property
 PASS VideoDecoder interface: existence and properties of interface prototype object's @@unscopables property
 PASS VideoDecoder interface: attribute state
@@ -60,10 +60,10 @@ PASS VideoDecoder interface: new VideoDecoder(defaultCodecInit) must inherit pro
 PASS VideoDecoder interface: new VideoDecoder(defaultCodecInit) must inherit property "close()" with the proper type
 PASS VideoDecoder interface: new VideoDecoder(defaultCodecInit) must inherit property "isConfigSupported(VideoDecoderConfig)" with the proper type
 PASS VideoDecoder interface: calling isConfigSupported(VideoDecoderConfig) on new VideoDecoder(defaultCodecInit) with too few arguments must throw TypeError
-FAIL AudioEncoder interface: existence and properties of interface object assert_equals: prototype of self's property "AudioEncoder" is not Function.prototype expected function "function () { [native code] }" but got function "function EventTarget() { [native code] }"
+PASS AudioEncoder interface: existence and properties of interface object
 PASS AudioEncoder interface object length
 PASS AudioEncoder interface object name
-FAIL AudioEncoder interface: existence and properties of interface prototype object assert_equals: prototype of AudioEncoder.prototype is not Object.prototype expected object "[object Object]" but got object "[object EventTarget]"
+PASS AudioEncoder interface: existence and properties of interface prototype object
 PASS AudioEncoder interface: existence and properties of interface prototype object's "constructor" property
 PASS AudioEncoder interface: existence and properties of interface prototype object's @@unscopables property
 PASS AudioEncoder interface: attribute state
@@ -89,10 +89,10 @@ PASS AudioEncoder interface: new AudioEncoder(defaultCodecInit) must inherit pro
 PASS AudioEncoder interface: new AudioEncoder(defaultCodecInit) must inherit property "close()" with the proper type
 PASS AudioEncoder interface: new AudioEncoder(defaultCodecInit) must inherit property "isConfigSupported(AudioEncoderConfig)" with the proper type
 PASS AudioEncoder interface: calling isConfigSupported(AudioEncoderConfig) on new AudioEncoder(defaultCodecInit) with too few arguments must throw TypeError
-FAIL VideoEncoder interface: existence and properties of interface object assert_equals: prototype of self's property "VideoEncoder" is not Function.prototype expected function "function () { [native code] }" but got function "function EventTarget() { [native code] }"
+PASS VideoEncoder interface: existence and properties of interface object
 PASS VideoEncoder interface object length
 PASS VideoEncoder interface object name
-FAIL VideoEncoder interface: existence and properties of interface prototype object assert_equals: prototype of VideoEncoder.prototype is not Object.prototype expected object "[object Object]" but got object "[object EventTarget]"
+PASS VideoEncoder interface: existence and properties of interface prototype object
 PASS VideoEncoder interface: existence and properties of interface prototype object's "constructor" property
 PASS VideoEncoder interface: existence and properties of interface prototype object's @@unscopables property
 PASS VideoEncoder interface: attribute state

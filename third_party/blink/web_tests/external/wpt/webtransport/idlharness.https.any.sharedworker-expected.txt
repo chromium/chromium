@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 78 tests; 58 PASS, 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 80 tests; 58 PASS, 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS WebTransportDatagramDuplexStream interface: existence and properties of interface object
@@ -26,6 +26,7 @@ PASS WebTransport interface: attribute ready
 FAIL WebTransport interface: attribute reliability assert_true: The prototype object must have a property "reliability" expected true got false
 FAIL WebTransport interface: attribute congestionControl assert_true: The prototype object must have a property "congestionControl" expected true got false
 PASS WebTransport interface: attribute closed
+FAIL WebTransport interface: attribute draining assert_true: The prototype object must have a property "draining" expected true got false
 PASS WebTransport interface: operation close(optional WebTransportCloseInfo)
 PASS WebTransport interface: attribute datagrams
 PASS WebTransport interface: operation createBidirectionalStream(optional WebTransportSendStreamOptions)
@@ -39,6 +40,7 @@ PASS WebTransport interface: webTransport must inherit property "ready" with the
 FAIL WebTransport interface: webTransport must inherit property "reliability" with the proper type assert_inherits: property "reliability" not found in prototype chain
 FAIL WebTransport interface: webTransport must inherit property "congestionControl" with the proper type assert_inherits: property "congestionControl" not found in prototype chain
 PASS WebTransport interface: webTransport must inherit property "closed" with the proper type
+FAIL WebTransport interface: webTransport must inherit property "draining" with the proper type assert_inherits: property "draining" not found in prototype chain
 PASS WebTransport interface: webTransport must inherit property "close(optional WebTransportCloseInfo)" with the proper type
 PASS WebTransport interface: calling close(optional WebTransportCloseInfo) on webTransport with too few arguments must throw TypeError
 PASS WebTransport interface: webTransport must inherit property "datagrams" with the proper type
