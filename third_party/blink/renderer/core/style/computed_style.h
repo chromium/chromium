@@ -1784,6 +1784,13 @@ class ComputedStyle : public ComputedStyleBase,
   bool IsDisplayBlockContainer() const {
     return IsDisplayBlockContainer(Display());
   }
+  bool IsDisplayListItem() const { return IsDisplayListItem(Display()); }
+  static bool IsDisplayListItem(EDisplay display) {
+    return display == EDisplay::kListItem ||
+           display == EDisplay::kInlineListItem ||
+           display == EDisplay::kFlowRootListItem ||
+           display == EDisplay::kInlineFlowRootListItem;
+  }
   bool IsDisplayTableBox() const { return IsDisplayTableBox(Display()); }
   bool IsDisplayFlexibleBox() const { return IsDisplayFlexibleBox(Display()); }
   bool IsDisplayGridBox() const { return IsDisplayGridBox(Display()); }
@@ -2445,7 +2452,7 @@ class ComputedStyle : public ComputedStyleBase,
       return false;
     }
     if (pseudo == kPseudoIdMarker) {
-      return Display() == EDisplay::kListItem;
+      return IsDisplayListItem();
     }
     if (pseudo == kPseudoIdBackdrop && Overlay() == EOverlay::kNone) {
       return false;
@@ -2478,7 +2485,7 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   bool GeneratesMarkerImage() const {
-    return Display() == EDisplay::kListItem && ListStyleImage() &&
+    return IsDisplayListItem() && ListStyleImage() &&
            !ListStyleImage()->ErrorOccurred() &&
            (ListStyleImage()->IsLoading() || ListStyleImage()->IsLoaded());
   }

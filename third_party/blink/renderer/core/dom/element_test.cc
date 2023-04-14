@@ -1132,4 +1132,42 @@ TEST_F(ElementTest, MixStyleAttributeAndCSSOMChanges) {
   EXPECT_EQ(elmt->style()->getPropertyValue("color"), "green");
 }
 
+TEST_F(ElementTest, GetPseudoElement) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+    #before::before { content:"a"; }
+    #after::after { content:"a"; }
+    #marker1 { display: list-item; }
+    #marker2 { display: flow-root list-item; }
+    #marker3 { display: inline flow list-item; }
+    #marker4 { display: inline flow-root list-item; }
+    </style>
+    <div id="before"></div>
+    <div id="after">flow</div>
+    <div id="marker1"></div>
+    <div id="marker2"></div>
+    <div id="marker3"></div>
+    <div id="marker4"></div>
+    )HTML");
+  // GetPseudoElement() relies on style recalc.
+  GetDocument().UpdateStyleAndLayoutTree();
+  struct {
+    const char* id_name;
+    bool has_before;
+    bool has_after;
+    bool has_marker;
+  } kExpectations[] = {
+      {"before", true, false, false},  {"after", false, true, false},
+      {"marker1", false, false, true}, {"marker2", false, false, true},
+      {"marker3", false, false, true}, {"marker4", false, false, true},
+  };
+  for (const auto& e : kExpectations) {
+    SCOPED_TRACE(e.id_name);
+    Element* element = GetElementById(e.id_name);
+    EXPECT_EQ(e.has_before, !!element->GetPseudoElement(kPseudoIdBefore));
+    EXPECT_EQ(e.has_after, !!element->GetPseudoElement(kPseudoIdAfter));
+    EXPECT_EQ(e.has_marker, !!element->GetPseudoElement(kPseudoIdMarker));
+  }
+}
+
 }  // namespace blink
