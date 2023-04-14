@@ -19,6 +19,7 @@
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -1014,13 +1015,16 @@ void AutocompleteController::UpdateResult(
         input_, template_url_service_,
         preserve_default_after_transfer ? preserve_default_match : nullptr);
   } else {
-    // The async ml scoring is only run once all the providers are done.
-    if (MaybeRunUrlScoringModel(last_default_match,
-                                last_default_associated_keyword,
-                                force_notify_default_match_changed)) {
-      // When the ML Scoring model is run, sorting and processing of the result
-      // happens once all matches are scored in
-      // `OnUrlScoringModelDone()`, so we can skip it here.
+    // The async ML scoring is only run once all the providers are done. Use a
+    // WeakPtr since the model is not owned and `this` may not longer be alive.
+    scoring_model_weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
+    if (MaybeRunUrlScoringModel(base::BindOnce(
+            &AutocompleteController::AnnotateResultAndNotifyChanged,
+            scoring_model_weak_ptr_, last_default_match,
+            last_default_associated_keyword,
+            force_notify_default_match_changed))) {
+      // When the ML scoring model is run, processing the output and sorting
+      // and trimming of the matches happens in `OnUrlScoringModelDone()`.
       return;
     }
     // Sort the matches and trim them to a small number of "best" matches.
@@ -1032,8 +1036,8 @@ void AutocompleteController::UpdateResult(
 }
 
 void AutocompleteController::AnnotateResultAndNotifyChanged(
-    absl::optional<AutocompleteMatch>& last_default_match,
-    std::u16string& last_default_associated_keyword,
+    const absl::optional<AutocompleteMatch>& last_default_match,
+    const std::u16string& last_default_associated_keyword,
     bool force_notify_default_match_changed) {
 #if DCHECK_IS_ON()
   result_.Validate();
@@ -1515,9 +1519,7 @@ bool AutocompleteController::ShouldRunProvider(
 
 void AutocompleteController::OnUrlScoringModelDone(
     AutocompleteInput input,
-    absl::optional<AutocompleteMatch> last_default_match,
-    std::u16string last_default_associated_keyword,
-    bool force_notify_default_match_changed,
+    base::OnceClosure completion_callback,
     std::vector<std::pair<absl::optional<float>, size_t>>
         outputs_and_match_indices) {
   TRACE_EVENT0("omnibox", "AutocompleteController::OnUrlScoringModelDone");
@@ -1560,15 +1562,11 @@ void AutocompleteController::OnUrlScoringModelDone(
 
   result_.SortAndCull(input, template_url_service_);
 
-  AnnotateResultAndNotifyChanged(last_default_match,
-                                 last_default_associated_keyword,
-                                 force_notify_default_match_changed);
+  std::move(completion_callback).Run();
 }
 
 bool AutocompleteController::MaybeRunUrlScoringModel(
-    absl::optional<AutocompleteMatch>& last_default_match,
-    std::u16string& last_default_associated_keyword,
-    bool force_notify_default_match_changed) {
+    base::OnceClosure completion_callback) {
   TRACE_EVENT0("omnibox", "AutocompleteController::MaybeRunUrlScoringModel");
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -1582,16 +1580,12 @@ bool AutocompleteController::MaybeRunUrlScoringModel(
     return false;
   }
 
-  // Needed because the model is not owned and `this` may not longer be alive.
-  scoring_model_weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
-
   auto barrier_callback =
       base::BarrierCallback<std::pair<absl::optional<float>, size_t>>(
           result_.size(),
           base::BindOnce(&AutocompleteController::OnUrlScoringModelDone,
-                         scoring_model_weak_ptr_, input_, last_default_match,
-                         last_default_associated_keyword,
-                         force_notify_default_match_changed));
+                         scoring_model_weak_ptr_, input_,
+                         std::move(completion_callback)));
 
   for (size_t match_index = 0; match_index < result_.matches_.size();
        match_index++) {
