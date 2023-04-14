@@ -353,8 +353,8 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
                                          .identifier = identifier,
                                          .pinned_state = PinnedState::kPinned,
                                      });
-
   if (!webState) {
+    completion(nil);
     return;
   }
 
@@ -366,15 +366,25 @@ NSArray<TabSwitcherItem*>* CreatePinnedTabConsumerItems(
     return;
   }
 
+  // Use the page favicon if available.
   favicon::FaviconDriver* faviconDriver =
       favicon::WebFaviconDriver::FromWebState(webState);
-
   if (faviconDriver) {
     gfx::Image favicon = faviconDriver->GetFavicon();
     if (!favicon.IsEmpty()) {
       completion(favicon.ToUIImage());
+      return;
     }
   }
+
+  // Otherwise, set a default favicon.
+  NSString* symbolName = kGlobeSymbol;
+  if (@available(iOS 15, *)) {
+    symbolName = kGlobeAmericasSymbol;
+  }
+  UIImage* defaultFavicon =
+      DefaultSymbolWithPointSize(symbolName, kPinnedCellFaviconSymbolPointSize);
+  completion(defaultFavicon);
 }
 
 - (void)preloadSnapshotsForVisibleGridItems:

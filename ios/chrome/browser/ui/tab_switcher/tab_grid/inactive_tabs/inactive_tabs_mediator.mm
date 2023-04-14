@@ -11,6 +11,7 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
@@ -255,22 +256,33 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
                                      .identifier = identifier,
                                  });
   if (!webState) {
+    completion(nil);
     return;
   }
+
   // NTP tabs get no favicon.
   if (IsUrlNtp(webState->GetVisibleURL())) {
+    completion(nil);
     return;
   }
-  completion([UIImage imageNamed:@"default_world_favicon_regular"]);
 
+  // Use the page favicon if available.
   favicon::FaviconDriver* faviconDriver =
       favicon::WebFaviconDriver::FromWebState(webState);
   if (faviconDriver) {
     gfx::Image favicon = faviconDriver->GetFavicon();
     if (!favicon.IsEmpty()) {
       completion(favicon.ToUIImage());
+      return;
     }
   }
+
+  // Otherwise, set a default favicon.
+  UIImage* defaultFavicon =
+      webState->GetBrowserState()->IsOffTheRecord()
+          ? [UIImage imageNamed:@"default_world_favicon_incognito"]
+          : [UIImage imageNamed:@"default_world_favicon_regular"];
+  completion(defaultFavicon);
 }
 
 - (void)preloadSnapshotsForVisibleGridItems:

@@ -24,6 +24,7 @@ source_set("inactive_tabs") {
     "//components/prefs/ios",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/shared/coordinator/alert",
