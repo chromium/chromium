@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string-array name="activities_drop_down">
+        <item>Shell</item>
+        <item>UI/WebEngine State Test</item>
+        <item>Navigation Test</item>
+    </string-array>
+</resources>
