@@ -1,0 +1,19 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Protocol buffers used for storing in SQLite.
+
+syntax = "proto2";
+
+// Required in Chrome.
+option optimize_for = LITE_RUNTIME;
+
+// Represents a page's LCP element.
+//
+// In MVP, stores only LCP Element's URL. We'll add more fields which are
+// useful to improve LCP later.
+message LCPElement {
+  optional string lcp_element_url = 1;
+  // TODO(crbug.com/1419756): Store the last visit time.
+}

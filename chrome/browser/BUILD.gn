@@ -1234,6 +1234,10 @@ static_library("browser") {
     "predictors/autocomplete_action_predictor_factory.h",
     "predictors/autocomplete_action_predictor_table.cc",
     "predictors/autocomplete_action_predictor_table.h",
+    "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_database.cc",
+    "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_database.h",
+    "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_persister.cc",
+    "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_persister.h",
     "predictors/loading_data_collector.cc",
     "predictors/loading_data_collector.h",
     "predictors/loading_predictor.cc",
@@ -1918,6 +1922,7 @@ static_library("browser") {
     ":dev_ui_browser_resources_grit",
     ":expired_flags_list",
     ":k_anonymity_storage_proto",
+    ":lcp_critical_path_predictor_proto",
     ":ntp_background_proto",
     ":permissions_proto",
     ":resource_prefetch_predictor_proto",
@@ -7692,6 +7697,12 @@ proto_library("k_anonymity_storage_proto") {
 
 proto_library("resource_prefetch_predictor_proto") {
   sources = [ "predictors/resource_prefetch_predictor.proto" ]
+}
+
+proto_library("lcp_critical_path_predictor_proto") {
+  sources = [
+    "predictors/lcp_critical_path_predictor/lcp_critical_path_predictor.proto",
+  ]
 }
 
 proto_library("permissions_proto") {
