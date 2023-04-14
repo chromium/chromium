@@ -203,9 +203,8 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   NGConstraintSpace CreateConstraintSpace(
       NGCacheSlot cache_slot,
       const GridItemData& grid_item,
-      const NGGridLayoutData& layout_data,
       const LogicalSize& containing_grid_area_size,
-      absl::optional<LayoutUnit> opt_fixed_block_size,
+      const LogicalSize& fixed_available_size,
       NGGridLayoutSubtree&& opt_layout_subtree = NGGridLayoutSubtree(),
       bool min_block_size_should_encompass_intrinsic_size = false,
       absl::optional<LayoutUnit> opt_fragment_relative_block_offset =
@@ -222,15 +221,12 @@ class CORE_EXPORT NGGridLayoutAlgorithm
           absl::nullopt) const;
 
   NGConstraintSpace CreateConstraintSpaceForMeasure(
-      const GridItemData& grid_item,
-      const NGGridSizingSubtree& sizing_subtree,
+      const NGSubgriddedItemData& subgridded_item,
       GridTrackSizingDirection track_direction,
       absl::optional<LayoutUnit> opt_fixed_block_size = absl::nullopt) const;
 
-  NGGridLayoutAlgorithm CreateSubgridLayoutAlgorithm(
-      const NGSubgriddedItemData& subgrid_data,
-      NGConstraintSpace* constraint_space,
-      NGFragmentGeometry* fragment_geometry) const;
+  NGConstraintSpace CreateConstraintSpaceForSubgridAlgorithm(
+      const NGSubgriddedItemData& subgrid_data) const;
 
   // Layout the |grid_items|, and add them to the builder.
   //
