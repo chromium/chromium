@@ -10,6 +10,7 @@
 #include "ash/public/cpp/night_light_controller.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/shell.h"
+#include "ash/system/power/adaptive_charging_controller.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -1153,8 +1154,12 @@ DeviceSection::DeviceSection(Profile* profile,
         &DeviceSection::OnGotSwitchStates, weak_ptr_factory_.GetWeakPtr()));
 
     // Surface adaptive charging setting in search if the feature is enabled.
-    if (ash::features::IsAdaptiveChargingEnabled())
+    if (ash::features::IsAdaptiveChargingEnabled() &&
+        Shell::Get()
+            ->adaptive_charging_controller()
+            ->IsAdaptiveChargingSupported()) {
       updater.AddSearchTags(GetPowerWithAdaptiveChargingSearchConcepts());
+    }
   }
 
   // Keyboard/mouse search tags are added/removed dynamically.
@@ -1220,7 +1225,10 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddDevicePowerStrings(html_source);
 
   html_source->AddBoolean("isAdaptiveChargingEnabled",
-                          ash::features::IsAdaptiveChargingEnabled());
+                          ash::features::IsAdaptiveChargingEnabled() &&
+                              Shell::Get()
+                                  ->adaptive_charging_controller()
+                                  ->IsAdaptiveChargingSupported());
 }
 
 void DeviceSection::AddHandlers(content::WebUI* web_ui) {
