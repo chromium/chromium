@@ -14,13 +14,21 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ash/login/users/avatar/user_image_manager_test_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
+
+namespace {
+
+// Points to a webp file with 3 frames of red, green, blue solid colors,
+// respectively.
+constexpr base::StringPiece kUserAvatarWebpRelativePath =
+    "chromeos/avatars/avatar.webp";
+
+}  // namespace
 
 class UserImageLoaderTest : public testing::Test {
  public:
@@ -41,7 +49,7 @@ TEST_F(UserImageLoaderTest, StartWithFilePathAnimated) {
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir));
 
   const base::FilePath image_path =
-      test_dir.Append(test::kUserAvatarWebpRelativePath);
+      test_dir.Append(kUserAvatarWebpRelativePath);
 
   std::string original_contents;
   base::ReadFileToString(image_path, &original_contents);

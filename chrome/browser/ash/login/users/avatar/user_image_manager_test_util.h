@@ -21,9 +21,6 @@ extern const char kUserAvatarImage1RelativePath[];
 extern const char kUserAvatarImage2RelativePath[];
 // Points to a png file with transparent pixels.
 extern const char kUserAvatarImage3RelativePath[];
-// Points to a webp file with 3 frames of red, green, blue solid colors,
-// respectively.
-extern const char kUserAvatarWebpRelativePath[];
 
 // Returns `true` if the two given images are pixel-for-pixel identical.
 bool AreImagesEqual(const gfx::ImageSkia& first, const gfx::ImageSkia& second);
