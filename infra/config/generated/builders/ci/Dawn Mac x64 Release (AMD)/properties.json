@@ -69,6 +69,12 @@
           "builder": "Dawn Mac x64 Release (AMD)",
           "project": "chromium"
         }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "mac-dawn-rel",
+          "group": "tryserver.chromium.dawn"
+        }
       ]
     }
   },

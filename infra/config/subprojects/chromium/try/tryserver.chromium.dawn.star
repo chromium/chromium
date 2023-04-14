@@ -89,8 +89,7 @@ try_.builder(
     branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
         "ci/Dawn Mac x64 DEPS Builder",
-        # Not enough capacity on Mac AMD https://crbug.com/1380184.
-        # "ci/Dawn Mac x64 DEPS Release (AMD)",
+        "ci/Dawn Mac x64 DEPS Release (AMD)",
         "ci/Dawn Mac x64 DEPS Release (Intel)",
     ],
     os = os.MAC_ANY,
@@ -201,8 +200,7 @@ try_.builder(
     name = "mac-dawn-rel",
     mirrors = [
         "ci/Dawn Mac x64 Builder",
-        # Not enough capacity on Mac AMD https://crbug.com/1380184.
-        # "ci/Dawn Mac x64 Release (AMD)",
+        "ci/Dawn Mac x64 Release (AMD)",
         "ci/Dawn Mac x64 Release (Intel)",
     ],
     os = os.MAC_ANY,

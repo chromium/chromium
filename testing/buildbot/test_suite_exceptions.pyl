@@ -4587,6 +4587,12 @@
       'Dawn Linux x64 Release (Intel UHD 630)': {
         'ci_only': True,
       },
+      'Dawn Mac x64 DEPS Release (AMD)': {
+        'ci_only': True,
+      },
+      'Dawn Mac x64 Release (AMD)': {
+        'ci_only': True,
+      },
     },
   },
   'webgpu_swiftshader_web_platform_cts_with_validation_tests': {
@@ -4603,6 +4609,12 @@
         'ci_only': True,
       },
       'Dawn Linux x64 Release (Intel UHD 630)': {
+        'ci_only': True,
+      },
+      'Dawn Mac x64 DEPS Release (AMD)': {
+        'ci_only': True,
+      },
+      'Dawn Mac x64 Release (AMD)': {
         'ci_only': True,
       },
     },
