@@ -145,41 +145,6 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   is_same_site_cross_origin_prerender_ = false;
   same_site_cross_origin_prerender_did_redirect_ = false;
 
-  // Origin checks for the main frame navigation (redirection) happens after the
-  // initial prerendering navigation in a prerendered page. Compare the origin
-  // of the initial prerendering URL to the origin of navigation (redirection)
-  // URL.
-  if (!IsInitialNavigation()) {
-    if (!base::FeatureList::IsEnabled(
-            blink::features::kPrerender2MainFrameNavigation)) {
-      // Navigations after the initial prerendering navigation are disallowed
-      // when the kPrerender2MainFrameNavigation feature is disabled.
-      CancelPrerendering(PrerenderFinalStatus::kMainFrameNavigation);
-      return CANCEL;
-    }
-
-    // Cross-site navigations after the initial prerendering navigation are
-    // disallowed.
-    if (prerender_navigation_utils::IsCrossSite(navigation_url,
-                                                initial_prerendering_origin)) {
-      CancelPrerendering(
-          is_redirection
-              ? PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation
-              : PrerenderFinalStatus::
-                    kCrossSiteNavigationInMainFrameNavigation);
-      return CANCEL;
-    }
-
-    // Same-site cross-origin prerendering is allowed only when the opt-in
-    // header is specified on response. This will be checked on
-    // WillProcessResponse().
-    if (prerender_navigation_utils::IsSameSiteCrossOrigin(
-            navigation_url, initial_prerendering_origin)) {
-      is_same_site_cross_origin_prerender_ = true;
-      same_site_cross_origin_prerender_did_redirect_ = is_redirection;
-    }
-  }
-
   if (prerender_host_->IsBrowserInitiated() &&
       ShouldSkipHostInBlockList(navigation_url)) {
     CancelPrerendering(PrerenderFinalStatus::kEmbedderHostDisallowed);
@@ -195,19 +160,19 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
     return CANCEL;
   }
 
-  // Origin checks for initial prerendering navigation (redirection).
-  //
-  // For non-embedder triggered prerendering, compare the origin of the
-  // initiator URL to the origin of navigation (redirection) URL.
-  //
-  // For embedder triggered prerendering, there is no initiator page, so initial
-  // prerendering navigation doesn't check origins and instead initial
-  // prerendering redirection compare the origin of initial prerendering URL to
-  // the origin of redirection URL.
-  //
-  // TODO(https://crbug.com/1422248): Merge this into the origin checks for
-  // non-initial prerendering navigation above.
+  // Origin checks for the navigation (redirection), which varies depending on
+  // whether the navigation is initial one or not.
   if (IsInitialNavigation()) {
+    // Origin checks for initial prerendering navigation (redirection).
+    //
+    // For non-embedder triggered prerendering, compare the origin of the
+    // initiator URL to the origin of navigation (redirection) URL.
+    //
+    // For embedder triggered prerendering, there is no initiator page, so
+    // initial prerendering navigation doesn't check origins and instead initial
+    // prerendering redirection compare the origin of initial prerendering URL
+    // to the origin of redirection URL.
+
     if (prerender_host_->IsBrowserInitiated()) {
       // Cancel an embedder triggered prerendering if it is redirected to a URL
       // cross-site to the initial prerendering URL.
@@ -247,6 +212,40 @@ PrerenderNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
       // Same-site cross-origin prerendering is allowed only when the opt-in
       // header is specified on response. This will be checked on
       // WillProcessResponse().
+      is_same_site_cross_origin_prerender_ = true;
+      same_site_cross_origin_prerender_did_redirect_ = is_redirection;
+    }
+  } else {
+    // Origin checks for the main frame navigation (redirection) happens after
+    // the initial prerendering navigation in a prerendered page. Compare the
+    // origin of the initial prerendering URL to the origin of navigation
+    // (redirection) URL.
+
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kPrerender2MainFrameNavigation)) {
+      // Navigations after the initial prerendering navigation are disallowed
+      // when the kPrerender2MainFrameNavigation feature is disabled.
+      CancelPrerendering(PrerenderFinalStatus::kMainFrameNavigation);
+      return CANCEL;
+    }
+
+    // Cross-site navigations after the initial prerendering navigation are
+    // disallowed.
+    if (prerender_navigation_utils::IsCrossSite(navigation_url,
+                                                initial_prerendering_origin)) {
+      CancelPrerendering(
+          is_redirection
+              ? PrerenderFinalStatus::kCrossSiteRedirectInMainFrameNavigation
+              : PrerenderFinalStatus::
+                    kCrossSiteNavigationInMainFrameNavigation);
+      return CANCEL;
+    }
+
+    // Same-site cross-origin prerendering is allowed only when the opt-in
+    // header is specified on response. This will be checked on
+    // WillProcessResponse().
+    if (prerender_navigation_utils::IsSameSiteCrossOrigin(
+            navigation_url, initial_prerendering_origin)) {
       is_same_site_cross_origin_prerender_ = true;
       same_site_cross_origin_prerender_did_redirect_ = is_redirection;
     }
