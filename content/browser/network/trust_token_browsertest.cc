@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   fail_to_execute_op_via_iframe("/redeem", R"({"type": "token-redemption"})");
   command = JsReplace(R"(
   (async () => {
-    return document.hasRedemptionRecord($1, 'private-state-token');
+    return document.hasRedemptionRecord($1);
   })();)",
                       IssuanceOriginFromHost("a.test"));
   EXPECT_EQ(false, EvalJs(shell(), command));
@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   command = JsReplace(R"(
   (async () => {
     return await document.hasPrivateToken($1, 'private-state-token')
-    || document.hasRedemptionRecord($1, 'private-state-token');
+    || document.hasRedemptionRecord($1);
   })();)",
                       IssuanceOriginFromHost("a.test"));
   EXPECT_EQ(false, EvalJs(shell(), command));
