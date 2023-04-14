@@ -97,17 +97,6 @@
       type_name: "bool",
       inherited: true,
     },
-    // Whether we're inside (or at) a block fragmentation context that may
-    // switch between legacy and NG layout, depending on the contents.
-    // This can be removed when we have got rid of the legacy engine.
-    // See crbug.com/1229581
-    {
-      name: "InsideFragmentationContextWithNondeterministicEngine",
-      field_template: "primitive",
-      default_value: "false",
-      type_name: "bool",
-      inherited: true,
-    },
     // Style has content property with attr() values.
     {
       name: "HasAttrContent",

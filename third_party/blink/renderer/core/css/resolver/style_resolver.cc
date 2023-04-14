@@ -1551,14 +1551,6 @@ void StyleResolver::ApplyBaseStyle(
     // place during StyleBuilder::ApplyProperty.
     ApplyLengthConversionFlags(state);
 
-    // AdjustComputedStyle() will set these flags if needed,
-    // but will (generally) not unset them, so reset them before
-    // computation.
-    state.StyleBuilder()
-        .SetInsideFragmentationContextWithNondeterministicEngine(
-            state.ParentStyle()
-                ->InsideFragmentationContextWithNondeterministicEngine());
-
     StyleAdjuster::AdjustComputedStyle(
         state, style_request.IsPseudoStyleRequest() ? nullptr : element);
 
