@@ -41,6 +41,10 @@ class BackoffOperator {
   // count and ends backoff.
   void ReportSuccess();
 
+  // Gets the remaining duration in the backoff mode. Returns 0 if it is
+  // currently not in backoff mode.
+  base::TimeDelta GetBackoffRemainingDuration();
+
  private:
   // Returns the duration of the next backoff. Starts at
   // |min_backoff_reset_duration_in_seconds_| and increases exponentially until
@@ -68,6 +72,9 @@ class BackoffOperator {
 
   // If this timer is running, backoff is in effect.
   base::OneShotTimer backoff_timer_;
+
+  // The last time when |backoff_timer_| starts to run.
+  base::Time last_backoff_start_time_;
 
   // The number of consecutive failures that trigger backoff mode.
   size_t num_failures_to_enforce_backoff_;

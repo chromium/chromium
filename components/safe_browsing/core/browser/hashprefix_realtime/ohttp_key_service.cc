@@ -6,6 +6,7 @@
 
 #include "base/rand_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/browser/utils/backoff_operator.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
@@ -30,6 +31,9 @@ constexpr base::TimeDelta kKeyCloseToExpirationThreshold = base::Days(1);
 // The interval that async workflow checks the status of the key.
 constexpr base::TimeDelta kAsyncFetchCheckInterval = base::Hours(1);
 
+// The minimum interval that async workflow checks the status of the key.
+constexpr base::TimeDelta kAsyncFetchCheckMinInterval = base::Minutes(1);
+
 // The error code represents that the server cannot successfully decrypt the
 // request. Defined in
 // https://www.ietf.org/archive/id/draft-ietf-ohai-ohttp-02.html#name-server-responsibilities
@@ -43,6 +47,11 @@ constexpr char kKeyRotatedHeader[] = "X-OhttpPublickey-Rotated";
 // The maximum delayed time to fetch a new key if the key fetch is triggered
 // by the server.
 constexpr int kServerTriggeredFetchMaxDelayTimeSec = 60;
+
+// Backoff constants
+const size_t kNumFailuresToEnforceBackoff = 3;
+const size_t kMinBackOffResetDurationInSeconds = 5 * 60;   //  5 minutes.
+const size_t kMaxBackOffResetDurationInSeconds = 30 * 60;  // 30 minutes.
 
 constexpr net::NetworkTrafficAnnotationTag kOhttpKeyTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("safe_browsing_ohttp_key_fetch",
@@ -95,7 +104,14 @@ namespace safe_browsing {
 OhttpKeyService::OhttpKeyService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService* pref_service)
-    : url_loader_factory_(url_loader_factory), pref_service_(pref_service) {
+    : url_loader_factory_(url_loader_factory),
+      pref_service_(pref_service),
+      backoff_operator_(std::make_unique<BackoffOperator>(
+          /*num_failures_to_enforce_backoff=*/kNumFailuresToEnforceBackoff,
+          /*min_backoff_reset_duration_in_seconds=*/
+          kMinBackOffResetDurationInSeconds,
+          /*max_backoff_reset_duration_in_seconds=*/
+          kMaxBackOffResetDurationInSeconds)) {
   // |pref_service_| can be null in tests.
   if (!pref_service_) {
     return;
@@ -201,6 +217,11 @@ void OhttpKeyService::NotifyLookupResponse(
 }
 
 void OhttpKeyService::StartFetch(Callback callback) {
+  if (backoff_operator_->IsInBackoffMode()) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
   if (callback) {
     pending_callbacks_.AddUnsafe(std::move(callback));
   }
@@ -237,6 +258,9 @@ void OhttpKeyService::OnURLLoaderComplete(
   if (is_key_fetch_successful) {
     ohttp_key_ = {*response_body, base::Time::Now() + kKeyExpirationDuration};
     StoreKeyToPref();
+    backoff_operator_->ReportSuccess();
+  } else {
+    backoff_operator_->ReportError();
   }
   pending_callbacks_.Notify(is_key_fetch_successful
                                 ? absl::optional<std::string>(*response_body)
@@ -263,8 +287,17 @@ void OhttpKeyService::OnAsyncFetchCompleted(
   if (!enabled_) {
     return;
   }
-  // TODO(crbug.com/1407283): Start next fetch based on backoff status.
-  async_fetch_timer_.Start(FROM_HERE, kAsyncFetchCheckInterval, this,
+
+  base::TimeDelta next_fetch_time = kAsyncFetchCheckInterval;
+  if (!ohttp_key) {
+    // If the key fetch failed, retry earlier. If it is in backoff mode, retry
+    // after the backoff ends. Otherwise, retry with minimum interval.
+    next_fetch_time = backoff_operator_->IsInBackoffMode()
+                          ? backoff_operator_->GetBackoffRemainingDuration()
+                          : kAsyncFetchCheckMinInterval;
+  }
+
+  async_fetch_timer_.Start(FROM_HERE, next_fetch_time, this,
                            &OhttpKeyService::MaybeStartOrRescheduleAsyncFetch);
 }
 

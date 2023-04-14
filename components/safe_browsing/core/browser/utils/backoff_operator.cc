@@ -53,6 +53,7 @@ void BackoffOperator::ReportError() {
   next_backoff_duration_secs_ = GetBackoffDurationInSeconds();
   backoff_timer_.Start(FROM_HERE, base::Seconds(next_backoff_duration_secs_),
                        this, &BackoffOperator::ResetFailures);
+  last_backoff_start_time_ = base::Time::Now();
   did_successful_request_since_last_backoff_ = false;
 }
 
@@ -66,6 +67,12 @@ void BackoffOperator::ReportSuccess() {
 
 bool BackoffOperator::IsInBackoffMode() const {
   return backoff_timer_.IsRunning();
+}
+
+base::TimeDelta BackoffOperator::GetBackoffRemainingDuration() {
+  return IsInBackoffMode() ? base::Seconds(next_backoff_duration_secs_) -
+                                 (base::Time::Now() - last_backoff_start_time_)
+                           : base::Seconds(0);
 }
 
 void BackoffOperator::ResetFailures() {

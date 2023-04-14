@@ -27,6 +27,8 @@ class SimpleURLLoader;
 
 namespace safe_browsing {
 
+class BackoffOperator;
+
 // This class is responsible for managing the public key for sending Oblivious
 // HTTP requests in hash real time lookup service.
 class OhttpKeyService : public KeyedService {
@@ -147,6 +149,9 @@ class OhttpKeyService : public KeyedService {
   // Set to true when a server-triggered fetch is scheduled. Set to false on
   // |StartServerTriggeredFetch| called.
   bool server_triggered_fetch_scheduled_ = false;
+
+  // Helper object that manages backoff state.
+  std::unique_ptr<BackoffOperator> backoff_operator_;
 
   base::WeakPtrFactory<OhttpKeyService> weak_factory_{this};
 };
