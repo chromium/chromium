@@ -43,16 +43,16 @@ class HistoryClustersPageHandler
   ~HistoryClustersPageHandler() override;
 
   // mojom::PageHandler:
-  void GetCluster(GetClusterCallback callback) override;
+  void GetClusters(GetClustersCallback callback) override;
   void ShowJourneysSidePanel(const std::string& query) override;
   void OpenUrlsInTabGroup(const std::vector<GURL>&) override;
   void DismissCluster(
       const std::vector<history_clusters::mojom::URLVisitPtr> visits) override;
 
  private:
-  // Forward the most relevant history cluster to the callback if any.
+  // Forward the most relevant history clusters to the callback if any.
   void CallbackWithClusterData(
-      GetClusterCallback callback,
+      GetClustersCallback callback,
       std::vector<history::Cluster> clusters,
       history_clusters::QueryClustersContinuationParams continuation_params);
 

@@ -6,7 +6,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {Cluster, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
 import {PageHandlerRemote} from 'chrome://new-tab-page/history_clusters.mojom-webui.js';
-import {DismissModuleEvent, HistoryClusterElementType, HistoryClusterImageDisplayState, HistoryClusterLayoutType, historyClustersDescriptor, HistoryClustersModuleElement, HistoryClustersProxyImpl, LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS, LAYOUT_2_MIN_IMAGE_VISITS, LAYOUT_2_MIN_VISITS, LAYOUT_3_MIN_IMAGE_VISITS, LAYOUT_3_MIN_VISITS, MIN_RELATED_SEARCHES, PageImageServiceBrowserProxy} from 'chrome://new-tab-page/lazy_load.js';
+import {DismissModuleEvent, HistoryClusterElementType, HistoryClusterImageDisplayState, HistoryClusterLayoutType, historyClustersDescriptor, HistoryClustersModuleElement, HistoryClustersProxyImpl, LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS, LAYOUT_2_MIN_IMAGE_VISITS, LAYOUT_2_MIN_VISITS, LAYOUT_3_MIN_IMAGE_VISITS, LAYOUT_3_MIN_VISITS, PageImageServiceBrowserProxy} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -18,7 +18,7 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../test_support.js';
 
-import {createRelatedSearches, createSampleVisits, GOOGLE_SEARCH_BASE_URL} from './test_support.js';
+import {createRelatedSearches, createSampleVisits, GOOGLE_SEARCH_BASE_URL, MIN_RELATED_SEARCHES} from './test_support.js';
 
 const DISPLAY_LAYOUT_METRIC_NAME = 'NewTabPage.HistoryClusters.DisplayLayout';
 
@@ -89,12 +89,12 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
     metrics = fakeMetricsPrivate();
   });
 
-  async function initializeModule(cluster: Cluster|
-                                  null): Promise<HistoryClustersModuleElement> {
-    handler.setResultFor('getCluster', Promise.resolve({cluster: cluster}));
+  async function initializeModule(clusters: Cluster[]):
+      Promise<HistoryClustersModuleElement> {
+    handler.setResultFor('getClusters', Promise.resolve({clusters}));
     const moduleElement = await historyClustersDescriptor.initialize(0) as
         HistoryClustersModuleElement;
-    await handler.whenCalled('getCluster');
+    await handler.whenCalled('getClusters');
     document.body.append(moduleElement);
     await waitAfterNextRender(moduleElement);
     return moduleElement;
@@ -103,7 +103,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
   suite('core', () => {
     test('No module created if no history cluster data', async () => {
       // Arrange.
-      const moduleElement = await initializeModule(null);
+      const moduleElement = await initializeModule([]);
 
       // Assert.
       assertEquals(null, moduleElement);
@@ -119,30 +119,16 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
       const cluster: Partial<Cluster> = {
         visits: createSampleVisits(2, 0),
       };
-      const moduleElement = await initializeModule(createSampleCluster(
-          HistoryClusterLayoutType.NONE, undefined, cluster));
+      const moduleElement = await initializeModule([createSampleCluster(
+          HistoryClusterLayoutType.NONE, undefined, cluster)]);
 
       // Assert.
       assertEquals(null, moduleElement);
-    });
-
-    test('No module created when less than min related searches', async () => {
-      // Arrange.
-      const moduleElement = await initializeModule(
-          createSampleCluster(undefined, MIN_RELATED_SEARCHES - 1));
-
-      // Assert.
-      assertEquals(null, moduleElement);
-      assertEquals(1, metrics.count(DISPLAY_LAYOUT_METRIC_NAME));
-      assertEquals(
-          1,
-          metrics.count(
-              DISPLAY_LAYOUT_METRIC_NAME, HistoryClusterLayoutType.NONE));
     });
 
     test('Layout 1 is used', async () => {
       // Arrange.
-      const moduleElement = await initializeModule(createSampleCluster());
+      const moduleElement = await initializeModule([createSampleCluster()]);
 
       // Assert.
       assertTrue(!!moduleElement);
@@ -167,7 +153,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
     test('Layout 2 is used', async () => {
       // Arrange.
       const moduleElement = await initializeModule(
-          createSampleCluster(HistoryClusterLayoutType.LAYOUT_2));
+          [createSampleCluster(HistoryClusterLayoutType.LAYOUT_2)]);
 
       // Assert.
       assertTrue(!!moduleElement);
@@ -192,7 +178,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
     test('Layout 3 is used', async () => {
       // Arrange.
       const moduleElement = await initializeModule(
-          createSampleCluster(HistoryClusterLayoutType.LAYOUT_3));
+          [createSampleCluster(HistoryClusterLayoutType.LAYOUT_3)]);
 
       // Assert.
       assertTrue(!!moduleElement);
@@ -217,8 +203,8 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
     test('Header element populated with correct data', async () => {
       // Arrange.
       const sampleClusterLabel = '"Sample Journey"';
-      const moduleElement = await initializeModule(createSampleCluster(
-          undefined, undefined, {label: sampleClusterLabel}));
+      const moduleElement = await initializeModule([createSampleCluster(
+          undefined, undefined, {label: sampleClusterLabel})]);
 
       // Assert.
       assertTrue(!!moduleElement);
@@ -235,8 +221,8 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
     test('Header info button click opens info dialog', async () => {
       // Arrange.
       const sampleClusterLabel = '"Sample Journey"';
-      const moduleElement = await initializeModule(createSampleCluster(
-          undefined, undefined, {label: sampleClusterLabel}));
+      const moduleElement = await initializeModule([createSampleCluster(
+          undefined, undefined, {label: sampleClusterLabel})]);
 
       // Act.
       assertTrue(!!moduleElement);
@@ -252,8 +238,8 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
     test('Backend is notified when Show all button is triggered', async () => {
       const sampleClusterUnquotedLabel = 'Sample Journey';
       const sampleClusterLabel = `"${sampleClusterUnquotedLabel}"`;
-      const moduleElement = await initializeModule(createSampleCluster(
-          undefined, MIN_RELATED_SEARCHES, {label: sampleClusterLabel}));
+      const moduleElement = await initializeModule([createSampleCluster(
+          undefined, MIN_RELATED_SEARCHES, {label: sampleClusterLabel})]);
       assertTrue(!!moduleElement);
 
       const headerElement = $$(moduleElement, 'ntp-module-header');
@@ -282,7 +268,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
         async () => {
           const sampleCluster =
               createSampleCluster(HistoryClusterLayoutType.LAYOUT_1);
-          const moduleElement = await initializeModule(sampleCluster);
+          const moduleElement = await initializeModule([sampleCluster]);
           assertTrue(!!moduleElement);
 
           const openAllButton =
@@ -306,7 +292,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
       const sampleClusterLabel = '"Sample Journey"';
       const sampleCluster = createSampleCluster(
           undefined, undefined, {label: sampleClusterLabel});
-      const moduleElement = await initializeModule(sampleCluster);
+      const moduleElement = await initializeModule([sampleCluster]);
       assertTrue(!!moduleElement);
 
       // Act.
@@ -334,7 +320,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
           test('Module produces visit tile click metrics', async () => {
             // Arrange.
             const moduleElement =
-                await initializeModule(createSampleCluster(layoutType));
+                await initializeModule([createSampleCluster(layoutType)]);
 
             // Assert.
             assertTrue(!!moduleElement);
@@ -361,7 +347,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
           test('Module produces suggest tile click metrics', async () => {
             // Arrange.
             const moduleElement =
-                await initializeModule(createSampleCluster(layoutType));
+                await initializeModule([createSampleCluster(layoutType)]);
 
             // Assert.
             assertTrue(!!moduleElement);
@@ -393,7 +379,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
           'getPageImageUrl', Promise.resolve(null));
 
       const moduleElement = await initializeModule(
-          createSampleCluster(HistoryClusterLayoutType.LAYOUT_1));
+          [createSampleCluster(HistoryClusterLayoutType.LAYOUT_1)]);
       assertTrue(!!moduleElement);
       await waitAfterNextRender(moduleElement);
 
@@ -420,7 +406,7 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
       }));
 
       const moduleElement = await initializeModule(
-          createSampleCluster(HistoryClusterLayoutType.LAYOUT_1));
+          [createSampleCluster(HistoryClusterLayoutType.LAYOUT_1)]);
       assertTrue(!!moduleElement);
       await waitAfterNextRender(moduleElement);
 

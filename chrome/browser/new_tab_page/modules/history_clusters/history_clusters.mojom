@@ -9,8 +9,8 @@ import "url/mojom/url.mojom";
 
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
-  // Get the most relevant history cluster.
-  GetCluster() => (history_clusters.mojom.Cluster? cluster);
+  // Get a series of relevant history clusters.
+  GetClusters() => (array<history_clusters.mojom.Cluster> clusters);
 
   // Open or make visible the Journeys UI on the Side Panel.
   ShowJourneysSidePanel(string query);

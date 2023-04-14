@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import {SearchQuery, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
-import {LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS, MIN_RELATED_SEARCHES} from 'chrome://new-tab-page/lazy_load.js';
+import {LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS} from 'chrome://new-tab-page/lazy_load.js';
+
+export const MIN_RELATED_SEARCHES = 3;
 
 export function createVisit(overrides?: Partial<URLVisit>): URLVisit {
   return Object.assign(
