@@ -198,11 +198,29 @@ UIColor* DimColorIncognito() {
     UIColor* suggestionTextColor = SuggestionTextColor();
     UIColor* dimColor = self.incognito ? DimColorIncognito() : DimColor();
 
-    return [self attributedStringWithString:text
-                            classifications:textClassifications
-                                  smallFont:NO
-                                      color:suggestionTextColor
-                                   dimColor:dimColor];
+    NSAttributedString* attributedText =
+        [self attributedStringWithString:text
+                         classifications:textClassifications
+                               smallFont:NO
+                                   color:suggestionTextColor
+                                dimColor:dimColor];
+
+    if (self.isTailSuggestion &&
+        base::FeatureList::IsEnabled(kOmniboxTailSuggest)) {
+      NSMutableAttributedString* mutableString =
+          [[NSMutableAttributedString alloc] init];
+      NSAttributedString* tailSuggestPrefix =
+          // TODO(crbug.com/1432987): Do we want to localize the ellipsis ?
+          [self attributedStringWithString:@"... "
+                           classifications:NULL
+                                 smallFont:NO
+                                     color:suggestionTextColor
+                                  dimColor:dimColor];
+      [mutableString appendAttributedString:tailSuggestPrefix];
+      [mutableString appendAttributedString:attributedText];
+      attributedText = mutableString;
+    }
+    return attributedText;
   }
 }
 
