@@ -46,7 +46,7 @@
   return self;
 }
 
-- (void)saveImageAtURL:(const GURL&)url
+- (void)saveImageAtURL:(const GURL&)URL
               referrer:(const web::Referrer&)referrer
               webState:(web::WebState*)webState
     baseViewController:(UIViewController*)baseViewController {
@@ -56,46 +56,46 @@
   DCHECK(tabHelper);
 
   __weak ImageSaver* weakSelf = self;
-  tabHelper->GetImageData(url, referrer, ^(NSData* data) {
-    ImageSaver* strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-
-    if (data.length == 0) {
-      [strongSelf displayPrivacyErrorAlertOnMainQueue:
-                      l10n_util::GetNSString(
-                          IDS_IOS_SAVE_IMAGE_NO_INTERNET_CONNECTION)];
-      return;
-    }
-
-    // Use -imageWithData to validate `data`, but continue to pass the raw
-    // `data` to -savePhoto to ensure no data loss occurs.
-    UIImage* savedImage = [UIImage imageWithData:data];
-    if (!savedImage) {
-      [strongSelf
-          displayPrivacyErrorAlertOnMainQueue:l10n_util::GetNSString(
-                                                  IDS_IOS_SAVE_IMAGE_ERROR)];
-      return;
-    }
-
-    // Dump `data` into the photo library. Requires the usage of
-    // NSPhotoLibraryAddUsageDescription.
-    [[PHPhotoLibrary sharedPhotoLibrary]
-        performChanges:^{
-          PHAssetResourceCreationOptions* options =
-              [[PHAssetResourceCreationOptions alloc] init];
-          [[PHAssetCreationRequest creationRequestForAsset]
-              addResourceWithType:PHAssetResourceTypePhoto
-                             data:data
-                          options:options];
-        }
-        completionHandler:^(BOOL success, NSError* error) {
-          [weakSelf image:savedImage
-              didFinishSavingWithError:error
-                           contextInfo:nil];
-        }];
+  tabHelper->GetImageData(URL, referrer, ^(NSData* data) {
+    [weakSelf didGetImageData:data];
   });
+}
+
+// Callback when the image `data` got retrieved from the tab.
+- (void)didGetImageData:(NSData*)data {
+  if (data.length == 0) {
+    [self
+        displayPrivacyErrorAlertOnMainQueue:
+            l10n_util::GetNSString(IDS_IOS_SAVE_IMAGE_NO_INTERNET_CONNECTION)];
+    return;
+  }
+
+  // Use -imageWithData to validate `data`, but continue to pass the raw
+  // `data` to -savePhoto to ensure no data loss occurs.
+  UIImage* savedImage = [UIImage imageWithData:data];
+  if (!savedImage) {
+    [self displayPrivacyErrorAlertOnMainQueue:l10n_util::GetNSString(
+                                                  IDS_IOS_SAVE_IMAGE_ERROR)];
+    return;
+  }
+
+  // Dump `data` into the photo library. Requires the usage of
+  // NSPhotoLibraryAddUsageDescription.
+  __weak ImageSaver* weakSelf = self;
+  [[PHPhotoLibrary sharedPhotoLibrary]
+      performChanges:^{
+        PHAssetResourceCreationOptions* options =
+            [[PHAssetResourceCreationOptions alloc] init];
+        [[PHAssetCreationRequest creationRequestForAsset]
+            addResourceWithType:PHAssetResourceTypePhoto
+                           data:data
+                        options:options];
+      }
+      completionHandler:^(BOOL success, NSError* error) {
+        [weakSelf image:savedImage
+            didFinishSavingWithError:error
+                         contextInfo:nil];
+      }];
 }
 
 // Called when Chrome has been denied access to add photos or videos and the
