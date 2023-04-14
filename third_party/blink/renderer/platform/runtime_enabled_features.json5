@@ -1180,6 +1180,10 @@
       depends_on: ["CSSTextWrap"],
     },
     {
+      name: "CSSZoom",
+      status: "stable",
+    },
+    {
       name: "Database",
       public: true,
       status: "stable",

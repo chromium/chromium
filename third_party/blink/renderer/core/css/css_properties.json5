@@ -1534,6 +1534,7 @@
       // Setting zoom affects the _EffectiveZoom_, which in turns affects every px value
       // stored on ComputedStyle; see CSSToLengthConversionData::ZoomedComputedPixels.
       supports_incremental_style: false,
+      runtime_flag: "CSSZoom",
     },
     {
       name: "accent-color",
