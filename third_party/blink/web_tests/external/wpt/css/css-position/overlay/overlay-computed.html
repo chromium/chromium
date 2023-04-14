@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<title>CSS Transitions: getComputedStyle().overlay</title>
-<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/8189">
+<title>CSS Positioned Layout Module Test: getComputedStyle().overlay</title>
+<link rel="help" href="https://drafts.csswg.org/css-position-4/#overlay">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/css/support/computed-testcommon.js"></script>
@@ -12,6 +12,7 @@
   //
   // * { overlay: none !important }
   test_computed_value("overlay", "auto", "none");
+  test_computed_value("overlay", "inherit", "none");
   test_computed_value("overlay", "initial", "none");
   test_computed_value("overlay", "revert", "none");
   test_computed_value("overlay", "unset", "none");
