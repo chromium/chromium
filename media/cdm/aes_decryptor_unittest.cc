@@ -205,7 +205,7 @@ scoped_refptr<DecoderBuffer> CreateEncryptedBuffer(
     const std::vector<SubsampleEntry>& subsample_entries) {
   DCHECK(!data.empty());
   DCHECK(!iv.empty());
-  scoped_refptr<DecoderBuffer> encrypted_buffer(new DecoderBuffer(data.size()));
+  auto encrypted_buffer = base::MakeRefCounted<DecoderBuffer>(data.size());
   memcpy(encrypted_buffer->writable_data(), data.data(), data.size());
   std::string key_id_string(key_id.begin(), key_id.end());
   std::string iv_string(iv.begin(), iv.end());
@@ -217,7 +217,7 @@ scoped_refptr<DecoderBuffer> CreateEncryptedBuffer(
 scoped_refptr<DecoderBuffer> CreateClearBuffer(
     const std::vector<uint8_t>& data) {
   DCHECK(!data.empty());
-  scoped_refptr<DecoderBuffer> encrypted_buffer(new DecoderBuffer(data.size()));
+  auto encrypted_buffer = base::MakeRefCounted<DecoderBuffer>(data.size());
   memcpy(encrypted_buffer->writable_data(), data.data(), data.size());
   return encrypted_buffer;
 }

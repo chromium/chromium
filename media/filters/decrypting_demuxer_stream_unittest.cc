@@ -45,7 +45,7 @@ static const uint8_t kFakeIv[DecryptConfig::kDecryptionKeySize] = {0};
 // true, the buffer is not encrypted (signaled by an empty IV).
 static scoped_refptr<DecoderBuffer> CreateFakeEncryptedStreamBuffer(
     bool is_clear) {
-  scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(kFakeBufferSize));
+  auto buffer = base::MakeRefCounted<DecoderBuffer>(kFakeBufferSize);
   std::string iv = is_clear
                        ? std::string()
                        : std::string(reinterpret_cast<const char*>(kFakeIv),
@@ -73,22 +73,23 @@ ACTION_P(ReturnBuffer, buffer) {
 class DecryptingDemuxerStreamTest : public testing::Test {
  public:
   DecryptingDemuxerStreamTest()
-      : demuxer_stream_(new DecryptingDemuxerStream(
+      : demuxer_stream_(std::make_unique<DecryptingDemuxerStream>(
             task_environment_.GetMainThreadTaskRunner(),
             &media_log_,
             base::BindRepeating(&DecryptingDemuxerStreamTest::OnWaiting,
                                 base::Unretained(this)))),
-        cdm_context_(new StrictMock<MockCdmContext>()),
-        decryptor_(new StrictMock<MockDecryptor>()),
+        cdm_context_(std::make_unique<StrictMock<MockCdmContext>>()),
+        decryptor_(std::make_unique<StrictMock<MockDecryptor>>()),
         is_initialized_(false),
-        input_audio_stream_(
-            new StrictMock<MockDemuxerStream>(DemuxerStream::AUDIO)),
-        input_video_stream_(
-            new StrictMock<MockDemuxerStream>(DemuxerStream::VIDEO)),
-        clear_buffer_(new DecoderBuffer(kFakeBufferSize)),
+        input_audio_stream_(std::make_unique<StrictMock<MockDemuxerStream>>(
+            DemuxerStream::AUDIO)),
+        input_video_stream_(std::make_unique<StrictMock<MockDemuxerStream>>(
+            DemuxerStream::VIDEO)),
+        clear_buffer_(base::MakeRefCounted<DecoderBuffer>(kFakeBufferSize)),
         clear_encrypted_stream_buffer_(CreateFakeEncryptedStreamBuffer(true)),
         encrypted_buffer_(CreateFakeEncryptedStreamBuffer(false)),
-        decrypted_buffer_(new DecoderBuffer(kFakeBufferSize)) {}
+        decrypted_buffer_(
+            base::MakeRefCounted<DecoderBuffer>(kFakeBufferSize)) {}
 
   DecryptingDemuxerStreamTest(const DecryptingDemuxerStreamTest&) = delete;
   DecryptingDemuxerStreamTest& operator=(const DecryptingDemuxerStreamTest&) =

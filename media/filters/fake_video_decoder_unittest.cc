@@ -35,7 +35,7 @@ class FakeVideoDecoderTest
       public testing::WithParamInterface<FakeVideoDecoderTestParams> {
  public:
   FakeVideoDecoderTest()
-      : decoder_(new FakeVideoDecoder(
+      : decoder_(std::make_unique<FakeVideoDecoder>(
             0xFACCE,
             GetParam().decoding_delay,
             GetParam().max_decode_requests,

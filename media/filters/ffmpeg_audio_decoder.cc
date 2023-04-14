@@ -56,7 +56,7 @@ FFmpegAudioDecoder::FFmpegAudioDecoder(
       state_(DecoderState::kUninitialized),
       av_sample_format_(0),
       media_log_(media_log),
-      pool_(new AudioBufferMemoryPool()) {
+      pool_(base::MakeRefCounted<AudioBufferMemoryPool>()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 

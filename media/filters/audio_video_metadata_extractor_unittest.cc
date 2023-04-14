@@ -26,8 +26,7 @@ std::unique_ptr<AudioVideoMetadataExtractor> GetExtractor(
   FileDataSource source;
   EXPECT_TRUE(source.Initialize(GetTestDataFilePath(filename)));
 
-  std::unique_ptr<AudioVideoMetadataExtractor> extractor(
-      new AudioVideoMetadataExtractor);
+  auto extractor = std::make_unique<AudioVideoMetadataExtractor>();
   bool extracted = extractor->Extract(&source, extract_attached_images);
   EXPECT_EQ(expected_result, extracted);
 

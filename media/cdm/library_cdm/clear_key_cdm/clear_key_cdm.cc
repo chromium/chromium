@@ -309,7 +309,7 @@ template <typename HostInterface>
 ClearKeyCdm::ClearKeyCdm(HostInterface* host, const std::string& key_system)
     : host_interface_version_(HostInterface::kVersion),
       cdm_host_proxy_(std::make_unique<CdmHostProxyImpl<HostInterface>>(host)),
-      cdm_(new ClearKeyPersistentSessionCdm(
+      cdm_(base::MakeRefCounted<ClearKeyPersistentSessionCdm>(
           cdm_host_proxy_.get(),
           base::BindRepeating(&ClearKeyCdm::OnSessionMessage,
                               base::Unretained(this)),

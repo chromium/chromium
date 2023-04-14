@@ -28,7 +28,7 @@ namespace media {
 class VpxVideoDecoderTest : public testing::Test {
  public:
   VpxVideoDecoderTest()
-      : decoder_(new VpxVideoDecoder()),
+      : decoder_(std::make_unique<VpxVideoDecoder>()),
         i_frame_buffer_(ReadTestDataFile("vp9-I-frame-320x240")) {}
 
   VpxVideoDecoderTest(const VpxVideoDecoderTest&) = delete;

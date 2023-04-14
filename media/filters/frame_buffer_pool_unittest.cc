@@ -14,7 +14,7 @@ constexpr size_t kBufferSize = 1024;
 
 TEST(FrameBufferPool, BasicFunctionality) {
   base::TestMessageLoop message_loop;
-  scoped_refptr<FrameBufferPool> pool = new FrameBufferPool();
+  auto pool = base::MakeRefCounted<FrameBufferPool>();
 
   void* priv1 = nullptr;
   uint8_t* buf1 = pool->GetFrameBuffer(kBufferSize, &priv1);
@@ -59,7 +59,7 @@ TEST(FrameBufferPool, BasicFunctionality) {
 
 TEST(FrameBufferPool, ForceAllocationError) {
   base::TestMessageLoop message_loop;
-  scoped_refptr<FrameBufferPool> pool = new FrameBufferPool();
+  auto pool = base::MakeRefCounted<FrameBufferPool>();
   pool->force_allocation_error_for_testing();
 
   void* priv1 = nullptr;
@@ -71,7 +71,7 @@ TEST(FrameBufferPool, ForceAllocationError) {
 
 TEST(FrameBufferPool, DeferredDestruction) {
   base::TestMessageLoop message_loop;
-  scoped_refptr<FrameBufferPool> pool = new FrameBufferPool();
+  auto pool = base::MakeRefCounted<FrameBufferPool>();
   base::SimpleTestTickClock test_clock;
   pool->set_tick_clock_for_testing(&test_clock);
 

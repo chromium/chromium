@@ -253,7 +253,7 @@ bool VpxVideoDecoder::ConfigureDecoder(const VideoDecoderConfig& config) {
            VPX_CODEC_CAP_EXTERNAL_FRAME_BUFFER);
 
     DCHECK(!memory_pool_);
-    memory_pool_ = new FrameBufferPool();
+    memory_pool_ = base::MakeRefCounted<FrameBufferPool>();
 
     if (vpx_codec_set_frame_buffer_functions(
             vpx_codec_.get(), &GetVP9FrameBuffer, &ReleaseVP9FrameBuffer,

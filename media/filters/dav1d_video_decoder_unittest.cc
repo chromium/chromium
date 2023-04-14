@@ -39,7 +39,7 @@ MATCHER(ContainsDecoderErrorLog, "") {
 class Dav1dVideoDecoderTest : public testing::Test {
  public:
   Dav1dVideoDecoderTest()
-      : decoder_(new Dav1dVideoDecoder(&media_log_)),
+      : decoder_(std::make_unique<Dav1dVideoDecoder>(&media_log_)),
         i_frame_buffer_(ReadTestDataFile("av1-I-frame-320x240")) {}
 
   Dav1dVideoDecoderTest(const Dav1dVideoDecoderTest&) = delete;

@@ -41,7 +41,7 @@ const int kDecodingDelay = 3;
 // Create a fake non-empty encrypted buffer.
 static scoped_refptr<DecoderBuffer> CreateFakeEncryptedBuffer() {
   const int buffer_size = 16;  // Need a non-empty buffer;
-  scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(buffer_size));
+  auto buffer = base::MakeRefCounted<DecoderBuffer>(buffer_size);
   buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
       std::string(reinterpret_cast<const char*>(kFakeKeyId),
                   std::size(kFakeKeyId)),
@@ -53,11 +53,11 @@ static scoped_refptr<DecoderBuffer> CreateFakeEncryptedBuffer() {
 class DecryptingVideoDecoderTest : public testing::Test {
  public:
   DecryptingVideoDecoderTest()
-      : decoder_(new DecryptingVideoDecoder(
+      : decoder_(std::make_unique<DecryptingVideoDecoder>(
             task_environment_.GetMainThreadTaskRunner(),
             &media_log_)),
-        cdm_context_(new StrictMock<MockCdmContext>()),
-        decryptor_(new StrictMock<MockDecryptor>()),
+        cdm_context_(std::make_unique<StrictMock<MockCdmContext>>()),
+        decryptor_(std::make_unique<StrictMock<MockDecryptor>>()),
         num_decrypt_and_decode_calls_(0),
         num_frames_in_decryptor_(0),
         encrypted_buffer_(CreateFakeEncryptedBuffer()),

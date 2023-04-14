@@ -778,8 +778,9 @@ void FFmpegDemuxerStream::InitBitstreamConverter() {
       break;
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
     case AV_CODEC_ID_HEVC:
-      bitstream_converter_.reset(
-          new FFmpegH265ToAnnexBBitstreamConverter(stream_->codecpar));
+      bitstream_converter_ =
+          std::make_unique<FFmpegH265ToAnnexBBitstreamConverter>(
+              stream_->codecpar);
       break;
 #endif
     case AV_CODEC_ID_AAC:

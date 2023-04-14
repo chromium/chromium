@@ -36,7 +36,7 @@ MediaCodecAudioDecoder::MediaCodecAudioDecoder(
       channel_layout_(CHANNEL_LAYOUT_NONE),
       sample_rate_(0),
       media_crypto_context_(nullptr),
-      pool_(new AudioBufferMemoryPool()) {
+      pool_(base::MakeRefCounted<AudioBufferMemoryPool>()) {
   DVLOG(1) << __func__;
 }
 
