@@ -17,6 +17,11 @@ ios_xcuitest_test("ios_chrome_device_check_xcuitests_module") {
   xcode_test_application_name = "ios_chrome_xcuitests"
   deps = [ ":device_check_xcuitests" ]
   data_deps = [ ":ios_chrome_xcuitests" ]
+
+  # Those frameworks are force-linked via //base/test:test_support, so
+  # ensure the framework bundles are packaged in the test runner and
+  # not the test module.
+  runner_only_bundle_deps = [ "//base/test:test_trace_processor+bundle" ]
 }
 
 # This target is only used in routinely device checks.
