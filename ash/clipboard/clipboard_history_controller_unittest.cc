@@ -24,6 +24,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -603,8 +604,13 @@ class ClipboardHistoryControllerRefreshTest
       public testing::WithParamInterface</*refresh_enabled=*/bool> {
  public:
   ClipboardHistoryControllerRefreshTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kClipboardHistoryRefresh, IsClipboardHistoryRefreshEnabled());
+    std::vector<base::test::FeatureRef> refresh_features = {
+        features::kClipboardHistoryRefresh, chromeos::features::kJelly};
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    (IsClipboardHistoryRefreshEnabled() ? enabled_features : disabled_features)
+        .swap(refresh_features);
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   bool IsClipboardHistoryRefreshEnabled() const { return GetParam(); }
