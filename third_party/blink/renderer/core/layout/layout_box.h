@@ -325,11 +325,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                                                 : PixelSnappedHeight();
   }
 
-  LayoutUnit MinimumLogicalHeightForEmptyLine() const {
-    NOT_DESTROYED();
-    return BorderAndPaddingLogicalHeight() +
-           ComputeLogicalScrollbars().BlockSum() + LogicalHeightForEmptyLine();
-  }
   LayoutUnit LogicalHeightForEmptyLine() const {
     NOT_DESTROYED();
     return LineHeight(
@@ -507,7 +502,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool CanResize() const;
 
-  LayoutUnit ContainerWidthInInlineDirection() const;
   bool ShouldComputeLogicalHeightFromAspectRatio() const {
     NOT_DESTROYED();
     if (ShouldComputeLogicalWidthFromAspectRatioAndInsets())
@@ -1270,7 +1264,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       LayoutBlock** out_cb = nullptr,
       bool* out_skipped_auto_height_containing_block = nullptr) const;
 
-  bool PercentageLogicalHeightIsResolvable() const;
   LayoutUnit ComputePercentageLogicalHeight(const Length& height) const;
 
   // Block flows subclass availableWidth/Height to handle multi column layout
@@ -1282,22 +1275,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutUnit AvailableLogicalHeight(AvailableLogicalHeightType) const;
   LayoutUnit AvailableLogicalHeightUsing(const Length&,
                                          AvailableLogicalHeightType) const;
-
-  // There are a few cases where we need to refer specifically to the available
-  // physical width and available physical height. Relative positioning is one
-  // of those cases, since left/top offsets are physical.
-  LayoutUnit AvailableWidth() const {
-    NOT_DESTROYED();
-    return StyleRef().IsHorizontalWritingMode()
-               ? AvailableLogicalWidth()
-               : AvailableLogicalHeight(kIncludeMarginBorderPadding);
-  }
-  LayoutUnit AvailableHeight() const {
-    NOT_DESTROYED();
-    return StyleRef().IsHorizontalWritingMode()
-               ? AvailableLogicalHeight(kIncludeMarginBorderPadding)
-               : AvailableLogicalWidth();
-  }
 
   // Return both scrollbars and scrollbar gutters (defined by scrollbar-gutter).
   inline NGPhysicalBoxStrut ComputeScrollbars() const {
@@ -1881,9 +1858,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   bool ColumnFlexItemHasStretchAlignment() const;
   bool IsStretchingColumnFlexItem() const;
-  enum class StretchingMode { kAny, kExplicit };
-  bool HasStretchedLogicalWidth(StretchingMode = StretchingMode::kAny) const;
-  bool HasStretchedLogicalHeight() const;
 
   void ExcludeScrollbars(
       PhysicalRect&,
@@ -2003,11 +1977,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const Length& margin_logical_top,
       const Length& margin_logical_bottom,
       LogicalExtentComputedValues&) const;
-
-  LayoutUnit FillAvailableMeasure(LayoutUnit available_logical_width) const;
-  LayoutUnit FillAvailableMeasure(LayoutUnit available_logical_width,
-                                  LayoutUnit& margin_start,
-                                  LayoutUnit& margin_end) const;
 
   LayoutBoxRareData& EnsureRareData() {
     NOT_DESTROYED();

@@ -60,8 +60,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   LayoutReplaced(Element*, const LayoutSize& intrinsic_size);
   ~LayoutReplaced() override;
 
-  bool HasReplacedLogicalHeight() const;
-
   // This function returns the local rect of the replaced content. The rectangle
   // is in the coordinate space of the element's physical border-box and assumes
   // no clipping.

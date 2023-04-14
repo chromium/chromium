@@ -152,26 +152,6 @@ void LayoutReplaced::Paint(const PaintInfo& paint_info) const {
   ReplacedPainter(*this).Paint(paint_info);
 }
 
-bool LayoutReplaced::HasReplacedLogicalHeight() const {
-  NOT_DESTROYED();
-  if (StyleRef().LogicalHeight().IsAuto())
-    return StretchBlockSizeIfAuto();
-
-  if (StyleRef().LogicalHeight().IsFixed())
-    return true;
-
-  if (StyleRef().LogicalHeight().IsPercentOrCalc()) {
-    if (HasAutoHeightOrContainingBlockWithAutoHeight())
-      return false;
-    return true;
-  }
-
-  if (StyleRef().LogicalHeight().IsContentOrIntrinsicOrFillAvailable())
-    return StyleRef().AspectRatio().IsAuto();
-
-  return false;
-}
-
 bool LayoutReplaced::NeedsPreferredWidthsRecalculation() const {
   NOT_DESTROYED();
   // If the height is a percentage and the width is auto, then the

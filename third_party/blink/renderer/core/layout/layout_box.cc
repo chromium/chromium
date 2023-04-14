@@ -3536,54 +3536,6 @@ void LayoutBox::InflateVisualRectForFilter(
       gfx::QuadF(gfx::RectF(Layer()->MapRectForFilter(rect))));
 }
 
-LayoutUnit LayoutBox::ContainerWidthInInlineDirection() const {
-  NOT_DESTROYED();
-  LayoutBlock* cb = ContainingBlock();
-
-  if (IsParallelWritingMode(cb->StyleRef().GetWritingMode(),
-                            StyleRef().GetWritingMode())) {
-    return std::max(LayoutUnit(), ContainingBlockLogicalWidthForContent());
-  }
-
-  // PerpendicularContainingBlockLogicalHeight() can return -1 in some
-  // situations but we cannot have a negative width, that's why we clamp it to
-  // zero.
-  return PerpendicularContainingBlockLogicalHeight().ClampNegativeToZero();
-}
-
-LayoutUnit LayoutBox::FillAvailableMeasure(
-    LayoutUnit available_logical_width) const {
-  NOT_DESTROYED();
-  LayoutUnit margin_start;
-  LayoutUnit margin_end;
-  return FillAvailableMeasure(available_logical_width, margin_start,
-                              margin_end);
-}
-
-LayoutUnit LayoutBox::FillAvailableMeasure(LayoutUnit available_logical_width,
-                                           LayoutUnit& margin_start,
-                                           LayoutUnit& margin_end) const {
-  NOT_DESTROYED();
-  DCHECK_GE(available_logical_width, 0);
-
-  bool isOrthogonalElement =
-      IsHorizontalWritingMode() != ContainingBlock()->IsHorizontalWritingMode();
-  LayoutUnit available_size_for_resolving_margin =
-      isOrthogonalElement ? ContainingBlockLogicalWidthForContent()
-                          : available_logical_width;
-  margin_start = MinimumValueForLength(StyleRef().MarginStart(),
-                                       available_size_for_resolving_margin);
-  margin_end = MinimumValueForLength(StyleRef().MarginEnd(),
-                                     available_size_for_resolving_margin);
-
-  if (HasOverrideAvailableInlineSize())
-    available_logical_width = OverrideAvailableInlineSize();
-
-  LayoutUnit available = available_logical_width - margin_start - margin_end;
-  available = std::max(available, LayoutUnit());
-  return available;
-}
-
 bool LayoutBox::ColumnFlexItemHasStretchAlignment() const {
   NOT_DESTROYED();
   // auto margins mean we don't stretch. Note that this function will only be
@@ -3610,59 +3562,6 @@ bool LayoutBox::IsStretchingColumnFlexItem() const {
       ColumnFlexItemHasStretchAlignment())
     return true;
   return false;
-}
-
-// TODO (lajava) Can/Should we move this inside specific layout classes (flex.
-// grid)? Can we refactor columnFlexItemHasStretchAlignment logic?
-bool LayoutBox::HasStretchedLogicalWidth(StretchingMode stretchingMode) const {
-  NOT_DESTROYED();
-  const ComputedStyle& style = StyleRef();
-  if (!style.LogicalWidth().IsAuto() || style.MarginStart().IsAuto() ||
-      style.MarginEnd().IsAuto())
-    return false;
-  LayoutBlock* cb = ContainingBlock();
-  if (!cb) {
-    // We are evaluating align-self/justify-self, which default to 'normal' for
-    // the root element. The 'normal' value behaves like 'start' except for
-    // Flexbox Items, which obviously should have a container.
-    return false;
-  }
-  auto defaultItemPosition = stretchingMode == StretchingMode::kAny
-                                 ? cb->SelfAlignmentNormalBehavior(this)
-                                 : ItemPosition::kNormal;
-  if (cb->IsHorizontalWritingMode() != IsHorizontalWritingMode()) {
-    return style.ResolvedAlignSelf(defaultItemPosition, cb->Style())
-               .GetPosition() == ItemPosition::kStretch;
-  }
-  return style.ResolvedJustifySelf(defaultItemPosition, cb->Style())
-             .GetPosition() == ItemPosition::kStretch;
-}
-
-// TODO (lajava) Can/Should we move this inside specific layout classes (flex.
-// grid)? Can we refactor columnFlexItemHasStretchAlignment logic?
-bool LayoutBox::HasStretchedLogicalHeight() const {
-  NOT_DESTROYED();
-  const ComputedStyle& style = StyleRef();
-  if (!style.LogicalHeight().IsAuto() || style.MarginBefore().IsAuto() ||
-      style.MarginAfter().IsAuto())
-    return false;
-  LayoutBlock* cb = ContainingBlock();
-  if (!cb) {
-    // We are evaluating align-self/justify-self, which default to 'normal' for
-    // the root element. The 'normal' value behaves like 'start' except for
-    // Flexbox Items, which obviously should have a container.
-    return false;
-  }
-  if (cb->IsHorizontalWritingMode() != IsHorizontalWritingMode()) {
-    return style
-               .ResolvedJustifySelf(cb->SelfAlignmentNormalBehavior(this),
-                                    cb->Style())
-               .GetPosition() == ItemPosition::kStretch;
-  }
-  return style
-             .ResolvedAlignSelf(cb->SelfAlignmentNormalBehavior(this),
-                                cb->Style())
-             .GetPosition() == ItemPosition::kStretch;
 }
 
 bool LayoutBox::SizesLogicalWidthToFitContent(
@@ -5883,12 +5782,6 @@ void LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
     contents_rect.offset.left += flip_offset;
   }
   SetVisualOverflow(self_rect, contents_rect);
-}
-
-bool LayoutBox::PercentageLogicalHeightIsResolvable() const {
-  NOT_DESTROYED();
-  Length fake_length = Length::Percent(100);
-  return ComputePercentageLogicalHeight(fake_length) != -1;
 }
 
 DISABLE_CFI_PERF
