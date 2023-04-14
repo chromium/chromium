@@ -47,7 +47,6 @@ class DOMTask final : public GarbageCollected<DOMTask> {
   // catching any errors and retrieving the result.
   void InvokeInternal(ScriptState*);
   void OnAbort();
-  void RecordTaskStartMetrics();
 
   TaskHandle task_handle_;
   Member<V8SchedulerPostTaskCallback> callback_;
@@ -59,7 +58,6 @@ class DOMTask final : public GarbageCollected<DOMTask> {
   // the associated WebSchedulingTaskQueue stays alive until after this task
   // runs, which is necessary to ensure throttling works correctly.
   Member<DOMScheduler::DOMTaskQueue> task_queue_;
-  const base::TimeTicks queue_time_;
   const base::TimeDelta delay_;
   const uint64_t task_id_for_tracing_;
   absl::optional<scheduler::TaskAttributionId> parent_task_id_;

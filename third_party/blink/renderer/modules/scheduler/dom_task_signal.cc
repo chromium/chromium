@@ -128,7 +128,6 @@ void DOMTaskSignal::SignalPriorityChange(const AtomicString& priority,
   is_priority_changing_ = true;
   const AtomicString previous_priority = priority_;
   priority_ = priority;
-  priority_change_status_ = PriorityChangeStatus::kPriorityHasChanged;
 
   for (AlgorithmHandle* handle : priority_change_algorithms_) {
     handle->GetAlgorithm()->Run();

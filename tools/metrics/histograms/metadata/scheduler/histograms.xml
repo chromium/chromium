@@ -46,30 +46,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true"
-    name="Scheduler.DOMScheduler.QueueingDurationPerPriority" units="ms"
-    expires_after="2022-12-01">
-<!-- Name completed by histogram_suffixes name="Scheduler.DOMScheduler.Priority" -->
-
-  <owner>kdillon@chromium.org</owner>
-  <owner>shaseley@chromium.org</owner>
-  <summary>
-    Queueing time of a task posted via the postTask API. Reported when the task
-    is starts and bycked by priority. Tasks who have had their priority changed
-    are skipped.
-  </summary>
-</histogram>
-
-<histogram name="Scheduler.DOMScheduler.TaskSignalPriorityWasChanged"
-    enum="PriorityChangeStatus" expires_after="2022-12-01">
-  <owner>kdillon@chromium.org</owner>
-  <owner>shaseley@chromium.org</owner>
-  <summary>
-    Records whether or not a task posted via scheduler.postTask had it's
-    priority changed. Records when the task is started.
-  </summary>
-</histogram>
-
 <histogram name="Scheduler.Experimental.CPUTimePerThread"
     enum="SchedulerThreadType" expires_after="M81">
   <owner>altimin@chromium.org</owner>

@@ -5058,14 +5058,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="SB2.RequestDestination"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Scheduler_DOMScheduler_Priority" separator=".">
-  <suffix name="Background" label=""/>
-  <suffix name="UserBlocking" label=""/>
-  <suffix name="UserVisible" label=""/>
-  <affected-histogram
-      name="Scheduler.DOMScheduler.QueueingDurationPerPriority"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="SchedulerDarkMatterMetrics" separator=".">
   <suffix name="Tracked"
       label="Total duration of all tasks managed by the scheduler. This

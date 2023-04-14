@@ -35,19 +35,6 @@
 
 namespace blink {
 
-#define QUEUEING_TIME_PER_PRIORITY_METRIC_NAME \
-  "DOMScheduler.QueueingDurationPerPriority"
-
-#define PRIORITY_CHANGED_HISTOGRAM_NAME \
-  "DOMSchedler.TaskSignalPriorityWasChanged"
-
-// Same as UMA_HISTOGRAM_TIMES but for a broader view of this metric we end
-// at 1 minute instead of 10 seconds.
-#define QUEUEING_TIME_HISTOGRAM(name, sample)                                 \
-  UMA_HISTOGRAM_CUSTOM_TIMES(QUEUEING_TIME_PER_PRIORITY_METRIC_NAME name,     \
-                             sample, base::Milliseconds(1), base::Minutes(1), \
-                             50)
-
 namespace {
 
 void GenericTaskData(perfetto::TracedDictionary& dict,
@@ -103,9 +90,6 @@ DOMTask::DOMTask(ScriptPromiseResolver* resolver,
       resolver_(resolver),
       signal_(signal),
       task_queue_(task_queue),
-      // TODO(crbug.com/1291798): Expose queuing time from
-      // base::sequence_manager so we don't have to recalculate it here.
-      queue_time_(delay.is_zero() ? base::TimeTicks::Now() : base::TimeTicks()),
       delay_(delay),
       task_id_for_tracing_(NextIdForTracing()) {
   CHECK(task_queue_);
@@ -177,7 +161,6 @@ void DOMTask::Invoke() {
     return;
   }
 
-  RecordTaskStartMetrics();
   InvokeInternal(script_state);
   callback_.Release();
 }
@@ -254,32 +237,6 @@ void DOMTask::OnAbort() {
       ToV8Traits<IDLAny>::ToV8(resolver_script_state,
                                signal_->reason(resolver_script_state))
           .ToLocalChecked());
-}
-
-void DOMTask::RecordTaskStartMetrics() {
-  auto status =
-      (signal_ && IsA<DOMTaskSignal>(signal_.Get()))
-          ? To<DOMTaskSignal>(signal_.Get())->GetPriorityChangeStatus()
-          : DOMTaskSignal::PriorityChangeStatus::kNoPriorityChange;
-  UMA_HISTOGRAM_ENUMERATION(PRIORITY_CHANGED_HISTOGRAM_NAME, status);
-
-  if (queue_time_ > base::TimeTicks()) {
-    base::TimeDelta queue_duration = base::TimeTicks::Now() - queue_time_;
-    DCHECK_GT(queue_duration, base::TimeDelta());
-    if (status == DOMTaskSignal::PriorityChangeStatus::kNoPriorityChange) {
-      switch (task_queue_->GetPriority()) {
-        case WebSchedulingPriority::kUserBlockingPriority:
-          QUEUEING_TIME_HISTOGRAM(".UserBlocking", queue_duration);
-          break;
-        case WebSchedulingPriority::kUserVisiblePriority:
-          QUEUEING_TIME_HISTOGRAM(".UserVisable", queue_duration);
-          break;
-        case WebSchedulingPriority::kBackgroundPriority:
-          QUEUEING_TIME_HISTOGRAM(".Background", queue_duration);
-          break;
-      }
-    }
-  }
 }
 
 }  // namespace blink
