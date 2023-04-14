@@ -7,23 +7,17 @@
 
 #include "ash/system/tray/tray_constants.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 
 namespace ash {
 
 namespace message_center_style {
 
-constexpr SkColor kEmptyViewColor = SkColorSetARGB(0x8A, 0x0, 0x0, 0x0);
 constexpr SkColor kScrollShadowColor = SkColorSetARGB(0x24, 0x0, 0x0, 0x0);
 
 // TODO(crbug.com/1309551): Get the colors from AshColorProvider once
 // notification supports dark/light mode.
 constexpr SkColor kSeparatorColor = SkColorSetA(SK_ColorBLACK, 0x24);  // 14%
-constexpr SkColor kUnifiedMenuButtonColorActive =
-    SkColorSetRGB(0x25, 0x81, 0xDF);
-constexpr SkColor kInkRippleColor = SK_ColorBLACK;
-constexpr float kInkRippleOpacity = 0.06f;
 
 constexpr int kEmptyIconSize = 24;
 constexpr auto kEmptyIconPadding = gfx::Insets::TLBR(0, 0, 4, 0);
