@@ -3,9 +3,10 @@
 # found in the LICENSE file.
 
 USE_PYTHON3 = True
+PRESUBMIT_VERSION = '2.0.0'
 
 
-def _CommonChecks(input_api, output_api):
+def CheckChange(input_api, output_api):
   results = []
   try:
     import sys
@@ -21,10 +22,19 @@ def _CommonChecks(input_api, output_api):
                                                          check_js=True)
   return results
 
+def CheckTestFilename(input_api, output_api):
+  results = []
 
-def CheckChangeOnUpload(input_api, output_api):
-  return _CommonChecks(input_api, output_api)
+  def IsNameInvalid(affected_file):
+    return affected_file.LocalPath().endswith('_tests.ts')
 
+  invalid_test_files = input_api.AffectedFiles(include_deletes=False,
+                                               file_filter=IsNameInvalid)
+  for f in invalid_test_files:
+    results += [
+        output_api.PresubmitError(
+            f'Disallowed \'_tests\' suffix found in \'{f}\'. WebUI test files '
+            'must end with "_test" suffix instead.')
+    ]
 
-def CheckChangeOnCommit(input_api, output_api):
-  return _CommonChecks(input_api, output_api)
+  return results
