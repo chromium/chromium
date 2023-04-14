@@ -202,8 +202,9 @@ class SettingsStorageElement extends SettingsStorageElementBase {
    * Handler for tapping the "Offline files" item.
    */
   private onDriveOfflineClick_(): void {
-    // TODO(b/266631636): Offline files row should redirect users to Files
-    // settings > Drive settings.
+    Router.getInstance().navigateTo(
+        routes.GOOGLE_DRIVE,
+        /* dynamicParams= */ undefined, /* removeSearch= */ true);
   }
 
   /**
