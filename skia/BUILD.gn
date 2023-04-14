@@ -46,6 +46,8 @@ config("skia_config") {
     "SK_DISABLE_LEGACY_MAKE_TEXTURE_IMAGE",
     "SK_DISABLE_LEGACY_IMAGE_FLUSH",
     "SK_DISABLE_LEGACY_GET_BACKEND_TEXTURE",
+    "SK_DISABLE_LEGACY_IMAGE_ENCODE_METHODS",
+    "SK_DISABLE_LEGACY_IMAGE_ENCODER",
   ]
 
   include_dirs = [ "//third_party/skia" ]
@@ -316,6 +318,9 @@ component("skia") {
   public += skia_effects_imagefilter_public
   public += skia_utils_chromium
   public += skia_discardable_memory_chromium
+  public += skia_encode_public
+  public += skia_encode_png_public
+  public += skia_encode_webp_public
 
   # The imported Skia gni source paths are made absolute by gn.
   defines = []
@@ -339,6 +344,7 @@ component("skia") {
     sources += skia_codec_core
     sources += skia_codec_decode_bmp
     sources += skia_encode_jpeg_srcs
+    public += skia_encode_jpeg_public
     sources += [
       "//third_party/skia/src/codec/SkEncodedInfo.cpp",
       "//third_party/skia/src/codec/SkIcoCodec.cpp",

@@ -32,9 +32,9 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkData.h"
-#include "third_party/skia/include/core/SkEncodedImageFormat.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
@@ -1411,8 +1411,8 @@ class AppListSortColorOrderBrowserTest : public AppListSortBrowserTest {
     icon = gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
         icon_size / 2, icon_color, icon);
     const sk_sp<SkImage> image = SkImages::RasterFromBitmap(*icon.bitmap());
-    const sk_sp<SkData> png_data(
-        image->encodeToData(SkEncodedImageFormat::kPNG, /*quality=*/100));
+    const sk_sp<SkData> png_data =
+        SkPngEncoder::Encode(nullptr, image.get(), {});
     icon_file.Write(0, (const char*)png_data->data(), png_data->size());
     icon_file.Close();
 

@@ -6,9 +6,8 @@
 
 #include "base/base64.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkEncodedImageFormat.h"
-#include "third_party/skia/include/core/SkImageEncoder.h"
 #include "third_party/skia/include/core/SkStream.h"
+#include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "ui/gfx/image/buffer_w_stream.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -28,7 +27,7 @@ std::string EncodePNGAndMakeDataURI(gfx::ImageSkia image, float scale_factor) {
   const SkBitmap& bitmap = image.GetRepresentation(scale_factor).GetBitmap();
   gfx::BufferWStream stream;
   const bool encoding_succeeded =
-      SkEncodeImage(&stream, bitmap, SkEncodedImageFormat::kPNG, 100);
+      SkPngEncoder::Encode(&stream, bitmap.pixmap(), {});
   DCHECK(encoding_succeeded);
   return MakeDataURIForImage(
       base::as_bytes(base::make_span(stream.TakeBuffer())), "png");

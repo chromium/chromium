@@ -32,9 +32,10 @@
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkData.h"
-#include "third_party/skia/include/core/SkEncodedImageFormat.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "third_party/skia/include/core/SkStream.h"
+#include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace extensions {
@@ -56,12 +57,13 @@ std::string ConvertAndEncode(const SkBitmap& bitmap) {
     DLOG(WARNING) << "Got an invalid bitmap";
     return std::string();
   }
-  sk_sp<SkImage> image = SkImages::RasterFromBitmap(bitmap);
-  sk_sp<SkData> png_data(image->encodeToData(SkEncodedImageFormat::kPNG, 100));
-  if (!png_data) {
+  SkDynamicMemoryWStream stream;
+  if (!SkPngEncoder::Encode(&stream, bitmap.pixmap(), {}) ||
+      !stream.bytesWritten()) {
     DLOG(WARNING) << "Thumbnail encoding error";
     return std::string();
   }
+  sk_sp<SkData> png_data = stream.detachAsData();
   return MakeThumbnailDataUrlOnThreadPool(
       kMimeTypeImagePng, base::make_span(png_data->bytes(), png_data->size()));
 }

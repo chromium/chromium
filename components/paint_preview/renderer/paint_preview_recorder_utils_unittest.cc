@@ -46,6 +46,7 @@
 #include "third_party/skia/include/core/SkSamplingOptions.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/core/SkTypeface.h"
+#include "third_party/skia/include/encode/SkPngEncoder.h"
 
 namespace paint_preview {
 
@@ -406,7 +407,7 @@ TEST_P(PaintPreviewRecorderUtilsSerializeAsSkPictureTest,
     SkCanvas sk_canvas(bitmap);
     sk_canvas.drawColor(SkColors::kRed);
     auto sk_image = SkImages::RasterFromBitmap(bitmap);
-    auto data = sk_image->encodeToData();
+    auto data = SkPngEncoder::Encode(nullptr, sk_image.get(), {});
     auto lazy_sk_image = SkImages::DeferredFromEncodedData(data);
     ASSERT_TRUE(lazy_sk_image->isLazyGenerated());
     cc::PaintImage paint_image =
