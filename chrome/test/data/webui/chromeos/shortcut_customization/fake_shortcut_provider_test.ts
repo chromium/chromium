@@ -112,6 +112,13 @@ suite('fakeShortcutProviderTest', function() {
   });
 
   test('ReplaceAcceleratorFake', () => {
+    const fakeResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kSuccess,
+      shortcutName: undefined,
+    };
+
+    getProvider().setFakeReplaceAcceleratorResult(fakeResult);
+
     // TODO(jimmyxgong): Remove this test once real data is ready.
     return getProvider()
         .replaceAccelerator(

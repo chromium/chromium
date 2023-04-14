@@ -111,9 +111,6 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
       _old_accelerator: Accelerator,
       _new_accelerator: Accelerator): Promise<{result: AcceleratorResultData}> {
     // Always return kSuccess in this fake.
-    const result = new AcceleratorResultData();
-    result.result = AcceleratorConfigResult.kSuccess;
-    this.methods.setResult('replaceAccelerator', {result});
     return this.methods.resolveMethod('replaceAccelerator');
   }
 
@@ -179,6 +176,10 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   setFakeAddAcceleratorResult(result: AcceleratorResultData): void {
     this.methods.setResult('addAccelerator', {result});
+  }
+
+  setFakeReplaceAcceleratorResult(result: AcceleratorResultData): void {
+    this.methods.setResult('replaceAccelerator', {result});
   }
 
   // Sets up an observer for methodName.

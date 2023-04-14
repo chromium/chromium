@@ -270,9 +270,7 @@ suite('shortcutCustomizationAppTest', function() {
     assertFalse(dialog.open);
   });
 
-  // TODO(jimmyxgong): Re-enable this test when ReplaceAccelerator api is
-  // used.
-  test.skip('ReplaceAccelerator', async () => {
+  test('ReplaceAccelerator', async () => {
     page = initShortcutCustomizationAppElement();
     await flushTasks();
 
@@ -298,6 +296,13 @@ suite('shortcutCustomizationAppTest', function() {
     // Assert no error has occurred prior to pressing a shortcut.
     assertFalse(editView.hasError);
 
+    // Set the fake mojo return call.
+    const fakeResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kConflictCanOverride,
+      shortcutName: strToMojoString16('TestConflictName'),
+    };
+    provider.setFakeReplaceAcceleratorResult(fakeResult);
+
     // Alt + ']' is a conflict, expect the error message to appear.
     accelViewElement!.dispatchEvent(new KeyboardEvent('keydown', {
       key: ']',
@@ -313,6 +318,12 @@ suite('shortcutCustomizationAppTest', function() {
 
     assertTrue(editView.hasError);
 
+    const fakeResult2: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kSuccess,
+      shortcutName: undefined,
+    };
+    provider.setFakeReplaceAcceleratorResult(fakeResult2);
+
     // Press the shortcut again, this time it will replace the preexsting
     // accelerator.
     accelViewElement!.dispatchEvent(new KeyboardEvent('keydown', {
@@ -326,40 +337,10 @@ suite('shortcutCustomizationAppTest', function() {
     }));
 
     await flushTasks();
-
-    // Requery the view element.
-    const editViews =
+    const updatedEditView =
         editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
-            'accelerator-edit-view');
-    // Replacing a default accelerator will disable the default and add a new
-    // accelerator.
-    assertEquals(2, editViews!.length);
-
-    const accelViewElement1 =
-        editViews[0]!.shadowRoot!.querySelector('#acceleratorItem');
-    const acceleratorInfo1 =
-        (accelViewElement1 as AcceleratorViewElement).acceleratorInfo;
-    const actualAccelerator1 =
-        acceleratorInfo1.layoutProperties.standardAccelerator.accelerator;
-    assertEquals(
-        Modifier.COMMAND | Modifier.SHIFT, actualAccelerator1!.modifiers);
-    assertEquals(187, actualAccelerator1.keyCode);
-    assertEquals(
-        '+', acceleratorInfo1.layoutProperties.standardAccelerator.keyDisplay);
-    assertEquals(AcceleratorState.kDisabledByUser, acceleratorInfo1.state);
-
-    // Assert that the accelerator was updated with the new shortcut (Alt + ']')
-    const accelViewElement2 =
-        editViews[1]!.shadowRoot!.querySelector('#acceleratorItem');
-    const acceleratorInfo2 =
-        (accelViewElement2 as AcceleratorViewElement).acceleratorInfo;
-    const actualAccelerator2 =
-        acceleratorInfo2.layoutProperties.standardAccelerator.accelerator;
-    assertEquals(Modifier.ALT, actualAccelerator2!.modifiers);
-    assertEquals(221, actualAccelerator2.keyCode);
-    assertEquals(
-        ']', acceleratorInfo2.layoutProperties.standardAccelerator.keyDisplay);
-    assertEquals(AcceleratorState.kEnabled, acceleratorInfo2.state);
+            'accelerator-edit-view')[0] as AcceleratorEditViewElement;
+    assertFalse(updatedEditView.hasError);
   });
 
   test('AddAccelerator', async () => {

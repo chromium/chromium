@@ -9,7 +9,10 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/js/accelerator_edit_view.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
-import {AcceleratorSource, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
+import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
+import {AcceleratorConfigResult, AcceleratorSource, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -19,8 +22,12 @@ import {createStandardAcceleratorInfo, createUserAcceleratorInfo} from './shortc
 suite('acceleratorEditViewTest', function() {
   let editViewElement: AcceleratorEditViewElement|null = null;
   let manager: AcceleratorLookupManager|null = null;
+  let provider: FakeShortcutProvider;
 
   setup(() => {
+    provider = new FakeShortcutProvider();
+    setShortcutProviderForTesting(provider);
+
     manager = AcceleratorLookupManager.getInstance();
     manager.setAcceleratorLookup(fakeAcceleratorConfig);
     manager.setAcceleratorLayoutLookup(fakeLayoutInfo);
@@ -72,8 +79,14 @@ suite('acceleratorEditViewTest', function() {
     assertFalse(isVisible(getElementById('cancelButtonContainer')));
   });
 
-  // TODO(jimmyxgong): Re-enable test when ReplaceAcceleratorApi is implemented.
-  test.skip('DetectShortcutConflict', async () => {
+  test('DetectShortcutConflict', async () => {
+    const fakeResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kConflict,
+      shortcutName: {data: [1]},
+    };
+
+    provider.setFakeReplaceAcceleratorResult(fakeResult);
+
     const acceleratorInfo = createStandardAcceleratorInfo(
         Modifier.ALT,
         /*key=*/ 221,
@@ -110,6 +123,12 @@ suite('acceleratorEditViewTest', function() {
     await flushTasks();
     assertTrue(editViewElement!.hasError);
 
+    const fakeResult2: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kSuccess,
+      shortcutName: undefined,
+    };
+
+    provider.setFakeReplaceAcceleratorResult(fakeResult2);
     // Press another shortcut, expect no error.
     viewElement!.dispatchEvent(new KeyboardEvent('keydown', {
       key: 'e',

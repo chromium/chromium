@@ -10,8 +10,11 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {AcceleratorViewElement, ViewState} from 'chrome://shortcut-customization/js/accelerator_view.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
+import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {InputKeyElement, KeyInputState} from 'chrome://shortcut-customization/js/input_key.js';
-import {AcceleratorSource, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
+import {AcceleratorConfigResult, AcceleratorSource, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -28,8 +31,12 @@ suite('acceleratorViewTest', function() {
   let viewElement: AcceleratorViewElement|null = null;
 
   let manager: AcceleratorLookupManager|null = null;
+  let provider: FakeShortcutProvider;
 
   setup(() => {
+    provider = new FakeShortcutProvider();
+    setShortcutProviderForTesting(provider);
+
     manager = AcceleratorLookupManager.getInstance();
     manager.setAcceleratorLookup(fakeAcceleratorConfig);
     manager.setAcceleratorLayoutLookup(fakeLayoutInfo);
@@ -108,6 +115,13 @@ suite('acceleratorViewTest', function() {
     assertEquals(KeyInputState.NOT_SELECTED, metaKey.keyState);
     assertEquals(KeyInputState.NOT_SELECTED, pendingKey.keyState);
     assertEquals('key', pendingKey.key);
+
+    const fakeResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kConflict,
+      shortcutName: {data: [1]},
+    };
+
+    provider.setFakeReplaceAcceleratorResult(fakeResult);
 
     // Simulate Ctrl + Alt + e.
     viewElement.dispatchEvent(new KeyboardEvent('keydown', {
