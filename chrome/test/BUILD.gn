@@ -2926,7 +2926,6 @@ if (!is_android) {
         "../browser/signin/signin_ui_util_browsertest.cc",
         "../browser/ui/signin_intercept_first_run_experience_dialog_browsertest.cc",
         "../browser/ui/signin_reauth_view_controller_browsertest.cc",
-        "../browser/ui/views/profiles/first_run_flow_controller_dice_browsertest.cc",
         "../browser/ui/views/sync/inline_login_ui_browsertest.cc",
         "../browser/unified_consent/unified_consent_browsertest.cc",
       ]
@@ -10276,11 +10275,14 @@ if (!is_android) {
     if (is_win || is_mac || is_linux || is_chromeos_lacros) {
       sources += [
         "../browser/ui/views/profiles/profile_picker_interactive_uitest.cc",
+        "../browser/ui/views/profiles/profile_picker_interactive_uitest_base.cc",
+        "../browser/ui/views/profiles/profile_picker_interactive_uitest_base.h",
       ]
     }
 
     if (is_win || is_mac || is_linux) {
       sources += [
+        "../browser/ui/views/profiles/first_run_interactive_uitest.cc",
         "../browser/ui/views/profiles/profile_bubble_interactive_uitest.cc",
       ]
     }
