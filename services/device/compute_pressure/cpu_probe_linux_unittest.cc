@@ -11,40 +11,12 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "services/device/compute_pressure/cpu_probe.h"
+#include "services/device/compute_pressure/pressure_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
-
-// TestDouble for CpuProbeLinux that overrides OnPressureSampleAvailable()
-// to get PressureSample.
-class FakeCpuProbeLinux : public CpuProbeLinux {
- public:
-  FakeCpuProbeLinux(
-      base::TimeDelta sampling_interval,
-      base::RepeatingCallback<void(mojom::PressureState)> sampling_callback,
-      base::FilePath procfs_stat_path)
-      : CpuProbeLinux(sampling_interval,
-                      std::move(sampling_callback),
-                      std::move(procfs_stat_path)) {}
-  ~FakeCpuProbeLinux() override = default;
-
-  FakeCpuProbeLinux(const FakeCpuProbeLinux&) = delete;
-  FakeCpuProbeLinux& operator=(const FakeCpuProbeLinux&) = delete;
-
-  void OnPressureSampleAvailable(PressureSample sample) override {
-    CpuProbeLinux::OnPressureSampleAvailable(sample);
-    sample_.AddValue(std::move(sample));
-  }
-
-  PressureSample WaitForSample() { return sample_.Take(); }
-
- private:
-  base::test::RepeatingTestFuture<PressureSample> sample_;
-};
 
 class CpuProbeLinuxTest : public testing::Test {
  public:
@@ -61,7 +33,7 @@ class CpuProbeLinuxTest : public testing::Test {
     stat_file_ = base::File(fake_stat_path_, base::File::FLAG_CREATE_ALWAYS |
                                                  base::File::FLAG_WRITE);
 
-    probe_ = std::make_unique<FakeCpuProbeLinux>(
+    probe_ = std::make_unique<FakePlatformCpuProbe<CpuProbeLinux>>(
         base::Milliseconds(10), base::DoNothing(), fake_stat_path_);
   }
 
@@ -80,7 +52,7 @@ class CpuProbeLinuxTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   base::FilePath fake_stat_path_;
   base::File stat_file_;
-  std::unique_ptr<FakeCpuProbeLinux> probe_;
+  std::unique_ptr<FakePlatformCpuProbe<CpuProbeLinux>> probe_;
 };
 
 TEST_F(CpuProbeLinuxTest, ProductionDataNoCrash) {

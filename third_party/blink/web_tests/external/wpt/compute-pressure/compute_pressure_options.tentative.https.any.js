@@ -1,3 +1,5 @@
+// META: global=window,dedicatedworker,sharedworker
+
 'use strict';
 
 test(t => {

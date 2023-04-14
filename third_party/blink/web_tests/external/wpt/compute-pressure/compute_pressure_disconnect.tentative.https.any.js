@@ -1,3 +1,7 @@
+// META: script=/resources/test-only-api.js
+// META: script=resources/pressure-helpers.js
+// META: global=window,dedicatedworker,sharedworker
+
 'use strict';
 
 test(t => {
@@ -8,11 +12,11 @@ test(t => {
   observer.disconnect();
 }, 'Call disconnect() directly should not crash');
 
-promise_test(async t => {
+pressure_test(async (t, mockPressureService) => {
   const observer1_changes = [];
   const observer1 = new PressureObserver(change => {
     observer1_changes.push(change);
-  }, {sampleRate: 1.0});
+  });
   t.add_cleanup(() => observer1.disconnect());
   // Ensure that observer1's schema gets registered before observer2 starts.
   await observer1.observe('cpu');
@@ -23,9 +27,11 @@ promise_test(async t => {
     const observer2 = new PressureObserver(change => {
       observer2_changes.push(change);
       resolve();
-    }, {sampleRate: 1.0});
+    });
     t.add_cleanup(() => observer2.disconnect());
     observer2.observe('cpu').catch(reject);
+    mockPressureService.setPressureUpdate('cpu', 'critical');
+    mockPressureService.startPlatformCollector(/*sampleRate=*/ 5.0);
   });
 
   assert_equals(
@@ -34,7 +40,5 @@ promise_test(async t => {
 
   assert_equals(observer2_changes.length, 1);
   assert_equals(observer2_changes[0].length, 1);
-  assert_in_array(
-      observer2_changes[0][0].state, ['nominal', 'fair', 'serious', 'critical'],
-      'cpu pressure state');
+  assert_equals(observer2_changes[0][0].state, 'critical');
 }, 'Stopped PressureObserver do not receive changes');

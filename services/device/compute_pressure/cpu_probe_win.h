@@ -28,11 +28,14 @@ class CpuProbeWin : public CpuProbe {
   CpuProbeWin(const CpuProbeWin&) = delete;
   CpuProbeWin& operator=(const CpuProbeWin&) = delete;
 
- private:
-  class BlockingTaskRunnerHelper;
-
+ protected:
   CpuProbeWin(base::TimeDelta,
               base::RepeatingCallback<void(mojom::PressureState)>);
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(CpuProbeWinTest, ProductionDataNoCrash);
+
+  class BlockingTaskRunnerHelper;
 
   // CpuProbe implementation.
   void Update() override;

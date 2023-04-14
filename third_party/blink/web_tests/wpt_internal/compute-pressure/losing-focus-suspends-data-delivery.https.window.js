@@ -23,7 +23,7 @@ pressure_test(async (t, mockPressureService) => {
 
   window.internals.setFocused(false);
   mockPressureService.setPressureUpdate('cpu', 'nominal');
-  await new Promise(resolve => t.step_timeout(resolve, 2000));
+  await new Promise(resolve => t.step_timeout(resolve, 1000));
   assert_equals(observerChanges.length, 1);
 
   window.internals.setFocused(true);

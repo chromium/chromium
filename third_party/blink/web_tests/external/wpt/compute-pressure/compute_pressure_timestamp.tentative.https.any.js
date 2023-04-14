@@ -1,5 +1,6 @@
 // META: script=/resources/test-only-api.js
 // META: script=resources/pressure-helpers.js
+// META: global=window,dedicatedworker,sharedworker
 
 'use strict';
 

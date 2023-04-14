@@ -350,7 +350,7 @@
   },
   {
     "prefix": "compute-pressure",
-    "platforms": ["Linux", "Mac"],
+    "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/compute-pressure"],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=ComputePressure"],

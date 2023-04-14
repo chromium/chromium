@@ -9,10 +9,6 @@ class MockPressureService {
     this.interceptor_.oninterfacerequest = e => {
       this.receiver_.$.bindHandle(e.handle);
     };
-    this.receiver_.onConnectionError.addListener(() => {
-      this.stopPlatformCollector();
-      this.observer_ = null;
-    });
     this.reset();
     this.mojomSourceType_ = new Map([['cpu', PressureSource.kCpu]]);
     this.mojomStateType_ = new Map([
@@ -41,7 +37,7 @@ class MockPressureService {
   }
 
   reset() {
-    this.observer_ = null;
+    this.observers_ = [];
     this.pressureUpdate_ = null;
     this.pressureServiceReadingTimerId_ = null;
     this.pressureStatus_ = PressureStatus.kOk;
@@ -49,7 +45,7 @@ class MockPressureService {
   }
 
   async addClient(observer, source) {
-    if (this.observer_ !== null)
+    if (this.observers_.indexOf(observer) >= 0)
       throw new Error('addClient() has already been called');
 
     // TODO(crbug.com/1342184): Consider other sources.
@@ -57,11 +53,11 @@ class MockPressureService {
     if (source !== PressureSource.kCpu)
       throw new Error('Call addClient() with a wrong PressureSource');
 
-    this.observer_ = observer;
-    this.observer_.onConnectionError.addListener(() => {
-      this.stopPlatformCollector();
-      this.observer_ = null;
+    observer.onConnectionError.addListener(() => {
+      // Remove this observer from observer array.
+      this.observers_.splice(this.observers_.indexOf(observer), 1);
     });
+    this.observers_.push(observer);
 
     return {status: this.pressureStatus_};
   }
@@ -89,20 +85,21 @@ class MockPressureService {
     const epochDeltaInMs = unixEpoch - windowsEpoch;
 
     const timeout = (1 / sampleRate) * 1000;
-    this.pressureServiceReadingTimerId_ = window.setInterval(() => {
-      if (this.pressureUpdate_ === null || this.observer_ === null)
+    this.pressureServiceReadingTimerId_ = self.setInterval(() => {
+      if (this.pressureUpdate_ === null || this.observers_.length === 0)
         return;
       this.pressureUpdate_.timestamp = {
         internalValue: BigInt((new Date().getTime() + epochDeltaInMs) * 1000)
       };
-      this.observer_.onPressureUpdated(this.pressureUpdate_);
+      for (let observer of this.observers_)
+        observer.onPressureUpdated(this.pressureUpdate_);
       this.updatesDelivered_++;
     }, timeout);
   }
 
   stopPlatformCollector() {
     if (this.pressureServiceReadingTimerId_ != null) {
-      window.clearInterval(this.pressureServiceReadingTimerId_);
+      self.clearInterval(this.pressureServiceReadingTimerId_);
       this.pressureServiceReadingTimerId_ = null;
     }
     this.updatesDelivered_ = 0;
