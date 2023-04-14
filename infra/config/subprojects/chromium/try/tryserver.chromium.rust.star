@@ -67,8 +67,3 @@ try_.builder(
     cores = None,
     os = os.MAC_ANY,
 )
-
-try_.builder(
-    name = "linux-rust-x64-rel-android-toolchain",
-    mirrors = ["ci/linux-rust-x64-rel"],
-)

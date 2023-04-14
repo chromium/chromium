@@ -38,10 +38,6 @@
         {
           "builder": "linux-rust-x64-rel",
           "group": "tryserver.chromium.rust"
-        },
-        {
-          "builder": "linux-rust-x64-rel-android-toolchain",
-          "group": "tryserver.chromium.rust"
         }
       ]
     }
