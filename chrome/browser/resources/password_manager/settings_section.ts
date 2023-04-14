@@ -76,10 +76,11 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         value: false,
       },
 
-      showPasswordsImporter_: {
+      passwordManagerDisabled_: {
         type: Boolean,
-        /* TODO(crbug/1432962): Compute based on policy. */
-        value: true,
+        computed: 'computePasswordManagerDisabled_(' +
+            'prefs.credentials_enable_service.enforcement, ' +
+            'prefs.credentials_enable_service.value)',
       },
 
       /** The visibility state of the trusted vault banner. */
@@ -243,6 +244,12 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     // Keychain, or open Control Panel on Windows for Hello. Currently passkey
     // management is filled in via Chrome settings.
     OpenWindowProxyImpl.getInstance().openUrl('chrome://settings/passkeys');
+  }
+
+  private computePasswordManagerDisabled_(): boolean {
+    const pref = this.getPref('credentials_enable_service');
+    return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED &&
+        !pref.value;
   }
 }
 

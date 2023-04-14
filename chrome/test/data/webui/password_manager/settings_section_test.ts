@@ -260,13 +260,25 @@ suite('SettingsSectionTest', function() {
     await passwordManager.whenCalled('showAddShortcutDialog');
   });
 
+  test('import hidden when policy disabled', async function() {
+    const settings = document.createElement('settings-section');
+    settings.prefs = makePasswordManagerPrefs();
+    settings.prefs.credentials_enable_service.value = false;
+    settings.prefs.credentials_enable_service.enforcement =
+        chrome.settingsPrivate.Enforcement.ENFORCED;
+    document.body.appendChild(settings);
+    await flushTasks();
+
+    assertFalse(!!settings.shadowRoot!.querySelector('passwords-importer'));
+  });
+
   test('Password exporter element', async function() {
     // Exporter should not be present if there are no saved passwords.
     passwordManager.data.passwords = [];
     const settings = document.createElement('settings-section');
     document.body.appendChild(settings);
     await passwordManager.whenCalled('getSavedPasswordList');
-    assertFalse(!!settings!.shadowRoot!.querySelector('passwords-exporter'));
+    assertFalse(!!settings.shadowRoot!.querySelector('passwords-exporter'));
 
     // Exporter should appear when saved passwords are observed.
     passwordManager.data.passwords.push(
