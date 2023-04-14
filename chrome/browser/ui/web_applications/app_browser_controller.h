@@ -149,6 +149,9 @@ class AppBrowserController
   // Gets the new tab URL for tabbed apps.
   virtual GURL GetAppNewTabUrl() const;
 
+  // Returns whether the url is within the scope of the tab strip home tab.
+  virtual bool IsUrlInHomeTabScope(const GURL& url) const;
+
   // Determines whether the specified url is 'inside' the app |this| controls.
   virtual bool IsUrlInAppScope(const GURL& url) const = 0;
 

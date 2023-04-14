@@ -20,24 +20,4 @@ bool IsPinnedHomeTab(const TabStripModel* tab_strip_model, int index) {
   return HasPinnedHomeTab(tab_strip_model) && index == 0;
 }
 
-bool IsPinnedHomeTabUrl(const WebAppRegistrar& registrar,
-                        const AppId& app_id,
-                        GURL launch_url) {
-  if (!registrar.IsTabbedWindowModeEnabled(app_id))
-    return false;
-
-  absl::optional<GURL> pinned_home_url =
-      registrar.GetAppPinnedHomeTabUrl(app_id);
-  if (!pinned_home_url)
-    return false;
-
-  // A launch URL which is the home tab URL with query params and
-  // hash ref should be opened as the home tab.
-  GURL::Replacements replacements;
-  replacements.ClearQuery();
-  replacements.ClearRef();
-  return launch_url.ReplaceComponents(replacements) ==
-         pinned_home_url.value().ReplaceComponents(replacements);
-}
-
 }  // namespace web_app

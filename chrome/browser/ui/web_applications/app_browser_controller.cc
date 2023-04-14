@@ -440,6 +440,10 @@ GURL AppBrowserController::GetAppNewTabUrl() const {
   return GetAppStartUrl();
 }
 
+bool AppBrowserController::IsUrlInHomeTabScope(const GURL& url) const {
+  return false;
+}
+
 #if BUILDFLAG(IS_MAC)
 bool AppBrowserController::AlwaysShowToolbarInFullscreen() const {
   return true;

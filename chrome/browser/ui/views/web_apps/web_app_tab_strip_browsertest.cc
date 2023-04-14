@@ -812,4 +812,142 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
       controller->BeforeCloseTab(1, CloseTabSource::CLOSE_TAB_FROM_MOUSE));
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, HomeTabScopeSegmentWildcard) {
+  GURL start_url =
+      embedded_test_server()->GetURL("/web_apps/tab_strip_customizations.html");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+
+  // Expect app opened with pinned home tab.
+  EXPECT_EQ(tab_strip->count(), 1);
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+  // Navigate to an out of home tab scope URL.
+  OpenUrlAndWait(app_browser,
+                 embedded_test_server()->GetURL("/web_apps/favicon_only.html"));
+  // Expect URL to have opened in a new  tab.
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_EQ(tab_strip->active_index(), 1);
+
+  // Navigate to an in home tab scope URL.
+  OpenUrlAndWait(app_browser, embedded_test_server()->GetURL(
+                                  "/web_apps/title_appname_prefix.html"));
+  // Expect it was opened in home tab.
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+  EXPECT_EQ(
+      tab_strip->GetActiveWebContents()->GetVisibleURL(),
+      embedded_test_server()->GetURL("/web_apps/title_appname_prefix.html"));
+
+  // Navigate to start_url.
+  OpenUrlAndWait(app_browser, start_url);
+  // Expect it was opened in home tab.
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+  EXPECT_EQ(tab_strip->GetActiveWebContents()->GetVisibleURL(), start_url);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, HomeTabScopeFixedString) {
+  GURL start_url = embedded_test_server()->GetURL(
+      "/web_apps/get_manifest.html?tab_strip_fixed_home_scope.json");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+
+  // Expect app opened with pinned home tab.
+  EXPECT_EQ(tab_strip->count(), 1);
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+
+  // Navigate to an in home tab scope URL.
+  OpenUrlAndWait(app_browser, embedded_test_server()->GetURL(
+                                  "/web_apps/title_appname_prefix.html"));
+  // Expect it was opened in home tab.
+  EXPECT_EQ(tab_strip->count(), 1);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+  EXPECT_EQ(
+      tab_strip->GetActiveWebContents()->GetVisibleURL(),
+      embedded_test_server()->GetURL("/web_apps/title_appname_prefix.html"));
+
+  // Navigate to an out of home tab scope URL.
+  OpenUrlAndWait(app_browser,
+                 embedded_test_server()->GetURL("/web_apps/favicon_only.html"));
+  // Expect URL to have opened in a new  tab.
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_EQ(tab_strip->active_index(), 1);
+
+  // Navigate to another in home tab scope URL.
+  OpenUrlAndWait(app_browser, embedded_test_server()->GetURL(
+                                  "/web_apps/tab_strip_customizations.html"));
+  // Expect it was opened in home tab.
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+  EXPECT_EQ(tab_strip->GetActiveWebContents()->GetVisibleURL(),
+            embedded_test_server()->GetURL(
+                "/web_apps/tab_strip_customizations.html"));
+
+  // Navigate to start_url.
+  OpenUrlAndWait(app_browser, start_url);
+  // Expect it was opened in home tab.
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+  EXPECT_EQ(tab_strip->GetActiveWebContents()->GetVisibleURL(), start_url);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, HomeTabScopeWildcardString) {
+  GURL start_url = embedded_test_server()->GetURL(
+      "/web_apps/get_manifest.html?tab_strip_wildcard_home_scope.json");
+  AppId app_id = InstallWebAppFromPage(browser(), start_url);
+  Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
+  TabStripModel* tab_strip = app_browser->tab_strip_model();
+
+  EXPECT_TRUE(registrar().IsTabbedWindowModeEnabled(app_id));
+
+  // Expect app opened with pinned home tab.
+  EXPECT_EQ(tab_strip->count(), 1);
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+
+  // Navigate to an in home tab scope URL.
+  OpenUrlAndWait(app_browser, embedded_test_server()->GetURL(
+                                  "/web_apps/title_appname_prefix.html"));
+  // Expect it was opened in home tab.
+  EXPECT_EQ(tab_strip->count(), 1);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+  EXPECT_EQ(
+      tab_strip->GetActiveWebContents()->GetVisibleURL(),
+      embedded_test_server()->GetURL("/web_apps/title_appname_prefix.html"));
+
+  // Navigate to an out of home tab scope URL.
+  OpenUrlAndWait(app_browser,
+                 embedded_test_server()->GetURL("/banners/theme-color.html"));
+  // Expect URL to have opened in a new  tab.
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_EQ(tab_strip->active_index(), 1);
+
+  // Navigate to another in home tab scope URL.
+  OpenUrlAndWait(app_browser, embedded_test_server()->GetURL(
+                                  "/web_apps/standalone/basic.html"));
+  // Expect it was opened in home tab.
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+  EXPECT_EQ(tab_strip->GetActiveWebContents()->GetVisibleURL(),
+            embedded_test_server()->GetURL("/web_apps/standalone/basic.html"));
+
+  // Navigate to start_url.
+  OpenUrlAndWait(app_browser, start_url);
+  // Expect it was opened in home tab.
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+  EXPECT_EQ(tab_strip->GetActiveWebContents()->GetVisibleURL(), start_url);
+}
+
 }  // namespace web_app

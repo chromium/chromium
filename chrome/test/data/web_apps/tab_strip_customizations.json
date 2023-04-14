@@ -18,6 +18,9 @@
           "sizes": "200x200 192x192 300x300",
           "type": "image/png"
         }
+      ],
+      "scope_patterns": [
+        {"pathname": "/:foo/title_appname_prefix.html"}
       ]
     },
     "new_tab_button": {
