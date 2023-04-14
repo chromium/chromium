@@ -95,7 +95,7 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
 
   // Destination url.
   ProviderId provider_id = ProviderId::CreateFromExtensionId(
-      file_manager::file_tasks::kODFSExtensionId);
+      file_manager::file_tasks::GetODFSExtensionId(profile_));
   Service* service = Service::Get(profile_);
   std::vector<ProvidedFileSystemInfo> file_systems =
       service->GetProvidedFileSystemInfoList(provider_id);

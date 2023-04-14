@@ -98,7 +98,7 @@ void CloudUploadPageHandler::SignInToOneDrive(
     SignInToOneDriveCallback callback) {
   Service* service = Service::Get(profile_);
   ProviderId provider_id = ProviderId::CreateFromExtensionId(
-      file_manager::file_tasks::kODFSExtensionId);
+      file_manager::file_tasks::GetODFSExtensionId(profile_));
   web_ui_->GetWebContents()->GetTopLevelNativeWindow()->Hide();
   service->RequestMount(
       provider_id,

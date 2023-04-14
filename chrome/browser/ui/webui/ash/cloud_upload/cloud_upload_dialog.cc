@@ -56,7 +56,7 @@ const char kAndroidOneDriveAuthority[] =
 std::vector<ProvidedFileSystemInfo> GetODFSFileSystems(Profile* profile) {
   Service* service = Service::Get(profile);
   ProviderId provider_id = ProviderId::CreateFromExtensionId(
-      file_manager::file_tasks::kODFSExtensionId);
+      file_manager::file_tasks::GetODFSExtensionId(profile));
   return service->GetProvidedFileSystemInfoList(provider_id);
 }
 
@@ -183,7 +183,7 @@ bool FileIsOnODFS(Profile* profile, const FileSystemURL& url) {
 
   file_system_provider::ProviderId provider_id =
       file_system_provider::ProviderId::CreateFromExtensionId(
-          file_manager::file_tasks::kODFSExtensionId);
+          file_manager::file_tasks::GetODFSExtensionId(profile));
   if (parser.file_system()->GetFileSystemInfo().provider_id() != provider_id) {
     return false;
   }
