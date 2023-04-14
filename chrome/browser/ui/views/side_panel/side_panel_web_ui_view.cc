@@ -28,7 +28,6 @@ SidePanelWebUIView::SidePanelWebUIView(base::RepeatingClosure on_show_cb,
       contents_wrapper_(contents_wrapper) {
   SidePanelUtil::GetSidePanelContentProxy(this)->SetAvailable(false);
   SetVisible(false);
-  set_allow_accelerators(true);
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
   SetWebContents(contents_wrapper_->web_contents());
 }
