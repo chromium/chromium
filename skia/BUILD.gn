@@ -356,7 +356,14 @@ component("skia") {
     ]
     deps += [ "//third_party/wuffs" ]
   } else {
-      sources += skia_no_encode_jpeg_srcs
+    sources += skia_no_encode_jpeg_srcs
+  }
+
+  if (skia_support_xmp) {
+    sources += skia_xml_sources
+    sources += [ "//third_party/skia/src/codec/SkJpegXmp.cpp" ]
+    deps += [ "//third_party/expat" ]
+    defines += [ "SK_CODEC_DECODES_JPEG_GAINMAPS" ]
   }
 
   # Remove unused util sources.
