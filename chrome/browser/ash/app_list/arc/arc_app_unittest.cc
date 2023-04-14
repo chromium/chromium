@@ -452,7 +452,7 @@ ArcAppListPrefs::AppInfo GetAppInfoExpectation(const arc::mojom::AppInfo& app,
       ArcAppListPrefs::WindowLayout(), true /* ready */, false /* suspended */,
       launchable /* show_in_launcher*/, false /* shortcut */, launchable,
       false /* need_fixup */, absl::nullopt /* app_size */,
-      absl::nullopt /* data_size */);
+      absl::nullopt /* data_size */, app.app_category);
 }
 
 MATCHER_P(ArcPackageInfoIs, package, "") {

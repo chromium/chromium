@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 
 #include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/mojom/app.mojom-shared.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/session/arc_session_runner.h"
@@ -201,17 +202,21 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
   arc::mojom::AppInfo app;
   // Make sure we have enough data for test.
   for (int i = 0; i < 3; ++i) {
-    fake_apps_.emplace_back(arc::mojom::AppInfo::New(
+    arc::mojom::AppInfoPtr app_info = arc::mojom::AppInfo::New(
         base::StringPrintf("Fake App %d", i),
         base::StringPrintf("fake.app.%d", i),
-        base::StringPrintf("fake.app.%d.activity", i), false /* sticky */));
+        base::StringPrintf("fake.app.%d.activity", i), false /* sticky */);
+    app_info->app_category = arc::mojom::AppCategory::kUndefined;
+    fake_apps_.emplace_back(std::move(app_info));
   }
   fake_apps_[0]->sticky = true;
 
   for (int i = 1; i <= 3; ++i) {
-    fake_default_apps_.emplace_back(arc::mojom::AppInfo::New(
+    arc::mojom::AppInfoPtr app_info = arc::mojom::AppInfo::New(
         base::StringPrintf("TestApp%d", i), base::StringPrintf("test.app%d", i),
-        base::StringPrintf("test.app%d.activity", i), true /* sticky */));
+        base::StringPrintf("test.app%d.activity", i), true /* sticky */);
+    app_info->app_category = arc::mojom::AppCategory::kUndefined;
+    fake_default_apps_.emplace_back(std::move(app_info));
   }
 
   base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
