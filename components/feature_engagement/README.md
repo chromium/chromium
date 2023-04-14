@@ -637,7 +637,7 @@ all described below:
         *   `0` Nothing should be stored.
         *   `1` |current_day| should be stored.
         *   `2+` |current_day| plus |N-1| more days should be stored.
-    *   The value should not exceed 10 years (3650 days).
+    *   The value should not exceed 10 years (3650 days, see `kMaxStoragePeriod`).
     *   Value client side data type: uint32_t
     *   Whenever a particular event is used by multiple features, the maximum
         value of all `storage` is used as the storage window.
