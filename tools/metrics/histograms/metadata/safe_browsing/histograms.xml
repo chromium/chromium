@@ -1092,6 +1092,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.HPRT.HasOhttpKey" enum="BooleanHasKey"
+    expires_after="2023-10-14">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether hash realtime service can obtain a non empty key from OHTTP key
+    service. The lookup will fail if there is no key. Logged each time a top
+    frame URL navigation happens for users who have hash-prefix real-time
+    lookups enabled.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.HPRT.IsLookupServiceFound" enum="BooleanFound"
     expires_after="2023-09-24">
   <owner>thefrog@chromium.org</owner>
@@ -1134,6 +1146,48 @@ chromium-metrics-reviews@google.com.
     Logs the roundtrip time it took to perform a Safe Browsing hash-prefix
     real-time lookup. Logged on each resource check for which a lookup request
     is sent to the server.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.OhttpKeyService.BackoffState"
+    enum="BooleanEnabled" expires_after="2023-10-14">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs if the OHTTP key service is currently in backoff state due to previous
+    errors. Logs whenever a key fetch request is about to be attempted (either
+    triggered by hash prefix lookup, asynchronous workflow or server hint),
+    which will not go through if the service is in backoff mode.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.OhttpKeyService.HasCachedKey"
+    enum="BooleanHasKey" expires_after="2023-10-14">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether OHTTP key service has a valid key cached in memory. Logged each
+    time a key is requested through the get OHTTP key API.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.OhttpKeyService.Network.Result"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-10-14">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Response or error codes from OHTTP key hosting endpoint. Logged on each key
+    fetch request that is sent to the server.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.HPRT.OhttpKeyService.Network.Time" units="ms"
+    expires_after="2023-10-14">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the roundtrip time it took to fetch a new OHTTP key. Logged on each key
+    fetch request that is sent to the server.
   </summary>
 </histogram>
 

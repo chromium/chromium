@@ -12618,6 +12618,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Has distilled data"/>
 </enum>
 
+<enum name="BooleanHasKey">
+  <int value="0" label="Lacks key"/>
+  <int value="1" label="Has key"/>
+</enum>
+
 <enum name="BooleanHasNoSniff">
   <int value="0" label="Does not have nosniff"/>
   <int value="1" label="Has nosniff"/>

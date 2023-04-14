@@ -363,7 +363,7 @@ void HashRealTimeService::OnGetOhttpKey(
     HPRTLookupResponseCallback response_callback,
     SBThreatType locally_cached_results_threat_type,
     absl::optional<std::string> key) {
-  // TODO(crbug.com/1407283): Add a histogram to log the key fetch result.
+  base::UmaHistogramBoolean("SafeBrowsing.HPRT.HasOhttpKey", key.has_value());
   if (!key.has_value()) {
     backoff_operator_->ReportError();
     response_callback_task_runner->PostTask(

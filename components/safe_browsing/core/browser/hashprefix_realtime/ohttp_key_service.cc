@@ -4,10 +4,12 @@
 
 #include "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/utils/backoff_operator.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/utils.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -164,7 +166,10 @@ void OhttpKeyService::GetOhttpKey(Callback callback) {
   }
 
   // If there is a valid key in memory, use it directly.
-  if (ohttp_key_ && ohttp_key_->expiration > base::Time::Now()) {
+  bool has_cache_key = ohttp_key_ && ohttp_key_->expiration > base::Time::Now();
+  base::UmaHistogramBoolean("SafeBrowsing.HPRT.OhttpKeyService.HasCachedKey",
+                            has_cache_key);
+  if (has_cache_key) {
     std::move(callback).Run(ohttp_key_->key);
     return;
   }
@@ -217,7 +222,10 @@ void OhttpKeyService::NotifyLookupResponse(
 }
 
 void OhttpKeyService::StartFetch(Callback callback) {
-  if (backoff_operator_->IsInBackoffMode()) {
+  bool in_backoff = backoff_operator_->IsInBackoffMode();
+  base::UmaHistogramBoolean("SafeBrowsing.HPRT.OhttpKeyService.BackoffState",
+                            in_backoff);
+  if (in_backoff) {
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -239,22 +247,28 @@ void OhttpKeyService::StartFetch(Callback callback) {
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&OhttpKeyService::OnURLLoaderComplete,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
 void OhttpKeyService::OnURLLoaderComplete(
+    base::TimeTicks request_start_time,
     std::unique_ptr<std::string> response_body) {
-  // TODO(crbug.com/1407283): Log net error and response code.
   DCHECK(url_loader_);
+  int net_error = url_loader_->NetError();
   int response_code = 0;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
     response_code = url_loader_->ResponseInfo()->headers->response_code();
   }
-  bool is_key_fetch_successful = response_body &&
-                                 url_loader_->NetError() == net::OK &&
-                                 response_code == net::HTTP_OK;
+
+  base::UmaHistogramTimes("SafeBrowsing.HPRT.OhttpKeyService.Network.Time",
+                          base::TimeTicks::Now() - request_start_time);
+  RecordHttpResponseOrErrorCode(
+      "SafeBrowsing.HPRT.OhttpKeyService.Network.Result", net_error,
+      response_code);
 
   url_loader_.reset();
+  bool is_key_fetch_successful =
+      response_body && net_error == net::OK && response_code == net::HTTP_OK;
   if (is_key_fetch_successful) {
     ohttp_key_ = {*response_body, base::Time::Now() + kKeyExpirationDuration};
     StoreKeyToPref();

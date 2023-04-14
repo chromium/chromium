@@ -91,7 +91,8 @@ class OhttpKeyService : public KeyedService {
 
   // Called when the response from the Safe Browsing key hosting endpoint is
   // received.
-  void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoaderComplete(base::TimeTicks request_start_time,
+                           std::unique_ptr<std::string> response_body);
 
   // Async workflow:
   // Starts to fetch a new key if the current key is close to expiration.
