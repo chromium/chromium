@@ -2006,7 +2006,7 @@
     {
       // crbug.com/1353190
       name: "LayoutNGNoCopyBack",
-      depends_on: ["LayoutMediaNGContainer"],
+      depends_on: ["LayoutMediaNGContainer", "RemoveConvertToLayerCoords"],
       status: "test",
     },
     {
@@ -2779,6 +2779,11 @@
       // Tracking bug for the implementation: https://crbug.com/728609
       status: {"Android": "stable", "default": ""},
       base_feature: "none",
+    },
+    {
+      // crbug.com/1432839
+      name: "RemoveConvertToLayerCoords",
+      status: "stable",
     },
     {
       name: "RemoveDataUrlInSvgUse",
