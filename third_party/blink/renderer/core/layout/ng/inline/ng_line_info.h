@@ -30,6 +30,8 @@ class CORE_EXPORT NGLineInfo {
   STACK_ALLOCATED();
 
  public:
+  void Reset();
+
   const NGInlineItemsData& ItemsData() const {
     DCHECK(items_data_);
     return *items_data_;
@@ -279,6 +281,8 @@ class CORE_EXPORT NGLineInfo {
   // when |NGInlineItemResult| to |results_|.
   bool may_have_text_combine_item_ = false;
   bool allow_hang_for_alignment_ = false;
+
+  // When adding fields, pelase ensure `Reset()` is in sync.
 };
 
 std::ostream& operator<<(std::ostream& ostream, const NGLineInfo& line_info);

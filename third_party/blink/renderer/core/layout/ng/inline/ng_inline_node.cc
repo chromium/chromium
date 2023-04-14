@@ -1812,8 +1812,8 @@ static LayoutUnit ComputeContentSize(
 
   if (UNLIKELY(node.IsInitialLetterBox())) {
     LayoutUnit inline_size = LayoutUnit();
+    NGLineInfo line_info;
     do {
-      NGLineInfo line_info;
       line_breaker.NextLine(&line_info);
       if (line_info.Results().empty())
         break;
@@ -1828,8 +1828,8 @@ static LayoutUnit ComputeContentSize(
   MaxSizeFromMinSize max_size_from_min_size(items_data, *max_size_cache,
                                             &floats_max_size);
 
+  NGLineInfo line_info;
   do {
-    NGLineInfo line_info;
     line_breaker.NextLine(&line_info);
     if (line_info.Results().empty())
       break;

@@ -1265,6 +1265,7 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
   bool is_line_created = false;
   LayoutUnit line_block_size;
   LayoutUnit block_delta;
+  NGLineInfo line_info;
   const auto* opportunities_it = opportunities.begin();
   while (opportunities_it != opportunities.end()) {
     const NGLayoutOpportunity& opportunity = *opportunities_it;
@@ -1314,7 +1315,6 @@ const NGLayoutResult* NGInlineLayoutAlgorithm::Layout() {
                                                  &line_opportunity);
     }
 
-    NGLineInfo line_info;
     NGLineBreaker line_breaker(
         Node(), NGLineBreakerMode::kContent, ConstraintSpace(),
         line_opportunity, leading_floats, handled_leading_floats_index,
