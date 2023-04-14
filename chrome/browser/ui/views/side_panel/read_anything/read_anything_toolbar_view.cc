@@ -59,6 +59,8 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
       kTextDecreaseIcon, kIconSize, gfx::kPlaceholderColor,
       l10n_util::GetStringUTF16(
           IDS_READING_MODE_DECREASE_FONT_SIZE_BUTTON_LABEL));
+  decrease_size_button->SetProperty(views::kCrossAxisAlignmentKey,
+                                    views::LayoutAlignment::kCenter);
 
   auto increase_size_button = std::make_unique<ReadAnythingButtonView>(
       base::BindRepeating(&ReadAnythingToolbarView::IncreaseFontSizeCallback,
@@ -66,6 +68,8 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
       kTextIncreaseIcon, kIconSize, gfx::kPlaceholderColor,
       l10n_util::GetStringUTF16(
           IDS_READING_MODE_INCREASE_FONT_SIZE_BUTTON_LABEL));
+  increase_size_button->SetProperty(views::kCrossAxisAlignmentKey,
+                                    views::LayoutAlignment::kCenter);
 
   // Create theme selection menubutton.
   auto colors_button = std::make_unique<ReadAnythingMenuButton>(

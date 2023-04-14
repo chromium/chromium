@@ -106,11 +106,11 @@ class ReadAnythingToolbarViewTest : public InProcessBrowserTest {
   }
 
   views::Button::ButtonState GetDecreaseSizeButtonState() {
-    return toolbar_view_->decrease_text_size_button_->GetStateForTesting();
+    return toolbar_view_->decrease_text_size_button_->GetState();
   }
 
   views::Button::ButtonState GetIncreaseSizeButtonState() {
-    return toolbar_view_->increase_text_size_button_->GetStateForTesting();
+    return toolbar_view_->increase_text_size_button_->GetState();
   }
 
  protected:

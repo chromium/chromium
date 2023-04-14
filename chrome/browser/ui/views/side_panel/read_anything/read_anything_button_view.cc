@@ -17,44 +17,27 @@ ReadAnythingButtonView::ReadAnythingButtonView(
     int icon_size,
     SkColor icon_color,
     const std::u16string& tooltip) {
-  // Create and set a BoxLayout with insets to hold the button.
-  auto button_layout_manager = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal);
-  button_layout_manager->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-  button_layout_manager->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kCenter);
-
-  SetLayoutManager(std::move(button_layout_manager));
-
-  // Create the image button.
-  auto button = views::CreateVectorImageButton(std::move(callback));
-  views::SetImageFromVectorIconWithColorId(button.get(), icon, icon_color,
-                                           icon_color, icon_size);
-  views::InstallCircleHighlightPathGenerator(button.get());
-  button->SetTooltipText(tooltip);
-
-  // Add the button to the view.
-  button_ = AddChildView(std::move(button));
+  views::SetImageFromVectorIconWithColorId(this, icon, icon_color, icon_color,
+                                           icon_size);
+  views::InstallCircleHighlightPathGenerator(this);
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::VH(kInternalInsets / 2, kInternalInsets / 2)));
+  SetTooltipText(tooltip);
 }
 
 void ReadAnythingButtonView::UpdateIcon(const gfx::VectorIcon& icon,
                                         int icon_size,
                                         ui::ColorId icon_color) {
-  views::SetImageFromVectorIconWithColorId(button_, icon, icon_color,
-                                           icon_color, icon_size);
+  views::SetImageFromVectorIconWithColorId(this, icon, icon_color, icon_color,
+                                           icon_size);
 }
 
 void ReadAnythingButtonView::Enable() {
-  button_->SetState(views::Button::ButtonState::STATE_NORMAL);
+  SetState(views::Button::ButtonState::STATE_NORMAL);
 }
 
 void ReadAnythingButtonView::Disable() {
-  button_->SetState(views::Button::ButtonState::STATE_DISABLED);
-}
-
-views::Button::ButtonState ReadAnythingButtonView::GetStateForTesting() {
-  return button_->GetState();
+  SetState(views::Button::ButtonState::STATE_DISABLED);
 }
 
 BEGIN_METADATA(ReadAnythingButtonView, views::View)
