@@ -25,6 +25,7 @@ class PillButton;
 }  // namespace ash
 
 namespace arc::input_overlay {
+
 class Action;
 class ActionEditMenu;
 class ActionView;

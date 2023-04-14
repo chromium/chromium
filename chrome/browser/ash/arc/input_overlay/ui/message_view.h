@@ -11,6 +11,7 @@
 #include "ui/views/controls/label.h"
 
 namespace arc::input_overlay {
+
 class DisplayOverlayController;
 
 // MessageView shows info or error message on the top center of the window.

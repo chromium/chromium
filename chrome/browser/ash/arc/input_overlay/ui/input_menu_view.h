@@ -34,7 +34,9 @@ class ToggleButton;
 //   +---------------------------------+
 
 namespace arc::input_overlay {
+
 class DisplayOverlayController;
+
 class InputMenuView : public views::View {
  public:
   static std::unique_ptr<InputMenuView> BuildMenuView(

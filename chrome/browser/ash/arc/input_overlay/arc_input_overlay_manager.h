@@ -25,12 +25,15 @@
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
-#include "ui/base/ime/input_method.h"
 #include "ui/display/display_observer.h"
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
+
+namespace ui {
+class InputMethod;
+}  // namespace ui
 
 namespace arc::input_overlay {
 
