@@ -130,10 +130,6 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
             minimizeApp = true;
             shouldCloseTab = false;
         } else {
-            // TAB history handler has a higher priority and should navigate page back before
-            // minimizing app and closing tab.
-            assert !currentTab.canGoBack()
-                : "Tab should be navigated back before closing or exiting app";
             // At this point we know either the tab will close or the app will minimize.
             NativePage nativePage = currentTab.getNativePage();
             if (nativePage != null) {
@@ -181,7 +177,7 @@ public class MinimizeAppAndCloseTabBackPressHandler implements BackPressHandler,
         mBackPressSupplier.set(tab != null && mBackShouldCloseTab.test(tab));
     }
 
-    static boolean shouldUseSystemBack() {
+    private static boolean shouldUseSystemBack() {
         // https://developer.android.com/about/versions/12/behavior-changes-all#back-press
         // Starting from 12, root launcher activities are no longer finished on Back press.
         // Limiting to T, since some OEMs seem to still finish activity on 12.

@@ -4,19 +4,14 @@
 
 package org.chromium.chrome.browser.back_press;
 
-import android.os.Build;
-
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 /**
@@ -43,16 +38,6 @@ public class BackPressManagerUnitTest {
         public CallbackHelper getCallbackHelper() {
             return mCallbackHelper;
         }
-    }
-
-    @Test
-    @Before
-    public void setup() {
-        MinimizeAppAndCloseTabBackPressHandler.setVersionForTesting(Build.VERSION_CODES.TIRAMISU);
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.BACK_GESTURE_REFACTOR, "system_back", "true");
-        FeatureList.setTestValues(testValues);
     }
 
     @Test
@@ -272,27 +257,6 @@ public class BackPressManagerUnitTest {
         h1.getHandleBackPressChangedSupplier().set(null);
         Assert.assertFalse("Callback should be disabled if no handler is enabled",
                 manager.getCallback().isEnabled());
-    }
-
-    // Test callback is always enabled to trigger fallbacks for groups without system back.
-    @Test
-    public void testAlwaysEnabledCallback() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.BACK_GESTURE_REFACTOR, "system_back", "false");
-        FeatureList.setTestValues(testValues);
-
-        BackPressManager manager = new BackPressManager();
-        EmptyBackPressHandler h1 = new EmptyBackPressHandler();
-        EmptyBackPressHandler h2 = new EmptyBackPressHandler();
-        manager.addHandler(h1, 0);
-        manager.addHandler(h2, 1);
-        h1.getHandleBackPressChangedSupplier().set(true);
-        Assert.assertTrue("Callback should be enabled if any of handlers are enabled",
-                manager.getCallback().isEnabled());
-        h1.getHandleBackPressChangedSupplier().set(false);
-        Assert.assertFalse("No handler is enabled", manager.shouldInterceptBackPress());
-        Assert.assertTrue("Callback is always enabled", manager.getCallback().isEnabled());
     }
 
     private int getHandlerCount(BackPressManager manager) {
