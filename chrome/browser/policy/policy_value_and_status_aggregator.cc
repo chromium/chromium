@@ -42,6 +42,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/policy/management_utils.h"
 #include "chrome/browser/policy/status_provider/ash_lacros_policy_stack_bridge.h"
 #include "chrome/browser/policy/status_provider/user_policy_status_provider_lacros.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -200,8 +201,10 @@ PolicyValueAndStatusAggregator::CreateDefaultPolicyValueAndStatusAggregator(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // We will use AshLacrosPolicyStackBridge to retrieve device policies in
   // Lacros.
-  aggregator->AddPolicyStatusAndValueProvider(
-      kDeviceStatusKey, std::make_unique<AshLacrosPolicyStackBridge>());
+  if (policy::IsDeviceEnterpriseManaged()) {
+    aggregator->AddPolicyStatusAndValueProvider(
+        kDeviceStatusKey, std::make_unique<AshLacrosPolicyStackBridge>());
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Machine policies.
