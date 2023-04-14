@@ -5,7 +5,7 @@
 #include "status_area_animation_controller.h"
 
 #include "ash/system/notification_center/notification_center_tray.h"
-#include "ash/system/unified/notification_counter_view.h"
+#include "ash/system/tray/tray_container.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/animation/animation_builder.h"
 
@@ -40,20 +40,11 @@ void StatusAreaAnimationController::OnVisiblePreferredChanged(
 
 void StatusAreaAnimationController::
     DisableNotificationCenterTrayItemAnimations() {
-  auto* notification_icons_controller =
-      notification_center_tray_->notification_icons_controller();
-  for (auto* tray_item : notification_icons_controller->tray_items()) {
+  for (auto* tray_item :
+       notification_center_tray_->tray_container()->children()) {
     notification_center_tray_item_animation_enablers_.push_back(
-        tray_item->DisableAnimation());
+        static_cast<TrayItemView*>(tray_item)->DisableAnimation());
   }
-  // Don't forget about the `TrayItemView`s that are still children of
-  // `NotificationCenterTray` even though they're not part of
-  // `notification_icons_controller->tray_items()`.
-  notification_center_tray_item_animation_enablers_.push_back(
-      notification_icons_controller->notification_counter_view()
-          ->DisableAnimation());
-  notification_center_tray_item_animation_enablers_.push_back(
-      notification_icons_controller->quiet_mode_view()->DisableAnimation());
 }
 
 void StatusAreaAnimationController::
@@ -64,22 +55,29 @@ void StatusAreaAnimationController::
 void StatusAreaAnimationController::PerformAnimation(bool visible) {
   if (visible) {
     notification_center_tray_->layer()->SetVisible(true);
-    notification_center_tray_->layer()->SetTransform(gfx::Transform());
     views::AnimationBuilder()
         .SetPreemptionStrategy(ui::LayerAnimator::PreemptionStrategy::
                                    IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
         .OnAborted(base::BindOnce(
             [](base::WeakPtr<StatusAreaAnimationController> ptr) {
-              if (ptr) {
-                ptr->EnableNotificationCenterTrayItemAnimations();
+              if (!ptr || !ptr->notification_center_tray_) {
+                return;
               }
+
+              // Don't enable notification center tray item animations if this
+              // show animation was interrupted by a hide animation.
+              if (!ptr->notification_center_tray_->visible_preferred()) {
+                return;
+              }
+              ptr->EnableNotificationCenterTrayItemAnimations();
             },
             weak_factory_.GetWeakPtr()))
         .OnEnded(base::BindOnce(
             [](base::WeakPtr<StatusAreaAnimationController> ptr) {
-              if (ptr) {
-                ptr->EnableNotificationCenterTrayItemAnimations();
+              if (!ptr) {
+                return;
               }
+              ptr->EnableNotificationCenterTrayItemAnimations();
             },
             weak_factory_.GetWeakPtr()))
         .Once()
@@ -88,8 +86,38 @@ void StatusAreaAnimationController::PerformAnimation(bool visible) {
         .SetOpacity(notification_center_tray_, 1, gfx::Tween::LINEAR);
   } else {
     DisableNotificationCenterTrayItemAnimations();
-    // TODO(b/252887047): Replace default hide animation with new hide
-    // animation.
+    views::AnimationBuilder()
+        .SetPreemptionStrategy(ui::LayerAnimator::PreemptionStrategy::
+                                   IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+        .OnAborted(base::BindOnce(
+            [](base::WeakPtr<StatusAreaAnimationController> ptr) {
+              if (!ptr) {
+                return;
+              }
+              ptr->notification_center_tray_->OnAnimationAborted();
+              ptr->ImmediatelyUpdateTrayItemVisibilities();
+            },
+            weak_factory_.GetWeakPtr()))
+        .OnEnded(base::BindOnce(
+            [](base::WeakPtr<StatusAreaAnimationController> ptr) {
+              if (!ptr) {
+                return;
+              }
+              ptr->notification_center_tray_->OnAnimationEnded();
+              ptr->ImmediatelyUpdateTrayItemVisibilities();
+            },
+            weak_factory_.GetWeakPtr()))
+        .Once()
+        .SetDuration(base::Milliseconds(150))
+        .SetOpacity(notification_center_tray_, 0, gfx::Tween::LINEAR)
+        .SetVisibility(notification_center_tray_, false);
+  }
+}
+
+void StatusAreaAnimationController::ImmediatelyUpdateTrayItemVisibilities() {
+  for (auto* tray_item :
+       notification_center_tray_->tray_container()->children()) {
+    static_cast<TrayItemView*>(tray_item)->ImmediatelyUpdateVisibility();
   }
 }
 

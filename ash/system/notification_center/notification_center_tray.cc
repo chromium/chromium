@@ -51,9 +51,32 @@ NotificationCenterTray::NotificationCenterTray(Shelf* shelf)
     privacy_indicators_view_ = tray_container()->AddChildView(
         std::make_unique<PrivacyIndicatorsTrayItemView>(shelf));
   }
+
+  for (auto* tray_item : tray_container()->children()) {
+    static_cast<TrayItemView*>(tray_item)->AddObserver(this);
+  }
 }
 
-NotificationCenterTray::~NotificationCenterTray() = default;
+NotificationCenterTray::~NotificationCenterTray() {
+  for (auto* tray_item : tray_container()->children()) {
+    static_cast<TrayItemView*>(tray_item)->RemoveObserver(this);
+  }
+}
+
+void NotificationCenterTray::OnTrayItemVisibilityAboutToChange(
+    bool target_visibility) {
+  // A change in one of this tray's tray items could have implications for this
+  // tray's overall visibility (e.g. if the only visible tray item wants to
+  // become hidden, which could happen when dismissing all notifications). We
+  // need to update this tray's visibility here, before the tray item gets a
+  // chance to start its own visibility change animation, so that this tray does
+  // not briefly become empty, for instance.
+  //
+  // If the tray item's visibility change does not imply a change in visibility
+  // for this tray, then `SetVisiblePreferred()` (which is called by
+  // `UpdateVisibility()`) will do nothing.
+  UpdateVisibility();
+}
 
 void NotificationCenterTray::OnSystemTrayVisibilityChanged(
     bool system_tray_visible) {

@@ -20,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
+#include "ui/message_center/message_center.h"
 
 namespace ash {
 
@@ -138,6 +139,51 @@ TEST_F(StatusAreaAnimationControllerTest,
 }
 
 // Tests that the notification center tray's `TrayItemView`s' animations are
+// disabled while the notification center tray is running its initial hide
+// animation.
+TEST_F(StatusAreaAnimationControllerTest,
+       TrayItemAnimationDisabledDuringHideAnimation) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  ASSERT_FALSE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+  ASSERT_FALSE(test_api->IsTrayShown());
+  ASSERT_FALSE(notification_counter()->GetVisible());
+
+  // Add a notification to make the notification center tray visible.
+  auto id = test_api->AddNotification();
+  ASSERT_TRUE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+  ASSERT_TRUE(test_api->IsTrayShown());
+
+  // Wait for the notification center tray's show animation to finish.
+  ui::LayerAnimationStoppedWaiter notification_center_tray_waiter;
+  notification_center_tray_waiter.Wait(test_api->GetTray()->layer());
+  ASSERT_FALSE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+
+  // Verify that the notification center tray is visible.
+  ASSERT_TRUE(test_api->IsTrayShown());
+
+  // Remove the notification to cause the notification center tray to start its
+  // hide animation.
+  test_api->RemoveNotification(id);
+
+  // Verify that the notification center tray is running its hide animation.
+  ASSERT_TRUE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+  ASSERT_FALSE(test_api->GetTray()->layer()->GetTargetVisibility());
+  ASSERT_EQ(test_api->GetTray()->layer()->GetTargetOpacity(), 0);
+
+  // Verify that the notification counter does not start animating.
+  EXPECT_FALSE(IsNotificationCounterAnimationRunning());
+
+  // Wait for the tray's hide animation to finish.
+  notification_center_tray_waiter.Wait(test_api->GetTray()->layer());
+  ASSERT_FALSE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+
+  // Verify that the notification counter is not visible.
+  EXPECT_FALSE(notification_counter()->GetVisible());
+  EXPECT_EQ(notification_counter()->layer()->opacity(), 0);
+}
+
+// Tests that the notification center tray's `TrayItemView`s' animations are
 // disabled while the notification center tray is running its show animation,
 // even when it's not the initial show animation.
 TEST_F(StatusAreaAnimationControllerTest,
@@ -182,6 +228,66 @@ TEST_F(StatusAreaAnimationControllerTest,
   // Verify that the notification counter is visible.
   EXPECT_TRUE(notification_counter()->GetVisible());
   EXPECT_EQ(notification_counter()->layer()->opacity(), 1);
+}
+
+// Tests that the notification center tray's `TrayItemView`s' animations are
+// disabled while the notification center tray is running its hide animation,
+// even when it's not the initial hide animation.
+TEST_F(StatusAreaAnimationControllerTest,
+       TrayItemAnimationDisabledDuringNonInitialHideAnimation) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  ASSERT_FALSE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+  ASSERT_FALSE(test_api->IsTrayShown());
+  ASSERT_FALSE(notification_counter()->GetVisible());
+
+  // Add a notification to make the notification center tray visible.
+  auto id = test_api->AddNotification();
+  ASSERT_TRUE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+
+  // Wait for the tray's show animation to finish.
+  ui::LayerAnimationStoppedWaiter notification_center_tray_waiter;
+  notification_center_tray_waiter.Wait(test_api->GetTray()->layer());
+  ASSERT_FALSE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+  ASSERT_TRUE(test_api->IsTrayShown());
+  ASSERT_TRUE(notification_counter()->GetVisible());
+
+  // Remove the notification, causing the tray to hide.
+  test_api->RemoveNotification(id);
+  ASSERT_TRUE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+
+  // Wait for the hide animation to finish.
+  notification_center_tray_waiter.Wait(test_api->GetTray()->layer());
+  ASSERT_FALSE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+  ASSERT_FALSE(test_api->IsTrayShown());
+  ASSERT_FALSE(notification_counter()->GetVisible());
+
+  // Add another notification to make the tray visible a second time.
+  id = test_api->AddNotification();
+  ASSERT_TRUE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+
+  // Wait for the notification center tray's second show animation to finish.
+  notification_center_tray_waiter.Wait(test_api->GetTray()->layer());
+  ASSERT_FALSE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+  ASSERT_TRUE(test_api->IsTrayShown());
+  ASSERT_TRUE(notification_counter()->GetVisible());
+
+  // Remove the notification, causing the notification center tray to start its
+  // second hide animation.
+  test_api->RemoveNotification(id);
+  ASSERT_TRUE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+
+  // Verify that the notification counter does not start animating.
+  EXPECT_FALSE(IsNotificationCounterAnimationRunning());
+
+  // Wait for the notification center tray's hide animation to finish.
+  notification_center_tray_waiter.Wait(test_api->GetTray()->layer());
+  ASSERT_FALSE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+  ASSERT_FALSE(test_api->IsTrayShown());
+
+  // Verify that the notification counter is hidden.
+  EXPECT_FALSE(notification_counter()->GetVisible());
+  EXPECT_EQ(notification_counter()->layer()->opacity(), 0);
 }
 
 // Tests that already-visible `TrayItemView`s do not animate when a new
@@ -286,7 +392,7 @@ TEST_F(StatusAreaAnimationControllerTest, ShowWhileHideAnimationIsRunning) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  // Remove the initial notification, causing the notification counter to hide.
+  // Remove the notification, causing the notification tray to hide.
   test_api->RemoveNotification(id);
 
   // Verify that the tray's hide animation is running.
@@ -311,6 +417,85 @@ TEST_F(StatusAreaAnimationControllerTest, ShowWhileHideAnimationIsRunning) {
   // Verify that the tray is visible.
   EXPECT_TRUE(test_api->GetTray()->GetVisible());
   EXPECT_EQ(test_api->GetTray()->layer()->opacity(), 1);
+}
+
+// Tests that scheduling the hide animation while the show animation is running
+// results in the `TrayBackgroundView` being hidden once all animations are
+// finished.
+TEST_F(StatusAreaAnimationControllerTest, HideWhileShowAnimationIsRunning) {
+  ASSERT_FALSE(test_api->IsTrayShown());
+  ASSERT_FALSE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+
+  // Set the animation duration scale to some small non-zero value for the rest
+  // of the test.
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Cause the notification tray to start to show by adding a notification.
+  auto id = test_api->AddNotification();
+
+  // Verify that the notification tray's show animation is running.
+  ASSERT_TRUE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+  ASSERT_TRUE(test_api->GetTray()->layer()->GetTargetVisibility());
+  ASSERT_EQ(test_api->GetTray()->layer()->GetTargetOpacity(), 1);
+
+  // Remove the notification, causing the in-progress show animation to be
+  // interrupted by the hide animation.
+  test_api->RemoveNotification(id);
+
+  // Verify that the tray is still animating, but this time it is the hide
+  // animation that is running.
+  EXPECT_TRUE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+  EXPECT_FALSE(test_api->GetTray()->layer()->GetTargetVisibility());
+  EXPECT_EQ(test_api->GetTray()->layer()->GetTargetOpacity(), 0);
+
+  // Wait for the hide animation to finish.
+  ui::LayerAnimationStoppedWaiter notification_center_tray_waiter;
+  notification_center_tray_waiter.Wait(test_api->GetTray()->layer());
+  ASSERT_FALSE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+
+  // Verify that the tray is hidden.
+  EXPECT_FALSE(test_api->IsTrayShown());
+  EXPECT_EQ(test_api->GetTray()->layer()->opacity(), 0);
+}
+
+// Tests that the notification center tray's tray items have their animations
+// reset when the tray's hide animation ends.
+TEST_F(StatusAreaAnimationControllerTest,
+       HideAnimationEndedResetsTrayItemAnimation) {
+  // Show the tray by adding a notification. Note that animations still finish
+  // immediately at this stage of the test.
+  auto id = test_api->AddNotification();
+  ASSERT_TRUE(test_api->IsTrayShown());
+  ASSERT_FALSE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+
+  // Set the animation duration scale to some small non-zero value for the rest
+  // of the test.
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Toggle "Do not disturb" mode on and off to ensure that the notification
+  // counter animates at least once (otherwise its animation object will still
+  // be null and the rest of this test will crash).
+  message_center::MessageCenter::Get()->SetQuietMode(true);
+  message_center::MessageCenter::Get()->SetQuietMode(false);
+
+  // Verify that the notification counter's animation is in its "shown" state.
+  ASSERT_EQ(notification_counter()->animation_for_testing()->GetCurrentValue(),
+            1);
+
+  // Remove the notification to hide the notification center tray.
+  test_api->RemoveNotification(id);
+  ASSERT_TRUE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+
+  // Wait for the hide animation to finish.
+  ui::LayerAnimationStoppedWaiter notification_center_tray_waiter;
+  notification_center_tray_waiter.Wait(test_api->GetTray()->layer());
+  ASSERT_FALSE(test_api->GetTray()->layer()->GetAnimator()->is_animating());
+
+  // Verify that the notification counter's animation is in its "hidden" state.
+  EXPECT_EQ(notification_counter()->animation_for_testing()->GetCurrentValue(),
+            0);
 }
 
 }  // namespace ash
