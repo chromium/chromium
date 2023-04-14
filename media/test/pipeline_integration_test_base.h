@@ -120,7 +120,7 @@ class PipelineIntegrationTestBase : public Pipeline::Client {
   // Returns the hash of all audio frames seen.  Should only be called once
   // after playback completes.  Pipeline must have been started with hashing
   // enabled.
-  std::string GetAudioHash();
+  const AudioHash& GetAudioHash() const;
 
   // Reset video hash to restart hashing from scratch (e.g. after a seek or
   // after disabling a media track).

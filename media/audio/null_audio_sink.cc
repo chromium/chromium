@@ -127,8 +127,8 @@ void NullAudioSink::StartAudioHashForTesting() {
   audio_hash_ = std::make_unique<AudioHash>();
 }
 
-std::string NullAudioSink::GetAudioHashForTesting() {
-  return audio_hash_ ? audio_hash_->ToString() : std::string();
+const AudioHash& NullAudioSink::GetAudioHashForTesting() const {
+  return *audio_hash_;
 }
 
 }  // namespace media

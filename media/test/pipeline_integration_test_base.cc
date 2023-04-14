@@ -575,7 +575,7 @@ std::string PipelineIntegrationTestBase::GetVideoHash() {
   return base::MD5DigestToBase16(digest);
 }
 
-std::string PipelineIntegrationTestBase::GetAudioHash() {
+const AudioHash& PipelineIntegrationTestBase::GetAudioHash() const {
   DCHECK(hashing_enabled_);
 
   if (clockless_playback_)
