@@ -21,7 +21,8 @@ namespace net {
 // This class is thread-safe.
 class NET_EXPORT AddressMapCacheLinux : public AddressMapOwnerLinux {
  public:
-  AddressMapCacheLinux();
+  AddressMapCacheLinux(AddressMap initial_address_map,
+                       std::unordered_set<int> initial_online_links);
 
   AddressMapCacheLinux(const AddressMapCacheLinux&) = delete;
   AddressMapCacheLinux& operator=(const AddressMapCacheLinux&) = delete;

@@ -75,10 +75,17 @@ class AddressTrackerLinuxTest : public testing::Test {
   AddressTrackerLinuxTest() = default;
 
   void InitializeAddressTracker(bool tracking) {
+    tracking_ = tracking;
     if (tracking) {
       tracker_ = std::make_unique<AddressTrackerLinux>(
           base::DoNothing(), base::DoNothing(), base::DoNothing(),
           ignored_interfaces_);
+#if BUILDFLAG(IS_LINUX)
+      const auto& [address_map, online_links] =
+          tracker_->GetInitialDataAndStartRecordingDiffs();
+      address_map_cache_ =
+          std::make_unique<AddressMapCacheLinux>(address_map, online_links);
+#endif  // BUILDFLAG(IS_LINUX)
     } else {
       tracker_ = std::make_unique<AddressTrackerLinux>();
     }
@@ -91,12 +98,9 @@ class AddressTrackerLinuxTest : public testing::Test {
     bool address_changed = false;
     bool link_changed = false;
     bool tunnel_changed = false;
-    AddressMapOwnerLinux::AddressMapDiff address_map_diff_;
-    AddressMapOwnerLinux::OnlineLinksDiff online_links_diff_;
     tracker_->HandleMessage(&writable_buf[0], buf.size(), &address_changed,
-                            &link_changed, &tunnel_changed, &address_map_diff_,
-                            &online_links_diff_);
-    UpdateCache(address_map_diff_, online_links_diff_);
+                            &link_changed, &tunnel_changed);
+    UpdateCache();
     EXPECT_FALSE(link_changed);
     return address_changed;
   }
@@ -106,12 +110,9 @@ class AddressTrackerLinuxTest : public testing::Test {
     bool address_changed = false;
     bool link_changed = false;
     bool tunnel_changed = false;
-    AddressMapOwnerLinux::AddressMapDiff address_map_diff_;
-    AddressMapOwnerLinux::OnlineLinksDiff online_links_diff_;
     tracker_->HandleMessage(&writable_buf[0], buf.size(), &address_changed,
-                            &link_changed, &tunnel_changed, &address_map_diff_,
-                            &online_links_diff_);
-    UpdateCache(address_map_diff_, online_links_diff_);
+                            &link_changed, &tunnel_changed);
+    UpdateCache();
     EXPECT_FALSE(address_changed);
     return link_changed;
   }
@@ -124,9 +125,8 @@ class AddressTrackerLinuxTest : public testing::Test {
     AddressMapOwnerLinux::AddressMapDiff address_map_diff_;
     AddressMapOwnerLinux::OnlineLinksDiff online_links_diff_;
     tracker_->HandleMessage(&writable_buf[0], buf.size(), &address_changed,
-                            &link_changed, &tunnel_changed, &address_map_diff_,
-                            &online_links_diff_);
-    UpdateCache(address_map_diff_, online_links_diff_);
+                            &link_changed, &tunnel_changed);
+    UpdateCache();
     EXPECT_FALSE(address_changed);
     return tunnel_changed;
   }
@@ -154,19 +154,24 @@ class AddressTrackerLinuxTest : public testing::Test {
  private:
   // Checks that applying the generated diff to `address_map_cache_` results in
   // the same AddressMap and set of online links that `tracker_` maintains.
-  void UpdateCache(
-      const AddressMapOwnerLinux::AddressMapDiff& address_map_diff,
-      const AddressMapOwnerLinux::OnlineLinksDiff& online_links_diff) {
+  void UpdateCache() {
+    if (!tracking_) {
+      return;
+    }
 #if BUILDFLAG(IS_LINUX)
-    address_map_cache_.ApplyDiffs(address_map_diff, online_links_diff);
-    EXPECT_EQ(address_map_cache_.GetAddressMap(), tracker_->GetAddressMap());
-    EXPECT_EQ(address_map_cache_.GetOnlineLinks(), tracker_->GetOnlineLinks());
+    address_map_cache_->ApplyDiffs(tracker_->address_map_diff_for_testing(),
+                                   tracker_->online_links_diff_for_testing());
+    EXPECT_EQ(address_map_cache_->GetAddressMap(), tracker_->GetAddressMap());
+    EXPECT_EQ(address_map_cache_->GetOnlineLinks(), tracker_->GetOnlineLinks());
+    tracker_->address_map_diff_for_testing().clear();
+    tracker_->online_links_diff_for_testing().clear();
 #endif  // BUILDFLAG(IS_LINUX)
   }
 
 #if BUILDFLAG(IS_LINUX)
-  AddressMapCacheLinux address_map_cache_;
+  std::unique_ptr<AddressMapCacheLinux> address_map_cache_;
 #endif
+  bool tracking_;
 };
 
 namespace {

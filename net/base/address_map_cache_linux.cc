@@ -10,7 +10,11 @@
 
 namespace net {
 
-AddressMapCacheLinux::AddressMapCacheLinux() = default;
+AddressMapCacheLinux::AddressMapCacheLinux(
+    AddressMap initial_address_map,
+    std::unordered_set<int> initial_online_links)
+    : cached_address_map_(std::move(initial_address_map)),
+      cached_online_links_(std::move(initial_online_links)) {}
 AddressMapCacheLinux::~AddressMapCacheLinux() = default;
 
 AddressMapOwnerLinux::AddressMap AddressMapCacheLinux::GetAddressMap() const {

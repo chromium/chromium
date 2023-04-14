@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/dcheck_is_on.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -244,8 +245,7 @@ void AddressTrackerLinux::Init() {
   bool address_changed;
   bool link_changed;
   bool tunnel_changed;
-  ReadMessages(&address_changed, &link_changed, &tunnel_changed, nullptr,
-               nullptr);
+  ReadMessages(&address_changed, &link_changed, &tunnel_changed);
 
   // Request dump of link state
   request.header.nlmsg_type = RTM_GETLINK;
@@ -260,8 +260,7 @@ void AddressTrackerLinux::Init() {
   }
 
   // Consume pending message to populate links_online_, but don't notify.
-  ReadMessages(&address_changed, &link_changed, &tunnel_changed, nullptr,
-               nullptr);
+  ReadMessages(&address_changed, &link_changed, &tunnel_changed);
   {
     AddressTrackerAutoLock lock(*this, connection_type_lock_);
     connection_type_initialized_ = true;
@@ -302,24 +301,31 @@ std::unordered_set<int> AddressTrackerLinux::GetOnlineLinks() const {
   return online_links_;
 }
 
+std::pair<AddressTrackerLinux::AddressMap, std::unordered_set<int>>
+AddressTrackerLinux::GetInitialDataAndStartRecordingDiffs() {
+  DCHECK(tracking_);
+  AddressTrackerAutoLock lock_address_map(*this, address_map_lock_);
+  AddressTrackerAutoLock lock_online_links(*this, online_links_lock_);
+  address_map_diff_ = AddressMapDiff();
+  online_links_diff_ = OnlineLinksDiff();
+  return {address_map_, online_links_};
+}
+
 void AddressTrackerLinux::SetDiffCallback(DiffCallback diff_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(tracking_);
+#if DCHECK_IS_ON()
+  {
+    // GetInitialDataAndStartRecordingDiffs() must be called before
+    // SetDiffCallback().
+    AddressTrackerAutoLock lock_address_map(*this, address_map_lock_);
+    AddressTrackerAutoLock lock_online_links(*this, online_links_lock_);
+    DCHECK(address_map_diff_.has_value());
+    DCHECK(online_links_diff_.has_value());
+  }
+#endif  // DCHECK_IS_ON()
   diff_callback_ = std::move(diff_callback);
-
-  // Send the initial configuration to the diff callback.
-  AddressMap address_map = GetAddressMap();
-  AddressMapDiff address_map_diff;
-  for (const std::pair<const IPAddress, struct ifaddrmsg>& it : address_map) {
-    address_map_diff[it.first] = it.second;
-  }
-
-  std::unordered_set<int> online_links = GetOnlineLinks();
-  OnlineLinksDiff online_links_diff;
-  for (int online_link : online_links) {
-    online_links_diff[online_link] = true;
-  }
-
-  diff_callback_.Run(address_map_diff, online_links_diff);
+  RunDiffCallback();
 }
 
 bool AddressTrackerLinux::IsInterfaceIgnored(int interface_index) const {
@@ -348,9 +354,7 @@ AddressTrackerLinux::GetCurrentConnectionType() {
 
 void AddressTrackerLinux::ReadMessages(bool* address_changed,
                                        bool* link_changed,
-                                       bool* tunnel_changed,
-                                       AddressMapDiff* address_map_diff,
-                                       OnlineLinksDiff* online_links_diff) {
+                                       bool* tunnel_changed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   *address_changed = false;
   *link_changed = false;
@@ -380,8 +384,7 @@ void AddressTrackerLinux::ReadMessages(bool* address_changed,
         PLOG(ERROR) << "Failed to recv from netlink socket";
         return;
       }
-      HandleMessage(buffer, rv, address_changed, link_changed, tunnel_changed,
-                    address_map_diff, online_links_diff);
+      HandleMessage(buffer, rv, address_changed, link_changed, tunnel_changed);
     }
   }
   if (*link_changed || *address_changed)
@@ -392,9 +395,7 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
                                         int length,
                                         bool* address_changed,
                                         bool* link_changed,
-                                        bool* tunnel_changed,
-                                        AddressMapDiff* address_map_diff,
-                                        OnlineLinksDiff* online_links_diff) {
+                                        bool* tunnel_changed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(buffer);
   // Note that NLMSG_NEXT decrements |length| to reflect the number of bytes
@@ -446,8 +447,8 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
             it->second = msg_copy;
             *address_changed = true;
           }
-          if (*address_changed && address_map_diff) {
-            (*address_map_diff)[address] = msg_copy;
+          if (*address_changed && address_map_diff_.has_value()) {
+            (*address_map_diff_)[address] = msg_copy;
           }
         }
       } break;
@@ -463,8 +464,8 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
           AddressTrackerAutoLock lock(*this, address_map_lock_);
           if (address_map_.erase(address)) {
             *address_changed = true;
-            if (address_map_diff) {
-              (*address_map_diff)[address] = absl::nullopt;
+            if (address_map_diff_.has_value()) {
+              (*address_map_diff_)[address] = absl::nullopt;
             }
           }
         }
@@ -485,8 +486,8 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
           AddressTrackerAutoLock lock(*this, online_links_lock_);
           if (online_links_.insert(msg->ifi_index).second) {
             *link_changed = true;
-            if (online_links_diff) {
-              (*online_links_diff)[msg->ifi_index] = true;
+            if (online_links_diff_.has_value()) {
+              (*online_links_diff_)[msg->ifi_index] = true;
             }
             if (IsTunnelInterface(msg->ifi_index))
               *tunnel_changed = true;
@@ -495,8 +496,8 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
           AddressTrackerAutoLock lock(*this, online_links_lock_);
           if (online_links_.erase(msg->ifi_index)) {
             *link_changed = true;
-            if (online_links_diff) {
-              (*online_links_diff)[msg->ifi_index] = false;
+            if (online_links_diff_.has_value()) {
+              (*online_links_diff_)[msg->ifi_index] = false;
             }
             if (IsTunnelInterface(msg->ifi_index))
               *tunnel_changed = true;
@@ -513,8 +514,8 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
         AddressTrackerAutoLock lock(*this, online_links_lock_);
         if (online_links_.erase(msg->ifi_index)) {
           *link_changed = true;
-          if (online_links_diff) {
-            (*online_links_diff)[msg->ifi_index] = false;
+          if (online_links_diff_.has_value()) {
+            (*online_links_diff_)[msg->ifi_index] = false;
           }
           if (IsTunnelInterface(msg->ifi_index))
             *tunnel_changed = true;
@@ -531,22 +532,19 @@ void AddressTrackerLinux::OnFileCanReadWithoutBlocking() {
   bool address_changed;
   bool link_changed;
   bool tunnel_changed;
+  ReadMessages(&address_changed, &link_changed, &tunnel_changed);
   if (diff_callback_) {
-    AddressMapDiff address_map_diff;
-    OnlineLinksDiff online_links_diff;
-    ReadMessages(&address_changed, &link_changed, &tunnel_changed,
-                 &address_map_diff, &online_links_diff);
-    diff_callback_.Run(address_map_diff, online_links_diff);
-  } else {
-    ReadMessages(&address_changed, &link_changed, &tunnel_changed, nullptr,
-                 nullptr);
+    RunDiffCallback();
   }
-  if (address_changed)
+  if (address_changed) {
     address_callback_.Run();
-  if (link_changed)
+  }
+  if (link_changed) {
     link_callback_.Run();
-  if (tunnel_changed)
+  }
+  if (tunnel_changed) {
     tunnel_callback_.Run();
+  }
 }
 
 bool AddressTrackerLinux::IsTunnelInterface(int interface_index) const {
@@ -587,6 +585,27 @@ void AddressTrackerLinux::UpdateCurrentConnectionType() {
 
   AddressTrackerAutoLock lock(*this, connection_type_lock_);
   current_connection_type_ = type;
+}
+
+void AddressTrackerLinux::RunDiffCallback() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(tracking_);
+  DCHECK(address_map_diff_.has_value());
+  DCHECK(online_links_diff_.has_value());
+  // It's fine to access `address_map_diff_` and `online_links_diff_` without
+  // any locking here, as the only time they are ever accessed on another thread
+  // is in GetInitialDataAndStartRecordingDiffs(). But
+  // GetInitialDataAndStartRecordingDiffs() must be called before
+  // SetDiffCallback(), which must be called before RunDiffCallback(), so this
+  // function cannot overlap with any modifications on another thread.
+
+  // There should be a diff or the DiffCallback shouldn't be run.
+  if (address_map_diff_->empty() && online_links_diff_->empty()) {
+    return;
+  }
+  diff_callback_.Run(address_map_diff_.value(), online_links_diff_.value());
+  address_map_diff_->clear();
+  online_links_diff_->clear();
 }
 
 int AddressTrackerLinux::GetThreadsWaitingForConnectionTypeInitForTesting() {

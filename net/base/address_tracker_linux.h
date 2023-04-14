@@ -80,10 +80,21 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
   // Returns set of interface indices for online interfaces.
   std::unordered_set<int> GetOnlineLinks() const override;
 
+  // This returns the current AddressMap and set of online links, and atomically
+  // starts recording diffs to those structures. This can be called on any
+  // thread, and must be called called before SetDiffCallback() below. Available
+  // only in tracking mode.
+  std::pair<AddressMap, std::unordered_set<int>>
+  GetInitialDataAndStartRecordingDiffs();
+
+  // Called after GetInitialDataAndStartRecordingDiffs().
+  //
   // Whenever the AddressMap or the set of online links (returned by the above
   // two methods) changes, this callback is called on AddressTrackerLinux's
   // sequence. On the first call, |diff_callback| is called synchronously with
-  // the current AddressMap and set of online links.
+  // the set of diffs that have been built since
+  // GetInitialDataAndStartRecordingDiffs() was called. If there are none,
+  // |diff_callback| won't be called.
   //
   // This is only available in tracking mode, and must be called on
   // AddressTrackerLinux's sequence. Note that other threads may see updated
@@ -138,34 +149,30 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
   // |*tunnel_changed| to indicate if |online_links_| changed with regards to a
   // tunnel interface while reading messages from |netlink_fd_|.
   //
-  // If |address_map_| has changed and |address_map_diff| is not nullptr,
-  // |*address_map_diff| is populated with the changes to the AddressMap.
-  // Similarly, if |online_links_| has changed and |online_links_diff| is not
-  // nullptr, |*online_links_diff| is populated with the changes to the set of
+  // If |address_map_| has changed and |address_map_diff_| is not nullopt,
+  // |*address_map_diff_| is populated with the changes to the AddressMap.
+  // Similarly, if |online_links_| has changed and |online_links_diff_| is not
+  // nullopt, |*online_links_diff| is populated with the changes to the set of
   // online links.
   void ReadMessages(bool* address_changed,
                     bool* link_changed,
-                    bool* tunnel_changed,
-                    AddressMapDiff* address_map_diff,
-                    OnlineLinksDiff* online_links_diff);
+                    bool* tunnel_changed);
 
   // Sets |*address_changed| to true if |address_map_| changed, sets
   // |*link_changed| to true if |online_links_| changed, sets |*tunnel_changed|
   // to true if |online_links_| changed with regards to a tunnel interface while
   // reading the message from |buffer|.
   //
-  // If |address_map_| has changed and |address_map_diff| is not nullptr,
-  // |*address_map_diff| is populated with the changes to the AddressMap.
-  // Similarly, if |online_links_| has changed and |online_links_diff| is not
-  // nullptr, |*online_links_diff| is populated with the changes to the set of
+  // If |address_map_| has changed and |address_map_diff_| is not nullopt,
+  // |*address_map_diff_| is populated with the changes to the AddressMap.
+  // Similarly, if |online_links_| has changed and |online_links_diff_| is not
+  // nullopt, |*online_links_diff| is populated with the changes to the set of
   // online links.
   void HandleMessage(const char* buffer,
                      int length,
                      bool* address_changed,
                      bool* link_changed,
-                     bool* tunnel_changed,
-                     AddressMapDiff* address_map_diff,
-                     OnlineLinksDiff* online_links_diff);
+                     bool* tunnel_changed);
 
   // Call when some part of initialization failed; forces online and unblocks.
   void AbortAndForceOnline();
@@ -182,6 +189,10 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
   // Updates current_connection_type_ based on the network list.
   void UpdateCurrentConnectionType();
 
+  // Passes |address_map_diff_| and |online_links_diff_| to |diff_callback_| as
+  // arguments, and then clears them.
+  void RunDiffCallback();
+
   // Used by AddressTrackerLinuxTest, returns the number of threads waiting
   // for |connection_type_initialized_cv_|.
   int GetThreadsWaitingForConnectionTypeInitForTesting();
@@ -189,6 +200,15 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
   // Used by AddressTrackerLinuxNetlinkTest, returns true iff `Init` succeeded.
   // Undefined for non-tracking mode.
   bool DidTrackingInitSucceedForTesting() const;
+
+  AddressMapDiff& address_map_diff_for_testing() {
+    AddressTrackerAutoLock lock(*this, address_map_lock_);
+    return address_map_diff_.value();
+  }
+  OnlineLinksDiff& online_links_diff_for_testing() {
+    AddressTrackerAutoLock lock(*this, online_links_lock_);
+    return online_links_diff_.value();
+  }
 
   // Gets the name of an interface given the interface index |interface_index|.
   // May return empty string if it fails but should not return NULL. This is
@@ -208,10 +228,12 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
 
   mutable base::Lock address_map_lock_;
   AddressMap address_map_ GUARDED_BY(address_map_lock_);
+  absl::optional<AddressMapDiff> address_map_diff_;
 
   // Set of interface indices for links that are currently online.
-  mutable base::Lock online_links_lock_;
+  mutable base::Lock online_links_lock_ ACQUIRED_AFTER(address_map_lock_);
   std::unordered_set<int> online_links_ GUARDED_BY(online_links_lock_);
+  absl::optional<OnlineLinksDiff> online_links_diff_;
 
   // Set of interface names that should be ignored.
   const std::unordered_set<std::string> ignored_interfaces_;
