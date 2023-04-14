@@ -72,9 +72,11 @@ using autofill_address_profile_infobar_overlays::
     [self.consumer setRestrictSubtitleTextToSingleLine:YES];
   }
 
-  [self.consumer
-      setIconImage:CustomSymbolWithPointSize(kLocationFillSymbol,
-                                             kInfobarSymbolPointSize)];
+  [self.consumer setIconImage:CustomSymbolWithPointSize(
+                                  self.config->is_migration_to_account()
+                                      ? kCloudAndArrowUpSymbol
+                                      : kLocationFillSymbol,
+                                  kInfobarSymbolPointSize)];
   // This is done to hide the settings image from the banner view. The modal
   // would still be presented when the user chooses to pick the Save/Update
   // action.
