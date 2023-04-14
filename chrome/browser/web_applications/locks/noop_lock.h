@@ -5,15 +5,18 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_NOOP_LOCK_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_NOOP_LOCK_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/locks/lock.h"
-#include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 
 namespace content {
 struct PartitionedLockHolder;
 }
 
 namespace web_app {
+
+class WebAppLockManager;
 
 // This lock essentially doesn't lock anything in the system. However, if a
 // `FullSystemLock` is used, then that will block the acquisition of this lock.

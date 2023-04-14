@@ -4,8 +4,11 @@
 
 #include "chrome/browser/web_applications/locks/full_system_lock.h"
 
+#include <memory>
+
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/locks/lock.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 
 namespace web_app {
 
@@ -15,24 +18,7 @@ FullSystemLockDescription::~FullSystemLockDescription() = default;
 
 FullSystemLock::FullSystemLock(
     base::WeakPtr<WebAppLockManager> lock_manager,
-    std::unique_ptr<content::PartitionedLockHolder> holder,
-    WebAppRegistrar& registrar,
-    WebAppSyncBridge& sync_bridge,
-    WebAppInstallFinalizer& install_finalizer,
-    OsIntegrationManager& os_integration_manager,
-    WebAppInstallManager& install_manager,
-    WebAppIconManager& icon_manager,
-    WebAppTranslationManager& translation_manager,
-    WebAppUiManager& ui_manager)
-    : Lock(std::move(holder)),
-      WithAppResources(std::move(lock_manager),
-                       registrar,
-                       sync_bridge,
-                       install_finalizer,
-                       os_integration_manager,
-                       install_manager,
-                       icon_manager,
-                       translation_manager,
-                       ui_manager) {}
+    std::unique_ptr<content::PartitionedLockHolder> holder)
+    : Lock(std::move(holder)), WithAppResources(std::move(lock_manager)) {}
 FullSystemLock::~FullSystemLock() = default;
 }  // namespace web_app

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/locks/lock.h"
 
+#include <memory>
 #include <ostream>
 
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"

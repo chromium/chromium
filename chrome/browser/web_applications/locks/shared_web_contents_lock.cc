@@ -4,26 +4,16 @@
 
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 
+#include <memory>
+
 #include "chrome/browser/web_applications/locks/lock.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 
 namespace web_app {
 
 SharedWebContentsLockDescription::SharedWebContentsLockDescription()
     : LockDescription({}, LockDescription::Type::kBackgroundWebContents) {}
 SharedWebContentsLockDescription::~SharedWebContentsLockDescription() = default;
-
-WithSharedWebContentsResources::WithSharedWebContentsResources(
-    base::WeakPtr<WebAppLockManager> lock_manager,
-    content::WebContents& shared_web_contents)
-    : lock_manager_(std::move(lock_manager)),
-      shared_web_contents_(shared_web_contents) {}
-WithSharedWebContentsResources::~WithSharedWebContentsResources() = default;
-
-content::WebContents& WithSharedWebContentsResources::shared_web_contents()
-    const {
-  CHECK(lock_manager_);
-  return *shared_web_contents_;
-}
 
 SharedWebContentsLock::SharedWebContentsLock(
     base::WeakPtr<WebAppLockManager> lock_manager,

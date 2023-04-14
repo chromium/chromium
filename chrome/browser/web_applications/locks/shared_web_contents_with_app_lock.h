@@ -5,11 +5,15 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_SHARED_WEB_CONTENTS_WITH_APP_LOCK_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_SHARED_WEB_CONTENTS_WITH_APP_LOCK_H_
 
+#include <memory>
+
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
-#include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
+#include "chrome/browser/web_applications/locks/with_app_resources.h"
+#include "chrome/browser/web_applications/locks/with_shared_web_contents_resources.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 
 namespace content {
@@ -19,14 +23,7 @@ struct PartitionedLockHolder;
 
 namespace web_app {
 
-class OsIntegrationManager;
-class WebAppIconManager;
-class WebAppInstallFinalizer;
-class WebAppInstallManager;
-class WebAppRegistrar;
-class WebAppSyncBridge;
-class WebAppTranslationManager;
-class WebAppUiManager;
+class WebAppLockManager;
 
 // This locks both the background shared web contents AND the given app ids. The
 // background web contents is used by the WebAppProvider system to do operations
@@ -68,15 +65,7 @@ class SharedWebContentsWithAppLock : public Lock,
   SharedWebContentsWithAppLock(
       base::WeakPtr<WebAppLockManager> lock_manager,
       std::unique_ptr<content::PartitionedLockHolder> holder,
-      content::WebContents& shared_web_contents,
-      WebAppRegistrar& registrar,
-      WebAppSyncBridge& sync_bridge,
-      WebAppInstallFinalizer& install_finalizer,
-      OsIntegrationManager& os_integration_manager,
-      WebAppInstallManager& install_manager,
-      WebAppIconManager& icon_manager,
-      WebAppTranslationManager& translation_manager,
-      WebAppUiManager& ui_manager);
+      content::WebContents& web_contents);
 
   base::WeakPtrFactory<SharedWebContentsWithAppLock> weak_factory_{this};
 };

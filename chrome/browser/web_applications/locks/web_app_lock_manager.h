@@ -111,6 +111,8 @@ class WebAppLockManager {
 
   base::Value ToDebugValue() const;
 
+  WebAppProvider& provider() const { return provider_.get(); }
+
  private:
   // Acquires the lock for the given `lock`, calling `on_lock_acquired` when
   // complete.
