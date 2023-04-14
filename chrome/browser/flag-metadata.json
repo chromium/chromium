@@ -4178,8 +4178,8 @@
   },
   {
     "name": "fuse-box-debug",
-    "owners": [ "nigeltao", "noel", "simmonsjosh@google.com" ],
-    "expiry_milestone": 114
+    "owners": [ "nigeltao", "simmonsjosh@google.com" ],
+    "expiry_milestone": 126
   },
   {
     "name": "gaia-id-in-amf",
