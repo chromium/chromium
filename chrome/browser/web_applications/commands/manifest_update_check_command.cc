@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/browser/web_applications/web_contents/web_app_icon_downloader.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -161,10 +162,10 @@ void ManifestUpdateCheckCommand::DownloadNewIconBitmaps(
   base::flat_set<GURL> icon_urls =
       GetValidIconUrlsToDownload(new_install_info_);
 
+  IconDownloaderOptions options = {.skip_page_favicons = true,
+                                   .fail_all_if_any_fail = true};
   icon_downloader_.emplace(web_contents_.get(), std::move(icon_urls),
-                           std::move(next_step_callback));
-  icon_downloader_->SkipPageFavicons();
-  icon_downloader_->FailAllIfAnyFail();
+                           std::move(next_step_callback), options);
   icon_downloader_->Start();
 }
 

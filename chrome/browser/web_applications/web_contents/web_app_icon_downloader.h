@@ -26,6 +26,13 @@ namespace web_app {
 
 enum class IconsDownloadedResult;
 
+struct IconDownloaderOptions {
+  // If favicons from the current WebContents should not be downloaded.
+  bool skip_page_favicons = false;
+  // If the download should end early if any failures occur.
+  bool fail_all_if_any_fail = false;
+};
+
 // Class to help download all icons (including favicons and web app manifest
 // icons) for a tab.
 class WebAppIconDownloader : public content::WebContentsObserver {
@@ -39,17 +46,11 @@ class WebAppIconDownloader : public content::WebContentsObserver {
   // provided by the renderer (e.g touch icons on non-android environments).
   WebAppIconDownloader(content::WebContents* web_contents,
                        base::flat_set<GURL> extra_favicon_urls,
-                       WebAppIconDownloaderCallback callback);
+                       WebAppIconDownloaderCallback callback,
+                       IconDownloaderOptions options = IconDownloaderOptions());
   WebAppIconDownloader(const WebAppIconDownloader&) = delete;
   WebAppIconDownloader& operator=(const WebAppIconDownloader&) = delete;
   ~WebAppIconDownloader() override;
-
-  // Instructs the downloader to not query the page for favicons (e.g. when a
-  // favicon URL has already been provided in the constructor's
-  // |extra_favicon_urls| argument).
-  void SkipPageFavicons();
-
-  void FailAllIfAnyFail();
 
   void Start();
 
@@ -77,26 +78,20 @@ class WebAppIconDownloader : public content::WebContentsObserver {
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
-  void DidUpdateFaviconURL(
-      content::RenderFrameHost* rfh,
-      const std::vector<blink::mojom::FaviconURLPtr>& candidates) override;
   void WebContentsDestroyed() override;
 
-  void CompleteCallback();
+  void MaybeCompleteCallback();
   void CancelDownloads(IconsDownloadedResult result,
                        DownloadedIconsHttpResults icons_http_results);
-
-  // Whether we need to fetch favicons from the renderer.
-  bool need_favicon_urls_ = true;
-
-  // Whether we consider all requests to have failed if any individual URL fails
-  // to load.
-  bool fail_all_if_any_fail_ = false;
 
   // URLs that aren't given by WebContentsObserver::DidUpdateFaviconURL() that
   // should be used for this favicon. This is necessary in order to get touch
   // icons on non-android environments.
   base::flat_set<GURL> extra_favicon_urls_;
+
+  IconDownloaderOptions options_;
+
+  bool starting_ = false;
 
   // The icons which were downloaded. Populated by FetchIcons().
   IconsMap icons_map_;
