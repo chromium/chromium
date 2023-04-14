@@ -7,6 +7,7 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/debug/crash_logging.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/persistent_memory_allocator.h"
@@ -324,6 +325,16 @@ bool SampleVectorBase::AddSubtractImpl(SampleCountIterator* iter,
     // Ensure that the sample's min/max match the ranges min/max.
     if (min != bucket_ranges_->range(dest_index) ||
         max != bucket_ranges_->range(dest_index + 1)) {
+#if !BUILDFLAG(IS_NACL)
+      // TODO(crbug/1432981): Remove these. They are used to investigate
+      // unexpected failures.
+      SCOPED_CRASH_KEY_NUMBER("SampleVector", "min", min);
+      SCOPED_CRASH_KEY_NUMBER("SampleVector", "max", max);
+      SCOPED_CRASH_KEY_NUMBER("SampleVector", "range_min",
+                              bucket_ranges_->range(dest_index));
+      SCOPED_CRASH_KEY_NUMBER("SampleVector", "range_max",
+                              bucket_ranges_->range(dest_index + 1));
+#endif  // !BUILDFLAG(IS_NACL)
       NOTREACHED() << "sample=" << min << "," << max
                    << "; range=" << bucket_ranges_->range(dest_index) << ","
                    << bucket_ranges_->range(dest_index + 1);

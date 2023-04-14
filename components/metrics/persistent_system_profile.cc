@@ -10,6 +10,7 @@
 #include "base/bits.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/debug/crash_logging.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/notreached.h"
@@ -249,6 +250,16 @@ bool PersistentSystemProfile::RecordAllocator::ReadData(
   }
   size_t read_size = header.as_parts.amount;
   if (end_offset_ + sizeof(header) + read_size > alloc_size_) {
+#if !BUILDFLAG(IS_NACL)
+    // TODO(crbug/1432981): Remove these. They are used to investigate
+    // unexpected failures.
+    SCOPED_CRASH_KEY_NUMBER("PersistentSystemProfile", "end_offset_",
+                            end_offset_);
+    SCOPED_CRASH_KEY_NUMBER("PersistentSystemProfile", "read_size", read_size);
+    SCOPED_CRASH_KEY_NUMBER("PersistentSystemProfile", "alloc_size_",
+                            alloc_size_);
+#endif  // !BUILDFLAG(IS_NACL)
+
     NOTREACHED();  // Invalid header amount.
     *type = kUnusedSpace;
     return true;  // Don't try again.
