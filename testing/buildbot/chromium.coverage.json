@@ -3389,7 +3389,6 @@
   },
   "android-x86-code-coverage": {
     "additional_compile_targets": [
-      "cronet_test_instrumentation_apk",
       "chrome_nocompile_tests"
     ],
     "gtest_tests": [

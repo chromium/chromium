@@ -1004,7 +1004,6 @@
           'x86-64',
         ],
         'additional_compile_targets': [
-          'cronet_test_instrumentation_apk',
           'chrome_nocompile_tests',
         ],
         'args': [
@@ -2176,7 +2175,6 @@
           'x86-64',
         ],
         'additional_compile_targets': [
-          'cronet_test_instrumentation_apk',
           'chrome_nocompile_tests',
         ],
         'args': [
