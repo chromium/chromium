@@ -324,4 +324,48 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordTouchpadSettings) {
       /*expected_count=*/1u);
 }
 
+TEST_F(InputDeviceSettingsMetricsManagerTest, RecordModifierRemappingMetrics) {
+  mojom::Keyboard keyboard;
+  keyboard.device_key = kExternalKeyboardId;
+  keyboard.is_external = false;
+  keyboard.modifier_keys = {
+      ui::mojom::ModifierKey::kAlt,
+      ui::mojom::ModifierKey::kMeta,
+      ui::mojom::ModifierKey::kAssistant,
+  };
+  keyboard.settings = mojom::KeyboardSettings::New();
+  keyboard.settings->modifier_remappings = {
+      {ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kControl},
+  };
+  base::HistogramTester histogram_tester;
+  manager_.get()->RecordKeyboardInitialMetrics(keyboard);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers.AltRemappedTo."
+      "Initial",
+      /*expected_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers.MetaRemappedTo."
+      "Initial",
+      /*expected_count=*/1u);
+
+  const auto old_settings = std::move(keyboard.settings);
+  keyboard.settings = mojom::KeyboardSettings::New();
+  keyboard.settings->modifier_remappings = {
+      {ui::mojom::ModifierKey::kAlt, ui::mojom::ModifierKey::kControl},
+      {ui::mojom::ModifierKey::kMeta, ui::mojom::ModifierKey::kCapsLock},
+  };
+  manager_.get()->RecordKeyboardChangedMetrics(keyboard, *old_settings);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers.AltRemappedTo."
+      "Changed",
+      /*expected_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers.MetaRemappedTo."
+      "Changed",
+      /*expected_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.Modifiers."
+      "AssistantRemappedTo.Changed",
+      /*expected_count=*/0);
+}
 }  // namespace ash

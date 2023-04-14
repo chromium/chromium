@@ -7,7 +7,9 @@
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 
 namespace ash {
 
@@ -22,6 +24,17 @@ enum class PointerSensitivity {
   kMaxValue = kHighest,
 };
 
+constexpr auto kModifierNames =
+    base::MakeFixedFlatMap<ui::mojom::ModifierKey, const char*>({
+        {ui::mojom::ModifierKey::kMeta, "Meta"},
+        {ui::mojom::ModifierKey::kControl, "Control"},
+        {ui::mojom::ModifierKey::kAlt, "Alt"},
+        {ui::mojom::ModifierKey::kCapsLock, "CapsLock"},
+        {ui::mojom::ModifierKey::kEscape, "Escape"},
+        {ui::mojom::ModifierKey::kBackspace, "Backspace"},
+        {ui::mojom::ModifierKey::kAssistant, "Assistant"},
+    });
+
 std::string GetKeyboardMetricsPrefix(const mojom::Keyboard& keyboard) {
   if (!keyboard.is_external) {
     return "ChromeOS.Settings.Device.Keyboard.Internal.";
@@ -31,6 +44,16 @@ std::string GetKeyboardMetricsPrefix(const mojom::Keyboard& keyboard) {
   } else {
     return "ChromeOS.Settings.Device.Keyboard.External.";
   }
+}
+
+ui::mojom::ModifierKey GetModifierRemappingTo(
+    const mojom::KeyboardSettings& settings,
+    ui::mojom::ModifierKey modifier_key) {
+  const auto iter = settings.modifier_remappings.find(modifier_key);
+  if (iter != settings.modifier_remappings.end()) {
+    return iter->second;
+  }
+  return modifier_key;
 }
 
 }  // namespace
@@ -65,6 +88,18 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardInitialMetrics(
         keyboard_metrics_prefix + "BlockMetaFKeyRewrites.Initial",
         keyboard.settings->suppress_meta_fkey_rewrites);
   }
+
+  // Record metrics for modifier remappings.
+  for (const auto modifier_key : keyboard.modifier_keys) {
+    auto* modifier_name_iter = kModifierNames.find(modifier_key);
+    DCHECK(modifier_name_iter != kModifierNames.end());
+    const auto key_remapped_to =
+        GetModifierRemappingTo(*keyboard.settings, modifier_key);
+    const std::string modifier_remapping_metrics =
+        base::StrCat({keyboard_metrics_prefix, "Modifiers.",
+                      modifier_name_iter->second, "RemappedTo.Initial"});
+    base::UmaHistogramEnumeration(modifier_remapping_metrics, key_remapped_to);
+  }
 }
 
 void InputDeviceSettingsMetricsManager::RecordKeyboardChangedMetrics(
@@ -85,6 +120,23 @@ void InputDeviceSettingsMetricsManager::RecordKeyboardChangedMetrics(
     base::UmaHistogramBoolean(
         keyboard_metrics_prefix + "BlockMetaFKeyRewrites.Changed",
         keyboard.settings->suppress_meta_fkey_rewrites);
+  }
+
+  // Record metrics for modifier remappings.
+  for (const auto modifier_key : keyboard.modifier_keys) {
+    auto* modifier_name_iter = kModifierNames.find(modifier_key);
+    DCHECK(modifier_name_iter != kModifierNames.end());
+    const auto key_remapped_to_before =
+        GetModifierRemappingTo(old_settings, modifier_key);
+    const auto key_remapped_to =
+        GetModifierRemappingTo(*keyboard.settings, modifier_key);
+    if (key_remapped_to_before != key_remapped_to) {
+      const std::string modifier_remapping_metrics =
+          base::StrCat({keyboard_metrics_prefix, "Modifiers.",
+                        modifier_name_iter->second, "RemappedTo.Changed"});
+      base::UmaHistogramEnumeration(modifier_remapping_metrics,
+                                    key_remapped_to);
+    }
   }
 }
 
