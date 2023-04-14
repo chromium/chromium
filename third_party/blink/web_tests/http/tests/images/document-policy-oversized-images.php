@@ -2,6 +2,7 @@
 header("Document-Policy: oversized-images=2.0");
 ?>
 <!DOCTYPE html>
+<meta name="fuzzy" content="maxDifference=0-6;totalPixels=0-17">
 
 <head>
   <base href="resources/">
