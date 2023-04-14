@@ -29,7 +29,7 @@
 // https://w3c.github.io/webcrypto/Overview.html#crypto-interface
 
 [
-    Exposed=(Window,Worker)
+    Exposed=(Window,Worker,SharedStorageWorklet)
 ] interface Crypto {
     [RaisesException, MeasureAs=CryptoGetRandomValues] ArrayBufferView getRandomValues(ArrayBufferView array);
     // Implementation of crypto.randomUUID() from the standard:

@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/threaded_messaging_proxy_base.h"
+#include "third_party/blink/renderer/modules/crypto/crypto.h"
 #include "third_party/blink/renderer/modules/shared_storage/private_aggregation.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_operation_definition.h"
@@ -335,6 +336,7 @@ void SharedStorageWorkletGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   visitor->Trace(shared_storage_);
   visitor->Trace(private_aggregation_);
+  visitor->Trace(crypto_);
   visitor->Trace(operation_definition_map_);
   visitor->Trace(client_);
   WorkletGlobalScope::Trace(visitor);
@@ -534,11 +536,9 @@ SharedStorage* SharedStorageWorkletGlobalScope::sharedStorage(
   // `sharedStorage`: on the browser side, we already enforce that `addModule()`
   // can only be called once, so there's no way to expose the storage data to
   // the associated `Document`.
-  if (shared_storage_) {
-    return shared_storage_.Get();
+  if (!shared_storage_) {
+    shared_storage_ = MakeGarbageCollected<SharedStorage>();
   }
-
-  shared_storage_ = MakeGarbageCollected<SharedStorage>();
 
   return shared_storage_.Get();
 }
@@ -559,6 +559,16 @@ PrivateAggregation* SharedStorageWorkletGlobalScope::privateAggregation(
   }
 
   return GetOrCreatePrivateAggregation();
+}
+
+Crypto* SharedStorageWorkletGlobalScope::crypto(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (!crypto_) {
+    crypto_ = MakeGarbageCollected<Crypto>();
+  }
+
+  return crypto_.Get();
 }
 
 // Returns the unique ID for the currently running operation.

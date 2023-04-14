@@ -42,6 +42,7 @@ class SharedStorageOperationDefinition;
 class V8NoArgumentConstructor;
 class SharedStorage;
 class PrivateAggregation;
+class Crypto;
 
 // mojom::SharedStorageWorkletService implementation. Responsible for
 // handling worklet operations. This object lives on the worklet thread.
@@ -72,6 +73,17 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
                            SourceLocation* location) override;
 
   bool IsSharedStorageWorkletGlobalScope() const override { return true; }
+
+  // `SharedStorageWorkletGlobalScope` is populated with a null SecurityContext,
+  // and any attempt to use the default `ExecutionContext::IsSecureContext()`
+  // check would fail. Override with `true` to give us the desired status (i.e.
+  // the worklet must have originated from a secure Window context, so it must
+  // also be a secure context).
+  //
+  // TODO(crbug.com/1414951): Remove this and undo marking
+  // `ExecutionContext::IsSecureContext()` as virtual once
+  // `SharedStorageWorkletGlobalScope` is populated with a real SecurityContext.
+  bool IsSecureContext() const override { return true; }
 
   WorkletToken GetWorkletToken() const override { return token_; }
   ExecutionContextToken GetExecutionContextToken() const override {
@@ -113,6 +125,7 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   // SharedStorageWorkletGlobalScope IDL
   SharedStorage* sharedStorage(ScriptState*, ExceptionState&);
   PrivateAggregation* privateAggregation(ScriptState*, ExceptionState&);
+  Crypto* crypto(ScriptState*, ExceptionState&);
 
   // Returns the unique ID for the currently running operation.
   int64_t GetCurrentOperationId();
@@ -199,6 +212,10 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   // The per-global-scope private aggregation object. Created on the first
   // access of `privateAggregation`.
   Member<PrivateAggregation> private_aggregation_;
+
+  // The per-global-scope crypto object. Created on the first access of
+  // `crypto`.
+  Member<Crypto> crypto_;
 
   // The map from the registered operation names to their definition.
   HeapHashMap<String, Member<SharedStorageOperationDefinition>>

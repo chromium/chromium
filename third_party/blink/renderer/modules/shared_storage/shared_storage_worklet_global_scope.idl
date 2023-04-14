@@ -21,6 +21,12 @@ interface SharedStorageWorkletGlobalScope : WorkletGlobalScope {
     ContextEnabled=PrivateAggregationInSharedStorage
   ]
   readonly attribute PrivateAggregation privateAggregation;
+
+  [
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  readonly attribute Crypto crypto;
 };
 
 // TODO(yaoxia): Figure out whether `urls`'s type can be `FrozenArray` instead

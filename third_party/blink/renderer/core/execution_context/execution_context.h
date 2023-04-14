@@ -308,7 +308,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   SecureContextMode GetSecureContextMode() const {
     return security_context_.GetSecureContextMode();
   }
-  bool IsSecureContext() const {
+  virtual bool IsSecureContext() const {
     return GetSecureContextMode() == SecureContextMode::kSecureContext;
   }
   bool IsSecureContext(String& error_message) const;

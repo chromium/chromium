@@ -456,11 +456,17 @@ TEST_F(SharedStorageWorkletTest,
        GlobalScopeObjectsAndFunctions_DuringAddModule) {
   AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
     var expectedObjects = [
-      "console"
+      "console",
+      "crypto"
     ];
 
     var expectedFunctions = [
       "SharedStorage",
+      "Crypto",
+      "CryptoKey",
+      "SubtleCrypto",
+      "TextEncoder",
+      "TextDecoder",
       "register",
       "console.log"
     ];
@@ -1133,11 +1139,18 @@ TEST_F(SharedStorageWorkletTest,
       class TestClass {
         async run() {
           var expectedObjects = [
+            "console",
             "sharedStorage",
+            "crypto"
           ];
 
           var expectedFunctions = [
             "SharedStorage",
+            "Crypto",
+            "CryptoKey",
+            "SubtleCrypto",
+            "TextEncoder",
+            "TextDecoder",
             "register",
             "sharedStorage.set",
             "sharedStorage.append",
@@ -1200,11 +1213,18 @@ TEST_F(SharedStorageWorkletTest,
       class TestClass {
         async run() {
           var expectedObjects = [
-            "sharedStorage"
+            "console",
+            "sharedStorage",
+            "crypto"
           ];
 
           var expectedFunctions = [
             "SharedStorage",
+            "Crypto",
+            "CryptoKey",
+            "SubtleCrypto",
+            "TextEncoder",
+            "TextDecoder",
             "register",
             "sharedStorage.set",
             "sharedStorage.append",
@@ -2239,6 +2259,102 @@ TEST_F(SharedStorageWorkletTest,
 
   EXPECT_TRUE(run_result.success);
   EXPECT_TRUE(run_result.error_message.empty());
+}
+
+TEST_F(SharedStorageWorkletTest, Crypto_GetRandomValues) {
+  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+      class TestClass {
+        async run() {
+          const myArray = new BigUint64Array(2);
+          crypto.getRandomValues(myArray);
+          console.log(myArray[0]);
+          console.log(myArray[1]);
+        }
+      }
+
+      register("test-operation", TestClass);
+  )");
+
+  EXPECT_TRUE(add_module_result.success);
+
+  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+
+  EXPECT_TRUE(run_result.success);
+
+  EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 2u);
+  // Naive test for randomness: the two numbers are different.
+  EXPECT_NE(test_client_->observed_console_log_messages_[0],
+            test_client_->observed_console_log_messages_[1]);
+}
+
+TEST_F(SharedStorageWorkletTest, Crypto_RandomUUID) {
+  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+      class TestClass {
+        async run() {
+          console.log(crypto.randomUUID());
+          console.log(crypto.randomUUID());
+        }
+      }
+
+      register("test-operation", TestClass);
+  )");
+
+  EXPECT_TRUE(add_module_result.success);
+
+  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+
+  EXPECT_TRUE(run_result.success);
+
+  EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 2u);
+  EXPECT_EQ(test_client_->observed_console_log_messages_[0].size(), 36u);
+  EXPECT_EQ(test_client_->observed_console_log_messages_[1].size(), 36u);
+  // Naive test for randomness: the two numbers are different.
+  EXPECT_NE(test_client_->observed_console_log_messages_[0],
+            test_client_->observed_console_log_messages_[1]);
+}
+
+TEST_F(SharedStorageWorkletTest,
+       TextEncoderDecoderAndSubtleCryptoEncryptDecrypt) {
+  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+      class TestClass {
+        async run() {
+          let iv = crypto.getRandomValues(new Uint8Array(12));
+
+          let key = await crypto.subtle.generateKey(
+            {
+              name: "AES-GCM",
+              length: 256,
+            },
+            true,
+            ["encrypt", "decrypt"]
+          );
+
+          let text = "123abc";
+          let encodedText = new TextEncoder().encode(text);
+
+          let ciphertext = await crypto.subtle.encrypt(
+            {name:"AES-GCM", iv:iv}, key, encodedText);
+
+          let decipheredText = await crypto.subtle.decrypt(
+            {name:"AES-GCM", iv}, key, ciphertext);
+
+          let decodedText = new TextDecoder().decode(decipheredText)
+
+          console.log(decodedText);
+        }
+      }
+
+      register("test-operation", TestClass);
+  )");
+
+  EXPECT_TRUE(add_module_result.success);
+
+  RunResult run_result = Run("test-operation", /*serialized_data=*/{});
+
+  EXPECT_TRUE(run_result.success);
+
+  EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 1u);
+  EXPECT_EQ(test_client_->observed_console_log_messages_[0], "123abc");
 }
 
 class SharedStoragePrivateAggregationTest : public SharedStorageWorkletTest {
