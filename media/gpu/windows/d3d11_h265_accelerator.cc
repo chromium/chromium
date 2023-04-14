@@ -29,9 +29,9 @@
 
 namespace media {
 
-using DecoderStatus = H265Decoder::H265Accelerator::Status;
-
 namespace {
+
+using H265DecoderStatus = H265Decoder::H265Accelerator::Status;
 
 // Converts SubsampleEntry to D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK.
 void AppendSubsamples(
@@ -99,7 +99,7 @@ bool D3D11H265Accelerator::IsChromaSamplingSupported(
          chroma_sampling == VideoChromaSampling::k444;
 }
 
-DecoderStatus D3D11H265Accelerator::SubmitFrameMetadata(
+H265DecoderStatus D3D11H265Accelerator::SubmitFrameMetadata(
     const H265SPS* sps,
     const H265PPS* pps,
     const H265SliceHeader* slice_hdr,
@@ -109,14 +109,14 @@ DecoderStatus D3D11H265Accelerator::SubmitFrameMetadata(
   if (is_encrypted) {
     RecordFailure("Cannot find decrypt context for the frame.",
                   D3D11Status::Codes::kCryptoConfigFailed);
-    return DecoderStatus::kFail;
+    return H265DecoderStatus::kFail;
   }
 
   HRESULT hr;
   for (;;) {
     D3D11H265Picture* d3d11_pic = pic->AsD3D11H265Picture();
     if (!d3d11_pic)
-      return DecoderStatus::kFail;
+      return H265DecoderStatus::kFail;
 
     ID3D11VideoDecoderOutputView* output_view = nullptr;
     auto result = d3d11_pic->picture->AcquireOutputView();
@@ -124,7 +124,7 @@ DecoderStatus D3D11H265Accelerator::SubmitFrameMetadata(
       output_view = std::move(result).value();
     } else {
       RecordFailure(std::move(result).error());
-      return DecoderStatus::kFail;
+      return H265DecoderStatus::kFail;
     }
 
     hr = video_context_->DecoderBeginFrame(video_decoder_.Get(), output_view, 0,
@@ -134,7 +134,7 @@ DecoderStatus D3D11H265Accelerator::SubmitFrameMetadata(
     } else if (!SUCCEEDED(hr)) {
       RecordFailure("DecoderBeginFrame failed",
                     D3D11Status::Codes::kDecoderBeginFrameFailed, hr);
-      return DecoderStatus::kFail;
+      return H265DecoderStatus::kFail;
     } else {
       break;
     }
@@ -156,7 +156,7 @@ DecoderStatus D3D11H265Accelerator::SubmitFrameMetadata(
   // list in picture param.
   if (ref_pic_list.size() > kMaxRefPicListSize) {
     DLOG(ERROR) << "Invalid fef pic list size.";
-    return DecoderStatus::kFail;
+    return H265DecoderStatus::kFail;
   }
 
   int i = 0;
@@ -173,7 +173,8 @@ DecoderStatus D3D11H265Accelerator::SubmitFrameMetadata(
     i++;
   }
   slice_info_.clear();
-  return RetrieveBitstreamBuffer() ? DecoderStatus::kOk : DecoderStatus::kFail;
+  return RetrieveBitstreamBuffer() ? H265DecoderStatus::kOk
+                                   : H265DecoderStatus::kFail;
 }
 
 bool D3D11H265Accelerator::RetrieveBitstreamBuffer() {
@@ -497,7 +498,7 @@ bool D3D11H265Accelerator::PicParamsFromRefLists(
   return true;
 }
 
-DecoderStatus D3D11H265Accelerator::SubmitSlice(
+H265DecoderStatus D3D11H265Accelerator::SubmitSlice(
     const H265SPS* sps,
     const H265PPS* pps,
     const H265SliceHeader* slice_hdr,
@@ -514,7 +515,7 @@ DecoderStatus D3D11H265Accelerator::SubmitSlice(
 
   D3D11H265Picture* d3d11_pic = pic->AsD3D11H265Picture();
   if (!d3d11_pic) {
-    return DecoderStatus::kFail;
+    return H265DecoderStatus::kFail;
   }
 
   FillPicParamsWithConstants(&pic_param);
@@ -528,7 +529,7 @@ DecoderStatus D3D11H265Accelerator::SubmitSlice(
   if (!PicParamsFromRefLists(&pic_param, ref_pic_set_lt_curr,
                              ref_pic_set_st_curr_after,
                              ref_pic_set_st_curr_before)) {
-    return DecoderStatus::kFail;
+    return H265DecoderStatus::kFail;
   }
 
   pic_param.main.StatusReportFeedbackNumber =
@@ -542,7 +543,7 @@ DecoderStatus D3D11H265Accelerator::SubmitSlice(
   if (!SUCCEEDED(hr)) {
     RecordFailure("GetDecoderBuffer (PictureParams) failed",
                   D3D11Status::Codes::kGetPicParamBufferFailed, hr);
-    return DecoderStatus::kFail;
+    return H265DecoderStatus::kFail;
   }
 
   memcpy(buffer, &pic_param, sizeof(pic_param));
@@ -551,7 +552,7 @@ DecoderStatus D3D11H265Accelerator::SubmitSlice(
   if (!SUCCEEDED(hr)) {
     RecordFailure("ReleaseDecoderBuffer (PictureParams) failed",
                   D3D11Status::Codes::kReleasePicParamBufferFailed, hr);
-    return DecoderStatus::kFail;
+    return H265DecoderStatus::kFail;
   }
 
   // Fill up the quantitization matrix data structure when
@@ -613,7 +614,7 @@ DecoderStatus D3D11H265Accelerator::SubmitSlice(
     if (!SUCCEEDED(hr)) {
       RecordFailure("GetDecoderBuffer (QuantMatrix) failed",
                     D3D11Status::Codes::kGetQuantBufferFailed, hr);
-      return DecoderStatus::kFail;
+      return H265DecoderStatus::kFail;
     }
     memcpy(buffer, &iq_matrix_buf, sizeof(iq_matrix_buf));
     hr = video_context_->ReleaseDecoderBuffer(
@@ -622,7 +623,7 @@ DecoderStatus D3D11H265Accelerator::SubmitSlice(
     if (!SUCCEEDED(hr)) {
       RecordFailure("ReleaseDecoderBuffer (QuantMatrix) failed",
                     D3D11Status::Codes::kReleaseQuantBufferFailed, hr);
-      return DecoderStatus::kFail;
+      return H265DecoderStatus::kFail;
     }
   }
 
@@ -642,7 +643,7 @@ DecoderStatus D3D11H265Accelerator::SubmitSlice(
                         ") too big to fit in the bistream buffer (" +
                         base::NumberToString(bitstream_buffer_size_) + ").",
                     D3D11Status::Codes::kBitstreamBufferSliceTooBig);
-      return DecoderStatus::kFail;
+      return H265DecoderStatus::kFail;
     }
 
     AppendSubsamples(subsamples, &subsamples_);
@@ -656,10 +657,10 @@ DecoderStatus D3D11H265Accelerator::SubmitSlice(
     if (bitstream_buffer_size_ < remaining_bitstream &&
         slice_info_.size() > 0) {
       if (!SubmitSliceData())
-        return DecoderStatus::kFail;
+        return H265DecoderStatus::kFail;
 
       if (!RetrieveBitstreamBuffer())
-        return DecoderStatus::kFail;
+        return H265DecoderStatus::kFail;
     }
 
     size_t bytes_to_copy = remaining_bitstream;
@@ -698,7 +699,7 @@ DecoderStatus D3D11H265Accelerator::SubmitSlice(
     bitstream_buffer_bytes_ += bytes_to_copy;
   }
 
-  return DecoderStatus::kOk;
+  return H265DecoderStatus::kOk;
 }
 
 bool D3D11H265Accelerator::SubmitSliceData() {
@@ -790,19 +791,19 @@ bool D3D11H265Accelerator::SubmitSliceData() {
   return true;
 }
 
-DecoderStatus D3D11H265Accelerator::SubmitDecode(
+H265DecoderStatus D3D11H265Accelerator::SubmitDecode(
     scoped_refptr<H265Picture> pic) {
   if (!SubmitSliceData())
-    return DecoderStatus::kFail;
+    return H265DecoderStatus::kFail;
 
   HRESULT hr = video_context_->DecoderEndFrame(video_decoder_.Get());
   if (!SUCCEEDED(hr)) {
     RecordFailure("DecoderEndFrame failed",
                   D3D11Status::Codes::kDecoderEndFrameFailed, hr);
-    return DecoderStatus::kFail;
+    return H265DecoderStatus::kFail;
   }
 
-  return DecoderStatus::kOk;
+  return H265DecoderStatus::kOk;
 }
 
 void D3D11H265Accelerator::Reset() {
