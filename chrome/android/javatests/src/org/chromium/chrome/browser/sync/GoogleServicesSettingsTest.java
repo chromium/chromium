@@ -185,12 +185,13 @@ public class GoogleServicesSettingsTest {
     @Feature({"Preference"})
     @EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:enable_price_tracking/true"
-                    + "/allow_disable_price_annotations/true"})
+            "force-fieldtrial-params=Study.Group:allow_disable_price_annotations/true"})
     public void
     testPriceTrackingAnnotations() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+            PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
+        });
 
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
 
@@ -213,12 +214,13 @@ public class GoogleServicesSettingsTest {
     @Feature({"Preference"})
     @EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:enable_price_tracking/true"
-                    + "/allow_disable_price_annotations/false"})
+            "force-fieldtrial-params=Study.Group:allow_disable_price_annotations/false"})
     public void
     testPriceTrackingAnnotations_FeatureDisabled() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+            PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
+        });
 
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
 
@@ -233,12 +235,13 @@ public class GoogleServicesSettingsTest {
     @Feature({"Preference"})
     @EnableFeatures({ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study"})
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:enable_price_tracking/true"
-                    + "/allow_disable_price_annotations/true"})
+            "force-fieldtrial-params=Study.Group:allow_disable_price_annotations/true"})
     public void
     testPriceTrackingAnnotations_NotSignedIn() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(false));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+            PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(false);
+        });
 
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
 

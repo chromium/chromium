@@ -271,6 +271,11 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // enabled country and locale.
   virtual bool IsMerchantViewerEnabled();
 
+  // This is a feature check for the "price tracking", which will return true
+  // if the user has the feature flag enabled or (if applicable) is in an
+  // enabled country and locale.
+  virtual bool IsCommercePriceTrackingEnabled();
+
   // Get a weak pointer for this service instance.
   base::WeakPtr<ShoppingService> AsWeakPtr();
 

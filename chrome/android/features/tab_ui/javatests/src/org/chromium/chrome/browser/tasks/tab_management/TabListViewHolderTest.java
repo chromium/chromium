@@ -50,7 +50,6 @@ import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -779,7 +778,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
 
     private void testPriceString(Tab tab, MockShoppingPersistedTabDataFetcher fetcher,
             int expectedVisibility, String expectedCurrentPrice, String expectedPreviousPrice) {
-        setPriceTrackingEnabledForTesting(true);
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
         testGridSelected(mTabGridView, mGridModel);
         PriceCardView priceCardView = mTabGridView.findViewById(R.id.price_info_box_outer);
         TextView currentPrice = mTabGridView.findViewById(R.id.current_price);
@@ -843,7 +842,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
             ShoppingPersistedTabData.onDeferredStartup();
             ShoppingPersistedTabData.enablePriceTrackingWithOptimizationGuideForTesting();
             PersistedTabDataConfiguration.setUseTestConfig(true);
-            setPriceTrackingEnabledForTesting(true);
+            PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
             mockCurrencyFormatter();
             mockUrlUtilities();
             mockOptimizationGuideResponse(OptimizationGuideDecision.TRUE, ANY_PRICE_TRACKING_DATA);
@@ -968,21 +967,12 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @Override
     public void tearDownTest() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PriceTrackingFeatures.setPriceTrackingEnabledForTesting(null);
             mStripMCP.destroy();
             mGridMCP.destroy();
             mSelectableMCP.destroy();
             CachedFeatureFlags.resetFlagsForTesting();
         });
         super.tearDownTest();
-    }
-
-    private void setPriceTrackingEnabledForTesting(boolean value) {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-
-        // Required by MockTab.
-        testValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                PriceTrackingFeatures.PRICE_TRACKING_PARAM, String.valueOf(value));
-        FeatureList.setTestValues(testValues);
     }
 }

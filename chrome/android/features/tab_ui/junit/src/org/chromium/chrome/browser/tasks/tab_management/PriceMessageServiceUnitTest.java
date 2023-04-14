@@ -16,6 +16,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -82,11 +83,10 @@ public class PriceMessageServiceUnitTest {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
         testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                PriceTrackingFeatures.PRICE_TRACKING_PARAM, "true");
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
                 CommerceSubscriptionsServiceConfig.IMPLICIT_SUBSCRIPTIONS_ENABLED_PARAM, "true");
         FeatureList.setTestValues(testValues);
 
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
                 PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, true);
@@ -102,6 +102,11 @@ public class PriceMessageServiceUnitTest {
         mMessageService = new PriceMessageService(
                 mMessageProvider, mReviewActionProvider, mNotificationManager);
         mMessageService.addObserver(mMessageObserver);
+    }
+
+    @After
+    public void tearDown() {
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(null);
     }
 
     @Test(expected = AssertionError.class)

@@ -28,6 +28,7 @@ extern const char kEnableChromeCart[];
 }
 
 BASE_DECLARE_FEATURE(kCommercePriceTracking);
+BASE_DECLARE_FEATURE(kCommercePriceTrackingRegionLaunched);
 
 // Price tracking variations for Android.
 constexpr flags_ui::FeatureEntry::FeatureParam

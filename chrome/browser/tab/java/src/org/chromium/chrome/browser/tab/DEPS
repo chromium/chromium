@@ -7,6 +7,7 @@ include_rules = [
   "+build/android/java/src/org/chromium/build",
   "+chrome/browser/android/crypto/java",
   '+chrome/browser/commerce/android/java',
+  '+chrome/browser/commerce/price_tracking/android/java',
   "+chrome/browser/contextmenu/java",
   "+chrome/browser/endpoint_fetcher",
   "+chrome/browser/tab/java",

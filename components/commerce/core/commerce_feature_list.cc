@@ -47,6 +47,7 @@ const CountryLocaleMap& GetAllowedCountryToLocaleMap() {
     map[&kShoppingPDPMetricsRegionLaunched] = {{"us", {"en-us"}}};
     map[&ntp_features::kNtpChromeCartModule] = {{"us", {"en-us"}}};
     map[&kCommerceMerchantViewerRegionLaunched] = {{"us", {"en-us"}}};
+    map[&kCommercePriceTrackingRegionLaunched] = {{"us", {"en-us"}}};
 
     return map;
   }());
@@ -142,6 +143,15 @@ BASE_FEATURE(kCommerceMerchantViewerRegionLaunched,
 BASE_FEATURE(kCommercePriceTracking,
              "CommercePriceTracking",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kCommercePriceTrackingRegionLaunched,
+             "CommercePriceTrackingRegionLaunched",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+BASE_FEATURE(kCommercePriceTrackingRegionLaunched,
+             "CommercePriceTrackingRegionLaunched",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kCommerceProductInfoApiEnabled,
              "CommerceProductInfoApiEnabled",

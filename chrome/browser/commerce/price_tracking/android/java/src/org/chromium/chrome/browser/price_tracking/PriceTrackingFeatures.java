@@ -7,18 +7,19 @@ package org.chromium.chrome.browser.price_tracking;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.FeatureList;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 
 import java.util.concurrent.TimeUnit;
 
 /** Flag configuration for price tracking features. */
 public class PriceTrackingFeatures {
-    @VisibleForTesting
-    public static final String PRICE_TRACKING_PARAM = "enable_price_tracking";
     @VisibleForTesting
     public static final String ALLOW_DISABLE_PRICE_ANNOTATIONS_PARAM =
             "allow_disable_price_annotations";
@@ -29,23 +30,19 @@ public class PriceTrackingFeatures {
             "price_annotations_enabled_metrics_window_duration_ms";
 
     private static Boolean sIsSignedInAndSyncEnabledForTesting;
-
-    /**
-     * @return whether or not price tracking is enabled.
-     */
-    public static boolean getPriceTrackingEnabled() {
-        if (FeatureList.isInitialized()) {
-            return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, PRICE_TRACKING_PARAM, false);
-        }
-        return false;
-    }
+    private static Boolean sPriceTrackingEnabledForTesting;
 
     /**
      * @return Whether the price tracking feature is eligible to work. Now it is used to determine
      *         whether the menu item "track prices" is visible and whether the tab has {@link
      *         TabProperties#SHOPPING_PERSISTED_TAB_DATA_FETCHER}.
      */
+    // TODO(b:277218890): Currently the method isPriceTrackingEnabled() is gating some
+    // infrastructure setup such as registering the message card in the tab switcher and adding
+    // observers for the price annotation preference, while the method isPriceTrackingEligible()
+    // requires users to sign in and enable MSBB and the returned value can change at runtime. We
+    // should implement this method in native as well and rename isPriceTrackingEnabled() to be less
+    // confusing.
     public static boolean isPriceTrackingEligible() {
         if (sIsSignedInAndSyncEnabledForTesting != null) {
             return isPriceTrackingEnabled() && sIsSignedInAndSyncEnabledForTesting;
@@ -53,11 +50,18 @@ public class PriceTrackingFeatures {
         return isPriceTrackingEnabled() && isSignedIn() && isAnonymizedUrlDataCollectionEnabled();
     }
 
-    /**
-     * @return Whether the price tracking feature is enabled and available for use.
-     */
+    /** Wrapper function for ShoppingService.isCommercePriceTrackingEnabled(). */
     public static boolean isPriceTrackingEnabled() {
-        return getPriceTrackingEnabled();
+        if (sPriceTrackingEnabledForTesting != null) return sPriceTrackingEnabledForTesting;
+        if (!ProfileManager.isInitialized()) return false;
+
+        // TODO(b:277218890): Pass profile into this method/class instead of calling the
+        // Profile.getLastUsedRegularProfile() method.
+        Profile profile = Profile.getLastUsedRegularProfile();
+        if (profile == null) return false;
+        ShoppingService service = ShoppingServiceFactory.getForProfile(profile);
+        if (service == null) return false;
+        return service.isCommercePriceTrackingEnabled();
     }
 
     private static boolean isSignedIn() {
@@ -121,5 +125,10 @@ public class PriceTrackingFeatures {
                             PRICE_DROP_BADGE_ENABLED_PARAM, false);
         }
         return isPriceTrackingEligible();
+    }
+
+    @VisibleForTesting
+    public static void setPriceTrackingEnabledForTesting(Boolean enabled) {
+        sPriceTrackingEnabledForTesting = enabled;
     }
 }

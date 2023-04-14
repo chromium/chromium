@@ -22,6 +22,7 @@ import org.chromium.build.annotations.DoNotClassMerge;
 import org.chromium.chrome.browser.commerce.PriceUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.proto.ShoppingPersistedTabData.ShoppingPersistedTabDataProto;
@@ -1029,9 +1030,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                     ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                    PRICE_TRACKING_WITH_OPTIMIZATION_GUIDE_PARAM, false);
+                    PRICE_TRACKING_WITH_OPTIMIZATION_GUIDE_PARAM,
+                    PriceTrackingFeatures.isPriceTrackingEnabled());
         }
-        return false;
+        return PriceTrackingFeatures.isPriceTrackingEnabled();
     }
 
     /**

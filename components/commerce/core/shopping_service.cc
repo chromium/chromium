@@ -415,6 +415,12 @@ bool ShoppingService::IsMerchantViewerEnabled() {
                                       country_on_startup_, locale_on_startup_);
 }
 
+bool ShoppingService::IsCommercePriceTrackingEnabled() {
+  return IsRegionLockedFeatureEnabled(kCommercePriceTracking,
+                                      kCommercePriceTrackingRegionLaunched,
+                                      country_on_startup_, locale_on_startup_);
+}
+
 void ShoppingService::HandleOptGuideProductInfoResponse(
     const GURL& url,
     ProductInfoCallback callback,

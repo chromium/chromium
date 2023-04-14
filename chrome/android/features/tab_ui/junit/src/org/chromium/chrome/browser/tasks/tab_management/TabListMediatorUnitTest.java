@@ -474,6 +474,7 @@ public class TabListMediatorUnitTest {
         PseudoTab.clearForTesting();
         TabAttributeCache.clearAllForTesting();
         getGroupTitleSharedPreferences().edit().clear();
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(null);
     }
 
     private static SharedPreferences getGroupTitleSharedPreferences() {
@@ -3883,9 +3884,9 @@ public class TabListMediatorUnitTest {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
         testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                PriceTrackingFeatures.PRICE_TRACKING_PARAM, String.valueOf(value));
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
                 PriceTrackingFeatures.PRICE_DROP_IPH_ENABLED_PARAM, String.valueOf(value));
         FeatureList.setTestValues(testValues);
+
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(value);
     }
 }

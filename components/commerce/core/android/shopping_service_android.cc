@@ -284,4 +284,12 @@ bool ShoppingServiceAndroid::IsMerchantViewerEnabled(
   return shopping_service_->IsMerchantViewerEnabled();
 }
 
+bool ShoppingServiceAndroid::IsCommercePriceTrackingEnabled(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  CHECK(shopping_service_);
+
+  return shopping_service_->IsCommercePriceTrackingEnabled();
+}
+
 }  // namespace commerce

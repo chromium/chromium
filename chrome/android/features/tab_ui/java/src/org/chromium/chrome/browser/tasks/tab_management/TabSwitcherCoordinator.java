@@ -319,8 +319,7 @@ public class TabSwitcherCoordinator
                             LargeMessageCardViewBinder::bind);
                 }
 
-                if (PriceTrackingFeatures.isPriceTrackingEnabled()
-                        && PriceTrackingFeatures.getPriceTrackingEnabled()) {
+                if (PriceTrackingFeatures.isPriceTrackingEnabled()) {
                     mPriceAnnotationsPrefObserver = key -> {
                         if (PriceTrackingUtilities.TRACK_PRICES_ON_TABS.equals(key)
                                 && !mTabModelSelector.isIncognitoSelected()
