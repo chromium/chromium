@@ -106,6 +106,12 @@ class MockPasswordManagerPorter : public PasswordManagerPorterInterface {
                password_manager::PasswordForm::Store to_store,
                ImportResultsCallback results_callback),
               (override));
+  MOCK_METHOD(void,
+              ContinueImport,
+              (const std::vector<int>& selected_ids,
+               ImportResultsCallback results_callback),
+              (override));
+  MOCK_METHOD(void, ResetImporter, (bool delete_file), (override));
 };
 
 class FakePasswordManagerPorter : public PasswordManagerPorterInterface {
@@ -127,6 +133,17 @@ class FakePasswordManagerPorter : public PasswordManagerPorterInterface {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(results_callback), results));
   }
+
+  void ContinueImport(const std::vector<int>& selected_ids,
+                      ImportResultsCallback results_callback) override {
+    password_manager::ImportResults results;
+    results.status = import_results_status_;
+    // For consistency |results_callback| is always run asynchronously.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(results_callback), results));
+  }
+
+  void ResetImporter(bool delete_file) override {}
 
   void set_import_result_status(
       password_manager::ImportResults::Status status) {
@@ -591,13 +608,63 @@ TEST_F(PasswordsPrivateDelegateImplTest,
       password_manager::ImportResults::Status::BAD_FORMAT;
   fake_porter_ptr->set_import_result_status(kExpectedStatus);
 
+  base::MockCallback<PasswordsPrivateDelegate::ImportResultsCallback> callback;
+  EXPECT_CALL(callback, Run(::testing::Field(
+                            &api::passwords_private::ImportResults::status,
+                            api::passwords_private::ImportResultsStatus::
+                                IMPORT_RESULTS_STATUS_BAD_FORMAT)))
+      .Times(1);
   delegate->ImportPasswords(
       api::passwords_private::PasswordStoreSet::PASSWORD_STORE_SET_ACCOUNT,
-      base::DoNothing(), web_contents.get());
+      callback.Get(), web_contents.get());
   task_environment()->RunUntilIdle();
 
   histogram_tester().ExpectUniqueSample("PasswordManager.ImportResultsStatus2",
                                         kExpectedStatus, 1);
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest,
+       ContinueImportLogsImportResultsStatus) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(),
+                                                        /*instance=*/nullptr);
+  auto* client =
+      MockPasswordManagerClient::CreateForWebContentsAndGet(web_contents.get());
+  scoped_refptr<PasswordsPrivateDelegateImpl> delegate = CreateDelegate();
+
+  auto fake_porter = std::make_unique<FakePasswordManagerPorter>();
+  auto* fake_porter_ptr = fake_porter.get();
+  delegate->SetPorterForTesting(std::move(fake_porter));
+
+  ON_CALL(*(client->GetPasswordFeatureManager()), IsOptedInForAccountStorage)
+      .WillByDefault(Return(false));
+
+  const auto kExpectedStatus =
+      password_manager::ImportResults::Status::BAD_FORMAT;
+  fake_porter_ptr->set_import_result_status(kExpectedStatus);
+
+  base::MockCallback<PasswordsPrivateDelegate::ImportResultsCallback> callback;
+  EXPECT_CALL(callback, Run(::testing::Field(
+                            &api::passwords_private::ImportResults::status,
+                            api::passwords_private::ImportResultsStatus::
+                                IMPORT_RESULTS_STATUS_BAD_FORMAT)))
+      .Times(1);
+  delegate->ContinueImport(/*selected_ids=*/{}, callback.Get());
+  task_environment()->RunUntilIdle();
+
+  histogram_tester().ExpectUniqueSample("PasswordManager.ImportResultsStatus2",
+                                        kExpectedStatus, 1);
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest, ResetImporter) {
+  auto delegate = CreateDelegate();
+
+  auto mock_porter = std::make_unique<MockPasswordManagerPorter>();
+  auto* mock_porter_ptr = mock_porter.get();
+  delegate->SetPorterForTesting(std::move(mock_porter));
+
+  EXPECT_CALL(*mock_porter_ptr, ResetImporter).Times(1);
+  delegate->ResetImporter(/*delete_file=*/false);
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, ChangeSavedPassword) {

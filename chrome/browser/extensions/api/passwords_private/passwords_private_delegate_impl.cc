@@ -668,17 +668,14 @@ void PasswordsPrivateDelegateImpl::ImportPasswords(
 void PasswordsPrivateDelegateImpl::ContinueImport(
     const std::vector<int>& selected_ids,
     ImportResultsCallback results_callback) {
-  // TODO(crbug/1417650): Implement PasswordManagerPorter::ContinueImport
   // TODO(crbug/1417650): Add re-auth before ContinueImport.
-  extensions::api::passwords_private::ImportResults private_results;
-  private_results.status = extensions::api::passwords_private::
-      ImportResultsStatus::IMPORT_RESULTS_STATUS_UNKNOWN_ERROR;
-  std::move(results_callback).Run(private_results);
+  password_manager_porter_->ContinueImport(
+      selected_ids,
+      base::BindOnce(&ConvertImportResults).Then(std::move(results_callback)));
 }
 
 void PasswordsPrivateDelegateImpl::ResetImporter(bool delete_file) {
-  // TODO(crbug/1417650): Implement PasswordManagerPorter::ResetImporter.
-  return;
+  password_manager_porter_->ResetImporter(delete_file);
 }
 
 void PasswordsPrivateDelegateImpl::ExportPasswords(

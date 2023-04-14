@@ -49,6 +49,9 @@ class PasswordManagerPorter : public PasswordManagerPorterInterface,
   void Import(content::WebContents* web_contents,
               password_manager::PasswordForm::Store to_store,
               ImportResultsCallback results_callback) override;
+  void ContinueImport(const std::vector<int>& selected_ids,
+                      ImportResultsCallback results_callback) override;
+  void ResetImporter(bool delete_file) override;
 
   // The next export will use |exporter|, instead of creating a new instance.
   void SetExporterForTesting(
