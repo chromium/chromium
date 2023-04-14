@@ -1052,7 +1052,6 @@ suite('PasswordsSection', function() {
   test(
       'importPasswordsButtonShownOnlyWhenPasswordManagerNotDisabledByPolicy',
       async function() {
-        loadTimeData.overrideValues({showImportPasswords: false});
         const passwordsSectionImportPasswordsDisabled =
             await createPasswordsSection(
                 elementFactory, passwordManager, [], []);
@@ -1065,7 +1064,6 @@ suite('PasswordsSection', function() {
         assertTrue(
             passwordsSectionImportPasswordsDisabled.shadowRoot!
                 .querySelector<HTMLElement>('#menuImportPassword')!.hidden);
-        loadTimeData.overrideValues({showImportPasswords: true});
         passwordsSectionImportPasswordsDisabled.set(
             'prefs.credentials_enable_service.value', true);
         flush();
@@ -1078,7 +1076,6 @@ suite('PasswordsSection', function() {
       });
 
   test('importButtonOpensPasswordsImportDialog', async function() {
-    loadTimeData.overrideValues({showImportPasswords: true});
     const passwordsSection =
         await createPasswordsSection(elementFactory, passwordManager, [], []);
     assertFalse(!!passwordsSection.shadowRoot!.querySelector<HTMLElement>(

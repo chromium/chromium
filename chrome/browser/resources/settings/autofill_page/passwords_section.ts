@@ -386,9 +386,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   }
 
   private computeShowImportPasswords_(): boolean {
-    return !this.passwordManagerDisabledByPolicy_ &&
-        loadTimeData.valueExists('showImportPasswords') &&
-        loadTimeData.getBoolean('showImportPasswords');
+    return !this.passwordManagerDisabledByPolicy_;
   }
 
   private computePasswordManagerDisabledByPolicy_(): boolean {

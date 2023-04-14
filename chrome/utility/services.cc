@@ -439,9 +439,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunLanguageDetectionService);
   services.Add(RunQRCodeGeneratorService);
   services.Add(RunWebAppOriginAssociationParser);
-
-  if (base::FeatureList::IsEnabled(password_manager::features::kPasswordImport))
-    services.Add(RunCSVPasswordParser);
+  services.Add(RunCSVPasswordParser);
 
 #if !BUILDFLAG(IS_ANDROID)
   services.Add(RunProfileImporter);

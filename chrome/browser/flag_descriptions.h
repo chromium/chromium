@@ -1448,9 +1448,6 @@ extern const char kPageVisibilityPageContentAnnotationsDescription[];
 extern const char kParallelDownloadingName[];
 extern const char kParallelDownloadingDescription[];
 
-extern const char kPasswordImportName[];
-extern const char kPasswordImportDescription[];
-
 extern const char kPasswordsImportM2Name[];
 extern const char kPasswordsImportM2Description[];
 

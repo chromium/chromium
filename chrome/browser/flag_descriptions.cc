@@ -2576,10 +2576,6 @@ const char kParallelDownloadingName[] = "Parallel downloading";
 const char kParallelDownloadingDescription[] =
     "Enable parallel downloading to accelerate download speed.";
 
-const char kPasswordImportName[] = "Password import";
-const char kPasswordImportDescription[] =
-    "Import functionality in password settings.";
-
 const char kPasswordsImportM2Name[] = "Passwords Import M2";
 const char kPasswordsImportM2Description[] =
     "Extends passwords import flow in password settings with conflict "
