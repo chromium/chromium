@@ -37,9 +37,6 @@ consoles.list_view(
 defaults.set(
     bucket = "reviver",
     list_view = "reviver",
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
     service_account = "reviver-builder@chops-service-accounts.iam.gserviceaccount.com",
 )
 

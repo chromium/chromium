@@ -15,9 +15,6 @@ try_.defaults.set(
     pool = try_.DEFAULT_POOL,
     cores = 8,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )
 

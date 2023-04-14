@@ -21,9 +21,6 @@ ci.defaults.set(
     cq_mirrors_console_view = "mirrors",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     notifies = ["cr-fuchsia"],
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,

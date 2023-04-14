@@ -16,9 +16,6 @@ ci.defaults.set(
     sheriff_rotations = sheriff_rotations.CHROMIUM_FUZZ,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     notifies = ["chromesec-lkgr-failures"],
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,

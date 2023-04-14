@@ -13,9 +13,6 @@ ci.defaults.set(
     cores = 8,
     os = os.LINUX_DEFAULT,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
     service_account = "chromium-cipd-builder@chops-service-accounts.iam.gserviceaccount.com",
 )
 

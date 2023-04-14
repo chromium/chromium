@@ -20,9 +20,6 @@ try_.defaults.set(
     compilator_goma_jobs = goma.jobs.J150,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     goma_backend = goma.backend.RBE_PROD,
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
     orchestrator_cores = 2,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
 )

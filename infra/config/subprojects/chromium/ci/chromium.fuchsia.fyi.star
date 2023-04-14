@@ -18,9 +18,6 @@ ci.defaults.set(
     sheriff_rotations = sheriff_rotations.FUCHSIA,
     execution_timeout = 10 * time.hour,
     notifies = ["cr-fuchsia"],
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
     reclient_jobs = reclient.jobs.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
