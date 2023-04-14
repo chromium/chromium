@@ -225,6 +225,11 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
           std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>());
   wallpaper_controller_client_->Init();
 
+  if (ash::features::IsAmbientModeManagedScreensaverEnabled()) {
+    screensaver_images_policy_handler_ =
+        std::make_unique<policy::ScreensaverImagesPolicyHandler>();
+  }
+
   session_controller_client_ = std::make_unique<SessionControllerClientImpl>();
   session_controller_client_->Init();
   // By this point ash shell should have initialized its D-Bus signal
@@ -338,11 +343,6 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
 
   // Initialize TabScrubberChromeOS after the Ash Shell has been initialized.
   TabScrubberChromeOS::GetInstance();
-
-  if (ash::features::IsAmbientModeManagedScreensaverEnabled()) {
-    screensaver_images_policy_handler_ =
-        std::make_unique<policy::ScreensaverImagesPolicyHandler>();
-  }
 }
 
 void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {
@@ -377,7 +377,6 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   tab_cluster_ui_client_.reset();
 
   // Initialized in PostProfileInit (which may not get called in some tests).
-  screensaver_images_policy_handler_.reset();
   game_mode_controller_.reset();
   quick_answers_controller_.reset();
   ash_web_view_factory_.reset();
@@ -394,6 +393,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   g_browser_process->SetGeolocationManager(nullptr);
   system_tray_client_.reset();
   session_controller_client_.reset();
+  screensaver_images_policy_handler_.reset();
   ime_controller_client_.reset();
   in_session_auth_dialog_client_.reset();
   arc_open_url_delegate_impl_.reset();
