@@ -34,8 +34,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/get_isolated_web_app_browsing_data_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
-#include "chrome/browser/web_applications/locks/full_system_lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
@@ -444,8 +444,8 @@ void WebAppCommandScheduler::ClearWebAppBrowsingData(
     return;
   }
 
-  provider_->scheduler().ScheduleCallbackWithLock<FullSystemLock>(
-      "ClearWebAppBrowsingData", std::make_unique<FullSystemLockDescription>(),
+  provider_->scheduler().ScheduleCallbackWithLock<AllAppsLock>(
+      "ClearWebAppBrowsingData", std::make_unique<AllAppsLockDescription>(),
       base::BindOnce(web_app::ClearWebAppBrowsingData, begin_time, end_time,
                      std::move(done)),
       location);
@@ -683,15 +683,15 @@ WebAppCommandScheduler::ScheduleCallbackWithLock<SharedWebContentsWithAppLock>(
         callback,
     const base::Location& location);
 
-template void WebAppCommandScheduler::ScheduleCallbackWithLock<FullSystemLock>(
+template void WebAppCommandScheduler::ScheduleCallbackWithLock<AllAppsLock>(
     const std::string& operation_name,
-    std::unique_ptr<FullSystemLock::LockDescription> lock_description,
-    base::OnceCallback<void(FullSystemLock& lock)> callback,
+    std::unique_ptr<AllAppsLock::LockDescription> lock_description,
+    base::OnceCallback<void(AllAppsLock& lock)> callback,
     const base::Location& location);
-template void WebAppCommandScheduler::ScheduleCallbackWithLock<FullSystemLock>(
+template void WebAppCommandScheduler::ScheduleCallbackWithLock<AllAppsLock>(
     const std::string& operation_name,
-    std::unique_ptr<FullSystemLock::LockDescription> lock_description,
-    base::OnceCallback<base::Value(FullSystemLock& lock)> callback,
+    std::unique_ptr<AllAppsLock::LockDescription> lock_description,
+    base::OnceCallback<base::Value(AllAppsLock& lock)> callback,
     const base::Location& location);
 
 }  // namespace web_app

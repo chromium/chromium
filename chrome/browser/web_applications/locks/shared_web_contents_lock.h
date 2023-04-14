@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/locks/with_shared_web_contents_resources.h"

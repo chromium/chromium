@@ -29,7 +29,7 @@ class LockDescription {
     kBackgroundWebContents,
     kApp,
     kAppAndWebContents,
-    kFullSystem,
+    kAllAppsLock,
   };
 
   LockDescription(LockDescription&&);

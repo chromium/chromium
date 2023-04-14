@@ -30,8 +30,8 @@ enum class WebappUninstallSource;
 
 namespace web_app {
 
-class FullSystemLock;
-class FullSystemLockDescription;
+class AllAppsLock;
+class AllAppsLockDescription;
 class LockDescription;
 class WebAppUninstallJob;
 
@@ -59,7 +59,7 @@ class WebAppUninstallJob;
 //    a. All running WebAppUninstallJobs have been completed.
 //    b. The queue that was keeping track of app_ids that needed to be
 //    uninstalled is empty.
-class WebAppUninstallCommand : public WebAppCommandTemplate<FullSystemLock> {
+class WebAppUninstallCommand : public WebAppCommandTemplate<AllAppsLock> {
  public:
   using UninstallWebAppCallback =
       base::OnceCallback<void(webapps::UninstallResultCode)>;
@@ -74,8 +74,8 @@ class WebAppUninstallCommand : public WebAppCommandTemplate<FullSystemLock> {
       Profile* profile);
   ~WebAppUninstallCommand() override;
 
-  // WebAppCommandTemplate<FullSystemLock>:
-  void StartWithLock(std::unique_ptr<FullSystemLock> lock) override;
+  // WebAppCommandTemplate<AllAppsLock>:
+  void StartWithLock(std::unique_ptr<AllAppsLock> lock) override;
   void OnSyncSourceRemoved() override;
   void OnShutdown() override;
   const LockDescription& lock_description() const override;
@@ -117,8 +117,8 @@ class WebAppUninstallCommand : public WebAppCommandTemplate<FullSystemLock> {
                                  webapps::UninstallResultCode code);
   void MaybeFinishUninstallAndDestruct();
 
-  std::unique_ptr<FullSystemLockDescription> lock_description_;
-  std::unique_ptr<FullSystemLock> lock_;
+  std::unique_ptr<AllAppsLockDescription> lock_description_;
+  std::unique_ptr<AllAppsLock> lock_;
 
   const AppId app_id_;
   base::circular_deque<UninstallInfo> queued_uninstalls_;

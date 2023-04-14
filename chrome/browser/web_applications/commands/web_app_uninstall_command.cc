@@ -13,7 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/locks/full_system_lock.h"
+#include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -54,8 +54,8 @@ WebAppUninstallCommand::WebAppUninstallCommand(
     webapps::WebappUninstallSource uninstall_source,
     UninstallWebAppCallback callback,
     Profile* profile)
-    : WebAppCommandTemplate<FullSystemLock>("WebAppUninstallCommand"),
-      lock_description_(std::make_unique<FullSystemLockDescription>()),
+    : WebAppCommandTemplate<AllAppsLock>("WebAppUninstallCommand"),
+      lock_description_(std::make_unique<AllAppsLockDescription>()),
       app_id_(app_id),
       callback_(std::move(callback)),
       profile_prefs_(profile->GetPrefs()) {
@@ -68,8 +68,7 @@ WebAppUninstallCommand::WebAppUninstallCommand(
 
 WebAppUninstallCommand::~WebAppUninstallCommand() = default;
 
-void WebAppUninstallCommand::StartWithLock(
-    std::unique_ptr<FullSystemLock> lock) {
+void WebAppUninstallCommand::StartWithLock(std::unique_ptr<AllAppsLock> lock) {
   lock_ = std::move(lock);
 
   while (!queued_uninstalls_.empty()) {

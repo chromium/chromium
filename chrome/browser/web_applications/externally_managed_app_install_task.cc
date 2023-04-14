@@ -19,7 +19,7 @@
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/web_applications/commands/externally_managed_install_command.h"
 #include "chrome/browser/web_applications/commands/install_from_info_command.h"
-#include "chrome/browser/web_applications/locks/full_system_lock.h"
+#include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -317,13 +317,13 @@ void ExternallyManagedAppInstallTask::GetPlaceholderAppId(
     const GURL& install_url,
     WebAppManagement::Type source_type,
     base::OnceCallback<void(absl::optional<AppId>)> callback) {
-  command_scheduler_->ScheduleCallbackWithLock<FullSystemLock>(
+  command_scheduler_->ScheduleCallbackWithLock<AllAppsLock>(
       "ExternallyManagedAppInstallTask::GetPlaceholderAppId",
-      std::make_unique<FullSystemLockDescription>(),
+      std::make_unique<AllAppsLockDescription>(),
       base::BindOnce(
           [](const GURL& install_url, WebAppManagement::Type source_type,
              base::OnceCallback<void(absl::optional<AppId>)> callback,
-             FullSystemLock& lock) {
+             AllAppsLock& lock) {
             absl::optional<AppId> app_id =
                 lock.registrar().LookupPlaceholderAppId(install_url,
                                                         source_type);

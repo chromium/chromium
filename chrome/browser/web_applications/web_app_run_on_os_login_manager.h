@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/locks/full_system_lock.h"
+#include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 
@@ -32,7 +32,7 @@ class WebAppRunOnOsLoginManager {
   void RunAppsOnOsLoginForTesting();
 
  private:
-  void RunAppsOnOsLogin(FullSystemLock& lock);
+  void RunAppsOnOsLogin(AllAppsLock& lock);
   void OnAppLaunchedOnOsLogin(AppId app_id,
                               std::string app_name,
                               Browser* browser,

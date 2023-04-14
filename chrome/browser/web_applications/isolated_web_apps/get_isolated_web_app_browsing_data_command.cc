@@ -17,7 +17,7 @@
 #include "chrome/browser/browsing_data/local_data_container.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/web_applications/locks/full_system_lock.h"
+#include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/browsing_data/content/browsing_data_model.h"
@@ -146,11 +146,11 @@ class StoragePartitionSizeEstimator : private CookiesTreeModel::Observer,
 GetIsolatedWebAppBrowsingDataCommand::GetIsolatedWebAppBrowsingDataCommand(
     Profile* profile,
     BrowsingDataCallback callback)
-    : WebAppCommandTemplate<FullSystemLock>(
+    : WebAppCommandTemplate<AllAppsLock>(
           "GetIsolatedWebAppBrowsingDataCommand"),
       profile_(profile),
       callback_(std::move(callback)),
-      lock_description_(std::make_unique<FullSystemLockDescription>()),
+      lock_description_(std::make_unique<AllAppsLockDescription>()),
       browsing_data_({}) {
   debug_data_.Set("profile", profile_->GetDebugName());
 }
@@ -168,7 +168,7 @@ base::Value GetIsolatedWebAppBrowsingDataCommand::ToDebugValue() const {
 }
 
 void GetIsolatedWebAppBrowsingDataCommand::StartWithLock(
-    std::unique_ptr<FullSystemLock> lock) {
+    std::unique_ptr<AllAppsLock> lock) {
   lock_ = std::move(lock);
 
   pending_task_count_++;

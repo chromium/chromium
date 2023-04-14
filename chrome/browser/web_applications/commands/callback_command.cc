@@ -9,8 +9,8 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
-#include "chrome/browser/web_applications/locks/full_system_lock.h"
 #include "chrome/browser/web_applications/locks/lock.h"
 #include "chrome/browser/web_applications/locks/noop_lock.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
@@ -68,6 +68,6 @@ template class CallbackCommand<NoopLock>;
 template class CallbackCommand<SharedWebContentsLock>;
 template class CallbackCommand<AppLock>;
 template class CallbackCommand<SharedWebContentsWithAppLock>;
-template class CallbackCommand<FullSystemLock>;
+template class CallbackCommand<AllAppsLock>;
 
 }  // namespace web_app

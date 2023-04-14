@@ -15,7 +15,7 @@
 #include "base/stl_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/locks/full_system_lock.h"
+#include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -94,9 +94,9 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
   // Only one concurrent SynchronizeInstalledApps() expected per
   // ExternalInstallSource.
   DCHECK(!base::Contains(synchronize_requests_, install_source));
-  command_scheduler_->ScheduleCallbackWithLock<FullSystemLock>(
+  command_scheduler_->ScheduleCallbackWithLock<AllAppsLock>(
       "ExternallyManagedAppManager::SynchronizeInstalledApps",
-      std::make_unique<FullSystemLockDescription>(),
+      std::make_unique<AllAppsLockDescription>(),
       base::BindOnce(
           &ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired,
           weak_ptr_factory_.GetWeakPtr(),
@@ -108,7 +108,7 @@ void ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
     std::vector<ExternalInstallOptions> desired_apps_install_options,
     ExternalInstallSource install_source,
     SynchronizeCallback callback,
-    FullSystemLock& lock) {
+    AllAppsLock& lock) {
   std::vector<GURL> installed_urls;
   for (const auto& apps_it :
        lock.registrar().GetExternallyInstalledApps(install_source)) {

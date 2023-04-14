@@ -19,7 +19,7 @@ namespace web_app {
 class WebAppLockManager;
 
 // This lock essentially doesn't lock anything in the system. However, if a
-// `FullSystemLock` is used, then that will block the acquisition of this lock.
+// `AllAppsLock` is used, then that will block the acquisition of this lock.
 //
 // Locks can be acquired by using the `WebAppLockManager`.
 class NoopLockDescription : public LockDescription {

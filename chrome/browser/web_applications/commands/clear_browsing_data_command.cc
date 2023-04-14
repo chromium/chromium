@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "chrome/browser/web_applications/locks/full_system_lock.h"
+#include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -20,7 +20,7 @@ namespace web_app {
 void ClearWebAppBrowsingData(const base::Time& begin_time,
                              const base::Time& end_time,
                              base::OnceClosure done,
-                             FullSystemLock& lock) {
+                             AllAppsLock& lock) {
   DCHECK_LE(begin_time, end_time);
 
   WebAppSyncBridge* sync_bridge = &lock.sync_bridge();
