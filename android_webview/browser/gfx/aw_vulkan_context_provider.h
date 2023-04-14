@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -41,7 +42,9 @@ class AwVulkanContextProvider final : public viz::VulkanContextProvider {
     ~ScopedSecondaryCBDraw() { provider_->SecondaryCMBDrawSubmitted(); }
 
    private:
-    AwVulkanContextProvider* const provider_;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION AwVulkanContextProvider* const provider_;
   };
 
   AwVulkanContextProvider(const AwVulkanContextProvider&) = delete;

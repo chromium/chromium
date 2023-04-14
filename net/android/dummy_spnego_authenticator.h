@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr_exclusion.h"
 
 // Provides an interface for controlling the DummySpnegoAuthenticator service.
 // This includes a basic stub of the Mock GSSAPI library, so that OS independent
@@ -26,7 +27,9 @@ namespace net {
 
 typedef struct gss_OID_desc_struct {
   uint32_t length;
-  void* elements;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #global-scope
+  RAW_PTR_EXCLUSION void* elements;
 } gss_OID_desc, *gss_OID;
 
 extern gss_OID CHROME_GSS_SPNEGO_MECH_OID_DESC;

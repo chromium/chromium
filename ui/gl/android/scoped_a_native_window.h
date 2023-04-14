@@ -7,6 +7,7 @@
 
 #include <cstddef>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/gl/gl_export.h"
 
 struct ANativeWindow;
@@ -39,7 +40,9 @@ class GL_EXPORT ScopedANativeWindow {
 
   void DestroyIfNeeded();
 
-  ANativeWindow* a_native_window_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #constexpr-ctor-field-initializer, #global-scope
+  RAW_PTR_EXCLUSION ANativeWindow* a_native_window_ = nullptr;
 };
 
 }  // namespace gl

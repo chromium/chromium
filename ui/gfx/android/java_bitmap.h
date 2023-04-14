@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gfx_export.h"
@@ -48,7 +49,9 @@ class GFX_EXPORT JavaBitmap {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> bitmap_;
-  void* pixels_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
+  // #addr-of
+  RAW_PTR_EXCLUSION void* pixels_;
   gfx::Size size_;
   BitmapFormat format_;
   uint32_t bytes_per_row_;

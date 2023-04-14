@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "android_webview/browser/gfx/scoped_app_gl_state_restore.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace android_webview {
@@ -41,7 +42,9 @@ class ScopedAppGLStateRestoreImpl : public ScopedAppGLStateRestore::Impl {
     GLint type;
     GLint normalized;
     GLint stride;
-    GLvoid* pointer;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #addr-of
+    RAW_PTR_EXCLUSION GLvoid* pointer;
     GLint vertex_attrib_array_buffer_binding;
     GLfloat current_vertex_attrib[4];
   };
