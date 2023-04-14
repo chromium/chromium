@@ -100,7 +100,7 @@ class ArcInputOverlayManager::InputMethodObserver
   }
 
  private:
-  ArcInputOverlayManager* const owner_;
+  raw_ptr<ArcInputOverlayManager> const owner_;
 };
 
 // static
