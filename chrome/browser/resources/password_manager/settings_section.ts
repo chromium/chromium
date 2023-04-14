@@ -76,6 +76,12 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         value: false,
       },
 
+      showPasswordsImporter_: {
+        type: Boolean,
+        /* TODO(crbug/1432962): Compute based on policy. */
+        value: true,
+      },
+
       /** The visibility state of the trusted vault banner. */
       trustedVaultBannerState_: {
         type: Object,
@@ -87,6 +93,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   private blockedSites_: BlockedSite[];
   private hasPasskeys_: boolean;
   private hasPasswordsToExport_: boolean;
+  private showPasswordsImporter_: boolean;
   private trustedVaultBannerState_: TrustedVaultBannerState;
 
   private setBlockedSitesListListener_: BlockedSitesListChangedListener|null =

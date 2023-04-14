@@ -40,6 +40,13 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   private requestCredentialsDetailsResponse_:
       chrome.passwordsPrivate.PasswordUiEntry[]|null = null;
 
+  private importResults_: chrome.passwordsPrivate.ImportResults = {
+    status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
+    numberImported: 0,
+    displayedEntries: [],
+    fileName: '',
+  };
+
   constructor() {
     super([
       'addPassword',
@@ -47,6 +54,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'changeSavedPassword',
       'exportPasswords',
       'extendAuthValidity',
+      'importPasswords',
       'isAccountStoreDefault',
       'isOptedInForAccountStorage',
       'getBlockedSitesList',
@@ -301,6 +309,11 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
   removeAccountStorageOptInStateListener(
       _listener: AccountStorageOptInStateChangedListener) {
     this.listeners.accountStorageOptInStateListener = null;
+  }
+
+  importPasswords(toStore: chrome.passwordsPrivate.PasswordStoreSet) {
+    this.methodCalled('importPasswords', toStore);
+    return Promise.resolve(this.importResults_);
   }
 
   isOptedInForAccountStorage() {

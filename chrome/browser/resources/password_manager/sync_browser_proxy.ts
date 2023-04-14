@@ -22,6 +22,7 @@ export interface AccountInfo {
 
 export interface SyncInfo {
   isEligibleForAccountStorage: boolean;
+  isSyncingPasswords: boolean;
 }
 
 

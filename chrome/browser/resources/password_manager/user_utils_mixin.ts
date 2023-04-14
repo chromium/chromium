@@ -48,6 +48,12 @@ export const UserUtilMixin = dedupingMixin(
                   'isOptedInForAccountStorage, isEligibleForAccountStorage)',
             },
 
+            isSyncingPasswords: {
+              type: Boolean,
+              value: true,
+              computed: 'computeIsSyncingPasswords_(syncInfo_)',
+            },
+
             /* Email of the primary account. */
             accountEmail: {
               type: String,
@@ -67,6 +73,7 @@ export const UserUtilMixin = dedupingMixin(
         isOptedInForAccountStorage: boolean;
         isEligibleForAccountStorage: boolean;
         isAccountStoreUser: boolean;
+        isSyncingPasswords: boolean;
         accountEmail: string;
         avatarImage: string;
         private syncInfo_: SyncInfo;
@@ -123,6 +130,10 @@ export const UserUtilMixin = dedupingMixin(
           return !!this.syncInfo_ && this.syncInfo_.isEligibleForAccountStorage;
         }
 
+        private computeIsSyncingPasswords_(): boolean {
+          return !!this.syncInfo_ && this.syncInfo_.isSyncingPasswords;
+        }
+
         private computeAccountEmail_(): string {
           return (this.accountInfo_ ? this.accountInfo_.email : '');
         }
@@ -145,6 +156,7 @@ export interface UserUtilMixinInterface {
   isOptedInForAccountStorage: boolean;
   isEligibleForAccountStorage: boolean;
   isAccountStoreUser: boolean;
+  isSyncingPasswords: boolean;
   accountEmail: string;
   avatarImage: string;
   optInForAccountStorage(): void;

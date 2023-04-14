@@ -29,6 +29,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
     };
     this.syncInfo = {
       isEligibleForAccountStorage: false,
+      isSyncingPasswords: false,
     };
   }
 

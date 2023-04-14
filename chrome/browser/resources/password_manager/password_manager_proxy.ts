@@ -213,6 +213,13 @@ export interface PasswordManagerProxy {
   undoRemoveSavedPasswordOrException(): void;
 
   /**
+   * Triggers the dialog for importing passwords.
+   * @return A promise that resolves to the import results.
+   */
+  importPasswords(toStore: chrome.passwordsPrivate.PasswordStoreSet):
+      Promise<chrome.passwordsPrivate.ImportResults>;
+
+  /**
    * Queries the status of any ongoing export.
    */
   requestExportProgressStatus():
@@ -437,6 +444,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   undoRemoveSavedPasswordOrException() {
     chrome.passwordsPrivate.undoRemoveSavedPasswordOrException();
+  }
+
+  importPasswords(toStore: chrome.passwordsPrivate.PasswordStoreSet) {
+    return chrome.passwordsPrivate.importPasswords(toStore);
   }
 
   requestExportProgressStatus() {

@@ -88,12 +88,14 @@
       button-aria-description="$i18n{opensInNewTab}"
       on-click="onTrustedVaultBannerClick_" external>
   </cr-link-row>
-  <cr-link-row id="importPasswords" class="cr-row settings-cr-link-row"
-      label="$i18n{importPasswords}" role-description="button"
-      sub-label="$i18n{importPasswordsDescription}" hide-icon>
-  </cr-link-row>
+  <template is="dom-if" if="[[showPasswordsImporter_]]" restamp>
+    <passwords-importer account-email="[[accountEmail]]"
+        is-account-store-user="[[isAccountStoreUser]]"
+        is-user-syncing-passwords="[[isSyncingPasswords]]">
+    </passwords-importer>
+  </template>
   <template is="dom-if" if="[[hasPasswordsToExport_]]" restamp>
-      <passwords-exporter></passwords-exporter>
+    <passwords-exporter></passwords-exporter>
   </template>
   <cr-link-row id="addShortcutBanner" class="cr-row settings-cr-link-row"
       on-click="onAddShortcutClick_" label="$i18n{addShortcut}" hide-icon

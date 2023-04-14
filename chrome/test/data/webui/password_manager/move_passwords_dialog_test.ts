@@ -87,7 +87,10 @@ suite('AddPasswordDialogTest', function() {
       email: 'test@gmail.com',
       avatarImage: 'chrome://image-url/',
     };
-    syncProxy.syncInfo = {isEligibleForAccountStorage: true};
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: true,
+      isSyncingPasswords: false,
+    };
 
     const dialog = document.createElement('move-passwords-dialog');
     dialog.passwords = passwords;
@@ -115,7 +118,10 @@ suite('AddPasswordDialogTest', function() {
       email: 'test@gmail.com',
       avatarImage: 'chrome://image-url/',
     };
-    syncProxy.syncInfo = {isEligibleForAccountStorage: true};
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: true,
+      isSyncingPasswords: false,
+    };
 
     const dialog = document.createElement('move-passwords-dialog');
     dialog.passwords = passwords;
@@ -162,7 +168,10 @@ suite('AddPasswordDialogTest', function() {
       email: 'test@gmail.com',
       avatarImage: 'chrome://image-url/',
     };
-    syncProxy.syncInfo = {isEligibleForAccountStorage: true};
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: true,
+      isSyncingPasswords: false,
+    };
 
     const dialog = document.createElement('move-passwords-dialog');
     dialog.passwords = passwords;

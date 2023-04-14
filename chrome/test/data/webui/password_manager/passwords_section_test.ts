@@ -340,6 +340,7 @@ suite('PasswordsSectionTest', function() {
     })];
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
+      isSyncingPasswords: false,
     };
 
     const section = await createPasswordsSection();
@@ -366,6 +367,7 @@ suite('PasswordsSectionTest', function() {
     })];
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
+      isSyncingPasswords: false,
     };
 
     const section = await createPasswordsSection();
@@ -457,6 +459,7 @@ suite('PasswordsSectionTest', function() {
         passwordManager.data.groups[0]!.entries);
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
+      isSyncingPasswords: false,
     };
 
     const section = await createPasswordsSection();

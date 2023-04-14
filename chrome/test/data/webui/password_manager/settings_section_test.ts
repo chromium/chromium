@@ -338,6 +338,7 @@ suite('SettingsSectionTest', function() {
     };
     syncProxy.syncInfo = {
       isEligibleForAccountStorage: true,
+      isSyncingPasswords: false,
     };
 
     const settings = document.createElement('settings-section');
@@ -375,6 +376,7 @@ suite('SettingsSectionTest', function() {
       async function() {
         syncProxy.syncInfo = {
           isEligibleForAccountStorage: false,
+          isSyncingPasswords: false,
         };
         const settings = document.createElement('settings-section');
         document.body.appendChild(settings);
