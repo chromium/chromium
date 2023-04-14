@@ -13,8 +13,10 @@
 #include "ash/webui/color_internals/color_internals_ui.h"
 #include "ash/webui/files_internals/files_internals_ui.h"
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
+#include "ash/webui/os_feedback_ui/os_feedback_ui.h"
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
 #include "ash/webui/system_extensions_internals_ui/system_extensions_internals_ui.h"
+#include "chrome/browser/ash/os_feedback/chrome_os_feedback_delegate.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/files_internals_ui_delegate.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_manager_error_ui.h"
@@ -139,6 +141,9 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::NotificationTesterUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<ash::office_fallback::OfficeFallbackUIConfig>());
+  map.AddWebUIConfig(
+      MakeComponentConfig<ash::OSFeedbackUIConfig, ash::OSFeedbackUI,
+                          ash::ChromeOsFeedbackDelegate>());
   map.AddWebUIConfig(std::make_unique<ash::settings::OSSettingsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::ParentAccessUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::PasswordChangeUIConfig>());

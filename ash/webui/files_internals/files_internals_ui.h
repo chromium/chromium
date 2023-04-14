@@ -12,7 +12,6 @@
 #include "ash/webui/files_internals/url_constants.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
