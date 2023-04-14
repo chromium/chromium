@@ -31,6 +31,7 @@
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -130,10 +131,13 @@
       sheetPresentationController
           .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
 
-      sheetPresentationController.detents = @[
-        [UISheetPresentationControllerDetent mediumDetent],
-        [UISheetPresentationControllerDetent largeDetent]
-      ];
+      sheetPresentationController.detents =
+          ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
+              ? @[ [UISheetPresentationControllerDetent largeDetent] ]
+              : @[
+                  [UISheetPresentationControllerDetent mediumDetent],
+                  [UISheetPresentationControllerDetent largeDetent]
+                ];
     }
   }
 
