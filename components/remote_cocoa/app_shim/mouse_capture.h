@@ -5,17 +5,13 @@
 #ifndef COMPONENTS_REMOTE_COCOA_APP_SHIM_MOUSE_CAPTURE_H_
 #define COMPONENTS_REMOTE_COCOA_APP_SHIM_MOUSE_CAPTURE_H_
 
+#import <Cocoa/Cocoa.h>
+
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/remote_cocoa/app_shim/remote_cocoa_app_shim_export.h"
-
-#if defined(__OBJC__)
-@class NSWindow;
-#else
-class NSWindow;
-#endif
 
 namespace remote_cocoa {
 

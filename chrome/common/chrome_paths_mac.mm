@@ -215,13 +215,6 @@ NSBundle* OuterAppBundle() {
   return bundle;
 }
 
-bool GetUserDataDirectoryForBrowserBundle(NSBundle* bundle,
-                                          base::FilePath* result) {
-  std::unique_ptr<char, base::FreeDeleter> product_dir_name(
-      ProductDirNameForBundle(bundle));
-  return GetDefaultUserDataDirectoryForProduct(product_dir_name.get(), result);
-}
-
 bool ProcessNeedsProfileDir(const std::string& process_type) {
   // For now we have no reason to forbid this on other MacOS as we don't
   // have the roaming profile troubles there.

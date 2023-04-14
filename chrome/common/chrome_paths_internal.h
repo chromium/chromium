@@ -12,8 +12,6 @@
 #if BUILDFLAG(IS_MAC)
 #if defined(__OBJC__)
 @class NSBundle;
-#else
-class NSBundle;
 #endif
 #endif
 
@@ -63,6 +61,7 @@ bool GetUserPicturesDirectory(base::FilePath* result);
 bool GetUserVideosDirectory(base::FilePath* result);
 
 #if BUILDFLAG(IS_MAC)
+
 // Most of the application is further contained within the framework, which
 // resides in the Frameworks directory of the top-level Contents folder. The
 // framework is versioned with the full product version. This function returns
@@ -76,20 +75,16 @@ bool GetLocalLibraryDirectory(base::FilePath* result);
 // Get the global Application Support directory (under /Library/).
 bool GetGlobalApplicationSupportDirectory(base::FilePath* result);
 
+#if defined(__OBJC__)
+
 // Returns the NSBundle for the outer browser application, even when running
 // inside the helper. In unbundled applications, such as tests, returns nil.
 NSBundle* OuterAppBundle();
 
-// Get the user data directory for the Chrome browser bundle at |bundle|.
-// |bundle| should be the same value that would be returned from +[NSBundle
-// mainBundle] if Chrome were launched normaly. This is used by app shims,
-// which run from a bundle which isn't Chrome itself, but which need access to
-// the user data directory to connect to a UNIX-domain socket therein.
-// Returns false if there was a problem fetching the app data directory.
-bool GetUserDataDirectoryForBrowserBundle(NSBundle* bundle,
-                                          base::FilePath* result);
+#endif  // __OBJC__
 
 #endif  // BUILDFLAG(IS_MAC)
+
 // Checks if the |process_type| has the rights to access the profile.
 bool ProcessNeedsProfileDir(const std::string& process_type);
 
