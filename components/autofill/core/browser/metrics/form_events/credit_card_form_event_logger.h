@@ -134,6 +134,8 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   bool DoSuggestionsIncludeVirtualCard();
 
   UnmaskAuthFlowType current_authentication_flow_;
+  bool has_logged_suggestion_with_metadata_shown_ = false;
+  bool has_logged_suggestion_with_metadata_selected_ = false;
   bool has_logged_masked_server_card_suggestion_selected_ = false;
   bool has_logged_virtual_card_suggestion_selected_ = false;
   bool logged_suggestion_filled_was_masked_server_card_ = false;

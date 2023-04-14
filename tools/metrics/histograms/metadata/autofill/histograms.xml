@@ -1240,15 +1240,21 @@ chromium-metrics-reviews@google.com.
 
     2. a {CardIssuer} selected from Autofill suggestions did not have metadata
 
-    It is emitted every time Autofill suggestions shown or selected have an
-    issuer id.
+    Histograms without &quot;Once&quot; are logged every time Autofill
+    suggestions that are shown or selected have an issuer id. Histograms with
+    &quot;Once&quot; are logged once per page load.
   </summary>
   <token key="CardIssuer" variants="Autofill.CreditCardIssuerId"/>
   <token key="FormEventWithMetadata">
     <variant name="SelectedWithMetadata"
         summary="A card with issuer id was selected"/>
+    <variant name="SelectedWithMetadataOnce"
+        summary="A card with issuer id was selected, logged once per page
+                 load"/>
     <variant name="ShownWithMetadata"
         summary="A card with issuer id was shown"/>
+    <variant name="ShownWithMetadataOnce"
+        summary="A card with issuer id was shown, logged once per page load"/>
   </token>
 </histogram>
 
