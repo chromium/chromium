@@ -141,6 +141,17 @@ std::vector<uint8_t> CreateSerializedDict(
   return serialized_data;
 }
 
+std::vector<blink::mojom::SharedStorageKeyAndOrValuePtr> CreateBatchResult(
+    std::vector<std::pair<std::u16string, std::u16string>> input) {
+  std::vector<blink::mojom::SharedStorageKeyAndOrValuePtr> result;
+  for (const auto& p : input) {
+    blink::mojom::SharedStorageKeyAndOrValuePtr e =
+        blink::mojom::SharedStorageKeyAndOrValue::New(p.first, p.second);
+    result.push_back(std::move(e));
+  }
+  return result;
+}
+
 class TestClient : public blink::mojom::SharedStorageWorkletServiceClient {
  public:
   explicit TestClient(mojo::PendingAssociatedReceiver<
@@ -185,13 +196,13 @@ class TestClient : public blink::mojom::SharedStorageWorkletServiceClient {
   void SharedStorageKeys(
       mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
           pending_listener) override {
-    NOTREACHED();
+    pending_keys_listeners_.push_back(std::move(pending_listener));
   }
 
   void SharedStorageEntries(
       mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>
           pending_listener) override {
-    NOTREACHED();
+    pending_entries_listeners_.push_back(std::move(pending_listener));
   }
 
   void SharedStorageLength(SharedStorageLengthCallback callback) override {
@@ -217,6 +228,34 @@ class TestClient : public blink::mojom::SharedStorageWorkletServiceClient {
       const std::vector<blink::mojom::WebFeature>& features) override {
     observed_use_counters_.push_back(features);
   }
+
+  mojo::Remote<blink::mojom::SharedStorageEntriesListener>
+  TakeKeysListenerAtFront() {
+    CHECK(!pending_keys_listeners_.empty());
+
+    auto pending_listener = std::move(pending_keys_listeners_.front());
+    pending_keys_listeners_.pop_front();
+
+    return mojo::Remote<blink::mojom::SharedStorageEntriesListener>(
+        std::move(pending_listener));
+  }
+
+  mojo::Remote<blink::mojom::SharedStorageEntriesListener>
+  TakeEntriesListenerAtFront() {
+    CHECK(!pending_entries_listeners_.empty());
+
+    auto pending_listener = std::move(pending_entries_listeners_.front());
+    pending_entries_listeners_.pop_front();
+
+    return mojo::Remote<blink::mojom::SharedStorageEntriesListener>(
+        std::move(pending_listener));
+  }
+
+  std::deque<mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>>
+      pending_keys_listeners_;
+
+  std::deque<mojo::PendingRemote<blink::mojom::SharedStorageEntriesListener>>
+      pending_entries_listeners_;
 
   std::vector<SetParams> observed_set_params_;
   std::vector<AppendParams> observed_append_params_;
@@ -1158,6 +1197,8 @@ TEST_F(SharedStorageWorkletTest,
             "sharedStorage.clear",
             "sharedStorage.get",
             "sharedStorage.length",
+            "sharedStorage.keys",
+            "sharedStorage.entries",
             "sharedStorage.remainingBudget"
           ];
 
@@ -1167,8 +1208,6 @@ TEST_F(SharedStorageWorkletTest,
             "sharedStorage.run",
             "sharedStorage.worklet",
             "sharedStorage.context",
-            "sharedStorage.keys",
-            "sharedStorage.entries",
 
             // PrivateAggregation related variables are undefined because the
             // corresponding base::Feature(s) are not enabled.
@@ -1232,6 +1271,8 @@ TEST_F(SharedStorageWorkletTest,
             "sharedStorage.clear",
             "sharedStorage.get",
             "sharedStorage.length",
+            "sharedStorage.keys",
+            "sharedStorage.entries",
             "sharedStorage.remainingBudget"
           ];
 
@@ -1241,8 +1282,6 @@ TEST_F(SharedStorageWorkletTest,
             "sharedStorage.run",
             "sharedStorage.worklet",
             "sharedStorage.context",
-            "sharedStorage.keys",
-            "sharedStorage.entries",
 
             // PrivateAggregation related variables are undefined because the
             // corresponding base::Feature(s) are not enabled.
@@ -2124,6 +2163,278 @@ TEST_F(SharedStorageWorkletTest, Length_Success) {
 
   EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 1u);
   EXPECT_EQ(test_client_->observed_console_log_messages_[0], "123");
+}
+
+TEST_F(SharedStorageWorkletTest, Entries_OneEmptyBatch_Success) {
+  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+      class TestClass {
+        async run() {
+          for await (const [key, value] of sharedStorage.entries()) {
+            console.log(key + ';' + value);
+          }
+        }
+      }
+
+      register("test-operation", TestClass);
+  )");
+
+  base::test::TestFuture<bool, const std::string&> run_future;
+  shared_storage_worklet_service_->RunOperation(
+      "test-operation", /*serialized_data=*/{}, MaybeInitNewRemotePAHost(),
+      run_future.GetCallback());
+  shared_storage_worklet_service_.FlushForTesting();
+
+  EXPECT_FALSE(run_future.IsReady());
+  EXPECT_EQ(test_client_->pending_entries_listeners_.size(), 1u);
+
+  mojo::Remote<blink::mojom::SharedStorageEntriesListener> listener =
+      test_client_->TakeEntriesListenerAtFront();
+  listener->DidReadEntries(
+      /*success=*/true, /*error_message=*/{}, CreateBatchResult({}),
+      /*has_more_entries=*/false, /*total_queued_to_send=*/0);
+
+  RunResult run_result{run_future.Get<0>(), run_future.Get<1>()};
+  EXPECT_TRUE(run_result.success);
+
+  EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 0u);
+}
+
+TEST_F(SharedStorageWorkletTest, Entries_FirstBatchError_Failure) {
+  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+      class TestClass {
+        async run() {
+          for await (const [key, value] of sharedStorage.entries()) {
+            console.log(key + ';' + value);
+          }
+        }
+      }
+
+      register("test-operation", TestClass);
+  )");
+
+  base::test::TestFuture<bool, const std::string&> run_future;
+  shared_storage_worklet_service_->RunOperation(
+      "test-operation", /*serialized_data=*/{}, MaybeInitNewRemotePAHost(),
+      run_future.GetCallback());
+  shared_storage_worklet_service_.FlushForTesting();
+
+  EXPECT_FALSE(run_future.IsReady());
+  EXPECT_EQ(test_client_->pending_entries_listeners_.size(), 1u);
+
+  mojo::Remote<blink::mojom::SharedStorageEntriesListener> listener =
+      test_client_->TakeEntriesListenerAtFront();
+  listener->DidReadEntries(
+      /*success=*/false, /*error_message=*/"Internal error 12345",
+      CreateBatchResult({}),
+      /*has_more_entries=*/true, /*total_queued_to_send=*/0);
+
+  RunResult run_result{run_future.Get<0>(), run_future.Get<1>()};
+  EXPECT_FALSE(run_result.success);
+  EXPECT_EQ(run_result.error_message, "Error: Internal error 12345");
+
+  EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 0u);
+}
+
+TEST_F(SharedStorageWorkletTest, Entries_TwoBatches_Success) {
+  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+      class TestClass {
+        async run() {
+          for await (const [key, value] of sharedStorage.entries()) {
+            console.log(key + ';' + value);
+          }
+        }
+      }
+
+      register("test-operation", TestClass);
+  )");
+
+  base::test::TestFuture<bool, const std::string&> run_future;
+  shared_storage_worklet_service_->RunOperation(
+      "test-operation", /*serialized_data=*/{}, MaybeInitNewRemotePAHost(),
+      run_future.GetCallback());
+  shared_storage_worklet_service_.FlushForTesting();
+
+  EXPECT_FALSE(run_future.IsReady());
+  EXPECT_EQ(test_client_->pending_entries_listeners_.size(), 1u);
+
+  mojo::Remote<blink::mojom::SharedStorageEntriesListener> listener =
+      test_client_->TakeEntriesListenerAtFront();
+  listener->DidReadEntries(
+      /*success=*/true, /*error_message=*/{},
+      CreateBatchResult({{u"key0", u"value0"}}),
+      /*has_more_entries=*/true, /*total_queued_to_send=*/3);
+  shared_storage_worklet_service_.FlushForTesting();
+
+  EXPECT_FALSE(run_future.IsReady());
+  EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 1u);
+  EXPECT_EQ(test_client_->observed_console_log_messages_[0], "key0;value0");
+
+  listener->DidReadEntries(
+      /*success=*/true, /*error_message=*/{},
+      CreateBatchResult({{u"key1", u"value1"}, {u"key2", u"value2"}}),
+      /*has_more_entries=*/false, /*total_queued_to_send=*/3);
+
+  RunResult run_result{run_future.Get<0>(), run_future.Get<1>()};
+  EXPECT_TRUE(run_result.success);
+
+  EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 3u);
+  EXPECT_EQ(test_client_->observed_console_log_messages_[1], "key1;value1");
+  EXPECT_EQ(test_client_->observed_console_log_messages_[2], "key2;value2");
+}
+
+TEST_F(SharedStorageWorkletTest, Entries_SecondBatchError_Failure) {
+  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+      class TestClass {
+        async run() {
+          for await (const [key, value] of sharedStorage.entries()) {
+            console.log(key + ';' + value);
+          }
+        }
+      }
+
+      register("test-operation", TestClass);
+  )");
+
+  base::test::TestFuture<bool, const std::string&> run_future;
+  shared_storage_worklet_service_->RunOperation(
+      "test-operation", /*serialized_data=*/{}, MaybeInitNewRemotePAHost(),
+      run_future.GetCallback());
+  shared_storage_worklet_service_.FlushForTesting();
+
+  EXPECT_FALSE(run_future.IsReady());
+  EXPECT_EQ(test_client_->pending_entries_listeners_.size(), 1u);
+
+  mojo::Remote<blink::mojom::SharedStorageEntriesListener> listener =
+      test_client_->TakeEntriesListenerAtFront();
+  listener->DidReadEntries(
+      /*success=*/true, /*error_message=*/{},
+      CreateBatchResult({{u"key0", u"value0"}}),
+      /*has_more_entries=*/true, /*total_queued_to_send=*/3);
+  shared_storage_worklet_service_.FlushForTesting();
+
+  EXPECT_FALSE(run_future.IsReady());
+  EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 1u);
+  EXPECT_EQ(test_client_->observed_console_log_messages_[0], "key0;value0");
+
+  listener->DidReadEntries(
+      /*success=*/false, /*error_message=*/"Internal error 12345",
+      CreateBatchResult({}),
+      /*has_more_entries=*/true, /*total_queued_to_send=*/3);
+
+  RunResult run_result{run_future.Get<0>(), run_future.Get<1>()};
+  EXPECT_FALSE(run_result.success);
+  EXPECT_EQ(run_result.error_message, "Error: Internal error 12345");
+
+  EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 1u);
+}
+
+TEST_F(SharedStorageWorkletTest, Keys_OneBatch_Success) {
+  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+      class TestClass {
+        async run() {
+          for await (const key of sharedStorage.keys()) {
+            console.log(key);
+          }
+        }
+      }
+
+      register("test-operation", TestClass);
+  )");
+
+  base::test::TestFuture<bool, const std::string&> run_future;
+  shared_storage_worklet_service_->RunOperation(
+      "test-operation", /*serialized_data=*/{}, MaybeInitNewRemotePAHost(),
+      run_future.GetCallback());
+  shared_storage_worklet_service_.FlushForTesting();
+
+  EXPECT_FALSE(run_future.IsReady());
+  EXPECT_EQ(test_client_->pending_keys_listeners_.size(), 1u);
+
+  mojo::Remote<blink::mojom::SharedStorageEntriesListener> listener =
+      test_client_->TakeKeysListenerAtFront();
+  listener->DidReadEntries(
+      /*success=*/true, /*error_message=*/{},
+      CreateBatchResult({{u"key0", u"value0"}, {u"key1", u"value1"}}),
+      /*has_more_entries=*/false, /*total_queued_to_send=*/2);
+
+  RunResult run_result{run_future.Get<0>(), run_future.Get<1>()};
+  EXPECT_TRUE(run_result.success);
+
+  EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 2u);
+  EXPECT_EQ(test_client_->observed_console_log_messages_[0], "key0");
+  EXPECT_EQ(test_client_->observed_console_log_messages_[1], "key1");
+}
+
+TEST_F(SharedStorageWorkletTest, Keys_ManuallyCallNext) {
+  AddModuleResult add_module_result = AddModule(/*script_content=*/R"(
+      class TestClass {
+        async run() {
+          const keys_iterator = sharedStorage.keys()[Symbol.asyncIterator]();
+
+          keys_iterator.next(); // result0 skipped
+          keys_iterator.next(); // result1 skipped
+
+          const result2 = await keys_iterator.next();
+          console.log(JSON.stringify(result2, Object.keys(result2).sort()));
+
+          const result3 = await keys_iterator.next();
+          console.log(JSON.stringify(result3, Object.keys(result3).sort()));
+
+          const result4 = await keys_iterator.next();
+          console.log(JSON.stringify(result4, Object.keys(result4).sort()));
+
+          const result5 = await keys_iterator.next();
+          console.log(JSON.stringify(result5, Object.keys(result5).sort()));
+        }
+      }
+
+      register("test-operation", TestClass);
+  )");
+
+  base::test::TestFuture<bool, const std::string&> run_future;
+  shared_storage_worklet_service_->RunOperation(
+      "test-operation", /*serialized_data=*/{}, MaybeInitNewRemotePAHost(),
+      run_future.GetCallback());
+  shared_storage_worklet_service_.FlushForTesting();
+
+  EXPECT_FALSE(run_future.IsReady());
+  EXPECT_EQ(test_client_->pending_keys_listeners_.size(), 1u);
+
+  mojo::Remote<blink::mojom::SharedStorageEntriesListener> listener =
+      test_client_->TakeKeysListenerAtFront();
+  listener->DidReadEntries(
+      /*success=*/true, /*error_message=*/{},
+      CreateBatchResult({{u"key0", /*value=*/{}}}),
+      /*has_more_entries=*/true, /*total_queued_to_send=*/4);
+  shared_storage_worklet_service_.FlushForTesting();
+
+  EXPECT_FALSE(run_future.IsReady());
+  EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 0u);
+
+  listener->DidReadEntries(
+      /*success=*/true, /*error_message=*/{},
+      CreateBatchResult({{u"key1", /*value=*/{}}, {u"key2", /*value=*/{}}}),
+      /*has_more_entries=*/true, /*total_queued_to_send=*/4);
+  shared_storage_worklet_service_.FlushForTesting();
+
+  EXPECT_FALSE(run_future.IsReady());
+  EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 1u);
+  EXPECT_EQ(test_client_->observed_console_log_messages_[0],
+            "{\"done\":false,\"value\":\"key2\"}");
+
+  listener->DidReadEntries(
+      /*success=*/true, /*error_message=*/{},
+      CreateBatchResult({{u"key3", /*value=*/{}}}),
+      /*has_more_entries=*/false, /*total_queued_to_send=*/4);
+
+  RunResult run_result{run_future.Get<0>(), run_future.Get<1>()};
+  EXPECT_TRUE(run_result.success);
+
+  EXPECT_EQ(test_client_->observed_console_log_messages_.size(), 4u);
+  EXPECT_EQ(test_client_->observed_console_log_messages_[1],
+            "{\"done\":false,\"value\":\"key3\"}");
+  EXPECT_EQ(test_client_->observed_console_log_messages_[2], "{\"done\":true}");
+  EXPECT_EQ(test_client_->observed_console_log_messages_[3], "{\"done\":true}");
 }
 
 TEST_F(SharedStorageWorkletTest, RemainingBudget_ClientError) {

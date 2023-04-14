@@ -4428,12 +4428,6 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, KeysAndEntriesOperation) {
-  // crbug.com/1414951: Some functions for the blink-style worklet are yet to be
-  // implemented.
-  if (BlinkStyleWorkletImplementation()) {
-    return;
-  }
-
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
@@ -4491,12 +4485,6 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, KeysAndEntriesOperation) {
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
                        KeysAndEntriesOperation_MultipleBatches) {
-  // crbug.com/1414951: Some functions for the blink-style worklet are yet to be
-  // implemented.
-  if (BlinkStyleWorkletImplementation()) {
-    return;
-  }
-
   GURL url = https_server()->GetURL("a.test", kSimplePagePath);
   EXPECT_TRUE(NavigateToURL(shell(), url));
 

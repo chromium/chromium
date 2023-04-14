@@ -1,0 +1,13 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Async iterator returned by SharedStorage.keys() or SharedStorage.entries().
+[
+    LegacyNoInterfaceObject,
+    ActiveScriptWrappable,
+    RuntimeEnabled=SharedStorageAPI,
+    Exposed=(SharedStorageWorklet)
+] interface SharedStorageIterator {
+  [CallWith=ScriptState, RaisesException] Promise<any> next();
+};

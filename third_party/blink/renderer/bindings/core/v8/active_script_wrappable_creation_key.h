@@ -100,6 +100,7 @@ class ActiveScriptWrappableCreationKey final {
   friend class SerialPort;
   friend class ServiceWorker;
   friend class ServiceWorkerRegistration;
+  friend class SharedStorageIterator;
   friend class SharedWorker;
   friend class SmartCardReader;
   friend class SmartCardReaderPresenceObserver;

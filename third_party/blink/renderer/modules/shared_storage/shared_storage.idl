@@ -48,6 +48,18 @@ typedef (USVString or FencedFrameConfig) SharedStorageResponse;
     Exposed=SharedStorageWorklet,
     CallWith=ScriptState,
     RaisesException
+  ] SharedStorageIterator keys();
+
+  [
+    Exposed=SharedStorageWorklet,
+    CallWith=ScriptState,
+    RaisesException
+  ] SharedStorageIterator entries();
+
+  [
+    Exposed=SharedStorageWorklet,
+    CallWith=ScriptState,
+    RaisesException
   ] Promise<double> remainingBudget();
 
   [

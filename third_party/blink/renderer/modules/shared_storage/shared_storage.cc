@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/fenced_frame_config.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/modules/shared_storage/shared_storage_iterator.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet.h"
 #include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/shared_storage/util.h"
@@ -499,6 +500,34 @@ ScriptPromise SharedStorage::length(ScriptState* script_state,
           WrapPersistent(resolver), WrapPersistent(this), start_time));
 
   return promise;
+}
+
+SharedStorageIterator* SharedStorage::keys(ScriptState* script_state,
+                                           ExceptionState& exception_state) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  CHECK(execution_context->IsSharedStorageWorkletGlobalScope());
+
+  if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<SharedStorageIterator>(
+      SharedStorageIterator::Mode::kKey, execution_context,
+      GetSharedStorageWorkletServiceClient(execution_context));
+}
+
+SharedStorageIterator* SharedStorage::entries(ScriptState* script_state,
+                                              ExceptionState& exception_state) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  CHECK(execution_context->IsSharedStorageWorkletGlobalScope());
+
+  if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<SharedStorageIterator>(
+      SharedStorageIterator::Mode::kKeyValue, execution_context,
+      GetSharedStorageWorkletServiceClient(execution_context));
 }
 
 ScriptPromise SharedStorage::remainingBudget(ScriptState* script_state,
