@@ -213,6 +213,18 @@ class FileManagerPrivateOpenManageSyncSettingsFunction
   ResponseAction Run() override;
 };
 
+// Implements the chrome.fileManagerPrivate.getBulkPinProgress method.
+class FileManagerPrivateGetBulkPinProgressFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.getBulkPinProgress",
+                             FILEMANAGERPRIVATE_GETBULKPINPROGRESS)
+
+ protected:
+  ~FileManagerPrivateGetBulkPinProgressFunction() override = default;
+
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_PRIVATE_API_DRIVE_H_

@@ -39,6 +39,10 @@ namespace drive {
 class EventLogger;
 }
 
+namespace drivefs::pinning {
+struct Progress;
+}
+
 namespace extensions {
 namespace api {
 namespace file_manager_private {
@@ -176,6 +180,11 @@ CreateMountableGuestList(Profile* profile);
 bool ToRecentSourceFileType(
     extensions::api::file_manager_private::FileCategory input_category,
     ash::RecentSource::FileType* output_type);
+
+// Converts the given |progress| struct containing the progress of Drive's bulk
+// pinning to its file manager private equivalent.
+extensions::api::file_manager_private::BulkPinProgress BulkPinProgressToJs(
+    const drivefs::pinning::Progress& progress);
 
 }  // namespace util
 }  // namespace file_manager

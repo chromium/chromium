@@ -374,6 +374,30 @@ enum PolicyDefaultHandlerStatus {
   incorrect_assignment
 };
 
+// Describes the stage the bulk pinning manager is in. This enum should be kept
+// in sync with chromeos/ash/components/drivefs/drivefs_pin_manager.h
+enum BulkPinStage {
+  // Initial stage.
+  stopped,
+
+  // Paused because of unfavorable network conditions.
+  paused,
+
+  // In-progress stages.
+  getting_free_space,
+  listing_files,
+  syncing,
+
+  // Final success stage.
+  success,
+
+  // Final error stages.
+  cannot_get_free_space,
+  cannot_list_files,
+  not_enough_space,
+  cannot_enable_docs_offline
+};
+
 // These three fields together uniquely identify a task.
 dictionary FileTaskDescriptor {
   DOMString appId;
@@ -1161,6 +1185,30 @@ dictionary ParsedTrashInfoFile {
   double deletionDate;
 };
 
+// The current progress of the bulk pinning manager. This is a subset of the
+// Progress struct in chromeos/ash/components/drivefs/drivefs_pin_manager.h
+dictionary BulkPinProgress {
+  // The stage the bulk pin manager is in.
+  BulkPinStage stage;
+
+  // Estimated amount of free space on the stateful partition in bytes.
+  long freeSpaceBytes;
+
+  // Estimated amount of free space required in order to successfully complete
+  // pinning.
+  long requiredSpaceBytes;
+
+  // Estimated amount of bytes remaining to be downloaded in order to
+  // successfully complete pinning.
+  long bytesToPin;
+
+  // Bytes that have been downloaded so far.
+  long pinnedBytes;
+
+  // Total number of files to pin.
+  long filesToPin;
+};
+
 // Callback that does not take arguments.
 callback SimpleCallback = void();
 
@@ -1334,6 +1382,8 @@ callback HoldingSpaceStateCallback = void(HoldingSpaceState state);
 callback ListMountableGuestsCallback = void(MountableGuest[] guest);
 
 callback ParseTrashInfoFilesCallback = void(ParsedTrashInfoFile[] files);
+
+callback GetBulkPinProgressCallback = void(BulkPinProgress progress);
 
 interface Functions {
   // Cancels file selection.
@@ -1896,6 +1946,9 @@ interface Functions {
   [nocompile]
   static void parseTrashInfoFiles([instanceOf=Entry] object[] entries,
                                   ParseTrashInfoFilesCallback callback);
+
+  // Returns the current progress of the bulk pinning manager.
+  static void getBulkPinProgress(GetBulkPinProgressCallback callback);
 };
 
 // Events supported by fileManagerPrivate API. These events are broadcasted.
