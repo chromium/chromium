@@ -568,8 +568,8 @@ void DemoSession::RegisterDemoModeAAExperiment() {
     // The hashing salt for the AA experiment.
     std::string demo_mode_aa_experiment_hashing_salt = "fae448044d545f9c";
 
-    std::vector<std::string> best_buy_retailer_names = {"BBY", "bby", "BestBuy",
-                                                        "BBT"};
+    std::vector<std::string> best_buy_retailer_names = {"bby", "bestbuy",
+                                                        "bbt"};
     std::vector<std::string>::iterator it;
 
     it = std::find(best_buy_retailer_names.begin(),

@@ -267,7 +267,7 @@ class DemoSetupTestBase : public OobeBaseTest {
     test::OobeJS().ClickOnPath(kDemoPreferencesNext);
   }
 
-  // Type in valid input and the "continue" button is enabled.
+  // Type in valid input and verify that the "continue" button is enabled.
   void SetAndVerifyValidRetailerNameAndStoreNumber(
       const std::string& expected_retailer_name,
       const std::string& expected_store_number) {
@@ -576,7 +576,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   // it's shown again when Demo setup completes.
   LoginOrLockScreenVisibleWaiter().WaitEvenIfShown();
 
-  EXPECT_EQ("Retailer", g_browser_process->local_state()->GetString(
+  // Verify that pref value has been normalized to uppercase.
+  EXPECT_EQ("retailer", g_browser_process->local_state()->GetString(
                             prefs::kDemoModeRetailerId));
   EXPECT_EQ("1234", g_browser_process->local_state()->GetString(
                         prefs::kDemoModeStoreId));
