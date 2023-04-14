@@ -3456,6 +3456,7 @@ static_library("ui") {
       "//ui/chromeos/resources",
       "//ui/chromeos/strings",
       "//ui/chromeos/strings:strings_provider",
+      "//ui/chromeos/styles:cros_styles_resources",
       "//ui/compositor_extra",
       "//ui/display/manager",
       "//ui/events/ash",

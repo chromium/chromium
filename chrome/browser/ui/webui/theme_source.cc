@@ -47,6 +47,8 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/grit/cros_styles_resources.h"  // nogncheck crbug.com/1113869
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -119,6 +121,14 @@ void ThemeSource::StartDataRequest(
     SendColorsCss(url, wc_getter, std::move(callback));
     return;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  constexpr char kTypographyCssPath[] = "typography.css";
+  if (parsed_path == kTypographyCssPath) {
+    SendTypographyCss(std::move(callback));
+    return;
+  }
+#endif
 
   int resource_id = -1;
   if (parsed_path == "current-channel-logo") {
@@ -361,6 +371,22 @@ std::string ThemeSource::GetAccessControlAllowOriginForOrigin(
 
   return content::URLDataSource::GetAccessControlAllowOriginForOrigin(origin);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ThemeSource::SendTypographyCss(
+    content::URLDataSource::GotDataCallback callback) {
+  if (!chromeos::features::IsJellyEnabled()) {
+    std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(
+        std::string("/* This file is intentionally blank */")));
+    return;
+  }
+
+  const ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+  std::move(callback).Run(rb.LoadDataResourceBytesForScale(
+      IDR_CROS_STYLES_UI_CHROMEOS_STYLES_CROS_TYPOGRAPHY_CSS,
+      ui::kScaleFactorNone));
+}
+#endif
 
 std::string ThemeSource::GetContentSecurityPolicy(
     network::mojom::CSPDirectiveName directive) {

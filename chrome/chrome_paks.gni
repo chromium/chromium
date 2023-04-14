@@ -293,6 +293,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/audio_resources.pak",
         "$root_gen_dir/chrome/bluetooth_pairing_dialog_resources.pak",
         "$root_gen_dir/chrome/cloud_upload_resources.pak",
+        "$root_gen_dir/chrome/cros_styles_resources.pak",
         "$root_gen_dir/chrome/desk_api_resources.pak",
         "$root_gen_dir/chrome/emoji_picker_resources.pak",
         "$root_gen_dir/chrome/enterprise_reporting_resources.pak",
@@ -397,6 +398,7 @@ template("chrome_extra_paks") {
         "//chrome/browser/resources/settings/chromeos:resources",
         "//chromeos/ash/resources",
         "//chromeos/resources",
+        "//ui/chromeos/styles:cros_styles_resources",
         "//ui/file_manager:file_manager_gen_resources",
         "//ui/file_manager:resources",
       ]

@@ -1058,6 +1058,10 @@
   "ui/chromeos/resources/ui_chromeos_resources.grd": {
     "structures": [4660],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/ui/chromeos/styles/cros_typography_resources.grd": {
+    "META": {"sizes": {"includes": [5],}},
+    "includes": [4678],
+  },
   "ui/chromeos/ui_chromeos_strings.grd": {
     "messages": [4680],
   },
