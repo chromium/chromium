@@ -35,7 +35,7 @@ TEST_F(CallerValidationTest, PathValidationTestFail) {
   ASSERT_FALSE(data.empty());
 
   auto notepad_process =
-      base::LaunchProcess(L"notepad.exe", base::LaunchOptions());
+      base::LaunchProcess(L"calc.exe", base::LaunchOptions());
   ASSERT_TRUE(notepad_process.IsRunning());
 
   ASSERT_FALSE(ValidateData(notepad_process, data));
@@ -49,7 +49,7 @@ TEST_F(CallerValidationTest, PathValidationTestOtherProcess) {
   // cares about the process path and not the process itself.
   {
     auto notepad_process =
-        base::LaunchProcess(L"notepad.exe", base::LaunchOptions());
+        base::LaunchProcess(L"calc.exe", base::LaunchOptions());
     ASSERT_TRUE(notepad_process.IsRunning());
 
     data = GenerateValidationData(ProtectionLevel::PATH_VALIDATION,
@@ -61,7 +61,7 @@ TEST_F(CallerValidationTest, PathValidationTestOtherProcess) {
 
   {
     auto notepad_process =
-        base::LaunchProcess(L"notepad.exe", base::LaunchOptions());
+        base::LaunchProcess(L"calc.exe", base::LaunchOptions());
     ASSERT_TRUE(notepad_process.IsRunning());
 
     ASSERT_TRUE(ValidateData(notepad_process, data));
@@ -76,7 +76,7 @@ TEST_F(CallerValidationTest, NoneValidationTestOtherProcess) {
   ASSERT_FALSE(data.empty());
 
   auto notepad_process =
-      base::LaunchProcess(L"notepad.exe", base::LaunchOptions());
+      base::LaunchProcess(L"calc.exe", base::LaunchOptions());
   ASSERT_TRUE(notepad_process.IsRunning());
 
   // None validation should not care if the process is different.
