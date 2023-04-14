@@ -53,16 +53,15 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
   absl::optional<ui::ColorId> GetDropdownSelectedBackgroundColorIdAt(
       size_t index) const override;
 
-  void SetForegroundColorId(absl::optional<ui::ColorId> foreground_color) {
+  void SetForegroundColorId(ui::ColorId foreground_color) {
     foreground_color_id_ = foreground_color;
   }
 
-  void SetBackgroundColorId(absl::optional<ui::ColorId> background_color) {
+  void SetBackgroundColorId(ui::ColorId background_color) {
     background_color_id_ = background_color;
   }
 
-  void SetSelectedBackgroundColorId(
-      absl::optional<ui::ColorId> selected_color) {
+  void SetSelectedBackgroundColorId(ui::ColorId selected_color) {
     selected_color_id_ = selected_color;
   }
 
