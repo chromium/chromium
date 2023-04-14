@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/fonts/font_matching_metrics.h"
+#include "third_party/blink/renderer/core/frame/font_matching_metrics.h"
 
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
@@ -13,8 +13,12 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/dactyloscoper.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
 #include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace {
 
@@ -24,8 +28,9 @@ template <typename T>
 HashSet<T> SetIntersection(const HashSet<T>& a, const HashSet<T>& b) {
   HashSet<T> result;
   for (const T& a_value : a) {
-    if (b.Contains(a_value))
+    if (b.Contains(a_value)) {
       result.insert(a_value);
+    }
   }
   return result;
 }
@@ -48,30 +53,30 @@ bool IdentifiabilityStudyShouldSampleFonts() {
   });
 }
 
+FontMatchingMetrics::FontLoadContext GetLoadContext(
+    ExecutionContext* execution_context) {
+  if (execution_context->IsWorkerOrWorkletGlobalScope()) {
+    return FontMatchingMetrics::kWorker;
+  }
+  if (auto* dom_window = DynamicTo<LocalDOMWindow>(execution_context)) {
+    if (dom_window->GetFrame()) {
+      return dom_window->GetFrame()->IsOutermostMainFrame()
+                 ? FontMatchingMetrics::kTopLevelFrame
+                 : FontMatchingMetrics::kSubframe;
+    }
+  }
+  return FontMatchingMetrics::kTopLevelFrame;
+}
+
 }  // namespace
 
 FontMatchingMetrics::FontMatchingMetrics(
-    bool top_level,
-    ukm::UkmRecorder* ukm_recorder,
-    ukm::SourceId source_id,
+    ExecutionContext* execution_context,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : load_context_(top_level ? kTopLevelFrame : kSubframe),
-      ukm_recorder_(ukm_recorder),
-      source_id_(source_id),
-      identifiability_metrics_timer_(
-          task_runner,
-          this,
-          &FontMatchingMetrics::IdentifiabilityMetricsTimerFired) {
-  Initialize();
-}
-
-FontMatchingMetrics::FontMatchingMetrics(
-    ukm::UkmRecorder* ukm_recorder,
-    ukm::SourceId source_id,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : load_context_(kWorker),
-      ukm_recorder_(ukm_recorder),
-      source_id_(source_id),
+    : load_context_(GetLoadContext(execution_context)),
+      ukm_recorder_(execution_context->UkmRecorder()),
+      source_id_(execution_context->UkmSourceID()),
+      execution_context_(execution_context),
       identifiability_metrics_timer_(
           task_runner,
           this,
@@ -155,8 +160,9 @@ void FontMatchingMetrics::InsertFontHashIntoMap(IdentifiableTokenKey input_key,
                                                 SimpleFontData* font_data,
                                                 TokenToTokenHashMap& hash_map) {
   DCHECK(IdentifiabilityStudyShouldSampleFonts());
-  if (hash_map.Contains(input_key))
+  if (hash_map.Contains(input_key)) {
     return;
+  }
   IdentifiableToken output_token(GetHashForFontData(font_data));
   hash_map.insert(input_key, output_token);
 
@@ -185,6 +191,9 @@ void FontMatchingMetrics::ReportFontLookupByUniqueOrFamilyName(
     const AtomicString& name,
     const FontDescription& font_description,
     SimpleFontData* resulting_font_data) {
+  Dactyloscoper::TraceFontLookup(
+      execution_context_, name, font_description,
+      Dactyloscoper::FontLookupType::kUniqueOrFamilyName);
   if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
           IdentifiableSurface::Type::kLocalFontLookupByUniqueOrFamilyName)) {
     return;
@@ -209,8 +218,15 @@ void FontMatchingMetrics::ReportFontLookupByUniqueNameOnly(
     bool is_loading_fallback) {
   // We ignore lookups that result in loading fallbacks for now as they should
   // only be temporary.
-  if (is_loading_fallback ||
-      !IdentifiabilityStudySettings::Get()->ShouldSampleType(
+  if (is_loading_fallback) {
+    return;
+  }
+
+  Dactyloscoper::TraceFontLookup(
+      execution_context_, name, font_description,
+      Dactyloscoper::FontLookupType::kUniqueNameOnly);
+
+  if (!IdentifiabilityStudySettings::Get()->ShouldSampleType(
           IdentifiableSurface::Type::kLocalFontLookupByUniqueNameOnly)) {
     return;
   }
@@ -307,8 +323,9 @@ void FontMatchingMetrics::ReportEmojiSegmentGlyphCoverage(
 }
 
 void FontMatchingMetrics::PublishIdentifiabilityMetrics() {
-  if (!IdentifiabilityStudyShouldSampleFonts())
+  if (!IdentifiabilityStudyShouldSampleFonts()) {
     return;
+  }
 
   IdentifiabilityMetricBuilder builder(source_id_);
 

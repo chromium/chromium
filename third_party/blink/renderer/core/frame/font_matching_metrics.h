@@ -2,25 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_MATCHING_METRICS_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_MATCHING_METRICS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FONT_MATCHING_METRICS_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FONT_MATCHING_METRICS_H_
 
 #include "base/task/single_thread_task_runner.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-
-namespace ukm {
-class UkmRecorder;
-}  // namespace ukm
 
 namespace blink {
 
@@ -77,20 +73,13 @@ struct IdentifiableTokenKeyHashTraits
 // family lookups are de-duped according to the generic name, the
 // GenericFamilyType and the script. Both types of lookup events are reported
 // regularly.
-class PLATFORM_EXPORT FontMatchingMetrics {
+class FontMatchingMetrics {
  public:
   enum FontLoadContext { kTopLevelFrame = 0, kSubframe, kWorker };
 
-  // Create a FontMatchingMetrics objects for a frame, with |top_level|
-  // indicating whether it is a mainframe.
-  FontMatchingMetrics(bool top_level,
-                      ukm::UkmRecorder* ukm_recorder,
-                      ukm::SourceId source_id,
-                      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-
-  // Create a FontMatchingMetrics objects for a worker.
-  FontMatchingMetrics(ukm::UkmRecorder* ukm_recorder,
-                      ukm::SourceId source_id,
+  // Create a FontMatchingMetrics objects for a document or a worker. The
+  // corresponding ExecutionContext `execution_context` must outlive this.
+  FontMatchingMetrics(ExecutionContext* execution_context,
                       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // Called when a page attempts to match a font family, and the font family is
@@ -256,9 +245,11 @@ class PLATFORM_EXPORT FontMatchingMetrics {
   ukm::UkmRecorder* const ukm_recorder_;
   const ukm::SourceId source_id_;
 
+  WeakPersistent<ExecutionContext> execution_context_;
+
   TaskRunnerTimer<FontMatchingMetrics> identifiability_metrics_timer_;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_MATCHING_METRICS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_FONT_MATCHING_METRICS_H_
