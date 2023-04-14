@@ -31,6 +31,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -219,6 +220,7 @@ public class BottomSheetControllerTest {
     @MediumTest
     @Feature({"BottomSheetController"})
     @Features.DisableFeatures({ChromeFeatureList.BOTTOM_SHEET_GTS_SUPPORT})
+    @RequiresRestart("Requires re-creating BottomSheetManager for flag change.")
     public void testSheetPeekAfterTabSwitcher() throws TimeoutException {
         requestContentInSheet(mLowPriorityContent, true);
         enterAndExitTabSwitcher();
@@ -259,6 +261,7 @@ public class BottomSheetControllerTest {
     @MediumTest
     @Feature({"BottomSheetController"})
     @Features.DisableFeatures({ChromeFeatureList.BOTTOM_SHEET_GTS_SUPPORT})
+    @RequiresRestart("Requires re-creating BottomSheetManager for flag change.")
     public void testSheetHiddenAfterTabSwitcher() throws TimeoutException {
         // Open a second tab.
         Tab tab1 = mActivity.getActivityTab();
