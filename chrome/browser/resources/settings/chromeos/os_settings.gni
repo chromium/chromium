@@ -414,7 +414,6 @@ non_web_component_files = [
   "controls/cr_policy_pref_mixin.ts",
   "controls/pref_control_mixin.ts",
   "controls/settings_boolean_control_mixin.ts",
-  "i18n_setup.ts",
 ]
 
 mojom_webui_files = [

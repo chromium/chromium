@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_button/cr_button.js';
-import '../i18n_setup.js';
+import '../strings.m.js';
 import '../settings_shared.css.js';
 
 import {assert} from '//resources/js/assert_ts.js';
