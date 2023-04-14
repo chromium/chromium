@@ -18,10 +18,11 @@
 namespace gpu {
 
 ExternalVkImageSkiaImageRepresentation::ExternalVkImageSkiaImageRepresentation(
+    GrDirectContext* gr_context,
     SharedImageManager* manager,
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker)
-    : SkiaImageRepresentation(manager, backing, tracker),
+    : SkiaImageRepresentation(gr_context, manager, backing, tracker),
       context_state_(backing_impl()->context_state()) {}
 
 ExternalVkImageSkiaImageRepresentation::

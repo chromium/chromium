@@ -58,10 +58,11 @@ class RawDrawImageBacking::RasterRawDrawImageRepresentation
 class RawDrawImageBacking::SkiaRawDrawImageRepresentation
     : public SkiaImageRepresentation {
  public:
-  SkiaRawDrawImageRepresentation(SharedImageManager* manager,
+  SkiaRawDrawImageRepresentation(GrDirectContext* gr_context,
+                                 SharedImageManager* manager,
                                  SharedImageBacking* backing,
                                  MemoryTypeTracker* tracker)
-      : SkiaImageRepresentation(manager, backing, tracker) {}
+      : SkiaImageRepresentation(gr_context, manager, backing, tracker) {}
 
   bool SupportsMultipleConcurrentReadAccess() override { return true; }
 
@@ -153,8 +154,8 @@ std::unique_ptr<SkiaImageRepresentation> RawDrawImageBacking::ProduceSkiaGanesh(
   if (!context_state_)
     context_state_ = context_state;
   DCHECK(context_state_ == context_state);
-  return std::make_unique<SkiaRawDrawImageRepresentation>(manager, this,
-                                                          tracker);
+  return std::make_unique<SkiaRawDrawImageRepresentation>(
+      context_state->gr_context(), manager, this, tracker);
 }
 
 void RawDrawImageBacking::ResetPaintOpBuffer() {

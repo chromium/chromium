@@ -22,6 +22,9 @@
 
 namespace gpu {
 
+///////////////////////////////////////////////////////////////////////////////
+// SharedImageRepresentation
+
 SharedImageRepresentation::SharedImageRepresentation(
     SharedImageManager* manager,
     SharedImageBacking* backing,
@@ -55,6 +58,9 @@ size_t SharedImageRepresentation::NumPlanesExpected() const {
   return static_cast<size_t>(format().NumberOfPlanes());
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// GLTextureImageRepresentationBase
+
 std::unique_ptr<GLTextureImageRepresentation::ScopedAccess>
 GLTextureImageRepresentationBase::BeginScopedAccess(
     GLenum mode,
@@ -87,6 +93,9 @@ bool GLTextureImageRepresentationBase::SupportsMultipleConcurrentReadAccess() {
   return false;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// GLTextureImageRepresentation
+
 gpu::TextureBase* GLTextureImageRepresentation::GetTextureBase(
     int plane_index) {
   return GetTexture(plane_index);
@@ -115,6 +124,9 @@ void GLTextureImageRepresentation::UpdateClearedStateOnBeginAccess() {
     texture->SetLevelClearedRect(texture->target(), 0, cleared_rect);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// GLTexturePassthroughImageRepresentation
+
 gpu::TextureBase* GLTexturePassthroughImageRepresentation::GetTextureBase(
     int plane_index) {
   return GetTexturePassthrough(plane_index).get();
@@ -130,6 +142,18 @@ bool GLTexturePassthroughImageRepresentation::
     NeedsSuspendAccessForDXGIKeyedMutex() const {
   return false;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// SkiaImageRepresentation
+
+SkiaImageRepresentation::SkiaImageRepresentation(GrDirectContext* gr_context,
+                                                 SharedImageManager* manager,
+                                                 SharedImageBacking* backing,
+                                                 MemoryTypeTracker* tracker)
+    : SharedImageRepresentation(manager, backing, tracker),
+      gr_context_(gr_context) {}
+
+SkiaImageRepresentation::~SkiaImageRepresentation() = default;
 
 bool SkiaImageRepresentation::SupportsMultipleConcurrentReadAccess() {
   return false;
@@ -364,6 +388,9 @@ SkiaImageRepresentation::BeginScopedReadAccess(
       std::move(promise_image_textures), std::move(end_state));
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// OverlayImageRepresentation
+
 #if BUILDFLAG(IS_ANDROID)
 AHardwareBuffer* OverlayImageRepresentation::GetAHardwareBuffer() {
   NOTREACHED();
@@ -427,6 +454,9 @@ OverlayImageRepresentation::BeginScopedReadAccess() {
       std::move(acquire_fence));
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// DawnImageRepresentation
+
 DawnImageRepresentation::ScopedAccess::ScopedAccess(
     base::PassKey<DawnImageRepresentation> /* pass_key */,
     DawnImageRepresentation* representation,
@@ -460,6 +490,9 @@ DawnImageRepresentation::BeginScopedAccess(
       base::PassKey<DawnImageRepresentation>(), this, texture);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// SharedImageRepresentationFactoryRef
+
 SharedImageRepresentationFactoryRef::SharedImageRepresentationFactoryRef(
     SharedImageManager* manager,
     SharedImageBacking* backing,
@@ -482,6 +515,9 @@ SharedImageRepresentationFactoryRef::~SharedImageRepresentationFactoryRef() {
     backing()->MarkForDestruction();
   }
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// VaapiImageRepresentation
 
 VaapiImageRepresentation::VaapiImageRepresentation(
     SharedImageManager* manager,
@@ -513,6 +549,9 @@ VaapiImageRepresentation::BeginScopedWriteAccess() {
       base::PassKey<VaapiImageRepresentation>(), this);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// MemoryImageRepresentation
+
 MemoryImageRepresentation::ScopedReadAccess::ScopedReadAccess(
     base::PassKey<MemoryImageRepresentation> pass_key,
     MemoryImageRepresentation* representation,
@@ -526,6 +565,9 @@ MemoryImageRepresentation::BeginScopedReadAccess() {
   return std::make_unique<ScopedReadAccess>(
       base::PassKey<MemoryImageRepresentation>(), this, BeginReadAccess());
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// RasterImageRepresentation
 
 RasterImageRepresentation::ScopedReadAccess::ScopedReadAccess(
     base::PassKey<RasterImageRepresentation> pass_key,
@@ -573,6 +615,9 @@ RasterImageRepresentation::BeginScopedWriteAccess(
       BeginWriteAccess(std::move(context_state), final_msaa_count,
                        surface_props, clear_color, visible));
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// VideoDecodeImageRepresentation
 
 VideoDecodeImageRepresentation::VideoDecodeImageRepresentation(
     SharedImageManager* manager,

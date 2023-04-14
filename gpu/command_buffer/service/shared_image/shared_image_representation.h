@@ -19,6 +19,7 @@
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -72,6 +73,9 @@ enum class RepresentationAccessMode {
   kRead,
   kWrite,
 };
+
+///////////////////////////////////////////////////////////////////////////////
+// SharedImageRepresentation
 
 // A representation of a SharedImageBacking for use with a specific use case /
 // api.
@@ -154,6 +158,8 @@ class GPU_GLES2_EXPORT SharedImageRepresentation {
   bool has_scoped_access_ = false;
 };
 
+///////////////////////////////////////////////////////////////////////////////
+// SharedImageRepresentationFactoryRef
 class SharedImageRepresentationFactoryRef : public SharedImageRepresentation {
  public:
   SharedImageRepresentationFactoryRef(SharedImageManager* manager,
@@ -178,6 +184,9 @@ class SharedImageRepresentationFactoryRef : public SharedImageRepresentation {
  private:
   const bool is_primary_;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+// GLTextureImageRepresentationBase
 
 class GPU_GLES2_EXPORT GLTextureImageRepresentationBase
     : public SharedImageRepresentation {
@@ -227,6 +236,9 @@ class GPU_GLES2_EXPORT GLTextureImageRepresentationBase
   virtual bool SupportsMultipleConcurrentReadAccess();
 };
 
+///////////////////////////////////////////////////////////////////////////////
+// GLTextureImageRepresentation
+
 class GPU_GLES2_EXPORT GLTextureImageRepresentation
     : public GLTextureImageRepresentationBase {
  public:
@@ -248,6 +260,9 @@ class GPU_GLES2_EXPORT GLTextureImageRepresentation
   void UpdateClearedStateOnBeginAccess() override;
   void UpdateClearedStateOnEndAccess() override;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+// GLTexturePassthroughImageRepresentation
 
 class GPU_GLES2_EXPORT GLTexturePassthroughImageRepresentation
     : public GLTextureImageRepresentationBase {
@@ -274,6 +289,9 @@ class GPU_GLES2_EXPORT GLTexturePassthroughImageRepresentation
  private:
   friend class WrappedGLTexturePassthroughCompoundImageRepresentation;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+// SkiaImageRepresentation
 
 class GPU_GLES2_EXPORT SkiaImageRepresentation
     : public SharedImageRepresentation {
@@ -357,10 +375,11 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
     std::unique_ptr<GrBackendSurfaceMutableState> end_state_;
   };
 
-  SkiaImageRepresentation(SharedImageManager* manager,
+  SkiaImageRepresentation(GrDirectContext* gr_context,
+                          SharedImageManager* manager,
                           SharedImageBacking* backing,
-                          MemoryTypeTracker* tracker)
-      : SharedImageRepresentation(manager, backing, tracker) {}
+                          MemoryTypeTracker* tracker);
+  ~SkiaImageRepresentation() override;
 
   // Note: See BeginWriteAccess below for a description of the semaphore
   // parameters.
@@ -444,7 +463,12 @@ class GPU_GLES2_EXPORT SkiaImageRepresentation
       std::vector<GrBackendSemaphore>* end_semaphores,
       std::unique_ptr<GrBackendSurfaceMutableState>* end_state) = 0;
   virtual void EndReadAccess() = 0;
+
+  raw_ptr<GrDirectContext> gr_context_ = nullptr;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+// DawnImageRepresentation
 
 class GPU_GLES2_EXPORT DawnImageRepresentation
     : public SharedImageRepresentation {
@@ -489,6 +513,9 @@ class GPU_GLES2_EXPORT DawnImageRepresentation
   virtual WGPUTexture BeginAccess(WGPUTextureUsage usage) = 0;
   virtual void EndAccess() = 0;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+// OverlayImageRepresentation
 
 class GPU_GLES2_EXPORT OverlayImageRepresentation
     : public SharedImageRepresentation {
@@ -582,6 +609,9 @@ class GPU_GLES2_EXPORT OverlayImageRepresentation
 #endif
 };
 
+///////////////////////////////////////////////////////////////////////////////
+// LegacyOverlayImageRepresentation
+
 #if BUILDFLAG(IS_ANDROID)
 class GPU_GLES2_EXPORT LegacyOverlayImageRepresentation
     : public SharedImageRepresentation {
@@ -600,6 +630,9 @@ class GPU_GLES2_EXPORT LegacyOverlayImageRepresentation
                                       const gfx::Rect& bounds) = 0;
 };
 #endif
+
+///////////////////////////////////////////////////////////////////////////////
+// MemoryImageRepresentation
 
 class GPU_GLES2_EXPORT MemoryImageRepresentation
     : public SharedImageRepresentation {
@@ -648,6 +681,9 @@ class VaapiDependenciesFactory {
       scoped_refptr<gfx::NativePixmap> pixmap) = 0;
 };
 
+///////////////////////////////////////////////////////////////////////////////
+// VaapiImageRepresentation
+
 // Representation of a SharedImageBacking as a VA-API surface.
 // This representation is currently only supported by OzoneImageBacking.
 //
@@ -690,6 +726,9 @@ class GPU_GLES2_EXPORT VaapiImageRepresentation
   virtual void EndAccess() = 0;
   virtual void BeginAccess() = 0;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+// RasterImageRepresentation
 
 // Representation of a SharedImageBacking for raster work.
 // This representation is used for raster work and compositor. The raster work
@@ -768,6 +807,9 @@ class GPU_GLES2_EXPORT RasterImageRepresentation
       bool visible) = 0;
   virtual void EndWriteAccess(base::OnceClosure callback) = 0;
 };
+
+///////////////////////////////////////////////////////////////////////////////
+// VideoDecodeImageRepresentation
 
 class GPU_GLES2_EXPORT VideoDecodeImageRepresentation
     : public SharedImageRepresentation {

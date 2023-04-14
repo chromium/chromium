@@ -194,7 +194,10 @@ SkiaIOSurfaceRepresentation::SkiaIOSurfaceRepresentation(
     scoped_refptr<SharedContextState> context_state,
     std::vector<sk_sp<SkPromiseImageTexture>> promise_textures,
     MemoryTypeTracker* tracker)
-    : SkiaImageRepresentation(manager, backing, tracker),
+    : SkiaImageRepresentation(context_state->gr_context(),
+                              manager,
+                              backing,
+                              tracker),
       egl_state_(egl_state),
       context_state_(std::move(context_state)),
       promise_textures_(promise_textures) {

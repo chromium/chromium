@@ -64,10 +64,11 @@ gl::ScopedEGLImage CreateEGLImage(VkImage image,
 class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
     : public SkiaImageRepresentation {
  public:
-  SkiaAngleVulkanImageRepresentation(SharedImageManager* manager,
+  SkiaAngleVulkanImageRepresentation(GrDirectContext* gr_context,
+                                     SharedImageManager* manager,
                                      AngleVulkanImageBacking* backing,
                                      MemoryTypeTracker* tracker)
-      : SkiaImageRepresentation(manager, backing, tracker),
+      : SkiaImageRepresentation(gr_context, manager, backing, tracker),
         context_state_(backing_impl()->context_state_) {}
 
   ~SkiaAngleVulkanImageRepresentation() override = default;
@@ -354,8 +355,8 @@ AngleVulkanImageBacking::ProduceSkiaGanesh(
     scoped_refptr<SharedContextState> context_state) {
   if (context_state->GrContextIsVulkan()) {
     DCHECK_EQ(context_state_, context_state.get());
-    return std::make_unique<SkiaAngleVulkanImageRepresentation>(manager, this,
-                                                                tracker);
+    return std::make_unique<SkiaAngleVulkanImageRepresentation>(
+        context_state->gr_context(), manager, this, tracker);
   }
   // If it is not vulkan context, it must be GL context being used with Skia
   // over passthrough command decoder.

@@ -818,7 +818,7 @@ ExternalVkImageBacking::ProduceSkiaGanesh(
     // should also be using Vulkan.
     DCHECK_EQ(context_state_, context_state);
     return std::make_unique<ExternalVkImageSkiaImageRepresentation>(
-        manager, this, tracker);
+        context_state->gr_context(), manager, this, tracker);
   }
   // If it is not vulkan context, it must be GL context being used with Skia
   // over passthrough command decoder.

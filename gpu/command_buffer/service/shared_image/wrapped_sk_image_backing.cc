@@ -47,7 +47,10 @@ class WrappedSkImageBacking::SkiaImageRepresentationImpl
                               SharedImageBacking* backing,
                               MemoryTypeTracker* tracker,
                               scoped_refptr<SharedContextState> context_state)
-      : SkiaImageRepresentation(manager, backing, tracker),
+      : SkiaImageRepresentation(context_state->gr_context(),
+                                manager,
+                                backing,
+                                tracker),
         context_state_(std::move(context_state)) {}
 
   ~SkiaImageRepresentationImpl() override { DCHECK(write_surfaces_.empty()); }
