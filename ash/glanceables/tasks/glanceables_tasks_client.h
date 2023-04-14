@@ -24,6 +24,7 @@ class ASH_EXPORT GlanceablesTasksClient {
       base::OnceCallback<void(ui::ListModel<GlanceablesTaskList>* task_lists)>;
   using GetTasksCallback =
       base::OnceCallback<void(ui::ListModel<GlanceablesTask>* tasks)>;
+  using MarkAsCompletedCallback = base::OnceCallback<void(bool success)>;
 
   // Fetches all the authenticated user's task lists and invokes `callback` when
   // done.
@@ -34,11 +35,12 @@ class ASH_EXPORT GlanceablesTasksClient {
   virtual void GetTasks(const std::string& task_list_id,
                         GetTasksCallback callback) = 0;
 
-  // Marks the specified task in the specified task list as completed. Only root
-  // tasks can be marked as completed (all subtasks will be marked as completed
-  // automatically by the API).
+  // Marks the specified task in the specified task list as completed and
+  // invokes `callback` when done. Only root tasks can be marked as completed
+  // (all subtasks will be marked as completed automatically by the API).
   virtual void MarkAsCompleted(const std::string& task_list_id,
-                               const std::string& task_id) = 0;
+                               const std::string& task_id,
+                               MarkAsCompletedCallback callback) = 0;
 
  protected:
   virtual ~GlanceablesTasksClient() = default;

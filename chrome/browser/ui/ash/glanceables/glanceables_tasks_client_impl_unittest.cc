@@ -13,7 +13,6 @@
 #include "ash/glanceables/tasks/glanceables_tasks_types.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_command_line.h"
@@ -448,27 +447,28 @@ TEST_F(GlanceablesTasksClientImplTest, MarkAsCompleted) {
       .WillOnce(
           Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(""))));
 
-  TestFuture<ui::ListModel<GlanceablesTask>*> future;
-  client()->GetTasks("test-task-list-id", future.GetCallback());
-  ASSERT_TRUE(future.Wait());
+  TestFuture<ui::ListModel<GlanceablesTask>*> get_tasks_future;
+  client()->GetTasks("test-task-list-id", get_tasks_future.GetCallback());
+  ASSERT_TRUE(get_tasks_future.Wait());
 
-  auto* const tasks = future.Get();
+  auto* const tasks = get_tasks_future.Get();
   EXPECT_EQ(tasks->item_count(), 2u);
 
   testing::StrictMock<TestListModelObserver> observer;
   tasks->AddObserver(&observer);
 
-  base::RunLoop run_loop;
-  EXPECT_CALL(observer, ListItemsRemoved(/*start=*/1, /*count=*/1))
-      .WillOnce([&run_loop]() { run_loop.Quit(); });
-  client()->MarkAsCompleted("test-task-list-id", "task-2");
-  run_loop.Run();
+  EXPECT_CALL(observer, ListItemsRemoved(/*start=*/1, /*count=*/1));
+  TestFuture<bool> mark_as_completed_future;
+  client()->MarkAsCompleted("test-task-list-id", "task-2",
+                            mark_as_completed_future.GetCallback());
+  ASSERT_TRUE(mark_as_completed_future.Wait());
 
+  EXPECT_TRUE(mark_as_completed_future.Get());
   EXPECT_EQ(tasks->item_count(), 1u);
   EXPECT_EQ(tasks->GetItemAt(0)->id, "task-1");
 }
 
-TEST_F(GlanceablesTasksClientImplTest, DISABLED_MarkAsCompletedOnHttpError) {
+TEST_F(GlanceablesTasksClientImplTest, MarkAsCompletedOnHttpError) {
   EXPECT_CALL(
       request_handler(),
       HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET))))
@@ -492,16 +492,19 @@ TEST_F(GlanceablesTasksClientImplTest, DISABLED_MarkAsCompletedOnHttpError) {
       HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_PATCH))))
       .WillOnce(Return(ByMove(TestRequestHandler::CreateFailedResponse())));
 
-  TestFuture<ui::ListModel<GlanceablesTask>*> future;
-  client()->GetTasks("test-task-list-id", future.GetCallback());
-  ASSERT_TRUE(future.Wait());
+  TestFuture<ui::ListModel<GlanceablesTask>*> get_tasks_future;
+  client()->GetTasks("test-task-list-id", get_tasks_future.GetCallback());
+  ASSERT_TRUE(get_tasks_future.Wait());
 
-  const auto* const tasks = future.Get();
+  const auto* const tasks = get_tasks_future.Get();
   EXPECT_EQ(tasks->item_count(), 2u);
 
-  client()->MarkAsCompleted("test-task-list-id", "task-2");
-  base::RunLoop().RunUntilIdle();
+  TestFuture<bool> mark_as_completed_future;
+  client()->MarkAsCompleted("test-task-list-id", "task-2",
+                            mark_as_completed_future.GetCallback());
+  ASSERT_TRUE(mark_as_completed_future.Wait());
 
+  EXPECT_FALSE(mark_as_completed_future.Get());
   EXPECT_EQ(tasks->item_count(), 2u);
 }
 

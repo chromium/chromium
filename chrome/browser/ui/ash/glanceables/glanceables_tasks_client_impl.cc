@@ -155,15 +155,18 @@ void GlanceablesTasksClientImpl::GetTasks(
 
 void GlanceablesTasksClientImpl::MarkAsCompleted(
     const std::string& task_list_id,
-    const std::string& task_id) {
+    const std::string& task_id,
+    GlanceablesTasksClient::MarkAsCompletedCallback callback) {
   CHECK(!task_list_id.empty());
   CHECK(!task_id.empty());
+  CHECK(callback);
 
   GetRequestSender()->StartRequestWithAuthRetry(
       std::make_unique<PatchTaskRequest>(
           request_sender_.get(),
           base::BindOnce(&GlanceablesTasksClientImpl::OnMarkedAsCompleted,
-                         weak_factory_.GetWeakPtr(), task_list_id, task_id),
+                         weak_factory_.GetWeakPtr(), task_list_id, task_id,
+                         std::move(callback)),
           task_list_id, task_id, Task::Status::kCompleted));
 }
 
@@ -244,24 +247,29 @@ void GlanceablesTasksClientImpl::OnTasksPageFetched(
 void GlanceablesTasksClientImpl::OnMarkedAsCompleted(
     const std::string& task_list_id,
     const std::string& task_id,
+    GlanceablesTasksClient::MarkAsCompletedCallback callback,
     ApiErrorCode status_code) {
   if (status_code != ApiErrorCode::HTTP_SUCCESS) {
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
   const auto task_list_iter = tasks_in_task_lists_.find(task_list_id);
   if (task_list_iter == tasks_in_task_lists_.end()) {
+    std::move(callback).Run(/*success=*/false);
     return;
   }
   const auto task_iter = std::find_if(
       task_list_iter->second->begin(), task_list_iter->second->end(),
       [&task_id](const auto& task) { return task->id == task_id; });
   if (task_iter == task_list_iter->second->end()) {
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
   const auto task_index = task_iter - task_list_iter->second->begin();
   task_list_iter->second->RemoveAt(task_index);
+  std::move(callback).Run(/*success=*/true);
 }
 
 google_apis::RequestSender* GlanceablesTasksClientImpl::GetRequestSender() {
