@@ -701,6 +701,14 @@ AtomicString ImageResourceContent::MediaType() const {
   return AtomicString(image_->FilenameExtension());
 }
 
+base::TimeTicks ImageResourceContent::DiscoveryTime() const {
+  return discovery_time_;
+}
+
+void ImageResourceContent::SetDiscoveryTime(base::TimeTicks discovery_time) {
+  discovery_time_ = discovery_time;
+}
+
 base::TimeTicks ImageResourceContent::LoadStart() const {
   return info_->LoadStart();
 }

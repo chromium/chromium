@@ -59,6 +59,29 @@ void ValidateTraceEventHasCorrectCandidateSize(int expected_size,
   EXPECT_TRUE(traced_main_frame_flag.value());
 }
 
+void ValidateTraceEventBreakdownTimings(const TraceEvent& event,
+                                        double lcp_time) {
+  ASSERT_TRUE(event.HasDictArg("data"));
+  base::Value::Dict data = event.GetKnownArgAsDict("data");
+
+  const absl::optional<double> load_start = data.FindDouble("imageLoadStart");
+  ASSERT_TRUE(load_start.has_value());
+
+  const absl::optional<double> discovery_time =
+      data.FindDouble("imageDiscoveryTime");
+  ASSERT_TRUE(discovery_time.has_value());
+
+  const absl::optional<double> load_end = data.FindDouble("imageLoadEnd");
+  ASSERT_TRUE(load_end.has_value());
+
+  // Verify image discovery time < load start < load end < lcp time;
+  EXPECT_LT(discovery_time.value(), load_start.value());
+
+  EXPECT_LT(load_start.value(), load_end.value());
+
+  EXPECT_LT(load_end.value(), lcp_time);
+}
+
 int GetCandidateIndex(const TraceEvent& event) {
   base::Value::Dict data = event.GetKnownArgAsDict("data");
   absl::optional<int> candidate_idx = data.FindInt("candidateIndex");
@@ -156,6 +179,15 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LargestContentfulPaint) {
   ValidateTraceEventHasCorrectCandidateSize(96 * 96, *candidate_events[1]);
   // LCP_2 uses green-256x256.png, of size 16 x 16.
   ValidateTraceEventHasCorrectCandidateSize(256 * 256, *candidate_events[2]);
+
+  ValidateTraceEventBreakdownTimings(*candidate_events[0],
+                                     lcp_timestamps[0].value());
+
+  ValidateTraceEventBreakdownTimings(*candidate_events[1],
+                                     lcp_timestamps[1].value());
+
+  ValidateTraceEventBreakdownTimings(*candidate_events[2],
+                                     lcp_timestamps[2].value());
 
   ExpectMetricInLastUKMUpdateTraceEventNear(
       *trace_analyzer, "latest_largest_contentful_paint_ms",

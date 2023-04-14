@@ -229,6 +229,10 @@ class CORE_EXPORT ImageResourceContent final
   // Returns whether the resource request has been tagged as an ad.
   bool IsAdResource() const;
 
+  base::TimeTicks DiscoveryTime() const override;
+
+  void SetDiscoveryTime(base::TimeTicks discovery_time);
+
   // Records the decoded image type in a UseCounter if the image is a
   // BitmapImage. |use_counter| may be a null pointer.
   void RecordDecodedImageType(UseCounter* use_counter);
@@ -274,6 +278,8 @@ class CORE_EXPORT ImageResourceContent final
   bool has_device_pixel_ratio_header_value_;
 
   scoped_refptr<blink::Image> image_;
+
+  base::TimeTicks discovery_time_;
 
   HeapHashCountedSet<WeakMember<ImageResourceObserver>> observers_;
   HeapHashCountedSet<WeakMember<ImageResourceObserver>> finished_observers_;

@@ -200,6 +200,16 @@ LargestContentfulPaintCalculator::ImageCandidateTraceData(
   value->SetString("navigationId",
                    IdentifiersFactory::LoaderId(window->document()->Loader()));
 
+  value->SetDouble("imageDiscoveryTime",
+                   window_performance_->MonotonicTimeToDOMHighResTimeStamp(
+                       largest_image->media_timing->DiscoveryTime()));
+  value->SetDouble("imageLoadStart",
+                   window_performance_->MonotonicTimeToDOMHighResTimeStamp(
+                       largest_image->media_timing->LoadStart()));
+  value->SetDouble("imageLoadEnd",
+                   window_performance_->MonotonicTimeToDOMHighResTimeStamp(
+                       largest_image->media_timing->LoadEnd()));
+
   return value;
 }
 
