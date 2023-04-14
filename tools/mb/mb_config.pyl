@@ -161,10 +161,9 @@
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_reclient',
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel_reclient',
       'lacros-arm64-generic-rel': 'chromeos_arm64-generic_lacros_rel_reclient',
-      'linux-ash-chromium-generator-rel': 'chromeos_with_codecs_release_bot',
+      'linux-ash-chromium-generator-rel': 'chromeos_with_codecs_release_bot_reclient',
       'linux-cfm-rel': 'linux_cfm_release_bot_reclient',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot_reclient',
-      'linux-chromeos-rel': 'chromeos_with_codecs_with_lacros_release_bot',
       'linux-chromeos-rel': 'chromeos_with_codecs_with_lacros_release_bot_reclient',
       'linux-lacros-builder-rel': 'lacros_on_linux_release_bot_reclient',
       'linux-lacros-dbg': 'lacros_on_linux_debug_bot_reclient',
@@ -1248,7 +1247,7 @@
       'ios-catalyst': 'ios_catalyst_debug_static_bot_compile_only_libfuzzer_asan_no_dsyms_no_remoting',
       'ios-device': 'ios_device_release_compile_only',
       'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64',
-      'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64',
+      'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64_reclient',
       'ios-m1-simulator-cronet': 'ios_cronet_xctest_arm64',
       'ios-simulator': 'ios_simulator_code_coverage_partial_instrumentation_xctest',
       'ios-simulator-cr-recipe': 'ios_simulator_debug_static_bot_xctest',
@@ -1325,10 +1324,10 @@
     },
 
     'tryserver.chromium.tricium': {
-      'android-clang-tidy-rel': 'android_release_trybot',
+      'android-clang-tidy-rel': 'android_release_trybot_reclient',
       'fuchsia-clang-tidy-rel': 'release_trybot_fuchsia',
       'ios-clang-tidy-rel': 'ios_device_release_compile_only',
-      'linux-chromeos-clang-tidy-rel': 'chromeos_with_codecs_release_trybot',
+      'linux-chromeos-clang-tidy-rel': 'chromeos_with_codecs_release_trybot_reclient',
       'linux-clang-tidy-dbg': 'debug_bot',
       'linux-clang-tidy-rel': 'release_trybot_reclient',
       'linux-lacros-clang-tidy-rel': 'lacros_on_linux_release_trybot',
@@ -1771,6 +1770,10 @@
       'android', 'release_trybot', 'minimal_symbols', 'x86',
       'strip_debug_info', 'android_fastbuild', 'webview_monochrome',
       'disable_proguard'
+    ],
+
+    'android_release_trybot_reclient': [
+      'android', 'release_trybot_reclient', 'strip_debug_info',
     ],
 
     'android_release_trybot_x64_fastbuild_webview_trichrome': [
@@ -2273,10 +2276,6 @@
       'chromeos_with_codecs', 'release_bot_reclient',
     ],
 
-    'chromeos_with_codecs_release_trybot': [
-      'chromeos_with_codecs', 'release_trybot', 'no_symbols',
-    ],
-
     # Keep in sync with chromeos_with_codecs_release_trybot.
     'chromeos_with_codecs_release_trybot_code_coverage_reclient': [
       'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols', 'also_build_lacros_chrome',
@@ -2285,6 +2284,10 @@
 
     'chromeos_with_codecs_release_trybot_invert_fieldtrials_reclient': [
       'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols', 'invert_fieldtrials',
+    ],
+
+    'chromeos_with_codecs_release_trybot_reclient': [
+      'chromeos_with_codecs', 'release_trybot_reclient', 'no_symbols',
     ],
 
     'chromeos_with_codecs_with_lacros_release_bot_reclient': [
@@ -2973,6 +2976,10 @@
 
     'ios_simulator_debug_static_bot_xctest_arm64': [
         'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest', 'ios_disable_xcode_project_generation',
+    ],
+
+    'ios_simulator_debug_static_bot_xctest_arm64_reclient': [
+        'debug_static_bot_reclient', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest', 'ios_disable_xcode_project_generation',
     ],
 
     'ios_simulator_debug_static_bot_xctest_reclient': [
