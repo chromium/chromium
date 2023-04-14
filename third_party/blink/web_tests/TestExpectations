@@ -2968,8 +2968,6 @@ crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-010.html [ Failure 
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-011.html [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-012.html [ Failure ]
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-015.html [ Failure ]
-crbug.com/626703 [ Linux ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Timeout ]
-crbug.com/626703 [ Mac11 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-color/system-color-hightlights-vs-getSelection-001.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Timeout ]
@@ -6875,16 +6873,6 @@ crbug.com/1432272 [ Linux ] virtual/unsafe_webgpu/regress/regress-1104580.html [
 
 # TODO(crbug.com/1432448, crbug.com/1273291): Re-enable or move off waterfall.
 crbug.com/1432448 external/wpt/webnn/* [ Failure ]
-
-# Sheriff 2023-04-12
-crbug.com/1432666 [ Mac10.13 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Failure Pass ]
-crbug.com/1432666 [ Mac10.14 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Failure Pass ]
-crbug.com/1432666 [ Mac10.15 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Failure Pass ]
-crbug.com/1432666 [ Mac11-arm64 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Failure Pass ]
-crbug.com/1432666 [ Mac12 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Failure Pass ]
-crbug.com/1432666 [ Mac12-arm64 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Failure Pass ]
-crbug.com/1432666 [ Mac13 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Failure Pass ]
-crbug.com/1432666 [ Mac13-arm64 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Failure Pass ]
 
 # Sheriff 2023-04-13
 crbug.com/1432763 [ Linux ] external/wpt/fetch/metadata/generated/element-picture.https.sub.html [ Pass Timeout ]
