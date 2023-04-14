@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.directactions;
-import static org.junit.Assert.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import androidx.test.filters.MediumTest;
 

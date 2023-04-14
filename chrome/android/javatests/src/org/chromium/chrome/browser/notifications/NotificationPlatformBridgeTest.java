@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.notifications;
 
-import static org.junit.Assert.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.chromium.components.content_settings.PrefNames.NOTIFICATIONS_VIBRATE_ENABLED;
 

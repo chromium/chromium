@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.browsing_data;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import androidx.test.filters.MediumTest;

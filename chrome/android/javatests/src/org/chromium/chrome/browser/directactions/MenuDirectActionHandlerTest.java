@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.directactions;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 

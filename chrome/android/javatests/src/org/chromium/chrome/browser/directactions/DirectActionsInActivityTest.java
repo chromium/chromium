@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.directactions;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 import android.os.Bundle;

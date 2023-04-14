@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.signin;
 
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.junit.Assert.assertThat;
 
 import static org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil.createSession;
 import static org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil.createTrustedWebActivityIntent;

@@ -53,6 +53,7 @@ robolectric_library("junit") {
     "//chrome/browser/password_entry_edit/android:java_resources",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
