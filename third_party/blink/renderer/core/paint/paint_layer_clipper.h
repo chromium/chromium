@@ -158,13 +158,12 @@ class ClipRectsContext {
 // a layout tree walk and cache them for painting.
 
 class ClipRect;
-class ClipRects;
 
 class CORE_EXPORT PaintLayerClipper {
   STACK_ALLOCATED();
 
  public:
-  explicit PaintLayerClipper(const PaintLayer*, bool use_geometry_mapper);
+  explicit PaintLayerClipper(const PaintLayer*);
 
   // Computes the same thing as |background_rect| in CalculateRects(), but
   // skips applying CSS clip and the VisualOverflowRect() of |layer_|.
@@ -181,8 +180,6 @@ class CORE_EXPORT PaintLayerClipper {
                       ClipRect& foreground_rect) const;
 
  private:
-  void CalculateClipRects(const ClipRectsContext&, ClipRects&) const;
-
   ALWAYS_INLINE bool ShouldClipOverflowAlongEitherAxis(
       const ClipRectsContext&) const;
 
@@ -206,7 +203,6 @@ class CORE_EXPORT PaintLayerClipper {
   ALWAYS_INLINE PhysicalRect LocalVisualRect(const ClipRectsContext&) const;
 
   const PaintLayer* layer_;
-  bool use_geometry_mapper_;
 
   friend class PaintLayerClipperTest;
 };

@@ -35,22 +35,12 @@ TEST_F(PaintLayerClipperTest, ParentBackgroundClipRectSubpixelAccumulation) {
                            PhysicalOffset(LayoutUnit(0.25), LayoutUnit(0.35)));
 
   ClipRect background_rect_gm;
-  target_paint_layer
-      ->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateBackgroundClipRect(context, background_rect_gm);
+  target_paint_layer->Clipper().CalculateBackgroundClipRect(context,
+                                                            background_rect_gm);
 
   EXPECT_EQ(PhysicalRect(LayoutUnit(8.25), LayoutUnit(8.34375), LayoutUnit(300),
                          LayoutUnit(300)),
             background_rect_gm.Rect());
-
-  ClipRect background_rect_nogm;
-  target_paint_layer
-      ->Clipper(PaintLayer::GeometryMapperOption::kDoNotUseGeometryMapper)
-      .CalculateBackgroundClipRect(context, background_rect_nogm);
-
-  EXPECT_EQ(PhysicalRect(LayoutUnit(8.25), LayoutUnit(8.34375), LayoutUnit(300),
-                         LayoutUnit(300)),
-            background_rect_nogm.Rect());
 }
 
 TEST_F(PaintLayerClipperTest, BackgroundClipRectSubpixelAccumulation) {
@@ -66,18 +56,10 @@ TEST_F(PaintLayerClipperTest, BackgroundClipRectSubpixelAccumulation) {
                            PhysicalOffset(LayoutUnit(0.25), LayoutUnit(0.35)));
 
   ClipRect background_rect_gm;
-  target_paint_layer
-      ->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateBackgroundClipRect(context, background_rect_gm);
+  target_paint_layer->Clipper().CalculateBackgroundClipRect(context,
+                                                            background_rect_gm);
 
   EXPECT_TRUE(background_rect_gm.IsInfinite()) << background_rect_gm;
-
-  ClipRect background_rect_nogm;
-  target_paint_layer
-      ->Clipper(PaintLayer::GeometryMapperOption::kDoNotUseGeometryMapper)
-      .CalculateBackgroundClipRect(context, background_rect_nogm);
-
-  EXPECT_EQ(background_rect_gm.Rect().size, background_rect_nogm.Rect().size);
 }
 
 TEST_F(PaintLayerClipperTest, SVGBackgroundClipRectSubpixelAccumulation) {
@@ -95,18 +77,10 @@ TEST_F(PaintLayerClipperTest, SVGBackgroundClipRectSubpixelAccumulation) {
                            PhysicalOffset(LayoutUnit(0.25), LayoutUnit(0.35)));
 
   ClipRect background_rect_gm;
-  target_paint_layer
-      ->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateBackgroundClipRect(context, background_rect_gm);
+  target_paint_layer->Clipper().CalculateBackgroundClipRect(context,
+                                                            background_rect_gm);
 
   EXPECT_TRUE(background_rect_gm.IsInfinite()) << background_rect_gm;
-
-  ClipRect background_rect_nogm;
-  target_paint_layer
-      ->Clipper(PaintLayer::GeometryMapperOption::kDoNotUseGeometryMapper)
-      .CalculateBackgroundClipRect(context, background_rect_nogm);
-
-  EXPECT_EQ(background_rect_gm.Rect().size, background_rect_nogm.Rect().size);
 }
 
 TEST_F(PaintLayerClipperTest, LayoutSVGRoot) {
@@ -127,11 +101,9 @@ TEST_F(PaintLayerClipperTest, LayoutSVGRoot) {
   PhysicalOffset layer_offset;
   ClipRect background_rect, foreground_rect;
 
-  target_paint_layer
-      ->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(context,
-                      &target_paint_layer->GetLayoutObject().FirstFragment(),
-                      layer_offset, background_rect, foreground_rect);
+  target_paint_layer->Clipper().CalculateRects(
+      context, &target_paint_layer->GetLayoutObject().FirstFragment(),
+      layer_offset, background_rect, foreground_rect);
 
   EXPECT_EQ(PhysicalRect(LayoutUnit(8.25), LayoutUnit(8.35), LayoutUnit(200),
                          LayoutUnit(300)),
@@ -158,11 +130,9 @@ TEST_F(PaintLayerClipperTest, ControlClip) {
   PhysicalOffset layer_offset;
   ClipRect background_rect, foreground_rect;
 
-  target_paint_layer
-      ->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(context,
-                      &target_paint_layer->GetLayoutObject().FirstFragment(),
-                      layer_offset, background_rect, foreground_rect);
+  target_paint_layer->Clipper().CalculateRects(
+      context, &target_paint_layer->GetLayoutObject().FirstFragment(),
+      layer_offset, background_rect, foreground_rect);
   // If the PaintLayer clips overflow, the background rect is intersected with
   // the PaintLayer bounds...
   EXPECT_EQ(PhysicalRect(8, 8, 200, 300), background_rect.Rect());
@@ -187,11 +157,9 @@ TEST_F(PaintLayerClipperTest, RoundedClip) {
   PhysicalOffset layer_offset;
   ClipRect background_rect, foreground_rect;
 
-  target_paint_layer
-      ->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(context,
-                      &target_paint_layer->GetLayoutObject().FirstFragment(),
-                      layer_offset, background_rect, foreground_rect);
+  target_paint_layer->Clipper().CalculateRects(
+      context, &target_paint_layer->GetLayoutObject().FirstFragment(),
+      layer_offset, background_rect, foreground_rect);
 
   // Only the foreground rect gets hasRadius set for overflow clipping
   // of descendants.
@@ -224,11 +192,9 @@ TEST_F(PaintLayerClipperTest, RoundedClipNested) {
   PhysicalOffset layer_offset;
   ClipRect background_rect, foreground_rect;
 
-  child_paint_layer
-      ->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(context,
-                      &child_paint_layer->GetLayoutObject().FirstFragment(),
-                      layer_offset, background_rect, foreground_rect);
+  child_paint_layer->Clipper().CalculateRects(
+      context, &child_paint_layer->GetLayoutObject().FirstFragment(),
+      layer_offset, background_rect, foreground_rect);
 
   EXPECT_EQ(PhysicalRect(0, 0, 200, 300), background_rect.Rect());
   EXPECT_TRUE(background_rect.HasRadius());
@@ -255,11 +221,9 @@ TEST_F(PaintLayerClipperTest, ControlClipSelect) {
   PhysicalOffset layer_offset;
   ClipRect background_rect, foreground_rect;
 
-  target_paint_layer
-      ->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(context,
-                      &target_paint_layer->GetLayoutObject().FirstFragment(),
-                      layer_offset, background_rect, foreground_rect);
+  target_paint_layer->Clipper().CalculateRects(
+      context, &target_paint_layer->GetLayoutObject().FirstFragment(),
+      layer_offset, background_rect, foreground_rect);
 
   PhysicalRect content_box_rect = target->PhysicalContentBoxRect();
   EXPECT_GT(foreground_rect.Rect().X(),
@@ -283,11 +247,9 @@ TEST_F(PaintLayerClipperTest, LayoutSVGRootChild) {
   PhysicalOffset layer_offset;
   ClipRect background_rect, foreground_rect;
 
-  target_paint_layer
-      ->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(context,
-                      &target_paint_layer->GetLayoutObject().FirstFragment(),
-                      layer_offset, background_rect, foreground_rect);
+  target_paint_layer->Clipper().CalculateRects(
+      context, &target_paint_layer->GetLayoutObject().FirstFragment(),
+      layer_offset, background_rect, foreground_rect);
   EXPECT_EQ(PhysicalRect(8, 8, 200, 300), background_rect.Rect());
   EXPECT_EQ(PhysicalRect(8, 8, 200, 300), foreground_rect.Rect());
   EXPECT_EQ(PhysicalOffset(8, 8), layer_offset);
@@ -307,9 +269,9 @@ TEST_F(PaintLayerClipperTest, ContainPaintClip) {
   PhysicalOffset layer_offset;
   ClipRect background_rect, foreground_rect;
 
-  layer->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(context, &layer->GetLayoutObject().FirstFragment(),
-                      layer_offset, background_rect, foreground_rect);
+  layer->Clipper().CalculateRects(
+      context, &layer->GetLayoutObject().FirstFragment(), layer_offset,
+      background_rect, foreground_rect);
   EXPECT_TRUE(background_rect.IsInfinite()) << background_rect;
   EXPECT_EQ(background_rect.Rect(), foreground_rect.Rect());
   EXPECT_EQ(PhysicalOffset(), layer_offset);
@@ -317,9 +279,9 @@ TEST_F(PaintLayerClipperTest, ContainPaintClip) {
   ClipRectsContext context_clip(layer,
                                 &layer->GetLayoutObject().FirstFragment());
 
-  layer->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(context_clip, &layer->GetLayoutObject().FirstFragment(),
-                      layer_offset, background_rect, foreground_rect);
+  layer->Clipper().CalculateRects(
+      context_clip, &layer->GetLayoutObject().FirstFragment(), layer_offset,
+      background_rect, foreground_rect);
   EXPECT_EQ(PhysicalRect(0, 0, 200, 200), background_rect.Rect());
   EXPECT_EQ(PhysicalRect(0, 0, 200, 200), foreground_rect.Rect());
   EXPECT_EQ(PhysicalOffset(), layer_offset);
@@ -341,9 +303,9 @@ TEST_F(PaintLayerClipperTest, NestedContainPaintClip) {
   PhysicalOffset layer_offset;
   ClipRect background_rect, foreground_rect;
 
-  layer->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(context, &layer->GetLayoutObject().FirstFragment(),
-                      layer_offset, background_rect, foreground_rect);
+  layer->Clipper().CalculateRects(
+      context, &layer->GetLayoutObject().FirstFragment(), layer_offset,
+      background_rect, foreground_rect);
   EXPECT_EQ(PhysicalRect(0, 0, 200, 400), background_rect.Rect());
   EXPECT_EQ(PhysicalRect(0, 0, 200, 400), foreground_rect.Rect());
   EXPECT_EQ(PhysicalOffset(), layer_offset);
@@ -351,9 +313,9 @@ TEST_F(PaintLayerClipperTest, NestedContainPaintClip) {
   ClipRectsContext context_clip(
       layer->Parent(), &layer->Parent()->GetLayoutObject().FirstFragment());
 
-  layer->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(context_clip, &layer->GetLayoutObject().FirstFragment(),
-                      layer_offset, background_rect, foreground_rect);
+  layer->Clipper().CalculateRects(
+      context_clip, &layer->GetLayoutObject().FirstFragment(), layer_offset,
+      background_rect, foreground_rect);
   EXPECT_EQ(PhysicalRect(0, 0, 200, 200), background_rect.Rect());
   EXPECT_EQ(PhysicalRect(0, 0, 200, 200), foreground_rect.Rect());
   EXPECT_EQ(PhysicalOffset(), layer_offset);
@@ -377,9 +339,9 @@ TEST_F(PaintLayerClipperTest, CSSClip) {
   PhysicalOffset layer_offset = infinite_rect.offset;
   ClipRect background_rect(infinite_rect);
   ClipRect foreground_rect(infinite_rect);
-  target->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(context, &target->GetLayoutObject().FirstFragment(),
-                      layer_offset, background_rect, foreground_rect);
+  target->Clipper().CalculateRects(
+      context, &target->GetLayoutObject().FirstFragment(), layer_offset,
+      background_rect, foreground_rect);
 
   EXPECT_EQ(PhysicalRect(0, 0, 50, 100), background_rect.Rect());
   EXPECT_EQ(PhysicalRect(0, 0, 50, 100), foreground_rect.Rect());
@@ -405,9 +367,9 @@ TEST_F(PaintLayerClipperTest, Filter) {
   PhysicalOffset layer_offset = infinite_rect.offset;
   ClipRect background_rect(infinite_rect);
   ClipRect foreground_rect(infinite_rect);
-  target->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(context, &target->GetLayoutObject().FirstFragment(),
-                      layer_offset, background_rect, foreground_rect);
+  target->Clipper().CalculateRects(
+      context, &target->GetLayoutObject().FirstFragment(), layer_offset,
+      background_rect, foreground_rect);
 
   // The background rect is used to clip stacking context (layer) output.
   // In this case, nothing is above us, thus the infinite rect. However we do
@@ -417,36 +379,16 @@ TEST_F(PaintLayerClipperTest, Filter) {
   // stacking context (layer) thus including the overflow clip.
   EXPECT_EQ(PhysicalRect(40, 40, 100, 200), foreground_rect.Rect());
 
-  // Test without GeometryMapper.
-  background_rect = infinite_rect;
-  foreground_rect = infinite_rect;
-  target->Clipper(PaintLayer::GeometryMapperOption::kDoNotUseGeometryMapper)
-      .CalculateRects(context, nullptr, layer_offset, background_rect,
-                      foreground_rect);
-  // The non-GeometryMapper path applies the immediate filter effect in
-  // background rect.
-  EXPECT_EQ(PhysicalRect(-12, -9, 204, 304), background_rect.Rect());
-  EXPECT_EQ(PhysicalRect(40, 40, 100, 200), foreground_rect.Rect());
-
   // Test mapping to the root layer.
   ClipRectsContext root_context(GetLayoutView().Layer(),
                                 &GetLayoutView().FirstFragment());
   background_rect = infinite_rect;
   foreground_rect = infinite_rect;
-  target->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(root_context, &target->GetLayoutObject().FirstFragment(),
-                      layer_offset, background_rect, foreground_rect);
+  target->Clipper().CalculateRects(
+      root_context, &target->GetLayoutObject().FirstFragment(), layer_offset,
+      background_rect, foreground_rect);
   // This includes the filter effect because it's applied before mapping the
   // background rect to the root layer.
-  EXPECT_EQ(PhysicalRect(38, 41, 204, 304), background_rect.Rect());
-  EXPECT_EQ(PhysicalRect(90, 90, 100, 200), foreground_rect.Rect());
-
-  // Test mapping to the root layer without GeometryMapper.
-  background_rect = infinite_rect;
-  foreground_rect = infinite_rect;
-  target->Clipper(PaintLayer::GeometryMapperOption::kDoNotUseGeometryMapper)
-      .CalculateRects(root_context, nullptr, layer_offset, background_rect,
-                      foreground_rect);
   EXPECT_EQ(PhysicalRect(38, 41, 204, 304), background_rect.Rect());
   EXPECT_EQ(PhysicalRect(90, 90, 100, 200), foreground_rect.Rect());
 }
@@ -475,9 +417,9 @@ TEST_F(PaintLayerClipperTest, IgnoreRootLayerClipWithCSSClip) {
   PhysicalOffset layer_offset = infinite_rect.offset;
   ClipRect background_rect(infinite_rect);
   ClipRect foreground_rect(infinite_rect);
-  target->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(context, &target->GetLayoutObject().FirstFragment(),
-                      layer_offset, background_rect, foreground_rect);
+  target->Clipper().CalculateRects(
+      context, &target->GetLayoutObject().FirstFragment(), layer_offset,
+      background_rect, foreground_rect);
 
   EXPECT_TRUE(background_rect.IsInfinite());
   EXPECT_TRUE(foreground_rect.IsInfinite());
@@ -506,9 +448,9 @@ TEST_F(PaintLayerClipperTest, IgnoreRootLayerClipWithOverflowClip) {
   PhysicalOffset layer_offset(LayoutRect::InfiniteIntRect().origin());
   ClipRect background_rect;
   ClipRect foreground_rect;
-  target->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(context, &target->GetLayoutObject().FirstFragment(),
-                      layer_offset, background_rect, foreground_rect);
+  target->Clipper().CalculateRects(
+      context, &target->GetLayoutObject().FirstFragment(), layer_offset,
+      background_rect, foreground_rect);
 
   EXPECT_TRUE(background_rect.IsInfinite());
   EXPECT_TRUE(foreground_rect.IsInfinite());
@@ -539,9 +481,9 @@ TEST_F(PaintLayerClipperTest, IgnoreRootLayerClipWithBothClip) {
   PhysicalOffset layer_offset = infinite_rect.offset;
   ClipRect background_rect(infinite_rect);
   ClipRect foreground_rect(infinite_rect);
-  target->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(context, &target->GetLayoutObject().FirstFragment(),
-                      layer_offset, background_rect, foreground_rect);
+  target->Clipper().CalculateRects(
+      context, &target->GetLayoutObject().FirstFragment(), layer_offset,
+      background_rect, foreground_rect);
 
   EXPECT_TRUE(background_rect.IsInfinite());
   EXPECT_TRUE(foreground_rect.IsInfinite());
@@ -573,22 +515,18 @@ TEST_F(PaintLayerClipperTest, Fragmentation) {
                    .NextFragment()
                    ->NextFragment());
 
-  target_paint_layer
-      ->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(context,
-                      &target_paint_layer->GetLayoutObject().FirstFragment(),
-                      layer_offset, background_rect, foreground_rect);
+  target_paint_layer->Clipper().CalculateRects(
+      context, &target_paint_layer->GetLayoutObject().FirstFragment(),
+      layer_offset, background_rect, foreground_rect);
 
   EXPECT_TRUE(background_rect.IsInfinite());
   EXPECT_TRUE(foreground_rect.IsInfinite());
   EXPECT_EQ(PhysicalOffset(), layer_offset);
 
-  target_paint_layer
-      ->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(
-          context,
-          target_paint_layer->GetLayoutObject().FirstFragment().NextFragment(),
-          layer_offset, background_rect, foreground_rect);
+  target_paint_layer->Clipper().CalculateRects(
+      context,
+      target_paint_layer->GetLayoutObject().FirstFragment().NextFragment(),
+      layer_offset, background_rect, foreground_rect);
 
   EXPECT_TRUE(background_rect.IsInfinite());
   EXPECT_TRUE(foreground_rect.IsInfinite());
@@ -616,21 +554,9 @@ TEST_F(PaintLayerClipperTest, ScrollbarClipBehaviorChild) {
 
   PhysicalOffset layer_offset;
   ClipRect background_rect, foreground_rect;
-  child_paint_layer
-      ->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(context,
-                      &child_paint_layer->GetLayoutObject().FirstFragment(),
-                      layer_offset, background_rect, foreground_rect);
-
-  // The background and foreground rect are clipped by the scrollbar size.
-  EXPECT_EQ(PhysicalRect(0, 0, 193, 293), background_rect.Rect());
-  EXPECT_EQ(PhysicalRect(0, 0, 193, 293), foreground_rect.Rect());
-  EXPECT_EQ(PhysicalOffset(), layer_offset);
-
-  child_paint_layer
-      ->Clipper(PaintLayer::GeometryMapperOption::kDoNotUseGeometryMapper)
-      .CalculateRects(context, nullptr, layer_offset, background_rect,
-                      foreground_rect);
+  child_paint_layer->Clipper().CalculateRects(
+      context, &child_paint_layer->GetLayoutObject().FirstFragment(),
+      layer_offset, background_rect, foreground_rect);
 
   // The background and foreground rect are clipped by the scrollbar size.
   EXPECT_EQ(PhysicalRect(0, 0, 193, 293), background_rect.Rect());
@@ -660,21 +586,9 @@ TEST_F(PaintLayerClipperTest, ScrollbarClipBehaviorChildScrollBetween) {
 
   PhysicalOffset layer_offset;
   ClipRect background_rect, foreground_rect;
-  child_paint_layer
-      ->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(context,
-                      &child_paint_layer->GetLayoutObject().FirstFragment(),
-                      layer_offset, background_rect, foreground_rect);
-
-  // The background and foreground rect are clipped by the scrollbar size.
-  EXPECT_EQ(PhysicalRect(8, 8, 193, 293), background_rect.Rect());
-  EXPECT_EQ(PhysicalRect(8, 8, 193, 293), foreground_rect.Rect());
-  EXPECT_EQ(PhysicalOffset(8, 8), layer_offset);
-
-  child_paint_layer
-      ->Clipper(PaintLayer::GeometryMapperOption::kDoNotUseGeometryMapper)
-      .CalculateRects(context, nullptr, layer_offset, background_rect,
-                      foreground_rect);
+  child_paint_layer->Clipper().CalculateRects(
+      context, &child_paint_layer->GetLayoutObject().FirstFragment(),
+      layer_offset, background_rect, foreground_rect);
 
   // The background and foreground rect are clipped by the scrollbar size.
   EXPECT_EQ(PhysicalRect(8, 8, 193, 293), background_rect.Rect());
@@ -702,28 +616,15 @@ TEST_F(PaintLayerClipperTest, ScrollbarClipBehaviorParent) {
 
   PhysicalOffset layer_offset;
   ClipRect background_rect, foreground_rect;
-  parent_paint_layer
-      ->Clipper(PaintLayer::GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(context,
-                      &parent_paint_layer->GetLayoutObject().FirstFragment(),
-                      layer_offset, background_rect, foreground_rect);
+  parent_paint_layer->Clipper().CalculateRects(
+      context, &parent_paint_layer->GetLayoutObject().FirstFragment(),
+      layer_offset, background_rect, foreground_rect);
 
   // Only the foreground is clipped by the scrollbar size, because we
   // called CalculateRects on the root layer.
   EXPECT_EQ(PhysicalRect(0, 0, 200, 300), background_rect.Rect());
   EXPECT_EQ(PhysicalRect(0, 0, 193, 293), foreground_rect.Rect());
   EXPECT_EQ(PhysicalOffset(), layer_offset);
-
-  parent_paint_layer
-      ->Clipper(PaintLayer::GeometryMapperOption::kDoNotUseGeometryMapper)
-      .CalculateRects(context, nullptr, layer_offset, background_rect,
-                      foreground_rect);
-
-  // Only the foreground is clipped by the scrollbar size, because we
-  // called CalculateRects on the root layer.
-  EXPECT_EQ(PhysicalRect(0, 0, 200, 300), background_rect.Rect());
-  EXPECT_EQ(PhysicalRect(0, 0, 193, 293), foreground_rect.Rect());
-  EXPECT_EQ(PhysicalOffset(0, 0), layer_offset);
 }
 
 }  // namespace blink

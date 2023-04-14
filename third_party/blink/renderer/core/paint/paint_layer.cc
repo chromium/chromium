@@ -1045,10 +1045,9 @@ void PaintLayer::AppendSingleFragmentForHitTesting(
   ClipRectsContext clip_rects_context(this, fragment.fragment_data,
                                       kExcludeOverlayScrollbarSizeForHitTesting,
                                       respect_overflow_clip);
-  Clipper(GeometryMapperOption::kUseGeometryMapper)
-      .CalculateRects(clip_rects_context, fragment.fragment_data,
-                      fragment.layer_offset, fragment.background_rect,
-                      fragment.foreground_rect);
+  Clipper().CalculateRects(clip_rects_context, fragment.fragment_data,
+                           fragment.layer_offset, fragment.background_rect,
+                           fragment.foreground_rect);
 
   fragments.push_back(fragment);
 }
@@ -1115,10 +1114,9 @@ void PaintLayer::CollectFragments(
         kExcludeOverlayScrollbarSizeForHitTesting, respect_overflow_clip,
         PhysicalOffset());
 
-    Clipper(GeometryMapperOption::kUseGeometryMapper)
-        .CalculateRects(clip_rects_context, fragment_data,
-                        fragment.layer_offset, fragment.background_rect,
-                        fragment.foreground_rect);
+    Clipper().CalculateRects(clip_rects_context, fragment_data,
+                             fragment.layer_offset, fragment.background_rect,
+                             fragment.foreground_rect);
 
     fragment.fragment_data = fragment_data;
 
@@ -2342,10 +2340,8 @@ gfx::Vector2d PaintLayer::PixelSnappedScrolledContentOffset() const {
   return gfx::Vector2d();
 }
 
-PaintLayerClipper PaintLayer::Clipper(
-    GeometryMapperOption geometry_mapper_option) const {
-  return PaintLayerClipper(
-      this, geometry_mapper_option == GeometryMapperOption::kUseGeometryMapper);
+PaintLayerClipper PaintLayer::Clipper() const {
+  return PaintLayerClipper(this);
 }
 
 bool PaintLayer::ScrollsOverflow() const {

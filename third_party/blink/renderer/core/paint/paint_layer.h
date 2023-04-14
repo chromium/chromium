@@ -407,12 +407,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return scrollable_area_.Get();
   }
 
-  enum class GeometryMapperOption {
-    kUseGeometryMapper,
-    kDoNotUseGeometryMapper
-  };
-
-  PaintLayerClipper Clipper(GeometryMapperOption) const;
+  PaintLayerClipper Clipper() const;
 
   bool ScrollsOverflow() const;
 
