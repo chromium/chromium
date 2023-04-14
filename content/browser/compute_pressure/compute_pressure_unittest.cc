@@ -41,9 +41,7 @@ constexpr base::TimeDelta kSampleInterval = base::Seconds(1);
 class PressureManagerSync {
  public:
   explicit PressureManagerSync(device::mojom::PressureManager* manager)
-      : manager_(*manager) {
-    DCHECK(manager);
-  }
+      : manager_(raw_ref<device::mojom::PressureManager>::from_ptr(manager)) {}
   ~PressureManagerSync() = default;
 
   PressureManagerSync(const PressureManagerSync&) = delete;
@@ -93,7 +91,7 @@ class FakePressureClient : public device::mojom::PressureClient {
 
   void SetNextUpdateCallback(base::OnceClosure callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(!update_callback_) << " already called before update received";
+    CHECK(!update_callback_) << " already called before update received";
 
     update_callback_ = std::move(callback);
   }

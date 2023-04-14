@@ -111,7 +111,7 @@ void PressureObserverManager::Trace(Visitor* visitor) const {
 }
 
 void PressureObserverManager::EnsureServiceConnection() {
-  DCHECK(GetExecutionContext());
+  CHECK(GetExecutionContext());
 
   if (pressure_manager_.is_bound()) {
     return;

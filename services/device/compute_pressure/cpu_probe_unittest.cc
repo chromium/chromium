@@ -65,7 +65,7 @@ class CpuProbeTest : public testing::Test {
  private:
   void SetNextUpdateCallback(base::OnceClosure callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(!update_callback_)
+    CHECK(!update_callback_)
         << __func__ << " already called before update received";
     update_callback_ = std::move(callback);
   }

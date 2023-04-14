@@ -66,7 +66,7 @@ void ScopedPressureManagerOverrider::set_is_supported(bool is_supported) {
 
 void ScopedPressureManagerOverrider::set_fake_pressure_manager(
     std::unique_ptr<FakePressureManager> pressure_manager) {
-  DCHECK(!pressure_manager_->is_bound());
+  CHECK(!pressure_manager_->is_bound());
   pressure_manager_ = std::move(pressure_manager);
   DeviceService::OverridePressureManagerBinderForTesting(base::BindRepeating(
       &FakePressureManager::Bind, base::Unretained(pressure_manager_.get())));

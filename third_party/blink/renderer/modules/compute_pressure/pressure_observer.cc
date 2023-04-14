@@ -53,7 +53,7 @@ PressureObserver* PressureObserver::Create(V8PressureUpdateCallback* callback,
 // static
 wtf_size_t PressureObserver::ToSourceIndex(V8PressureSource::Enum source) {
   wtf_size_t index = static_cast<wtf_size_t>(source);
-  DCHECK_LT(index, V8PressureSource::kEnumSize);
+  CHECK_LT(index, V8PressureSource::kEnumSize);
   return index;
 }
 
@@ -165,7 +165,7 @@ void PressureObserver::OnUpdate(ExecutionContext* execution_context,
     records_.erase(records_.begin());
 
   records_.push_back(record);
-  DCHECK_LE(records_.size(), kMaxQueuedRecords);
+  CHECK_LE(records_.size(), kMaxQueuedRecords);
 
   if (pending_report_to_callback_.IsActive())
     return;
@@ -196,7 +196,7 @@ void PressureObserver::OnConnectionError() {
 }
 
 void PressureObserver::ReportToCallback(ExecutionContext* execution_context) {
-  DCHECK(observer_callback_);
+  CHECK(observer_callback_);
   if (!execution_context || execution_context->IsContextDestroyed())
     return;
 

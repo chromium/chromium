@@ -82,7 +82,7 @@ void CpuProbeLinux::BlockingTaskRunnerHelper::Update() {
   double utilization_sum = 0.0;
   int utilization_cores = 0;
   for (size_t i = 0; i < per_core_times.size(); ++i) {
-    DCHECK_GE(last_per_core_times_.size(), i);
+    CHECK_GE(last_per_core_times_.size(), i);
 
     const CoreTimes& core_times = per_core_times[i];
 
@@ -118,7 +118,7 @@ void CpuProbeLinux::BlockingTaskRunnerHelper::InitializeCore(
     size_t core_index,
     const CoreTimes& initial_core_times) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(last_per_core_times_.size(), core_index);
+  CHECK_EQ(last_per_core_times_.size(), core_index);
 
   last_per_core_times_.push_back(initial_core_times);
 }

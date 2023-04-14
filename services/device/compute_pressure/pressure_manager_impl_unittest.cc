@@ -32,9 +32,7 @@ constexpr base::TimeDelta kDefaultSamplingIntervalForTesting =
 class PressureManagerImplSync {
  public:
   explicit PressureManagerImplSync(mojom::PressureManager* manager)
-      : manager_(*manager) {
-    DCHECK(manager);
-  }
+      : manager_(raw_ref<mojom::PressureManager>::from_ptr(manager)) {}
   ~PressureManagerImplSync() = default;
 
   PressureManagerImplSync(const PressureManagerImplSync&) = delete;
@@ -75,7 +73,7 @@ class FakePressureClient : public mojom::PressureClient {
   const std::vector<mojom::PressureUpdate>& updates() const { return updates_; }
 
   void SetNextUpdateCallback(base::OnceClosure callback) {
-    DCHECK(!update_callback_) << " already called before update received";
+    CHECK(!update_callback_) << " already called before update received";
     update_callback_ = std::move(callback);
   }
 

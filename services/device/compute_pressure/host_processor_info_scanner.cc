@@ -53,7 +53,7 @@ bool HostProcessorInfoScanner::Update() {
                          sizeof(processor_cpu_load_info)));
 
   for (natural_t i = 0; i < number_of_processors; ++i) {
-    DCHECK_GE(core_times_.size(), i);
+    CHECK_GE(core_times_.size(), i);
 
     if (core_times_.size() <= i) {
       core_times_.resize(i + 1);

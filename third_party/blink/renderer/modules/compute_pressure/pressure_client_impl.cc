@@ -160,7 +160,7 @@ bool PressureClientImpl::PassesPrivacyTest() const {
   }
 
   // 7. If top-level browsing context does not have system focus, return false.
-  DCHECK(this_frame->GetPage());
+  CHECK(this_frame->GetPage());
   const auto& focus_controller = this_frame->GetPage()->GetFocusController();
   if (!focus_controller.IsFocused()) {
     return false;
