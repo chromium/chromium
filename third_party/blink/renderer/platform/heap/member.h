@@ -7,6 +7,7 @@
 
 #include "base/check_op.h"
 #include "base/record_replay.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
 #include "third_party/blink/renderer/platform/heap/write_barrier.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -201,21 +202,27 @@ struct MemberHashRecordReplayId
 };
 
 template <typename T>
+using DefaultHashTypeForMember =
+    std::conditional_t<IsSubclass<T, blink::ScriptWrappable>::value,
+                       MemberHashRecordReplayId<T>,
+                       MemberHash<T>>;
+
+template <typename T>
 struct DefaultHash<blink::Member<T>> {
   STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
+  using Hash = DefaultHashTypeForMember<T>;
 };
 
 template <typename T>
 struct DefaultHash<blink::WeakMember<T>> {
   STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
+  using Hash = DefaultHashTypeForMember<T>;
 };
 
 template <typename T>
 struct DefaultHash<blink::UntracedMember<T>> {
   STATIC_ONLY(DefaultHash);
-  using Hash = MemberHash<T>;
+  using Hash = DefaultHashTypeForMember<T>;
 };
 
 template <typename T>
