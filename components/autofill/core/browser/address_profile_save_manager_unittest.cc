@@ -217,6 +217,10 @@ class AddressProfileSaveManagerTest
       const ImportScenarioTestCase& test_scenario,
       const base::HistogramTester& histogram_tester) const;
 
+  void VerifyUpdateAffectedTypesHistogram(
+      const ImportScenarioTestCase& test_scenario,
+      const base::HistogramTester& histogram_tester) const;
+
   void VerifyStrikeCounts(const ImportScenarioTestCase& test_scenario,
                           const ProfileImportProcess& last_import,
                           int initial_strikes_for_domain) const;
@@ -351,88 +355,100 @@ void AddressProfileSaveManagerTest::VerifyUMAMetricsCollection(
           : kProfileImportTypeHistogram,
       test_scenario.expected_import_type, 1);
 
+  // When the user is prompted, three histograms are recorded:
+  // - The user `decision`.
+  // - The `edits` made by user.
+  // - The `num_of_edits`.
+  struct ImportHistogramNames {
+    base::StringPiece decision;
+    base::StringPiece edits;
+    base::StringPiece num_of_edits;
+    void ExpectAllEmpty(const base::HistogramTester& tester) const {
+      ExpectEmptyHistograms(tester, {decision, edits, num_of_edits});
+    }
+  };
+  constexpr ImportHistogramNames new_profile_histograms = {
+      kNewProfileDecisionHistogram, kNewProfileEditsHistogram,
+      kNewProfileNumberOfEditsHistogram};
+  constexpr ImportHistogramNames update_profile_histograms = {
+      kProfileUpdateDecisionHistogram, kProfileUpdateEditsHistogram,
+      kProfileUpdateNumberOfEditsHistogram};
+
   // If the import was neither a new profile or a confirmable merge, test that
   // the corresponding histograms are unchanged.
   if (!IsNewProfile(test_scenario) && !IsConfirmableMerge(test_scenario)) {
-    ExpectEmptyHistograms(
-        histogram_tester,
-        {kNewProfileEditsHistogram, kNewProfileDecisionHistogram,
-         kProfileUpdateEditsHistogram, kProfileUpdateDecisionHistogram});
-  } else {
-    DCHECK(!IsNewProfile(test_scenario) || !IsConfirmableMerge(test_scenario));
+    new_profile_histograms.ExpectAllEmpty(histogram_tester);
+    update_profile_histograms.ExpectAllEmpty(histogram_tester);
+    return;
+  }
+  // The import cannot be a new profile and update profile at the same time.
+  DCHECK(!IsNewProfile(test_scenario) || !IsConfirmableMerge(test_scenario));
 
-    const std::string affected_decision_histo =
-        IsNewProfile(test_scenario) ? kNewProfileDecisionHistogram
-                                    : kProfileUpdateDecisionHistogram;
-    const std::string unaffected_decision_histo =
-        !IsNewProfile(test_scenario) ? kNewProfileDecisionHistogram
-                                     : kProfileUpdateDecisionHistogram;
+  const ImportHistogramNames& affected_histograms =
+      IsNewProfile(test_scenario) ? new_profile_histograms
+                                  : update_profile_histograms;
+  // Expect records in the affected histograms.
+  histogram_tester.ExpectUniqueSample(affected_histograms.decision,
+                                      test_scenario.user_decision, 1);
+  histogram_tester.ExpectTotalCount(
+      affected_histograms.edits,
+      test_scenario.expected_edited_types_for_metrics.size());
+  for (auto edited_type : test_scenario.expected_edited_types_for_metrics) {
+    histogram_tester.ExpectBucketCount(affected_histograms.edits, edited_type,
+                                       1);
+  }
+  if (test_scenario.user_decision == UserDecision::kEditAccepted) {
+    histogram_tester.ExpectUniqueSample(
+        affected_histograms.num_of_edits,
+        test_scenario.expected_edited_types_for_metrics.size(), 1);
+  }
 
-    const std::string affected_edits_histo = IsNewProfile(test_scenario)
-                                                 ? kNewProfileEditsHistogram
-                                                 : kProfileUpdateEditsHistogram;
-    const std::string unaffected_edits_histo =
-        !IsNewProfile(test_scenario) ? kNewProfileEditsHistogram
-                                     : kProfileUpdateEditsHistogram;
-
-    const std::string affected_number_of_edits_histo =
-        IsNewProfile(test_scenario) ? kNewProfileNumberOfEditsHistogram
-                                    : kProfileUpdateNumberOfEditsHistogram;
-    const std::string unaffected_number_of_edits_histo =
-        !IsNewProfile(test_scenario) ? kNewProfileNumberOfEditsHistogram
-                                     : kProfileUpdateNumberOfEditsHistogram;
-
-    histogram_tester.ExpectTotalCount(unaffected_decision_histo, 0);
-    histogram_tester.ExpectTotalCount(unaffected_edits_histo, 0);
-
-    histogram_tester.ExpectUniqueSample(affected_decision_histo,
-                                        test_scenario.user_decision, 1);
-    histogram_tester.ExpectTotalCount(
-        affected_edits_histo,
-        test_scenario.expected_edited_types_for_metrics.size());
-
-    for (auto edited_type : test_scenario.expected_edited_types_for_metrics) {
-      histogram_tester.ExpectBucketCount(affected_edits_histo, edited_type, 1);
-    }
-
-    if (test_scenario.user_decision == UserDecision::kEditAccepted) {
-      histogram_tester.ExpectUniqueSample(
-          affected_number_of_edits_histo,
-          test_scenario.expected_edited_types_for_metrics.size(), 1);
-      histogram_tester.ExpectTotalCount(unaffected_number_of_edits_histo, 0);
-    }
-
-    if (IsConfirmableMerge(test_scenario) &&
-        (test_scenario.user_decision == UserDecision::kAccepted ||
-         test_scenario.user_decision == UserDecision::kDeclined)) {
-      std::string changed_histogram_suffix;
-      switch (test_scenario.user_decision) {
-        case UserDecision::kAccepted:
-          changed_histogram_suffix = ".Accepted";
-          break;
-
-        case UserDecision::kDeclined:
-          changed_histogram_suffix = ".Declined";
-          break;
-
-        default:
-          NOTREACHED() << "Decision not covered by test logic.";
-      }
-      for (auto changed_type :
-           test_scenario.expected_affeceted_types_in_merge_for_metrics) {
-        histogram_tester.ExpectBucketCount(
-            base::StrCat({kProfileUpdateAffectedTypesHistogram,
-                          changed_histogram_suffix}),
-            changed_type, 1);
-      }
-
-      histogram_tester.ExpectUniqueSample(
-          base::StrCat({kProfileUpdateNumberOfAffectedTypesHistogram,
-                        changed_histogram_suffix}),
-          test_scenario.expected_affeceted_types_in_merge_for_metrics.size(),
-          1);
+  // Expect no records in all unaffected histograms.
+  for (const ImportHistogramNames* histograms :
+       {&new_profile_histograms, &update_profile_histograms}) {
+    if (histograms != &affected_histograms) {
+      histograms->ExpectAllEmpty(histogram_tester);
     }
   }
+
+  // Expect that the unaffected histograms are empty.
+  VerifyUpdateAffectedTypesHistogram(test_scenario, histogram_tester);
+}
+
+void AddressProfileSaveManagerTest::VerifyUpdateAffectedTypesHistogram(
+    const ImportScenarioTestCase& test_scenario,
+    const base::HistogramTester& histogram_tester) const {
+  if (!IsConfirmableMerge(test_scenario) ||
+      (test_scenario.user_decision != UserDecision::kAccepted &&
+       test_scenario.user_decision != UserDecision::kDeclined)) {
+    return;
+  }
+
+  std::string changed_histogram_suffix;
+  switch (test_scenario.user_decision) {
+    case UserDecision::kAccepted:
+      changed_histogram_suffix = ".Accepted";
+      break;
+
+    case UserDecision::kDeclined:
+      changed_histogram_suffix = ".Declined";
+      break;
+
+    default:
+      NOTREACHED() << "Decision not covered by test logic.";
+  }
+  for (auto changed_type :
+       test_scenario.expected_affeceted_types_in_merge_for_metrics) {
+    histogram_tester.ExpectBucketCount(
+        base::StrCat(
+            {kProfileUpdateAffectedTypesHistogram, changed_histogram_suffix}),
+        changed_type, 1);
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({kProfileUpdateNumberOfAffectedTypesHistogram,
+                    changed_histogram_suffix}),
+      test_scenario.expected_affeceted_types_in_merge_for_metrics.size(), 1);
 }
 
 void AddressProfileSaveManagerTest::VerifyStrikeCounts(
