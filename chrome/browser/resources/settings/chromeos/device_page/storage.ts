@@ -267,8 +267,10 @@ class SettingsStorageElement extends SettingsStorageElementBase {
    *     Google Drive.
    */
   private handleDriveOfflineSizeChanged_(size: string): void {
-    this.shadowRoot!.querySelector<CrLinkRowElement>(
-                        '#driveOfflineSize')!.subLabel = size;
+    if (this.showDriveOfflineStorage_) {
+      this.shadowRoot!.querySelector<CrLinkRowElement>(
+                          '#driveOfflineSize')!.subLabel = size;
+    }
   }
 
   /**
