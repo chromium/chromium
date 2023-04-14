@@ -1061,6 +1061,18 @@ TEST_P(ClientControlledStateTestClamshellAndTablet, FloatWindow) {
   EXPECT_TRUE(window_state()->IsFloated());
   EXPECT_EQ(kShellWindowId_FloatContainer, window()->parent()->GetId());
 
+  // Test rotate.
+  ASSERT_TRUE(chromeos::wm::IsLandscapeOrientationForWindow(window()));
+  Shell::Get()->display_manager()->SetDisplayRotation(
+      display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      display::Display::ROTATE_90, display::Display::RotationSource::USER);
+  ASSERT_FALSE(chromeos::wm::IsLandscapeOrientationForWindow(window()));
+  EXPECT_EQ(
+      InTabletMode()
+          ? FloatController::GetPreferredFloatWindowTabletBounds(window())
+          : FloatController::GetPreferredFloatWindowClamshellBounds(window()),
+      delegate()->requested_bounds());
+
   // Test minimize.
   const WMEvent minimize_event(WM_EVENT_MINIMIZE);
   window_state()->OnWMEvent(&minimize_event);

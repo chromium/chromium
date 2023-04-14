@@ -121,6 +121,15 @@ void ClientControlledState::HandleWorkspaceEvents(WindowState* window_state,
     // Then ask delegate to set the desired bounds for the snap state.
     delegate_->HandleBoundsRequest(window_state, window_state->GetStateType(),
                                    bounds, window_state->GetDisplay().id());
+  } else if (window_state->IsFloated()) {
+    const gfx::Rect bounds =
+        Shell::Get()->tablet_mode_controller()->InTabletMode()
+            ? FloatController::GetPreferredFloatWindowTabletBounds(
+                  window_state->window())
+            : FloatController::GetPreferredFloatWindowClamshellBounds(
+                  window_state->window());
+    delegate_->HandleBoundsRequest(window_state, window_state->GetStateType(),
+                                   bounds, window_state->GetDisplay().id());
   } else if (event->type() == WM_EVENT_DISPLAY_BOUNDS_CHANGED) {
     // Explicitly handle the primary change because it can change the display id
     // with no bounds change.
