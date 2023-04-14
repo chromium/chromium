@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/tabs/features.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/query_title_server_util.h"
+#import "ios/chrome/browser/ui/tab_switcher/test/tabs_egtest_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -32,14 +33,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 
 namespace {
-
-NSString* const kRegularTabTitlePrefix = @"RegularTab";
-NSString* const kPinnedTabTitlePrefix = @"PinnedTab";
-
-// Matcher for the overflow pin action.
-id<GREYMatcher> GetMatcherForPinOverflowAction() {
-  return grey_accessibilityID(kToolsMenuPinTabId);
-}
 
 // Matcher for the regual cell at the given `index`.
 id<GREYMatcher> GetMatcherForRegularCellWithTitle(NSString* title) {
@@ -105,39 +98,6 @@ void AssertPinnedCellMovedToGridView(NSString* tab_title) {
 
   GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
              @"Has failed to unpin a tab with title: \"%@.\"", tab_title);
-}
-
-// Pins a regular tab using overflow menu.
-void PinTabUsingOverfolwMenu() {
-  [ChromeEarlGreyUI openToolsMenu];
-  [ChromeEarlGreyUI tapToolsMenuAction:GetMatcherForPinOverflowAction()];
-}
-
-// Creates a regular tab with `title` using `test_server`.
-void CreateRegularTab(net::EmbeddedTestServer* test_server, NSString* title) {
-  [ChromeEarlGreyUI openNewTab];
-  [ChromeEarlGrey loadURL:GetQueryTitleURL(test_server, title)];
-}
-
-// Create `tabs_count` of regular tabs.
-void CreateRegularTabs(int tabs_count, net::EmbeddedTestServer* test_server) {
-  for (int index = 0; index < tabs_count; ++index) {
-    NSString* title =
-        [kRegularTabTitlePrefix stringByAppendingFormat:@"%d", index];
-
-    CreateRegularTab(test_server, title);
-  }
-}
-
-// Create `tabs_count` of pinned tabs.
-void CreatePinnedTabs(int tabs_count, net::EmbeddedTestServer* test_server) {
-  for (int index = 0; index < tabs_count; ++index) {
-    NSString* title =
-        [kPinnedTabTitlePrefix stringByAppendingFormat:@"%d", index];
-
-    CreateRegularTab(test_server, title);
-    PinTabUsingOverfolwMenu();
-  }
 }
 
 }  // namespace

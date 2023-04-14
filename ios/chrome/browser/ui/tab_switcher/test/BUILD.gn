@@ -8,6 +8,13 @@ source_set("utils") {
   sources = [
     "query_title_server_util.h",
     "query_title_server_util.mm",
+    "tabs_egtest_util.h",
+    "tabs_egtest_util.mm",
   ]
-  deps = [ "//net:test_support" ]
+  deps = [
+    "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+  ]
 }
