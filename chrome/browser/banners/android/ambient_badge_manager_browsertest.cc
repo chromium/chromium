@@ -119,6 +119,11 @@ class AmbientBadgeManagerBrowserTest : public AndroidBrowserTest {
 
   ~AmbientBadgeManagerBrowserTest() override = default;
 
+  void SetUp() override {
+    SetUpFeatureList();
+    AndroidBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
     site_engagement::SiteEngagementScore::SetParamValuesForTesting();
@@ -133,6 +138,11 @@ class AmbientBadgeManagerBrowserTest : public AndroidBrowserTest {
 
   Profile* profile() {
     return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  }
+
+  virtual void SetUpFeatureList() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kAmbientBadgeSuppressFirstVisit);
   }
 
   void ResetEngagementForUrl(const GURL& url, double score) {
@@ -155,6 +165,8 @@ class AmbientBadgeManagerBrowserTest : public AndroidBrowserTest {
 
     waiter.Run();
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   // Disable the banners in the browser so it won't interfere with the test.
@@ -208,11 +220,7 @@ IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerBrowserTest,
 class AmbientBadgeManagerSecondVisitTest
     : public AmbientBadgeManagerBrowserTest {
  public:
-  AmbientBadgeManagerSecondVisitTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kAmbientBadgeSuppressFirstVisit},
-        {features::kAmbientBadgeSiteEngagement});
-  }
+  AmbientBadgeManagerSecondVisitTest() = default;
 
   AmbientBadgeManagerSecondVisitTest(
       const AmbientBadgeManagerSecondVisitTest&) = delete;
@@ -221,8 +229,7 @@ class AmbientBadgeManagerSecondVisitTest
 
   ~AmbientBadgeManagerSecondVisitTest() override = default;
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  void SetUpFeatureList() override {}
 };
 
 IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerSecondVisitTest,

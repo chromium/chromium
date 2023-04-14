@@ -7234,16 +7234,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Message_Engagement_5",
-                    "params": {
-                        "minimal_engagement": "5"
-                    },
+                    "name": "Enabled_Message_Visit",
                     "enable_features": [
-                        "AmbientBadgeSiteEngagement",
+                        "AmbientBadgeSuppressFirstVisit",
                         "InstallableAmbientBadgeMessage"
                     ],
                     "disable_features": [
-                        "AmbientBadgeSuppressFirstVisit"
+                        "AmbientBadgeSiteEngagement"
                     ]
                 }
             ]

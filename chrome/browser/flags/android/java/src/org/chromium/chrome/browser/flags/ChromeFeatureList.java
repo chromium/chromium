@@ -537,6 +537,8 @@ public abstract class ChromeFeatureList {
     public static final String WEB_APK_TRAMPOLINE_ON_INITIAL_INTENT =
             "WebApkTrampolineOnInitialIntent";
     public static final String WEB_APK_UNIQUE_ID = "WebApkUniqueId";
+    public static final String WEB_APP_AMBIENT_BADGE_SUPRESS_FIRST_VISIT =
+            "AmbientBadgeSuppressFirstVisit";
     public static final String WEB_APK_INSTALL_FAILURE_NOTIFICATION =
             "WebApkInstallFailureNotification";
     public static final String WEB_APK_INSTALL_RETRY = "WebApkInstallFailureRetry";
