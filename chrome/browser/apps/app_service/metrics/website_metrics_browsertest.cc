@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <set>
+
 #include "base/containers/contains.h"
 #include "base/json/values_util.h"
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -28,7 +31,9 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/wm/core/window_util.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
@@ -1111,13 +1116,52 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MAYBE_OnURLsDeleted) {
                 /*is_activated=*/false, /*promotable=*/false);
   VerifyUrlInfo(GURL("https://b.example.org"),
                 /*is_activated=*/true, /*promotable=*/false);
+
+  // Simulate OnURLsDeleted is called for an expiration. Nothing should be
+  // cleared.
+  auto info = history::DeletionInfo(
+      history::DeletionTimeRange(base::Time(), base::Time::Now()),
+      /*is_from_expiration=*/true, {}, {}, absl::optional<std::set<GURL>>());
+  website_metrics()->OnURLsDeleted(nullptr, info);
+  EXPECT_EQ(2u, window_to_web_contents().size());
+  EXPECT_EQ(2u, webcontents_to_observer_map().size());
+  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
+                             window_to_web_contents()[window1]));
+  EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
+                             window_to_web_contents()[window2]));
+  EXPECT_EQ(window_to_web_contents()[window1]->GetVisibleURL(),
+            GURL("https://a.example.org"));
+  EXPECT_EQ(window_to_web_contents()[window2]->GetVisibleURL(),
+            GURL("https://b.example.org"));
+  EXPECT_EQ(2u, webcontents_to_ukm_key().size());
+  EXPECT_EQ(webcontents_to_ukm_key()[tab_app1], GURL("https://a.example.org"));
+  EXPECT_EQ(webcontents_to_ukm_key()[tab_app2], GURL("https://b.example.org"));
+  VerifyUrlInfo(GURL("https://a.example.org"),
+                /*is_activated=*/false, /*promotable=*/false);
+  VerifyUrlInfo(GURL("https://b.example.org"),
+                /*is_activated=*/true, /*promotable=*/false);
+
+  // Persist data to prefs and verify.
   website_metrics()->OnFiveMinutes();
   VerifyUrlInfoInPref(GURL("https://a.example.org"),
                       /*promotable=*/false);
   VerifyUrlInfoInPref(GURL("https://b.example.org"),
                       /*promotable=*/false);
 
-  // Simulate OnURLsDeleted is called.
+  // Simulate OnURLsDeleted again for an expiration. The prefs should not be
+  // affected
+  website_metrics()->OnURLsDeleted(nullptr, info);
+  EXPECT_EQ(2u, webcontents_to_ukm_key().size());
+  EXPECT_EQ(2u, url_infos().size());
+  EXPECT_EQ(webcontents_to_ukm_key()[tab_app1], GURL("https://a.example.org"));
+  EXPECT_EQ(webcontents_to_ukm_key()[tab_app2], GURL("https://b.example.org"));
+  VerifyUrlInfoInPref(GURL("https://a.example.org"),
+                      /*promotable=*/false);
+  VerifyUrlInfoInPref(GURL("https://b.example.org"),
+                      /*promotable=*/false);
+
+  // Simulate OnURLsDeleted for a non-expiration and ensure prefs and
+  // in-memory usage data is cleared.
   website_metrics()->OnURLsDeleted(nullptr,
                                    history::DeletionInfo::ForAllHistory());
   EXPECT_EQ(2u, window_to_web_contents().size());
