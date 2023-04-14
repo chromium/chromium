@@ -455,19 +455,10 @@ void PrePaintTreeWalk::UpdateContextForOOFContainer(
   // If we're in a fragmentation context, the parent fragment of OOFs is the
   // fragmentainer, unless the object is monolithic, in which case nothing
   // contained by the object participates in the current block fragmentation
-  // context. The monolithic-check here is somewhat special, to match the
-  // behavior in OOF layout. We need to check that we're monolithic AND the
-  // first fragment of the node in order to act as an OOF container. A non-first
-  // fragment may be set as monolithic if overflow is clipped and we've reached
-  // the end right there. But that doesn't affect how OOF layout behaves. In
-  // such cases, where there's more than one fragment involved, an OOF fragment
-  // will become a direct child of a fragmentainer, just as if there were no
-  // monolithicness involved at all.
-  //
-  // If we're not participating in block fragmentation, the containing fragment
-  // of an OOF fragment is always simply the parent.
+  // context. If we're not participating in block fragmentation, the containing
+  // fragment of an OOF fragment is always simply the parent.
   if (!context.current_container.IsInFragmentationContext() ||
-      (fragment && fragment->IsMonolithic() && fragment->IsFirstForNode())) {
+      (fragment && fragment->IsMonolithic())) {
     // Anonymous blocks are not allowed to be containing blocks, so we should
     // skip over any such elements.
     if (!fragment || !fragment->IsAnonymousBlock()) {
