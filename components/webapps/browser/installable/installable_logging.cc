@@ -34,10 +34,6 @@ static const char kManifestMissingSuitableIconMessage[] =
     "Manifest does not contain a suitable icon - PNG, SVG or WebP format of at "
     "least %dpx is required, the sizes attribute must be set, and the purpose "
     "attribute, if set, must include \"any\" or \"maskable\".";
-static const char kNoMatchingServiceWorkerMessage[] =
-    "No matching service worker detected. You may need to reload the page, or "
-    "check that the scope of the service worker for the current page encloses "
-    "the scope and start URL from the manifest.";
 static const char kNoAcceptableIconMessage[] =
     "No supplied icon is at least %dpx square in PNG, SVG or WebP format";
 static const char kCannotDownloadIconMessage[] =
@@ -86,7 +82,6 @@ static const char kManifestDisplayNotSupportedId[] =
 static const char kManifestMissingSuitableIconId[] =
     "manifest-missing-suitable-icon";
 static const char kMinimumIconSizeInPixelsId[] = "minimum-icon-size-in-pixels";
-static const char kNoMatchingServiceWorkerId[] = "no-matching-service-worker";
 static const char kNoAcceptableIconId[] = "no-acceptable-icon";
 static const char kCannotDownloadIconId[] = "cannot-download-icon";
 static const char kNoIconAvailableId[] = "no-icon-available";
@@ -126,6 +121,7 @@ std::string GetErrorMessage(InstallableStatusCode code) {
     case RENDERER_EXITING:
     case RENDERER_CANCELLED:
     case USER_NAVIGATED:
+    case NO_MATCHING_SERVICE_WORKER:
     case INSUFFICIENT_ENGAGEMENT:
     case PACKAGE_NAME_OR_START_URL_EMPTY:
     case PREVIOUSLY_BLOCKED:
@@ -140,7 +136,6 @@ std::string GetErrorMessage(InstallableStatusCode code) {
     case SHOWING_APP_INSTALLATION_DIALOG:
     case DATA_TIMED_OUT:
     case WEBAPK_INSTALL_FAILED:
-    case SERVICE_WORKER_NOT_REQUIRED:
     case MAX_ERROR_CODE:
       break;
     case NOT_FROM_SECURE_ORIGIN:
@@ -165,9 +160,6 @@ std::string GetErrorMessage(InstallableStatusCode code) {
       message =
           base::StringPrintf(kManifestMissingSuitableIconMessage,
                              InstallableManager::GetMinimumIconSizeInPx());
-      break;
-    case NO_MATCHING_SERVICE_WORKER:
-      message = kNoMatchingServiceWorkerMessage;
       break;
     case NO_ACCEPTABLE_ICON:
       message =
@@ -238,6 +230,7 @@ content::InstallabilityError GetInstallabilityError(
     case RENDERER_EXITING:
     case RENDERER_CANCELLED:
     case USER_NAVIGATED:
+    case NO_MATCHING_SERVICE_WORKER:
     case INSUFFICIENT_ENGAGEMENT:
     case PACKAGE_NAME_OR_START_URL_EMPTY:
     case PREVIOUSLY_BLOCKED:
@@ -252,7 +245,6 @@ content::InstallabilityError GetInstallabilityError(
     case SHOWING_APP_INSTALLATION_DIALOG:
     case DATA_TIMED_OUT:
     case WEBAPK_INSTALL_FAILED:
-    case SERVICE_WORKER_NOT_REQUIRED:
     case MAX_ERROR_CODE:
       break;
     case NOT_FROM_SECURE_ORIGIN:
@@ -278,9 +270,6 @@ content::InstallabilityError GetInstallabilityError(
       error_arguments.emplace_back(
           kMinimumIconSizeInPixelsId,
           base::NumberToString(InstallableManager::GetMinimumIconSizeInPx()));
-      break;
-    case NO_MATCHING_SERVICE_WORKER:
-      error_id = kNoMatchingServiceWorkerId;
       break;
     case NO_ACCEPTABLE_ICON:
       error_id = kNoAcceptableIconId;
