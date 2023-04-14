@@ -217,6 +217,7 @@ try_.builder(
         "ci/Dawn Linux TSAN Release",
     ],
     pool = "luci.chromium.gpu.linux.nvidia.try",
+    builderless = True,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
