@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/commerce/core/account_checker.h"
-#include "base/feature_list.h"
 #include "base/json/json_writer.h"
-#include "base/json/values_util.h"
 #include "base/values.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/pref_names.h"
@@ -170,7 +168,7 @@ void AccountChecker::OnFetchWaaJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   if (pref_service_ && result.has_value() && result->is_dict()) {
     const char waa_response_key[] = "history_recording_enabled";
-    if (auto waa_enabled = result->FindBoolKey(waa_response_key)) {
+    if (auto waa_enabled = result->GetDict().FindBool(waa_response_key)) {
       pref_service_->SetBoolean(kWebAndAppActivityEnabledForShopping,
                                 *waa_enabled);
     }
@@ -270,12 +268,11 @@ void AccountChecker::OnPriceEmailPrefChanged() {
   }
 
   // Send the new value to server.
-  base::Value preferences_map(base::Value::Type::DICT);
-  preferences_map.SetBoolKey(
-      kPriceTrackEmailPref,
-      pref_service_->GetBoolean(kPriceEmailNotificationsEnabled));
-  base::Value post_json(base::Value::Type::DICT);
-  post_json.SetKey(kPreferencesKey, std::move(preferences_map));
+  base::Value::Dict post_json = base::Value::Dict().Set(
+      kPreferencesKey,
+      base::Value::Dict().Set(
+          kPriceTrackEmailPref,
+          pref_service_->GetBoolean(kPriceEmailNotificationsEnabled)));
   std::string post_data;
   base::JSONWriter::Write(post_json, &post_data);
 
