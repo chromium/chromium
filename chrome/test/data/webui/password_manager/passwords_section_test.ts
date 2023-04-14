@@ -474,4 +474,95 @@ suite('PasswordsSectionTest', function() {
     assertTrue(!!movdeDialog);
     assertTrue(movdeDialog.$.dialog.open);
   });
+
+  test('description is hidden during search', async function() {
+    passwordManager.data.groups = [
+      createCredentialGroup({
+        name: 'foo.com',
+      }),
+      createCredentialGroup({
+        name: 'bar.com',
+      }),
+    ];
+
+    const section = await createPasswordsSection();
+
+    assertTrue(isVisible(section.$.descriptionLabel));
+
+    const query = new URLSearchParams();
+    query.set(UrlParam.SEARCH_TERM, 'bar');
+    Router.getInstance().updateRouterParams(query);
+    await flushTasks();
+
+    assertFalse(isVisible(section.$.descriptionLabel));
+  });
+
+  test('Move passwords is hidden during search', async function() {
+    passwordManager.data.isOptedInAccountStorage = true;
+    passwordManager.data.groups = [createCredentialGroup({
+      name: 'test.com',
+      credentials: [createPasswordEntry({
+        username: 'user',
+        id: 0,
+        inProfileStore: true,
+        affiliatedDomains: [createAffiliatedDomain('test.com')],
+      })],
+    })];
+    passwordManager.setRequestCredentialsDetailsResponse(
+        passwordManager.data.groups[0]!.entries);
+    syncProxy.syncInfo = {
+      isEligibleForAccountStorage: true,
+      isSyncingPasswords: false,
+    };
+
+    const section = await createPasswordsSection();
+
+    assertTrue(isVisible(section.$.movePasswords));
+
+    const query = new URLSearchParams();
+    query.set(UrlParam.SEARCH_TERM, 'bar');
+    Router.getInstance().updateRouterParams(query);
+    await flushTasks();
+
+    assertFalse(isVisible(section.$.movePasswords));
+  });
+
+  test('No password is shown when no matches', async function() {
+    passwordManager.data.groups = [
+      createCredentialGroup({
+        name: 'foo.com',
+      }),
+      createCredentialGroup({
+        name: 'bar.com',
+      }),
+    ];
+
+    const section = await createPasswordsSection();
+
+    assertFalse(isVisible(section.$.noPasswordsFound));
+
+    const query = new URLSearchParams();
+    query.set(UrlParam.SEARCH_TERM, 'bar');
+    Router.getInstance().updateRouterParams(query);
+    await flushTasks();
+    assertFalse(isVisible(section.$.noPasswordsFound));
+
+    query.set(UrlParam.SEARCH_TERM, 'bar.org');
+    Router.getInstance().updateRouterParams(query);
+    await flushTasks();
+    assertTrue(isVisible(section.$.noPasswordsFound));
+  });
+
+  test('No password is hidden when there are no passwords', async function() {
+    const section = await createPasswordsSection();
+
+    assertFalse(isVisible(section.$.noPasswordsFound));
+
+    const query = new URLSearchParams();
+    query.set(UrlParam.SEARCH_TERM, 'test');
+    Router.getInstance().updateRouterParams(query);
+    await flushTasks();
+
+    assertFalse(isVisible(section.$.noPasswordsFound));
+  });
 });
