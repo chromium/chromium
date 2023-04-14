@@ -1593,7 +1593,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPrintExtensionBrowserTest,
 
 // Printing frame content for the main frame of a generic webpage with N-up
 // printing. This is a regression test for https://crbug.com/937247
-IN_PROC_BROWSER_TEST_F(PrintBrowserTest, PrintNup) {
+// TODO(crbug.com/1371776): Fix flakiness and re-enable.
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest, DISABLED_PrintNup) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/multipagenup.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -1615,14 +1616,9 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, PrintNup) {
   EXPECT_EQ(rendered_page_count(), 2u);
 }
 
-// Flaky on Linux. See https://crbug.com/1431079.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_PrintNup DISABLED_PrintNup
-#else
-#define MAYBE_PrintNup PrintNup
-#endif
 // Site per process version of PrintBrowserTest.PrintNup.
-IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest, MAYBE_PrintNup) {
+// TODO(crbug.com/1371776): Fix flakiness and re-enable.
+IN_PROC_BROWSER_TEST_F(SitePerProcessPrintBrowserTest, DISABLED_PrintNup) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL("/printing/multipagenup.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
