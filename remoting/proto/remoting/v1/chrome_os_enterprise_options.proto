@@ -1,0 +1,18 @@
+syntax = "proto2";
+
+package remoting.apis.v1;
+
+option optimize_for = LITE_RUNTIME;
+
+// Defines the UX and capabilities for a Chrome OS enterprise session.
+message ChromeOsEnterpriseOptions {
+  // Indicates whether to show the admin troubleshooting tools in the client UI.
+  optional bool allow_troubleshooting_tools = 1;
+
+  // Indicates whether the client should attempt to reconnect if the connection
+  // is dropped.
+  optional bool allow_reconnections = 2;
+
+  // Indicates whether to show the file transfer section in the client UI.
+  optional bool allow_file_transfer = 3;
+}
