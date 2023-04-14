@@ -27,7 +27,7 @@ declare_args() {
   # slowly and carefully and there may be no actual bugs there.
   enable_rust = is_linux && !is_official_build && !using_sanitizer &&
                 target_cpu != "x86" && !use_clang_coverage && is_clang &&
-                target_os == host_os && build_with_chromium
+                build_with_chromium
 
   # As we incrementally enable Rust on mainstream builders, we want to enable
   # the toolchain (by switching 'enable_rust' to true) while still disabling
