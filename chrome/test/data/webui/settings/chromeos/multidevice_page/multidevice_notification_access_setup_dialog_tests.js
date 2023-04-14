@@ -6,7 +6,6 @@ import {MultiDeviceBrowserProxyImpl, NotificationAccessSetupOperationStatus} fro
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.js';
@@ -44,9 +43,8 @@ suite('Multidevice', () => {
     browserProxy = new TestMultideviceBrowserProxy();
     MultiDeviceBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
-    notificationAccessSetupDialog =
-        document.createElement(
-            'settings-multidevice-notification-access-setup-dialog');
+    notificationAccessSetupDialog = document.createElement(
+        'settings-multidevice-notification-access-setup-dialog');
     document.body.appendChild(notificationAccessSetupDialog);
     flush();
     buttonContainer =
@@ -64,7 +62,7 @@ suite('Multidevice', () => {
     assertEquals(browserProxy.getCallCount('attemptNotificationSetup'), 1);
 
     simulateStatusChanged(
-      NotificationAccessSetupOperationStatus.CONNECTION_REQUESTED);
+        NotificationAccessSetupOperationStatus.CONNECTION_REQUESTED);
     assertTrue(isSetupInstructionsShownSeparately());
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
@@ -78,8 +76,8 @@ suite('Multidevice', () => {
     assertFalse(!!buttonContainer.querySelector('#doneButton'));
     assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
 
-    simulateStatusChanged(NotificationAccessSetupOperationStatus.
-        SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE);
+    simulateStatusChanged(NotificationAccessSetupOperationStatus
+                              .SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE);
     assertTrue(isSetupInstructionsShownSeparately());
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertFalse(!!buttonContainer.querySelector('#getStartedButton'));

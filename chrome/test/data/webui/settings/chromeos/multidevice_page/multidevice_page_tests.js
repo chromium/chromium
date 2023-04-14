@@ -287,7 +287,7 @@ suite('Multidevice', function() {
     PolymerTest.clearBody();
     browserProxy = new TestMultideviceBrowserProxy();
     MultiDeviceBrowserProxyImpl.setInstanceForTesting(browserProxy);
-    browserProxy.data.notificationAccessStatus =
+    browserProxy.data_.notificationAccessStatus =
         PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED;
 
     multidevicePage = document.createElement('settings-multidevice-page');
@@ -332,9 +332,9 @@ suite('Multidevice', function() {
     PolymerTest.clearBody();
     browserProxy = new TestMultideviceBrowserProxy();
     MultiDeviceBrowserProxyImpl.setInstanceForTesting(browserProxy);
-    browserProxy.data.notificationAccessStatus =
+    browserProxy.data_.notificationAccessStatus =
         PhoneHubFeatureAccessStatus.AVAILABLE_BUT_NOT_GRANTED;
-    browserProxy.data.isPhoneHubPermissionsDialogSupported = true;
+    browserProxy.data_.isPhoneHubPermissionsDialogSupported = true;
 
     multidevicePage = document.createElement('settings-multidevice-page');
     assertTrue(!!multidevicePage);

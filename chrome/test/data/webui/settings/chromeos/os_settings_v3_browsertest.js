@@ -364,11 +364,23 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  // TODO(b/208932892): Re-enable once flakiness is fixed.
  // ['MultideviceFeatureItem', 'multidevice_feature_item_tests.js'],
  ['MultideviceFeatureToggle', 'multidevice_feature_toggle_tests.js'],
+ ['MultidevicePage', 'multidevice_page/multidevice_page_tests.js'],
  [
-   'MultideviceNotificationAccessSetupDialog',
-   'multidevice_notification_access_setup_dialog_tests.js',
+   'MultidevicePageMultideviceNotificationAccessSetupDialog',
+   'multidevice_page/multidevice_notification_access_setup_dialog_tests.js',
  ],
- ['MultidevicePage', 'multidevice_page_tests.js'],
+ [
+   'MultidevicePageMultidevicePermissionsSetupDialog',
+   'multidevice_page/multidevice_permissions_setup_dialog_tests.js',
+ ],
+ [
+   'MultidevicePageMultideviceSmartlockItem',
+   'multidevice_page/multidevice_smartlock_item_test.js'
+ ],
+ [
+   'MultidevicePageMultideviceSubPage',
+   'multidevice_page/multidevice_subpage_tests.js'
+ ],
  [
    'MultiDevicePageMultideviceCombinedSetupItem',
    'multidevice_page/multidevice_combined_setup_item_tests.js'
@@ -377,12 +389,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'MultidevicePageMultideviceWifiSyncItem',
    'multidevice_page/multidevice_wifi_sync_item_tests.js'
  ],
- [
-   'MultidevicePermissionsSetupDialog',
-   'multidevice_permissions_setup_dialog_tests.js',
- ],
- ['MultideviceSmartLockItem', 'multidevice_smartlock_item_test.js'],
- ['MultideviceSubPage', 'multidevice_subpage_tests.js'],
  [
    'MultideviceTaskContinuationItem',
    'multidevice_task_continuation_item_tests.js',

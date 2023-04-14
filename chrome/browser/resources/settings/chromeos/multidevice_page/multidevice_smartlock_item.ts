@@ -23,7 +23,7 @@ import {SettingsMultideviceFeatureItemElement} from './multidevice_feature_item.
 import {MultiDeviceFeatureMixin} from './multidevice_feature_mixin.js';
 import {getTemplate} from './multidevice_smartlock_item.html.js';
 
-interface SettingsMultideviceSmartlockItemElement {
+export interface SettingsMultideviceSmartlockItemElement {
   $: {
     smartLockItem: SettingsMultideviceFeatureItemElement,
   };
@@ -32,7 +32,7 @@ interface SettingsMultideviceSmartlockItemElement {
 const SettingsMultideviceSmartlockItemElementBase =
     MultiDeviceFeatureMixin(WebUiListenerMixin(PolymerElement));
 
-class SettingsMultideviceSmartlockItemElement extends
+export class SettingsMultideviceSmartlockItemElement extends
     SettingsMultideviceSmartlockItemElementBase {
   static get is() {
     return 'settings-multidevice-smartlock-item' as const;

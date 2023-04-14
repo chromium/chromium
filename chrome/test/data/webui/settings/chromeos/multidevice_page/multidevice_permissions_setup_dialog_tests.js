@@ -6,7 +6,6 @@ import {MultiDeviceBrowserProxyImpl, PermissionsSetupStatus, SetupFlowStatus} fr
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/ash/common/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestMultideviceBrowserProxy} from './test_multidevice_browser_proxy.js';
