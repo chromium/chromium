@@ -27,7 +27,7 @@
 #if defined(WAYLAND_GBM)
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/linux/drm_util_linux.h"
-#include "ui/gfx/linux/gbm_device.h"
+#include "ui/gfx/linux/gbm_device.h"  // nogncheck
 #include "ui/ozone/platform/wayland/gpu/gbm_pixmap_wayland.h"
 #include "ui/ozone/platform/wayland/gpu/gbm_surfaceless_wayland.h"
 #include "ui/ozone/public/ozone_platform.h"
