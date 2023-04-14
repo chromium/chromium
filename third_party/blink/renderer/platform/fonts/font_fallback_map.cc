@@ -79,6 +79,10 @@ void FontFallbackMap::InvalidateInternal(Predicate predicate) {
 
 void FontFallbackMap::FontsNeedUpdate(FontSelector*,
                                       FontInvalidationReason reason) {
+  recordreplay::Assert(
+    "[RUN-1219-1728] FontFallbackMap::FontNeedsUpdate %d",
+    this->RecordReplayId()
+  );
   AutoLockForParallelTextShaping guard(lock_);
   switch (reason) {
     case FontInvalidationReason::kFontFaceLoaded:
