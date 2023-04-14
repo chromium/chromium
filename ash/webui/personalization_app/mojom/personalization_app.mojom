@@ -347,6 +347,7 @@ interface WallpaperProvider {
 };
 
 // Color scheme options used to generate the system UI's color palette.
+// These options are based off the user's wallpaper.
 enum ColorScheme {
   kStatic = 0,
   kTonalSpot = 1,
@@ -354,6 +355,21 @@ enum ColorScheme {
   kExpressive = 3,
   kVibrant = 4,
 };
+
+// Static color options used to generate the system UI's color palette. These
+// options are not based off the user's wallpaper.
+enum StaticColor {
+  kUnknown = 0,
+  kGoogleBlue = 1,
+  kLightPink = 2,
+  kDarkGreen = 3,
+  kLightPurple = 4,
+};
+
+const uint32 kStaticColorGoogleBlue = 0x4285F4;
+const uint32 kStaticColorLightPink = 0xFFD6D6;
+const uint32 kStaticColorDarkGreen = 0x485045;
+const uint32 kStaticColorLightPurple = 0xCBBFFF;
 
 // Samples of a color scheme for the tri-color scheme preview.
 struct SampleColorScheme {

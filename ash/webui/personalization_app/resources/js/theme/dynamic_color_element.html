@@ -120,13 +120,12 @@
       hidden$="[[automaticSeedColorEnabled]]">
     <template is="dom-repeat" items="[[staticColors_]]" as="staticColor">
       <cr-button
-          tabindex$="[[getStaticColorTabIndex_(staticColor)]]"
+          tabindex$="[[getStaticColorTabIndex_(staticColor.hexVal)]]"
           on-click="onClickStaticColorButton_"
-          aria-checked$="[[getStaticColorAriaChecked_(staticColor, staticColorSelected_)]]"
-          data-static-color$="[[staticColor]]">
+          aria-checked$="[[getStaticColorAriaChecked_(staticColor.hexVal, staticColorSelected_)]]">
         <div class="container">
           <svg>
-            <circle style$="fill: [[staticColor]]" cx="24" cy="24" r="24"></circle>
+            <circle style$="fill: [[staticColor.hexVal]]" cx="24" cy="24" r="24"></circle>
           </svg>
           <iron-icon icon="personalization:circle_checkmark"></iron-icon>
         </div>

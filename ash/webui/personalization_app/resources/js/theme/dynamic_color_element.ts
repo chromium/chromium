@@ -19,8 +19,8 @@ import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-w
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
-import {ColorScheme, SampleColorScheme} from '../../personalization_app.mojom-webui.js';
-import {logDynamicColorToggleButtonClick} from '../personalization_metrics_logger.js';
+import {ColorScheme, SampleColorScheme, STATIC_COLOR_DARK_GREEN, STATIC_COLOR_GOOGLE_BLUE, STATIC_COLOR_LIGHT_PINK, STATIC_COLOR_LIGHT_PURPLE, StaticColor} from '../../personalization_app.mojom-webui.js';
+import {logDynamicColorColorSchemeButtonClick, logDynamicColorStaticColorButtonClick, logDynamicColorToggleButtonClick} from '../personalization_metrics_logger.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {convertToRgbHexStr} from '../utils.js';
 
@@ -37,6 +37,15 @@ export interface DynamicColorElement {
     colorSchemeSelector: IronSelectorElement,
     staticColorSelector: IronSelectorElement,
   };
+}
+
+export interface StaticColorInfo {
+  hexVal: string;
+  enumVal: StaticColor;
+}
+
+interface OnStaticColorSelectedEvent {
+  model: {staticColor: StaticColorInfo};
 }
 
 export class DynamicColorElement extends WithPersonalizationStore {
@@ -61,13 +70,7 @@ export class DynamicColorElement extends WithPersonalizationStore {
       colorSchemeSelected_: Object,
       staticColors_: {
         type: Object,
-        readOnly: true,
-        value: [
-          '#4285f4',
-          '#ffd6d6',
-          '#485045',
-          '#cbbfff',
-        ],
+        computed: 'computePresetStaticColors_()',
       },
       sampleColorSchemes_: {
         type: Array,
@@ -91,7 +94,7 @@ export class DynamicColorElement extends WithPersonalizationStore {
   private previousColorSchemeSelected_: ColorScheme|null;
   private staticColorSelected_: SkColor|null;
   private colorSchemeSelected_: ColorScheme|null;
-  private staticColors_: string[];
+  private staticColors_: StaticColorInfo[];
   private sampleColorSchemes_: SampleColorScheme[];
   private colorSchemeHighlightedButton_: CrButtonElement;
   private staticColorHighlightedButton_: CrButtonElement;
@@ -115,17 +118,40 @@ export class DynamicColorElement extends WithPersonalizationStore {
     initializeDynamicColorData(getThemeProvider(), this.getStore());
   }
 
+  private computePresetStaticColors_() {
+    return [
+      {
+        hexVal: convertToRgbHexStr(STATIC_COLOR_GOOGLE_BLUE),
+        enumVal: StaticColor.kGoogleBlue,
+      },
+      {
+        hexVal: convertToRgbHexStr(STATIC_COLOR_LIGHT_PINK),
+        enumVal: StaticColor.kLightPink,
+      },
+      {
+        hexVal: convertToRgbHexStr(STATIC_COLOR_DARK_GREEN),
+        enumVal: StaticColor.kDarkGreen,
+      },
+      {
+        hexVal: convertToRgbHexStr(STATIC_COLOR_LIGHT_PURPLE),
+        enumVal: StaticColor.kLightPurple,
+      },
+    ];
+  }
+
   private onClickColorSchemeButton_(event: Event) {
     const eventTarget = event.currentTarget as HTMLElement;
     const colorScheme = Number(eventTarget.dataset['colorSchemeId']);
+    logDynamicColorColorSchemeButtonClick(colorScheme);
     setColorSchemePref(colorScheme, getThemeProvider(), this.getStore());
   }
 
-  private onClickStaticColorButton_(event: Event) {
-    const eventTarget = event.currentTarget as HTMLElement;
-    const staticColorHexStr = String(eventTarget.dataset['staticColor']);
-    const staticColor = hexColorToSkColor(staticColorHexStr);
-    setStaticColorPref(staticColor, getThemeProvider(), this.getStore());
+  private onClickStaticColorButton_(event: OnStaticColorSelectedEvent) {
+    const staticColorInfo = event.model.staticColor;
+    logDynamicColorStaticColorButtonClick(staticColorInfo.enumVal);
+    setStaticColorPref(
+        hexColorToSkColor(staticColorInfo.hexVal), getThemeProvider(),
+        this.getStore());
   }
 
   private onToggleChanged_() {

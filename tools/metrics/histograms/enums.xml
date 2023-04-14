@@ -81456,6 +81456,22 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="Serialization error"/>
 </enum>
 
+<enum name="PersonalizationDynamicColorColorScheme">
+  <int value="0" label="kStatic"/>
+  <int value="1" label="kTonalSpot"/>
+  <int value="2" label="kNeutral"/>
+  <int value="3" label="kExpressive"/>
+  <int value="4" label="kVibrant"/>
+</enum>
+
+<enum name="PersonalizationDynamicColorStaticColor">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kGoogleBlue"/>
+  <int value="2" label="kLightPink"/>
+  <int value="3" label="kDarkGreen"/>
+  <int value="4" label="kLightPurple"/>
+</enum>
+
 <enum name="PersonalizationEntryPoint">
   <int value="0" label="Home Screen"/>
   <int value="1" label="System Tray"/>
