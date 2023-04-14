@@ -26,6 +26,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_user_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_login_hint.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_m_doc_element.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_m_doc_provider.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_parameters.h"
@@ -67,6 +69,8 @@ using blink::mojom::blink::IdentityUserInfoPtr;
 using blink::mojom::blink::LargeBlobSupport;
 using blink::mojom::blink::LogoutRpsRequest;
 using blink::mojom::blink::LogoutRpsRequestPtr;
+using blink::mojom::blink::MDocElement;
+using blink::mojom::blink::MDocElementPtr;
 using blink::mojom::blink::MDocProvider;
 using blink::mojom::blink::MDocProviderPtr;
 using blink::mojom::blink::PRFValues;
@@ -774,7 +778,15 @@ TypeConverter<IdentityProviderPtr, blink::IdentityProviderConfig>::Convert(
       // TODO(https://crbug.com/1416939): make sure the MDocs API
       // works well with the Multiple IdP API.
       !blink::RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled()) {
-    auto mdoc = MDocProvider::New();
+    WTF::Vector<MDocElementPtr> requested_elements;
+    for (auto element : provider.mdoc()->requestedElements()) {
+      auto requested_element =
+          MDocElement::New(element->elementNamespace(), element->name());
+      requested_elements.push_back(std::move(requested_element));
+    }
+    auto mdoc = MDocProvider::New(provider.mdoc()->documentType(),
+                                  provider.mdoc()->readerPublicKey(),
+                                  std::move(requested_elements));
     return IdentityProvider::NewMdoc(std::move(mdoc));
   } else {
     auto config = IdentityProviderConfig::From(provider);

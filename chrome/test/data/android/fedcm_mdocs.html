@@ -1,0 +1,33 @@
+<html>
+
+<head>
+  <title>FedCM MDocs Test Page</title>
+</head>
+<script>
+  async function request() {
+    const mdoc = await navigator.credentials.get({
+      identity: {
+        providers: [{
+          configURL: '',
+          clientId: '',
+          mdoc: {
+            documentType: 'test_document_type',
+            readerPublicKey: 'test_reader_public_key',
+            requestedElements: [{
+              namespace: 'test_namespace',
+              name: 'test_name'
+            }],
+          },
+        }],
+      },
+    });
+   const token = mdoc.token;
+   document.getElementById("log").textContent += `${token}`;
+  }
+</script>
+
+<body>
+  <textarea id="log"></textarea>
+</body>
+
+</html>

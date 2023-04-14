@@ -88,4 +88,6 @@ public class ContentFeatureList {
             "WebBluetoothNewPermissionsBackend";
 
     public static final String WEB_NFC = "WebNFC";
+
+    public static final String WEB_IDENTITY_MDOCS = "WebIdentityMDocs";
 }

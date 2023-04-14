@@ -2247,6 +2247,8 @@ source_set("browser") {
     "webid/flags.h",
     "webid/idp_network_request_manager.cc",
     "webid/idp_network_request_manager.h",
+    "webid/mdocs/mdoc_provider.cc",
+    "webid/mdocs/mdoc_provider.h",
     "webid/webid_utils.cc",
     "webid/webid_utils.h",
     "webrtc/webrtc_connections_observer.cc",
@@ -3104,6 +3106,8 @@ source_set("browser") {
       "web_contents/web_contents_view_android.cc",
       "web_contents/web_contents_view_android.h",
       "webauth/web_authentication_delegate_android.cc",
+      "webid/mdocs/mdoc_provider_android.cc",
+      "webid/mdocs/mdoc_provider_android.h",
     ]
 
     deps += [

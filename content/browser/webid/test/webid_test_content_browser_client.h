@@ -12,6 +12,8 @@
 
 namespace content {
 
+class MDocProvider;
+
 // Implements ContentBrowserClient to allow calls out to the Chrome layer to
 // be stubbed for tests.
 class WebIdTestContentBrowserClient
@@ -27,13 +29,20 @@ class WebIdTestContentBrowserClient
   std::unique_ptr<IdentityRequestDialogController>
   CreateIdentityRequestDialogController() override;
 
+  std::unique_ptr<MDocProvider> CreateMDocProvider() override;
+
   // This needs to be called once for every WebID invocation. If there is a
   // need in future to generate these in sequence then a callback can be used.
   void SetIdentityRequestDialogController(
       std::unique_ptr<IdentityRequestDialogController> controller);
 
+  void SetMDocProvider(std::unique_ptr<MDocProvider> provider);
+
+  MDocProvider* GetMDocProviderForTests() { return test_mdoc_provider_.get(); }
+
  private:
   std::unique_ptr<IdentityRequestDialogController> test_dialog_controller_;
+  std::unique_ptr<MDocProvider> test_mdoc_provider_;
 };
 
 }  // namespace content

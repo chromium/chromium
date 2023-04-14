@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
+#include "content/browser/webid/test/mock_mdoc_provider.h"
 #include "content/browser/webid/test/webid_test_content_browser_client.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -34,6 +35,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -43,6 +46,8 @@ using net::test_server::BasicHttpResponse;
 using net::test_server::HttpMethod;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
+using ::testing::_;
+using ::testing::WithArg;
 
 namespace content {
 
@@ -210,6 +215,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
 
     test_browser_client_ = std::make_unique<WebIdTestContentBrowserClient>();
     SetTestIdentityRequestDialogController("not_real_account");
+    SetTestMDocProvider();
   }
 
   void TearDown() override { ContentBrowserTest::TearDown(); }
@@ -271,13 +277,18 @@ class WebIdBrowserTest : public ContentBrowserTest {
         std::move(controller));
   }
 
+  void SetTestMDocProvider() {
+    auto provider = std::make_unique<MockMDocProvider>();
+    test_browser_client_->SetMDocProvider(std::move(provider));
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<WebIdTestContentBrowserClient> test_browser_client_;
 
  private:
   EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<IdpTestServer> idp_server_;
-  std::unique_ptr<WebIdTestContentBrowserClient> test_browser_client_;
 };
 
 class WebIdIdpSigninStatusBrowserTest : public WebIdBrowserTest {
@@ -303,24 +314,6 @@ class WebIdIdPRegistryBrowserTest : public WebIdBrowserTest {
     features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
     features.push_back(features::kFedCm);
     features.push_back(features::kFedCmIdPRegistration);
-    scoped_feature_list_.InitWithFeatures(features, {});
-
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
-
-  ShellFederatedPermissionContext* sharing_context() {
-    BrowserContext* context = shell()->web_contents()->GetBrowserContext();
-    return static_cast<ShellFederatedPermissionContext*>(
-        context->GetFederatedIdentityPermissionContext());
-  }
-};
-
-class WebIdMDocsBrowserTest : public WebIdBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    std::vector<base::test::FeatureRef> features;
-    features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
-    features.push_back(features::kWebIdentityMDocs);
     scoped_feature_list_.InitWithFeatures(features, {});
 
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
@@ -520,29 +513,103 @@ IN_PROC_BROWSER_TEST_F(WebIdIdpSigninStatusBrowserTest,
   EXPECT_FALSE(*value);
 }
 
+class WebIdMDocsBrowserTest : public WebIdBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    std::vector<base::test::FeatureRef> features;
+    features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
+    features.push_back(features::kWebIdentityMDocs);
+    scoped_feature_list_.InitWithFeatures(features, {});
+
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+
+  ShellFederatedPermissionContext* sharing_context() {
+    BrowserContext* context = shell()->web_contents()->GetBrowserContext();
+    return static_cast<ShellFederatedPermissionContext*>(
+        context->GetFederatedIdentityPermissionContext());
+  }
+};
+
 // Test that an mdoc can be requested via a JS API.
-IN_PROC_BROWSER_TEST_F(WebIdMDocsBrowserTest, MDocs) {
-  GURL configURL = GURL(BaseIdpUrl());
+IN_PROC_BROWSER_TEST_F(WebIdMDocsBrowserTest, RequestMDoc) {
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+  MockMDocProvider* mdoc_provider = static_cast<MockMDocProvider*>(
+      test_browser_client_->GetMDocProviderForTests());
+
+  EXPECT_CALL(*mdoc_provider, RequestMDoc(_, _, _, _, _))
+      .WillOnce(WithArg<4>([](MDocProvider::MDocCallback callback) {
+        std::move(callback).Run("test-mdoc");
+      }));
 
   std::string script = R"(
         (async () => {
           const {token} = await navigator.credentials.get({
             identity: {
               providers: [{
-                configURL: "",
-                clientId: "",
+                configURL: '',
+                clientId: '',
                 mdoc: {
-                  documentType: "",
-                  readerPublicKey: "",
-                  requestedElements: []
-                }
-              }]
-            }
+                  documentType: 'test_document_type',
+                  readerPublicKey: 'test_reader_public_key',
+                  requestedElements: [
+                    {
+                      namespace: 'test_namespace',
+                      name: 'test_name'
+                    }
+                  ],
+                },
+              }],
+            },
           });
           return token;
         }) ()
     )";
+
+  EXPECT_EQ("test-mdoc", EvalJs(shell(), script));
+}
+
+// Test that when there's a pending mdoc request, a second `get` call should be
+// rejected.
+IN_PROC_BROWSER_TEST_F(WebIdMDocsBrowserTest,
+                       OnlyOneInFlightMDocRequestIsAllowed) {
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+  MockMDocProvider* mdoc_provider = static_cast<MockMDocProvider*>(
+      test_browser_client_->GetMDocProviderForTests());
+
+  std::string script = R"(
+        (async () => {
+          const {token} = await navigator.credentials.get({
+            identity: {
+              providers: [{
+                configURL: '',
+                clientId: '',
+                mdoc: {
+                  documentType: 'test_document_type',
+                  readerPublicKey: 'test_reader_public_key',
+                  requestedElements: [
+                    {
+                      namespace: 'test_namespace',
+                      name: 'test_name'
+                    }
+                  ],
+                },
+              }],
+            },
+          });
+          return token;
+        }) ()
+    )";
+
+  EXPECT_CALL(*mdoc_provider, RequestMDoc(_, _, _, _, _))
+      .WillOnce(WithArg<4>([&](MDocProvider::MDocCallback callback) {
+        EXPECT_EQ(
+            "a JavaScript error: \"AbortError: Only one "
+            "navigator.credentials.get request may be outstanding at one "
+            "time.\"\n",
+            EvalJs(shell(), script).error);
+        std::move(callback).Run("test-mdoc");
+      }));
 
   EXPECT_EQ("test-mdoc", EvalJs(shell(), script));
 }

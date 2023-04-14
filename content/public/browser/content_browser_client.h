@@ -212,6 +212,7 @@ class FontAccessDelegate;
 class HidDelegate;
 class IdentityRequestDialogController;
 class LoginDelegate;
+class MDocProvider;
 class MediaObserver;
 class NavigationHandle;
 class NavigationThrottle;
@@ -2289,6 +2290,9 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Creates a modal window that intermediates the exchange of ID tokens.
   virtual std::unique_ptr<IdentityRequestDialogController>
   CreateIdentityRequestDialogController();
+
+  // Creates an mdoc provider to fetch mdocs from native apps.
+  virtual std::unique_ptr<MDocProvider> CreateMDocProvider();
 
   // Returns true if JS dialogs from an iframe with different origin from the
   // main frame should be disallowed.
