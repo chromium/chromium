@@ -1554,6 +1554,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"omnibox-tail-suggest", flag_descriptions::kOmniboxTailSuggestName,
      flag_descriptions::kOmniboxTailSuggestDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kOmniboxTailSuggest)},
+    {"feed-disable-hot-start-refresh-ios",
+     flag_descriptions::kFeedDisableHotStartRefreshName,
+     flag_descriptions::kFeedDisableHotStartRefreshDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kFeedDisableHotStartRefresh)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

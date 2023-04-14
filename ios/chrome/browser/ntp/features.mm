@@ -80,6 +80,10 @@ BASE_FEATURE(kEnableFeedExperimentTagging,
 
 BASE_FEATURE(kIOSSetUpList, "IOSSetUpList", base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFeedDisableHotStartRefresh,
+             "FeedDisableHotStartRefresh",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Key for NSUserDefaults containing a bool indicating whether the next run
 // should enable feed background refresh capability. This is used because
 // registering for background refreshes must happen early in app initialization
@@ -344,4 +348,8 @@ bool IsFeedExperimentTaggingEnabled() {
 
 bool IsIOSSetUpListEnabled() {
   return base::FeatureList::IsEnabled(kIOSSetUpList);
+}
+
+bool IsFeedHotStartRefreshDisabled() {
+  return base::FeatureList::IsEnabled(kFeedDisableHotStartRefresh);
 }

@@ -53,6 +53,9 @@ BASE_DECLARE_FEATURE(kEnableFeedExperimentTagging);
 // Feature flag to enable the Set Up List.
 BASE_DECLARE_FEATURE(kIOSSetUpList);
 
+// Feature flag to disable Discover-controlled foregrounding refreshes.
+BASE_DECLARE_FEATURE(kFeedDisableHotStartRefresh);
+
 // Feature param under `kEnableFeedBackgroundRefresh` to also enable background
 // refresh for the Following feed.
 extern const char kEnableFollowingFeedBackgroundRefresh[];
@@ -234,5 +237,8 @@ bool IsFeedExperimentTaggingEnabled();
 
 // Whether the Set Up List feature is enabled.
 bool IsIOSSetUpListEnabled();
+
+// Whether Discover-controlled foregrounding refreshes are disabled.
+bool IsFeedHotStartRefreshDisabled();
 
 #endif  // IOS_CHROME_BROWSER_NTP_FEATURES_H_

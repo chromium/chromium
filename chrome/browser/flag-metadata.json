@@ -3933,6 +3933,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "feed-disable-hot-start-refresh-ios",
+    "owners": ["//ios/chrome/browser/discover_feed/OWNERS", "edchin@google.com"],
+    "expiry_milestone": 117
+  },
+  {
     "name": "feed-discofeed-endpoint",
     "owners": [ "//chrome/android/feed/OWNERS", "freedjm@chromium.org" ],
     "expiry_milestone": 115

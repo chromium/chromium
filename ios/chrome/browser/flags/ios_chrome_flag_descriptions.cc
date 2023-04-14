@@ -462,6 +462,10 @@ const char kFeedBackgroundRefreshDescription[] =
     "Schedules a feed background refresh after some minimum period of time has "
     "passed after the last refresh.";
 
+const char kFeedDisableHotStartRefreshName[] = "Disable hot start feed refresh";
+const char kFeedDisableHotStartRefreshDescription[] =
+    "Disables all Discover-controlled foregrounding refreshes.";
+
 const char kFeedExperimentTaggingName[] = "Enable Feed experiment tagging";
 const char kFeedExperimentTaggingDescription[] =
     "Makes server experiments visible as client-side experiments.";
