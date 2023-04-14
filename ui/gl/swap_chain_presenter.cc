@@ -605,10 +605,10 @@ bool SwapChainPresenter::AdjustTargetToFullScreenSizeIfNeeded(
   if (params.clip_rect.has_value())
     clipped_onscreen_rect.Intersect(*visual_clip_rect);
 
-  // Restore after test
-  // if (clipped_onscreen_rect == gfx::Rect(monitor_size)) {
-  //  return true;
-  //}
+  // Skip adjustment if the current swap chain size is already correct.
+  if (clipped_onscreen_rect == gfx::Rect(monitor_size)) {
+    return true;
+  }
 
   // Because of the rounding when converting between pixels and DIPs, a
   // fullscreen video can become slightly larger than the monitor - e.g. on
@@ -825,10 +825,10 @@ void SwapChainPresenter::AdjustTargetForFullScreenLetterboxing(
     }
   }
 
-  // Restore after test
-  // if (new_onscreen_rect == clipped_onscreen_rect) {
-  //  return true;
-  //}
+  // Skip adjustment if the current swap chain size is already correct.
+  if (new_onscreen_rect == clipped_onscreen_rect) {
+    return;
+  }
 
   //
   // Adjust the clip rect.
