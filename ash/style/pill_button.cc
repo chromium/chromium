@@ -156,31 +156,23 @@ PillButton::PillButton(PressedCallback callback,
                        PillButton::Type type,
                        const gfx::VectorIcon* icon,
                        int horizontal_spacing,
-                       bool use_light_colors,
-                       bool rounded_highlight_path,
                        int padding_reduction_for_icon)
     : views::LabelButton(std::move(callback), text),
       type_(type),
       icon_(icon),
-      use_light_colors_(use_light_colors),
       horizontal_spacing_(horizontal_spacing),
-      rounded_highlight_path_(rounded_highlight_path),
       padding_reduction_for_icon_(padding_reduction_for_icon) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   label()->SetSubpixelRenderingEnabled(false);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kLegacyButton2,
                                         *label());
-  StyleUtil::SetUpInkDropForButton(
-      this, gfx::Insets(),
-      /*highlight_on_hover=*/false,
-      /*highlight_on_focus=*/false,
-      /*background_color=*/
-      use_light_colors ? SK_ColorWHITE : gfx::kPlaceholderColor);
-  views::FocusRing::Get(this)->SetColorId(
-      (use_light_colors_ && !features::IsDarkLightModeEnabled())
-          ? ui::kColorAshLightFocusRing
-          : ui::kColorAshFocusRing);
+  StyleUtil::SetUpInkDropForButton(this, gfx::Insets(),
+                                   /*highlight_on_hover=*/false,
+                                   /*highlight_on_focus=*/false,
+                                   /*background_color=*/
+                                   gfx::kPlaceholderColor);
+  views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
   SetTooltipText(text);
 
   // Initialize image and icon spacing.
@@ -350,16 +342,14 @@ void PillButton::Init() {
 
   const int height = GetButtonHeight(type_);
 
-  if (rounded_highlight_path_) {
-    if (chromeos::features::IsJellyrollEnabled() ||
-        (type_ & kButtonColorVariant) == kPrimary) {
-      views::InstallRoundRectHighlightPathGenerator(
-          this, gfx::Insets(-kFocusRingPadding),
-          height / 2.f + kFocusRingPadding);
-    } else {
-      views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
-                                                    height / 2.f);
-    }
+  if (chromeos::features::IsJellyrollEnabled() ||
+      (type_ & kButtonColorVariant) == kPrimary) {
+    views::InstallRoundRectHighlightPathGenerator(
+        this, gfx::Insets(-kFocusRingPadding),
+        height / 2.f + kFocusRingPadding);
+  } else {
+    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                  height / 2.f);
   }
 
   UpdateBackgroundColor();

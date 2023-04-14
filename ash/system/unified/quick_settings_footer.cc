@@ -62,8 +62,6 @@ QsBatteryInfoViewBase::QsBatteryInfoViewBase(
                  type,
                  icon,
                  kHorizontalSpacing,
-                 /*use_light_colors=*/false,
-                 /*rounded_highlight_path=*/true,
                  kPaddingReduction) {
   PowerStatus::Get()->AddObserver(this);
   SetImageLabelSpacing(kImageLabelSpacing);
