@@ -254,6 +254,11 @@ UserPerformanceTuningManager::UserPerformanceTuningManager(
                                                          std::move(notifier));
   }
 
+  // TODO(crbug.com/1430068): call
+  // performance_manager::user_tuning::prefs::MigrateHighEfficiencyModePref
+  // here in the same patch as the UI and enterprise policy are migrated to
+  // the enum pref.
+
   pref_change_registrar_.Init(local_state);
 }
 

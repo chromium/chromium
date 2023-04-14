@@ -307,6 +307,7 @@ source_set("unit_tests") {
     "performance_manager_unittest.cc",
     "registered_objects_unittest.cc",
     "render_process_host_id_unittest.cc",
+    "user_tuning/prefs_unittest.cc",
     "v8_memory/v8_context_tracker_helpers_unittest.cc",
     "v8_memory/v8_context_tracker_internal_unittest.cc",
     "v8_memory/v8_context_tracker_unittest.cc",
