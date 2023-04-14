@@ -648,18 +648,18 @@ class DCompImageBackingFactoryVisualTreeTest
 };
 
 TEST_F(DCompImageBackingFactoryVisualTreeTest, DCompSurfaceCanDisplay) {
-  viz::ResourceFormat formats[4] = {
-      viz::ResourceFormat::RGBA_8888,
-      viz::ResourceFormat::BGRA_8888,
-      viz::ResourceFormat::RGBX_8888,
-      viz::ResourceFormat::BGRX_8888,
+  viz::SharedImageFormat formats[4] = {
+      viz::SinglePlaneFormat::kRGBA_8888,
+      viz::SinglePlaneFormat::kBGRA_8888,
+      viz::SinglePlaneFormat::kRGBX_8888,
+      viz::SinglePlaneFormat::kBGRX_8888,
   };
 
   SkColor test_color = SkColorSetRGB(0x20, 0x40, 0x80);
   SkColor expected_color = test_color;
   for (auto format : formats) {
-    RunTest(kDCompSurfaceUsage, viz::SharedImageFormat::SinglePlane(format),
-            gfx::ColorSpace::CreateSRGB(), false, test_color, expected_color);
+    RunTest(kDCompSurfaceUsage, format, gfx::ColorSpace::CreateSRGB(), false,
+            test_color, expected_color);
   }
 }
 
@@ -673,16 +673,16 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest, DCompSurfaceCanDisplayLinear) {
 
 TEST_F(DCompImageBackingFactoryVisualTreeTest,
        DCompSurfaceCanDisplayWithAlpha) {
-  viz::ResourceFormat formats[2] = {
-      viz::ResourceFormat::RGBA_8888,
-      viz::ResourceFormat::BGRA_8888,
+  viz::SharedImageFormat formats[2] = {
+      viz::SinglePlaneFormat::kRGBA_8888,
+      viz::SinglePlaneFormat::kBGRA_8888,
   };
 
   SkColor test_color = SkColorSetARGB(0x80, 0x20, 0x40, 0x80);
   SkColor expected_color = SkColorSetRGB(0x10, 0x20, 0x40);
   for (auto format : formats) {
-    RunTest(kDCompSurfaceUsage, viz::SharedImageFormat::SinglePlane(format),
-            gfx::ColorSpace::CreateSRGB(), true, test_color, expected_color);
+    RunTest(kDCompSurfaceUsage, format, gfx::ColorSpace::CreateSRGB(), true,
+            test_color, expected_color);
   }
 }
 
@@ -696,18 +696,18 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest,
 }
 
 TEST_F(DCompImageBackingFactoryVisualTreeTest, DXGISwapChainCanDisplay) {
-  viz::ResourceFormat formats[4] = {
-      viz::ResourceFormat::RGBA_8888,
-      viz::ResourceFormat::BGRA_8888,
-      viz::ResourceFormat::RGBX_8888,
-      viz::ResourceFormat::BGRX_8888,
+  viz::SharedImageFormat formats[4] = {
+      viz::SinglePlaneFormat::kRGBA_8888,
+      viz::SinglePlaneFormat::kBGRA_8888,
+      viz::SinglePlaneFormat::kRGBX_8888,
+      viz::SinglePlaneFormat::kBGRX_8888,
   };
 
   SkColor test_color = SkColorSetRGB(0x20, 0x40, 0x80);
   SkColor expected_color = test_color;
   for (auto format : formats) {
-    RunTest(kDXGISwapChainUsage, viz::SharedImageFormat::SinglePlane(format),
-            gfx::ColorSpace::CreateSRGB(), false, test_color, expected_color);
+    RunTest(kDXGISwapChainUsage, format, gfx::ColorSpace::CreateSRGB(), false,
+            test_color, expected_color);
   }
 }
 
@@ -728,16 +728,16 @@ TEST_F(DCompImageBackingFactoryVisualTreeTest, DXGISwapChainCanDisplayHDR10) {
 
 TEST_F(DCompImageBackingFactoryVisualTreeTest,
        DXGISwapChainCanDisplayWithAlpha) {
-  viz::ResourceFormat formats[2] = {
-      viz::ResourceFormat::RGBA_8888,
-      viz::ResourceFormat::BGRA_8888,
+  viz::SharedImageFormat formats[2] = {
+      viz::SinglePlaneFormat::kRGBA_8888,
+      viz::SinglePlaneFormat::kBGRA_8888,
   };
 
   SkColor test_color = SkColorSetARGB(0x80, 0x20, 0x40, 0x80);
   SkColor expected_color = SkColorSetRGB(0x10, 0x20, 0x40);
   for (auto format : formats) {
-    RunTest(kDXGISwapChainUsage, viz::SharedImageFormat::SinglePlane(format),
-            gfx::ColorSpace::CreateSRGB(), true, test_color, expected_color);
+    RunTest(kDXGISwapChainUsage, format, gfx::ColorSpace::CreateSRGB(), true,
+            test_color, expected_color);
   }
 }
 
