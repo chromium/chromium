@@ -10,7 +10,6 @@
 {{ super() }}
 android:multiArch="true"
 android:extractNativeLibs="false"
-{{use32bitAbi|default('')}}
 {% endblock %}
 
 {% block extra_keyset_definitions %}

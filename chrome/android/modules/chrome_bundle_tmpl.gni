@@ -35,7 +35,7 @@ template("chrome_bundle") {
       get_label_info(invoker.base_module_target, "target_gen_dir")
   _base_name = get_label_info(invoker.base_module_target, "name")
   _split_android_manifest =
-      "${_base_target_gen_dir}/manifest/${_base_name}/AndroidManifest_split.xml"
+      "${_base_target_gen_dir}/${_base_name}/AndroidManifest_split.xml"
 
   _chrome_module_desc = {
     name = "chrome"

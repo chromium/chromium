@@ -43,12 +43,8 @@ default_chrome_public_jinja_variables = [
   "zygote_preload_class=org.chromium.content_public.app.ZygotePreload",
 ]
 
-monochrome_android_manifest_jinja_variables = [
-  "sandboxed_service_exported=true",
-
-  # TODO(crbug.com/1411557): Remove.
-  use_32bit_abi_jinja_variable,
-]
+monochrome_android_manifest_jinja_variables =
+    [ "sandboxed_service_exported=true" ]
 
 # Generates an AndroidManifest.xml along with an optional second manifest
 # dependent on the original.
@@ -174,11 +170,8 @@ template("chrome_common_apk_or_module_tmpl") {
   }
 
   _android_manifest = "$target_gen_dir/$target_name/AndroidManifest.xml"
-
-  # TODO(crbug.com/1411557): Move out of manifest/ when downstream is updated.
-  # _split.xml is used in chrome_bundle template.
   _split_android_manifest =
-      "$target_gen_dir/manifest/$target_name/AndroidManifest_split.xml"
+      "$target_gen_dir/$target_name/AndroidManifest_split.xml"
   _android_manifest_target_name = "${target_name}__android_manifest"
   split_manifest_template(_android_manifest_target_name) {
     definitions_in_split = _is_bundle
@@ -215,11 +208,6 @@ template("chrome_common_apk_or_module_tmpl") {
         "force_32_bit=$_force_32_bit",
         "include_arcore_manifest_flag=$enable_arcore",
       ]
-
-      # TODO(crbug.com/1411557): Remove block.
-      if (_is_64_bit_browser) {
-        variables -= [ use_32bit_abi_jinja_variable ]
-      }
     }
     if (defined(invoker.jinja_input)) {
       includes += [ input ]

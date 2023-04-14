@@ -28,10 +28,6 @@ Note: This is a jinja2 template, processed at build time into the final manifest
         {% if force_32_bit is defined and force_32_bit == 'true' %}
         android:use32bitAbi="true"
         {% endif %}
-        {# TODO(crbug.com/1411557): Remove #}
-        {% if force_32_bit is not defined %}
-        {{ use32bitAbi|default('android:use32bitAbi="true"') }}
-        {% endif %}
       >
         <static-library android:name="{{ trichrome_library }}" android:version="{{ trichrome_version }}" />
     </application>

@@ -25,16 +25,10 @@ declare_args() {
   trichrome_certdigest = default_trichrome_certdigest
 }
 
-# TODO(crbug.com/1411557): Remove variable once unused internally.
-use_32bit_abi_jinja_variable = "use32bitAbi=android:use32bitAbi=\"true\""
-
 trichrome_jinja_variables = [
   "trichrome_library=$trichrome_library_package",
   "trichrome_certdigest=$trichrome_certdigest",
   "zygote_preload_class=org.chromium.chrome.app.TrichromeZygotePreload",
-
-  # TODO(crbug.com/1411557): Remove variable once unused internally.
-  use_32bit_abi_jinja_variable,
 ]
 
 template("trichrome_library_apk_tmpl") {
@@ -54,41 +48,32 @@ template("trichrome_library_apk_tmpl") {
   }
   _version_code = TRICHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
 
-  # TODO(crbug.com/1411557): Remove option for custom manifest.
-  if (!defined(invoker.android_manifest)) {
-    if (defined(invoker.manifest_package)) {
-      _manifest_package = invoker.manifest_package
-    } else {
-      _manifest_package = trichrome_library_package
-    }
-    _android_manifest = "$target_gen_dir/$target_name/AndroidManifest.xml"
-    _android_manifest_target_name = "${target_name}__android_manifest"
-    jinja_template(_android_manifest_target_name) {
-      input = "//chrome/android/java/AndroidManifest_trichrome_library.xml"
-      output = _android_manifest
-      _force_32_bit = _include_32_bit_webview && _include_64_bit_webview &&
-                      !_is_64_bit_browser
-      variables = trichrome_jinja_variables + [
-                    "force_32_bit=$_force_32_bit",
-                    "manifest_package=$_manifest_package",
-                    "trichrome_version=$_version_code",
-                  ]
+  if (defined(invoker.manifest_package)) {
+    _manifest_package = invoker.manifest_package
+  } else {
+    _manifest_package = trichrome_library_package
+  }
+  _android_manifest = "$target_gen_dir/$target_name/AndroidManifest.xml"
+  _android_manifest_target_name = "${target_name}__android_manifest"
+  jinja_template(_android_manifest_target_name) {
+    input = "//chrome/android/java/AndroidManifest_trichrome_library.xml"
+    output = _android_manifest
+    _force_32_bit = _include_32_bit_webview && _include_64_bit_webview &&
+                    !_is_64_bit_browser
+    variables = trichrome_jinja_variables + [
+                  "force_32_bit=$_force_32_bit",
+                  "manifest_package=$_manifest_package",
+                  "trichrome_version=$_version_code",
+                ]
 
-      # TODO(crbug.com/1411557): Remove block.
-      if (_is_64_bit_browser) {
-        variables -= [ use_32bit_abi_jinja_variable ]
-      }
-      if (defined(invoker.jinja_extra_variables)) {
-        variables += invoker.jinja_extra_variables
-      }
+    if (defined(invoker.jinja_extra_variables)) {
+      variables += invoker.jinja_extra_variables
     }
   }
   android_apk(target_name) {
-    if (defined(_android_manifest_target_name)) {
-      android_manifest = _android_manifest
-      android_manifest_dep = ":$_android_manifest_target_name"
-      manifest_package = _manifest_package
-    }
+    android_manifest = _android_manifest
+    android_manifest_dep = ":$_android_manifest_target_name"
+    manifest_package = _manifest_package
 
     if (defined(invoker.expected_android_manifest)) {
       expected_android_manifest_version_code_offset = chrome_version_code
