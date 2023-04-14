@@ -2879,7 +2879,6 @@
           'dimension_sets': [
             {
               'kvm': '1',
-              'machine_type': 'e2-standard-2',
               'pool': 'chromium.tests.fuchsia',
             },
           ],
