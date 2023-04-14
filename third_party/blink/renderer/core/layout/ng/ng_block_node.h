@@ -231,6 +231,10 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
     return box_->ShouldApplyLayoutContainment();
   }
 
+  bool ShouldApplyPaintContainment() const {
+    return box_->ShouldApplyPaintContainment();
+  }
+
   bool HasLineIfEmpty() const {
     if (const auto* block = DynamicTo<LayoutBlock>(box_.Get()))
       return block->HasLineIfEmpty();
