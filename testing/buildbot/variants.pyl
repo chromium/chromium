@@ -469,6 +469,9 @@
       'cros_chrome_version': '114.0.5692.0',
       'cros_img': 'eve-public/R114-15410.0.0',
       'bucket': 'chromiumos-image-archive',
+      'dut_pool': 'chromium',
+      'public_builder': 'cros_test_platform_public',
+      'public_builder_bucket': 'testplatform-public',
     },
     'enabled': True,
     'identifier': 'EVE_PUBLIC_LKGM',
@@ -723,16 +726,6 @@
     },
     'enabled': True,
     'identifier': 'VOLTEER_RELEASE_LKGM',
-  },
-  'CROS_ZORK_PUBLIC': {
-    'skylab': {
-      'cros_board': 'zork',
-      'cros_chrome_version': '110.0.5464.0',
-      'cros_img': 'zork-public/R110-15277.0.0',
-      'bucket': 'chromiumos-image-archive',
-    },
-    'enabled': True,
-    'identifier': 'ZORK_PUBLIC',
   },
   'LACROS_AMD64_GENERIC': {
     'args': [

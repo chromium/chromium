@@ -1522,9 +1522,12 @@
       {
         "args": [],
         "bucket": "chromiumos-image-archive",
-        "cros_board": "zork",
-        "cros_img": "zork-public/R110-15277.0.0",
-        "name": "lacros_all_tast_tests ZORK_PUBLIC",
+        "cros_board": "eve",
+        "cros_img": "eve-public/R114-15410.0.0",
+        "dut_pool": "chromium",
+        "name": "lacros_all_tast_tests EVE_PUBLIC_LKGM",
+        "public_builder": "cros_test_platform_public",
+        "public_builder_bucket": "testplatform-public",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -1535,7 +1538,7 @@
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 10800,
-        "variant_id": "ZORK_PUBLIC"
+        "variant_id": "EVE_PUBLIC_LKGM"
       }
     ]
   },
