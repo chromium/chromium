@@ -123,11 +123,11 @@ ChromeUserPopulation GetUserPopulationForProfileWithCookieTheftExperiments(
   if (population.user_population() ==
       ChromeUserPopulation::ENHANCED_PROTECTION) {
     static const base::NoDestructor<std::vector<const base::Feature*>>
-        kCookieTheftExperiments({
+        kCookieTheftExperiments{{
 #if BUILDFLAG(IS_WIN)
-          &features::kLockProfileCookieDatabase
+            &features::kLockProfileCookieDatabase
 #endif
-        });
+        }};
 
     GetExperimentStatus(*kCookieTheftExperiments, &population);
   }
