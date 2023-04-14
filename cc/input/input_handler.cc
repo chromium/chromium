@@ -520,9 +520,13 @@ void InputHandler::ScrollEnd(bool should_snap) {
       .browser_controls_manager()
       ->ScrollEnd();
 
+  // Only indicate that the scroll gesture ended if scrolling actually occurred
+  // so that we don't fire a "scrollend" event.
+  if (did_scroll_x_for_scroll_gesture_ || did_scroll_y_for_scroll_gesture_) {
+    scroll_gesture_did_end_ = true;
+  }
   ClearCurrentlyScrollingNode();
   deferred_scroll_end_ = false;
-  scroll_gesture_did_end_ = true;
   SetNeedsCommit();
 }
 
