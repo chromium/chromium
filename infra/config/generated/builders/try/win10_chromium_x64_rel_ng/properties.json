@@ -166,6 +166,11 @@
   "$build/flakiness": {
     "check_for_flakiness": true
   },
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 300,
+    "metrics_project": "chromium-reclient-metrics"
+  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [
