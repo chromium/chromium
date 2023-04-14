@@ -9,13 +9,25 @@
 #include "components/bookmarks/common/url_load_stats.h"
 
 namespace {
+
 const int kBytesPerKB = 1024;
+
+void RecordBookmarkParentFolderType(
+    bookmarks::metrics::BookmarkFolderTypeForUMA parent) {
+  base::UmaHistogramEnumeration("Bookmarks.ParentFolderType", parent);
+}
 }
 
 namespace bookmarks::metrics {
 
-void RecordBookmarkAdded() {
+void RecordUrlBookmarkAdded(BookmarkFolderTypeForUMA parent) {
   base::RecordAction(base::UserMetricsAction("Bookmarks.Added"));
+  RecordBookmarkParentFolderType(parent);
+}
+
+void RecordBookmarkFolderAdded(BookmarkFolderTypeForUMA parent) {
+  base::RecordAction(base::UserMetricsAction("Bookmarks.FolderAdded"));
+  RecordBookmarkParentFolderType(parent);
 }
 
 void RecordBookmarkRemoved(BookmarkEditSource source) {
@@ -32,6 +44,10 @@ void RecordBookmarkOpened(base::Time now,
   base::UmaHistogramCounts10000("Bookmarks.Opened.TimeSinceAdded",
                                 (now - date_added).InDays());
   base::RecordAction(base::UserMetricsAction("Bookmarks.Opened"));
+}
+
+void RecordBookmarkMovedTo(BookmarkFolderTypeForUMA new_parent) {
+  RecordBookmarkParentFolderType(new_parent);
 }
 
 void RecordTimeSinceLastScheduledSave(base::TimeDelta delta) {

@@ -5513,6 +5513,28 @@ should be able to be added at any place in this file.
   <description>Recorded when the user adds a bookmark.</description>
 </action>
 
+<action name="Bookmarks.AddedFromSidePanel">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the user adds a bookmark from the side panel.
+  </description>
+</action>
+
+<action name="Bookmarks.FolderAdded">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>Recorded when the user adds a bookmark folder.</description>
+</action>
+
+<action name="Bookmarks.FolderAddedFromSidePanel">
+  <owner>emshack@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    Recorded when the user adds a bookmark folder from the side panel.
+  </description>
+</action>
+
 <action name="Bookmarks.Opened">
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>

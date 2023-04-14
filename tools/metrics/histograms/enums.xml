@@ -11828,6 +11828,13 @@ Called by update_bad_message_reasons.py.-->
   <int value="2" label="Edited by another source"/>
 </enum>
 
+<enum name="BookmarkFolderType">
+  <int value="0" label="Bookmarks Bar"/>
+  <int value="1" label="Other Bookmarks"/>
+  <int value="2" label="Mobile Bookmarks"/>
+  <int value="3" label="User Generated Folder"/>
+</enum>
+
 <enum name="BookmarkGUIDSource">
   <summary>
     Whether a GUID came from BookmarkSpecifics, or, in case it was missing,

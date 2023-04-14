@@ -220,6 +220,10 @@ class BookmarkModel : public BookmarkUndoProvider,
   // same or not.
   void GetBookmarks(std::vector<UrlAndTitle>* urls);
 
+  // Returns the type of |folder| as represented in metrics.
+  metrics::BookmarkFolderTypeForUMA GetFolderType(
+      const BookmarkNode* folder) const;
+
   // Adds a new folder node at the specified position with the given
   // |creation_time|, |uuid| and |meta_info|. If no UUID is provided (i.e.
   // nullopt), then a random one will be generated. If a UUID is provided, it

@@ -49,6 +49,9 @@ import {getTemplate} from './power_bookmarks_list.html.js';
 import {editingDisabledByPolicy, Label, PowerBookmarksService} from './power_bookmarks_service.js';
 import {BookmarkProductInfo} from './shopping_list.mojom-webui.js';
 
+const ADD_FOLDER_ACTION_UMA = 'Bookmarks.FolderAddedFromSidePanel';
+const ADD_URL_ACTION_UMA = 'Bookmarks.AddedFromSidePanel';
+
 function getBookmarkName(bookmark: chrome.bookmarks.BookmarkTreeNode): string {
   return bookmark.title || bookmark.url || '';
 }
@@ -635,6 +638,7 @@ export class PowerBookmarksListElement extends PolymerElement {
     event.stopPropagation();
     let parentId = event.detail.folderId;
     for (const folder of event.detail.newFolders) {
+      chrome.metricsPrivate.recordUserAction(ADD_FOLDER_ACTION_UMA);
       const newFolder =
           await this.bookmarksApi_.createFolder(folder.parentId!, folder.title);
       folder.children!.forEach(child => child.parentId = newFolder.id);
@@ -776,6 +780,7 @@ export class PowerBookmarksListElement extends PolymerElement {
       this.showDisabledFeatureDialog_();
       return;
     }
+    chrome.metricsPrivate.recordUserAction(ADD_FOLDER_ACTION_UMA);
     this.bookmarksApi_
         .createFolder(newParent.id, loadTimeData.getString('newFolderTitle'))
         .then((newFolder) => {
@@ -915,6 +920,7 @@ export class PowerBookmarksListElement extends PolymerElement {
       this.showDisabledFeatureDialog_();
       return;
     }
+    chrome.metricsPrivate.recordUserAction(ADD_URL_ACTION_UMA);
     this.bookmarksApi_.bookmarkCurrentTabInFolder(newParent.id);
   }
 

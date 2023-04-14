@@ -351,6 +351,10 @@ void BookmarkModel::Move(const BookmarkNode* node,
   for (BookmarkModelObserver& observer : observers_) {
     observer.BookmarkNodeMoved(this, old_parent, old_index, new_parent, index);
   }
+
+  if (old_parent != new_parent) {
+    metrics::RecordBookmarkMovedTo(GetFolderType(new_parent));
+  }
 }
 
 void BookmarkModel::UpdateLastUsedTime(const BookmarkNode* node,
@@ -744,6 +748,19 @@ void BookmarkModel::GetBookmarks(std::vector<UrlAndTitle>* bookmarks) {
   }
 }
 
+metrics::BookmarkFolderTypeForUMA BookmarkModel::GetFolderType(
+    const BookmarkNode* folder) const {
+  CHECK(folder->is_folder());
+  if (folder == bookmark_bar_node()) {
+    return metrics::BookmarkFolderTypeForUMA::kBookmarksBar;
+  } else if (folder == other_node()) {
+    return metrics::BookmarkFolderTypeForUMA::kOtherBookmarks;
+  } else if (folder == mobile_node()) {
+    return metrics::BookmarkFolderTypeForUMA::kMobileBookmarks;
+  }
+  return metrics::BookmarkFolderTypeForUMA::kUserGeneratedFolder;
+}
+
 const BookmarkNode* BookmarkModel::AddFolder(
     const BookmarkNode* parent,
     size_t index,
@@ -772,7 +789,7 @@ const BookmarkNode* BookmarkModel::AddFolder(
   if (meta_info) {
     new_node->SetMetaInfoMap(*meta_info);
   }
-
+  metrics::RecordBookmarkFolderAdded(GetFolderType(parent));
   return AddNode(AsMutable(parent), index, std::move(new_node));
 }
 
@@ -782,7 +799,7 @@ const BookmarkNode* BookmarkModel::AddNewURL(
     const std::u16string& title,
     const GURL& url,
     const BookmarkNode::MetaInfoMap* meta_info) {
-  metrics::RecordBookmarkAdded();
+  metrics::RecordUrlBookmarkAdded(GetFolderType(parent));
   return AddURL(parent, index, title, url, meta_info, absl::nullopt,
                 absl::nullopt, true);
 }
