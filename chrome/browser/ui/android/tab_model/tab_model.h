@@ -108,6 +108,9 @@ class TabModel {
     FROM_READING_LIST,
     // Opened from Tab Switcher UI.
     FROM_TAB_SWITCHER_UI,
+    // Opened from the Restore Tabs UI. When restoring synced tabs the first
+    // tab is opened but not brought to the foreground.
+    FROM_RESTORE_TABS_UI,
     // Must be last.
     SIZE
   };

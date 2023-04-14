@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.recent_tabs;
 
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 
 /**
  * Controller for accessing helper functions for the singleton factory instance.
@@ -13,10 +14,11 @@ public class RestoreTabsControllerImpl {
     private RestoreTabsFeatureHelper mHelper;
     private RestoreTabsCoordinator mRestoreTabsCoordinator;
 
-    public RestoreTabsControllerImpl(
-            Profile profile, RestoreTabsControllerFactory.ControllerListener listener) {
+    public RestoreTabsControllerImpl(Profile profile,
+            RestoreTabsControllerFactory.ControllerListener listener,
+            TabCreatorManager tabCreatorManager) {
         mHelper = new RestoreTabsFeatureHelperImpl();
-        mRestoreTabsCoordinator = new RestoreTabsCoordinator(profile, listener);
+        mRestoreTabsCoordinator = new RestoreTabsCoordinator(profile, listener, tabCreatorManager);
     }
 
     public void destroy() {

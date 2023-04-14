@@ -1216,7 +1216,8 @@ std::vector<Browser*> SessionRestore::RestoreForeignSessionWindows(
 WebContents* SessionRestore::RestoreForeignSessionTab(
     content::WebContents* source_web_contents,
     const sessions::SessionTab& tab,
-    WindowOpenDisposition disposition) {
+    WindowOpenDisposition disposition,
+    bool skip_renderer_creation) {
   Browser* browser = chrome::FindBrowserWithWebContents(source_web_contents);
   Profile* profile = browser->profile();
   StartupTabs startup_tabs;

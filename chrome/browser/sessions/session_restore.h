@@ -93,11 +93,13 @@ class SessionRestore {
   // restores the given session tab to the browser of |source_web_contents| if
   // the disposition is not NEW_WINDOW. Returns the WebContents corresponding
   // to the restored tab. If |disposition| is CURRENT_TAB, |source_web_contents|
-  // may be destroyed.
+  // may be destroyed. If |skip_renderer_creation| is true, depending on if
+  // |disposition| is BACKGROUND_TAB, lazily initialize tabs without a renderer.
   static content::WebContents* RestoreForeignSessionTab(
       content::WebContents* source_web_contents,
       const sessions::SessionTab& tab,
-      WindowOpenDisposition disposition);
+      WindowOpenDisposition disposition,
+      bool skip_renderer_creation = false);
 
   // Returns true if we're in the process of restoring |profile|.
   static bool IsRestoring(const Profile* profile);

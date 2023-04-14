@@ -22,6 +22,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 
@@ -45,6 +46,8 @@ public class RestoreTabsFeatureHelperUnitTest {
     private Tracker mTracker;
     @Mock
     private RestoreTabsControllerFactory.ControllerListener mListener;
+    @Mock
+    private TabCreatorManager mTabCreatorManager;
 
     @Before
     public void setUp() {
@@ -53,7 +56,8 @@ public class RestoreTabsFeatureHelperUnitTest {
         TrackerFactory.setTrackerForTests(mTracker);
         jniMocker.mock(ForeignSessionHelperJni.TEST_HOOKS, mForeignSessionHelperJniMock);
 
-        mController = RestoreTabsControllerFactory.createInstance(mProfile, mListener);
+        mController = RestoreTabsControllerFactory.createInstance(
+                mProfile, mListener, mTabCreatorManager);
         mHelper = mController.getFeatureHelper();
     }
 
