@@ -4475,26 +4475,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DefaultBrowser.SettingsInteraction.ConcludeReason"
-    enum="SettingsInteractionConcludeReason" expires_after="M77">
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    The reason why the default browser settings interaction concluded on Windows
-    10.
-  </summary>
-</histogram>
-
-<histogram name="DefaultBrowser.SettingsInteraction.RegistryWatcherDuration"
-    units="ms" expires_after="M77">
-  <owner>pmonette@chromium.org</owner>
-  <summary>
-    The registry keys for the default browser protocols (http/https) are
-    monitored to know when the user finished interacting with the system
-    settings. This is how long it took for the last registry watcher to get
-    signaled.
-  </summary>
-</histogram>
-
 <histogram name="DefaultBrowser.State" enum="DefaultBrowserState"
     expires_after="never">
 <!-- expires-never: Used to keep track of desktop browser ecosystem. -->
