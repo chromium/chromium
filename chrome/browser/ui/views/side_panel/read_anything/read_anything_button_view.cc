@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_button_view.h"
 
+#include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -16,9 +17,11 @@ ReadAnythingButtonView::ReadAnythingButtonView(
     const gfx::VectorIcon& icon,
     int icon_size,
     SkColor icon_color,
-    const std::u16string& tooltip) {
+    const std::u16string& tooltip)
+    : ImageButton(std::move(callback)) {
   views::SetImageFromVectorIconWithColorId(this, icon, icon_color, icon_color,
                                            icon_size);
+  ConfigureInkDropForToolbar(this);
   views::InstallCircleHighlightPathGenerator(this);
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(kInternalInsets / 2, kInternalInsets / 2)));
