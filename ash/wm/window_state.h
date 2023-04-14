@@ -698,8 +698,14 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // state types can be put in the restore history stack.
   std::vector<RestoreState> window_state_restore_history_;
 
-  // Holds the current working restore state.
-  absl::optional<RestoreState> current_restore_state_;
+  // Usually we want to use the tip of the window_state_restore_history_ to
+  // retrieve the restore_bounds. However, there are cases where we might want
+  // to explicitly set or store a specific restore bounds when transitioning
+  // between states. This typically happens because an operation might cause
+  // the restore bounds to become incorrect. If a value is present, it will have
+  // a higher precedent than whatever is at the tip of
+  // window_state_restore_history_.
+  absl::optional<gfx::Rect> restore_bounds_override_;
 
   // This is used to record where the current snap window state change request
   // comes from.

@@ -1751,6 +1751,56 @@ TEST_F(WindowStateTest, HorizontalMaximizeThenMaximizeAndRestore) {
   EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
 }
 
+TEST_F(WindowStateTest, SnapThenResize) {
+  UpdateDisplay("800x600");
+  const gfx::Rect work_area_bounds = GetPrimaryDisplay().work_area();
+
+  // Start with kDefault window state.
+  constexpr gfx::Rect default_bounds(20, 10, 200, 150);
+  std::unique_ptr<aura::Window> window = CreateAppWindow(default_bounds);
+  WindowState* window_state = WindowState::Get(window.get());
+  EXPECT_TRUE(window_state->IsNormalStateType());
+
+  const std::vector<WindowState::RestoreState>& restore_stack =
+      window_state->window_state_restore_history_for_testing();
+  EXPECT_TRUE(restore_stack.empty());
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), gfx::Rect());
+
+  // Important! Change the restore bounds, so they are not the same. This will
+  // create a conflict between the window's current bounds and the restore
+  // bounds when restoring.
+  constexpr gfx::Rect moved_bounds(10, 10, 200, 150);
+  window->SetBounds(moved_bounds);
+  window_state->SetRestoreBoundsInScreen(default_bounds);
+
+  const WMEvent snap_left_event(WM_EVENT_SNAP_PRIMARY);
+  const gfx::Rect snapped_left_bounds(0, 0, work_area_bounds.width() / 2,
+                                      work_area_bounds.height());
+  window_state->OnWMEvent(&snap_left_event);
+  EXPECT_EQ(window->GetBoundsInScreen(), snapped_left_bounds);
+  EXPECT_EQ(restore_stack.size(), 1U);
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), default_bounds);
+
+  const int resize = 100;
+  const gfx::Rect resized_bounds(0, resize, work_area_bounds.width() / 2,
+                                 work_area_bounds.height() - resize);
+  {
+    // Drag the top of the window to unsnap and resize.
+    ui::test::EventGenerator* generator = GetEventGenerator();
+    generator->MoveMouseTo(snapped_left_bounds.top_center().x(),
+                           snapped_left_bounds.top_center().y());
+    generator->PressLeftButton();
+    generator->MoveMouseTo(snapped_left_bounds.top_center().x(), resize);
+    generator->ReleaseLeftButton();
+  }
+
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_TRUE(restore_stack.empty());
+  EXPECT_EQ(window_state->GetCurrentBoundsInScreen(), resized_bounds);
+  EXPECT_EQ(window_state->GetRestoreBoundsInScreen(), gfx::Rect());
+}
+
 // Tests the restore behavior for default or normal window.
 TEST_F(WindowStateTest, NormalOrDefaultRestore) {
   // Start with kDefault window state.
