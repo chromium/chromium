@@ -39,9 +39,7 @@ import {UserUtilMixin} from './user_utils_mixin.js';
 export interface PasswordsSectionElement {
   $: {
     addPasswordButton: CrButtonElement,
-    descriptionLabel: HTMLElement,
     passwordsList: IronListElement,
-    noPasswordsFound: HTMLElement,
     movePasswords: HTMLElement,
     importPasswords: HTMLElement,
   };
@@ -96,12 +94,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
       showMovePasswords_: {
         type: Boolean,
         computed: 'computeShowMovePasswords_(isAccountStoreUser, ' +
-            'passwordsOnDevice_, searchTerm_)',
-      },
-
-      showPasswordsDescription_: {
-        type: Boolean,
-        computed: 'computeShowPasswordsDescription_(groups_, searchTerm_)',
+            'passwordsOnDevice_)',
       },
 
       // <if expr="_google_chrome">
@@ -241,7 +234,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private computeShowMovePasswords_(): boolean {
     // TODO(crbug.com/1420548): Check for conflicts if needed.
     return this.computePasswordsOnDevice_().length > 0 &&
-        this.isAccountStoreUser && !this.searchTerm_;
+        this.isAccountStoreUser;
   }
 
   private async onGroupsChanged_() {
@@ -290,14 +283,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     const pref = this.getPref('credentials_enable_service');
     return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED &&
         !pref.value;
-  }
-
-  private computeShowPasswordsDescription_(): boolean {
-    return !this.searchTerm_ && this.groups_.length > 0;
-  }
-
-  private showNoPasswordsFound_(): boolean {
-    return this.hideGroupsList_() && this.groups_.length > 0;
   }
 }
 
