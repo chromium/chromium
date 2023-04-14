@@ -54,6 +54,9 @@ class SavedTabGroupKeyedService : public KeyedService,
 
   // SavedTabGroupModelObserver
   void SavedTabGroupModelLoaded() override;
+  void SavedTabGroupUpdatedFromSync(
+      const base::Uuid& group_guid,
+      const absl::optional<base::Uuid>& tab_guid) override;
 
  private:
   // Returns a pointer to the TabStripModel which contains `local_group_id`.

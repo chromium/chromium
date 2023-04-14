@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/notreached.h"
 #include "chrome/browser/bookmarks/url_and_id.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
@@ -52,7 +53,9 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(Profile* profile)
   }
 }
 
-SavedTabGroupKeyedService::~SavedTabGroupKeyedService() = default;
+SavedTabGroupKeyedService::~SavedTabGroupKeyedService() {
+  model_.RemoveObserver(this);
+}
 
 syncer::OnceModelTypeStoreFactory SavedTabGroupKeyedService::GetStoreFactory() {
   DCHECK(ModelTypeStoreServiceFactory::GetForProfile(profile()));
@@ -287,12 +290,40 @@ void SavedTabGroupKeyedService::SavedTabGroupModelLoaded() {
     ConnectLocalTabGroup(local_group_id, saved_guid);
   }
 
-  // SavedTabGroupModelLoaded is only called once when the model is initially
-  // loaded. As such we can stop oberserving the model and assume that all of
-  // the data in `saved_guid_to_local_group_id_mapping_` has been used.
-  model_.RemoveObserver(this);
+  // Clear `saved_guid_to_local_group_id_mapping_` expecting that this observer
+  // function will only be called once on startup freeing unsued space.
+  //
+  // TODO(dljames): Investigate using a single use callback to connect local and
+  // saved groups together. There are crashes that occur when restarting the
+  // browser before the browser process completely shuts down. This triggers the
+  // CHECK in StoreLocalToSavedId because the SavedTabGroupModel has already
+  // loaded. The callback will also remove the need of
+  // `saved_guid_to_local_group_id_mapping_`.
   saved_guid_to_local_group_id_mapping_.clear();
   CHECK(saved_guid_to_local_group_id_mapping_.empty());
+}
+
+void SavedTabGroupKeyedService::SavedTabGroupUpdatedFromSync(
+    const base::Uuid& group_guid,
+    const absl::optional<base::Uuid>& tab_guid) {
+  const SavedTabGroup* const saved_group = model_.Get(group_guid);
+  CHECK(saved_group);
+
+  // Do nothing if the saved group is not open in the tabstrip.
+  if (!saved_group->local_group_id().has_value()) {
+    return;
+  }
+
+  if (tab_guid.has_value()) {
+    // TODO(dljames): Update tabs in the tabstrip if the respective group is
+    // open with the updated tab metadata. Figure out if the tab should be
+    // added, removed, or updated based on the data in saved_group.
+    NOTIMPLEMENTED();
+  } else {
+    // Update the visual data of the saved group if it exists and is open in
+    // the tabstrip.
+    UpdateGroupVisualData(group_guid, saved_group->local_group_id().value());
+  }
 }
 
 const TabStripModel* SavedTabGroupKeyedService::GetTabStripModelWithTabGroupId(
