@@ -29,6 +29,9 @@ class WebsiteMetricsServiceLacros {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  // Asynchronously initialise the device type and then call Start() when done.
+  void InitDeviceTypeAndStart();
+
   // Start the timer for website metrics.
   void Start();
 

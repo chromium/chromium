@@ -625,7 +625,7 @@ void AppServiceProxyLacros::ProxyLaunch(crosapi::mojom::LaunchParamsPtr params,
 
 void AppServiceProxyLacros::InitWebsiteMetrics() {
   if (metrics_service_) {
-    metrics_service_->Start();
+    metrics_service_->InitDeviceTypeAndStart();
   }
 }
 

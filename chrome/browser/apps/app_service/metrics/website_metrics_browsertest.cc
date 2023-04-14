@@ -124,10 +124,6 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
 #endif
   }
 
-  void TearDownOnMainThread() override {
-    InProcessBrowserTest::TearDownOnMainThread();
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest ::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kNoStartupWindow);
@@ -316,13 +312,7 @@ class WebsiteMetricsBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };
 
-// crbug.com/1399461 Disable flaky test.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_InsertAndCloseTabs DISABLED_InsertAndCloseTabs
-#else
-#define MAYBE_InsertAndCloseTabs InsertAndCloseTabs
-#endif
-IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MAYBE_InsertAndCloseTabs) {
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
   InstallWebAppOpeningAsTab("https://a.example.org");
 
   Browser* browser = CreateBrowser();
@@ -419,13 +409,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MAYBE_InsertAndCloseTabs) {
   EXPECT_TRUE(url_infos().empty());
 }
 
-// crbug.com/1399461 Disable flaky test.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_ForegroundTabNavigate DISABLED_ForegroundTabNavigate
-#else
-#define MAYBE_ForegroundTabNavigate ForegroundTabNavigate
-#endif
-IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MAYBE_ForegroundTabNavigate) {
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, ForegroundTabNavigate) {
   Browser* browser = CreateBrowser();
   auto* window = browser->window()->GetNativeWindow();
   EXPECT_EQ(1u, window_to_web_contents().size());
@@ -481,14 +465,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MAYBE_ForegroundTabNavigate) {
   EXPECT_TRUE(url_infos().empty());
 }
 
-// crbug.com/1399461 Disable flaky test.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_NavigateToBackgroundTab DISABLED_NavigateToBackgroundTab
-#else
-#define MAYBE_NavigateToBackgroundTab NavigateToBackgroundTab
-#endif
-IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
-                       MAYBE_NavigateToBackgroundTab) {
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, NavigateToBackgroundTab) {
   auto website_metrics_ptr = std::make_unique<apps::TestWebsiteMetrics>(
       ProfileManager::GetPrimaryUserProfile());
   auto* metrics = website_metrics_ptr.get();
@@ -620,14 +597,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, ActiveBackgroundTab) {
   EXPECT_TRUE(url_infos().empty());
 }
 
-// crbug.com/1399461 Disable flaky test.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_NavigateToUrlWithManifest DISABLED_NavigateToUrlWithManifest
-#else
-#define MAYBE_NavigateToUrlWithManifest NavigateToUrlWithManifest
-#endif
-IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
-                       MAYBE_NavigateToUrlWithManifest) {
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, NavigateToUrlWithManifest) {
   auto website_metrics_ptr = std::make_unique<apps::TestWebsiteMetrics>(
       ProfileManager::GetPrimaryUserProfile());
   auto* metrics = website_metrics_ptr.get();
@@ -690,13 +660,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
   EXPECT_TRUE(url_infos().empty());
 }
 
-// crbug.com/1399461 Disable flaky test.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_MultipleBrowser DISABLED_MultipleBrowser
-#else
-#define MAYBE_MultipleBrowser MultipleBrowser
-#endif
-IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MAYBE_MultipleBrowser) {
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MultipleBrowser) {
   // Setup: two browsers with two tabs each.
   auto* browser1 = CreateBrowser();
   auto* window1 = browser1->window()->GetNativeWindow();
@@ -816,14 +780,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MAYBE_MultipleBrowser) {
   EXPECT_TRUE(url_infos().empty());
 }
 
-// crbug.com/1399461 Disable flaky test.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_MoveActivatedTabToNewBrowser DISABLED_MoveActivatedTabToNewBrowser
-#else
-#define MAYBE_MoveActivatedTabToNewBrowser MoveActivatedTabToNewBrowser
-#endif
 IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
-                       MAYBE_MoveActivatedTabToNewBrowser) {
+                       MoveActivatedTabToNewBrowser) {
   auto website_metrics_ptr = std::make_unique<apps::TestWebsiteMetrics>(
       ProfileManager::GetPrimaryUserProfile());
   auto* metrics = website_metrics_ptr.get();
@@ -953,15 +911,8 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
   EXPECT_TRUE(url_infos().empty());
 }
 
-// crbug.com/1399461 Disable flaky test.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_MoveInActivatedTabToNewBrowser \
-  DISABLED_MoveInActivatedTabToNewBrowser
-#else
-#define MAYBE_MoveInActivatedTabToNewBrowser MoveInActivatedTabToNewBrowser
-#endif
 IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
-                       MAYBE_MoveInActivatedTabToNewBrowser) {
+                       MoveInActivatedTabToNewBrowser) {
   // Create a browser with two tabs.
   auto* browser1 = CreateBrowser();
   auto* window1 = browser1->window()->GetNativeWindow();
@@ -1082,13 +1033,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, WindowedWebApp) {
   EXPECT_TRUE(webcontents_to_ukm_key().empty());
 }
 
-// crbug.com/1399461 Disable flaky test.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_OnURLsDeleted DISABLED_OnURLsDeleted
-#else
-#define MAYBE_OnURLsDeleted OnURLsDeleted
-#endif
-IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, MAYBE_OnURLsDeleted) {
+IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, OnURLsDeleted) {
   // Setup: two browsers with one tabs each.
   auto* browser1 = CreateBrowser();
   auto* window1 = browser1->window()->GetNativeWindow();
