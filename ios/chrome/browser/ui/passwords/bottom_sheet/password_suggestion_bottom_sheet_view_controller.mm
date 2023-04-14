@@ -315,11 +315,19 @@ CGFloat const kTableViewCornerRadius = 10;
 
   TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
 
+  // Set the cell identifier to the associated URL, which we use to fetch the
+  // favicon.
+  NSString* cellIdentifier = [self descriptionAtRow:indexPath.row];
+  URLCell.cellUniqueIdentifier = cellIdentifier;
+
   auto faviconLoadedBlock = ^(FaviconAttributes* attributes) {
-    // TODO(crbug.com/1422362): if the user scrolls quickly and the cell is
-    // reused, it is possible that the wrong favicon is displayed (as the
-    // favicon fetch is asynchronous).
-    [URLCell.faviconView configureWithAttributes:attributes];
+    // If the user scrolls quickly, the cell could be reused, so make sure the
+    // favicon still matches the URL used to fetch the favicon (as the favicon
+    // fetch is asynchronous).
+    if ([URLCell.cellUniqueIdentifier isEqualToString:cellIdentifier]) {
+      DCHECK(attributes);
+      [URLCell.faviconView configureWithAttributes:attributes];
+    }
   };
   [self.delegate loadFaviconAtIndexPath:indexPath
                     faviconBlockHandler:faviconLoadedBlock];
