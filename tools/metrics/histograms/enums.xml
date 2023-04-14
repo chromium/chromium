@@ -62979,6 +62979,7 @@ from previous Chrome versions.
   <int value="533115840"
       label="HoldingSpaceInProgressDownloadsIntegration:enabled"/>
   <int value="533814676" label="CCTResizableForFirstParties:enabled"/>
+  <int value="534825129" label="ReducedWifiPollingInterval:disabled"/>
   <int value="535131384" label="OmniboxTailSuggestions:enabled"/>
   <int value="535194142" label="TemporaryHoldingSpacePreviews:enabled"/>
   <int value="535976218" label="enable-plugin-power-saver"/>
@@ -64272,6 +64273,7 @@ from previous Chrome versions.
   <int value="1243704644" label="ArcFixupWindowFeature:enabled"/>
   <int value="1243890754" label="ForbidSyncXHRInPageDismissal:disabled"/>
   <int value="1244050764" label="LauncherPulsingBlocksRefresh:disabled"/>
+  <int value="1244972195" label="ReducedWifiPollingInterval:enabled"/>
   <int value="1245889469" label="enable-surface-worker"/>
   <int value="1246022849"
       label="MessagesForAndroidAutoDarkWebContents:disabled"/>

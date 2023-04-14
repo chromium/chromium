@@ -26,5 +26,10 @@ BASE_FEATURE(kMacCoreLocationBackend,
 BASE_FEATURE(kAsyncSensorCalls,
              "AsyncSensorCalls",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// Reduces the interval between WiFi polls to fetch new WiFi data sooner. This
+// can be useful in situations where new WiFi data is needed frequently.
+BASE_FEATURE(kCrOSGeolocationReducedWifiPollingInterval,
+             "ReducedWifiPollingInterval",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
