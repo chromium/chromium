@@ -9133,14 +9133,14 @@ test("unit_tests") {
       sources += [
         "../browser/supervised_user/chromeos/mock_large_icon_service.cc",
         "../browser/supervised_user/chromeos/mock_large_icon_service.h",
-        "../browser/supervised_user/chromeos/web_content_handler_impl_unittest.cc",
+        "../browser/supervised_user/chromeos/supervised_user_web_content_handler_impl_unittest.cc",
       ]
     }
     if (is_chromeos_ash) {
       deps += [ "//chrome/browser/ash/crosapi" ]
     }
     if (is_android) {
-      sources += [ "../browser/supervised_user/android/web_content_handler_impl_unittest.cc" ]
+      sources += [ "../browser/supervised_user/android/supervised_user_web_content_handler_impl_unittest.cc" ]
     }
 
     if (enable_extensions) {

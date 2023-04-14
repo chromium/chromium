@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/chromeos/web_content_handler_impl.h"
+#include "chrome/browser/supervised_user/chromeos/supervised_user_web_content_handler_impl.h"
 
 #include <memory>
 #include <string>
@@ -32,21 +32,22 @@ class MockSupervisedUserSettingsService
 }  // namespace
 
 // TODO(b/273692421): Extend unit test scope of all the methods in
-// WebContentHandlerImpl.
+// SupervisedUserWebContentHandlerImpl.
 
-class WebContentHandlerImplTest : public ::testing::Test {
+class SupervisedUserWebContentHandlerImplTest : public ::testing::Test {
  public:
-  WebContentHandlerImplTest() {
+  SupervisedUserWebContentHandlerImplTest() {
     TestingProfile::Builder builder;
     profile_ = IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment(builder);
   }
 
-  WebContentHandlerImplTest(const WebContentHandlerImplTest&) = delete;
-  WebContentHandlerImplTest& operator=(const WebContentHandlerImplTest&) =
-      delete;
+  SupervisedUserWebContentHandlerImplTest(
+      const SupervisedUserWebContentHandlerImplTest&) = delete;
+  SupervisedUserWebContentHandlerImplTest& operator=(
+      const SupervisedUserWebContentHandlerImplTest&) = delete;
 
-  ~WebContentHandlerImplTest() override = default;
+  ~SupervisedUserWebContentHandlerImplTest() override = default;
 
   content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
@@ -62,7 +63,8 @@ class WebContentHandlerImplTest : public ::testing::Test {
   MockLargeIconService large_icon_service_;
 };
 
-TEST_F(WebContentHandlerImplTest, LocalWebApprovalApprovedChromeOSTest) {
+TEST_F(SupervisedUserWebContentHandlerImplTest,
+       LocalWebApprovalApprovedChromeOSTest) {
   base::HistogramTester histogram_tester;
   const GURL url("http://www.example.com");
 
@@ -84,7 +86,7 @@ TEST_F(WebContentHandlerImplTest, LocalWebApprovalApprovedChromeOSTest) {
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
-  WebContentHandlerImpl web_content_handler(
+  SupervisedUserWebContentHandlerImpl web_content_handler(
       web_contents.get(), url, large_icon_service(), /*frame_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
@@ -103,7 +105,8 @@ TEST_F(WebContentHandlerImplTest, LocalWebApprovalApprovedChromeOSTest) {
       approval_duration, 1);
 }
 
-TEST_F(WebContentHandlerImplTest, LocalWebApprovalDeclinedChromeOSTest) {
+TEST_F(SupervisedUserWebContentHandlerImplTest,
+       LocalWebApprovalDeclinedChromeOSTest) {
   base::HistogramTester histogram_tester;
   const GURL url("http://www.example.com");
 
@@ -125,7 +128,7 @@ TEST_F(WebContentHandlerImplTest, LocalWebApprovalDeclinedChromeOSTest) {
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
-  WebContentHandlerImpl web_content_handler(
+  SupervisedUserWebContentHandlerImpl web_content_handler(
       web_contents.get(), url, large_icon_service(), /*frame_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
@@ -144,7 +147,8 @@ TEST_F(WebContentHandlerImplTest, LocalWebApprovalDeclinedChromeOSTest) {
       approval_duration, 1);
 }
 
-TEST_F(WebContentHandlerImplTest, LocalWebApprovalCanceledChromeOSTest) {
+TEST_F(SupervisedUserWebContentHandlerImplTest,
+       LocalWebApprovalCanceledChromeOSTest) {
   base::HistogramTester histogram_tester;
   const GURL url("http://www.example.com");
 
@@ -166,7 +170,7 @@ TEST_F(WebContentHandlerImplTest, LocalWebApprovalCanceledChromeOSTest) {
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
-  WebContentHandlerImpl web_content_handler(
+  SupervisedUserWebContentHandlerImpl web_content_handler(
       web_contents.get(), url, large_icon_service(), /*frame_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
@@ -182,7 +186,8 @@ TEST_F(WebContentHandlerImplTest, LocalWebApprovalCanceledChromeOSTest) {
       supervised_user::WebContentHandler::LocalApprovalResult::kCanceled, 1);
 }
 
-TEST_F(WebContentHandlerImplTest, LocalWebApprovalErrorChromeOSTest) {
+TEST_F(SupervisedUserWebContentHandlerImplTest,
+       LocalWebApprovalErrorChromeOSTest) {
   base::HistogramTester histogram_tester;
   const GURL url("http://www.example.com");
 
@@ -205,7 +210,7 @@ TEST_F(WebContentHandlerImplTest, LocalWebApprovalErrorChromeOSTest) {
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
-  WebContentHandlerImpl web_content_handler(
+  SupervisedUserWebContentHandlerImpl web_content_handler(
       web_contents.get(), url, large_icon_service(), /*frame_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(

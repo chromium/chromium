@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SUPERVISED_USER_CHROME_WEB_CONTENT_HANDLER_BASE_H_
-#define CHROME_BROWSER_SUPERVISED_USER_CHROME_WEB_CONTENT_HANDLER_BASE_H_
+#ifndef CHROME_BROWSER_SUPERVISED_USER_CHROME_SUPERVISED_USER_WEB_CONTENT_HANDLER_BASE_H_
+#define CHROME_BROWSER_SUPERVISED_USER_CHROME_SUPERVISED_USER_WEB_CONTENT_HANDLER_BASE_H_
 
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "components/supervised_user/core/browser/web_content_handler.h"
@@ -15,19 +15,22 @@ class WebContents;
 // Implements common Web Content Handler functionality that can be shared
 // accross non-IOS platforms, but cannot belong in the base class due to
 // prohibited dependencies in components.
-class ChromeWebContentHandlerBase : public supervised_user::WebContentHandler {
+class ChromeSupervisedUserWebContentHandlerBase
+    : public supervised_user::WebContentHandler {
  public:
-  ChromeWebContentHandlerBase(const ChromeWebContentHandlerBase&) = delete;
-  ChromeWebContentHandlerBase& operator=(const ChromeWebContentHandlerBase&) =
-      delete;
-  ~ChromeWebContentHandlerBase() override;
+  ChromeSupervisedUserWebContentHandlerBase(
+      const ChromeSupervisedUserWebContentHandlerBase&) = delete;
+  ChromeSupervisedUserWebContentHandlerBase& operator=(
+      const ChromeSupervisedUserWebContentHandlerBase&) = delete;
+  ~ChromeSupervisedUserWebContentHandlerBase() override;
 
   // supervised_user::WebContentHandler implementation:
   bool IsMainFrame() const override;
   void CleanUpInfoBarOnMainFrame() override;
 
  protected:
-  ChromeWebContentHandlerBase(content::WebContents* web_contents, int frame_id);
+  ChromeSupervisedUserWebContentHandlerBase(content::WebContents* web_contents,
+                                            int frame_id);
   raw_ptr<content::WebContents> web_contents_;
 
  private:
@@ -35,4 +38,4 @@ class ChromeWebContentHandlerBase : public supervised_user::WebContentHandler {
   const int frame_id_;
 };
 
-#endif  // CHROME_BROWSER_SUPERVISED_USER_CHROME_WEB_CONTENT_HANDLER_BASE_H_
+#endif  // CHROME_BROWSER_SUPERVISED_USER_CHROME_SUPERVISED_USER_WEB_CONTENT_HANDLER_BASE_H_

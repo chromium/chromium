@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/android/web_content_handler_impl.h"
+#include "chrome/browser/supervised_user/android/supervised_user_web_content_handler_impl.h"
 
 #include <memory>
 #include <string>
@@ -29,17 +29,18 @@ class MockSupervisedUserSettingsService
 }  // namespace
 
 // TODO(b/273692421): Extend unit test scope of all the methods in
-// WebContentHandlerImpl.
+// SupervisedUserWebContentHandlerImpl.
 
-class WebContentHandlerImplTest : public ::testing::Test {
+class SupervisedUserWebContentHandlerImplTest : public ::testing::Test {
  public:
-  WebContentHandlerImplTest() = default;
+  SupervisedUserWebContentHandlerImplTest() = default;
 
-  WebContentHandlerImplTest(const WebContentHandlerImplTest&) = delete;
-  WebContentHandlerImplTest& operator=(const WebContentHandlerImplTest&) =
-      delete;
+  SupervisedUserWebContentHandlerImplTest(
+      const SupervisedUserWebContentHandlerImplTest&) = delete;
+  SupervisedUserWebContentHandlerImplTest& operator=(
+      const SupervisedUserWebContentHandlerImplTest&) = delete;
 
-  ~WebContentHandlerImplTest() override = default;
+  ~SupervisedUserWebContentHandlerImplTest() override = default;
 
   content::BrowserTaskEnvironment& task_environment() {
     return task_environment_;
@@ -52,7 +53,7 @@ class WebContentHandlerImplTest : public ::testing::Test {
   TestingProfile profile_;
 };
 
-TEST_F(WebContentHandlerImplTest,
+TEST_F(SupervisedUserWebContentHandlerImplTest,
        LocalWebApprovalDurationHistogramRejectionTest) {
   base::HistogramTester histogram_tester;
 
@@ -69,8 +70,8 @@ TEST_F(WebContentHandlerImplTest,
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
-  WebContentHandlerImpl web_content_handler =
-      WebContentHandlerImpl(web_contents.get(), /*frame_id=*/0);
+  SupervisedUserWebContentHandlerImpl web_content_handler =
+      SupervisedUserWebContentHandlerImpl(web_contents.get(), /*frame_id=*/0);
 
   web_content_handler.OnLocalApprovalRequestCompleted(
       supervisedUserSettingsServiceMock, url, start_time,
@@ -89,7 +90,7 @@ TEST_F(WebContentHandlerImplTest,
       elapsed_time, 1);
 }
 
-TEST_F(WebContentHandlerImplTest,
+TEST_F(SupervisedUserWebContentHandlerImplTest,
        LocalWebApprovalDurationHistogramCancellationTest) {
   base::HistogramTester histogram_tester;
 
@@ -103,8 +104,8 @@ TEST_F(WebContentHandlerImplTest,
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
-  WebContentHandlerImpl web_content_handler =
-      WebContentHandlerImpl(web_contents.get(), /*frame_id=*/0);
+  SupervisedUserWebContentHandlerImpl web_content_handler =
+      SupervisedUserWebContentHandlerImpl(web_contents.get(), /*frame_id=*/0);
 
   // Receive a request canceled by the parent.
   // Check that no duration metric is recorded for incomplete requests.
@@ -121,7 +122,7 @@ TEST_F(WebContentHandlerImplTest,
       0);
 }
 
-TEST_F(WebContentHandlerImplTest,
+TEST_F(SupervisedUserWebContentHandlerImplTest,
        LocalWebApprovalDurationHistogramApprovalTest) {
   base::HistogramTester histogram_tester;
 
@@ -135,8 +136,8 @@ TEST_F(WebContentHandlerImplTest,
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(GetProfilePtr()));
-  WebContentHandlerImpl web_content_handler =
-      WebContentHandlerImpl(web_contents.get(), /*frame_id=*/0);
+  SupervisedUserWebContentHandlerImpl web_content_handler =
+      SupervisedUserWebContentHandlerImpl(web_contents.get(), /*frame_id=*/0);
 
   // Receive a request accepted by the parent with a total duration of 5
   // minutes. Check that duration metric is recorded.

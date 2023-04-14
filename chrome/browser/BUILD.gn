@@ -3199,8 +3199,8 @@ static_library("browser") {
       "ssl/known_interception_disclosure_infobar.h",
       "supervised_user/android/favicon_fetcher.cc",
       "supervised_user/android/favicon_fetcher.h",
-      "supervised_user/android/web_content_handler_impl.cc",
-      "supervised_user/android/web_content_handler_impl.h",
+      "supervised_user/android/supervised_user_web_content_handler_impl.cc",
+      "supervised_user/android/supervised_user_web_content_handler_impl.h",
       "sync/android/sync_service_android_bridge.cc",
       "sync/android/sync_service_android_bridge.h",
       "sync/glue/synced_tab_delegate_android.cc",
@@ -7417,8 +7417,8 @@ static_library("browser") {
       "supervised_user/child_accounts/family_info_fetcher.h",
       "supervised_user/child_accounts/permission_request_creator_apiary.cc",
       "supervised_user/child_accounts/permission_request_creator_apiary.h",
-      "supervised_user/chrome_web_content_handler_base.cc",
-      "supervised_user/chrome_web_content_handler_base.h",
+      "supervised_user/chrome_supervised_user_web_content_handler_base.cc",
+      "supervised_user/chrome_supervised_user_web_content_handler_base.h",
       "supervised_user/kids_chrome_management/kids_access_token_fetcher.cc",
       "supervised_user/kids_chrome_management/kids_access_token_fetcher.h",
       "supervised_user/kids_chrome_management/kids_chrome_management_client_factory.cc",
@@ -7459,8 +7459,8 @@ static_library("browser") {
       sources += [
         "supervised_user/chromeos/supervised_user_favicon_request_handler.cc",
         "supervised_user/chromeos/supervised_user_favicon_request_handler.h",
-        "supervised_user/chromeos/web_content_handler_impl.cc",
-        "supervised_user/chromeos/web_content_handler_impl.h",
+        "supervised_user/chromeos/supervised_user_web_content_handler_impl.cc",
+        "supervised_user/chromeos/supervised_user_web_content_handler_impl.h",
       ]
     }
     deps += [

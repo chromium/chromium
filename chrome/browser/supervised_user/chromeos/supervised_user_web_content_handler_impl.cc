@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/chromeos/web_content_handler_impl.h"
+#include "chrome/browser/supervised_user/chromeos/supervised_user_web_content_handler_impl.h"
 
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
@@ -66,12 +66,12 @@ void HandleChromeOSErrorResult(
 
 }  // namespace
 
-WebContentHandlerImpl::WebContentHandlerImpl(
+SupervisedUserWebContentHandlerImpl::SupervisedUserWebContentHandlerImpl(
     content::WebContents* web_contents,
     const GURL& url,
     favicon::LargeIconService& large_icon_service,
     int frame_id)
-    : ChromeWebContentHandlerBase(web_contents, frame_id),
+    : ChromeSupervisedUserWebContentHandlerBase(web_contents, frame_id),
       favicon_handler_(std::make_unique<SupervisedUserFaviconRequestHandler>(
           url.GetWithEmptyPath(),
           &large_icon_service)),
@@ -86,9 +86,10 @@ WebContentHandlerImpl::WebContentHandlerImpl(
   }
 }
 
-WebContentHandlerImpl::~WebContentHandlerImpl() = default;
+SupervisedUserWebContentHandlerImpl::~SupervisedUserWebContentHandlerImpl() =
+    default;
 
-void WebContentHandlerImpl::RequestLocalApproval(
+void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
     const GURL& url,
     const std::u16string& child_display_name,
     ApprovalRequestInitiatedCallback callback) {
@@ -106,16 +107,18 @@ void WebContentHandlerImpl::RequestLocalApproval(
   parent_access->GetWebsiteParentApproval(
       url.GetWithEmptyPath(), child_display_name,
       favicon_handler_->GetFaviconOrFallback(),
-      base::BindOnce(&WebContentHandlerImpl::OnLocalApprovalRequestCompleted,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::ref(*settings_service), url, base::TimeTicks::Now()));
+      base::BindOnce(
+          &SupervisedUserWebContentHandlerImpl::OnLocalApprovalRequestCompleted,
+          weak_ptr_factory_.GetWeakPtr(), std::ref(*settings_service), url,
+          base::TimeTicks::Now()));
   std::move(callback).Run(true);
 #else   // Local Web approvals not yet supported on Lacros.
   NOTREACHED_NORETURN();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-void WebContentHandlerImpl::ShowFeedback(GURL url, std::u16string reason) {
+void SupervisedUserWebContentHandlerImpl::ShowFeedback(GURL url,
+                                                       std::u16string reason) {
   std::string message = l10n_util::GetStringFUTF8(
       IDS_BLOCK_INTERSTITIAL_DEFAULT_FEEDBACK_TEXT, reason);
 
@@ -125,7 +128,7 @@ void WebContentHandlerImpl::ShowFeedback(GURL url, std::u16string reason) {
       std::string() /* category_tag */, std::string() /* extra_diagnostics */);
 }
 
-void WebContentHandlerImpl::OnLocalApprovalRequestCompleted(
+void SupervisedUserWebContentHandlerImpl::OnLocalApprovalRequestCompleted(
     supervised_user::SupervisedUserSettingsService& settings_service,
     const GURL& url,
     base::TimeTicks start_time,

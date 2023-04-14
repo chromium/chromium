@@ -38,11 +38,11 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/supervised_user/android/web_content_handler_impl.h"
+#include "chrome/browser/supervised_user/android/supervised_user_web_content_handler_impl.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/supervised_user/chromeos/web_content_handler_impl.h"
+#include "chrome/browser/supervised_user/chromeos/supervised_user_web_content_handler_impl.h"
 #endif
 
 namespace {
@@ -53,11 +53,12 @@ std::unique_ptr<supervised_user::WebContentHandler> CreateWebContentHandler(
     Profile* profile,
     int frame_id) {
 #if BUILDFLAG(IS_CHROMEOS)
-  return std::make_unique<WebContentHandlerImpl>(
+  return std::make_unique<SupervisedUserWebContentHandlerImpl>(
       web_contents, url,
       *LargeIconServiceFactory::GetForBrowserContext(profile), frame_id);
 #elif BUILDFLAG(IS_ANDROID)
-  return std::make_unique<WebContentHandlerImpl>(web_contents, frame_id);
+  return std::make_unique<SupervisedUserWebContentHandlerImpl>(web_contents,
+                                                               frame_id);
 #else
   return nullptr;
 #endif

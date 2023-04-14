@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/android/web_content_handler_impl.h"
+#include "chrome/browser/supervised_user/android/supervised_user_web_content_handler_impl.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -36,13 +36,15 @@ AndroidOutcomeToLocalApprovalResult(
 
 }  // namespace
 
-WebContentHandlerImpl::WebContentHandlerImpl(content::WebContents* web_contents,
-                                             int frame_id)
-    : ChromeWebContentHandlerBase(web_contents, frame_id) {}
+SupervisedUserWebContentHandlerImpl::SupervisedUserWebContentHandlerImpl(
+    content::WebContents* web_contents,
+    int frame_id)
+    : ChromeSupervisedUserWebContentHandlerBase(web_contents, frame_id) {}
 
-WebContentHandlerImpl::~WebContentHandlerImpl() = default;
+SupervisedUserWebContentHandlerImpl::~SupervisedUserWebContentHandlerImpl() =
+    default;
 
-void WebContentHandlerImpl::RequestLocalApproval(
+void SupervisedUserWebContentHandlerImpl::RequestLocalApproval(
     const GURL& url,
     const std::u16string& child_display_name,
     ApprovalRequestInitiatedCallback callback) {
@@ -54,21 +56,23 @@ void WebContentHandlerImpl::RequestLocalApproval(
 
   WebsiteParentApproval::RequestLocalApproval(
       web_contents_.get(), supervised_user::NormalizeUrl(url),
-      base::BindOnce(&WebContentHandlerImpl::OnLocalApprovalRequestCompleted,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::ref(*settings_service), url, base::TimeTicks::Now()));
+      base::BindOnce(
+          &SupervisedUserWebContentHandlerImpl::OnLocalApprovalRequestCompleted,
+          weak_ptr_factory_.GetWeakPtr(), std::ref(*settings_service), url,
+          base::TimeTicks::Now()));
   // Runs the `callback` to inform the caller that the flow initiation was
   // successful.
   std::move(callback).Run(true);
 }
 
-void WebContentHandlerImpl::ShowFeedback(GURL url, std::u16string reason) {
+void SupervisedUserWebContentHandlerImpl::ShowFeedback(GURL url,
+                                                       std::u16string reason) {
   std::string message = l10n_util::GetStringFUTF8(
       IDS_BLOCK_INTERSTITIAL_DEFAULT_FEEDBACK_TEXT, reason);
   ReportChildAccountFeedback(web_contents_.get(), message, url);
 }
 
-void WebContentHandlerImpl::OnLocalApprovalRequestCompleted(
+void SupervisedUserWebContentHandlerImpl::OnLocalApprovalRequestCompleted(
     supervised_user::SupervisedUserSettingsService& settings_service,
     const GURL& url,
     base::TimeTicks start_time,

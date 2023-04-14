@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/chrome_web_content_handler_base.h"
+#include "chrome/browser/supervised_user/chrome_supervised_user_web_content_handler_base.h"
 
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -11,21 +11,23 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 
-ChromeWebContentHandlerBase::ChromeWebContentHandlerBase(
-    content::WebContents* web_contents,
-    int frame_id)
+ChromeSupervisedUserWebContentHandlerBase::
+    ChromeSupervisedUserWebContentHandlerBase(
+        content::WebContents* web_contents,
+        int frame_id)
     : web_contents_(web_contents), frame_id_(frame_id) {
   CHECK(web_contents_);
 }
 
-ChromeWebContentHandlerBase::~ChromeWebContentHandlerBase() = default;
+ChromeSupervisedUserWebContentHandlerBase::
+    ~ChromeSupervisedUserWebContentHandlerBase() = default;
 
-bool ChromeWebContentHandlerBase::IsMainFrame() const {
+bool ChromeSupervisedUserWebContentHandlerBase::IsMainFrame() const {
   return web_contents_->GetPrimaryMainFrame()->GetFrameTreeNodeId() ==
          frame_id_;
 }
 
-void ChromeWebContentHandlerBase::CleanUpInfoBarOnMainFrame() {
+void ChromeSupervisedUserWebContentHandlerBase::CleanUpInfoBarOnMainFrame() {
   if (!IsMainFrame()) {
     return;
   }
