@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/supervised_user/android/website_parent_approval.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_feedback_reporter_android.h"
-#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"

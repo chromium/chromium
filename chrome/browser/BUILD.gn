@@ -7461,6 +7461,12 @@ static_library("browser") {
         "supervised_user/chromeos/supervised_user_web_content_handler_impl.h",
       ]
     }
+    if (is_win || is_linux || is_mac) {
+      sources += [
+        "supervised_user/linux_mac_windows/supervised_user_web_content_handler_impl.cc",
+        "supervised_user/linux_mac_windows/supervised_user_web_content_handler_impl.h",
+      ]
+    }
     deps += [
       "//chrome/common:supervised_user_commands_mojom",
       "//components/supervised_user/core/browser",
