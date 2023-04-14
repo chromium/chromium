@@ -25,3 +25,23 @@ message AttributionFilterValues {
 message AttributionFilterData {
   map<string, AttributionFilterValues> filter_values = 1;
 }
+
+message AttributionEventLevelMetadata {
+  optional uint64 trigger_data = 1;
+  optional int64 priority = 2;
+}
+
+message AttributionAggregatableMetadata {
+  enum Coordinator {
+    AWS_CLOUD = 0;
+  }
+
+  optional Coordinator coordinator = 1;
+  optional string attestation_token = 2;
+
+  message Contribution {
+    optional AttributionAggregationKey key = 1;
+    optional uint32 value = 2;
+  }
+  repeated Contribution contributions = 3;
+}
