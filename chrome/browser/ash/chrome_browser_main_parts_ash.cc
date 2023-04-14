@@ -174,7 +174,6 @@
 #include "chrome/browser/net/chrome_network_delegate.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/startup_data.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.h"
@@ -1574,12 +1573,18 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // Must occur before BrowserProcessImpl::StartTearDown() destroys the
   // ProfileManager.
   if (pre_profile_init_called_) {
-    Profile* primary_user = ProfileManager::GetPrimaryUserProfile();
+    auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
     if (primary_user) {
-      // See startup_settings_cache::ReadAppLocale() comment for why we do this.
-      startup_settings_cache::WriteAppLocale(
-          primary_user->GetPrefs()->GetString(
-              language::prefs::kApplicationLocale));
+      // During a login restart-to-apply-flags the primary profile may not be
+      // loaded yet. See http://crbug.com/1432237
+      auto* primary_profile = Profile::FromBrowserContext(
+          BrowserContextHelper::Get()->GetBrowserContextByUser(primary_user));
+      if (primary_profile) {
+        // See startup_settings_cache::ReadAppLocale() comment.
+        startup_settings_cache::WriteAppLocale(
+            primary_profile->GetPrefs()->GetString(
+                language::prefs::kApplicationLocale));
+      }
     }
   }
 
