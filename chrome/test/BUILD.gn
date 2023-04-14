@@ -6684,6 +6684,7 @@ test("unit_tests") {
       "../browser/enterprise/util/android_enterprise_info_unittest.cc",
       "../browser/fast_checkout/fast_checkout_capabilities_fetcher_impl_unittest.cc",
       "../browser/fast_checkout/fast_checkout_client_impl_unittest.cc",
+      "../browser/fast_checkout/fast_checkout_delegate_impl_unittest.cc",
       "../browser/fast_checkout/fast_checkout_personal_data_helper_impl_unittest.cc",
       "../browser/fast_checkout/fast_checkout_trigger_validator_impl_unittest.cc",
       "../browser/feedback/android/family_info_feedback_source_unittest.cc",

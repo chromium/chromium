@@ -31,6 +31,7 @@ class FastCheckoutClientImpl
       public FastCheckoutControllerImpl::Delegate,
       public autofill::PersonalDataManagerObserver,
       public autofill::AutofillManager::Observer,
+      public autofill::ContentAutofillDriverFactory::Observer,
       public autofill::payments::FullCardRequest::ResultDelegate {
  public:
   explicit FastCheckoutClientImpl(autofill::ContentAutofillClient* client);
@@ -72,6 +73,13 @@ class FastCheckoutClientImpl
   void OnAutofillManagerDestroyed(autofill::AutofillManager& manager) override;
   // Is called on navigation and resets its internal state.
   void OnAutofillManagerReset(autofill::AutofillManager& manager) override;
+
+  // ContentAutofillDriverFactory::Observer:
+  void OnContentAutofillDriverFactoryDestroyed(
+      autofill::ContentAutofillDriverFactory& factory) override;
+  void OnContentAutofillDriverCreated(
+      autofill::ContentAutofillDriverFactory& factory,
+      autofill::ContentAutofillDriver& driver) override;
 
   // autofill::payments::FullCardRequest::ResultDelegate:
   void OnFullCardRequestSucceeded(
@@ -283,6 +291,12 @@ class FastCheckoutClientImpl
   base::ScopedObservation<autofill::AutofillManager,
                           autofill::AutofillManager::Observer>
       autofill_manager_observation_{this};
+
+  // Observes creation of ContentAutofillDrivers to inject a
+  // FastCheckoutDelegateImpl into the BrowserAutofillManager.
+  base::ScopedObservation<autofill::ContentAutofillDriverFactory,
+                          autofill::ContentAutofillDriverFactory::Observer>
+      driver_factory_observation_{this};
 
   // content::WebContentsUserData:
   WEB_CONTENTS_USER_DATA_KEY_DECL();

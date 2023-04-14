@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/fast_checkout/fast_checkout_accessibility_service_impl.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
+#include "chrome/browser/fast_checkout/fast_checkout_delegate_impl.h"
 #include "chrome/browser/fast_checkout/fast_checkout_enums.h"
 #include "chrome/browser/fast_checkout/fast_checkout_personal_data_helper_impl.h"
 #include "chrome/browser/fast_checkout/fast_checkout_trigger_validator_impl.h"
@@ -118,9 +119,27 @@ FastCheckoutClientImpl::FastCheckoutClientImpl(
           fetcher_,
           personal_data_helper_.get())),
       accessibility_service_(
-          std::make_unique<FastCheckoutAccessibilityServiceImpl>()) {}
+          std::make_unique<FastCheckoutAccessibilityServiceImpl>()) {
+  driver_factory_observation_.Observe(
+      autofill_client_->GetAutofillDriverFactory());
+}
 
 FastCheckoutClientImpl::~FastCheckoutClientImpl() = default;
+
+void FastCheckoutClientImpl::OnContentAutofillDriverFactoryDestroyed(
+    autofill::ContentAutofillDriverFactory& factory) {
+  driver_factory_observation_.Reset();
+}
+
+void FastCheckoutClientImpl::OnContentAutofillDriverCreated(
+    autofill::ContentAutofillDriverFactory& factory,
+    autofill::ContentAutofillDriver& driver) {
+  auto* manager =
+      static_cast<autofill::BrowserAutofillManager*>(driver.autofill_manager());
+  manager->set_fast_checkout_delegate(
+      std::make_unique<FastCheckoutDelegateImpl>(
+          &autofill_client_->GetWebContents(), this));
+}
 
 bool FastCheckoutClientImpl::TryToStart(
     const GURL& url,
