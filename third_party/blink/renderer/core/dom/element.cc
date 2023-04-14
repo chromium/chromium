@@ -8119,7 +8119,13 @@ void Element::RecalcTransitionPseudoTreeStyle(
     const Vector<AtomicString>& view_transition_names) {
   DCHECK_EQ(this, GetDocument().documentElement());
 
-  auto* old_transition_pseudo = GetPseudoElement(kPseudoIdViewTransition);
+  DisplayLockStyleScope display_lock_style_scope(this);
+  if (!display_lock_style_scope.ShouldUpdateChildStyle()) {
+    return;
+  }
+
+  PseudoElement* old_transition_pseudo =
+      GetPseudoElement(kPseudoIdViewTransition);
   if (view_transition_names.empty() && !old_transition_pseudo) {
     return;
   }
@@ -8129,7 +8135,7 @@ void Element::RecalcTransitionPseudoTreeStyle(
       StyleRecalcContext::FromInclusiveAncestors(
           *GetDocument().documentElement());
 
-  auto* transition_pseudo =
+  PseudoElement* transition_pseudo =
       UpdatePseudoElement(kPseudoIdViewTransition, style_recalc_change,
                           style_recalc_context, g_null_atom);
   if (!transition_pseudo) {
@@ -8137,14 +8143,14 @@ void Element::RecalcTransitionPseudoTreeStyle(
   }
 
   for (const auto& view_transition_name : view_transition_names) {
-    auto* container_pseudo = transition_pseudo->UpdatePseudoElement(
+    PseudoElement* container_pseudo = transition_pseudo->UpdatePseudoElement(
         kPseudoIdViewTransitionGroup, style_recalc_change, style_recalc_context,
         view_transition_name);
     if (!container_pseudo) {
       continue;
     }
 
-    auto* wrapper_pseudo = container_pseudo->UpdatePseudoElement(
+    PseudoElement* wrapper_pseudo = container_pseudo->UpdatePseudoElement(
         kPseudoIdViewTransitionImagePair, style_recalc_change,
         style_recalc_context, view_transition_name);
     if (!wrapper_pseudo) {
