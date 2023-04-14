@@ -21,12 +21,19 @@ def main():
         help='File contains a list of images to be appended')
     args = argument_parser.parse_args()
     with open(args.images_list_file) as f:
-        filenames = [
-            os.path.basename(filename) for filename in shlex.split(f.read())
-        ]
-    with open(args.output_file, 'w') as f:
+        files = shlex.split(f.read())
+
+    images = {}
+    for image in files:
+        with open(image, 'r', encoding='utf-8') as f:
+            images[os.path.basename(image)] = f.read()
+
+    with open(args.output_file, 'w', encoding='utf-8') as f:
+        filenames = [os.path.basename(f) for f in files]
         f.write('export const preloadImagesList = %s;' %
                 json.dumps(filenames, indent=2))
+        f.write('export const preloadedImages = %s;' % json.dumps(images))
+
     return 0
 
 

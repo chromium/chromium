@@ -675,10 +675,6 @@ body.mirror #open-mirror-panel {
   background-image: url(/images/camera_button_mic_off.svg);
 }
 
-#open-settings {
-  background-image: url(/images/camera_button_settings.svg);
-}
-
 body.should-handle-intent-result #open-settings {
   display: none;
 }
@@ -1558,4 +1554,8 @@ body:not(.video) #settings-video-resolution {
   background: url(/images/external_link_icon.svg);
   height: 20px;
   width: 20px;
+}
+
+#open-settings {
+  --color: white;
 }

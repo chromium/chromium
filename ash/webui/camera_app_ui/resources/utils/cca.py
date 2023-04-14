@@ -53,7 +53,9 @@ def build_preload_images_js(outdir):
             re.search(r'in_app_images\s*=\s*(\[.*?\])', f.read(),
                       re.DOTALL).group(1))
     with tempfile.NamedTemporaryFile('w') as f:
-        f.writelines(asset + '\n' for asset in in_app_images)
+        f.writelines(
+            os.path.abspath(f'images/{asset}') + '\n'
+            for asset in in_app_images)
         f.flush()
         cmd = [
             'utils/gen_preload_images_js.py',

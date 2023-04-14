@@ -18,7 +18,7 @@ action("gen_preload_images_js") {
   }
 
   outputs = [ "$target_gen_dir/js/preload_images.js" ]
-  response_file_contents = inputs
+  response_file_contents = rebase_path(inputs)
   args = [
     "--output_file",
     rebase_path(outputs[0], root_build_dir),
@@ -66,7 +66,11 @@ preprocess_if_expr("copy_mojo_ts") {
 }
 
 ts_library("build_ts") {
-  deps = [ "//ui/webui/resources/mojo:build_ts" ]
+  deps = [
+    "//third_party/material_web_components:bundle_lit_ts",
+    "//third_party/material_web_components:library",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
 
   tsconfig_base = "tsconfig_base.json"
   root_dir = target_gen_dir

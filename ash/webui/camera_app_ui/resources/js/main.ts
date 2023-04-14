@@ -16,6 +16,7 @@ import {Flag} from './flag.js';
 import {GalleryButton} from './gallerybutton.js';
 import {I18nString} from './i18n_string.js';
 import {Intent} from './intent.js';
+import {loadSvgImages} from './lit/svg_wrapper.js';
 import * as metrics from './metrics.js';
 import * as filesystem from './models/file_system.js';
 import * as loadTimeData from './models/load_time_data.js';
@@ -255,7 +256,7 @@ export class App {
       // For intent only requiring open camera with specific mode without
       // returning the capture result, finish it directly.
       if (this.intent !== null && !this.intent.shouldHandleResult) {
-        this.intent.finish();
+        await this.intent.finish();
       }
     })();
 
@@ -278,32 +279,37 @@ export class App {
     await ChromeHelper.getInstance().initCameraUsageMonitor(
         exploitUsage, releaseUsage);
 
+    let cameraStartSuccessful = false;
+
     const startCamera = (async () => {
       await cameraResourceInitialized.wait();
-      const isSuccess = await this.cameraManager.requestResume();
+      cameraStartSuccessful = await this.cameraManager.requestResume();
 
-      if (isSuccess) {
+      if (cameraStartSuccessful) {
         const {aspectRatio} = this.cameraManager.getPreviewResolution();
         const {width, height} = getDefaultWindowSize(aspectRatio);
         window.resizeTo(width, height);
       }
-
-      nav.close(ViewName.SPLASH);
-      nav.open(ViewName.CAMERA);
-
-      const windowCreationTime = window.windowCreationTime;
-      this.perfLogger.start(
-          PerfEvent.LAUNCHING_FROM_WINDOW_CREATION, windowCreationTime);
-      this.perfLogger.stop(
-          PerfEvent.LAUNCHING_FROM_WINDOW_CREATION, {hasError: !isSuccess});
-      if (appWindow !== null) {
-        appWindow.onAppLaunched();
-      }
     })();
 
     preloadImages();
+    loadSvgImages();
     metrics.sendLaunchEvent({launchType});
     await Promise.all([showWindow, startCamera]);
+
+    nav.close(ViewName.SPLASH);
+    nav.open(ViewName.CAMERA);
+
+    const windowCreationTime = window.windowCreationTime;
+    this.perfLogger.start(
+        PerfEvent.LAUNCHING_FROM_WINDOW_CREATION, windowCreationTime);
+    this.perfLogger.stop(
+        PerfEvent.LAUNCHING_FROM_WINDOW_CREATION,
+        {hasError: !cameraStartSuccessful});
+
+    if (appWindow !== null) {
+      appWindow.onAppLaunched();
+    }
   }
 
   /**
@@ -378,6 +384,8 @@ function parseSearchParams(): {
 
 /**
  * Preload images to avoid flickering.
+ * TODO(pihsun): Remove this and stop including .svg file in CCA once all
+ * images are migrated to use data-svg / loadSvgImages.
  */
 function preloadImages() {
   const imagesContainer = document.createElement('div');
