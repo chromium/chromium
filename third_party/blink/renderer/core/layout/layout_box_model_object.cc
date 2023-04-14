@@ -350,6 +350,10 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
     else
       element->RemoveAnchorScrollData();
   }
+
+  SetIsBackgroundAttachmentFixedObject(
+      !BackgroundTransfersToView() &&
+      StyleRef().HasFixedAttachmentBackgroundImage());
 }
 
 void LayoutBoxModelObject::CreateLayerAfterStyleChange() {

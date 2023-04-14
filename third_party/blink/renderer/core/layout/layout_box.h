@@ -1992,8 +1992,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   void LocationChanged();
 
-  void UpdateBackgroundAttachmentFixedStatusAfterStyleChange();
-
   void InflateVisualRectForFilter(TransformState&) const;
   void InflateVisualRectForFilterUnderContainer(
       TransformState&,

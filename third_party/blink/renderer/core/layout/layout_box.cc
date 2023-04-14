@@ -738,8 +738,6 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
       Parent()->StyleRef().IsDisplayFlexibleOrGridBox())
     ClearOverrideSize();
 
-  UpdateBackgroundAttachmentFixedStatusAfterStyleChange();
-
   if (old_style) {
     // Regular column content (i.e. non-spanners) have a hook into the flow
     // thread machinery before (StyleWillChange()) and after (here in
@@ -820,16 +818,6 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
 
   // Non-atomic inlines should be LayoutInline or LayoutText, not LayoutBox.
   DCHECK(!IsInline() || IsAtomicInlineLevel());
-}
-
-void LayoutBox::UpdateBackgroundAttachmentFixedStatusAfterStyleChange() {
-  NOT_DESTROYED();
-  if (!GetFrameView())
-    return;
-
-  SetIsBackgroundAttachmentFixedObject(
-      !BackgroundTransfersToView() &&
-      StyleRef().HasFixedAttachmentBackgroundImage());
 }
 
 void LayoutBox::UpdateShapeOutsideInfoAfterStyleChange(
