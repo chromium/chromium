@@ -93,8 +93,10 @@ public class PrivacySettings extends PreferenceFragmentCompat
         }
 
         Preference sandboxPreference = findPreference(PREF_PRIVACY_SANDBOX);
-        if (PrivacySandboxBridge.isPrivacySandboxRestricted()) {
-            // Hide the Privacy Sandbox if it is restricted.
+        if (PrivacySandboxBridge.isPrivacySandboxRestricted()
+                && !PrivacySandboxBridge.isRestrictedNoticeEnabled()) {
+            // Hide the Privacy Sandbox if it is restricted and ad-measurement is not
+            // available to restricted users.
             getPreferenceScreen().removePreference(sandboxPreference);
         } else {
             // Overwrite the click listener to pass a correct referrer to the fragment.

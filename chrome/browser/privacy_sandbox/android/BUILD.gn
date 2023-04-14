@@ -158,6 +158,7 @@ android_resources("java_resources") {
     "java/res/xml/fledge_learn_more_preference.xml",
     "java/res/xml/fledge_preference_v4.xml",
     "java/res/xml/learn_more_preference.xml",
+    "java/res/xml/privacy_sandbox_preferences_restricted_v4.xml",
     "java/res/xml/privacy_sandbox_preferences_v3.xml",
     "java/res/xml/privacy_sandbox_preferences_v4.xml",
     "java/res/xml/spam_fraud_preference.xml",

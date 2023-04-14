@@ -26,6 +26,11 @@ public class PrivacySandboxBridge {
         return PrivacySandboxBridgeJni.get().isPrivacySandboxRestricted();
     }
 
+    public static boolean isRestrictedNoticeEnabled() {
+        // TODO: This value will come from a feature parameter.
+        return false;
+    }
+
     public static void setPrivacySandboxEnabled(boolean enabled) {
         PrivacySandboxBridgeJni.get().setPrivacySandboxEnabled(enabled);
     }
