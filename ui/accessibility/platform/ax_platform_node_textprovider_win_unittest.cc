@@ -673,6 +673,73 @@ TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetSelection) {
             text_edit_provider->GetSelection(selections.Receive()));
 }
 
+TEST_F(AXPlatformNodeTextProviderTest,
+       TestRemoveTextInvalidatingPositionForComparison) {
+  TestAXTreeUpdate initial_state(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kStaticText name="aaa"
+    ++++++3 kInlineTextBox name="aaa"
+  )HTML"));
+
+  Init(initial_state);
+
+  ComPtr<IRawElementProviderSimple> root_node =
+      GetRootIRawElementProviderSimple();
+
+  ComPtr<ITextProvider> root_text_provider;
+  EXPECT_HRESULT_SUCCEEDED(
+      root_node->GetPatternProvider(UIA_TextPatternId, &root_text_provider));
+
+  ComPtr<AXPlatformNodeTextProviderWin> root_platform_node;
+  root_text_provider->QueryInterface(IID_PPV_ARGS(&root_platform_node));
+
+  base::win::ScopedSafearray selections;
+  AXPlatformNodeWin* owner = GetOwner(root_platform_node.Get());
+  AXTreeData& selected_tree_data =
+      const_cast<AXTreeData&>(owner->GetDelegate()->GetTreeData());
+  selected_tree_data.sel_focus_object_id = 2;
+  selected_tree_data.sel_anchor_object_id = 2;
+  selected_tree_data.sel_anchor_offset = 0;
+  selected_tree_data.sel_focus_offset = 3;
+
+  root_text_provider->GetSelection(selections.Receive());
+  ASSERT_NE(nullptr, selections.Get());
+
+  LONG index = 0;
+  ComPtr<ITextRangeProvider> text_range_provider;
+  EXPECT_HRESULT_SUCCEEDED(SafeArrayGetElement(
+      selections.Get(), &index, static_cast<void**>(&text_range_provider)));
+  SetOwner(owner, text_range_provider.Get());
+
+  base::win::ScopedBstr text_content;
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetText(-1, text_content.Receive()));
+  EXPECT_EQ(0, wcscmp(text_content.Get(), L"aaa"));
+
+  selections.Reset();
+  text_range_provider.Reset();
+  text_content.Reset();
+
+  AXTreeUpdate update;
+  update.nodes.resize(2);
+  update.nodes[0] = initial_state.nodes[1];
+  update.nodes[0].SetName("aa");
+  update.nodes[1] = initial_state.nodes[2];
+  update.nodes[1].SetName("aa");
+  ASSERT_TRUE(GetTree()->Unserialize(update));
+
+  root_text_provider->GetSelection(selections.Receive());
+  ASSERT_NE(nullptr, selections.Get());
+
+  EXPECT_HRESULT_SUCCEEDED(SafeArrayGetElement(
+      selections.Get(), &index, static_cast<void**>(&text_range_provider)));
+  SetOwner(owner, text_range_provider.Get());
+
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetText(-1, text_content.Receive()));
+  EXPECT_EQ(0, wcscmp(text_content.Get(), L"aa"));
+}
+
 TEST_F(AXPlatformNodeTextProviderTest, ITextProviderGetActiveComposition) {
   TestAXTreeUpdate update(std::string(R"HTML(
     ++1 kRootWebArea name="Document"

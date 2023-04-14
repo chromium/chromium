@@ -915,12 +915,14 @@ HRESULT AXPlatformNodeTextRangeProviderWin::MoveEndpointByRange(
 
   if (this_endpoint == TextPatternRangeEndpoint_Start) {
     SetStart(other_provider_endpoint->Clone());
-    if (*start() > *end())
+    if (*start() > *end()) {
       SetEnd(start()->Clone());
+    }
   } else {
     SetEnd(other_provider_endpoint->Clone());
-    if (*start() > *end())
+    if (*start() > *end()) {
       SetStart(end()->Clone());
+    }
   }
   return S_OK;
 }
@@ -1871,6 +1873,8 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
   // normalizing above. If we don't set the opposite endpoint to something that
   // we know will be safe (i.e. not in a deleted subtree) we'll crash later on
   // when trying to create a valid position.
+  other_endpoint->SnapToMaxTextOffsetIfBeyond();
+  new_endpoint->SnapToMaxTextOffsetIfBeyond();
   if (is_start_endpoint) {
     if (*other_endpoint < *new_endpoint)
       SetEnd(new_endpoint->Clone());

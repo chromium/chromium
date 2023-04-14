@@ -3745,6 +3745,11 @@ class AXPosition {
         return 0;
       return absl::nullopt;
     }
+    // Valid positions are required for comparison. Use `AsValidPosition`
+    // or `SnapToMaxTextOffsetIfBeyond` before calling `CompareTo` or making
+    // comparisons.
+    DCHECK(IsValid());
+    DCHECK(other.IsValid());
 
     if (GetAnchor() == other.GetAnchor())
       return SlowCompareTo(other);  // No optimization is necessary.
