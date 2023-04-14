@@ -2798,47 +2798,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.DisplayColorManager.HasColorCorrectionMatrix"
-    enum="Boolean" expires_after="M77">
-  <owner>mcasas@chromium.org</owner>
-  <owner>dcastagna@chromium.org</owner>
-  <summary>
-    Whether a display has a &quot;CTM&quot; matrix properties that can be used
-    to set a color transform matrix. Recorded every time there is a display
-    configuration update.
-  </summary>
-</histogram>
-
-<histogram name="Ash.DisplayColorManager.IccFileDownloaded"
-    enum="BooleanDownloaded" expires_after="M77">
-  <owner>mcasas@chromium.org</owner>
-  <owner>dcastagna@chromium.org</owner>
-  <summary>
-    This boolean keeps track if an ICC file was downloaded correctly (if true)
-    or a local file was reused instead.
-  </summary>
-</histogram>
-
-<histogram name="Ash.DisplayColorManager.ValidDisplayColorSpace" enum="Boolean"
-    expires_after="M77">
-  <owner>mcasas@chromium.org</owner>
-  <owner>dcastagna@chromium.org</owner>
-  <summary>
-    This boolean keeps track if a Display update (i.e. when connecting a new
-    one) carried valid ColorSpace information.
-  </summary>
-</histogram>
-
-<histogram name="Ash.DisplayColorManager.ValidProductId" enum="Boolean"
-    expires_after="M77">
-  <owner>mcasas@chromium.org</owner>
-  <owner>dcastagna@chromium.org</owner>
-  <summary>
-    Whether we could parse a valid product id from a display EDID. Recorded
-    every time there is a display configuration update.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Dock.Action" enum="DockedAction" expires_after="M85">
   <owner>kuscher@google.com</owner>
   <owner>wutao@chromium.org</owner>

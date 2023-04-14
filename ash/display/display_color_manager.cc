@@ -9,11 +9,9 @@
 #include "ash/constants/ash_paths.h"
 #include "ash/shell.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
@@ -104,9 +102,9 @@ std::unique_ptr<DisplayColorManager::ColorCalibrationData> ParseDisplayProfile(
     }
 
     size_t degamma_size = qcms_transform_get_input_trc_rgba(
-        transform, srgb_profile, QCMS_TRC_USHORT, NULL);
+        transform, srgb_profile, QCMS_TRC_USHORT, nullptr);
     size_t gamma_size = qcms_transform_get_output_trc_rgba(
-        transform, display_profile, QCMS_TRC_USHORT, NULL);
+        transform, display_profile, QCMS_TRC_USHORT, nullptr);
 
     if (degamma_size == 0 || gamma_size == 0) {
       LOG(WARNING)
@@ -249,14 +247,10 @@ void DisplayColorManager::OnDisplayModeChanged(
     const display::DisplayConfigurator::DisplayStateList& display_states) {
   size_t displays_with_ctm_support_count = 0;
   for (const display::DisplaySnapshot* state : display_states) {
-    UMA_HISTOGRAM_BOOLEAN("Ash.DisplayColorManager.ValidDisplayColorSpace",
-                          state->color_space().IsValid());
-
-    if (state->has_color_correction_matrix())
+    if (state->has_color_correction_matrix()) {
       ++displays_with_ctm_support_count;
+    }
 
-    UMA_HISTOGRAM_BOOLEAN("Ash.DisplayColorManager.HasColorCorrectionMatrix",
-                          state->has_color_correction_matrix());
     const int64_t display_id = state->display_id();
     const auto calibration_iter = calibration_map_.find(state->product_code());
     if (calibration_iter != calibration_map_.end()) {
@@ -315,13 +309,11 @@ bool DisplayColorManager::LoadCalibrationForDisplay(
     return false;
   }
 
-  const bool valid_product_code =
+  const bool is_valid_product_code =
       display->product_code() != display::DisplaySnapshot::kInvalidProductCode;
-  // TODO(mcasas): correct UMA s/Id/Code/, https://crbug.com/821393.
-  UMA_HISTOGRAM_BOOLEAN("Ash.DisplayColorManager.ValidProductId",
-                        valid_product_code);
-  if (!valid_product_code || !quirks::QuirksManager::HasInstance())
+  if (!is_valid_product_code || !quirks::QuirksManager::HasInstance()) {
     return false;
+  }
 
   // Look for calibrations for this display. Each calibration may overwrite the
   // previous one.
@@ -400,8 +392,6 @@ void DisplayColorManager::FinishLoadCalibrationForDisplay(
     return;
   }
 
-  UMA_HISTOGRAM_BOOLEAN("Ash.DisplayColorManager.IccFileDownloaded",
-                        file_downloaded);
   if (file_downloaded && type == display::DISPLAY_CONNECTION_TYPE_INTERNAL) {
     VLOG(1) << "Downloaded ICC file with product id: " << product_string
             << " for internal display id: " << display_id
