@@ -4437,66 +4437,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DBus.AsyncMethodCallSuccess" enum="BooleanSuccess"
-    expires_after="M81">
-  <owner>satorux@chromium.org</owner>
-  <summary>Whether an asynchronous D-Bus method call is successful.</summary>
-</histogram>
-
-<histogram name="DBus.AsyncMethodCallTime" units="microseconds"
-    expires_after="M82">
-  <owner>satorux@chromium.org</owner>
-  <summary>The time spent for an asynchronous D-Bus method call.</summary>
-</histogram>
-
-<histogram name="DBus.ExportedMethodHandleSuccess" enum="BooleanSuccess"
-    expires_after="M85">
-  <obsolete>
-    Kept to view historical data.
-  </obsolete>
-  <owner>satorux@chromium.org</owner>
-  <summary>
-    Whether a call to a D-Bus exported method is handled successfully.
-  </summary>
-</histogram>
-
-<histogram name="DBus.ExportedMethodHandleTime" units="microseconds"
-    expires_after="M77">
-  <obsolete>
-    Kept to view historical data.
-  </obsolete>
-  <owner>satorux@chromium.org</owner>
-  <summary>
-    The time spent for handling a call to a D-Bus exported method.
-  </summary>
-</histogram>
-
-<histogram name="DBus.SignalHandleTime" units="microseconds"
-    expires_after="2020-02-23">
-  <owner>satorux@chromium.org</owner>
-  <summary>The time spent for handling a D-Bus signal.</summary>
-</histogram>
-
-<histogram name="DBus.SignalSendTime" units="microseconds" expires_after="M82">
-  <owner>satorux@chromium.org</owner>
-  <summary>The time spent for sending a D-Bus signal.</summary>
-</histogram>
-
-<histogram name="DBus.SyncMethodCallSuccess" enum="BooleanSuccess"
-    expires_after="M81">
-  <owner>satorux@chromium.org</owner>
-  <summary>Whether a synchronous D-Bus method call is successful.</summary>
-</histogram>
-
-<histogram name="DBus.SyncMethodCallTime" units="microseconds"
-    expires_after="2020-02-16">
-  <obsolete>
-    Kept to view historical data.
-  </obsolete>
-  <owner>satorux@chromium.org</owner>
-  <summary>The time spent for a synchronous D-Bus method call.</summary>
-</histogram>
-
 <histogram name="DefaultBrowser.ActivateSettings.ErrorHresult" enum="Hresult"
     expires_after="M85">
   <owner>pmonette@chromium.org</owner>
