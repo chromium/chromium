@@ -152,6 +152,11 @@ The `--profile-process` and `--profile-thread` arguments support most of the com
 
     $ src/out/Release/bin/chrome_public_apk help profile
 
+
+By default, simpleperf will collect CPU cycles. To collect other events, use a command like this:
+
+    $ src/out/Release/bin/chrome_public_apk profile --profile-process=renderer --profile-events cpu-cycles,branch-misses,branch-instructions,cache-references,cache-misses,stalled-cycles-frontend,stalled-cycles-backend
+
 # Profiling on ChromeOS
 
 Follow the [simple chrome instructions](https://chromium.googlesource.com/chromiumos/docs/+/HEAD/simple_chrome_workflow.md), to build
