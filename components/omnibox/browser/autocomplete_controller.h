@@ -360,21 +360,12 @@ class AutocompleteController : public AutocompleteProviderListener,
   // only runs on Lacros and the @tabs scope.
   bool ShouldRunProvider(AutocompleteProvider* provider) const;
 
-  // Called each time the model returns for a match. Passes the output from the
-  // model and the index of the associated match to the final
-  // `OnUrlScoringModelDoneForAllMatches()` callback.
-  void OnUrlScoringModelDone(
-      base::OnceCallback<void(std::pair<absl::optional<float>, size_t>)>
-          callback,
-      size_t match_index,
-      absl::optional<float> model_output);
-
   // Called when the model finishes running for ALL matches in
   // `results_.matches_`. Redistributes the existing relevance scores to the
   // matches based on the model output (i.e. highest relevance now belongs to
   // the match with the highest output value, and vice versa), re-sorts the
   // matches, and notifies listeners.
-  void OnUrlScoringModelDoneForAllMatches(
+  void OnUrlScoringModelDone(
       AutocompleteInput input,
       absl::optional<AutocompleteMatch> last_default_match,
       std::u16string last_default_associated_keyword,
@@ -383,9 +374,8 @@ class AutocompleteController : public AutocompleteProviderListener,
           outputs_and_match_indices);
 
   // If ML Relevance Scoring is enabled, runs the model for all the supported
-  // `matches_` in `results_` and returns true. `OnUrlScoringModelOutput()`
-  // callback is expected to be called for every match and
-  // `OnUrlScoringModelDoneForAllMatches()` callback is expected to be called
+  // `matches_` in `results_` and returns true.
+  // `OnUrlScoringModelDone()` callback is expected to be called
   // once the scoring is done for ALL matches, whether successfully or not.
   bool MaybeRunUrlScoringModel(
       absl::optional<AutocompleteMatch>& last_default_match,

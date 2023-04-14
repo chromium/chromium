@@ -38,23 +38,28 @@ void AutocompleteScoringModelService::ScoreAutocompleteUrlMatch(
     base::CancelableTaskTracker* tracker,
     const metrics::OmniboxEventProto::Suggestion::ScoringSignals&
         scoring_signals,
+    size_t match_index,
     ResultCallback result_callback) {
+  TRACE_EVENT0("omnibox",
+               "AutocompleteScoringModelService::ScoreAutocompleteUrlMatch");
+
   if (!UrlScoringModelAvailable()) {
-    std::move(result_callback).Run(absl::nullopt);
+    std::move(result_callback).Run(std::make_pair(absl::nullopt, match_index));
     return;
   }
 
   absl::optional<std::vector<float>> input_signals =
       url_scoring_model_handler_->GetModelInput(scoring_signals);
   if (!input_signals) {
-    std::move(result_callback).Run(absl::nullopt);
+    std::move(result_callback).Run(std::make_pair(absl::nullopt, match_index));
     return;
   }
 
   url_scoring_model_handler_->ExecuteModelWithInput(
       tracker,
       base::BindOnce(&AutocompleteScoringModelService::ProcessModelOutput,
-                     base::Unretained(this), std::move(result_callback)),
+                     base::Unretained(this), std::move(result_callback),
+                     match_index),
       *input_signals);
 }
 
@@ -65,14 +70,18 @@ bool AutocompleteScoringModelService::UrlScoringModelAvailable() {
 
 void AutocompleteScoringModelService::ProcessModelOutput(
     ResultCallback result_callback,
+    size_t match_index,
     const absl::optional<AutocompleteScoringModelExecutor::ModelOutput>&
         model_output) {
+  TRACE_EVENT0("omnibox",
+               "AutocompleteScoringModelService::ProcessModelOutput");
   if (model_output.has_value()) {
     if (!model_output.value().empty()) {
-      std::move(result_callback).Run(model_output.value()[0]);
+      std::move(result_callback)
+          .Run(std::make_pair(model_output.value()[0], match_index));
       return;
     }
     NOTREACHED() << "The model generated an empty output vector.";
   }
-  std::move(result_callback).Run(absl::nullopt);
+  std::move(result_callback).Run(std::make_pair(absl::nullopt, match_index));
 }

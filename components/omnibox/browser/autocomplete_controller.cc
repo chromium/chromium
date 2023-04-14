@@ -1020,7 +1020,7 @@ void AutocompleteController::UpdateResult(
                                 force_notify_default_match_changed)) {
       // When the ML Scoring model is run, sorting and processing of the result
       // happens once all matches are scored in
-      // `OnUrlScoringModelDoneForAllMatches()`, so we can skip it here.
+      // `OnUrlScoringModelDone()`, so we can skip it here.
       return;
     }
     // Sort the matches and trim them to a small number of "best" matches.
@@ -1514,19 +1514,13 @@ bool AutocompleteController::ShouldRunProvider(
 }
 
 void AutocompleteController::OnUrlScoringModelDone(
-    base::OnceCallback<void(std::pair<absl::optional<float>, size_t>)> callback,
-    size_t match_index,
-    absl::optional<float> model_output) {
-  std::move(callback).Run(std::make_pair(model_output, match_index));
-}
-
-void AutocompleteController::OnUrlScoringModelDoneForAllMatches(
     AutocompleteInput input,
     absl::optional<AutocompleteMatch> last_default_match,
     std::u16string last_default_associated_keyword,
     bool force_notify_default_match_changed,
     std::vector<std::pair<absl::optional<float>, size_t>>
         outputs_and_match_indices) {
+  TRACE_EVENT0("omnibox", "AutocompleteController::OnUrlScoringModelDone");
   // The goal is to redistribute the existing relevance scores among the URL
   // suggestions according to the ML model output values. Construct two max
   // heaps for the (legacy) relevance score and the output scores.
@@ -1575,6 +1569,8 @@ bool AutocompleteController::MaybeRunUrlScoringModel(
     absl::optional<AutocompleteMatch>& last_default_match,
     std::u16string& last_default_associated_keyword,
     bool force_notify_default_match_changed) {
+  TRACE_EVENT0("omnibox", "AutocompleteController::MaybeRunUrlScoringModel");
+
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (!OmniboxFieldTrial::IsMlRelevanceScoringEnabled()) {
     return false;
@@ -1592,11 +1588,10 @@ bool AutocompleteController::MaybeRunUrlScoringModel(
   auto barrier_callback =
       base::BarrierCallback<std::pair<absl::optional<float>, size_t>>(
           result_.size(),
-          base::BindOnce(
-              &AutocompleteController::OnUrlScoringModelDoneForAllMatches,
-              scoring_model_weak_ptr_, input_, last_default_match,
-              last_default_associated_keyword,
-              force_notify_default_match_changed));
+          base::BindOnce(&AutocompleteController::OnUrlScoringModelDone,
+                         scoring_model_weak_ptr_, input_, last_default_match,
+                         last_default_associated_keyword,
+                         force_notify_default_match_changed));
 
   for (size_t match_index = 0; match_index < result_.matches_.size();
        match_index++) {
@@ -1606,16 +1601,13 @@ bool AutocompleteController::MaybeRunUrlScoringModel(
     // any other match type.
     if (AutocompleteMatch::GetDefaultGroupId(match->type) !=
         omnibox::GROUP_OTHER_NAVS) {
-      OnUrlScoringModelDone(barrier_callback,
-                            /*match_index=*/match_index,
-                            /*model_output=*/absl::nullopt);
+      barrier_callback.Run(std::make_pair(absl::nullopt, match_index));
       continue;
     }
 
     scoring_model_service->ScoreAutocompleteUrlMatch(
-        &scoring_model_task_tracker_, match->scoring_signals,
-        base::BindOnce(&AutocompleteController::OnUrlScoringModelDone,
-                       scoring_model_weak_ptr_, barrier_callback, match_index));
+        &scoring_model_task_tracker_, match->scoring_signals, match_index,
+        barrier_callback);
   }
 
   return true;
