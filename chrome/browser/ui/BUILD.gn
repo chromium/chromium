@@ -5632,20 +5632,24 @@ static_library("ui") {
       ]
     }
 
-    if (use_aura) {
+    if (use_aura && (is_linux || is_chromeos_lacros)) {
       # These files can do Gtk+-based theming for builds with gtk enabled.
-      if (is_linux || is_chromeos_lacros) {
+      sources += [
+        "views/chrome_browser_main_extra_parts_views_linux.cc",
+        "views/chrome_browser_main_extra_parts_views_linux.h",
+      ]
+      deps += [
+        "//ui/base/cursor",
+        "//ui/ozone",
+      ]
+      if (use_dbus) {
         sources += [
-          "views/chrome_browser_main_extra_parts_views_linux.cc",
-          "views/chrome_browser_main_extra_parts_views_linux.h",
           "views/dark_mode_manager_linux.cc",
           "views/dark_mode_manager_linux.h",
         ]
         deps += [
           "//components/dbus/thread_linux",
           "//dbus",
-          "//ui/base/cursor",
-          "//ui/ozone",
         ]
       }
     }
