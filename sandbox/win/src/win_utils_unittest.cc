@@ -52,6 +52,11 @@ bool GetModuleList(HANDLE process, std::vector<HMODULE>* result) {
     return true;
   }
   modules.resize(size_needed / sizeof(HMODULE));
+  // Avoid the undefined-behavior of calling modules[0] on an empty list. This
+  // can happen if the process has not yet started or has already exited.
+  if (modules.size() == 0) {
+    return false;
+  }
   if (EnumProcessModules(
           process, &modules[0],
           base::checked_cast<DWORD>(modules.size() * sizeof(HMODULE)),
@@ -228,7 +233,11 @@ TEST(WinUtils, GetProcessBaseAddress) {
   using sandbox::GetProcessBaseAddress;
   STARTUPINFO start_info = {};
   PROCESS_INFORMATION proc_info = {};
-  WCHAR command_line[] = L"notepad";
+  // The child process for this test must be a GUI app so that WaitForInputIdle
+  // can be used to guarantee that the child process has started but has not
+  // exited. notepad was used but will fail on Windows 11 if the store version
+  // of notepad is not installed.
+  WCHAR command_line[] = L"calc";
   start_info.cb = sizeof(start_info);
   start_info.dwFlags = STARTF_USESHOWWINDOW;
   start_info.wShowWindow = SW_HIDE;
