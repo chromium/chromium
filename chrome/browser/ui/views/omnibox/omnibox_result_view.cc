@@ -44,6 +44,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -101,8 +102,11 @@ class OmniboxResultSelectionIndicator : public views::View {
  public:
   METADATA_HEADER(OmniboxResultSelectionIndicator);
 
-  const int kStrokeThickness =
-      base::FeatureList::IsEnabled(omnibox::kExpandedStateColors) ? 4 : 3;
+  const bool cr2023_expanded_state_colors_enabled =
+      features::GetChromeRefresh2023Level() ==
+          features::ChromeRefresh2023Level::kLevel2 ||
+      base::FeatureList::IsEnabled(omnibox::kExpandedStateColors);
+  const int kStrokeThickness = cr2023_expanded_state_colors_enabled ? 4 : 3;
 
   explicit OmniboxResultSelectionIndicator(OmniboxResultView* result_view)
       : result_view_(result_view) {
