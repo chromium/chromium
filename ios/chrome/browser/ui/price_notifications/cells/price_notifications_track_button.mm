@@ -29,7 +29,8 @@ const CGFloat kTrackButtonTopPadding = 4;
     self.titleLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
     [self.titleLabel setLineBreakMode:NSLineBreakByTruncatingTail];
-    self.tintColor = [UIColor colorNamed:kSolidButtonTextColor];
+    [self setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
+               forState:UIControlStateNormal];
     self.backgroundColor = [UIColor colorNamed:kBlueColor];
     self.accessibilityIdentifier =
         kPriceNotificationsListItemTrackButtonIdentifier;
