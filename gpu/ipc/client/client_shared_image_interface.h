@@ -5,7 +5,8 @@
 #ifndef GPU_IPC_CLIENT_CLIENT_SHARED_IMAGE_INTERFACE_H_
 #define GPU_IPC_CLIENT_CLIENT_SHARED_IMAGE_INTERFACE_H_
 
-#include "base/containers/flat_set.h"
+#include <set>
+
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -97,7 +98,7 @@ class GPU_EXPORT ClientSharedImageInterface : public SharedImageInterface {
   const raw_ptr<SharedImageInterfaceProxy> proxy_;
 
   base::Lock lock_;
-  base::flat_set<Mailbox> mailboxes_ GUARDED_BY(lock_);
+  std::multiset<Mailbox> mailboxes_ GUARDED_BY(lock_);
 };
 
 }  // namespace gpu
