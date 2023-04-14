@@ -3,15 +3,19 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import './shared_style.css.js';
 
+import {CrScrollableMixin} from 'chrome://resources/cr_elements/cr_scrollable_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
+import {PrivacySandboxDialogMixin} from './privacy_sandbox_dialog_mixin.js';
 import {PrivacySandboxDialogResizeMixin} from './privacy_sandbox_dialog_resize_mixin.js';
 import {getTemplate} from './privacy_sandbox_notice_restricted_dialog_app.html.js';
 
-const PrivacySandboxNoticeRestrictedDialogAppElementBase =
-    PrivacySandboxDialogResizeMixin(PolymerElement);
+const PrivacySandboxNoticeRestrictedDialogAppElementBase = CrScrollableMixin(
+    PrivacySandboxDialogMixin(PrivacySandboxDialogResizeMixin(PolymerElement)));
 
 export class PrivacySandboxNoticeRestrictedDialogAppElement extends
     PrivacySandboxNoticeRestrictedDialogAppElementBase {
@@ -26,8 +30,10 @@ export class PrivacySandboxNoticeRestrictedDialogAppElement extends
   override ready() {
     super.ready();
 
-    // TODO(b/277180532): fire the appropriate events, add more structure, etc.
-    this.resizeAndShowNativeDialog();
+    this.resizeAndShowNativeDialog().then(() => {
+      this.updateScrollableContents();
+      this.promptActionOccurred(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    });
   }
 }
 

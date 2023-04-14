@@ -741,6 +741,19 @@ suite('PrivacySandboxDialogNoticeRestricted', function() {
   let page: PrivacySandboxNoticeRestrictedDialogAppElement;
   let browserProxy: TestPrivacySandboxDialogBrowserProxy;
 
+  async function verifyActionOccured(targetAction: PrivacySandboxPromptAction) {
+    const [action] = await browserProxy.whenCalled('promptActionOccurred');
+    assertEquals(action, targetAction);
+    browserProxy.reset();
+  }
+
+  function testClickButton(
+      buttonSelector: string, element: HTMLElement = page) {
+    const actionButton =
+        element.shadowRoot!.querySelector(buttonSelector) as CrButtonElement;
+    actionButton.click();
+  }
+
   setup(async function() {
     browserProxy = new TestPrivacySandboxDialogBrowserProxy();
     PrivacySandboxDialogBrowserProxy.setInstance(browserProxy);
@@ -756,7 +769,14 @@ suite('PrivacySandboxDialogNoticeRestricted', function() {
   test('validDialog', async function() {
     // Asserting very basic functionality for now.
     // TODO(b/277180677): add more tests as functionality is implemented.
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
     assertTrue(!!page.shadowRoot!.querySelector('div'));
+  });
+
+  test('settingsClicked', async function() {
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_SHOWN);
+    testClickButton('#settingsButton');
+    await verifyActionOccured(PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
   });
 });
 
