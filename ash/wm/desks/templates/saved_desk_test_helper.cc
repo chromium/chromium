@@ -32,6 +32,13 @@ SavedDeskTestHelper::SavedDeskTestHelper()
 SavedDeskTestHelper::~SavedDeskTestHelper() {
   static_cast<TestSavedDeskDelegate*>(Shell::Get()->saved_desk_delegate())
       ->set_desk_model(nullptr);
+  cache_.reset();
+  desk_model_.reset();
+
+  // TODO(b/277753059): Temporary workaround that makes the timing issue less
+  // likely to occur.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::DoNothingWithBoundArgs(std::move(desk_model_data_dir_)));
 }
 
 void SavedDeskTestHelper::AddAppIdToAppRegistryCache(
