@@ -233,7 +233,7 @@ class BidiServer implements ITransport {
 
   sendMessage(message: string) {
     if (!this.#sendBidiMessage)
-      throw new Error('Bidi connection is not initialised yet');
+      throw new Error('BiDi connection is not initialised yet');
 
     return this.#sendBidiMessage(message);
   }

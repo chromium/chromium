@@ -24,7 +24,7 @@ import {CdpTarget} from '../context/cdpTarget';
 
 import {getRemoteValuesText} from './logHelper.js';
 
-/** Converts CDP StackTrace object to Bidi StackTrace object. */
+/** Converts CDP StackTrace object to BiDi StackTrace object. */
 function getBidiStackTrace(
   cdpStackTrace: Protocol.Runtime.StackTrace | undefined
 ): Script.StackTrace | undefined {

@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import itertools
 import json
+from typing import Literal
 
 from anys import ANY_NUMBER, ANY_STR, AnyContains, AnyGT, AnyLT, AnyWithEntries
 
@@ -65,48 +66,6 @@ async def read_JSON_message(websocket) -> dict:
     return json.loads(await websocket.recv())
 
 
-async def set_html_content(websocket, context_id: str, html_content: str):
-    """Sets the current page content without navigation."""
-    await execute_command(
-        websocket, {
-            "method": "script.evaluate",
-            "params": {
-                "expression": f"document.body.innerHTML = '{html_content}'",
-                "target": {
-                    "context": context_id,
-                },
-                "awaitPromise": True
-            }
-        })
-
-
-async def get_tree(websocket, context_id: str | None = None) -> dict:
-    """Get the tree of browsing contexts."""
-    params = {}
-    if context_id is not None:
-        params["root"] = context_id
-    return await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": params
-    })
-
-
-async def goto_url(websocket,
-                   context_id: str,
-                   url: str,
-                   wait: str = "interactive") -> dict:
-    """Open given URL in the given context."""
-    return await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": url,
-                "context": context_id,
-                "wait": wait
-            }
-        })
-
-
 async def execute_command(websocket, command: dict) -> dict:
     if "id" not in command:
         command["id"] = get_next_command_id()
@@ -125,8 +84,52 @@ async def execute_command(websocket, command: dict) -> dict:
             })
 
 
+async def get_tree(websocket, context_id: str | None = None) -> dict:
+    """Get the tree of browsing contexts."""
+    params = {}
+    if context_id is not None:
+        params["root"] = context_id
+    return await execute_command(websocket, {
+        "method": "browsingContext.getTree",
+        "params": params
+    })
+
+
+async def goto_url(
+        websocket,
+        context_id: str,
+        url: str,
+        wait: Literal["none", "interactive",
+                      "complete"] = "interactive") -> dict:
+    """Open given URL in the given context."""
+    return await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": url,
+                "context": context_id,
+                "wait": wait
+            }
+        })
+
+
+async def set_html_content(websocket, context_id: str, html_content: str):
+    """Sets the current page content without navigation."""
+    await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"document.body.innerHTML = '{html_content}'",
+                "target": {
+                    "context": context_id,
+                },
+                "awaitPromise": True
+            }
+        })
+
+
 async def wait_for_event(websocket, event_method: str) -> dict:
-    """Wait and return a specific event from Bidi server."""
+    """Wait and return a specific event from BiDi server."""
     while True:
         event_response = await read_JSON_message(websocket)
         if "method" in event_response and event_response[
