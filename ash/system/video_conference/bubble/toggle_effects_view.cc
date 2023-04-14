@@ -50,7 +50,8 @@ class ButtonContainer : public views::Button {
   METADATA_HEADER(ButtonContainer);
 
   ButtonContainer(views::Button::PressedCallback callback,
-                  const gfx::VectorIcon* vector_icon,
+                  const gfx::VectorIcon* enabled_vector_icon,
+                  const gfx::VectorIcon* disabled_vector_icon,
                   bool toggle_state,
                   const std::u16string& label_text,
                   const int accessible_name_id,
@@ -59,7 +60,8 @@ class ButtonContainer : public views::Button {
       : callback_(callback),
         toggled_(toggle_state),
         effect_id_(effect_id),
-        vector_icon_(vector_icon) {
+        enabled_vector_icon_(enabled_vector_icon),
+        disabled_vector_icon_(disabled_vector_icon) {
     SetCallback(base::BindRepeating(&ButtonContainer::OnButtonClicked,
                                     weak_ptr_factory_.GetWeakPtr()));
     SetID(video_conference::BubbleViewID::kToggleEffectsButton);
@@ -79,8 +81,8 @@ class ButtonContainer : public views::Button {
     SetPreferredSize(gfx::Size(GetPreferredSize().width(), kButtonHeight));
 
     auto icon = std::make_unique<views::ImageView>();
-    icon->SetImage(ui::ImageModel::FromVectorIcon(
-        *vector_icon_, cros_tokens::kCrosSysOnSurface, kIconSize));
+    icon->SetID(video_conference::BubbleViewID::kToggleEffectIcon);
+    // `icon_` image set in `UpdateColorsAndBackground()`.
     icon_ = AddChildView(std::move(icon));
 
     // Label is below the button.
@@ -129,7 +131,8 @@ class ButtonContainer : public views::Button {
         toggled_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                  : cros_tokens::kCrosSysOnSurface;
     icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        *vector_icon_, foreground_color_id, kIconSize));
+        toggled_ ? *enabled_vector_icon_ : *disabled_vector_icon_,
+        foreground_color_id, kIconSize));
     label_->SetEnabledColorId(foreground_color_id);
   }
 
@@ -145,7 +148,8 @@ class ButtonContainer : public views::Button {
   views::ImageView* icon_ = nullptr;
   views::Label* label_ = nullptr;
 
-  const gfx::VectorIcon* vector_icon_;
+  const gfx::VectorIcon* enabled_vector_icon_;
+  const gfx::VectorIcon* disabled_vector_icon_;
 
   base::WeakPtrFactory<ButtonContainer> weak_ptr_factory_{this};
 };
@@ -200,9 +204,11 @@ ToggleEffectsView::ToggleEffectsView(
       // `current_state` can only be a `bool` for a toggle effect.
       bool toggle_state = current_state.value() != 0;
       const VcEffectState* state = tile->GetState(/*index=*/0);
+      CHECK(state->disabled_icon())
+          << "Toggle effects must define a disabled icon.";
       row_view->AddChildView(std::make_unique<ButtonContainer>(
-          state->button_callback(), state->icon(), toggle_state,
-          state->label_text(), state->accessible_name_id(),
+          state->button_callback(), state->icon(), state->disabled_icon(),
+          toggle_state, state->label_text(), state->accessible_name_id(),
           tile->container_id(), tile->id()));
     }
 

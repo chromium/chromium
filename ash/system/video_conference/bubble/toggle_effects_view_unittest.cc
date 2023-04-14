@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/video_conference/bubble/bubble_view.h"
-
+#include "ash/system/video_conference/bubble/toggle_effects_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/video_conference/bubble/bubble_view.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
-#include "ash/system/video_conference/bubble/toggle_effects_view.h"
 #include "ash/system/video_conference/effects/fake_video_conference_effects.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
@@ -18,6 +18,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/views/controls/image_view.h"
 
 namespace ash::video_conference {
 
@@ -74,9 +75,18 @@ class ToggleEffectsViewTest : public AshTestBase {
 
   FakeVideoConferenceTrayController* controller() { return controller_.get(); }
 
-  views::View* toggle_effect_button() {
+  // Each toggle button in the bubble view has this view ID, this just gets the
+  // first one in the view tree.
+  views::View* GetFirstToggleEffectButton() {
     return bubble_view()->GetViewByID(
         video_conference::BubbleViewID::kToggleEffectsButton);
+  }
+
+  // Each toggle button icon in a toggle button has this view ID, this just gets
+  // the first one in the view tree.
+  views::ImageView* GetFirstToggleEffectIcon() {
+    return static_cast<views::ImageView*>(bubble_view()->GetViewByID(
+        video_conference::BubbleViewID::kToggleEffectIcon));
   }
 
   ash::fake_video_conference::OfficeBunnyEffect* office_bunny() {
@@ -89,24 +99,51 @@ class ToggleEffectsViewTest : public AshTestBase {
   std::unique_ptr<ash::fake_video_conference::OfficeBunnyEffect> office_bunny_;
 };
 
+// Tests that a toggle button records histograms when clicked.
 TEST_F(ToggleEffectsViewTest, ToggleButtonClickedRecordedHistogram) {
   base::HistogramTester histogram_tester;
 
-  // Adds one toggle effect.
+  // Add one toggle effect.
   controller()->effects_manager().RegisterDelegate(office_bunny());
 
-  // Clicks to open the bubble, toggle effect button is present/visible.
+  // Click to open the bubble, toggle effect button should be visible.
   LeftClickOn(toggle_bubble_button());
-  ASSERT_TRUE(toggle_effect_button());
-  ASSERT_TRUE(toggle_effect_button()->GetVisible());
+  ASSERT_TRUE(GetFirstToggleEffectButton());
+  ASSERT_TRUE(GetFirstToggleEffectButton()->GetVisible());
 
-  // Clicks the toggle effect button, verify that metrics is recorded.
-  LeftClickOn(toggle_effect_button());
+  // Click the toggle effect button, verify that metrics is recorded.
+  LeftClickOn(GetFirstToggleEffectButton());
   histogram_tester.ExpectBucketCount(kTestEffectHistogramName, true, 1);
 
-  // Clicks again.
-  LeftClickOn(toggle_effect_button());
+  // Click again.
+  LeftClickOn(GetFirstToggleEffectButton());
   histogram_tester.ExpectBucketCount(kTestEffectHistogramName, false, 1);
+}
+
+// Tests that a toggled ToggleButton's image is updated.
+TEST_F(ToggleEffectsViewTest, ToggleUpdatesImage) {
+  // Add one toggle effect.
+  controller()->effects_manager().RegisterDelegate(office_bunny());
+  LeftClickOn(toggle_bubble_button());
+
+  // Initially the fake toggle effects icon is set to the video conference
+  // background blur off icon.
+  EXPECT_STREQ(GetFirstToggleEffectIcon()
+                   ->GetImageModel()
+                   .GetVectorIcon()
+                   .vector_icon()
+                   ->name,
+               kVideoConferenceBackgroundBlurOffIcon.name);
+
+  // Toggle the button, the icon should change to the privacy indicators camera
+  // icon.
+  LeftClickOn(GetFirstToggleEffectButton());
+  EXPECT_STREQ(GetFirstToggleEffectIcon()
+                   ->GetImageModel()
+                   .GetVectorIcon()
+                   .vector_icon()
+                   ->name,
+               ash::kPrivacyIndicatorsCameraIcon.name);
 }
 
 }  // namespace ash::video_conference

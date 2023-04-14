@@ -9,17 +9,17 @@
 
 namespace ash {
 
-VcEffectState::VcEffectState(const gfx::VectorIcon* icon,
+VcEffectState::VcEffectState(const gfx::VectorIcon* enabled_icon,
                              const std::u16string& label_text,
                              int accessible_name_id,
                              views::Button::PressedCallback button_callback,
                              absl::optional<int> state_value)
-    : icon_(icon),
+    : enabled_icon_(enabled_icon),
       label_text_(label_text),
       accessible_name_id_(accessible_name_id),
       button_callback_(button_callback),
       state_value_(state_value) {
-  DCHECK(icon);
+  DCHECK(enabled_icon);
 }
 
 VcEffectState::~VcEffectState() = default;

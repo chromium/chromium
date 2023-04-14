@@ -445,7 +445,8 @@ void CameraEffectsController::InitializeEffectControls() {
                             base::Unretained(this),
                             VcEffectId::kPortraitRelighting),
         /*effect_id=*/VcEffectId::kPortraitRelighting);
-    effect->AddState(std::make_unique<VcEffectState>(
+
+    auto effect_state = std::make_unique<VcEffectState>(
         /*icon=*/&kVideoConferencePortraitRelightOnIcon,
         /*label_text=*/
         l10n_util::GetStringUTF16(
@@ -456,7 +457,10 @@ void CameraEffectsController::InitializeEffectControls() {
         base::BindRepeating(&CameraEffectsController::OnEffectControlActivated,
                             base::Unretained(this),
                             /*effect_id=*/VcEffectId::kPortraitRelighting,
-                            /*value=*/absl::nullopt)));
+                            /*value=*/absl::nullopt));
+    effect_state->set_disabled_icon(&kVideoConferencePortraitRelightOffIcon);
+    effect->AddState(std::move(effect_state));
+
     effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kCamera);
     AddEffect(std::move(effect));
   }

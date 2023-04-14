@@ -130,7 +130,8 @@ void AudioEffectsController::AddNoiseCancellationEffect() {
                           base::Unretained(this),
                           VcEffectId::kNoiseCancellation),
       /*effect_id=*/VcEffectId::kNoiseCancellation);
-  effect->AddState(std::make_unique<VcEffectState>(
+
+  auto effect_state = std::make_unique<VcEffectState>(
       /*icon=*/&kVideoConferenceNoiseCancellationOnIcon,
       /*label_text=*/
       l10n_util::GetStringUTF16(
@@ -141,7 +142,10 @@ void AudioEffectsController::AddNoiseCancellationEffect() {
       base::BindRepeating(&AudioEffectsController::OnEffectControlActivated,
                           weak_factory_.GetWeakPtr(),
                           /*effect_id=*/VcEffectId::kNoiseCancellation,
-                          /*value=*/0)));
+                          /*value=*/0));
+  effect_state->set_disabled_icon(&kVideoConferenceNoiseCancellationOffIcon);
+  effect->AddState(std::move(effect_state));
+
   effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kMicrophone);
   AddEffect(std::move(effect));
 }
@@ -153,7 +157,8 @@ void AudioEffectsController::AddLiveCaptionEffect() {
       base::BindRepeating(&AudioEffectsController::GetEffectState,
                           base::Unretained(this), VcEffectId::kLiveCaption),
       /*effect_id=*/VcEffectId::kLiveCaption);
-  effect->AddState(std::make_unique<VcEffectState>(
+
+  auto effect_state = std::make_unique<VcEffectState>(
       /*icon=*/&kVideoConferenceLiveCaptionOnIcon,
       /*label_text=*/
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LIVE_CAPTION),
@@ -163,7 +168,10 @@ void AudioEffectsController::AddLiveCaptionEffect() {
       base::BindRepeating(&AudioEffectsController::OnEffectControlActivated,
                           weak_factory_.GetWeakPtr(),
                           /*effect_id=*/VcEffectId::kLiveCaption,
-                          /*value=*/0)));
+                          /*value=*/0));
+  effect_state->set_disabled_icon(&kVideoConferenceLiveCaptionOffIcon);
+
+  effect->AddState(std::move(effect_state));
   AddEffect(std::move(effect));
 }
 
