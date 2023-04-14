@@ -617,7 +617,6 @@ void DownloadItemImpl::Pause() {
 void DownloadItemImpl::Resume(bool user_resume) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(20) << __func__ << "() download = " << DebugString(true);
-  RecordDownloadResumption(GetLastReason(), user_resume);
 
   switch (state_) {
     case CANCELLED_INTERNAL:  // Nothing to resume.
@@ -644,7 +643,6 @@ void DownloadItemImpl::Resume(bool user_resume) {
       UpdateResumptionInfo(paused_ || user_resume);
       paused_ = false;
       if (auto_resume_count_ >= kMaxAutoResumeAttempts) {
-        RecordAutoResumeCountLimitReached(GetLastReason());
         UpdateObservers();
         return;
       }
@@ -2465,9 +2463,6 @@ void DownloadItemImpl::ResumeInterruptedDownload(
       mode == ResumeMode::USER_RESTART) {
     LOG_IF(ERROR, !GetFullPath().empty())
         << "Download full path should be empty before resumption";
-    if (destination_info_.received_bytes > 0) {
-      RecordResumptionRestartReason(last_reason_);
-    }
     destination_info_.received_bytes = 0;
     last_modified_time_.clear();
     etag_.clear();

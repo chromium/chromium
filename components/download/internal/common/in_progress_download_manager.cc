@@ -177,10 +177,6 @@ void OnPathReserved(
     }
   }
 
-  RecordBackgroundTargetDeterminationResult(
-      intermediate_path.empty()
-          ? BackgroudTargetDeterminationResultTypes::kPathReservationFailed
-          : BackgroudTargetDeterminationResultTypes::kSuccess);
   std::move(callback).Run(
       target_path, DownloadItem::TARGET_DISPOSITION_OVERWRITE, danger_type,
       insecure_download_status, intermediate_path, base::FilePath(),
@@ -407,8 +403,6 @@ void InProgressDownloadManager::DetermineDownloadTarget(
         download->GetDangerType(), download->GetInsecureDownloadStatus(),
         target_path, base::FilePath(), std::string() /*mime_type*/,
         DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
-    RecordBackgroundTargetDeterminationResult(
-        BackgroudTargetDeterminationResultTypes::kTargetPathMissing);
     return;
   }
 
@@ -420,8 +414,6 @@ void InProgressDownloadManager::DetermineDownloadTarget(
         download->GetDangerType(), download->GetInsecureDownloadStatus(),
         target_path, base::FilePath(), std::string() /*mime_type*/,
         DOWNLOAD_INTERRUPT_REASON_NONE);
-    RecordBackgroundTargetDeterminationResult(
-        BackgroudTargetDeterminationResultTypes::kSuccess);
     return;
   }
 

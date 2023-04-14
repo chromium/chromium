@@ -837,11 +837,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Download.OpensOutstanding" units="units" expires_after="M77">
-  <owner>dtrainor@chromium.org</owner>
-  <summary>The number of unopened downloads, when one is opened.</summary>
-</histogram>
-
 <histogram name="Download.OverwrittenDownloadRemovedFromHistory"
     units="downloads" expires_after="2022-04-24">
   <owner>qinmin@chromium.org</owner>
@@ -936,48 +931,6 @@ chromium-metrics-reviews@google.com.
     Records the time taken to load the downloads Web UI and render (at least) a
     screen full of items. This is roughly equivalent to 'time to first
     meaningful paint' for the downloads page.
-  </summary>
-</histogram>
-
-<histogram name="Download.Resume.AutoResumeLimitReached" enum="Boolean"
-    expires_after="2021-01-10">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    Records whenever max auto-resumption limit was reached for a download.
-  </summary>
-</histogram>
-
-<histogram name="Download.Resume.AutoResumeLimitReached.LastReason"
-    enum="InterruptReason" expires_after="2021-01-10">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>
-    Records the last interrupt reason for this download when the download
-    reaches auto-resumption limit.
-  </summary>
-</histogram>
-
-<histogram name="Download.Resume.LastReason" enum="InterruptReason"
-    expires_after="2021-01-03">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>Records the last interrupt reason for this download.</summary>
-</histogram>
-
-<histogram name="Download.Resume.UserResume" enum="Boolean"
-    expires_after="2020-11-01">
-  <owner>shaktisahu@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>Records whether a resumption was due to user.</summary>
-</histogram>
-
-<histogram name="Download.ResumptionRestart.Reason" enum="InterruptReason"
-    expires_after="2021-02-28">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Records the interrupt reason when download is restarting from the beginning
-    during resumption.
   </summary>
 </histogram>
 

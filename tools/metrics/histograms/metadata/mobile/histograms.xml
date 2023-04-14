@@ -644,16 +644,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MobileDownload.Background.TargetDeterminationResult"
-    enum="MobileDownloadBackgroundTargetDeterminationResult"
-    expires_after="2020-12-13">
-  <owner>qinmin@chromium.org</owner>
-  <summary>
-    Android: Records the target determination result for downloads started in
-    the background, that is, while the browser process is not running.
-  </summary>
-</histogram>
-
 <histogram name="MobileDownload.DownloadLaterPromptStatus"
     enum="DownloadLaterPromptStatus" expires_after="2023-02-06">
   <owner>shaktisahu@chromium.org</owner>
