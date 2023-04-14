@@ -298,6 +298,17 @@ void OSSettingsUI::BindInterface(
                               *pin_backend);
 }
 
+void OSSettingsUI::BindInterface(
+    mojo::PendingReceiver<google_drive::mojom::PageHandlerFactory> receiver) {
+  CHECK(ash::features::IsDriveFsBulkPinningEnabled());
+  // The PageHandlerFactory is reused across same-origin navigations, so ensure
+  // any existing factories are reset.
+  google_drive_page_handler_factory_.reset();
+  google_drive_page_handler_factory_ =
+      std::make_unique<GoogleDrivePageHandlerFactory>(
+          Profile::FromWebUI(web_ui()), std::move(receiver));
+}
+
 WEB_UI_CONTROLLER_TYPE_IMPL(OSSettingsUI)
 
 }  // namespace ash::settings

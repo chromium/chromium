@@ -46,6 +46,7 @@ import './multidevice_page/multidevice_page.js';
 import './nearby_share_page/nearby_share_high_visibility_page.js';
 import './nearby_share_page/nearby_share_receive_dialog.js';
 import './nearby_share_page/nearby_share_subpage.js';
+import './os_files_page/google_drive_subpage.js';
 import './personalization_page/personalization_page.js';
 import './os_a11y_page/change_dictation_locale_dialog.js';
 import './os_a11y_page/os_a11y_page.js';
@@ -171,6 +172,8 @@ export {AppManagementStoreMixin} from './os_apps_page/app_management_page/store_
 export {setAppNotificationProviderForTesting} from './os_apps_page/app_notifications_page/mojo_interface_provider.js';
 export {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_page/os_bluetooth_devices_subpage_browser_proxy.js';
 export {FastPairSavedDevice, FastPairSavedDevicesOptInStatus} from './os_bluetooth_page/settings_fast_pair_constants.js';
+export {GoogleDriveBrowserProxy, GoogleDrivePageCallbackRouter, GoogleDrivePageHandlerRemote} from './os_files_page/google_drive_browser_proxy.js';
+export {SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_subpage.js';
 export {osPageVisibility} from './os_page_visibility.js';
 export {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl, MetricsConsentState} from './os_privacy_page/metrics_consent_browser_proxy.js';
 export {DataAccessPolicyState, PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './os_privacy_page/peripheral_data_access_browser_proxy.js';

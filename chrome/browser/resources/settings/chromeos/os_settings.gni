@@ -310,6 +310,7 @@ non_web_component_files = [
   "chromeos/assert_extras.ts",
   "chromeos/common/global_scroll_target_mixin.ts",
   "chromeos/common/types.ts",
+  "chromeos/os_files_page/google_drive_browser_proxy.ts",
   "chromeos/crostini_page/crostini_browser_proxy.ts",
   "chromeos/crostini_page/crostini_shared_usb_devices.ts",
   "chromeos/date_time_page/date_time_types.ts",
@@ -425,9 +426,11 @@ non_web_component_files = [
 mojom_webui_files = [
   "chromeos/mojom-webui/app_notification_handler.mojom-webui.ts",
   "chromeos/mojom-webui/cros_audio_config.mojom-webui.ts",
+  "chromeos/mojom-webui/google_drive_handler.mojom-webui.ts",
   "chromeos/mojom-webui/input_device_settings_provider.mojom-webui.ts",
   "chromeos/mojom-webui/input_device_settings.mojom-webui.ts",
   "chromeos/mojom-webui/modifier_key.mojom-webui.ts",
+  "chromeos/mojom-webui/pin_manager_types.mojom-webui.ts",
   "chromeos/mojom-webui/routes.mojom-webui.ts",
   "chromeos/mojom-webui/setting.mojom-webui.ts",
 

@@ -11,17 +11,14 @@
 
 namespace ash::settings {
 
-GoogleDrivePageHandlerFactory::GoogleDrivePageHandlerFactory(Profile* profile)
-    : profile_(profile) {}
-
-GoogleDrivePageHandlerFactory::~GoogleDrivePageHandlerFactory() = default;
-
-void GoogleDrivePageHandlerFactory::Bind(
-    mojo::PendingReceiver<google_drive::mojom::PageHandlerFactory> receiver) {
-  CHECK(!page_factory_receiver_.is_bound()) << "PageFactory already bound";
-
+GoogleDrivePageHandlerFactory::GoogleDrivePageHandlerFactory(
+    Profile* profile,
+    mojo::PendingReceiver<google_drive::mojom::PageHandlerFactory> receiver)
+    : profile_(profile) {
   page_factory_receiver_.Bind(std::move(receiver));
 }
+
+GoogleDrivePageHandlerFactory::~GoogleDrivePageHandlerFactory() = default;
 
 void GoogleDrivePageHandlerFactory::CreatePageHandler(
     mojo::PendingRemote<google_drive::mojom::Page> page,

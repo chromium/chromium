@@ -20,16 +20,15 @@ namespace ash::settings {
 class GoogleDrivePageHandlerFactory
     : public google_drive::mojom::PageHandlerFactory {
  public:
-  explicit GoogleDrivePageHandlerFactory(Profile* profile);
+  GoogleDrivePageHandlerFactory(
+      Profile* profile,
+      mojo::PendingReceiver<google_drive::mojom::PageHandlerFactory> receiver);
 
   GoogleDrivePageHandlerFactory(const GoogleDrivePageHandlerFactory&) = delete;
   GoogleDrivePageHandlerFactory& operator=(
       const GoogleDrivePageHandlerFactory&) = delete;
 
   ~GoogleDrivePageHandlerFactory() override;
-
-  void Bind(
-      mojo::PendingReceiver<google_drive::mojom::PageHandlerFactory> receiver);
 
  private:
   // google_drive::mojom::PageHandlerFactory:

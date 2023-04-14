@@ -300,6 +300,7 @@
 #include "chrome/browser/ui/webui/ash/vm/vm_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
+#include "chrome/browser/ui/webui/settings/ash/files_page/mojom/google_drive_handler.mojom.h"
 #include "chrome/browser/ui/webui/settings/ash/input_device_settings/input_device_settings_provider.mojom.h"
 #include "chrome/browser/ui/webui/settings/ash/os_apps_page/mojom/app_notification_handler.mojom.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_ui.h"
@@ -1394,6 +1395,12 @@ void PopulateChromeWebUIFrameBinders(
     RegisterWebUIControllerInterfaceBinder<
         ash::office_fallback::mojom::PageHandlerFactory,
         ash::office_fallback::OfficeFallbackUI>(map);
+  }
+
+  if (ash::features::IsDriveFsBulkPinningEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        ash::settings::google_drive::mojom::PageHandlerFactory,
+        ash::settings::OSSettingsUI>(map);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
