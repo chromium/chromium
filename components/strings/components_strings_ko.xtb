@@ -276,7 +276,7 @@
 <translation id="1572765991610098222"><ph name="WIDTH" />x<ph name="HEIGHT" />인치</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">이 웹페이지를 표시하는 도중 문제가 발생했습니다.</translation>
-<translation id="1584492003828271317">인터넷을 탐색할 때 이 설정, 사이트 추천 광고, 나의 쿠키 설정, 표시되는 사이트에서 광고를 개인 최적화하는지에 따라 나에게 표시되는 광고의 개인 최적화 여부가 달라집니다.</translation>
+<translation id="1584492003828271317">해당 설정, 사이트 추천 광고, 나의 쿠키 설정, 그리고 표시되는 사이트에서 개인 맞춤 광고를 제공하는지에 따라 인터넷을 탐색할 때 개인 맞춤 광고가 표시되는지 여부가 달라집니다.</translation>
 <translation id="1586541204584340881">내가 설치한 확장 프로그램</translation>
 <translation id="1588438908519853928">일반</translation>
 <translation id="1592005682883173041">로컬 데이터 액세스</translation>
@@ -348,7 +348,7 @@
 <translation id="1736420071277903564">컴퓨터</translation>
 <translation id="1740951997222943430">올바른 만료 월을 입력하세요.</translation>
 <translation id="1741613555002899862">DnsOverHttpsMode가 <ph name="SECURE_DNS_MODE_SECURE" />일 때 반드시 지정되어야 하며 유효한 문자열이어야 합니다.</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Chrome의 데이터 사용 방식:<ph name="END_BOLD" />Chrome에서 내가 인터넷을 사용하는 동안 관심 주제를 파악합니다. 주제 라벨은 사전 정의되어 있으며 예술 및 엔터테인먼트, 쇼핑, 스포츠 등을 포함합니다. 나중에 사이트를 방문하면 사이트에서 광고 개인 최적화를 위해 내 관심 주제 몇 가지를 Chrome에 요청할 수 있습니다(방문 기록 제외).</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Chrome의 데이터 사용 방식:<ph name="END_BOLD" /> Chrome에서 내가 인터넷을 사용하는 동안 관심 주제를 파악합니다. 주제 라벨은 사전 정의되어 있으며 예술 및 엔터테인먼트, 쇼핑, 스포츠 등을 포함합니다. 나중에 사이트를 방문하면 사이트에서 광고 개인 최적화를 위해 내 관심 주제 몇 가지를 Chrome에 요청할 수 있습니다(방문 기록 제외).</translation>
 <translation id="1745880797583122200">관리 대상 브라우저입니다</translation>
 <translation id="1746113442205726301">이미지 Y 시프트</translation>
 <translation id="1746531169546376413">0도</translation>
@@ -2102,7 +2102,7 @@
 <translation id="61877208875190028">여성 의류</translation>
 <translation id="6194209731893739467">추적 중인 모든 제품을 여기에서 확인</translation>
 <translation id="6195371403461054755">지질학</translation>
-<translation id="6196640612572343990">타사 쿠키 차단</translation>
+<translation id="6196640612572343990">서드 파티 쿠키 차단</translation>
 <translation id="6197648101609735209">89x89mm</translation>
 <translation id="6203231073485539293">인터넷 연결을 확인하세요.</translation>
 <translation id="6205314730813004066">광고 개인 정보 보호</translation>
@@ -3072,7 +3072,7 @@
 <translation id="8589998999637048520">고품질 순</translation>
 <translation id="8600271352425265729">이번만 허용</translation>
 <translation id="860043288473659153">카드 명의자 이름</translation>
-<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />사용되는 데이터:<ph name="END_BOLD" /> 이 기기에서 Chrome을 사용하여 방문한 사이트에서 이루어진 내 활동입니다.</translation>
+<translation id="8601027005147870853"><ph name="BEGIN_BOLD" />사용되는 데이터:<ph name="END_BOLD" /> 이 기기에서 Chrome을 사용하여 방문한 사이트에서 이루어진 내 활동</translation>
 <translation id="8606726445206553943">MIDI 기기를 사용합니다.</translation>
 <translation id="8606988009912891950">광고 주제는 사이트에서 내 방문 기록과 신원 정보를 보호하면서 관련성 있는 광고를 표시하는 데 도움이 됩니다. Chrome에서는 내 최근 방문 기록을 기반으로 관심 주제를 파악할 수 있습니다. 나중에 사이트를 방문하면 사이트에서 광고 개인 최적화를 위해 관련 주제를 Chrome에 요청할 수 있습니다.</translation>
 <translation id="8617269623452051934">기기 사용 여부</translation>

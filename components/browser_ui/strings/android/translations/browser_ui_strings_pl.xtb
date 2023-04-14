@@ -195,7 +195,7 @@
 <translation id="4566417217121906555">Wycisz mikrofon</translation>
 <translation id="4570913071927164677">Szczegóły</translation>
 <translation id="4575264539271661854">Ułatw powiększanie tekstu i obrazów w odwiedzanej witrynie</translation>
-<translation id="4598549027014564149">W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem innych witryn, nawet powiązanych. Twoja aktywność związana z przeglądaniem nie służy do personalizowania reklam. W niektórych witrynach mogą nie działać funkcje.</translation>
+<translation id="4598549027014564149">W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem innych witryn, nawet powiązanych. Twoja aktywność związana z przeglądaniem nie służy do personalizowania reklam. Funkcje w niektórych witrynach mogą nie działać.</translation>
 <translation id="4645575059429386691">Zarządzany przez Twojego rodzica</translation>
 <translation id="4670064810192446073">Rzeczywistość wirtualna</translation>
 <translation id="4751476147751820511">Czujniki ruchu lub światła</translation>
@@ -384,7 +384,7 @@
 <translation id="8116925261070264013">Wyciszone</translation>
 <translation id="813082847718468539">Wyświetl informacje o witrynie</translation>
 <translation id="8131740175452115882">Potwierdź</translation>
-<translation id="8154912474061769055">W wielu witrynach mogą nie działać funkcje</translation>
+<translation id="8154912474061769055">Funkcje w wielu witrynach mogą nie działać</translation>
 <translation id="8168435359814927499">Treść</translation>
 <translation id="8197286292360124385">Dozwolone: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Wznów</translation>

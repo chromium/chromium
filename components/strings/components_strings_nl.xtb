@@ -348,7 +348,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1736420071277903564">Computer</translation>
 <translation id="1740951997222943430">Geef een geldige vervalmaand op</translation>
 <translation id="1741613555002899862">Moet gespecificeerd zijn en een geldige tekenreeks zijn als DnsOverHttpsMode <ph name="SECURE_DNS_MODE_SECURE" /> is.</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Hoe we deze gegevens gebruiken:<ph name="END_BOLD" /> Chrome registreert interessante onderwerpen terwijl je browset. Onderwerplabels zijn vooraf gedefinieerd en omvatten bijvoorbeeld Kunst en entertainment, Shopping en Sport. Later kan een site die je bezoekt Chrome om een aantal van je onderwerpen vragen (maar niet je browsegeschiedenis) om de advertenties te personaliseren die je te zien krijgt.</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Hoe we deze gegevens gebruiken:<ph name="END_BOLD" /> Chrome registreert interessante onderwerpen terwijl je browst. Onderwerplabels zijn vooraf gedefinieerd en omvatten bijvoorbeeld Kunst en entertainment, Shopping en Sport. Later kan een site die je bezoekt Chrome om een aantal van je onderwerpen vragen (maar niet je browsegeschiedenis) om de advertenties te personaliseren die je te zien krijgt.</translation>
 <translation id="1745880797583122200">Je browser wordt beheerd</translation>
 <translation id="1746113442205726301">Beeldverschuiving Y</translation>
 <translation id="1746531169546376413">0 graden</translation>
@@ -461,7 +461,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="205212645995975601">Barbecue en grillen</translation>
 <translation id="2053111141626950936">Pagina's in het <ph name="LANGUAGE" /> worden niet vertaald.</translation>
 <translation id="2053373601901562871">{NUM_DAYS,plural, =0{Als dit bedieningselement aanstaat en de status actief is, bepaalt Chrome op welke grote groep mensen (ook wel een cohort genoemd) je recente browse-activiteit het meest lijkt. Adverteerders kunnen advertenties voor de groep selecteren en je browse-activiteit blijft privé op je apparaat. Je groep wordt elke dag geüpdatet.}=1{Als dit bedieningselement aanstaat en de status actief is, bepaalt Chrome op welke grote groep mensen (ook wel een cohort genoemd) je recente browse-activiteit het meest lijkt. Adverteerders kunnen advertenties voor de groep selecteren en je browse-activiteit blijft privé op je apparaat. Je groep wordt elke dag geüpdatet.}other{Als dit bedieningselement aanstaat en de status actief is, bepaalt Chrome op welke grote groep mensen (ook wel een cohort genoemd) je recente browse-activiteit het meest lijkt. Adverteerders kunnen advertenties voor de groep selecteren en je browse-activiteit blijft privé op je apparaat. Je groep wordt elke {NUM_DAYS} dagen geüpdatet.}}</translation>
-<translation id="2056658168519009885">Sites kunnen Chrome om informatie vragen om de advertenties te personaliseren die je te zien krijgt.</translation>
+<translation id="2056658168519009885">Sites kunnen Chrome om informatie vragen om de advertenties te personaliseren die je ziet.</translation>
 <translation id="2059202684901022309">22 x 34 inch</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 suggestie}other{# suggesties}}</translation>
 <translation id="2066915425250589881">een verwijderingsverzoek indienen</translation>
@@ -825,7 +825,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="301521992641321250">Automatisch geblokkeerd</translation>
 <translation id="3016780570757425217">Je locatie weten</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, druk op Tab en daarna op Enter om de suggestie te verwijderen.</translation>
-<translation id="3023165109041533893">Met door sites voorgestelde advertenties worden je browsegeschiedenis en identiteit beschermd terwijl de sites je relevante advertenties kunnen laten zien. Op basis van je activiteit kan een site die je hebt bezocht gerelateerde advertenties voorstellen terwijl je browset. In de instellingen kun je een lijst van deze sites bekijken en ongewenste sites blokkeren.</translation>
+<translation id="3023165109041533893">Met door sites voorgestelde advertenties worden je browsegeschiedenis en identiteit beschermd terwijl de sites je relevante advertenties kunnen laten zien. Op basis van je activiteit kan een site die je hebt bezocht gerelateerde advertenties voorstellen terwijl je browst. In de instellingen kun je een lijst van deze sites bekijken en ongewenste sites blokkeren.</translation>
 <translation id="3024663005179499861">Onjuist beleidstype</translation>
 <translation id="3029752078111257850">Wereldnieuws</translation>
 <translation id="3037177537145227281">Prijs wordt gevolgd</translation>
@@ -946,7 +946,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3339440062908617027">Hardlopen en wandelen</translation>
 <translation id="3339446062576134663">Cloud (Ash)</translation>
 <translation id="3340978935015468852">instellingen</translation>
-<translation id="3342018947887487892">Later kan een site die je bezoekt vragen om je advertentieonderwerpen of om advertenties die zijn voorgesteld door sites die je hebt bezocht.</translation>
+<translation id="3342018947887487892">Later kan een site die je bezoekt informatie opvragen over advertentieonderwerpen of over voorgestelde advertenties op andere sites die je hebt bezocht.</translation>
 <translation id="3342366525167526994">Body art</translation>
 <translation id="3349952286488694786">SRA2</translation>
 <translation id="3355823806454867987">Proxyinstellingen wijzigen...</translation>
@@ -1175,7 +1175,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3901925938762663762">De pas is verlopen</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
-<translation id="3911401144270344103">Je kunt dit op elk moment wijzigen via de Chrome-instellingen</translation>
+<translation id="3911401144270344103">Je kunt dit altijd wijzigen via de Chrome-instellingen</translation>
 <translation id="3921869355029467742">Geef je beveiligingscode op</translation>
 <translation id="3927932062596804919">Weigeren</translation>
 <translation id="393316646445601645">Internet en telecom</translation>
@@ -1874,7 +1874,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5598944008576757369">Betaalmethode kiezen</translation>
 <translation id="560412284261940334">Beheer wordt niet ondersteund</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Hoe je je gegevens kunt beheren:<ph name="END_BOLD" /> Chrome verwijdert automatisch sites die ouder zijn dan 4 weken. Een site die je opnieuw bezoekt, kan weer in de lijst verschijnen. Via de Chrome-instellingen kun je ook altijd voorkomen dat een site advertenties voor je voorstelt of door sites voorgestelde advertenties uitzetten.</translation>
+<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Hoe je je gegevens kunt beheren:<ph name="END_BOLD" /> Chrome verwijdert automatisch sites die ouder zijn dan 4 weken. Een site die je opnieuw bezoekt, kan weer in de lijst verschijnen. Via de Chrome-instellingen kun je ook altijd voorkomen dat een site advertenties voorstelt en voorgestelde advertenties door sites uitzetten.</translation>
 <translation id="5610142619324316209">Controleer de verbinding</translation>
 <translation id="5610807607761827392">Je kunt passen en adressen beheren in <ph name="BEGIN_LINK" />Instellingen<ph name="END_LINK" />.</translation>
 <translation id="561165882404867731">Deze pagina vertalen met Google Translate</translation>
@@ -2313,7 +2313,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6786145470008421571">Envelop 6 x 9 inch</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786747875388722282">Extensies</translation>
-<translation id="6787094689637422836">We lanceren nieuwe privacyfuncties die je meer controle geven over de advertenties die je te zien krijgt.</translation>
+<translation id="6787094689637422836">We lanceren nieuwe privacyfuncties die je meer controle geven over de advertenties die je ziet.</translation>
 <translation id="678982761784843853">ID's van beschermde content</translation>
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="679355240208270552">Genegeerd omdat de standaard zoekoptie is uitgezet door het beleid.</translation>
@@ -2754,13 +2754,13 @@ Aanvullende informatie:
 <translation id="7773005668374414287">Dezelfde volgorde met de bedrukte zijde omhoog</translation>
 <translation id="7785790577395078482">deze tablet</translation>
 <translation id="7786368602962652765">Een verplicht veld is leeg. Vul het in voordat je opslaat.</translation>
-<translation id="7790488044432570133">Sites die je bezoekt kunnen Chrome om informatie vragen waarmee ze de prestaties van hun advertenties kunnen meten. Met Chrome kunnen sites slechts bepaalde soorten gegevens verzamelen, zoals het tijdstip waarop je een advertentie te zien kreeg.</translation>
+<translation id="7790488044432570133">Sites die je bezoekt kunnen Chrome om informatie vragen waarmee ze de prestaties van hun advertenties kunnen meten. Met Chrome kunnen sites alleen bepaalde soorten gegevens verzamelen, zoals het tijdstip waarop je een advertentie te zien kreeg.</translation>
 <translation id="7791011319128895129">Niet uitgebracht</translation>
 <translation id="7791196057686275387">Bundelen</translation>
 <translation id="7791543448312431591">Toevoegen</translation>
 <translation id="7798389633136518089">Genegeerd omdat het beleid niet is ingesteld door een cloudbron.</translation>
 <translation id="7800304661137206267">De verbinding is geëncrypt met <ph name="CIPHER" />, met <ph name="MAC" /> voor berichtverificatie en <ph name="KX" /> als mechanisme voor sleuteluitwisseling.</translation>
-<translation id="7800977246388195491">Chrome stelt interessante onderwerpen vast op basis van je recente browsegeschiedenis. Sites die je bezoekt, kunnen ook vaststellen wat je leuk vindt. Later kunnen sites om deze informatie vragen om de advertenties te personaliseren die je te zien krijgt. Je kunt kiezen welke onderwerpen en sites worden gebruikt om advertenties tonen.</translation>
+<translation id="7800977246388195491">Chrome stelt vast welke onderwerpen je interesseren op basis van je recente browsegeschiedenis. Ook kunnen sites die je bezoekt, vaststellen wat je leuk vindt. Later kunnen sites deze informatie opvragen om je advertenties te personaliseren. Je kunt kiezen welke onderwerpen en sites worden gebruikt om advertenties tonen.</translation>
 <translation id="7802523362929240268">Site is legitiem</translation>
 <translation id="7802989406998618639">Geef de beveiligingscode van <ph name="NUMBER_OF_DIGITS" /> cijfers op de <ph name="SIDE_OF_CARD" /> op, zodat je bank kan verifiëren dat jij het bent</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
@@ -2841,7 +2841,7 @@ Aanvullende informatie:
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om Chrome in te stellen als de standaardbrowser van het systeem</translation>
 <translation id="8025119109950072390">Cybercriminelen op deze site proberen je mogelijk te misleiden om iets gevaarlijks te doen, zoals software installeren of je persoonlijke informatie bekendmaken (bijvoorbeeld wachtwoorden, telefoonnummers of creditcards).</translation>
-<translation id="8026126421313327427">Chrome verwijdert automatisch onderwerpen die ouder zijn dan 4 weken. Terwijl je browset, kan er een onderwerp opnieuw verschijnen in de lijst. Je kunt ook onderwerpen verwijderen als je niet wilt dat Chrome deze met sites deelt.</translation>
+<translation id="8026126421313327427">Chrome verwijdert automatisch onderwerpen die ouder zijn dan 4 weken. Terwijl je browst, kan er een onderwerp opnieuw verschijnen in de lijst. Je kunt ook onderwerpen verwijderen als je niet wilt dat Chrome deze met sites deelt.</translation>
 <translation id="8026334261755873520">Browsegegevens wissen</translation>
 <translation id="8027077570865220386">Lade 15</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om snel een nieuw formulier in Google Formulieren te maken</translation>
@@ -3146,7 +3146,7 @@ Aanvullende informatie:
 <translation id="8805819170075074995">Lijstitem '<ph name="LANGUAGE_ID" />': Item is genegeerd omdat dit ook is opgenomen in het beleid SpellcheckLanguage.</translation>
 <translation id="8806285662264631610">Bad- en lichaamsverzorgingsproducten</translation>
 <translation id="8807160976559152894">Bijsnijden na elke pagina</translation>
-<translation id="8809203544698246977">Hier zie je geblokkeerde onderwerpen</translation>
+<translation id="8809203544698246977">Hier staan je geblokkeerde onderwerpen</translation>
 <translation id="8813277370772331957">Later herinneren</translation>
 <translation id="8814707942599948500">Envelop C8</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en vervolgens op Enter om Chrome te updaten via je Chrome-instellingen</translation>
@@ -3321,7 +3321,7 @@ Aanvullende informatie:
 <translation id="935608979562296692">FORMULIER LEEGMAKEN</translation>
 <translation id="936602727769022409">Je kunt de toegang tot je Google-account kwijtraken. Chromium raadt je aan je wachtwoord nu te wijzigen. Je wordt gevraagd in te loggen op je account.</translation>
 <translation id="937457230470581909">Dierentuinen, aquaria en natuurreservaten</translation>
-<translation id="937804173274050966"><ph name="BEGIN_BOLD" />Welke gegevens worden gebruikt:<ph name="END_BOLD" /> Je advertentieonderwerpen zijn gebaseerd op je recente browsegeschiedenis, een lijst met sites die je via Chrome op dit apparaat hebt bezocht.</translation>
+<translation id="937804173274050966"><ph name="BEGIN_BOLD" />Welke gegevens worden gebruikt:<ph name="END_BOLD" /> Je advertentieonderwerpen zijn gebaseerd op je recente browsegeschiedenis. Dit is een lijst met sites die je via Chrome op dit apparaat hebt bezocht.</translation>
 <translation id="939736085109172342">Nieuwe map</translation>
 <translation id="940053046584497293">Reizen en transport</translation>
 <translation id="945855313015696284">Controleer de informatie hieronder en verwijder alle ongeldige passen</translation>

@@ -4237,7 +4237,7 @@ también es seguro.</translation>
       Si no la configuras, se desactivarán los comentarios por voz en la pantalla de acceso. Los usuarios podrán activarlos en cualquier momento y su estado para la pantalla de acceso se mantendrá entre los diferentes usuarios.
 
           Nota: Si se especifica <ph name="DEVICE_LOGIN_SCREEN_SPOKEN_FEEDBACK_ENABLED_POLICY_NAME" />, anulará esta política.</translation>
-<translation id="4945419595339133946">Especifica si se muestra (o se oculta) siempre la información del sistema (p. ej., la versión de Chrome OS o el número
+<translation id="4945419595339133946">Especifica si se muestra (o se oculta) siempre la información del sistema (p. ej., la versión de ChromeOS o el número
        de serie del dispositivo) en la pantalla de acceso.
 
       Si se establece la política como verdadera, se mostrará la información del sistema de manera forzada.
@@ -5424,7 +5424,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6083631234867522991">Windows (clientes de Windows):</translation>
 <translation id="608788685013546076">Establecer en porcentaje el umbral de la batería para el cambio de carga fuera del horario de mayor consumo</translation>
 <translation id="6089679180657323464">Supervisa la configuración del controlador de telemetría y diagnósticos wilco.</translation>
-<translation id="6091233616732024397">Forzar a los usuarios a acceder para usar el navegador</translation>
+<translation id="6091233616732024397">Obligar a los usuarios a acceder para usar el navegador</translation>
 <translation id="6093156968240188330">Permitir que los usuarios remotos interactúen con las ventanas con permisos elevados en sesiones de asistencia remota</translation>
 <translation id="6094314311474620462">Inhabilitar la impresión</translation>
 <translation id="6095048925836115505">Habilita el teclado virtual en la pantalla de acceso</translation>

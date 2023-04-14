@@ -183,7 +183,7 @@
 <translation id="4336434711095810371">모든 데이터 삭제</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" />의 모든 사이트</translation>
 <translation id="4402755511846832236">사용자가 현재 기기를 사용 중인지 사이트에서 알 수 없도록 차단합니다.</translation>
-<translation id="4412992751769744546">타사 쿠키 허용</translation>
+<translation id="4412992751769744546">서드 파티 쿠키 허용</translation>
 <translation id="4428065317363009941">광고 개인 최적화</translation>
 <translation id="4434045419905280838">팝업 및 리디렉션</translation>
 <translation id="4440642537584213025"><ph name="TARGET_DESCRIPTION" /> 펼치기</translation>
@@ -283,7 +283,7 @@
 <translation id="6177128806592000436">이 사이트는 보안 연결(HTTPS)이 사용되지 않았습니다.</translation>
 <translation id="6181444274883918285">사이트 예외 추가</translation>
 <translation id="6192792657125177640">예외</translation>
-<translation id="6196640612572343990">타사 쿠키 차단</translation>
+<translation id="6196640612572343990">서드 파티 쿠키 차단</translation>
 <translation id="6205314730813004066">광고 개인 정보 보호</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> 옵션</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' 앱을 제거하시겠습니까?</translation>
@@ -397,7 +397,7 @@
 <translation id="8324158725704657629">다시 묻지 않음</translation>
 <translation id="8362795839483915693">방문하는 사이트를 확대 또는 축소할 수 있습니다.</translation>
 <translation id="8372893542064058268">특정 사이트에서 백그라운드 동기화를 허용합니다.</translation>
-<translation id="8376384591331888629">이 사이트의 타사 쿠키 포함</translation>
+<translation id="8376384591331888629">이 사이트의 서드 파티 쿠키 포함</translation>
 <translation id="83792324527827022">사이트에서 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="8380167699614421159">이 사이트에서는 방해가 되거나 사용자를 현혹하는 광고를 표시합니다.</translation>
 <translation id="8394832520002899662">탭하여 사이트로 돌아가기</translation>

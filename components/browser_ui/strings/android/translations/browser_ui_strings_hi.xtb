@@ -105,7 +105,7 @@
 <translation id="2874939134665556319">पिछला ट्रैक</translation>
 <translation id="2891975107962658722">किसी साइट को, आपके डिवाइस पर डेटा सेव करने से रोकें</translation>
 <translation id="2903493209154104877">पते</translation>
-<translation id="2910701580606108292">साइटों को सुरक्षित सामग्री चलाने की अनुमति देने से पहले पूछें</translation>
+<translation id="2910701580606108292">साइटों को सुरक्षित कॉन्टेंट चलाने की अनुमति देने से पहले पूछें</translation>
 <translation id="2913331724188855103">साइटों को कुकी डेटा सेव करने और पढ़ने की अनुमति दें (सुझाए गए)</translation>
 <translation id="2932883381142163287">बुरे बर्ताव की शिकायत करें</translation>
 <translation id="2968755619301702150">प्रमाणपत्र व्यूअर</translation>
@@ -161,7 +161,7 @@
 <translation id="3895926599014793903">ज़बरदस्ती ज़ूम करना चालू करें</translation>
 <translation id="3908288065506437185">गुप्त मोड में, तीसरे पक्ष की कुकी को ब्लॉक करें</translation>
 <translation id="3918378745482005425">शायद कुछ सुविधाएं काम न करें. इससे जुड़ी साइटें अब भी तीसरे पक्ष की कुकी का इस्तेमाल कर सकती हैं.</translation>
-<translation id="3955193568934677022">साइटों को सुरक्षित सामग्री चलाने दें (हम इस सेटिंग को चालू रखने का सुझाव देते हैं)</translation>
+<translation id="3955193568934677022">साइटों को सुरक्षित कॉन्टेंट चलाने दें (हम इस सेटिंग को चालू रखने का सुझाव देते हैं)</translation>
 <translation id="3967822245660637423">डाउनलोड पूरा हुआ</translation>
 <translation id="3987993985790029246">लिंक कॉपी करें</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
@@ -350,7 +350,7 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">कोई साइट आपके माइक्रोफ़ोन का इस्तेमाल कर रही है</translation>
 <translation id="7561196759112975576">हमेशा</translation>
-<translation id="757524316907819857">साइटों को सुरक्षित सामग्री चलाने से रोकें</translation>
+<translation id="757524316907819857">साइटों को सुरक्षित कॉन्टेंट चलाने से रोकें</translation>
 <translation id="7577900504646297215">पसंद प्रबंधित करें</translation>
 <translation id="7594634374516752650">ब्लूटूथ डिवाइस से जुड़ा हुआ है</translation>
 <translation id="7634280112532283638">स्पैम और धोखाधड़ी को कम करना</translation>
