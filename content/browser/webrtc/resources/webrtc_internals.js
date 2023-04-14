@@ -107,6 +107,7 @@ class PeerConnectionRecord {
 
 function initialize() {
   dumpCreator = new DumpCreator($('content-root'));
+
   $('content-root').appendChild(createStatsSelectionOptionElements());
   tabView = new TabView($('content-root'));
   ssrcInfoManager = new SsrcInfoManager();
