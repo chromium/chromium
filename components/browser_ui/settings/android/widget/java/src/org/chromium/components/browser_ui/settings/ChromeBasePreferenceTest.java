@@ -182,11 +182,7 @@ public class ChromeBasePreferenceTest {
         onView(withId(android.R.id.title)).check(matches(allOf(withText(TITLE), isDisplayed())));
         onView(withId(android.R.id.summary))
                 .check(matches(allOf(withText(R.string.managed_by_your_parent), isDisplayed())));
-        if (mEnableHighlightManagedPrefDisclaimerAndroid) {
-            onView(withId(R.id.managed_disclaimer_text)).check(matches(not(isDisplayed())));
-        } else {
-            onView(withId(R.id.managed_disclaimer_text)).check(doesNotExist());
-        }
+        onView(withId(R.id.managed_disclaimer_text)).check(doesNotExist());
         onView(withId(android.R.id.icon)).check(matches(isDisplayed()));
     }
 
@@ -204,11 +200,7 @@ public class ChromeBasePreferenceTest {
         onView(withId(android.R.id.title)).check(matches(allOf(withText(TITLE), isDisplayed())));
         onView(withId(android.R.id.summary))
                 .check(matches(allOf(withText(R.string.managed_by_your_parents), isDisplayed())));
-        if (mEnableHighlightManagedPrefDisclaimerAndroid) {
-            onView(withId(R.id.managed_disclaimer_text)).check(matches(not(isDisplayed())));
-        } else {
-            onView(withId(R.id.managed_disclaimer_text)).check(doesNotExist());
-        }
+        onView(withId(R.id.managed_disclaimer_text)).check(doesNotExist());
         onView(withId(android.R.id.icon)).check(matches(isDisplayed()));
     }
 

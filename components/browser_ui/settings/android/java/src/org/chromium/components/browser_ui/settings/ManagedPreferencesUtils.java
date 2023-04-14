@@ -133,8 +133,9 @@ public class ManagedPreferencesUtils {
         if (delegate == null) return;
 
         // Embedders may define its own default layout for preferences, which can only be applied
-        // if the preference doesn't use a custom layout.
-        if (!hasCustomLayout) {
+        // if the preference doesn't use a custom layout and if the preference is controlled by
+        // policy.
+        if (!hasCustomLayout && delegate.isPreferenceControlledByPolicy(preference)) {
             @LayoutRes
             int layoutResource = delegate.defaultPreferenceLayoutResource();
             if (layoutResource != 0) {
