@@ -31,14 +31,6 @@ using chrome_test_util::LongPressCellAndDragToOffsetOf;
 
 namespace {
 
-// Returns true if the current device is an iPhone SE (1st generation).
-// TODO(crbug.com/1427970): Use a width threshold.
-bool IsIPhoneSE() {
-  NSString* current_hardware =
-      base::SysUTF8ToNSString(ios::device_util::GetPlatform());
-  return [current_hardware isEqualToString:@"iPhone8,4"];
-}
-
 // Identifer for cell at given `index` in the tab grid.
 NSString* IdentifierForRegularCellAtIndex(unsigned int index) {
   return [NSString stringWithFormat:@"%@%u", kGridCellIdentifierPrefix, index];
@@ -78,19 +70,57 @@ XCUIElement* GetElementMatchingIdentifier(XCUIApplication* app,
   return [query elementBoundByIndex:0];
 }
 
+// Finds the element with the given `identifier` of given `type`.
+XCUIElement* GetElementMatchingLabel(XCUIApplication* app,
+                                     NSString* label,
+                                     XCUIElementType type) {
+  NSPredicate* predicate =
+      [NSPredicate predicateWithBlock:^BOOL(id<XCUIElementAttributes> item,
+                                            NSDictionary* bindings) {
+        return [item.label isEqualToString:label];
+      }];
+
+  XCUIElementQuery* query = [[app.windows.firstMatch
+      descendantsMatchingType:type] matchingPredicate:predicate];
+  return [query elementBoundByIndex:0];
+}
+
 // Drags and drops the cell with the given `cell_identifier` in the pinned view.
 void DragDropCellInPinnedView(NSString* cell_identifier) {
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElement* src_element =
       GetElementMatchingIdentifier(app, cell_identifier, XCUIElementTypeCell);
   XCUICoordinate* start_point =
-      [src_element coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.5)];
+      [src_element coordinateWithNormalizedOffset:CGVectorMake(0.1, 0.1)];
+
+  XCUIElement* dst_element = GetElementMatchingLabel(
+      app, l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB),
+      XCUIElementTypeAny);
 
   // Supposed position of the pinned view.
   // The pinned view is hidden when there is no pinned tabs. We can't determine
   // its position precisely.
   XCUICoordinate* end_point =
-      [app coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.82)];
+      [dst_element coordinateWithNormalizedOffset:CGVectorMake(-0.8, -0.5)];
+
+  [start_point pressForDuration:1.5
+           thenDragToCoordinate:end_point
+                   withVelocity:XCUIGestureVelocityDefault
+            thenHoldForDuration:1.0];
+}
+
+// Drags and drops the cell with the given `cell_identifier` in the regular
+// grid.
+void DragDropCellInRegularGrid(NSString* cell_identifier) {
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+  XCUIElement* src_element =
+      GetElementMatchingIdentifier(app, cell_identifier, XCUIElementTypeCell);
+  XCUICoordinate* start_point =
+      [src_element coordinateWithNormalizedOffset:CGVectorMake(0.1, 0.1)];
+
+  // Supposed position of the regular grid.
+  XCUICoordinate* end_point =
+      [app coordinateWithNormalizedOffset:CGVectorMake(0.5, 0.4)];
 
   [start_point pressForDuration:1.5
            thenDragToCoordinate:end_point
@@ -119,6 +149,27 @@ void AssertRegularCellMovedToPinnedView(unsigned int regular_index,
              @"The drag drop action has failed.");
 }
 
+// Checks that the pinned cell at `pinned_index` index has been moved to the
+// regular grid at `regular_index` index .
+void AssertPinnedCellMovedToRegularGrid(unsigned int pinned_index,
+                                        unsigned int regular_index) {
+  ConditionBlock condition = ^{
+    NSError* error1 = nil;
+    NSError* error2 = nil;
+
+    [[EarlGrey selectElementWithMatcher:PinnedCellAtIndex(pinned_index)]
+        assertWithMatcher:grey_nil()
+                    error:&error1];
+    [[EarlGrey selectElementWithMatcher:RegularCellAtIndex(regular_index)]
+        assertWithMatcher:grey_notNil()
+                    error:&error2];
+
+    return !error1 && !error2;
+  };
+  GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
+             @"The drag drop action has failed.");
+}
+
 }  // namespace
 
 // Tests Drag and Drop interactions for the Pinned Tabs feature.
@@ -134,16 +185,50 @@ void AssertRegularCellMovedToPinnedView(unsigned int regular_index,
   return config;
 }
 
+// Checks that the Pinned Tabs feature is disabled on iPad.
+- (void)testDragRegularTabOniPad {
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPhone.");
+  }
+
+  [ChromeEarlGreyUI openTabGrid];
+
+  // The pinned view should not be visible.
+  [[EarlGrey selectElementWithMatcher:PinnedView()]
+      assertWithMatcher:grey_notVisible()];
+
+  [[EarlGrey selectElementWithMatcher:RegularCellAtIndex(0)]
+      assertWithMatcher:grey_notNil()];
+
+  // Try to drag the first cell in the pinned view.
+  DragDropCellInPinnedView(IdentifierForRegularCellAtIndex(0));
+
+  // Check that the cell has not been moved in the pinned view.
+  ConditionBlock condition = ^{
+    NSError* error1 = nil;
+    NSError* error2 = nil;
+
+    [[EarlGrey selectElementWithMatcher:RegularCellAtIndex(0)]
+        assertWithMatcher:grey_notNil()
+                    error:&error1];
+    [[EarlGrey selectElementWithMatcher:PinnedCellAtIndex(0)]
+        assertWithMatcher:grey_nil()
+                    error:&error2];
+
+    return !error1 && !error2;
+  };
+  GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
+             @"The Pinned Tabs feature is not disabled on iPad.");
+  [[EarlGrey selectElementWithMatcher:PinnedView()]
+      assertWithMatcher:grey_notVisible()];
+}
+
 // Checks that dragging a regular tab and dropping it in the pinned view moves
 // it in the pinned view.
 - (void)testDragRegularTabInPinnedView {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
                            @"supported on iPhone.");
-  }
-  if (IsIPhoneSE()) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped on iPhone SE (1st generation). The screen "
-                           @"is to small to test drag and drop interactions.");
   }
 
   [ChromeEarlGreyUI openTabGrid];
@@ -177,6 +262,50 @@ void AssertRegularCellMovedToPinnedView(unsigned int regular_index,
   AssertRegularCellMovedToPinnedView(/*regular_index*/ 0, /*pinned_index*/ 2);
   [[EarlGrey selectElementWithMatcher:PinnedView()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Checks that dragging a pinned tab and dropping it in the regular grid moves
+// it in the regular grid.
+- (void)testDragPinnedTabInRegularGrid {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
+                           @"supported on iPhone.");
+  }
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Drag both tabs in the pinned view.
+  DragDropCellInPinnedView(IdentifierForRegularCellAtIndex(1));
+  AssertRegularCellMovedToPinnedView(/*regular_index*/ 1, /*pinned_index*/ 0);
+  DragDropCellInPinnedView(IdentifierForRegularCellAtIndex(0));
+  AssertRegularCellMovedToPinnedView(/*regular_index*/ 0, /*pinned_index*/ 1);
+
+  [[EarlGrey selectElementWithMatcher:PinnedView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Drag the second pinned cell in the regular grid.
+  DragDropCellInRegularGrid(IdentifierForPinnedCellAtIndex(1));
+  AssertPinnedCellMovedToRegularGrid(/*pinned_index*/ 1, /*regular_index*/ 0);
+  [[EarlGrey selectElementWithMatcher:PinnedView()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Drag the first (and last) pinned cell in the regular grid.
+  DragDropCellInRegularGrid(IdentifierForPinnedCellAtIndex(0));
+  AssertPinnedCellMovedToRegularGrid(/*pinned_index*/ 0, /*regular_index*/ 1);
+
+  // Check that the pinned view is hidden when its last item has been removed.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+
+    [[EarlGrey selectElementWithMatcher:PinnedView()]
+        assertWithMatcher:grey_notVisible()
+                    error:&error];
+
+    return !error;
+  };
+  GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
+             @"The pinned view is still visible.");
 }
 
 @end
