@@ -194,7 +194,7 @@ void PersonalizationAppWallpaperProviderImpl::MakeTransparent() {
   web_contents->GetRenderWidgetHostView()->SetBackgroundColor(
       SK_ColorTRANSPARENT);
 
-  // Set a background color override.
+  // Turn off the web contents background.
   static_cast<ContentsWebView*>(BrowserView::GetBrowserViewForNativeWindow(
                                     web_contents->GetTopLevelNativeWindow())
                                     ->contents_web_view())
