@@ -46,10 +46,6 @@ class ASH_EXPORT GeolocationPrivacySwitchController : public SessionObserver {
   // returned ).
   std::vector<std::u16string> GetActiveApps(size_t max_count) const;
 
-  // Set `prefs::kUserGeolocationAllowed` to the value of `enabled` and log the
-  // interaction from a notification.
-  static void SetAndLogGeolocationPreferenceFromNotification(bool enabled);
-
  private:
   // Called when the preference value is changed.
   void OnPreferenceChanged();

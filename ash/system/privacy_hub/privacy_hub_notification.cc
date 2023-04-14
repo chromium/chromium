@@ -10,11 +10,12 @@
 #include "ash/public/cpp/sensor_disabled_notification_delegate.h"
 #include "ash/shell.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
+#include "ash/system/privacy_hub/privacy_hub_metrics.h"
+#include "ash/system/privacy_hub/privacy_hub_notification_controller.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "components/vector_icons/vector_icons.h"
-#include "geolocation_privacy_switch_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
@@ -98,11 +99,21 @@ PrivacyHubNotificationDescriptor::PrivacyHubNotificationDescriptor(
       message_ids_(message_ids),
       delegate_(delegate) {
   DCHECK(!message_ids.empty());
-  DCHECK(delegate);
   DCHECK(message_ids.size() < 2u || !sensors.Empty())
       << "Specify at least one sensor when providing more than one message ID";
   DCHECK_LE(button_ids.size(), 2u) << "Privacy hub notifications are not "
                                       "supposed to have more than two buttons.";
+  if (!delegate_) {
+    delegate_ = base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
+        base::BindRepeating(
+            [](SensorDisabledNotificationDelegate::SensorSet sensors) {
+              for (const auto sensor : sensors) {
+                PrivacyHubNotificationController::
+                    SetAndLogSensorPreferenceFromNotification(sensor, true);
+              }
+            },
+            sensors));
+  }
 }
 
 PrivacyHubNotificationDescriptor::PrivacyHubNotificationDescriptor(

@@ -84,17 +84,6 @@ std::vector<std::u16string> GeolocationPrivacySwitchController::GetActiveApps(
   return apps;
 }
 
-// static
-void GeolocationPrivacySwitchController::
-    SetAndLogGeolocationPreferenceFromNotification(const bool enabled) {
-  PrefService* const pref_service =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  if (pref_service) {
-    pref_service->SetBoolean(prefs::kUserGeolocationAllowed, enabled);
-    privacy_hub_metrics::LogGeolocationEnabledFromNotification(enabled);
-  }
-}
-
 void GeolocationPrivacySwitchController::OnPreferenceChanged() {
   // TODO(zauri): This is a stub code. Sync the state with
   // SimpleGeolocationProvider.

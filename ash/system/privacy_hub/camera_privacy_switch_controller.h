@@ -75,10 +75,6 @@ class ASH_EXPORT CameraPrivacySwitchController
   // Retrieves the current value of the user pref.
   CameraSWPrivacySwitchSetting GetUserSwitchPreference();
 
-  // Set `prefs::kUserCameraAllowed` to the value of `enabled` and log the
-  // interaction from a notification.
-  static void SetAndLogCameraPreferenceFromNotification(bool enabled);
-
   // This is called when the set of applications accessing the camera changes.
   // `application_added` being true means a new applications has started
   // accessing the camera. `application_added` being false means one of the

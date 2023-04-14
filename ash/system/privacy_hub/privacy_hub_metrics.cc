@@ -8,34 +8,44 @@
 
 namespace ash::privacy_hub_metrics {
 
-void LogMicrophoneEnabledFromSettings(bool enabled) {
-  base::UmaHistogramBoolean(kPrivacyHubMicrophoneEnabledFromSettingsHistogram,
-                            enabled);
+void LogSensorEnabledFromSettings(Sensor sensor, bool enabled) {
+  const char* histogram = nullptr;
+  switch (sensor) {
+    case Sensor::kCamera: {
+      histogram = kPrivacyHubCameraEnabledFromSettingsHistogram;
+      break;
+    }
+    case Sensor::kMicrophone: {
+      histogram = kPrivacyHubMicrophoneEnabledFromSettingsHistogram;
+      break;
+    }
+    case Sensor::kLocation: {
+      histogram = kPrivacyHubGeolocationEnabledFromSettingsHistogram;
+      break;
+    }
+  }
+  CHECK(histogram);
+  base::UmaHistogramBoolean(histogram, enabled);
 }
 
-void LogMicrophoneEnabledFromNotification(bool enabled) {
-  base::UmaHistogramBoolean(
-      kPrivacyHubMicrophoneEnabledFromNotificationHistogram, enabled);
-}
-
-void LogCameraEnabledFromSettings(bool enabled) {
-  base::UmaHistogramBoolean(kPrivacyHubCameraEnabledFromSettingsHistogram,
-                            enabled);
-}
-
-void LogCameraEnabledFromNotification(bool enabled) {
-  base::UmaHistogramBoolean(kPrivacyHubCameraEnabledFromNotificationHistogram,
-                            enabled);
-}
-
-void LogGeolocationEnabledFromSettings(bool enabled) {
-  base::UmaHistogramBoolean(kPrivacyHubGeolocationEnabledFromSettingsHistogram,
-                            enabled);
-}
-
-void LogGeolocationEnabledFromNotification(bool enabled) {
-  base::UmaHistogramBoolean(
-      kPrivacyHubGeolocationEnabledFromNotificationHistogram, enabled);
+void LogSensorEnabledFromNotification(Sensor sensor, bool enabled) {
+  const char* histogram = nullptr;
+  switch (sensor) {
+    case Sensor::kCamera: {
+      histogram = kPrivacyHubCameraEnabledFromNotificationHistogram;
+      break;
+    }
+    case Sensor::kMicrophone: {
+      histogram = kPrivacyHubMicrophoneEnabledFromNotificationHistogram;
+      break;
+    }
+    case Sensor::kLocation: {
+      histogram = kPrivacyHubGeolocationEnabledFromNotificationHistogram;
+      break;
+    }
+  }
+  CHECK(histogram);
+  base::UmaHistogramBoolean(histogram, enabled);
 }
 
 void LogPrivacyHubOpenedFromNotification() {

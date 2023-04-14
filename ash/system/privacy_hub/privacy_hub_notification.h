@@ -49,18 +49,21 @@ class ASH_EXPORT PrivacyHubNotificationClickDelegate
 
 // Represents the information displayed in a `PrivacyHubNotification`.
 class ASH_EXPORT PrivacyHubNotificationDescriptor {
-  // `message_ids` must not be empty` and `delegate` must not be null.
+  // `message_ids` must not be empty`.
   // `message_ids.at(0)` should be the generic notification message with no
   // application names.
   // `message_ids.at(n)` should be the notification message with `n` application
   // names.
+  // `delegate` specifies the callback to be used when the button is clicked.
+  // if it is null (default), an action that sets all privacy toggles
+  // corresponding `sensors` to true.
  public:
   PrivacyHubNotificationDescriptor(
       const SensorDisabledNotificationDelegate::SensorSet& sensors,
       int title_id,
       const std::vector<int>& button_ids,
       const std::vector<int>& message_ids,
-      scoped_refptr<PrivacyHubNotificationClickDelegate> delegate);
+      scoped_refptr<PrivacyHubNotificationClickDelegate> delegate = nullptr);
   PrivacyHubNotificationDescriptor(
       const PrivacyHubNotificationDescriptor& other);
   PrivacyHubNotificationDescriptor& operator=(
