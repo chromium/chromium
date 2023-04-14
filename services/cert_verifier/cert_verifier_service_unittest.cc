@@ -30,6 +30,7 @@
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/crl_set.h"
 #include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util.h"
 #include "net/log/net_log.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
@@ -83,6 +84,7 @@ class DummyCertVerifier : public net::CertVerifierWithUpdatableProc {
 
     if (sync_response_params_.find(params) != sync_response_params_.end()) {
       verify_result->cert_status = kExpectedCertStatus;
+      verify_result->verified_cert = params.certificate();
       return kExpectedNetError;
     }
 
@@ -120,6 +122,7 @@ class DummyCertVerifier : public net::CertVerifierWithUpdatableProc {
     dummy_requests_.erase(it);
     req->cancel_cb.Reset();
     req->verify_result->cert_status = kExpectedCertStatus;
+    req->verify_result->verified_cert = params.certificate();
     std::move(req->callback).Run(kExpectedNetError);
   }
 
@@ -313,6 +316,54 @@ TEST_F(CertVerifierServiceTest, TestSingleSyncCompletion) {
 
 TEST_F(CertVerifierServiceTest, TestMultipleSimultaneousSyncCompletions) {
   TestCompletions(5, true);
+}
+
+TEST_F(CertVerifierServiceTest, TestInvalidIntermediate) {
+  auto leaf = GetTestCert();
+
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
+  intermediates.push_back(
+      net::x509_util::CreateCryptoBuffer(base::StringPiece("F")));
+
+  scoped_refptr<net::X509Certificate> test_cert =
+      net::X509Certificate::CreateFromBuffer(bssl::UpRef(leaf->cert_buffer()),
+                                             std::move(intermediates));
+  ASSERT_TRUE(test_cert);
+
+  net::CertVerifier::RequestParams dummy_params(test_cert, "example.com", 0,
+                                                /*ocsp_response=*/std::string(),
+                                                /*sct_list=*/std::string());
+
+  // Perform a verification request using the Remote<CertVerifierService>,
+  // which forwards to the CertVerifierServiceImpl.
+  DummyCVServiceRequest cv_service_req;
+  mojo::Receiver<mojom::CertVerifierRequest> cv_request_receiver(
+      &cv_service_req);
+
+  cv_service_remote()->Verify(
+      dummy_params,
+      static_cast<uint32_t>(net::NetLogSourceType::CERT_VERIFIER_JOB),
+      /*netlog_source_id=*/1234, base::TimeTicks::Now(),
+      cv_request_receiver.BindNewPipeAndPassRemote());
+
+  // Handle async Mojo request.
+  cv_service_remote().FlushForTesting();
+
+  ASSERT_FALSE(cv_service_req.is_completed);
+  ASSERT_FALSE(cv_service_req.result.verified_cert);
+  dummy_cv()->RespondToRequest(dummy_params);
+
+  // FlushForTesting() so the CertVerifierServiceImpl Mojo response is
+  // handled.
+  cv_service_remote().FlushForTesting();
+
+  // Request should have completed (should not be rejected at deserialization).
+  ASSERT_TRUE(cv_service_req.is_completed);
+  EXPECT_EQ(cv_service_req.net_error, kExpectedNetError);
+  // Check that the invalid intermediate can be successfully round-tripped.
+  ASSERT_TRUE(cv_service_req.result.verified_cert);
+  EXPECT_TRUE(test_cert->EqualsIncludingChain(
+      cv_service_req.result.verified_cert.get()));
 }
 
 TEST_F(CertVerifierServiceTest, TestRequestDisconnectionCancelsCVRequest) {

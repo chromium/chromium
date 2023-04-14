@@ -23,6 +23,7 @@
 #include "crypto/nss_util.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/cert/scoped_nss_types.h"
+#include "net/cert/x509_util.h"
 #include "net/cert/x509_util_nss.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_platform_key_nss.h"
@@ -119,12 +120,8 @@ void ClientCertStoreNSS::FilterCertsOnWorkerThread(
     std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
     intermediates.reserve(nss_intermediates.size());
     for (const ScopedCERTCertificate& nss_intermediate : nss_intermediates) {
-      bssl::UniquePtr<CRYPTO_BUFFER> intermediate_cert_handle(
-          X509Certificate::CreateCertBufferFromBytes(base::make_span(
-              nss_intermediate->derCert.data, nss_intermediate->derCert.len)));
-      if (!intermediate_cert_handle)
-        break;
-      intermediates.push_back(std::move(intermediate_cert_handle));
+      intermediates.push_back(x509_util::CreateCryptoBuffer(base::make_span(
+          nss_intermediate->derCert.data, nss_intermediate->derCert.len)));
     }
 
     // Retain a copy of the intermediates. Some deployments expect the client to

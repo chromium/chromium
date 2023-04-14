@@ -523,12 +523,6 @@ void MapPathBuilderErrorsToCertStatus(const CertPathErrors& errors,
     *cert_status |= CERT_STATUS_INVALID;
 }
 
-bssl::UniquePtr<CRYPTO_BUFFER> CreateCertBuffers(
-    const std::shared_ptr<const ParsedCertificate>& certificate) {
-  return X509Certificate::CreateCertBufferFromBytes(
-      certificate->der_cert().AsSpan());
-}
-
 // Creates a X509Certificate (chain) to return as the verified result.
 //
 //  * |target_cert|: The original X509Certificate that was passed in to
@@ -540,8 +534,9 @@ scoped_refptr<X509Certificate> CreateVerifiedCertChain(
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
 
   // Skip the first certificate in the path as that is the target certificate
-  for (size_t i = 1; i < path.certs.size(); ++i)
-    intermediates.push_back(CreateCertBuffers(path.certs[i]));
+  for (size_t i = 1; i < path.certs.size(); ++i) {
+    intermediates.push_back(bssl::UpRef(path.certs[i]->cert_buffer()));
+  }
 
   scoped_refptr<X509Certificate> result = X509Certificate::CreateFromBuffer(
       bssl::UpRef(target_cert->cert_buffer()), std::move(intermediates));
