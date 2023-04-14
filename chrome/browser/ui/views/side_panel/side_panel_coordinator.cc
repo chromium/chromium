@@ -383,6 +383,11 @@ bool SidePanelCoordinator::IsSidePanelEntryShowing(
 void SidePanelCoordinator::Show(
     SidePanelEntry* entry,
     absl::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) {
+  // Side panel is not supported for non-normal browsers.
+  if (!browser_view_->browser()->is_type_normal()) {
+    return;
+  }
+
   if (!entry) {
     return;
   }
