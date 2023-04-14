@@ -713,8 +713,7 @@ public class MediaDrmBridge {
      * @return the key request.
      */
     private MediaDrm.KeyRequest getKeyRequest(SessionId sessionId, byte[] data, String mime,
-            int keyType, HashMap<String, String> optionalParameters)
-            throws android.media.NotProvisionedException {
+            int keyType, HashMap<String, String> optionalParameters) {
         assert mMediaDrm != null;
         assert mMediaCryptoSession != null;
         assert !mProvisioningPending;
@@ -730,6 +729,12 @@ public class MediaDrmBridge {
                     keyType == MediaDrm.KEY_TYPE_RELEASE ? sessionId.keySetId() : sessionId.drmId();
             assert scopeId != null;
             request = mMediaDrm.getKeyRequest(scopeId, data, mime, keyType, optionalParameters);
+        } catch (android.media.NotProvisionedException e) {
+            Log.e(TAG,
+                    "The origin needs re-provision. Unprovision the origin so that the next "
+                            + "MediaDrmBridge creation can trigger the provision flow.",
+                    e);
+            unprovision();
         } catch (java.lang.IllegalStateException e) {
             // We've seen both MediaDrmStateException and MediaDrmResetException happening.
             // Since both are IllegalStateExceptions, so they will be handled here.
@@ -785,40 +790,38 @@ public class MediaDrmBridge {
         assert mMediaCryptoSession != null;
         assert !mProvisioningPending;
 
-        boolean newSessionOpened = false;
-        SessionId sessionId = null;
+        byte[] drmId = null;
         try {
-            byte[] drmId = openSession();
-            if (drmId == null) {
-                onPromiseRejected(promiseId, "Open session failed.");
-                return;
-            }
-            newSessionOpened = true;
-            assert keyType == MediaDrm.KEY_TYPE_STREAMING || keyType == MediaDrm.KEY_TYPE_OFFLINE;
-            sessionId = (keyType == MediaDrm.KEY_TYPE_OFFLINE)
-                    ? SessionId.createPersistentSessionId(drmId)
-                    : SessionId.createTemporarySessionId(drmId);
-
-            MediaDrm.KeyRequest request =
-                    getKeyRequest(sessionId, initData, mime, keyType, optionalParameters);
-            if (request == null) {
-                closeSessionNoException(sessionId);
-                onPromiseRejected(promiseId, "Generate request failed.");
-                return;
-            }
-
-            // Success!
-            Log.d(TAG, "createSession(): Session (%s) created.", sessionId.toHexString());
-            onPromiseResolvedWithSession(promiseId, sessionId);
-            onSessionMessage(sessionId, request);
-            mSessionManager.put(sessionId, mime, keyType);
+            drmId = openSession();
         } catch (android.media.NotProvisionedException e) {
             Log.e(TAG, "Device not provisioned", e);
-            if (newSessionOpened) {
-                closeSessionNoException(sessionId);
-            }
             onPromiseRejected(promiseId, "Device not provisioned during createSession().");
+            return;
         }
+
+        if (drmId == null) {
+            onPromiseRejected(promiseId, "Open session failed.");
+            return;
+        }
+
+        assert keyType == MediaDrm.KEY_TYPE_STREAMING || keyType == MediaDrm.KEY_TYPE_OFFLINE;
+        SessionId sessionId = (keyType == MediaDrm.KEY_TYPE_OFFLINE)
+                ? SessionId.createPersistentSessionId(drmId)
+                : SessionId.createTemporarySessionId(drmId);
+
+        MediaDrm.KeyRequest request =
+                getKeyRequest(sessionId, initData, mime, keyType, optionalParameters);
+        if (request == null) {
+            closeSessionNoException(sessionId);
+            onPromiseRejected(promiseId, "Generate request failed.");
+            return;
+        }
+
+        // Success!
+        Log.d(TAG, "createSession(): Session (%s) created.", sessionId.toHexString());
+        onPromiseResolvedWithSession(promiseId, sessionId);
+        onSessionMessage(sessionId, request);
+        mSessionManager.put(sessionId, mime, keyType);
     }
 
     /**
@@ -959,8 +962,8 @@ public class MediaDrmBridge {
 
             return;
         } catch (android.media.NotProvisionedException e) {
-            // TODO(xhwang): Should we handle this?
             Log.e(TAG, "failed to provide key response", e);
+            unprovision();
         } catch (android.media.DeniedByServerException e) {
             Log.e(TAG, "failed to provide key response", e);
         } catch (java.lang.IllegalStateException e) {
@@ -1116,28 +1119,23 @@ public class MediaDrmBridge {
     }
 
     private void doRemoveSession(SessionId sessionId, String mimeType, long promiseId) {
-        try {
-            // Get key release request.
-            MediaDrm.KeyRequest request =
-                    getKeyRequest(sessionId, null, mimeType, MediaDrm.KEY_TYPE_RELEASE, null);
+        // Get key release request.
+        MediaDrm.KeyRequest request =
+                getKeyRequest(sessionId, null, mimeType, MediaDrm.KEY_TYPE_RELEASE, null);
 
-            if (request == null) {
-                onPromiseRejected(promiseId, "Fail to generate key release request");
-                return;
-            }
-
-            // According to EME spec:
-            // https://www.w3.org/TR/encrypted-media/#dom-mediakeysession-remove
-            // 5.5 ... run the Queue a "message" Event ...
-            // 5.6 Resolve promise
-            // Since event is queued, JS will receive event after promise is
-            // resolved. So resolve the promise before firing the event here.
-            onPromiseResolved(promiseId);
-            onSessionMessage(sessionId, request);
-        } catch (android.media.NotProvisionedException e) {
-            Log.e(TAG, "removeSession called on unprovisioned device");
-            onPromiseRejected(promiseId, "Unknown failure");
+        if (request == null) {
+            onPromiseRejected(promiseId, "Fail to generate key release request");
+            return;
         }
+
+        // According to EME spec:
+        // https://www.w3.org/TR/encrypted-media/#dom-mediakeysession-remove
+        // 5.5 ... run the Queue a "message" Event ...
+        // 5.6 Resolve promise
+        // Since event is queued, JS will receive event after promise is
+        // resolved. So resolve the promise before firing the event here.
+        onPromiseResolved(promiseId);
+        onSessionMessage(sessionId, request);
     }
 
     /**
@@ -1404,13 +1402,8 @@ public class MediaDrmBridge {
             switch (event) {
                 case MediaDrm.EVENT_KEY_REQUIRED:
                     Log.d(TAG, "MediaDrm.EVENT_KEY_REQUIRED");
-                    try {
-                        request = getKeyRequest(sessionId, data, sessionInfo.mimeType(),
-                                sessionInfo.keyType(), null);
-                    } catch (android.media.NotProvisionedException e) {
-                        Log.e(TAG, "Device not provisioned", e);
-                        return;
-                    }
+                    request = getKeyRequest(
+                            sessionId, data, sessionInfo.mimeType(), sessionInfo.keyType(), null);
                     if (request != null) {
                         onSessionMessage(sessionId, request);
                     } else {
@@ -1424,15 +1417,8 @@ public class MediaDrmBridge {
                 // (b/271451225) This event is generated during ClearKey implementation in Android.
                 case MediaDrm.EVENT_VENDOR_DEFINED:
                     Log.d(TAG, "MediaDrm.EVENT_VENDOR_DEFINED");
-                    try {
-                        request = getKeyRequest(sessionId, data, sessionInfo.mimeType(),
-                                sessionInfo.keyType(), null);
-                    } catch (android.media.NotProvisionedException e) {
-                        // Device does not need to be provisioned for Clear Key, shouldn't hit this
-                        // error.
-                        Log.e(TAG, "Device not provisioned", e);
-                        return;
-                    }
+                    request = getKeyRequest(
+                            sessionId, data, sessionInfo.mimeType(), sessionInfo.keyType(), null);
                     if (request != null) {
                         onSessionMessage(sessionId, request);
                     } else {
