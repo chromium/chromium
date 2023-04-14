@@ -15,6 +15,7 @@ import {SearchBoxElement} from 'chrome://shortcut-customization/js/search/search
 import {SearchResultRowElement} from 'chrome://shortcut-customization/js/search/search_result_row.js';
 import {setShortcutSearchHandlerForTesting} from 'chrome://shortcut-customization/js/search/shortcut_search_handler.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('searchBoxTest', function() {
@@ -121,6 +122,18 @@ suite('searchBoxTest', function() {
   test('SearchBoxLoaded', async () => {
     [searchBoxElement] = initSearchBoxElement();
     assertTrue(!!searchBoxElement);
+  });
+
+  test('Focus search input on open', async () => {
+    [searchBoxElement, searchFieldElement] = initSearchBoxElement();
+
+    waitAfterNextRender(searchBoxElement);
+    await flushTasks();
+
+    // The search input should be focused after the first render.
+    assertEquals(
+        searchFieldElement.shadowRoot?.activeElement,
+        searchFieldElement.getSearchInput());
   });
 
   test('SearchResultsPopulated', async () => {
