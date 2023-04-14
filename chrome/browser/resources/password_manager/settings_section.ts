@@ -16,6 +16,9 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+// <if expr="is_win or is_macosx">
+import {PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
+// </if>
 import {BlockedSite, BlockedSitesListChangedListener, CredentialsChangedListener, PasswordManagerImpl} from './password_manager_proxy.js';
 import {PrefToggleButtonElement} from './prefs/pref_toggle_button.js';
 import {getTemplate} from './settings_section.html.js';
@@ -29,6 +32,7 @@ export interface SettingsSectionElement {
     blockedSitesList: HTMLElement,
     passwordToggle: PrefToggleButtonElement,
     trustedVaultBanner: CrLinkRowElement,
+    managePasskeysRow: CrLinkRowElement,
   };
 }
 
@@ -67,6 +71,11 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         value: false,
       },
 
+      hasPasskeys_: {
+        type: Boolean,
+        value: false,
+      },
+
       /** The visibility state of the trusted vault banner. */
       trustedVaultBannerState_: {
         type: Object,
@@ -76,6 +85,7 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   }
 
   private blockedSites_: BlockedSite[];
+  private hasPasskeys_: boolean;
   private hasPasswordsToExport_: boolean;
   private trustedVaultBannerState_: TrustedVaultBannerState;
 
@@ -111,6 +121,12 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
         trustedVaultStateChanged);
     this.addWebUiListener(
         'trusted-vault-banner-state-changed', trustedVaultStateChanged);
+
+    // <if expr="is_win or is_macosx">
+    PasskeysBrowserProxyImpl.getInstance().hasPasskeys().then(hasPasskeys => {
+      this.hasPasskeys_ = hasPasskeys;
+    });
+    // </if>
   }
 
   override disconnectedCallback() {
@@ -213,6 +229,13 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     } else {
       this.optInForAccountStorage();
     }
+  }
+
+  private onManagePasskeysClick_() {
+    // In the future this may, e.g., open System Settings on macOS for iCloud
+    // Keychain, or open Control Panel on Windows for Hello. Currently passkey
+    // management is filled in via Chrome settings.
+    OpenWindowProxyImpl.getInstance().openUrl('chrome://settings/passkeys');
   }
 }
 

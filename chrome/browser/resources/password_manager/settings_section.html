@@ -99,6 +99,12 @@
       on-click="onAddShortcutClick_" label="$i18n{addShortcut}" hide-icon
       sub-label="$i18n{addShortcutDescription}" role-description="button">
   </cr-link-row>
+  <if expr="is_win or is_macosx">
+    <cr-link-row id="managePasskeysRow" external
+        class="cr-row settings-cr-link-row" hidden$="[[!hasPasskeys_]]"
+        on-click="onManagePasskeysClick_" label="$i18n{managePasskeysLabel}">
+    </cr-link-row>
+  </if>
 </div>
 <h3 id="blockedSitesTitle" class="page-title">$i18n{blockedSitesTitle}</h3>
 <div class="card" id="blockedSites">

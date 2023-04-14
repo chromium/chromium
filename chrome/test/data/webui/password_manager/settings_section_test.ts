@@ -17,6 +17,14 @@ import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 import {createBlockedSiteEntry, createPasswordEntry, makePasswordManagerPrefs} from './test_util.js';
 
+// clang-format off
+// <if expr="is_win or is_macosx">
+import {PasskeysBrowserProxyImpl} from 'chrome://password-manager/password_manager.js';
+
+import {TestPasskeysBrowserProxy} from './test_passkeys_browser_proxy.js';
+// </if>
+// clang-format on
+
 /**
  * Helper method that validates a that elements in the exception list match
  * the expected data.
@@ -38,6 +46,9 @@ suite('SettingsSectionTest', function() {
   let passwordManager: TestPasswordManagerProxy;
   let openWindowProxy: TestOpenWindowProxy;
   let syncProxy: TestSyncBrowserProxy;
+  // <if expr="is_win or is_macosx">
+  let passkeysProxy: TestPasskeysBrowserProxy;
+  // </if>
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -47,6 +58,10 @@ suite('SettingsSectionTest', function() {
     OpenWindowProxyImpl.setInstance(openWindowProxy);
     syncProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncProxy);
+    // <if expr="is_win or is_macosx">
+    passkeysProxy = new TestPasskeysBrowserProxy();
+    PasskeysBrowserProxyImpl.setInstance(passkeysProxy);
+    // </if>
   });
 
   test('pref value displayed in the UI', async function() {
@@ -370,4 +385,29 @@ suite('SettingsSectionTest', function() {
             !!settings.shadowRoot!.querySelector<PrefToggleButtonElement>(
                 '#accountStorageToggle'));
       });
+
+  // <if expr="is_win or is_macosx">
+  test('managePasskeysNotShownWithoutPasskeys', async function() {
+    passkeysProxy.passkeysPresent = false;
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    await passkeysProxy.whenCalled('passkeysHasPasskeys');
+    flush();
+    assertFalse(isVisible(settings.$.managePasskeysRow));
+  });
+
+  test('managePasskeysShownWhenNeeded', async function() {
+    passkeysProxy.passkeysPresent = true;
+    const settings = document.createElement('settings-section');
+    document.body.appendChild(settings);
+    await passkeysProxy.whenCalled('passkeysHasPasskeys');
+    flush();
+    const row = settings.$.managePasskeysRow;
+    assertTrue(isVisible(row));
+
+    row.click();
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals('chrome://settings/passkeys', url);
+  });
+  // </if>
 });

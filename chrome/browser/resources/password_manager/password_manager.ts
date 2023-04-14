@@ -14,6 +14,9 @@ export {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 export {AddPasswordDialogElement} from './dialogs/add_password_dialog.js';
 export {AuthTimedOutDialogElement} from './dialogs/auth_timed_out_dialog.js';
 export {EditPasswordDialogElement} from './dialogs/edit_password_dialog.js';
+// <if expr="is_win or is_macosx">
+export {PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
+// </if>
 export {PasswordDetailsCardElement} from './password_details_card.js';
 export {PasswordDetailsSectionElement} from './password_details_section.js';
 export {PasswordListItemElement} from './password_list_item.js';
