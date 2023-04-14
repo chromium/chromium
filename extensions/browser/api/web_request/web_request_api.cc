@@ -1101,11 +1101,12 @@ void ExtensionWebRequestEventRouter::RegisterRulesRegistry(
     content::BrowserContext* browser_context,
     int rules_registry_id,
     scoped_refptr<WebRequestRulesRegistry> rules_registry) {
-  RulesRegistryKey key(browser_context, rules_registry_id);
-  if (rules_registry.get())
+  RulesRegistryKey key(BrowserContextID(browser_context), rules_registry_id);
+  if (rules_registry.get()) {
     rules_registries_[key] = rules_registry;
-  else
+  } else {
     rules_registries_.erase(key);
+  }
 }
 
 int ExtensionWebRequestEventRouter::OnBeforeRequest(
@@ -1930,13 +1931,6 @@ ExtensionWebRequestEventRouter::RemoveMatchingListener(
                                    : std::move(removed_listeners.front());
 }
 
-// static
-ExtensionWebRequestEventRouter::BrowserContextID
-ExtensionWebRequestEventRouter::GetBrowserContextID(
-    const content::BrowserContext* browser_context) {
-  return reinterpret_cast<BrowserContextID>(browser_context);
-}
-
 void ExtensionWebRequestEventRouter::RemoveLazyListener(
     content::BrowserContext* original_context,
     const ExtensionId& extension_id,
@@ -2709,7 +2703,8 @@ bool ExtensionWebRequestEventRouter::ProcessDeclarativeRules(
                               ? request->web_view_rules_registry_id
                               : RulesRegistryService::kDefaultRulesRegistryID;
 
-  RulesRegistryKey rules_key(browser_context, rules_registry_id);
+  RulesRegistryKey rules_key(BrowserContextID(browser_context),
+                             rules_registry_id);
   // If this check fails, check that the active stages are up to date in
   // extensions/browser/api/declarative_webrequest/request_stage.h .
   DCHECK(request_stage & kActiveStages);
@@ -2731,8 +2726,8 @@ bool ExtensionWebRequestEventRouter::ProcessDeclarativeRules(
 
   content::BrowserContext* cross_browser_context =
       GetCrossBrowserContext(browser_context);
-  RulesRegistryKey cross_browser_context_rules_key(cross_browser_context,
-                                                   rules_registry_id);
+  RulesRegistryKey cross_browser_context_rules_key(
+      BrowserContextID(cross_browser_context), rules_registry_id);
   if (cross_browser_context) {
     auto it = rules_registries_.find(cross_browser_context_rules_key);
     if (it != rules_registries_.end())
