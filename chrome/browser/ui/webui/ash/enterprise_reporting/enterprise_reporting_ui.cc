@@ -36,4 +36,9 @@ EnterpriseReportingUI::EnterpriseReportingUI(content::WebUI* web_ui)
 
 EnterpriseReportingUI::~EnterpriseReportingUI() = default;
 
+bool EnterpriseReportingUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return base::FeatureList::IsEnabled(ash::features::kEnterpriseReportingUI);
+}
+
 }  // namespace ash::reporting

@@ -974,10 +974,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     }
     return &NewComponentUI<ash::FaceMLAppUI, ash::ChromeFaceMLUserProvider>;
   }
-  if (url.host_piece() == chrome::kChromeUIEnterpriseReportingHost &&
-      base::FeatureList::IsEnabled(ash::features::kEnterpriseReportingUI)) {
-    return &NewWebUI<ash::reporting::EnterpriseReportingUI>;
-  }
   if (url.host_piece() == ash::file_manager::kChromeUIFileManagerHost) {
     return &NewComponentUI<ash::file_manager::FileManagerUI,
                            ChromeFileManagerUIDelegate>;
