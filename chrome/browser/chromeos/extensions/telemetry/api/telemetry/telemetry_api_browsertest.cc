@@ -1390,6 +1390,29 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionTelemetryApiWithoutAdditionalPermissionsBrowserTest,
+    GetUsbBusInfoWithoutPermission) {
+  // Configure FakeProbeService.
+  {
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getUsbBusInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getUsbBusInfo(),
+            'Error: Unauthorized access to chrome.os.telemetry.' +
+            'getUsbBusInfo. Extension doesn\'t have the permission.'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TelemetryExtensionTelemetryApiWithoutAdditionalPermissionsBrowserTest,
     GetVpdInfoWithoutSerialNumberPermission) {
   // Configure FakeProbeService.
   {
