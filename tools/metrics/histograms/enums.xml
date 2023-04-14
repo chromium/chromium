@@ -17742,6 +17742,7 @@ Called by update_net_error_codes.py.-->
   <int value="-802" label="DNS_SERVER_FAILED"/>
   <int value="-801" label="DNS_SERVER_REQUIRES_TCP"/>
   <int value="-800" label="DNS_MALFORMED_RESPONSE"/>
+  <int value="-716" label="CERT_VERIFIER_CHANGED"/>
   <int value="-715" label="CHANNEL_ID_IMPORT_FAILED"/>
   <int value="-714" label="CERT_DATABASE_CHANGED"/>
   <int value="-713" label="SELF_SIGNED_CERT_GENERATION_FAILED"/>
@@ -17991,6 +17992,7 @@ Called by update_net_error_codes.py.-->
   <int value="-1" label="IO_PENDING"/>
   <int value="100" label="100: Continue"/>
   <int value="101" label="101: Switching Protocols"/>
+  <int value="103" label="103: Early Hints"/>
   <int value="200" label="200: OK"/>
   <int value="201" label="201: Created"/>
   <int value="202" label="202: Accepted"/>
@@ -18006,6 +18008,7 @@ Called by update_net_error_codes.py.-->
   <int value="305" label="305: Use Proxy"/>
   <int value="306" label="306: (Unused)"/>
   <int value="307" label="307: Temporary Redirect"/>
+  <int value="308" label="308: Permanent Redirect"/>
   <int value="400" label="400: Bad Request"/>
   <int value="401" label="401: Unauthorized"/>
   <int value="402" label="402: Payment Required"/>
@@ -18025,6 +18028,7 @@ Called by update_net_error_codes.py.-->
   <int value="416" label="416: Requested Range Not Satisfiable"/>
   <int value="417" label="417: Expectation Failed"/>
   <int value="418" label="418: I'm a teapot"/>
+  <int value="422" label="422: Unprocessable Content"/>
   <int value="425" label="425: Too Early Experimental"/>
   <int value="429" label="429: Too Many Requests"/>
   <int value="500" label="500: Internal Server Error"/>
@@ -50846,7 +50850,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 <enum name="HttpResponseCode">
   <int value="100" label="100: Continue"/>
   <int value="101" label="101: Switching Protocols"/>
-  <int value="102" label="102: Processing"/>
   <int value="103" label="103: Early Hints"/>
   <int value="200" label="200: OK"/>
   <int value="201" label="201: Created"/>
@@ -50863,6 +50866,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="305" label="305: Use Proxy"/>
   <int value="306" label="306: (Unused)"/>
   <int value="307" label="307: Temporary Redirect"/>
+  <int value="308" label="308: Permanent Redirect"/>
   <int value="400" label="400: Bad Request"/>
   <int value="401" label="401: Unauthorized"/>
   <int value="402" label="402: Payment Required"/>
@@ -50881,6 +50885,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="415" label="415: Unsupported Media Type"/>
   <int value="416" label="416: Requested Range Not Satisfiable"/>
   <int value="417" label="417: Expectation Failed"/>
+  <int value="418" label="418: I'm a teapot"/>
+  <int value="422" label="422: Unprocessable Content"/>
+  <int value="425" label="425: Too Early Experimental"/>
   <int value="429" label="429: Too Many Requests"/>
   <int value="500" label="500: Internal Server Error"/>
   <int value="501" label="501: Not Implemented"/>
@@ -71515,6 +71522,7 @@ Called by update_net_error_codes.py.-->
   <int value="713" label="SELF_SIGNED_CERT_GENERATION_FAILED"/>
   <int value="714" label="CERT_DATABASE_CHANGED"/>
   <int value="715" label="CHANNEL_ID_IMPORT_FAILED"/>
+  <int value="716" label="CERT_VERIFIER_CHANGED"/>
   <int value="800" label="DNS_MALFORMED_RESPONSE"/>
   <int value="801" label="DNS_SERVER_REQUIRES_TCP"/>
   <int value="802" label="DNS_SERVER_FAILED"/>
