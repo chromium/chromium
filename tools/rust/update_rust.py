@@ -33,7 +33,7 @@ sys.path.append(
 # These fields are written by //tools/clang/scripts/upload_revision.py, and
 # should not be changed manually.
 RUST_REVISION = 'ac4379fea9e83465d814bb05005689f49bd2141e'
-RUST_SUB_REVISION = 5
+RUST_SUB_REVISION = 7
 
 # Trunk on 2022-10-15.
 #
@@ -65,7 +65,7 @@ CRUBIT_SUB_REVISION = 1
 # TODO(lukasza): Include CRUBIT_REVISION and CRUBIT_SUB_REVISION once we
 # include Crubit binaries in the generated package.  See also a TODO comment
 # in BuildCrubit in package_rust.py.
-FALLBACK_REVISION = 'ac4379fea9e83465d814bb05005689f49bd2141e-5-llvmorg-17-init-3874-g93a2fecc-1'
+FALLBACK_REVISION = 'ac4379fea9e83465d814bb05005689f49bd2141e-7-llvmorg-17-init-3874-g93a2fecc-1'
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with

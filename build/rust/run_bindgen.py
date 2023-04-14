@@ -54,7 +54,6 @@ def main():
 
   # Bindgen settings we use for Chromium
   genargs.append('--no-layout-tests')
-  genargs.append('--size_t-is-usize')
   # TODO(danakj): We need to point bindgen to
   # //third_party/rust-toolchain/bin/rustfmt.
   genargs.append('--no-rustfmt-bindings')

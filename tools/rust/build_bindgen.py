@@ -28,8 +28,8 @@ from build import (CheckoutGitRepo, DownloadAndUnpack, LLVM_BUILD_TOOLS_DIR,
                    MaybeDownloadHostGcc, RunCommand)
 from update import (RmTree)
 
-# The git hash to use. This is the `v0.60.0` tag.
-BINDGEN_GIT_VERSION = '355181134094202e0caae60c1fbf145d8e6ca84b'
+# The git hash to use.
+BINDGEN_GIT_VERSION = '078fb77e82507c1b96f571a18700a03870c96fdd'
 BINDGEN_GIT_REPO = ('https://chromium.googlesource.com/external/' +
                     'github.com/rust-lang/rust-bindgen')
 
@@ -221,7 +221,7 @@ def main():
         f'--target-dir={build_dir}',
         f'--target={RustTargetTriple(args.build_mac_arm)}',
         f'--no-default-features',
-        f'--features=clap,logging',
+        f'--features=logging',
         '--release',
         '--bin',
         'bindgen',
