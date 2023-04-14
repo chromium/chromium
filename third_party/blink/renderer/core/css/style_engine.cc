@@ -2254,7 +2254,6 @@ const unsigned kRuleSetFlagsAll = ~0u;
 unsigned GetRuleSetFlags(const HeapHashSet<Member<RuleSet>> rule_sets) {
   unsigned flags = 0;
   for (auto& rule_set : rule_sets) {
-    rule_set->CompactRulesIfNeeded();
     if (!rule_set->KeyframesRules().empty()) {
       flags |= kKeyframesRules;
     }
