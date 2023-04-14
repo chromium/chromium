@@ -442,7 +442,6 @@ BASE_DECLARE_FEATURE(kNotificationImageDrag);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kNotificationScrollBar);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kNotificationsInContextMenu);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kNotificationsRefresh);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kOnDeviceGrammarCheck);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kOnDeviceSpeechRecognition);
@@ -819,7 +818,6 @@ bool IsNotificationExperimentalShortTimeoutsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationImageDragEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationScrollBarEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationsInContextMenuEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationsRefreshEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOAuthIppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeChoobeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeDriveOfflineEnabled();

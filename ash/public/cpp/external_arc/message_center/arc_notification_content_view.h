@@ -67,8 +67,6 @@ class ArcNotificationContentView
 
   bool slide_in_progress() const { return slide_in_progress_; }
 
-  int notification_width() const { return notification_width_; }
-
  private:
   friend class ArcNotificationViewTest;
   friend class ArcNotificationContentViewTest;
@@ -208,8 +206,6 @@ class ArcNotificationContentView
   absl::optional<gfx::Insets> mask_insets_;
 
   std::unique_ptr<ui::LayerTreeOwner> surface_copy_;
-
-  const int notification_width_;
 };
 
 }  // namespace ash

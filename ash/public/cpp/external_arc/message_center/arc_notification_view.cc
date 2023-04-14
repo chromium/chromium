@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_content_view.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_item.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
@@ -69,17 +68,12 @@ ArcNotificationView::ArcNotificationView(
   AddChildView(content_view_);
 
   if (content_view_->background()) {
-    if (ash::features::IsNotificationsRefreshEnabled()) {
-      background()->SetNativeControlColor(
-          AshColorProvider::Get()->GetBaseLayerColor(
-              AshColorProvider::BaseLayerType::kTransparent80));
-    } else {
-      background()->SetNativeControlColor(
-          content_view_->background()->get_color());
-    }
+    background()->SetNativeControlColor(
+        AshColorProvider::Get()->GetBaseLayerColor(
+            AshColorProvider::BaseLayerType::kTransparent80));
   }
 
-  if (features::IsNotificationsRefreshEnabled() && shown_in_popup) {
+  if (shown_in_popup) {
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
     layer()->SetRoundedCornerRadius(
@@ -125,16 +119,12 @@ void ArcNotificationView::UpdateCornerRadius(int top_radius,
 }
 
 void ArcNotificationView::UpdateBackgroundPainter() {
-  if (features::IsNotificationsRefreshEnabled()) {
-    SetBackground(views::CreateSolidBackground(
-        shown_in_popup_ ? AshColorProvider::Get()->GetBaseLayerColor(
-                              AshColorProvider::BaseLayerType::kTransparent80)
-                        : AshColorProvider::Get()->GetControlsLayerColor(
-                              AshColorProvider::ControlsLayerType::
-                                  kControlBackgroundColorInactive)));
-  } else {
-    MessageView::UpdateBackgroundPainter();
-  }
+  SetBackground(views::CreateSolidBackground(
+      shown_in_popup_ ? AshColorProvider::Get()->GetBaseLayerColor(
+                            AshColorProvider::BaseLayerType::kTransparent80)
+                      : AshColorProvider::Get()->GetControlsLayerColor(
+                            AshColorProvider::ControlsLayerType::
+                                kControlBackgroundColorInactive)));
 }
 
 void ArcNotificationView::UpdateControlButtonsVisibility() {
@@ -206,15 +196,9 @@ void ArcNotificationView::OnThemeChanged() {
   message_center::MessageView::OnThemeChanged();
 
   // TODO(yhanada): Migrate to views::FocusRing to support rounded-corner ring.
-  if (ash::features::IsNotificationsRefreshEnabled()) {
-    focus_painter_ = views::Painter::CreateSolidFocusPainter(
-        GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused), 2,
-        gfx::InsetsF(3));
-  } else {
-    focus_painter_ = views::Painter::CreateSolidFocusPainter(
-        GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused),
-        gfx::Insets::TLBR(0, 1, 3, 2));
-  }
+  focus_painter_ = views::Painter::CreateSolidFocusPainter(
+      GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused), 2,
+      gfx::InsetsF(3));
 }
 
 void ArcNotificationView::OnContainerAnimationEnded() {
@@ -233,7 +217,7 @@ void ArcNotificationView::OnSlideChanged(bool in_progress) {
 
 gfx::Size ArcNotificationView::CalculatePreferredSize() const {
   const gfx::Insets insets = GetInsets();
-  const int contents_width = content_view_->notification_width();
+  const int contents_width = kNotificationInMessageCenterWidth;
   const int contents_height = content_view_->GetHeightForWidth(contents_width);
   return gfx::Size(contents_width + insets.width(),
                    contents_height + insets.height());

@@ -1521,11 +1521,6 @@ BASE_FEATURE(kNotificationsInContextMenu,
              "NotificationsInContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables new notifications UI and grouped notifications.
-BASE_FEATURE(kNotificationsRefresh,
-             "NotificationsRefresh",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to enable on-device grammar check service.
 BASE_FEATURE(kOnDeviceGrammarCheck,
              "OnDeviceGrammarCheck",
@@ -3046,10 +3041,6 @@ bool IsNotificationScrollBarEnabled() {
 
 bool IsNotificationsInContextMenuEnabled() {
   return base::FeatureList::IsEnabled(kNotificationsInContextMenu);
-}
-
-bool IsNotificationsRefreshEnabled() {
-  return base::FeatureList::IsEnabled(kNotificationsRefresh);
 }
 
 bool IsOobeChromeVoxHintEnabled() {

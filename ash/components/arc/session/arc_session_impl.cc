@@ -464,8 +464,8 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
           arc::kKeyboardShortcutHelperIntegrationFeature);
   params.lcd_density = lcd_density_;
   params.num_cores_disabled = num_cores_disabled;
-  params.enable_notifications_refresh =
-      ash::features::IsNotificationsRefreshEnabled();
+  // TODO(b/278121256): Remove pre-NotificationsRefresh code from ARC.
+  params.enable_notifications_refresh = true;
   params.enable_tts_caching = true;
   params.enable_consumer_auto_update_toggle = base::FeatureList::IsEnabled(
       ash::features::kConsumerAutoUpdateToggleAllowed);
