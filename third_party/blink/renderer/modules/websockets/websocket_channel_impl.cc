@@ -94,17 +94,6 @@ enum WebSocketOpCode {
   kOpCodeBinary = 0x2,
 };
 
-// When enabled, a page can be aggressively throttled even if it uses a
-// WebSocket. Aggressive throttling does not affect the execution of WebSocket
-// event handlers, so there is little reason to disable it on pages using a
-// WebSocket.
-//
-// TODO(crbug.com/1121725): Cleanup this feature in June 2021, when it becomes
-// enabled by default on Stable.
-BASE_FEATURE(kAllowAggressiveThrottlingWithWebSocket,
-             "AllowAggressiveThrottlingWithWebSocket",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace
 
 void WebSocketChannelImpl::MessageDataDeleter::operator()(char* p) const {
@@ -290,10 +279,7 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
   if (auto* scheduler = execution_context_->GetScheduler()) {
     feature_handle_for_scheduler_ = scheduler->RegisterFeature(
         SchedulingPolicy::Feature::kWebSocket,
-        base::FeatureList::IsEnabled(kAllowAggressiveThrottlingWithWebSocket)
-            ? SchedulingPolicy{SchedulingPolicy::DisableBackForwardCache()}
-            : SchedulingPolicy{SchedulingPolicy::DisableAggressiveThrottling(),
-                               SchedulingPolicy::DisableBackForwardCache()});
+        SchedulingPolicy{SchedulingPolicy::DisableBackForwardCache()});
   }
 
   if (MixedContentChecker::IsMixedContent(
