@@ -13,9 +13,13 @@
     --cr-icon-image: url(icons/image.svg);
     --cr-icon-size: 12px;
     height: 12px;
-    margin-inline-end: 8px;
+    margin-inline-end: 0;
     margin-inline-start: 0;
     width: 12px;
+  }
+
+  :host-context([chrome-refresh-2023]) #imageIcon {
+    --cr-icon-color: currentColor;
   }
 
   #setClassicChromeButton {
@@ -39,8 +43,8 @@
     label-description="$i18n{currentTheme}">
 </customize-chrome-hover-button>
 <cr-button id="editThemeButton" on-click="onEditThemeClicked_"
-    class="action-button">
-  <div id="imageIcon" class="cr-icon"></div>
+    class$="[[themeButtonClass_]]">
+  <div id="imageIcon" class="cr-icon" slot="prefix-icon"></div>
   $i18n{changeTheme}
 </cr-button>
 <customize-chrome-colors id="chromeColors"

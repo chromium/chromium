@@ -39,6 +39,7 @@ export class AppearanceElement extends PolymerElement {
   static get properties() {
     return {
       theme_: Object,
+      themeButtonClass_: String,
 
       thirdPartyThemeId_: {
         type: String,
@@ -71,6 +72,7 @@ export class AppearanceElement extends PolymerElement {
   }
 
   private theme_: Theme|undefined = undefined;
+  private themeButtonClass_: string;
   private thirdPartyThemeId_: string|null = null;
   private thirdPartyThemeName_: string|null = null;
   private showClassicChromeButton_: boolean;
@@ -90,6 +92,10 @@ export class AppearanceElement extends PolymerElement {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.themeButtonClass_ =
+        document.documentElement.hasAttribute('chrome-refresh-2023') ?
+        'floating-button' :
+        'action-button';
     this.setThemeListenerId_ =
         this.callbackRouter_.setTheme.addListener((theme: Theme) => {
           this.theme_ = theme;
