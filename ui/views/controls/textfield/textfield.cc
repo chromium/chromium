@@ -54,8 +54,6 @@
 #include "ui/gfx/selection_bound.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/animation/ink_drop.h"
-#include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/focusable_border.h"
@@ -243,17 +241,6 @@ Textfield::Textfield()
                                                 GetCornerRadius());
   FocusRing::Install(this);
   FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
-
-  if (::features::IsChromeRefresh2023()) {
-    InkDrop::Install(this, std::make_unique<views::InkDropHost>(this));
-    InkDrop::Get(this)->SetMode(InkDropHost::InkDropMode::ON);
-    InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
-        [](Textfield* host) {
-          return host->GetColorProvider()->GetColor(
-              ui::kColorTextfieldOutlineHover);
-        },
-        this));
-  }
 
 #if !BUILDFLAG(IS_MAC)
   // Do not map accelerators on Mac. E.g. They might not reflect custom

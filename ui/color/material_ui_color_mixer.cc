@@ -78,7 +78,6 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorTextfieldForegroundDisabled] = {kColorSysStateDisabled};
   mixer[kColorTextfieldForegroundPlaceholder] = {kColorSysOnSurfaceSubtle};
   mixer[kColorTextfieldOutline] = {kColorSysNeutralOutline};
-  mixer[kColorTextfieldOutlineHover] = {kColorSysStateHoverOnSubtle};
   mixer[kColorTextfieldDisabledOutline] = {SK_ColorTRANSPARENT};
   mixer[kColorTextfieldInvalidOutline] = {
       kColorTextfieldForegroundPlaceholderInvalid};

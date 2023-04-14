@@ -398,7 +398,6 @@
   E_CPONLY(kColorTextfieldSelectionBackground) \
   E_CPONLY(kColorTextfieldSelectionForeground) \
   E_CPONLY(kColorTextfieldOutline) \
-  E_CPONLY(kColorTextfieldOutlineHover) \
   E_CPONLY(kColorTextfieldDisabledOutline) \
   E_CPONLY(kColorTextfieldInvalidOutline) \
   E_CPONLY(kColorThrobber) \
