@@ -7,7 +7,13 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {pageVisibility, Router, routes, SettingsMenuElement} from 'chrome://settings/settings.js';
+// <if expr="_google_chrome">
+import {loadTimeData} from 'chrome://settings/settings.js';
+// </if>
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
+// <if expr="_google_chrome">
+import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+// </if>
 
 // clang-format on
 
@@ -48,6 +54,9 @@ suite('SettingsMenuReset', function() {
   let settingsMenu: SettingsMenuElement;
 
   setup(function() {
+    // <if expr="_google_chrome">
+    loadTimeData.overrideValues({showGetTheMostOutOfChromeSection: true});
+    // </if>
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     Router.getInstance().navigateTo(routes.RESET, undefined);
     settingsMenu = document.createElement('settings-menu');
@@ -88,6 +97,19 @@ suite('SettingsMenuReset', function() {
     // BASIC has no sub page selected.
     assertFalse(!!selector.selected);
   });
+
+  // <if expr="_google_chrome">
+  test('navigateToGetMostChrome', function() {
+    Router.getInstance().navigateTo(routes.GET_MOST_CHROME, undefined);
+    flush();
+
+    // GET_MOST_CHROME should select the 'About Chrome' entry.
+    const selector = settingsMenu.$.menu;
+    assertTrue(!!selector.selected);
+    const path = new window.URL(selector.selected.toString()).pathname;
+    assertEquals('/help', path);
+  });
+  // </if>
 
   test('pageVisibility', function() {
     function assertPagesHidden(expectedHidden: boolean) {

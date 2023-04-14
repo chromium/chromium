@@ -56,6 +56,18 @@
     <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_DESCRIPTION" desc="Explanatory text for the link to the 'Get the most out of Chrome' page.">
       This guide helps you understand your choices, so that Chrome works the way you want to
     </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_INTRO" desc="Introduction to the 'Get the most out of Chrome' page.">
+      This guide helps you understand important choices you have as you use Chrome. And it helps you make those choices, so that Chrome works the way you want it to.
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_MORE_THAN_A_BROWSER" desc="Title of the 'More than a browser' section of the 'Get the most out of Chrome' page.">
+      More than a browser
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_IN_CHROME" desc="Title of the 'Your data in Chrome' section of the 'Get the most out of Chrome' page.">
+      Your data in Chrome
+    </message>
+    <message name="IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES" desc="Title of the 'Beyond cookies' section of the 'Get the most out of Chrome' page.">
+      Beyond cookies
+    </message>
   </if>
   <if expr="is_macosx">
     <message name="IDS_ABOUT_CHROME_AUTOUPDATE_ALL" desc="The 'Automatically update Chrome for all users.' button in the About window.  Mac-only.">

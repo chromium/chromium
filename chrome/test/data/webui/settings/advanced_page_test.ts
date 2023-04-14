@@ -5,11 +5,11 @@
 /** @fileoverview Suite of tests for the Settings advanced page. */
 
 // clang-format off
-// <if expr="_google_chrome">
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-// </if>
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrSettingsPrefs, SettingsBasicPageElement, SettingsSectionElement} from 'chrome://settings/settings.js';
+// <if expr="_google_chrome">
+import {loadTimeData} from 'chrome://settings/settings.js';
+// </if>
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {getPage, getSection} from './settings_page_test_util.js';

@@ -81,6 +81,16 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
       }
     }
 
+    // <if expr="_google_chrome">
+    if (newRoute === routes.GET_MOST_CHROME) {
+      const about =
+          this.shadowRoot!.querySelector<HTMLAnchorElement>('#about-menu');
+      assert(about);
+      this.setSelectedUrl_(about.href);
+      return;
+    }
+    // </if>
+
     // Focus the initially selected path.
     const anchors = this.shadowRoot!.querySelectorAll('a');
     for (let i = 0; i < anchors.length; ++i) {

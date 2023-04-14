@@ -383,6 +383,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
               g_browser_process->local_state()));
 #endif
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  html_source->AddBoolean(
+      "showGetTheMostOutOfChromeSection",
+      base::FeatureList::IsEnabled(features::kGetTheMostOutOfChrome));
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));
 

@@ -5,8 +5,8 @@
 import 'chrome://settings/lazy_load.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {SettingsGetMostChromePageElement} from 'chrome://settings/lazy_load.js';
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {IronCollapseElement, SettingsGetMostChromePageElement} from 'chrome://settings/lazy_load.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 /** @fileoverview Suite of tests for get_most_chrome_page. */
 suite('GetMostChromePage', function() {
@@ -20,7 +20,15 @@ suite('GetMostChromePage', function() {
   });
 
   test('Basic', function() {
-    assertTrue(!!testElement);
-    // TODO(crbug.com/143278): Expand this test as the element gets implemented.
+    const rows = testElement.shadowRoot!.querySelectorAll('cr-expand-button');
+    assertTrue(rows.length > 0);
+    rows.forEach((row) => {
+      const ironCollapse = row.nextElementSibling as IronCollapseElement;
+      assertTrue(!!ironCollapse);
+
+      assertFalse(ironCollapse.opened);
+      row.click();
+      assertTrue(ironCollapse.opened);
+    });
   });
 });

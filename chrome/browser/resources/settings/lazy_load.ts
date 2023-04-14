@@ -96,6 +96,7 @@ export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.j
 export {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 export {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 export {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
+export {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 export {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 export {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 // <if expr="not is_chromeos">

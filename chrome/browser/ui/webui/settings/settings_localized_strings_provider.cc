@@ -303,11 +303,6 @@ void AddAboutStrings(content::WebUIDataSource* html_source, Profile* profile) {
 #if BUILDFLAG(IS_MAC)
     {"aboutLearnMoreUpdating", IDS_SETTINGS_ABOUT_PAGE_LEARN_MORE_UPDATING},
 #endif
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    {"getTheMostOutOfChrome", IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME},
-    {"getTheMostOutOfChromeDescription",
-     IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_DESCRIPTION},
-#endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -349,9 +344,6 @@ void AddAboutStrings(content::WebUIDataSource* html_source, Profile* profile) {
   html_source->AddString("aboutTermsURL", chrome::kChromeUITermsURL);
   html_source->AddLocalizedString("aboutProductTos",
                                   IDS_ABOUT_TERMS_OF_SERVICE);
-  html_source->AddBoolean(
-      "showGetTheMostOutOfChromeSection",
-      base::FeatureList::IsEnabled(features::kGetTheMostOutOfChrome));
 #endif
 }
 
@@ -522,6 +514,26 @@ void AddDownloadsStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+void AddGetTheMostOutOfChromeStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"getTheMostOutOfChrome", IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME},
+      {"getTheMostOutOfChromeDescription",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_DESCRIPTION},
+      {"getTheMostOutOfChromeIntro",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_INTRO},
+      {"getTheMostOutOfChromeMoreThanABrowser",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_MORE_THAN_A_BROWSER},
+      {"getTheMostOutOfChromeYourDataInChrome",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_YOUR_DATA_IN_CHROME},
+      {"getTheMostOutOfChromeBeyondCookies",
+       IDS_SETTINGS_GET_THE_MOST_OUT_OF_CHROME_BEYOND_COOKIES},
+  };
+
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 void AddChromeCleanupStrings(content::WebUIDataSource* html_source) {
@@ -3611,6 +3623,10 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddAboutStrings(html_source, profile);
   AddAutofillStrings(html_source, profile, web_contents);
   AddAppearanceStrings(html_source, profile);
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  AddGetTheMostOutOfChromeStrings(html_source);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   AddChromeCleanupStrings(html_source);
