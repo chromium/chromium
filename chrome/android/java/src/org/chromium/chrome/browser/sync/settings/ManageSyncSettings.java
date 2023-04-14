@@ -65,8 +65,10 @@ import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.widget.ButtonCompat;
 
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Settings fragment to customize Sync options (data types, encryption). Corresponds to
@@ -136,16 +138,11 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     private PreferenceCategory mSyncingCategory;
 
     private ChromeSwitchPreference mSyncEverything;
-    private CheckBoxPreference mSyncAutofill;
-    private CheckBoxPreference mSyncBookmarks;
     private CheckBoxPreference mSyncPaymentsIntegration;
-    private CheckBoxPreference mSyncHistory;
-    private CheckBoxPreference mSyncPasswords;
-    private CheckBoxPreference mSyncReadingList;
-    private CheckBoxPreference mSyncRecentTabs;
-    private CheckBoxPreference mSyncSettings;
-    // Contains preferences for all sync data types.
-    private CheckBoxPreference[] mSyncTypePreferences;
+    // Maps {@link UserSelectableType} to the corresponding CheckBoxPreference. There is no entry
+    // for {@code mSyncPaymentsIntegration} because it does not correspond to a {@link
+    // UserSelectableType}
+    private Map<Integer, CheckBoxPreference> mSyncTypePreferencesMap = new HashMap<>();
 
     private Preference mGoogleActivityControls;
     private Preference mSyncEncryption;
@@ -185,16 +182,6 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         mSyncEverything = (ChromeSwitchPreference) findPreference(PREF_SYNC_EVERYTHING);
         mSyncEverything.setOnPreferenceChangeListener(this);
 
-        mSyncAutofill = (CheckBoxPreference) findPreference(PREF_SYNC_AUTOFILL);
-        mSyncBookmarks = (CheckBoxPreference) findPreference(PREF_SYNC_BOOKMARKS);
-        mSyncPaymentsIntegration =
-                (CheckBoxPreference) findPreference(PREF_SYNC_PAYMENTS_INTEGRATION);
-        mSyncHistory = (CheckBoxPreference) findPreference(PREF_SYNC_HISTORY);
-        mSyncPasswords = (CheckBoxPreference) findPreference(PREF_SYNC_PASSWORDS);
-        mSyncReadingList = (CheckBoxPreference) findPreference(PREF_SYNC_READING_LIST);
-        mSyncRecentTabs = (CheckBoxPreference) findPreference(PREF_SYNC_RECENT_TABS);
-        mSyncSettings = (CheckBoxPreference) findPreference(PREF_SYNC_SETTINGS);
-
         Preference turnOffSync = findPreference(PREF_TURN_OFF_SYNC);
 
         Profile profile = Profile.getLastUsedRegularProfile();
@@ -227,12 +214,24 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         reviewSyncData.setOnPreferenceClickListener(SyncSettingsUtils.toOnClickListener(
                 this, () -> SyncSettingsUtils.openSyncDashboard(getActivity())));
 
-        mSyncTypePreferences = new CheckBoxPreference[] {mSyncAutofill, mSyncBookmarks,
-                mSyncPaymentsIntegration, mSyncHistory, mSyncPasswords, mSyncReadingList,
-                mSyncRecentTabs, mSyncSettings};
-        for (CheckBoxPreference type : mSyncTypePreferences) {
-            type.setOnPreferenceChangeListener(this);
-        }
+        mSyncTypePreferencesMap.put(
+                UserSelectableType.AUTOFILL, findPreference(PREF_SYNC_AUTOFILL));
+        mSyncTypePreferencesMap.put(
+                UserSelectableType.BOOKMARKS, findPreference(PREF_SYNC_BOOKMARKS));
+        mSyncTypePreferencesMap.put(UserSelectableType.HISTORY, findPreference(PREF_SYNC_HISTORY));
+        mSyncTypePreferencesMap.put(
+                UserSelectableType.PASSWORDS, findPreference(PREF_SYNC_PASSWORDS));
+        mSyncTypePreferencesMap.put(
+                UserSelectableType.READING_LIST, findPreference(PREF_SYNC_READING_LIST));
+        mSyncTypePreferencesMap.put(UserSelectableType.TABS, findPreference(PREF_SYNC_RECENT_TABS));
+        mSyncTypePreferencesMap.put(
+                UserSelectableType.PREFERENCES, findPreference(PREF_SYNC_SETTINGS));
+
+        mSyncTypePreferencesMap.values().forEach(pref -> pref.setOnPreferenceChangeListener(this));
+
+        mSyncPaymentsIntegration =
+                (CheckBoxPreference) findPreference(PREF_SYNC_PAYMENTS_INTEGRATION);
+        mSyncPaymentsIntegration.setOnPreferenceChangeListener(this);
 
         // Prevent sync settings changes from taking effect until the user leaves this screen.
         mSyncSetupInProgressHandle = mSyncService.getSetupInProgressHandle();
@@ -379,7 +378,8 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         // mSyncEverything was just enabled, then that state may not have propagated to
         // mSyncPaymentsIntegration yet. See crbug.com/972863.
         PersonalDataManager.setPaymentsIntegrationEnabled(mSyncEverything.isChecked()
-                || (mSyncPaymentsIntegration.isChecked() && mSyncAutofill.isChecked()));
+                || (mSyncPaymentsIntegration.isChecked()
+                        && mSyncTypePreferencesMap.get(UserSelectableType.AUTOFILL).isChecked()));
 
         // Some calls to setSelectedTypes don't trigger syncStateChanged, so schedule update here.
         PostTask.postTask(TaskTraits.UI_DEFAULT, this::updateSyncPreferences);
@@ -433,15 +433,10 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     }
 
     private Set<Integer> getUserSelectedTypes() {
-        Set<Integer> types = new HashSet<>();
-        if (mSyncAutofill.isChecked()) types.add(UserSelectableType.AUTOFILL);
-        if (mSyncBookmarks.isChecked()) types.add(UserSelectableType.BOOKMARKS);
-        if (mSyncHistory.isChecked()) types.add(UserSelectableType.HISTORY);
-        if (mSyncPasswords.isChecked()) types.add(UserSelectableType.PASSWORDS);
-        if (mSyncReadingList.isChecked()) types.add(UserSelectableType.READING_LIST);
-        if (mSyncRecentTabs.isChecked()) types.add(UserSelectableType.TABS);
-        if (mSyncSettings.isChecked()) types.add(UserSelectableType.PREFERENCES);
-        return types;
+        return mSyncTypePreferencesMap.keySet()
+                .stream()
+                .filter(type -> mSyncTypePreferencesMap.get(type).isChecked())
+                .collect(Collectors.toSet());
     }
 
     private void displayPassphraseTypeDialog() {
@@ -590,23 +585,9 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         boolean syncEverything = mSyncService.hasKeepEverythingSynced();
         mSyncEverything.setChecked(syncEverything);
 
-        // TODO(https://crbug.com/1407184): Use a loop on {@code mSyncTypePreferences} to update
-        // these states.
         Set<Integer> syncTypes = mSyncService.getSelectedTypes();
-        mSyncAutofill.setChecked(syncTypes.contains(UserSelectableType.AUTOFILL));
-        mSyncAutofill.setEnabled(!syncEverything);
-        mSyncBookmarks.setChecked(syncTypes.contains(UserSelectableType.BOOKMARKS));
-        mSyncBookmarks.setEnabled(!syncEverything);
-        mSyncHistory.setChecked(syncTypes.contains(UserSelectableType.HISTORY));
-        mSyncHistory.setEnabled(!syncEverything);
-        mSyncPasswords.setChecked(syncTypes.contains(UserSelectableType.PASSWORDS));
-        mSyncPasswords.setEnabled(!syncEverything);
-        mSyncReadingList.setChecked(syncTypes.contains(UserSelectableType.READING_LIST));
-        mSyncReadingList.setEnabled(!syncEverything);
-        mSyncRecentTabs.setChecked(syncTypes.contains(UserSelectableType.TABS));
-        mSyncRecentTabs.setEnabled(!syncEverything);
-        mSyncSettings.setChecked(syncTypes.contains(UserSelectableType.PREFERENCES));
-        mSyncSettings.setEnabled(!syncEverything);
+        mSyncTypePreferencesMap.values().forEach(pref -> pref.setEnabled(!syncEverything));
+        mSyncTypePreferencesMap.forEach((type, pref) -> pref.setChecked(syncTypes.contains(type)));
 
         // Payments integration requires AUTOFILL user selectable type
         boolean syncAutofill = syncTypes.contains(UserSelectableType.AUTOFILL);
