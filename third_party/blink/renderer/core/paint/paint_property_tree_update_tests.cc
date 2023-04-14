@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include "cc/input/scroll_snap_data.h"
+#include "third_party/blink/renderer/core/animation/animation_clock.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_builder_test.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
@@ -16,7 +19,14 @@
 namespace blink {
 
 // Tests covering incremental updates of paint property trees.
-class PaintPropertyTreeUpdateTest : public PaintPropertyTreeBuilderTest {};
+class PaintPropertyTreeUpdateTest : public PaintPropertyTreeBuilderTest {
+ public:
+  void SimulateFrame() {
+    // Advance time by 100 ms.
+    auto new_time = GetAnimationClock().CurrentTime() + base::Milliseconds(100);
+    GetPage().Animator().ServiceScriptedAnimations(new_time);
+  }
+};
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PaintPropertyTreeUpdateTest,
@@ -2110,4 +2120,36 @@ TEST_P(PaintPropertyTreeUpdateTest, UpdatesInLockedDisplayHandledCorrectly) {
   GetDocument().ElementFromPoint(1, 1);
   EXPECT_NEAR(0.8, div_properties->Effect()->Opacity(), 0.001);
 }
+
+TEST_P(PaintPropertyTreeUpdateTest, AnchorPositioningScrollUpdate) {
+  ScopedCSSAnchorPositioningForTest enabled(true);
+
+  SetBodyInnerHTML(R"HTML(
+    <div id="spacer" style="height: 1000px"></div>
+    <div id="anchor" style="
+        anchor-name: --a; width: 100px; height: 100px"></div>
+    <div id="target" style="
+        position: fixed; anchor-scroll: --a;
+        width: 100px; height: 100px; bottom: anchor(--a top)"></div>
+  )HTML");
+
+  // Make sure the scrolling coordinator is active.
+  ASSERT_TRUE(GetFrame().GetPage()->GetScrollingCoordinator());
+
+  GetFrame().DomWindow()->scrollBy(0, 300);
+
+  // anchor-scroll update requires animation frame.
+  SimulateFrame();
+  UpdateAllLifecyclePhasesExceptPaint();
+
+  // The anchor-scroll translation should be updated on main thread.
+  EXPECT_EQ(PaintPropertiesForElement("target")
+                ->AnchorScrollTranslation()
+                ->Get2dTranslation(),
+            gfx::Vector2dF(0, -300));
+
+  // Anchor positioning scroll update should not require main thread commits.
+  EXPECT_FALSE(GetFrame().View()->GetPaintArtifactCompositor()->NeedsUpdate());
+}
+
 }  // namespace blink

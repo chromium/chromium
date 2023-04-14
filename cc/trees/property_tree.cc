@@ -573,7 +573,11 @@ void TransformTree::UpdateLocalTransform(
   transform.Translate(position_adjustment -
                       node->scroll_offset.OffsetFromOrigin());
   transform.Translate(StickyPositionOffset(node));
-  transform.Translate(AnchorScrollOffset(node));
+  if (node->anchor_scroll_containers_data_id >= 0) {
+    transform.Translate(AnchorScrollOffset(node));
+    // Make sure the damage rect is tracked.
+    node->transform_changed = true;
+  }
   transform.PreConcat(node->local);
   transform.Translate3d(gfx::Point3F() - node->origin);
 
