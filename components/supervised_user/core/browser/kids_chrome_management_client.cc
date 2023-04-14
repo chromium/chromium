@@ -42,7 +42,7 @@ constexpr char kClassifyUrlDataContentType[] =
     "application/x-www-form-urlencoded";
 
 constexpr char kClassifyUrlNetOrHttpStatusMetric[] =
-    "ManagedUsers.ClassifyUrlRequest.NetOrHttpStatus";
+    "FamilyLinkUser.ClassifyUrlRequest.NetOrHttpStatus";
 
 // Constants for ClassifyURL.
 constexpr char kClassifyUrlOauthConsumerName[] = "kids_url_classifier";

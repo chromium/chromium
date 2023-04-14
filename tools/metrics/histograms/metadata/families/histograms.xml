@@ -251,6 +251,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FamilyLinkUser.ClassifyUrlRequest.NetOrHttpStatus"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-11-01">
+  <owner>tju@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <summary>
+    The status of the net or http communication to the Kids Management
+    API::ClassifyURL with JSON message format in expected response. This is
+    recorded for each request to the Kids Management API.
+  </summary>
+</histogram>
+
 <histogram name="FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration"
     units="ms" expires_after="2023-12-12">
   <owner>anthie@google.com</owner>
@@ -551,17 +562,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of blocked iframes per unblocked main frame load. The value is
     recorded when the main frame finishes loading.
-  </summary>
-</histogram>
-
-<histogram name="ManagedUsers.ClassifyUrlRequest.NetOrHttpStatus"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-11-01">
-  <owner>tju@google.com</owner>
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>
-    The status of the net or http communication to the Kids Management
-    API::ClassifyURL with JSON message format in expected response. This is
-    recorded for each request to the Kids Management API.
   </summary>
 </histogram>
 
