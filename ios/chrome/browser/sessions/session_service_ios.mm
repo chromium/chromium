@@ -270,25 +270,37 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 - (void)performSaveToPathInBackground:(NSString*)sessionPath {
   DCHECK(sessionPath);
 
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+
   // Serialize to NSData on the main thread to avoid accessing potentially
   // non-threadsafe objects on a background thread.
   SessionIOSFactory* factory = [_pendingSessions objectForKey:sessionPath];
   [_pendingSessions removeObjectForKey:sessionPath];
   SessionIOS* session = [factory sessionForSaving];
+
   // Because the factory may be called asynchronously after the underlying
   // web state list is destroyed, the session may be nil; if so, do nothing.
+  // Do not record the time spent calling -sessionForSaving: as it not
+  // interesting in that case.
   if (!session)
     return;
 
   @try {
     NSError* error = nil;
     size_t previous_cert_policy_bytes = web::GetCertPolicyBytesEncoded();
-    base::TimeTicks start_time = base::TimeTicks::Now();
+    const base::TimeTicks archiving_start_time = base::TimeTicks::Now();
     NSData* sessionData = [NSKeyedArchiver archivedDataWithRootObject:session
                                                 requiringSecureCoding:NO
                                                                 error:&error];
-    UmaHistogramTimes("Session.WebStates.ArchivedDataWithRootObjectTime",
-                      base::TimeTicks::Now() - start_time);
+
+    // Store end_time to avoid counting the time spent recording the first
+    // metric as part of the second metric recorded (probably negligible).
+    const base::TimeTicks end_time = base::TimeTicks::Now();
+    base::UmaHistogramTimes("Session.WebStates.SavingTimeOnMainThread",
+                            end_time - start_time);
+    base::UmaHistogramTimes("Session.WebStates.ArchivedDataWithRootObjectTime",
+                            end_time - archiving_start_time);
+
     if (!sessionData || error) {
       DLOG(WARNING) << "Error serializing session for path: "
                     << base::SysNSStringToUTF8(sessionPath) << ": "

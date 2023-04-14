@@ -782,6 +782,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.WebStates.LoadingTimeOnMainThread" units="ms"
+    expires_after="2024-01-01">
+  <owner>fedegermi@chromium.org</owner>
+  <owner>sdefresne@chromium.org</owner>
+  <summary>
+    The time spent on the main thread to restore a session as a continuous task.
+    It's recorded every time a session is loaded (which happens on application
+    startup or when the user re-open a recently closed windows on iPad). This
+    includes loading the data from disk as this happens on the main thread.
+
+    Large values for this histogram is indicative of jank for the user as the
+    main thread is blocked for the duration reported in the histogram in one
+    giant operation.
+  </summary>
+</histogram>
+
 <histogram name="Session.WebStates.NativeRestoreSession" enum="BooleanSuccess"
     expires_after="2023-10-16">
   <owner>justincohen@chromium.org</owner>
@@ -822,6 +838,23 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time needed to read iOS session webState data from a file. It's recorded
     every time a webState is restored, typically on app startup.
+  </summary>
+</histogram>
+
+<histogram name="Session.WebStates.SavingTimeOnMainThread" units="ms"
+    expires_after="2024-01-01">
+  <owner>fedegermi@chromium.org</owner>
+  <owner>sdefresne@chromium.org</owner>
+  <summary>
+    The time spend on the main thread to save a session as a continuous task.
+    It's recorded every time a session is saved (which is scheduled on page
+    loads, tab changes and app backgrounding, but repeating events may be
+    collapsed). This does not include the time spent writing the file on disk
+    (since it is done on a background sequence).
+
+    Large values for this histogram is indicative of jank for the user as the
+    main thread is blocked for the duration reported in the histogram in one
+    giant operation.
   </summary>
 </histogram>
 

@@ -6,7 +6,9 @@
 
 #import "base/ios/ios_util.h"
 #import "base/memory/ptr_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -218,6 +220,8 @@ bool SessionRestorationBrowserAgent::RestoreSessionWindow(
 bool SessionRestorationBrowserAgent::RestoreSession() {
   DCHECK(session_identifier_.length != 0);
 
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+
   PreviousSessionInfo* session_info = [PreviousSessionInfo sharedInstance];
   base::ScopedClosureRunner scoped_restore =
       [session_info startSessionRestoration];
@@ -232,7 +236,13 @@ bool SessionRestorationBrowserAgent::RestoreSession() {
     session_window = session.sessionWindows[0];
   }
 
-  return RestoreSessionWindow(session_window, SessionRestorationScope::kAll);
+  const bool closed_ntp_tab =
+      RestoreSessionWindow(session_window, SessionRestorationScope::kAll);
+
+  base::UmaHistogramTimes("Session.WebStates.LoadingTimeOnMainThread",
+                          base::TimeTicks::Now() - start_time);
+
+  return closed_ntp_tab;
 }
 
 bool SessionRestorationBrowserAgent::IsRestoringSession() {
