@@ -51,15 +51,17 @@ class TestFileSystemAccessPermissionContext
     content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
     EXPECT_TRUE(rfh->IsActive());
     performed_after_write_checks_ = true;
-    if (quit_callback_)
+    if (quit_callback_) {
       std::move(quit_callback_).Run();
+    }
   }
 
   bool performed_after_write_checks() { return performed_after_write_checks_; }
 
   void WaitForPerformAfterWriteChecks() {
-    if (performed_after_write_checks_)
+    if (performed_after_write_checks_) {
       return;
+    }
 
     base::RunLoop run_loop;
     quit_callback_ = run_loop.QuitClosure();
