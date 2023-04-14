@@ -125,7 +125,6 @@ class PerformanceControlsHatsServiceHasBatteryTest
         {performance_manager::features::
              kPerformanceControlsBatteryPerformanceSurvey,
          {}},
-        {performance_manager::features::kBatterySaverModeAvailable, {}},
     };
   }
 };
@@ -150,7 +149,6 @@ class PerformanceControlsHatsServiceBatterySaverOptOutTest
         {performance_manager::features::
              kPerformanceControlsBatterySaverOptOutSurvey,
          {}},
-        {performance_manager::features::kBatterySaverModeAvailable, {}},
     };
   }
 };

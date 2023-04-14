@@ -520,37 +520,20 @@ TEST_F(BrowserCommandHandlerTest, OpenPasswordManagerCommand) {
 }
 
 TEST_F(BrowserCommandHandlerTest, OpenPerformanceSettings) {
-  {
-    // Can open the performance settings if battery saver is unavailable.
-    base::test::ScopedFeatureList high_efficiency;
-    high_efficiency.InitWithFeaturesAndParameters(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            {performance_manager::features::kBatterySaverModeAvailable}});
-    EXPECT_TRUE(CanExecuteCommand(Command::kOpenPerformanceSettings));
-  }
-  {
-    // Can open if battery saver is available.
-    base::test::ScopedFeatureList enabled;
-    enabled.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{performance_manager::features::kBatterySaverModeAvailable, {}}},
-        /*disabled_features=*/{});
-    EXPECT_TRUE(CanExecuteCommand(Command::kOpenPerformanceSettings));
+  EXPECT_TRUE(CanExecuteCommand(Command::kOpenPerformanceSettings));
 
-    // Confirm executing the command works.
-    ClickInfoPtr info = ClickInfo::New();
-    info->middle_button = true;
-    info->meta_key = true;
-    // The OpenPassswordManager command opens a new settings window with the
-    // password manager and the correct disposition.
-    EXPECT_CALL(
-        *command_handler_,
-        NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kPerformanceSubPage)),
-                      DispositionFromClick(*info)));
-    EXPECT_TRUE(
-        ExecuteCommand(Command::kOpenPerformanceSettings, std::move(info)));
-  }
+  // Confirm executing the command works.
+  ClickInfoPtr info = ClickInfo::New();
+  info->middle_button = true;
+  info->meta_key = true;
+  // The OpenPerformanceSettings command opens a new settings window with the
+  // performance page open.
+  EXPECT_CALL(
+      *command_handler_,
+      NavigateToURL(GURL(chrome::GetSettingsUrl(chrome::kPerformanceSubPage)),
+                    DispositionFromClick(*info)));
+  EXPECT_TRUE(
+      ExecuteCommand(Command::kOpenPerformanceSettings, std::move(info)));
 }
 
 TEST_F(BrowserCommandHandlerTest,

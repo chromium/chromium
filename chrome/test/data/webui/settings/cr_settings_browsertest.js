@@ -466,15 +466,6 @@ var CrSettingsPerformanceMenuTest = class extends CrSettingsBrowserTest {
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/settings_performance_menu_test.js';
   }
-
-  /** @override */
-  get featureListInternal() {
-    return {
-      enabled: [
-        'performance_manager::features::kBatterySaverModeAvailable',
-      ],
-    };
-  }
 };
 
 TEST_F('CrSettingsPerformanceMenuTest', 'All', function() {
@@ -496,15 +487,6 @@ var CrSettingsBatteryPageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/battery_page_test.js';
-  }
-
-  /** @override */
-  get featureListInternal() {
-    return {
-      enabled: [
-        'performance_manager::features::kBatterySaverModeAvailable',
-      ],
-    };
   }
 };
 

@@ -31,9 +31,6 @@ constexpr char kCheckJsElementIsNotChecked[] =
 class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{performance_manager::features::kBatterySaverModeAvailable, {}}}, {});
-
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     SetUpFakeBatterySampler();
     InteractiveBrowserTest::SetUp();
@@ -127,7 +124,6 @@ class PerformanceSettingsInteractiveTest : public InteractiveBrowserTest {
     return WaitForStateChange(contents_id, element_renders);
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<base::test::TestSamplingEventSource, DanglingUntriaged>
       sampling_source_;
   raw_ptr<base::test::TestBatteryLevelProvider, DanglingUntriaged>

@@ -291,8 +291,6 @@ TEST_F(PageDiscardingHelperTest,
 }
 
 TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageOnNoDiscardList) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kBatterySaverModeAvailable}, {});
   // static_cast page_node because it's declared as a PageNodeImpl which hides
   // the members it overrides from PageNode.
   PageDiscardingHelper::GetFromGraph(graph())->SetNoDiscardPatternsForProfile(

@@ -91,10 +91,7 @@ class UserPerformanceTuningManagerTest : public testing::Test {
         local_state_.registry());
   }
 
-  void StartManager(
-      std::vector<base::test::FeatureRefAndParams> features_and_params = {
-          {performance_manager::features::kBatterySaverModeAvailable, {}},
-      }) {
+  void StartManager() {
     auto test_sampling_event_source =
         std::make_unique<base::test::TestSamplingEventSource>();
     auto test_battery_level_provider =
@@ -107,7 +104,6 @@ class UserPerformanceTuningManagerTest : public testing::Test {
         std::move(test_sampling_event_source),
         std::move(test_battery_level_provider));
 
-    feature_list_.InitWithFeaturesAndParameters(features_and_params, {});
     manager_.reset(new UserPerformanceTuningManager(
         &local_state_, nullptr,
         std::make_unique<FakeFrameThrottlingDelegate>(&throttling_enabled_),
@@ -126,7 +122,6 @@ class UserPerformanceTuningManagerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   TestingPrefServiceSimple local_state_;
-  base::test::ScopedFeatureList feature_list_;
 
   raw_ptr<base::test::TestSamplingEventSource> sampling_source_;
   raw_ptr<base::test::TestBatteryLevelProvider> battery_level_provider_;

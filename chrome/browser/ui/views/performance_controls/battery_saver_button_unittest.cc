@@ -28,11 +28,7 @@ class BatterySaverButtonTest : public TestWithBrowserView {
  public:
   BatterySaverButtonTest() = default;
 
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        performance_manager::features::kBatterySaverModeAvailable);
-    TestWithBrowserView::SetUp();
-  }
+  void SetUp() override { TestWithBrowserView::SetUp(); }
 
   void SetBatterySaverModeEnabled(bool enabled) {
     auto mode = enabled ? performance_manager::user_tuning::prefs::
@@ -47,7 +43,6 @@ class BatterySaverButtonTest : public TestWithBrowserView {
   base::HistogramTester* GetHistogramTester() { return &histogram_tester_; }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -190,27 +185,4 @@ TEST_F(BatterySaverButtonTest, LogMetricsOnTurnOffNowTest) {
   GetHistogramTester()->ExpectUniqueSample(
       "PerformanceControls.BatterySaver.BubbleAction",
       BatterySaverBubbleActionType::kTurnOffNow, 1);
-}
-
-class BatterySaverButtonNoExperimentsAvailableTest
-    : public TestWithBrowserView {
- public:
-  BatterySaverButtonNoExperimentsAvailableTest() = default;
-
-  void SetUp() override {
-    feature_list_.InitAndDisableFeature(
-        performance_manager::features::kBatterySaverModeAvailable);
-    TestWithBrowserView::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// When battery saver mode available feature is disabled the toolbar button
-// should not be initialized
-TEST_F(BatterySaverButtonNoExperimentsAvailableTest, ShouldNotShowTest) {
-  const BatterySaverButton* battery_saver_button =
-      browser_view()->toolbar()->battery_saver_button();
-  EXPECT_EQ(battery_saver_button, nullptr);
 }
