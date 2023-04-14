@@ -45,6 +45,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/search/ntp_features.h"
 #include "components/session_proto_db/session_proto_storage.h"
+#include "components/sync/driver/sync_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -76,6 +77,7 @@ ShoppingService::ShoppingService(
     optimization_guide::NewOptimizationGuideDecider* opt_guide,
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
+    syncer::SyncService* sync_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     SessionProtoStorage<
         commerce_subscription_db::CommerceSubscriptionContentProto>*
@@ -107,8 +109,8 @@ ShoppingService::ShoppingService(
   }
 
   if (identity_manager) {
-    account_checker_ = base::WrapUnique(
-        new AccountChecker(pref_service, identity_manager, url_loader_factory));
+    account_checker_ = base::WrapUnique(new AccountChecker(
+        pref_service, identity_manager, sync_service, url_loader_factory));
   }
 
   if (IsProductInfoApiEnabled() && identity_manager && account_checker_ &&
@@ -783,6 +785,7 @@ bool ShoppingService::IsShoppingListEligible(AccountChecker* account_checker,
   // Make sure the user allows subscriptions to be made and that we can fetch
   // store data.
   if (!account_checker || !account_checker->IsSignedIn() ||
+      !account_checker->IsSyncingBookmarks() ||
       !account_checker->IsAnonymizedUrlDataCollectionEnabled() ||
       !account_checker->IsWebAndAppActivityEnabled() ||
       account_checker->IsSubjectToParentalControls()) {

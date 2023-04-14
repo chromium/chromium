@@ -21,6 +21,7 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/test/test_sync_service.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
@@ -238,6 +239,7 @@ ShoppingServiceTestBase::ShoppingServiceTestBase()
       opt_guide_(std::make_unique<MockOptGuideDecider>()),
       pref_service_(std::make_unique<TestingPrefServiceSimple>()),
       identity_test_env_(std::make_unique<signin::IdentityTestEnvironment>()),
+      sync_service_(std::make_unique<syncer::TestSyncService>()),
       test_url_loader_factory_(
           std::make_unique<network::TestURLLoaderFactory>()) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -246,6 +248,7 @@ ShoppingServiceTestBase::ShoppingServiceTestBase()
   shopping_service_ = std::make_unique<ShoppingService>(
       "us", "en-us", bookmark_model_.get(), opt_guide_.get(),
       pref_service_.get(), identity_test_env_->identity_manager(),
+      sync_service_.get(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           test_url_loader_factory_.get()),
       nullptr, nullptr);

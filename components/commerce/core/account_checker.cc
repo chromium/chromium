@@ -13,6 +13,8 @@
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/model_type.h"
+#include "components/sync/driver/sync_service_utils.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -40,9 +42,11 @@ const char kNotificationsPrefUrl[] =
 AccountChecker::AccountChecker(
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
+    syncer::SyncService* sync_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : pref_service_(pref_service),
       identity_manager_(identity_manager),
+      sync_service_(sync_service),
       url_loader_factory_(url_loader_factory),
       weak_ptr_factory_(this) {
   if (identity_manager) {
@@ -66,6 +70,12 @@ AccountChecker::~AccountChecker() = default;
 bool AccountChecker::IsSignedIn() {
   return identity_manager_ &&
          identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync);
+}
+
+bool AccountChecker::IsSyncingBookmarks() {
+  return sync_service_ && syncer::GetUploadToGoogleState(
+                              sync_service_, syncer::ModelType::BOOKMARKS) ==
+                              syncer::UploadState::ACTIVE;
 }
 
 bool AccountChecker::IsAnonymizedUrlDataCollectionEnabled() {

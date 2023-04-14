@@ -613,6 +613,25 @@ TEST_F(ShoppingServiceTest, TestShoppingListEligible_ChildAccount) {
                                       kEligibleLocale));
 }
 
+TEST_F(ShoppingServiceTest, TestShoppingListEligible_SyncState) {
+  test_features_.InitWithFeatures({kShoppingList},
+                                  {kShoppingListRegionLaunched});
+
+  TestingPrefServiceSimple prefs;
+  RegisterPrefs(prefs.registry());
+  SetShoppingListEnterprisePolicyPref(&prefs, true);
+
+  MockAccountChecker checker;
+
+  ASSERT_TRUE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
+                                     kEligibleLocale));
+
+  checker.SetSyncingBookmarks(false);
+
+  ASSERT_FALSE(IsShoppingListEligible(&checker, &prefs, kEligibleCountry,
+                                      kEligibleLocale));
+}
+
 TEST_F(ShoppingServiceTest, TestShoppingListEligible_CountryAndLocale) {
   test_features_.InitWithFeatures({kShoppingList},
                                   {kShoppingListRegionLaunched});

@@ -168,6 +168,7 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
       optimization_guide::NewOptimizationGuideDecider* opt_guide,
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
+      syncer::SyncService* sync_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       SessionProtoStorage<
           commerce_subscription_db::CommerceSubscriptionContentProto>*

@@ -50,6 +50,7 @@ static_library("shopping_service") {
     "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/power_bookmarks",
     "//ios/chrome/browser/signin:signin",
+    "//ios/chrome/browser/sync",
     "//ios/web",
     "//services/network/public/cpp",
   ]

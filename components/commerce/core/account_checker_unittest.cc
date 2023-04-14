@@ -17,6 +17,9 @@
 #include "components/endpoint_fetcher/mock_endpoint_fetcher.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/test/test_sync_service.h"
+#include "components/sync/test/test_sync_user_settings.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -44,9 +47,11 @@ class SpyAccountChecker : public AccountChecker {
   SpyAccountChecker(
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
+      syncer::SyncService* sync_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       : AccountChecker(pref_service,
                        identity_manager,
+                       sync_service,
                        std::move(url_loader_factory)) {}
   SpyAccountChecker(const SpyAccountChecker&) = delete;
   SpyAccountChecker operator=(const SpyAccountChecker&) = delete;
@@ -80,9 +85,10 @@ class AccountCheckerTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
     fetcher_ = std::make_unique<MockEndpointFetcher>();
+    sync_service_ = std::make_unique<syncer::TestSyncService>();
     account_checker_ = std::make_unique<SpyAccountChecker>(
         &pref_service_, identity_test_env_.identity_manager(),
-        std::move(test_url_loader_factory));
+        sync_service_.get(), std::move(test_url_loader_factory));
     ASSERT_EQ(false, account_checker_->IsSignedIn());
 
     ON_CALL(*account_checker_, CreateEndpointFetcher).WillByDefault([this]() {
@@ -106,6 +112,7 @@ class AccountCheckerTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   std::unique_ptr<MockEndpointFetcher> fetcher_;
+  std::unique_ptr<syncer::TestSyncService> sync_service_;
   std::unique_ptr<SpyAccountChecker> account_checker_;
 };
 
@@ -177,6 +184,31 @@ TEST_F(AccountCheckerTest, TestSendPriceEmailPrefOnPrefChange) {
   pref_service_.SetBoolean(kPriceEmailNotificationsEnabled, true);
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(true, pref_service_.GetBoolean(kPriceEmailNotificationsEnabled));
+}
+
+TEST_F(AccountCheckerTest, TestBookmarksSyncState) {
+  syncer::UserSelectableTypeSet type_set;
+  type_set.Put(syncer::UserSelectableType::kBookmarks);
+  sync_service_->GetUserSettings()->SetSelectedTypes(false,
+                                                     std::move(type_set));
+
+  sync_service_->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  ASSERT_TRUE(account_checker_->IsSyncingBookmarks());
+
+  sync_service_->SetTransportState(syncer::SyncService::TransportState::PAUSED);
+  ASSERT_FALSE(account_checker_->IsSyncingBookmarks());
+}
+
+TEST_F(AccountCheckerTest, TestBookmarksSyncState_NoBookmarks) {
+  // Intentionally pass an empty set to the set of things that are synced.
+  sync_service_->GetUserSettings()->SetSelectedTypes(
+      false, syncer::UserSelectableTypeSet());
+
+  sync_service_->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+  ASSERT_FALSE(account_checker_->IsSyncingBookmarks());
+
+  sync_service_->SetTransportState(syncer::SyncService::TransportState::PAUSED);
+  ASSERT_FALSE(account_checker_->IsSyncingBookmarks());
 }
 
 }  // namespace commerce

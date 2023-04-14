@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -50,14 +51,15 @@ ShoppingServiceFactory::ShoppingServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "ShoppingService",
           BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ios::LocalOrSyncableBookmarkModelFactory::GetInstance());
   // TODO(crbug.com/1425818): Add AccountBookmarkModelFactory support.
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
-  DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(PowerBookmarkServiceFactory::GetInstance());
   DependsOn(SessionProtoDBFactory<
             commerce_subscription_db::CommerceSubscriptionContentProto>::
                 GetInstance());
-  DependsOn(PowerBookmarkServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
@@ -72,6 +74,7 @@ std::unique_ptr<KeyedService> ShoppingServiceFactory::BuildServiceInstanceFor(
           ->GetForBrowserState(chrome_state),
       OptimizationGuideServiceFactory::GetForBrowserState(chrome_state),
       pref_service, IdentityManagerFactory::GetForBrowserState(chrome_state),
+      SyncServiceFactory::GetForBrowserState(chrome_state),
       chrome_state->GetSharedURLLoaderFactory(),
       SessionProtoDBFactory<commerce_subscription_db::
                                 CommerceSubscriptionContentProto>::GetInstance()
