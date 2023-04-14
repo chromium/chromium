@@ -380,7 +380,8 @@ class DEVICE_BLUETOOTH_EXPORT FlossGattManagerClient
   // Create a GATT client connection to a remote device on given transport.
   virtual void Connect(ResponseCallback<Void> callback,
                        const std::string& remote_device,
-                       const BluetoothTransport& transport);
+                       const BluetoothTransport& transport,
+                       bool is_direct);
 
   // Disconnect GATT for given device.
   virtual void Disconnect(ResponseCallback<Void> callback,

@@ -554,6 +554,11 @@ void BluetoothDeviceFloss::ResetPairing() {
 
 void BluetoothDeviceFloss::CreateGattConnectionImpl(
     absl::optional<device::BluetoothUUID> service_uuid) {
+  // Generally, the first ever connection to a device should be direct and
+  // subsequent connections to known devices should be invoked with is_direct =
+  // false. Refer to |autoConnect| on BluetoothGatt.java.
+  bool is_direct = !IsBondedImpl();
+
   if (num_connecting_calls_++ == 0)
     adapter()->NotifyDeviceChanged(this);
 
@@ -564,7 +569,7 @@ void BluetoothDeviceFloss::CreateGattConnectionImpl(
   FlossDBusManager::Get()->GetGattManagerClient()->Connect(
       base::BindOnce(&BluetoothDeviceFloss::OnConnectGatt,
                      weak_ptr_factory_.GetWeakPtr()),
-      address_, FlossDBusClient::BluetoothTransport::kLe);
+      address_, FlossDBusClient::BluetoothTransport::kLe, is_direct);
 }
 
 void BluetoothDeviceFloss::OnConnectGatt(DBusResult<Void> ret) {

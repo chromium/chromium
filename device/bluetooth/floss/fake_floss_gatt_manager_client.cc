@@ -22,7 +22,8 @@ void FakeFlossGattManagerClient::Init(dbus::Bus* bus,
 
 void FakeFlossGattManagerClient::Connect(ResponseCallback<Void> callback,
                                          const std::string& remote_device,
-                                         const BluetoothTransport& transport) {
+                                         const BluetoothTransport& transport,
+                                         bool is_direct) {
   std::move(callback).Run(DBusResult<Void>({}));
 }
 
