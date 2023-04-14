@@ -581,6 +581,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)dismissModals {
   [self.regularTabsConsumer dismissModals];
+  [self.pinnedTabsConsumer dismissModals];
   [self.incognitoTabsConsumer dismissModals];
   [self.remoteTabsViewController dismissModals];
 }
