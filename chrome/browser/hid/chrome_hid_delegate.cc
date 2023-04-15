@@ -251,7 +251,6 @@ void ChromeHidDelegate::IncrementConnectionCount(
       GetConnectionTracker(browser_context, /*create=*/true);
   if (hid_connection_tracker) {
     hid_connection_tracker->IncrementConnectionCount(origin);
-    hid_connection_tracker->NotifyDeviceConnected(origin);
   }
 }
 

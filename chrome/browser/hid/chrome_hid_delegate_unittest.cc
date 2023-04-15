@@ -160,10 +160,6 @@ class MockHidConnectionTracker : public HidConnectionTracker {
 
   MOCK_METHOD(void, IncrementConnectionCount, (const url::Origin&), (override));
   MOCK_METHOD(void, DecrementConnectionCount, (const url::Origin&), (override));
-  MOCK_METHOD(void,
-              NotifyDeviceConnected,
-              (const url::Origin& origin),
-              (override));
 };
 
 class ChromeHidTestHelper {
@@ -811,8 +807,6 @@ class ChromeHidTestHelper {
     EXPECT_THAT(devices_future.Take(), ElementsAre(HasGuid(device->guid)));
 
     EXPECT_CALL(hid_connection_tracker(), IncrementConnectionCount(origin))
-        .Times(0);
-    EXPECT_CALL(hid_connection_tracker(), NotifyDeviceConnected(origin))
         .Times(0);
     // Open a connection to `device`.
     FakeHidConnectionClient connection_client;

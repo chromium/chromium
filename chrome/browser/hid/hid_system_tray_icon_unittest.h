@@ -17,7 +17,7 @@ class MockHidConnectionTracker : public HidConnectionTracker {
  public:
   explicit MockHidConnectionTracker(Profile* profile);
   ~MockHidConnectionTracker() override;
-  MOCK_METHOD(void, ShowHidContentSettingsExceptions, (), (override));
+  MOCK_METHOD(void, ShowContentSettingsExceptions, (), (override));
 };
 
 class HidSystemTrayIconTestBase : public BrowserWithTestWindowTest {

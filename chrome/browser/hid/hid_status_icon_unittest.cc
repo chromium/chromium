@@ -102,8 +102,7 @@ class HidStatusIconTest : public HidSystemTrayIconTestBase {
         EXPECT_EQ(menu_item->GetLabelAt(idx),
                   GetExpectedButtonTitleForProfile(
                       profile_connection_counts[idx].first));
-        EXPECT_CALL(*hid_connection_tracker,
-                    ShowHidContentSettingsExceptions());
+        EXPECT_CALL(*hid_connection_tracker, ShowContentSettingsExceptions());
         SimulateButtonClick(idx);
       }
       total_connection_count += profile_connection_counts[idx].second;
