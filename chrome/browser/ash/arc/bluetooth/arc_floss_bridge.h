@@ -164,6 +164,10 @@ class ArcFlossBridge : public ArcBluetoothBridge,
            base::UniquePtrComparator>
       connecting_sockets_;
 
+  // Map of device+channel combinations to service UUIDs
+  base::flat_map<std::pair<std::string, int32_t>, device::BluetoothUUID>
+      uuid_lookups_{};
+
   // WeakPtrFactory to use for callbacks.
   base::WeakPtrFactory<ArcFlossBridge> weak_factory_{this};
 };

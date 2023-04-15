@@ -220,6 +220,16 @@ void ArcFlossBridge::SdpSearchComplete(
     records_bluez.push_back(
         mojo::TypeConverter<bluez::BluetoothServiceRecordBlueZ,
                             floss::BtSdpRecord>::Convert(record));
+    absl::optional<floss::BtSdpHeaderOverlay> header =
+        GetHeaderOverlayFromSdpRecord(record);
+    if (!header.has_value()) {
+      continue;
+    }
+    // This record may be for an L2CAP service, but callers have to specify what
+    // protocol they want to use anyway.
+    uuid_lookups_.insert_or_assign(
+        std::make_pair(device.address, header->rfcomm_channel_number),
+        header->uuid);
   }
   OnGetServiceRecordsFinished(std::move(address), uuid, records_bluez);
 }
@@ -271,30 +281,42 @@ void ArcFlossBridge::CreateBluetoothListenSocket(
   if (!AdapterReadyAndRegistered()) {
     return;
   }
+  if (type != mojom::BluetoothSocketType::TYPE_RFCOMM &&
+      type != mojom::BluetoothSocketType::TYPE_L2CAP_LE) {
+    std::move(callback).Run(
+        mojom::BluetoothStatus::FAIL, /*port=*/0,
+        mojo::PendingReceiver<mojom::BluetoothListenSocketClient>());
+    return;
+  }
   auto sock_wrapper = std::make_unique<BluetoothListeningSocket>();
   sock_wrapper->sock_type = type;
   auto connection_accepted_callback =
       base::BindRepeating(&ArcFlossBridge::OnConnectionAccepted,
                           weak_factory_.GetWeakPtr(), sock_wrapper.get());
+  int socket_ready_callback_id = next_socket_ready_callback_id_++;
+  socket_ready_callbacks_.insert_or_assign(socket_ready_callback_id,
+                                           std::move(callback));
+  auto connection_state_changed_callback = base::BindRepeating(
+      &ArcFlossBridge::OnConnectionStateChanged, weak_factory_.GetWeakPtr(),
+      sock_wrapper.get(), socket_ready_callback_id);
+  floss::ResponseCallback<floss::FlossDBusClient::BtifStatus>
+      response_callback =
+          base::BindOnce(&ArcFlossBridge::OnCreateListenSocketCallback,
+                         weak_factory_.GetWeakPtr(), std::move(sock_wrapper),
+                         socket_ready_callback_id);
   switch (type) {
     case mojom::BluetoothSocketType::TYPE_RFCOMM: {
-      std::move(callback).Run(
-          mojom::BluetoothStatus::FAIL, /*port=*/0,
-          mojo::PendingReceiver<mojom::BluetoothListenSocketClient>());
-      return;
+      floss::FlossDBusManager::Get()->GetSocketManager()->ListenUsingRfcommAlt(
+          absl::nullopt, absl::nullopt, port,
+          floss::FlossSocketManager::GetRawFlossFlagsFromBluetoothFlags(
+              flags->encrypt, flags->auth, flags->auth_mitm,
+              flags->auth_16_digit, /*no_sdp=*/true),
+          std::move(response_callback),
+          std::move(connection_state_changed_callback),
+          std::move(connection_accepted_callback));
+      break;
     }
     case mojom::BluetoothSocketType::TYPE_L2CAP_LE: {
-      int socket_ready_callback_id = next_socket_ready_callback_id_++;
-      socket_ready_callbacks_.insert_or_assign(socket_ready_callback_id,
-                                               std::move(callback));
-      auto connection_state_changed_callback = base::BindRepeating(
-          &ArcFlossBridge::OnConnectionStateChanged, weak_factory_.GetWeakPtr(),
-          sock_wrapper.get(), socket_ready_callback_id);
-      floss::ResponseCallback<floss::FlossDBusClient::BtifStatus>
-          response_callback =
-              base::BindOnce(&ArcFlossBridge::OnCreateListenSocketCallback,
-                             weak_factory_.GetWeakPtr(),
-                             std::move(sock_wrapper), socket_ready_callback_id);
       floss::FlossDBusManager::Get()->GetSocketManager()->ListenUsingL2capLe(
           GetSecureFromFlags(std::move(flags)), std::move(response_callback),
           std::move(connection_state_changed_callback),
@@ -302,9 +324,6 @@ void ArcFlossBridge::CreateBluetoothListenSocket(
       break;
     }
     default: {
-      std::move(callback).Run(
-          mojom::BluetoothStatus::FAIL, /*port=*/0,
-          mojo::PendingReceiver<mojom::BluetoothListenSocketClient>());
       return;
     }
   }
@@ -325,9 +344,20 @@ void ArcFlossBridge::CreateBluetoothConnectSocket(
   sock_wrapper->sock_type = type;
   switch (type) {
     case mojom::BluetoothSocketType::TYPE_RFCOMM: {
-      std::move(callback).Run(
-          mojom::BluetoothStatus::FAIL,
-          mojo::PendingReceiver<mojom::BluetoothConnectSocketClient>());
+      const std::pair<std::string, int32_t> uuid_lookup_key =
+          std::make_pair(remote_device.address, port);
+      if (!uuid_lookups_.contains(uuid_lookup_key)) {
+        std::move(callback).Run(
+            mojom::BluetoothStatus::FAIL,
+            mojo::PendingReceiver<mojom::BluetoothConnectSocketClient>());
+        return;
+      }
+      floss::FlossDBusManager::Get()->GetSocketManager()->ConnectUsingRfcomm(
+          remote_device, uuid_lookups_.at(uuid_lookup_key),
+          GetSecureFromFlags(std::move(flags)),
+          base::BindOnce(&ArcFlossBridge::OnCreateConnectSocketCallback,
+                         weak_factory_.GetWeakPtr(), std::move(sock_wrapper),
+                         std::move(callback)));
       break;
     }
     case mojom::BluetoothSocketType::TYPE_L2CAP_LE: {
@@ -455,7 +485,7 @@ void ArcFlossBridge::OnConnectionStateChanged(
       response_callback = base::BindOnce(&OnNoOpBtifResult);
   // TODO: figure out the correct timeout here
   floss::FlossDBusManager::Get()->GetSocketManager()->Accept(
-      socket.id, 0, std::move(response_callback));
+      socket.id, /*timeout_ms=*/absl::nullopt, std::move(response_callback));
 }
 
 void ArcFlossBridge::OnConnectionAccepted(

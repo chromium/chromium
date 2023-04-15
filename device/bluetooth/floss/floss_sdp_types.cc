@@ -51,27 +51,37 @@ constexpr char kSdpDipRecordPropProduct[] = "product";
 constexpr char kSdpDipRecordPropVersion[] = "version";
 constexpr char kSdpDipRecordPropPrimaryRecord[] = "primary_record";
 
-absl::optional<device::BluetoothUUID> GetUUIDFromSdpRecord(
+absl::optional<floss::BtSdpHeaderOverlay> GetHeaderOverlayFromSdpRecord(
     const floss::BtSdpRecord& record) {
   if (absl::holds_alternative<floss::BtSdpHeaderOverlay>(record)) {
-    return absl::get<floss::BtSdpHeaderOverlay>(record).uuid;
+    return absl::get<floss::BtSdpHeaderOverlay>(record);
   } else if (absl::holds_alternative<floss::BtSdpMasRecord>(record)) {
-    return absl::get<floss::BtSdpMasRecord>(record).hdr.uuid;
+    return absl::get<floss::BtSdpMasRecord>(record).hdr;
   } else if (absl::holds_alternative<floss::BtSdpMnsRecord>(record)) {
-    return absl::get<floss::BtSdpMnsRecord>(record).hdr.uuid;
+    return absl::get<floss::BtSdpMnsRecord>(record).hdr;
   } else if (absl::holds_alternative<floss::BtSdpPseRecord>(record)) {
-    return absl::get<floss::BtSdpPseRecord>(record).hdr.uuid;
+    return absl::get<floss::BtSdpPseRecord>(record).hdr;
   } else if (absl::holds_alternative<floss::BtSdpPceRecord>(record)) {
-    return absl::get<floss::BtSdpPceRecord>(record).hdr.uuid;
+    return absl::get<floss::BtSdpPceRecord>(record).hdr;
   } else if (absl::holds_alternative<floss::BtSdpOpsRecord>(record)) {
-    return absl::get<floss::BtSdpOpsRecord>(record).hdr.uuid;
+    return absl::get<floss::BtSdpOpsRecord>(record).hdr;
   } else if (absl::holds_alternative<floss::BtSdpSapRecord>(record)) {
-    return absl::get<floss::BtSdpSapRecord>(record).hdr.uuid;
+    return absl::get<floss::BtSdpSapRecord>(record).hdr;
   } else if (absl::holds_alternative<floss::BtSdpDipRecord>(record)) {
-    return absl::get<floss::BtSdpDipRecord>(record).hdr.uuid;
+    return absl::get<floss::BtSdpDipRecord>(record).hdr;
   } else {
     return absl::nullopt;
   }
+}
+
+absl::optional<device::BluetoothUUID> GetUUIDFromSdpRecord(
+    const floss::BtSdpRecord& record) {
+  absl::optional<floss::BtSdpHeaderOverlay> header =
+      GetHeaderOverlayFromSdpRecord(record);
+  if (!header.has_value()) {
+    return absl::nullopt;
+  }
+  return header->uuid;
 }
 
 template <>

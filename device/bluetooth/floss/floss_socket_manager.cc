@@ -292,6 +292,21 @@ const DBusTypeInfo& GetDBusTypeInfo(const FlossSocketManager::FlossSocket*) {
   return info;
 }
 
+int FlossSocketManager::GetRawFlossFlagsFromBluetoothFlags(bool encrypt,
+                                                           bool auth,
+                                                           bool auth_mitm,
+                                                           bool auth_16_digit,
+                                                           bool no_sdp) {
+  int flags = 0;
+  return flags |
+         (encrypt ? static_cast<int>(SocketFlags::kSocketFlagsEncrypt) : 0) |
+         (auth ? static_cast<int>(SocketFlags::kSocketFlagsAuth) : 0) |
+         (auth_mitm ? static_cast<int>(SocketFlags::kSocketFlagsAuthMitm) : 0) |
+         (auth_16_digit ? static_cast<int>(SocketFlags::kSocketFlagsAuth16Digit)
+                        : 0) |
+         (no_sdp ? static_cast<int>(SocketFlags::kSocketFlagsNoSdp) : 0);
+}
+
 FlossSocketManager::FlossListeningSocket::FlossListeningSocket() = default;
 FlossSocketManager::FlossListeningSocket::FlossListeningSocket(
     const FlossListeningSocket&) = default;

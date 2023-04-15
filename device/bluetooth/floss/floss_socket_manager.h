@@ -57,6 +57,21 @@ class DEVICE_BLUETOOTH_EXPORT FlossSocketManager : public FlossDBusClient {
     kSecure,
   };
 
+  // Flags for changing how Floss constructs a socket.
+  enum class SocketFlags : int {
+    kSocketFlagsEncrypt = 1 << 0,
+    kSocketFlagsAuth = 1 << 1,
+    kSocketFlagsNoSdp = 1 << 2,
+    kSocketFlagsAuthMitm = 1 << 3,
+    kSocketFlagsAuth16Digit = 1 << 4
+  };
+
+  static int GetRawFlossFlagsFromBluetoothFlags(bool encrypt,
+                                                bool auth,
+                                                bool auth_mitm,
+                                                bool auth_16_digit,
+                                                bool no_sdp);
+
   // Represents a listening socket.
   struct FlossListeningSocket {
     SocketId id = FlossSocketManager::kInvalidSocketId;
