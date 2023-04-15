@@ -4,10 +4,10 @@
 
 #include "content/browser/fenced_frame/fenced_frame_config.h"
 #include "base/functional/callback.h"
-#include "base/guid.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/uuid.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 
@@ -17,7 +17,7 @@ const char kUrnUuidPrefix[] = "urn:uuid:";
 
 GURL GenerateUrnUuid() {
   return GURL(kUrnUuidPrefix +
-              base::GUID::GenerateRandomV4().AsLowercaseString());
+              base::Uuid::GenerateRandomV4().AsLowercaseString());
 }
 
 namespace {
