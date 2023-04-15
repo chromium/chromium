@@ -7,6 +7,8 @@
 
 #include "ash/test/pixel/ash_pixel_diff_util.h"
 #include "base/check_op.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/test/skia_gold_matching_algorithm.h"
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
 
 namespace ash {
@@ -73,6 +75,11 @@ class AshPixelDiffer {
       const std::string& screenshot_name,
       size_t revision_number,
       const std::vector<gfx::Rect>& rects_in_screen);
+
+  // Set only when the "positive if only" algorithm should be used instead of
+  // the exact matching algorithm.
+  absl::optional<ui::test::PositiveIfOnlyImageAlgorithm>
+      positive_if_only_algorithm_;
 
   // Used to take screenshots and upload images to the Skia Gold server to
   // perform pixel comparison.

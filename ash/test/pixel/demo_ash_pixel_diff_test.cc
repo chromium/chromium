@@ -69,7 +69,7 @@ TEST_F(DemoAshPixelDiffTest, VerifyTopLevelWidgets) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_widgets",
-      /*revision_number=*/0, widget1.get(), widget2.get(), widget3.get(),
+      /*revision_number=*/1, widget1.get(), widget2.get(), widget3.get(),
       widget4.get()));
 }
 

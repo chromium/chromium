@@ -4135,6 +4135,7 @@ static_library("test_support") {
     "//ui/accessibility/mojom",
     "//ui/aura",
     "//ui/aura:test_support",
+    "//ui/base:pixel_diff_test_support",
     "//ui/base:test_support",
     "//ui/color:mixers",
     "//ui/compositor:test_support",
