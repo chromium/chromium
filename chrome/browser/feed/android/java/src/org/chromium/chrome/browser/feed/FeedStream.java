@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
@@ -50,6 +51,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.xsurface.FeedActionsHandler;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger.StreamType;
+import org.chromium.chrome.browser.xsurface.FeedUserInteractionReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
@@ -615,6 +617,7 @@ public class FeedStream implements Stream {
     private RotationObserver mRotationObserver;
     private FeedReliabilityLoggingBridge mReliabilityLoggingBridge;
     private FeedLaunchReliabilityLogger mLaunchReliabilityLogger;
+    private FeedUserInteractionReliabilityLogger mFeedUserInteractionReliabilityLogger;
 
     // Things valid only when bound.
     private @Nullable RecyclerView mRecyclerView;
@@ -768,10 +771,20 @@ public class FeedStream implements Stream {
         launchReliabilityLogger.logFeedReloading(System.nanoTime());
         mReliabilityLoggingBridge.setLogger(launchReliabilityLogger);
 
+        if (FeatureList.isInitialized()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.FEED_USER_INTERACTION_RELIABILITY_REPORT)
+                && surfaceScope != null) {
+            mFeedUserInteractionReliabilityLogger =
+                    surfaceScope.getFeedUserInteractionReliabilityLogger();
+        }
+
         mScrollStateToRestore = savedInstanceState;
         manager.setHandlers(mHandlersMap);
         mSliceViewTracker = new FeedSliceViewTracker(rootView, mActivity, manager,
-                renderer.getListLayoutHelper(), new FeedStream.ViewTrackerObserver());
+                renderer.getListLayoutHelper(), /* watchForBarelyVisibleChange= */
+                (mFeedUserInteractionReliabilityLogger != null),
+                new FeedStream.ViewTrackerObserver());
         mSliceViewTracker.bind();
 
         rootView.addOnScrollListener(mMainScrollListener);
@@ -792,6 +805,10 @@ public class FeedStream implements Stream {
         }
 
         FeedStreamJni.get().surfaceOpened(mNativeFeedStream, FeedStream.this);
+
+        if (mFeedUserInteractionReliabilityLogger != null) {
+            mFeedUserInteractionReliabilityLogger.onStreamOpened(getXSurfaceStreamType());
+        }
     }
 
     @Override
@@ -1188,6 +1205,20 @@ public class FeedStream implements Stream {
         }
     }
 
+    // TODO(jianli): Consolidate 2 StreamType defined in different places.
+    private @org.chromium.chrome.browser.xsurface.StreamType int getXSurfaceStreamType() {
+        switch (mStreamKind) {
+            case StreamKind.FOR_YOU:
+                return org.chromium.chrome.browser.xsurface.StreamType.FOR_YOU;
+            case StreamKind.FOLLOWING:
+                return org.chromium.chrome.browser.xsurface.StreamType.WEB_FEED;
+            case StreamKind.SINGLE_WEB_FEED:
+                return org.chromium.chrome.browser.xsurface.StreamType.SINGLE_WEB_FEED;
+            default:
+                return org.chromium.chrome.browser.xsurface.StreamType.UNSPECIFIED;
+        }
+    }
+
     /**
      * Restores the scroll state serialized to |savedInstanceState|.
      * @return true if the scroll state was restored, or if the state could never be restored.
@@ -1321,6 +1352,18 @@ public class FeedStream implements Stream {
         @Override
         public void feedContentVisible() {
             FeedStreamJni.get().reportFeedViewed(mNativeFeedStream, FeedStream.this);
+        }
+        @Override
+        public void reportViewFirstBarelyVisible(View view) {
+            if (mFeedUserInteractionReliabilityLogger != null) {
+                mFeedUserInteractionReliabilityLogger.onViewFirstVisible(view);
+            }
+        }
+        @Override
+        public void reportViewFirstRendered(View view) {
+            if (mFeedUserInteractionReliabilityLogger != null) {
+                mFeedUserInteractionReliabilityLogger.onViewFirstRendered(view);
+            }
         }
     }
 

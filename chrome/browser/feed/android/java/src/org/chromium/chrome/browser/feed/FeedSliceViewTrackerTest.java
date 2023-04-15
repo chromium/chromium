@@ -18,9 +18,11 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.graphics.Rect;
+import android.os.Looper;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
@@ -95,8 +97,8 @@ public class FeedSliceViewTrackerTest {
         doReturn(mViewTreeObserver).when(mParentView).getViewTreeObserver();
         doReturn(mWindow).when(mActivity).getWindow();
         doReturn(mDecorView).when(mWindow).getDecorView();
-        mTracker = Mockito.spy(new FeedSliceViewTracker(
-                mParentView, mActivity, mContentManager, mLayoutHelper, mObserver));
+        mTracker = Mockito.spy(new FeedSliceViewTracker(mParentView, mActivity, mContentManager,
+                mLayoutHelper, /* watchForBarelyVisibleChange= */ true, mObserver));
     }
 
     @After
@@ -512,6 +514,28 @@ public class FeedSliceViewTrackerTest {
         advanceByMs(1L);
         mTracker.unbind();
         verify(mObserver, times(1)).reportContentSliceVisibleTime(eq(1L));
+    }
+
+    @Test
+    @SmallTest
+    public void testReportViewFirstVisibleAndRendered() {
+        mContentManager.addContents(0,
+                Arrays.asList(new FeedListContentManager.FeedContent[] {
+                        new FeedListContentManager.NativeViewContent(0, "c/key1", mChildA),
+                }));
+        doReturn(0).when(mLayoutHelper).findFirstVisibleItemPosition();
+        doReturn(0).when(mLayoutHelper).findLastVisibleItemPosition();
+        doReturn(mChildA).when(mLayoutManager).findViewByPosition(eq(0));
+
+        // View only covers 5% of the viewport.
+        mockViewportRect(0, 0, 100, 100);
+        mockViewDimensions(mChildA, 100, 5);
+        mockGetChildVisibleRect(mChildA, 0, 0, 100, 5);
+
+        mTracker.onPreDraw();
+        verify(mObserver, times(1)).reportViewFirstBarelyVisible(any());
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(mObserver, times(1)).reportViewFirstRendered(any());
     }
 
     void mockViewDimensions(View view, int width, int height) {
