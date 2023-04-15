@@ -31,11 +31,6 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "components/services/font/public/cpp/font_loader.h"  // nogncheck
-#include "third_party/skia/include/core/SkRefCnt.h"           // nogncheck
-#endif
-
 namespace blink {
 namespace scheduler {
 class WebThreadScheduler;
@@ -261,10 +256,6 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   // Event that signals `io_thread_id_` is set and ready to be read.
   mutable base::WaitableEvent io_thread_id_ready_event_;
   base::PlatformThreadId io_thread_id_ = base::kInvalidThreadId;
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  sk_sp<font_service::FontLoader> font_loader_;
-#endif
 
   // Thread to run the VideoFrameCompositor on.
   std::unique_ptr<base::Thread> video_frame_compositor_thread_;
