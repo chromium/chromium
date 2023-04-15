@@ -13,13 +13,12 @@
 
 namespace web {
 
-ContentWebFrame::ContentWebFrame(
-    const std::string& web_frame_id,
-    const content::GlobalRenderFrameHostId& content_id,
-    ContentWebState* content_web_state)
+ContentWebFrame::ContentWebFrame(const std::string& web_frame_id,
+                                 content::RenderFrameHost* render_frame_host,
+                                 ContentWebState* content_web_state)
     : web_frame_id_(web_frame_id),
-      content_id_(content_id),
-      content_web_state_(content_web_state) {
+      content_web_state_(content_web_state),
+      render_frame_host_(render_frame_host) {
   content_web_state->AddObserver(this);
 }
 
@@ -35,18 +34,14 @@ std::string ContentWebFrame::GetFrameId() const {
   return web_frame_id_;
 }
 
-content::RenderFrameHost* ContentWebFrame::GetRenderFrameHost() const {
-  return content::RenderFrameHost::FromID(content_id_);
-}
-
 bool ContentWebFrame::IsMainFrame() const {
-  return GetRenderFrameHost()->IsInPrimaryMainFrame();
+  return render_frame_host_->IsInPrimaryMainFrame();
 }
 
 GURL ContentWebFrame::GetSecurityOrigin() const {
   // TODO(crbug.com/1423501):  Once GetSecurityOrigin is changed to return an
   // Origin instead of a URL, this should use GetLastCommittedOrigin().
-  return GetRenderFrameHost()->GetLastCommittedURL();
+  return render_frame_host_->GetLastCommittedURL();
 }
 
 BrowserState* ContentWebFrame::GetBrowserState() {

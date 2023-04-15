@@ -66,7 +66,7 @@ void ContentWebFramesManager::RenderFrameCreated(
   // received from the frame, since features expect this.
   std::string web_frame_id = ios::device_util::GetRandomId();
   auto web_frame = std::make_unique<ContentWebFrame>(
-      web_frame_id, render_frame_host->GetGlobalId(), content_web_state_);
+      web_frame_id, render_frame_host, content_web_state_);
   WebFrame* new_frame = web_frame.get();
   web_frames_[web_frame_id] = std::move(web_frame);
   content_to_web_id_map_[render_frame_host->GetGlobalId()] = web_frame_id;

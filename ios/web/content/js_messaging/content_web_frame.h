@@ -10,7 +10,6 @@
 
 #import "base/cancelable_callback.h"
 #import "base/values.h"
-#import "content/public/browser/global_routing_id.h"
 #import "ios/web/js_messaging/web_frame_internal.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/web_state_observer.h"
@@ -30,7 +29,7 @@ class ContentWebFrame : public WebFrame,
                         public WebStateObserver {
  public:
   ContentWebFrame(const std::string& web_frame_id,
-                  const content::GlobalRenderFrameHostId& content_id,
+                  content::RenderFrameHost* render_frame_id,
                   ContentWebState* content_web_state);
 
   ContentWebFrame(const ContentWebFrame&) = delete;
@@ -80,19 +79,15 @@ class ContentWebFrame : public WebFrame,
   // Detaches the receiver from the associated  WebState.
   void DetachFromWebState();
 
-  // Returns the RenderFrameHost corresponding to this WebFrame.
-  content::RenderFrameHost* GetRenderFrameHost() const;
-
   // The web frame identifier which uniquely identifies this frame across the
   // application's lifetime.
   std::string web_frame_id_;
 
-  // The content frame identifier which uniquely identifies this frame across
-  // the application's lifetime.
-  content::GlobalRenderFrameHostId content_id_;
-
   // The web state corresponding to the WebContents for this frame.
   raw_ptr<ContentWebState> content_web_state_;
+
+  // The RenderFrameHost corresponding to this frame.
+  raw_ptr<content::RenderFrameHost> render_frame_host_;
 };
 
 }  // namespace web
