@@ -10,7 +10,6 @@
 #include "base/containers/queue.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
-#include "base/guid.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
@@ -19,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/optional_util.h"
+#include "base/uuid.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/download/mhtml_extra_parts_impl.h"
@@ -356,7 +356,7 @@ MHTMLGenerationManager::Job::Job(
       params_(params),
       frame_tree_node_id_of_busy_frame_(FrameTreeNode::kFrameTreeNodeInvalidId),
       mhtml_boundary_marker_(net::GenerateMimeMultipartBoundary()),
-      salt_(base::GenerateGUID()),
+      salt_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       callback_(std::move(callback)),
       is_finished_(false),
       waiting_on_data_streaming_(false) {
