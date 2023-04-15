@@ -123,8 +123,8 @@ int Center(int size, int item_size) {
 
 class TabStyleHighlightPathGenerator : public views::HighlightPathGenerator {
  public:
-  explicit TabStyleHighlightPathGenerator(TabStyleViews* tab_style)
-      : tab_style_(tab_style) {}
+  explicit TabStyleHighlightPathGenerator(TabStyleViews* tab_style_views)
+      : tab_style_views_(tab_style_views) {}
   TabStyleHighlightPathGenerator(const TabStyleHighlightPathGenerator&) =
       delete;
   TabStyleHighlightPathGenerator& operator=(
@@ -132,11 +132,11 @@ class TabStyleHighlightPathGenerator : public views::HighlightPathGenerator {
 
   // views::HighlightPathGenerator:
   SkPath GetHighlightPath(const views::View* view) override {
-    return tab_style_->GetPath(TabStyle::PathType::kHighlight, 1.0);
+    return tab_style_views_->GetPath(TabStyle::PathType::kHighlight, 1.0);
   }
 
  private:
-  const raw_ptr<TabStyleViews, DanglingUntriaged> tab_style_;
+  const raw_ptr<TabStyleViews, DanglingUntriaged> tab_style_views_;
 };
 
 }  // namespace
@@ -194,7 +194,7 @@ Tab::Tab(TabSlotController* controller)
       title_animation_(this) {
   DCHECK(controller);
 
-  tab_style_ = TabStyleViews::CreateForTab(this);
+  tab_style_views_ = TabStyleViews::Create()->CreateForTab(this);
 
   // So we get don't get enter/exit on children and don't prematurely stop the
   // hover.
@@ -204,7 +204,7 @@ Tab::Tab(TabSlotController* controller)
 
   // This will cause calls to GetContentsBounds to return only the rectangle
   // inside the tab shape, rather than to its extents.
-  SetBorder(views::CreateEmptyBorder(tab_style()->GetContentsInsets()));
+  SetBorder(views::CreateEmptyBorder(tab_style_views()->GetContentsInsets()));
 
   title_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   title_->SetElideBehavior(gfx::FADE_TAIL);
@@ -244,7 +244,8 @@ Tab::Tab(TabSlotController* controller)
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   views::FocusRing::Install(this);
   views::HighlightPathGenerator::Install(
-      this, std::make_unique<TabStyleHighlightPathGenerator>(tab_style_.get()));
+      this,
+      std::make_unique<TabStyleHighlightPathGenerator>(tab_style_views()));
 
   SetProperty(views::kElementIdentifierKey, kTabElementId);
 }
@@ -274,7 +275,7 @@ bool Tab::GetHitTestMask(SkPath* mask) const {
   // When the window is maximized we don't want to shave off the edges or top
   // shadow of the tab, such that the user can click anywhere along the top
   // edge of the screen to select a tab. Ditto for immersive fullscreen.
-  *mask = tab_style()->GetPath(
+  *mask = tab_style_views()->GetPath(
       TabStyle::PathType::kHitTest,
       GetWidget()->GetCompositor()->device_scale_factor(),
       /* force_active */ false, TabStyle::RenderUnits::kDips);
@@ -557,7 +558,7 @@ void Tab::OnMouseCaptureLost() {
 }
 
 void Tab::OnMouseMoved(const ui::MouseEvent& event) {
-  tab_style_->SetHoverLocation(event.location());
+  tab_style_views()->SetHoverLocation(event.location());
   controller_->OnMouseEventInTab(this, event);
 
   // Linux enter/leave events are sometimes flaky, so we don't want to "miss"
@@ -591,7 +592,7 @@ void Tab::MaybeUpdateHoverStatus(const ui::MouseEvent& event) {
 #endif
 
   mouse_hovered_ = true;
-  tab_style_->ShowHover(TabStyle::ShowHoverStyle::kSubtle);
+  tab_style_views()->ShowHover(TabStyle::ShowHoverStyle::kSubtle);
   UpdateForegroundColors();
   Layout();
   if (g_show_hover_card_on_mouse_hover)
@@ -603,7 +604,7 @@ void Tab::OnMouseExited(const ui::MouseEvent& event) {
   if (!mouse_hovered_)
     return;
   mouse_hovered_ = false;
-  tab_style_->HideHover(TabStyle::HideHoverStyle::kGradual);
+  tab_style_views()->HideHover(TabStyle::HideHoverStyle::kGradual);
   UpdateForegroundColors();
   Layout();
 }
@@ -673,7 +674,7 @@ void Tab::PaintChildren(const views::PaintInfo& info) {
   // The paint recording scale for tabs is consistent along the x and y axis.
   const float paint_recording_scale = info.paint_recording_scale_x();
 
-  const SkPath clip_path = tab_style()->GetPath(
+  const SkPath clip_path = tab_style_views()->GetPath(
       TabStyle::PathType::kInteriorClip, paint_recording_scale);
 
   clip_recorder.ClipPathWithAntiAliasing(clip_path);
@@ -681,7 +682,7 @@ void Tab::PaintChildren(const views::PaintInfo& info) {
 }
 
 void Tab::OnPaint(gfx::Canvas* canvas) {
-  tab_style()->PaintTab(canvas);
+  tab_style_views()->PaintTab(canvas);
 }
 
 void Tab::AddedToWidget() {
@@ -718,8 +719,9 @@ TabSlotView::ViewType Tab::GetTabSlotViewType() const {
 }
 
 TabSizeInfo Tab::GetTabSizeInfo() const {
-  return {tab_style()->GetPinnedWidth(), tab_style()->GetMinimumActiveWidth(),
-          tab_style()->GetMinimumInactiveWidth(),
+  return {tab_style()->GetPinnedWidth(),
+          tab_style_views()->GetMinimumActiveWidth(),
+          tab_style_views()->GetMinimumInactiveWidth(),
           tab_style()->GetStandardWidth()};
 }
 
@@ -784,8 +786,8 @@ SkColor Tab::GetAlertIndicatorColor(TabAlertState state) const {
        {kColorTabAlertAudioPlayingActiveFrameInactive,
         kColorTabAlertAudioPlayingActiveFrameActive}}};
   return color_provider->GetColor(
-      color_ids[group]
-               [tab_style_->GetApparentActiveState() == TabActive::kActive]
+      color_ids[group][tab_style_views()->GetApparentActiveState() ==
+                       TabActive::kActive]
                [controller_->ShouldPaintAsActiveFrame()]);
 }
 
@@ -1070,7 +1072,7 @@ int Tab::GetWidthOfLargestSelectableRegion() const {
 }
 
 void Tab::UpdateForegroundColors() {
-  TabStyle::TabColors colors = tab_style_->CalculateColors();
+  TabStyle::TabColors colors = tab_style_views()->CalculateColors();
   title_->SetEnabledColor(colors.foreground_color);
   close_button_->SetColors(colors);
   alert_indicator_button_->OnParentTabButtonColorChanged();

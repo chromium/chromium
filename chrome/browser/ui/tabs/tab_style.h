@@ -139,13 +139,13 @@ class TabStyle {
 
   static const TabStyle* Get();
 
- protected:
-  // Avoid implicitly-deleted constructor.
-  TabStyle() = default;
-
   // Returns how far from the leading and trailing edges of a tab the contents
   // should actually be laid out.
   int GetContentsHorizontalInsetSize() const;
+
+ protected:
+  // Avoid implicitly-deleted constructor.
+  TabStyle() = default;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STYLE_H_

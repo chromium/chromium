@@ -54,6 +54,6 @@ float ZOrderableTabContainerElement::CalculateZValue(views::View* child) {
   // The non-active tabs are painted next. They are ordered by their selected
   // or hovered state, which is animated and thus real-valued.
   const float tab_style_z_value =
-      tab ? tab->tab_style()->GetZValue() + 1.0f : 0.0f;
+      tab ? tab->tab_style_views()->GetZValue() + 1.0f : 0.0f;
   return z_value + tab_style_z_value;
 }

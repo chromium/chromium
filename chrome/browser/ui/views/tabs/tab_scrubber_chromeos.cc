@@ -49,7 +49,7 @@ gfx::Point TabScrubberChromeOS::GetStartPoint(
 
   // Start the swipe where the tab contents start/end.  This provides a small
   // amount of slop inside the tab before a swipe will change tabs.
-  auto contents_insets = tab->tab_style()->GetContentsInsets();
+  auto contents_insets = tab->tab_style_views()->GetContentsInsets();
   int left = contents_insets.left();
   int right = contents_insets.right();
 
@@ -184,7 +184,7 @@ void TabScrubberChromeOS::OnScrollEvent(ui::ScrollEvent* event) {
   if (highlighted_tab_ != -1) {
     gfx::Point hover_point(swipe_x_, swipe_y_);
     views::View::ConvertPointToTarget(tab_strip_, new_tab, &hover_point);
-    new_tab->tab_style()->SetHoverLocation(hover_point);
+    new_tab->tab_style_views()->SetHoverLocation(hover_point);
   }
 }
 
@@ -273,7 +273,7 @@ void TabScrubberChromeOS::FinishScrub(bool activate) {
     TabStrip* tab_strip = browser_view->tabstrip();
     if (activate && highlighted_tab_ != -1) {
       Tab* tab = tab_strip->tab_at(highlighted_tab_);
-      tab->tab_style()->HideHover(TabStyle::HideHoverStyle::kImmediate);
+      tab->tab_style_views()->HideHover(TabStyle::HideHoverStyle::kImmediate);
       int distance = std::abs(highlighted_tab_ -
                               browser_->tab_strip_model()->active_index());
       UMA_HISTOGRAM_CUSTOM_COUNTS("Tabs.ScrubDistance", distance, 1, 20, 21);
@@ -360,12 +360,13 @@ void TabScrubberChromeOS::UpdateHighlightedTab(Tab* new_tab, int new_index) {
 
   if (highlighted_tab_ != -1) {
     Tab* tab = tab_strip_->tab_at(highlighted_tab_);
-    tab->tab_style()->HideHover(TabStyle::HideHoverStyle::kImmediate);
+    tab->tab_style_views()->HideHover(TabStyle::HideHoverStyle::kImmediate);
   }
 
   if (new_index != browser_->tab_strip_model()->active_index()) {
     highlighted_tab_ = new_index;
-    new_tab->tab_style()->ShowHover(TabStyle::ShowHoverStyle::kPronounced);
+    new_tab->tab_style_views()->ShowHover(
+        TabStyle::ShowHoverStyle::kPronounced);
   } else {
     highlighted_tab_ = -1;
   }

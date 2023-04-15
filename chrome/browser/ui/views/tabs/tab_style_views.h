@@ -29,14 +29,15 @@ class Canvas;
 }
 
 // Holds Views-specific logic for rendering and sizing tabs.
-class TabStyleViews : public TabStyle {
+class TabStyleViews {
  public:
   // Factory function allows to experiment with different variations on tab
   // style at runtime or via flag.
   static std::unique_ptr<TabStyleViews> CreateForTab(Tab* tab);
   static std::unique_ptr<TabStyleViews> Create();
 
-  ~TabStyleViews() override;
+  TabStyleViews();
+  virtual ~TabStyleViews();
 
   // Gets the specific |path_type| associated with the specific |tab|.
   // If |force_active| is true, applies an active appearance on the tab (usually
@@ -78,6 +79,9 @@ class TabStyleViews : public TabStyle {
   // Hides the hover animation.
   virtual void HideHover(TabStyle::HideHoverStyle style) = 0;
 
+  // Returns the progress (0 to 1) of the hover animation.
+  virtual double GetHoverAnimationValue() const = 0;
+
   // Returns the minimum possible width of a selected Tab. Selected tabs must
   // always show a close button, and thus have a larger minimum size than
   // unselected tabs.
@@ -86,9 +90,10 @@ class TabStyleViews : public TabStyle {
   // Returns the minimum possible width of a single unselected Tab.
   int GetMinimumInactiveWidth() const;
 
- protected:
-  // Avoid implicitly-deleted constructor.
-  TabStyleViews() = default;
+  const TabStyle* tab_style() const { return tab_style_; }
+
+ private:
+  const raw_ptr<const TabStyle> tab_style_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_STYLE_VIEWS_H_
