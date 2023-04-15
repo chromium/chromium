@@ -121,12 +121,18 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
       const HoldingSpaceProgress& progress,
       ImageResolver image_resolver);
 
+  // Returns `true` if `type` is a Camera app type, `false` otherwise.
+  static bool IsCameraAppType(HoldingSpaceItem::Type type);
+
+  // TODO(http://b/278147195): Rename to `IsDownloadType()`.
   // Returns `true` if `type` is a download type, `false` otherwise.
   static bool IsDownload(HoldingSpaceItem::Type type);
 
+  // TODO(http://b/278147195): Rename to `IsScreenCaptureType()`.
   // Returns `true` if `type` is a screen capture type, `false` otherwise.
   static bool IsScreenCapture(HoldingSpaceItem::Type type);
 
+  // TODO(http://b/278147195): Rename to `IsSuggestionType()`.
   // Returns `true` if `type` is a suggestion type, `false` otherwise.
   static bool IsSuggestion(HoldingSpaceItem::Type type);
 

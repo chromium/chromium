@@ -23,6 +23,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -136,6 +137,18 @@ HoldingSpaceItem* AddUninitializedItem(HoldingSpaceModel* model,
   auto* deserialized_item_ptr = deserialized_item.get();
   model->AddItem(std::move(deserialized_item));
   return deserialized_item_ptr;
+}
+
+bool ShouldRestoreFromPersistence(HoldingSpaceItem::Type type) {
+  if (HoldingSpaceItem::IsCameraAppType(type) &&
+      !features::IsHoldingSpaceCameraAppIntegrationEnabled()) {
+    return false;
+  }
+  if (HoldingSpaceItem::IsSuggestion(type) &&
+      !features::IsHoldingSpaceSuggestionsEnabled()) {
+    return false;
+  }
+  return true;
 }
 
 // Utility class which can wait until a `HoldingSpaceModel` for a given profile
@@ -599,24 +612,19 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
 class HoldingSpaceKeyedServiceWithExperimentalFeatureTest
     : public HoldingSpaceKeyedServiceTest,
       public testing::WithParamInterface<
-          std::tuple</*enable_predictability=*/bool,
-                     /*enable_suggestion=*/bool>> {
+          std::tuple</*enable_camera_app_integration=*/bool,
+                     /*enable_predictability=*/bool,
+                     /*enable_suggestions=*/bool>> {
  public:
   HoldingSpaceKeyedServiceWithExperimentalFeatureTest() {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    if (std::get<0>(GetParam())) {
-      enabled_features.push_back(features::kHoldingSpacePredictability);
-    } else {
-      disabled_features.push_back(features::kHoldingSpacePredictability);
-    }
-
-    if (std::get<1>(GetParam())) {
-      enabled_features.push_back(features::kHoldingSpaceSuggestions);
-    } else {
-      disabled_features.push_back(features::kHoldingSpaceSuggestions);
-    }
-
+    (std::get<0>(GetParam()) ? enabled_features : disabled_features)
+        .push_back(features::kHoldingSpaceCameraAppIntegration);
+    (std::get<1>(GetParam()) ? enabled_features : disabled_features)
+        .push_back(features::kHoldingSpacePredictability);
+    (std::get<2>(GetParam()) ? enabled_features : disabled_features)
+        .push_back(features::kHoldingSpaceSuggestions);
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
@@ -624,9 +632,12 @@ class HoldingSpaceKeyedServiceWithExperimentalFeatureTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
+    testing::Combine(/*enable_camera_app_integration=*/testing::Bool(),
+                     /*enable_predictability*/ testing::Bool(),
+                     /*enabled_suggestions=*/testing::Bool()));
 
 TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest, GuestUserProfile) {
   // Construct a guest session profile.
@@ -1349,10 +1360,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
           persisted_holding_space_items_before_restoration.Append(
               fresh_holding_space_item->Serialize());
 
-          // Suggestions should not be restored if the suggestion feature is
-          // disabled.
-          if (!HoldingSpaceItem::IsSuggestion(type) ||
-              features::IsHoldingSpaceSuggestionsEnabled()) {
+          if (ShouldRestoreFromPersistence(type)) {
             // We expect the `fresh_holding_space_item` to still be in
             // persistence after model restoration since its backing file
             // exists.
@@ -1422,15 +1430,11 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
       "HoldingSpace.Item.TotalCount.All",
       secondary_holding_space_model->items().size(), 1);
   for (const HoldingSpaceItem::Type type : GetHoldingSpaceItemTypes()) {
-    // Suggestions are not added to the model if the feature is disabled.
-    const bool should_restore = !HoldingSpaceItem::IsSuggestion(type) ||
-                                features::IsHoldingSpaceSuggestionsEnabled();
-    const int expected_count = should_restore ? 1 : 0;
-
     histogram_tester.ExpectBucketCount(
         base::StringPrintf("HoldingSpace.Item.TotalCount.%s",
                            holding_space_util::ToString(type).c_str()),
-        /*sample=*/1, expected_count);
+        /*sample=*/1,
+        /*expected_count=*/ShouldRestoreFromPersistence(type) ? 1 : 0);
   }
 }
 
@@ -1472,11 +1476,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
           persisted_holding_space_items_before_restoration.Append(
               delayed_holding_space_item->Serialize());
 
-          // Suggestions should not be restored if the suggestion feature is
-          // disabled.
-          const bool should_restore =
-              !HoldingSpaceItem::IsSuggestion(type) ||
-              features::IsHoldingSpaceSuggestionsEnabled();
+          const bool should_restore = ShouldRestoreFromPersistence(type);
 
           // If an item should be restored, it should be restored after delayed
           // volume mount, and remain in persistent storage.
@@ -1642,11 +1642,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
           persisted_holding_space_items_before_restoration.Append(
               delayed_holding_space_item->Serialize());
 
-          // Suggestions should not be restored if the suggestion feature is
-          // disabled.
-          const bool should_restore =
-              !HoldingSpaceItem::IsSuggestion(type) ||
-              features::IsHoldingSpaceSuggestionsEnabled();
+          const bool should_restore = ShouldRestoreFromPersistence(type);
 
           // The item is restored after delayed volume mount, and remain
           // in persistent storage if it should be restored.
@@ -1789,10 +1785,7 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
 
           // The item should be immediately added to the model, and remain in
           // the persistent storage if it should be restored.
-          const bool should_restore =
-              !HoldingSpaceItem::IsSuggestion(type) ||
-              features::IsHoldingSpaceSuggestionsEnabled();
-          if (should_restore) {
+          if (ShouldRestoreFromPersistence(type)) {
             initialized_items_before_delayed_mount.push_back(
                 fresh_holding_space_item->id());
             persisted_holding_space_items_after_restoration.Append(
@@ -1962,13 +1955,9 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
           persisted_holding_space_items_before_restoration.Append(
               fresh_holding_space_item->Serialize());
 
-          bool should_restore = false;
-          if (!features::IsHoldingSpaceSuggestionsEnabled() &&
-              HoldingSpaceItem::IsSuggestion(type)) {
-            // Suggestion items should not be restored if the suggestion feature
-            // is disabled.
-            should_restore = false;
-          } else {
+          bool should_restore = ShouldRestoreFromPersistence(type);
+
+          if (should_restore) {
             // Pinned files are exempt from age checks. If the predictability
             // feature is disabled, we expect all holding space items of other
             // types to be removed from persistence during restoration due to
@@ -2561,18 +2550,27 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
 }
 
 // Base class for tests which verify adding and removing items from holding
-// space works as intended, parameterized by holding space item type.
+// space works as intended, parameterized by holding space item type and
+// whether Camera app integration is enabled.
 class HoldingSpaceKeyedServiceAddAndRemoveItemTest
     : public HoldingSpaceKeyedServiceTest,
-      public ::testing::WithParamInterface<HoldingSpaceItem::Type> {
+      public ::testing::WithParamInterface<
+          std::tuple<HoldingSpaceItem::Type,
+                     /*enable_camera_app_integration=*/bool>> {
  public:
+  HoldingSpaceKeyedServiceAddAndRemoveItemTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kHoldingSpaceCameraAppIntegration,
+        /*enable_camera_app_integration=*/std::get<1>(GetParam()));
+  }
+
   // Returns the holding space service associated with the specified `profile`.
   HoldingSpaceKeyedService* GetService(Profile* profile) {
     return HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);
   }
 
   // Returns the type of holding space item under test.
-  HoldingSpaceItem::Type GetType() const { return GetParam(); }
+  HoldingSpaceItem::Type GetType() const { return std::get<0>(GetParam()); }
 
   // Adds an item of `type` to the holding space belonging to `profile`, backed
   // by the file at the specified absolute `file_path`. Returns the `id` of the
@@ -2598,7 +2596,14 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
       case HoldingSpaceItem::Type::kCameraAppScanJpg:
       case HoldingSpaceItem::Type::kCameraAppScanPdf:
       case HoldingSpaceItem::Type::kCameraAppVideoGif:
-      case HoldingSpaceItem::Type::kCameraAppVideoMp4:
+      case HoldingSpaceItem::Type::kCameraAppVideoMp4: {
+        const auto& id = holding_space_service->AddItemOfType(type, file_path);
+        if (!features::IsHoldingSpaceCameraAppIntegrationEnabled()) {
+          EXPECT_TRUE(id.empty());
+          return id;
+        }
+        break;
+      }
       case HoldingSpaceItem::Type::kDiagnosticsLog:
       case HoldingSpaceItem::Type::kNearbyShare:
         holding_space_service->AddItemOfType(type, file_path);
@@ -2638,11 +2643,16 @@ class HoldingSpaceKeyedServiceAddAndRemoveItemTest
     EXPECT_TRUE(item);
     return item->id();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         HoldingSpaceKeyedServiceAddAndRemoveItemTest,
-                         ::testing::ValuesIn(GetHoldingSpaceItemTypes()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HoldingSpaceKeyedServiceAddAndRemoveItemTest,
+    testing::Combine(testing::ValuesIn(GetHoldingSpaceItemTypes()),
+                     /*enable_camera_app_integration=*/testing::Bool()));
 
 TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
   // Wait for the holding space model to attach.
@@ -2674,6 +2684,15 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
 
   // Add a holding space item of the type under test.
   const std::string id = AddItem(profile, GetType(), file_path);
+
+  // Insertion into the model should only fail if the item is a Camera app item
+  // and Camera app integration is disabled.
+  if (id.empty()) {
+    EXPECT_EQ(model->items().size(), 0u);
+    EXPECT_TRUE(HoldingSpaceItem::IsCameraAppType(GetType()));
+    EXPECT_FALSE(features::IsHoldingSpaceCameraAppIntegrationEnabled());
+    return;
+  }
 
   // Verify a holding space item has been added to the model.
   ASSERT_EQ(model->items().size(), 1u);
@@ -2758,7 +2777,15 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItemOfType) {
 
   // Add a holding space item of the type under test.
   const auto& id = GetService(profile)->AddItemOfType(GetType(), file_path);
-  EXPECT_FALSE(id.empty());
+
+  // Insertion into the model should only fail if the item is a Camera app item
+  // and Camera app integration is disabled.
+  if (id.empty()) {
+    EXPECT_EQ(model->items().size(), 0u);
+    EXPECT_TRUE(HoldingSpaceItem::IsCameraAppType(GetType()));
+    EXPECT_FALSE(features::IsHoldingSpaceCameraAppIntegrationEnabled());
+    return;
+  }
 
   // Verify a holding space item has been added to the model.
   ASSERT_EQ(model->items().size(), 1u);

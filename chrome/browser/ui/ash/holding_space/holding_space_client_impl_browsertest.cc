@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
@@ -107,6 +108,15 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceClientImplTest, AddItemOfType) {
         TestFile(GetProfile(), kTextFilePath);
     const std::string& expected_id =
         client->AddItemOfType(expected_type, expected_file_path);
+
+    // Insertion into the model should only fail if the item is a Camera app
+    // item and Camera app integration is disabled.
+    if (expected_id.empty()) {
+      EXPECT_EQ(model->items().size(), expected_count);
+      EXPECT_TRUE(HoldingSpaceItem::IsCameraAppType(expected_type));
+      EXPECT_FALSE(features::IsHoldingSpaceCameraAppIntegrationEnabled());
+      continue;
+    }
 
     // Verify the item was created as expected.
     ASSERT_EQ(model->items().size(), ++expected_count);

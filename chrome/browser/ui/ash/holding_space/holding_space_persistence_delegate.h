@@ -64,8 +64,9 @@ class HoldingSpacePersistenceDelegate
   // Restores the holding space model from persistent storage.
   void RestoreModelFromPersistence();
 
-  // Removes the persisted suggestions if the suggestion feature is disabled.
-  void MaybeRemoveSuggestionsFromPersistence();
+  // Removes items from persistent storage that should not be restored to the
+  // in-memory holding space model.
+  void MaybeRemoveItemsFromPersistence();
 
   // Owned by `HoldingSpaceKeyedService`.
   ThumbnailLoader* const thumbnail_loader_;
