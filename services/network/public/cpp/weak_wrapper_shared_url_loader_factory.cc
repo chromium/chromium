@@ -30,6 +30,8 @@ void WeakWrapperSharedURLLoaderFactory::CreateLoaderAndStart(
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   if (!factory())
     return;
+
+  mojo::internal::AutoRecordReplayAssertBufferAllocations assertsEnabled("RUN-1725-1732");
   factory()->CreateLoaderAndStart(std::move(loader), request_id, options,
                                   request, std::move(client),
                                   traffic_annotation);
