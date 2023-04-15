@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Berikut beberapa referensi berguna lainnya:</translation>
 <translation id="1905710495812624430">Melebihi batas percobaan maksimum yang diizinkan.</translation>
 <translation id="1908234395526491708">Kegagalan permintaan UDP</translation>
+<translation id="1923388006036088459">Warna aksen</translation>
 <translation id="1947737735496445907">Tercetak</translation>
 <translation id="1951012854035635156">Asisten</translation>
 <translation id="1962550982027027473">APN default diperlukan</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Download selesai</translation>
 <translation id="3969602104473960991">Sandi ChromeOS diperbarui</translation>
 <translation id="397105322502079400">Menghitung...</translation>
+<translation id="3974175076798940554">Aset Chromebook Plus eksklusif kini tersedia</translation>
 <translation id="39823212440917567">Tugas pencetakan yang sudah lebih dari <ph name="NUMBER_OF_DAYS" /> hari akan dihapus</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> Anda sekarang sudah diupdate</translation>
 <translation id="4003384961948020559">Gagal - Baki hasil cetak penuh</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">Tambahkan akun ke fitur masuk banyak akun. Semua akun yang masuk dapat diakses tanpa menggunakan sandi, sebaiknya hanya gunakan akun ini dengan akun tepercaya.</translation>
 <translation id="8364946094152050673">Server nama kosong</translation>
 <translation id="8372477600026034341">Host tambahan</translation>
+<translation id="8373046809163484087">Gunakan kumpulan warna yang cocok dengan wallpaper Anda</translation>
 <translation id="8380114448424469341">Kaitkan jendela di paruh <ph name="DIRECTION" /> layar</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> ini dikelola perusahaan</translation>
 <translation id="8398927464629426868">Kecepatan pengisian atau pemakaian daya perangkat saat ini</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">Nama Pengguna</translation>
 <translation id="8503836310948963452">Tinggal beberapa menit lagi...</translation>
 <translation id="8508640263392900755">Detail APN</translation>
+<translation id="8522687886059337719">Sekarang Anda memiliki akses ke <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />wallpaper<ph name="END_LINK_WALLPAPER_SUBPAGE" /> dan <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />screensaver<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> baru</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Operator Anda mungkin memerlukan opsi ini untuk terhubung ke jaringan. Hubungi operator untuk mengetahui detailnya.</translation>

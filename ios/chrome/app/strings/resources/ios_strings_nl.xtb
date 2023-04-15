@@ -353,6 +353,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3324193307694657476">Adres 2</translation>
 <translation id="3328459813621383194">Inactieve tabbladen verplaatsen</translation>
 <translation id="3328801116991980348">Site-informatie</translation>
+<translation id="3344485292736684439">{count,plural, =1{Bookmark opgeslagen in {title} in je account {email}}other{Bookmarks opgeslagen in {title} in je account {email}}}</translation>
 <translation id="3371831930909698441">Vertalen is beschikbaar. Opties beschikbaar onderaan het scherm.</translation>
 <translation id="3377063233124932127">Je opgeslagen bookmarks, wachtwoorden enz. staan nu bovenaan.</translation>
 <translation id="3393920035788932672">Pop-ups toegestaan</translation>
@@ -1032,6 +1033,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7840771868269352570">De geselecteerde items worden verwijderd.</translation>
 <translation id="7845466610722898">Leeslijst tonen</translation>
 <translation id="784551991304901159">Als je content wilt zien, selecteer je Aanzetten in het menu</translation>
+<translation id="7846158885638438868">{count,plural, =1{Gebookmarkt in {title}}other{Gebookmarkt in {title}}}</translation>
 <translation id="7853202427316060426">Activiteit</translation>
 <translation id="7856733331829174190">Kan niet downloaden</translation>
 <translation id="785938070103630874">Open Wachtwoorden, Betaalmethoden of Adres en meer</translation>

@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Voici quelques autres ressources utiles :</translation>
 <translation id="1905710495812624430">Nombre maximal autorisé de tentatives atteint.</translation>
 <translation id="1908234395526491708">Échecs des demandes UDP</translation>
+<translation id="1923388006036088459">Couleurs de mise en évidence</translation>
 <translation id="1947737735496445907">Imprimée</translation>
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1962550982027027473">Un APN par défaut est requis</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Téléchargement terminé</translation>
 <translation id="3969602104473960991">Mot de passe de Chrome OS mis à jour</translation>
 <translation id="397105322502079400">Calcul en cours...</translation>
+<translation id="3974175076798940554">Éléments Chromebook Plus exclusifs maintenant offerts</translation>
 <translation id="39823212440917567">Les tâches d'impression datant de plus de <ph name="NUMBER_OF_DAYS" /> jours seront supprimées</translation>
 <translation id="3993704782688964914">Votre <ph name="DEVICE_NAME" /> est maintenant à jour</translation>
 <translation id="4003384961948020559">Échec : bac de sortie plein</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">Ajouter un compte à la connexion multicompte. Tous les comptes connectés sont accessibles sans mot de passe. Nous vous recommandons donc de n'utiliser cette fonctionnalité qu'avec des comptes fiables.</translation>
 <translation id="8364946094152050673">Le champ des serveurs de nom est vide</translation>
 <translation id="8372477600026034341">Hôtes supplémentaires</translation>
+<translation id="8373046809163484087">Utiliser des ensembles de couleurs qui correspondent à votre fond d'écran</translation>
 <translation id="8380114448424469341">Ancrer la fenêtre sur la moitié <ph name="DIRECTION" /> de l'écran</translation>
 <translation id="8395584934117017006">Cet appareil <ph name="DEVICE_TYPE" /> est géré par l'entreprise</translation>
 <translation id="8398927464629426868">La vitesse à laquelle l'appareil se charge ou se décharge actuellement</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8503836310948963452">Il ne reste que quelques minutes…</translation>
 <translation id="8508640263392900755">Détails de l'APN</translation>
+<translation id="8522687886059337719">Vous avez maintenant accès aux nouveaux <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fonds d'écran<ph name="END_LINK_WALLPAPER_SUBPAGE" /> et à l'<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />écran de veille<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Votre fournisseur de services peut exiger l'activation de cette option pour vous connecter à son réseau. Communiquez avec votre fournisseur de services pour en savoir davantage.</translation>

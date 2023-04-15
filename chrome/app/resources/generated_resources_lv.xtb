@@ -118,6 +118,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="1090541560108055381">Pirms izveidojat savienojumu pārī, pārliecinieties, ka šis kods abās ierīcēs ir vienāds.</translation>
 <translation id="1091767800771861448">Nospiediet ESCAPE, lai izlaistu (tikai neoficiāli būvējumi).</translation>
 <translation id="1093457606523402488">Redzamie tīkli:</translation>
+<translation id="1094219634413363886">Ja šajā pārvaldītajā ierīcē tiks sākta ierakstīšana, jums tiks parādīts paziņojums.</translation>
 <translation id="1095761715416917775">Parūpējieties, lai vienmēr varētu piekļūt sinhronizētajiem datiem</translation>
 <translation id="1095879482467973146">Google paroļu pārvaldnieks tīmeklī</translation>
 <translation id="109647177154844434">Atinstalējot Parallels Desktop, tiks izdzēsts jūsu Windows sistēmas attēls. Tostarp tiks izdzēstas tajā iekļautās lietojumprogrammas, iestatījumi un dati. Vai tiešām vēlaties turpināt?</translation>
@@ -390,7 +391,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1333965224356556482">Neļaut vietnēm piekļūt jūsu atrašanās vietas informācijai</translation>
 <translation id="1335282218035876586">Jūsu Chromebook datorā vairs netiek saņemti drošības un programmatūras atjauninājumi. Izmantojiet jaunu Chromebook datoru, lai pilnvērtīgi izmantotu visas iespējas.</translation>
 <translation id="133535873114485416">Vēlamā ievade</translation>
-<translation id="1335437153193710305">Varat izvēlēties profilu, no kura vēlaties skatīt paroles.</translation>
 <translation id="1335929031622236846">Ierīces reģistrēšana</translation>
 <translation id="1336902454946927954">Jūsu drošības atslēga ir bloķēta, jo nevarēja atpazīt jūsu pirksta nospiedumu. Lai atbloķētu drošības atslēgu, ievadiet PIN.</translation>
 <translation id="1338631221631423366">Notiek savienošana pārī...</translation>
@@ -3315,7 +3315,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="383669374481694771">Šī ir vispārīga informācija par šo ierīci un tās lietojumu (piemēram, par akumulatora uzlādes līmeni, sistēmas darbībām, lietotņu izmantojumu un kļūdām). Dati tiks izmantoti, lai uzlabotu Android darbību. Noteiktu apkopotu informāciju izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji, lai uzlabotu lietotnes un produktus.</translation>
 <translation id="3838085852053358637">Neizdevās ielādēt paplašinājumu</translation>
 <translation id="3838486795898716504">Citas lapas ar nosaukumu <ph name="PAGE_TITLE" /></translation>
-<translation id="3838487810283346084">Pievienojiet saglabātās paroles Google paroļu pārvaldniekam.</translation>
 <translation id="383891835335927981">Nevienā vietnē nav veikta tālummaiņa.</translation>
 <translation id="3839509547554145593">Iespējot peles ritināšanas paātrinātāju</translation>
 <translation id="3839516600093027468">Vienmēr bloķēt starpliktuves satura rādīšanu vietnei <ph name="HOST" /></translation>
@@ -3855,6 +3854,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4340125850502689798">Lietotājvārds nav derīgs</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" /> vēlas sazināties ar lietotni “<ph name="EXTENSION_NAME" />”</translation>
 <translation id="4340799661701629185">Neļaut vietnēm sūtīt paziņojumus</translation>
+<translation id="4341280816303414009">Jūsu ekrāns var tikt ierakstīts</translation>
 <translation id="4341577178275615435">Lai ieslēgtu vai izslēgtu taustiņpārlūkošanu, izmantojiet īsinājumtaustiņu F7.</translation>
 <translation id="4341905082470253054">Notiek TPM statusa pārbaude...</translation>
 <translation id="434198521554309404">Ātra. Droša. Ērta.</translation>
@@ -5674,6 +5674,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5979421442488174909">&amp;Tulkot <ph name="LANGUAGE" /> valodā</translation>
 <translation id="5979469435153841984">Lai saglabātu lapu kā grāmatzīmi, noklikšķiniet uz zvaigznītes adreses joslā.</translation>
 <translation id="5981362776161841923">Lai atļautu paplašinājumu, tālāk mainiet noklusējuma iestatījumu.</translation>
+<translation id="5982578203375898585">Rādīt lejupielādes, kad tās ir pabeigtas</translation>
 <translation id="5984222099446776634">Nesen apmeklētie</translation>
 <translation id="5985458664595100876">Nederīgs vietrāža URL formāts. Atbalstītie formāti ir \\server\share un smb://server/share.</translation>
 <translation id="598810097218913399">Atcelt piešķiršanu</translation>

@@ -1793,6 +1793,7 @@
 <translation id="5344579389779391559">이 페이지에서 금액을 청구할 수 있습니다.</translation>
 <translation id="5347645913823149105">Chrome의 글꼴 맞춤설정 버튼, Chrome 글꼴 크기와 서체를 맞춤설정하려면 Enter를 누르세요</translation>
 <translation id="5355557959165512791">인증서가 취소되었기 때문에 현재 <ph name="SITE" />에 방문할 수 없습니다. 네트워크 오류와 공격은 대부분 일시적이므로 나중에 이 페이지가 정상적으로 작동할 수 있습니다.</translation>
+<translation id="5356345925629253198">Google 제품 전반에서 저장된 주소를 사용할 수 있습니다. 이 주소는 Google 계정(<ph name="ACCOUNT" />)에 저장됩니다.</translation>
 <translation id="5357848622083956825">시각 예술 및 디자인</translation>
 <translation id="536296301121032821">정책 설정 저장 실패</translation>
 <translation id="5363309033720083897">관리자가 허용한 직렬 포트</translation>
@@ -1918,7 +1919,6 @@
 <translation id="5695542892312572833">Windows Hello를 사용해 구매를 확인하고 완료하시겠습니까?</translation>
 <translation id="5701381305118179107">가운데</translation>
 <translation id="570530837424789914">관리...</translation>
-<translation id="5706906618852913030">계정에 저장하시겠습니까?</translation>
 <translation id="5707154300732650394">탐색 여정 재개</translation>
 <translation id="57094364128775171">강력한 비밀번호 추천...</translation>
 <translation id="571403275720188526">(arm64)</translation>

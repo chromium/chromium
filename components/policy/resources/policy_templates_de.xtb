@@ -532,15 +532,6 @@ Wenn du diese Richtlinie deaktivierst, wird das Scrollen zu bestimmten Textfragm
 
       Diese Richtlinie wurde in M94 entfernt.</translation>
 <translation id="1507373253059695424">Privatsphärefunktion auf dem Anmeldebildschirm immer aktivieren</translation>
-<translation id="150857982247452081">Ermöglicht das Erstellen einer Liste mit Protokollen und für jedes Protokoll eine verknüpfte Liste mit zugelassenen Quellmustern, die eine externe App starten können, ohne beim Nutzer nachzufragen. Das abschließende Trennzeichen sollte beim Aufführen des Protokolls nicht mit angegeben werden. Gib also beispielsweise „skype“ ein, statt „skype:“ oder „skype://“.
-
-      Wenn diese Richtlinie konfiguriert ist, darf ein Protokoll nur dann ohne Nachfrage eine externe App starten, wenn es auf der Liste aufgeführt ist und die Quelle der Website, die das Protokoll starten will, mit einem der Muster in der Liste allowed_origins des jeweiligen Protokolls übereinstimmt. Wenn eine der Bedingungen nicht erfüllt ist, wird die Nachfrage beim Starten externer Protokolle durch die Richtlinie nicht weggelassen.
-
-      Wenn diese Richtlinie nicht konfiguriert ist, können standardmäßig keine Protokolle ohne Nachfrage starten. Nutzer können für einzelne Protokolle oder Websites auf die Aufforderung verzichten, es sei denn, die Richtlinie <ph name="EXTERNAL_PROTOCOL_DIALOG_SHOW_ALWAYS_OPEN_CHECKBOX_POLICY_NAME" /> ist deaktiviert. Diese Richtlinie hat keine Auswirkung auf vom Nutzer festgelegte Ausnahmen für einzelne Protokolle oder Websites.
-
-      In den Mustern, die mit der Quelle übereinstimmen, wird ein ähnliches Format wie in der Richtlinie <ph name="URL_BLOCKLIST_POLICY_NAME" /> verwendet. Sie sind unter http://www.chromium.org/administrators/url-blocklist-filter-format beschrieben.
-
-      Die Muster für diese Richtlinie dürfen allerdings keine „/path“- oder „@query“-Elemente enthalten. Muster, die „/path“- oder „@query“-Elemente enthalten, werden ignoriert.</translation>
 <translation id="1508588104835702000">Cloud-Berichterstellung über verwaltete Browser deaktivieren</translation>
 <translation id="1509377996969000672">Wenn die Richtlinie festgelegt ist, werden Konfigurationen für gerätegebundene Unternehmensdrucker bereitgestellt. Das Format entspricht dem <ph name="NATIVE_PRINTERS_POLICY_NAME" />-Wörterbuch, erfordert jedoch zusätzlich ein „id“- oder „guid“-Feld pro Drucker für die Zulassungs- oder Sperrliste. Die Datei darf nicht größer als 5 MB sein und muss im JSON-Format vorliegen. Eine Datei mit ungefähr 21.000 Druckern ergibt nach dem Codieren eine Datei mit 5 MB. Die Integrität des Downloads wird anhand des kryptografischen Hashs verifiziert. Die Datei wird heruntergeladen, im Cache gespeichert und noch einmal heruntergeladen, sobald sich URL oder Hash ändern. <ph name="PRODUCT_OS_NAME" /> lädt die Datei für Druckerkonfigurationen herunter und sorgt dafür, dass die Drucker gemäß <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> und <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> verfügbar gemacht werden.
 
@@ -7528,14 +7519,6 @@ Wenn man <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> oder <ph name="LACROS_
 <translation id="802776363472387903">SHA-256-Hash des <ph name="PLUGIN_VM_NAME" />-Image.</translation>
 <translation id="8028814157747157754">Den Standardsuchanbieter aktivieren und zulassen, dass Nutzer die Liste der Suchanbieter ändern</translation>
 <translation id="8029201909194194377">Maximal zulässige Sitzungsdauer für Verbindungen per Remotezugriff</translation>
-<translation id="8032201191311129122">Mit dieser Richtlinie wird das Kopieren von Daten in die Zwischenablage auf bestimmten URLs blockiert.
-
-      Mit den URL-Listen <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> und <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> wird gesteuert, welche Websites in die Zwischenablage schreiben dürfen. Wenn ein URL-Muster in der Liste „Enable“ enthalten und in der Liste „Disable“ nicht enthalten ist, kann die betreffende Website nicht in die Zwischenablage schreiben. Ist die URL in keiner der beiden Listen enthalten, ist das Kopieren nicht blockiert.
-
-      Es werden ähnliche URL-Muster wie in der Richtlinie <ph name="URL_BLOCKLIST_POLICY_NAME" /> verwendet. Sie sind unter http://www.chromium.org/administrators/url-blocklist-filter-format beschrieben.
-
-      Unter <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> ist die minimale Datenmenge in Byte angegeben, die die Musterprüfung auslöst. Das bedeutet, dass ein Schreibvorgang in die Zwischenablage auf einer blockierten URL zulässig ist, wenn die Menge der kopierten Daten unter dem Wert in diesem Feld liegt. Wenn der Wert nicht festgelegt ist, gilt der Standardwert von 100 Byte.
-      </translation>
 <translation id="8033908599068513676">URL des herunterzuladenden Firmware-Images.</translation>
 <translation id="8035570672225663428">Adaptives Lademodell aktivieren, um den Ladevorgang anzuhalten und die Akkulaufzeit zu verlängern</translation>
 <translation id="8044493735196713914">Startmodus von Geräten melden</translation>

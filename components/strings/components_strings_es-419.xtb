@@ -770,7 +770,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2876949457278336305"><ph name="MANAGE_SECURITY_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para administrar tu Navegación segura y más en la configuración de Chrome</translation>
 <translation id="2878197950673342043">Plegado de póster</translation>
 <translation id="2878424575911748999">A1</translation>
-<translation id="2879694782644540289">usar el bloqueo de pantalla para completar contraseñas.</translation>
+<translation id="2879694782644540289">usar el bloqueo de pantalla para completar contraseñas</translation>
 <translation id="2881276955470682203">¿Quieres guardar la tarjeta?</translation>
 <translation id="2882949212241984732">Plegado en ventana doble</translation>
 <translation id="2893773853358652045">Cuarto rollo</translation>
@@ -1794,6 +1794,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5344579389779391559">Es posible que esta página intente cobrarte dinero</translation>
 <translation id="5347645913823149105">Botón Personalizar fuentes en Chrome, presiona Intro para personalizar el tamaño de las fuentes y los tipos de letra en Chrome</translation>
 <translation id="5355557959165512791">No puedes visitar <ph name="SITE" /> ahora porque este certificado se revocó. Los ataques y errores de red suelen ser temporales, por lo que es posible que esta página funcione más tarde.</translation>
+<translation id="5356345925629253198">Puedes usar las direcciones guardadas en todos los productos de Google. Esta dirección se guardará en tu Cuenta de Google (<ph name="ACCOUNT" />).</translation>
 <translation id="5357848622083956825">Artes visuales y diseño</translation>
 <translation id="536296301121032821">Error al almacenar la configuración de la política</translation>
 <translation id="5363309033720083897">Puerto en serie que permite tu administrador</translation>
@@ -1919,7 +1920,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5695542892312572833">¿Deseas usar Windows Hello para verificar y completar tu compra?</translation>
 <translation id="5701381305118179107">Centrar</translation>
 <translation id="570530837424789914">Administrar…</translation>
-<translation id="5706906618852913030">¿Quieres guardarla en la cuenta?</translation>
 <translation id="5707154300732650394">Reanudar tu exploración</translation>
 <translation id="57094364128775171">Sugerir contraseña segura…</translation>
 <translation id="571403275720188526">(arm64)</translation>
@@ -2542,7 +2542,7 @@ Detalles adicionales:
 <translation id="7277998515889183784">Maquillaje y cosméticos</translation>
 <translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para cambiar la contraseña de tu Cuenta de Google</translation>
 <translation id="7292031607255951991">Nombre del destinatario</translation>
-<translation id="7298195798382681320">Recomendada</translation>
+<translation id="7298195798382681320">Recomendado</translation>
 <translation id="7299471494012161875">Periféricos de pantallas conectados</translation>
 <translation id="7300012071106347854">Azul cobalto</translation>
 <translation id="7304030187361489308">Alto</translation>

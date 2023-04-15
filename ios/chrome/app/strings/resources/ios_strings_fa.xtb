@@ -353,6 +353,7 @@
 <translation id="3324193307694657476">آدرس ۲</translation>
 <translation id="3328459813621383194">انتقال برگه‌های غیرفعال</translation>
 <translation id="3328801116991980348">اطلاعات سایت</translation>
+<translation id="3344485292736684439">{count,plural, =1{نشانک در «{title}» در حساب شما ({email}) ذخیره شد}one{نشانک در «{title}» در حساب شما ({email}) ذخیره شد}other{نشانک‌ها در «{title}» در حساب شما ({email}) ذخیره شد}}</translation>
 <translation id="3371831930909698441">‏«ترجمه Google» دردسترس است. گزینه‌ها در نزدیک پایین صفحه نمایش در دسترس هستند.</translation>
 <translation id="3377063233124932127">اکنون نشانک‌ها، گذرواژه‌ها، و دیگر موارد ذخیره‌شده در بالا نمایش داده می‌شوند.</translation>
 <translation id="3393920035788932672">پنجره‌های بازشو مجاز است</translation>
@@ -1032,6 +1033,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7840771868269352570">موارد انتخاب‌شده برداشته خواهد شد.</translation>
 <translation id="7845466610722898">نمایش فهرست خواندن</translation>
 <translation id="784551991304901159">برای دیدن محتوا، «روشن کردن» را از منو انتخاب کنید</translation>
+<translation id="7846158885638438868">{count,plural, =1{در «{title}» نشانک‌گذاری شد}one{در «{title}» نشانک‌گذاری شد}other{در «{title}» نشانک‌گذاری شد}}</translation>
 <translation id="7853202427316060426">فعالیت</translation>
 <translation id="7856733331829174190">بارگیری نشد</translation>
 <translation id="785938070103630874">گذرواژه‌ها، روش‌های پرداخت، نشانی‌ها، و دیگر موارد ذخیره‌شده را باز کنید</translation>

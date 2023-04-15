@@ -402,7 +402,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="3211426585530211793"><ph name="ITEM_TITLE" /> blev slettet</translation>
 <translation id="3214996641768123781"><ph name="BEGIN_LINK1" />Søgehistorik<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />andre former for aktivitet<ph name="END_LINK2" /> kan blive gemt på din Google-konto, når du er logget ind. Du kan til enhver tid slette dem.</translation>
 <translation id="321773570071367578">Hvis du har glemt din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille synkroniseringen<ph name="END_LINK" /></translation>
-<translation id="3220943972464248773">Bekræft din identitet for at synkronisere dine adgangskoder</translation>
+<translation id="3220943972464248773">Verificer din identitet for at synkronisere dine adgangskoder</translation>
 <translation id="3223522355830797639">Din bank vil gerne bekræfte, at det er dig.</translation>
 <translation id="3227557059438308877">Google Chrome som sikkerhedsnøgle</translation>
 <translation id="3232754137068452469">Webapp</translation>
@@ -463,7 +463,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="3518985090088779359">Acceptér og fortsæt</translation>
 <translation id="3522247891732774234">Tilgængelig opdatering. Flere valgmuligheder</translation>
 <translation id="3524138585025253783">Brugerflade for udviklere</translation>
-<translation id="3524334353996115845">Tillad, at <ph name="ORIGIN" /> bekræfter din identitet</translation>
+<translation id="3524334353996115845">Tillad, at <ph name="ORIGIN" /> verificerer din identitet</translation>
 <translation id="3527085408025491307">Mappe</translation>
 <translation id="3542235761944717775">Der er <ph name="KILOBYTES" /> kB til rådighed</translation>
 <translation id="3549657413697417275">Søg i din historik</translation>
@@ -513,7 +513,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="3819183753496523827">Du er offline. Tjek din internetforbindelse, og prøv igen.</translation>
 <translation id="3830886834687455630">Opdater Google Play-tjenester for at tjekke dine adgangskoder</translation>
 <translation id="3845098929839618392">Åbn i inkognitofane</translation>
-<translation id="3856096718352044181">Bekræft, at dette er en gyldig udbyder, eller prøv igen senere</translation>
+<translation id="3856096718352044181">Verificer, at dette er en gyldig udbyder, eller prøv igen senere</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3861633093716975811">Populære videoer</translation>
 <translation id="3874520961715512166">Websitet er fjernet</translation>
@@ -983,7 +983,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> mere}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> mere}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 og <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" /> mere}}</translation>
 <translation id="6345878117466430440">Markér som læst</translation>
 <translation id="6357653805084533597">Du kan bruge denne telefon til at logge ind på den enhed, der viser QR-koden.</translation>
-<translation id="6363990818884053551">Bekræft din identitet for at starte synkroniseringen</translation>
+<translation id="6363990818884053551">Verificer din identitet for at starte synkroniseringen</translation>
 <translation id="6364438453358674297">Vil du fjerne forslaget fra historikken?</translation>
 <translation id="6380100320871303656">Forudindlæser oftere sider, som Chrome tror, der er stor chance for, at du besøger. Denne indstilling kan medføre et højere dataforbrug.</translation>
 <translation id="6394791151443660613">Søg: <ph name="SEARCH_QUERY" /></translation>
@@ -1230,7 +1230,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7581273696622423628">Deltag i undersøgelsen</translation>
 <translation id="7583262514280211622">Her finder du din læseliste</translation>
 <translation id="7588219262685291874">Aktivér mørkt tema, når enhedens batterisparefunktion er aktiveret</translation>
-<translation id="7594687499944811403">Tillad, at <ph name="EMBEDDED_ORIGIN" /> bekræfter din identitet for <ph name="TOP_ORIGIN" /></translation>
+<translation id="7594687499944811403">Tillad, at <ph name="EMBEDDED_ORIGIN" /> verificerer din identitet for <ph name="TOP_ORIGIN" /></translation>
 <translation id="7596558890252710462">Operativsystem</translation>
 <translation id="7605594153474022051">Synkronisering fungerer ikke</translation>
 <translation id="7612619742409846846">Du er logget ind på Google som</translation>

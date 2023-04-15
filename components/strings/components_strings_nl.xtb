@@ -1914,7 +1914,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5695542892312572833">Windows Hello gebruiken om je aankoop te verifiëren en af te ronden?</translation>
 <translation id="5701381305118179107">Centreren</translation>
 <translation id="570530837424789914">Beheren...</translation>
-<translation id="5706906618852913030">Opslaan in account?</translation>
 <translation id="5707154300732650394">Je traject hervatten</translation>
 <translation id="57094364128775171">Sterk wachtwoord voorstellen…</translation>
 <translation id="571403275720188526">(arm64)</translation>
@@ -2100,6 +2099,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6165508094623778733">Meer informatie</translation>
 <translation id="6167577165590485365">Laatste ophaalpoging:</translation>
 <translation id="6169916984152623906">Je kunt nu privé browsen, zodat andere mensen die dit apparaat gebruiken, jouw activiteit niet kunnen zien. Downloads en bookmarks worden echter wel opgeslagen.</translation>
+<translation id="617256461084925519">Google Chrome probeert te verifiëren dat jij het bent zodat je betalingsgegevens kunnen worden ingevuld.</translation>
 <translation id="6177128806592000436">Je verbinding met deze site is niet beveiligd</translation>
 <translation id="6177531123306197852">Envelop C2</translation>
 <translation id="6180316780098470077">Interval voor nieuwe poging</translation>
@@ -2651,6 +2651,7 @@ Aanvullende informatie:
 <translation id="7518003948725431193">Er is geen webpagina gevonden voor het webadres: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">Het gedeelte '<ph name="SECTION" />' is verborgen</translation>
+<translation id="752189128961566325">Je kunt het gebruiken in meerdere Google-producten</translation>
 <translation id="7523408071729642236">Productie</translation>
 <translation id="7526934274050461096">Je verbinding met deze site is niet privé</translation>
 <translation id="7529884293139707752">Thuisonderwijs</translation>
@@ -2878,6 +2879,7 @@ Aanvullende informatie:
 <translation id="8057711352706143257">'<ph name="SOFTWARE_NAME" />' is niet correct geconfigureerd. Als je '<ph name="SOFTWARE_NAME" />' verwijdert, wordt het probleem meestal opgelost. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058009102480785916">Levensmiddelenindustrie</translation>
 <translation id="8058603697124206642">Niet vereist</translation>
+<translation id="8064892030280197386">verifiëren dat jij het bent zodat je betalingsgegevens kunnen worden ingevuld.</translation>
 <translation id="8066225060526005217">Beheerd door cookie-instellingen</translation>
 <translation id="8067872629359326442">Je hebt zojuist je wachtwoord opgegeven op een misleidende site. Chromium kan je laten zien wat je nu kunt doen. Klik op 'Account beschermen' om je wachtwoord te wijzigen en Google te laten weten dat je account mogelijk gevaar loopt.</translation>
 <translation id="8070439594494267500">App-icoon</translation>

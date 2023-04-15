@@ -46,6 +46,7 @@
 <translation id="1038462104119736705">Linux를 사용하려면 최소 <ph name="INSTALL_SIZE" />의 여유 공간이 권장됩니다. 여유 공간을 늘리려면 기기에서 파일을 삭제하세요.</translation>
 <translation id="1038643060055067718">행 수:</translation>
 <translation id="1039337018183941703">잘못되었거나 손상된 파일입니다.</translation>
+<translation id="1040761927998636252"><ph name="URL" />에 관한 이름 없는 북마크</translation>
 <translation id="1041175011127912238">페이지가 응답하지 않음</translation>
 <translation id="1041263367839475438">사용 가능한 기기</translation>
 <translation id="1042174272890264476">또한 컴퓨터에는 <ph name="SHORT_PRODUCT_NAME" /> RLZ 라이브러리가 내장되어 있습니다. RLZ는 고유하지 않고 개인 식별이 불가능한 태그를 할당하여 특정 홍보 캠페인을 통한 검색 및 <ph name="SHORT_PRODUCT_NAME" /> 사용 실태를 측정합니다. 이러한 라벨은 <ph name="PRODUCT_NAME" />의 Google 검색어에 표시되기도 합니다.</translation>
@@ -389,7 +390,6 @@
 <translation id="1333965224356556482">사이트에서 내 위치를 확인하도록 허용하지 않음</translation>
 <translation id="1335282218035876586">Chromebook에 더 이상 보안 및 소프트웨어 업데이트가 적용되지 않습니다. 최적의 환경에서 사용하려면 Chromebook을 업그레이드하세요.</translation>
 <translation id="133535873114485416">선호하는 입력 방식</translation>
-<translation id="1335437153193710305">비밀번호를 확인할 프로필을 선택할 수 있습니다</translation>
 <translation id="1335929031622236846">기기 등록</translation>
 <translation id="1336902454946927954">지문을 인식할 수 없어 보안 키가 잠겼습니다. 보안 키를 잠금 해제하려면 PIN을 입력하세요.</translation>
 <translation id="1338631221631423366">페어링 중...</translation>
@@ -2041,7 +2041,7 @@
 <translation id="2709516037105925701">자동 완성</translation>
 <translation id="2710101514844343743">사용 및 진단 데이터</translation>
 <translation id="271033894570825754">New</translation>
-<translation id="2711073837061989559">무료 체험</translation>
+<translation id="2711073837061989559">체험판</translation>
 <translation id="2713106313042589954">카메라 끄기</translation>
 <translation id="2713444072780614174">흰색</translation>
 <translation id="2714180132046334502">어두운 배경</translation>
@@ -2685,7 +2685,7 @@
 <translation id="3289856944988573801">업데이트를 확인하려면 이더넷 또는 Wi-Fi를 사용하세요.</translation>
 <translation id="3289886661311231677">사이트와 공유하고 싶지 않은 주제를 차단할 수 있습니다. 또한 Chrome에서는 4주 이상된 주제를 자동으로 삭제합니다.</translation>
 <translation id="3290249595466894471">또한 페이지, 다운로드 항목, 확장 프로그램 활동, 시스템 정보의 표본을 일부 전송하여 새로운 위협을 발견하는 데 도움을 줍니다.</translation>
-<translation id="3293181007446299124">방문 기록은 기기에서 비공개로 유지되며 신고는 사용자의 신원을 보호하기 위해 보고서 전송이 지연됩니다.</translation>
+<translation id="3293181007446299124">방문 기록은 기기에서 비공개로 유지되며 사용자의 신원을 보호하기 위해 보고서 전송이 지연됩니다.</translation>
 <translation id="3293644607209440645">이 페이지 전송</translation>
 <translation id="32939749466444286">Linux 컨테이너가 시작되지 않았습니다. 다시 시도해 주세요.</translation>
 <translation id="3294437725009624529">게스트</translation>
@@ -3329,7 +3329,6 @@
 <translation id="383669374481694771">기기 및 기기 사용 방식에 관한 일반적인 정보(배터리 수준, 시스템 및 앱 활동, 오류 등)입니다. 데이터는 Android를 개선하는 데 사용되며 일부 수집 정보는 Google 앱과 파트너(Android 개발자 등)가 앱 및 제품을 개선하는 데도 도움이 됩니다.</translation>
 <translation id="3838085852053358637">확장 프로그램을 로드하지 못함</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> 더보기</translation>
-<translation id="3838487810283346084">저장된 비밀번호를 Google 비밀번호 관리자에 추가합니다.</translation>
 <translation id="383891835335927981">확대 또는 축소된 사이트가 없음</translation>
 <translation id="3839509547554145593">마우스 스크롤 가속 사용</translation>
 <translation id="3839516600093027468"><ph name="HOST" />에서 클립보드를 볼 수 없도록 항상 차단</translation>
@@ -6968,7 +6967,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7123302939607518173">특정 항목과 관련된 광고가 유용하다고 생각한다면 관심분야나 사이트를 추가하세요.</translation>
 <translation id="7124013154139278147">'이전'에 스위치 할당</translation>
 <translation id="7124712201233930202">조직의 정책을 준수하지 않습니다.</translation>
-<translation id="7125029162161377569">개인 정보 보호 샌드박스 무료 체험 기간에는 사이트에서 내 정보를 더 적게 사용하면서도 동일한 인터넷 사용 환경을 제공할 수 있습니다. 즉, 개인 정보 보호는 강화되고 크로스 사이트 추적은 줄어듭니다. 테스트 준비가 완료되는 대로 새로운 무료 체험 프로그램이 추가될 예정입니다.</translation>
+<translation id="7125029162161377569">개인 정보 보호 샌드박스 체험판을 사용하면 사이트에서 내 정보를 더 적게 사용하면서도 동일한 인터넷 사용 환경을 제공할 수 있습니다. 즉, 개인 정보 보호는 강화되고 크로스 사이트 추적은 줄어듭니다. 테스트 준비가 완료되는 대로 새로운 체험 프로그램이 추가될 예정입니다.</translation>
 <translation id="7125148293026877011">Crostini 삭제</translation>
 <translation id="7127980134843952133">다운로드 기록</translation>
 <translation id="7128151990937044829">알림이 차단되면 주소 표시줄에 표시 아이콘 나타내기</translation>

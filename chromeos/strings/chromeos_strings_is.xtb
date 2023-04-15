@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Hér eru fleiri gagnleg úrræði:</translation>
 <translation id="1905710495812624430">Farið var yfir hámarksfjölda tilrauna.</translation>
 <translation id="1908234395526491708">UDP-beiðnir mistókust</translation>
+<translation id="1923388006036088459">Áherslulitir</translation>
 <translation id="1947737735496445907">Prentað</translation>
 <translation id="1951012854035635156">Aðstoðarmaður</translation>
 <translation id="1962550982027027473">Sjálfgefinn aðgangsstaður er nauðsynlegur</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Niðurhali lokið</translation>
 <translation id="3969602104473960991">Aðgangsorð ChromeOS var uppfært</translation>
 <translation id="397105322502079400">Reiknar...</translation>
+<translation id="3974175076798940554">Nú eru sérvaldar Chromebook Plus-eignir í boði</translation>
 <translation id="39823212440917567">Prentverk sem eru eldri en <ph name="NUMBER_OF_DAYS" /> verða fjarlægð</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> er nú uppfært</translation>
 <translation id="4003384961948020559">Mistókst – úttakið er fullt</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">Bæta reikningi við innskráningu á marga reikninga. Hægt er að fá aðgang að öllum innskráðum reikningum án aðgangsorðs og því ætti aðeins að nota þennan eiginleika með traustum reikningum.</translation>
 <translation id="8364946094152050673">Auðir nafnaþjónar</translation>
 <translation id="8372477600026034341">Aukahýslar</translation>
+<translation id="8373046809163484087">Notaðu liti sem passa við veggfóðrið</translation>
 <translation id="8380114448424469341">Festa glugga til <ph name="DIRECTION" /> á skjánum</translation>
 <translation id="8395584934117017006">Þessu <ph name="DEVICE_TYPE" /> tæki er stjórnað af fyrirtæki</translation>
 <translation id="8398927464629426868">Núverandi hleðslu- eða afhleðsluhraði tækisins</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">Notandanafn</translation>
 <translation id="8503836310948963452">Aðeins nokkrar mínútur í viðbót…</translation>
 <translation id="8508640263392900755">Upplýsingar um aðgangsstað</translation>
+<translation id="8522687886059337719">Nú hefurðu aðgang að nýjum <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />veggfóðrum<ph name="END_LINK_WALLPAPER_SUBPAGE" /> og <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />skjávörum<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Símafyrirtæki kunna að biðja þig um slíkt til að tengjast neti þeirra. Hafðu samband við símafyrirtækið til að fá frekari upplýsingar.</translation>

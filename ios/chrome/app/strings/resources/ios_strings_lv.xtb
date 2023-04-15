@@ -353,6 +353,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3324193307694657476">2. adrese</translation>
 <translation id="3328459813621383194">Neaktīvo cilņu pārvietošana</translation>
 <translation id="3328801116991980348">Vietnes informācija</translation>
+<translation id="3344485292736684439">{count,plural, =1{Grāmatzīme ir saglabāta mapē “{title}” jūsu kontā ({email}).}zero{Grāmatzīmes ir saglabātas mapē “{title}” jūsu kontā ({email}).}one{Grāmatzīmes ir saglabātas mapē “{title}” jūsu kontā ({email}).}other{Grāmatzīmes ir saglabātas mapē “{title}” jūsu kontā ({email}).}}</translation>
 <translation id="3371831930909698441">Ir pieejams tulkojums. Opcijas, kas pieejamas ekrāna apakšējā daļā.</translation>
 <translation id="3377063233124932127">Tagad jūsu saglabātās grāmatzīmes, paroles un citi dati atrodas augšdaļā.</translation>
 <translation id="3393920035788932672">Uznir. logi atļauti</translation>
@@ -1032,6 +1033,7 @@ Inkognito režīmā vietnes nedrīkst izmantot sīkfailus, lai skatītu jūsu p�
 <translation id="7840771868269352570">Jūsu atlasītie vienumi tiks noņemti.</translation>
 <translation id="7845466610722898">Rādīt lasīšanas sarakstu</translation>
 <translation id="784551991304901159">Lai skatītu saturu, izvēlnē atlasiet vienumu Ieslēgt</translation>
+<translation id="7846158885638438868">{count,plural, =1{Grāmatzīme ir saglabāta mapē “{title}”.}zero{Grāmatzīmes ir saglabātas mapē “{title}”.}one{Grāmatzīmes ir saglabātas mapē “{title}”.}other{Grāmatzīmes ir saglabātas mapē “{title}”.}}</translation>
 <translation id="7853202427316060426">Aktivitāte</translation>
 <translation id="7856733331829174190">Lejupielāde neizdevās</translation>
 <translation id="785938070103630874">Atveriet sadaļu Paroles, Maksājumu veidi vai Adreses un citi dati.</translation>

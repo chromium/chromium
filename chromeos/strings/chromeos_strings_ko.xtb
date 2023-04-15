@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">다음은 몇 가지 유용한 리소스입니다.</translation>
 <translation id="1905710495812624430">허용되는 최대 시도 횟수를 초과했습니다.</translation>
 <translation id="1908234395526491708">UDP 요청 실패</translation>
+<translation id="1923388006036088459">강조 색상</translation>
 <translation id="1947737735496445907">인쇄됨</translation>
 <translation id="1951012854035635156">어시스턴트</translation>
 <translation id="1962550982027027473">기본 APN이 필요합니다.</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">다운로드 완료</translation>
 <translation id="3969602104473960991">ChromeOS 비밀번호 업데이트됨</translation>
 <translation id="397105322502079400">계산 중...</translation>
+<translation id="3974175076798940554">독점 Chromebook Plus 애셋 사용 가능</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" />일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> 버전이 최신임</translation>
 <translation id="4003384961948020559">실패 - 출력 가득 참</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">멀티 로그인에 계정을 추가하세요. 비밀번호를 입력하지 않고 모든 로그인 계정에 액세스할 수 있으므로 이 기능은 신뢰할 수 있는 계정에만 사용해야 합니다.</translation>
 <translation id="8364946094152050673">네임서버가 비어 있습니다.</translation>
 <translation id="8372477600026034341">추가 호스트</translation>
+<translation id="8373046809163484087">배경화면에 어울리는 색상 조합을 사용하세요.</translation>
 <translation id="8380114448424469341">화면의 <ph name="DIRECTION" /> 절반에 창 고정</translation>
 <translation id="8395584934117017006"><ph name="DEVICE_TYPE" /> 기기는 기업에서 관리합니다.</translation>
 <translation id="8398927464629426868">기기가 현재 충전 또는 방전되는 속도</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">사용자 이름</translation>
 <translation id="8503836310948963452">몇 분 정도밖에 남지 않았습니다...</translation>
 <translation id="8508640263392900755">APN 세부정보</translation>
+<translation id="8522687886059337719">이제 새로운 <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />배경화면<ph name="END_LINK_WALLPAPER_SUBPAGE" /> 및 <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />화면 보호기<ph name="END_LINK_SCREENSAVER_SUBPAGE" />에 액세스할 수 있습니다.</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">이동통신사에서 네트워크에 연결하기 위해 이 옵션을 요구할 수 있습니다. 자세한 내용은 이동통신사에 문의하세요.</translation>

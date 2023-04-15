@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Бул жерде башка пайдалуу булактар келтирилди:</translation>
 <translation id="1905710495812624430">Аракеттер уруксат берилген чегинен ашты.</translation>
 <translation id="1908234395526491708">Ишке ашпай калган UDP сурамдары</translation>
+<translation id="1923388006036088459">Негизги түстөр</translation>
 <translation id="1947737735496445907">Басып чыгарылды</translation>
 <translation id="1951012854035635156">Жардамчы</translation>
 <translation id="1962550982027027473">Демейки APN талап кылынат</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Жүктөп алуу аяктады</translation>
 <translation id="3969602104473960991">ChromeOS сырсөзү өзгөрдү</translation>
 <translation id="397105322502079400">Эсептелүүдө…</translation>
+<translation id="3974175076798940554">Эми эксклюзивдүү Chromebook Plus объекттери жеткиликтүү</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> күндөн мурунку басып чыгаруу тапшырмалары өчүрүлөт</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> түзмөгүңүз жаңыртылды</translation>
 <translation id="4003384961948020559">Басылып чыгарылган жок - Барактар тактасы толук</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">Бир нече профиль менен кирүү үчүн каттоо эсебин кошуңуз. Катталган бардык аккаунттарына кирүүдө сырсөз талап кылынбагандыктан, бул мүмкүнчүлүктү ишенимдүү каттоо эсептери гана колдонушу керек.</translation>
 <translation id="8364946094152050673">Ысым серверлери бош</translation>
 <translation id="8372477600026034341">Кошумча башкы түйүндөр</translation>
+<translation id="8373046809163484087">Тушкагазыңызга туура келген түстөрдүн топтомдорун колдонуңуз</translation>
 <translation id="8380114448424469341">Терезени экрандын <ph name="DIRECTION" /> жактагы жарымына бекитүү</translation>
 <translation id="8395584934117017006">Бул <ph name="DEVICE_TYPE" /> түзмөгүн ишкана башкарат</translation>
 <translation id="8398927464629426868">Түзмөк кубатталган же кубатталышы токтотулган деңгээл</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">Колдонуучунун ысымы</translation>
 <translation id="8503836310948963452">Дагы бир нече мүнөт калды...</translation>
 <translation id="8508640263392900755">APN тууралуу маалымат</translation>
+<translation id="8522687886059337719">Эми жаңы <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тушкагаздарды<ph name="END_LINK_WALLPAPER_SUBPAGE" /> жана <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />көшөгөнү<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> колдоно аласыз</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Тармакка туташуу үчүн байланыш оператору бул параметрди талап кылышы мүмкүн. Кеңири маалымат үчүн байланыш операторуңузга кайрылыңыз</translation>

@@ -1916,7 +1916,6 @@
 <translation id="5695542892312572833">ನಿಮ್ಮ ಖರೀದಿಯನ್ನು ಖಚಿತಪಡಿಸಲು ಮತ್ತು ಪೂರ್ಣಗೊಳಿಸಲು Windows Hello ಬಳಸಬೇಕೆ?</translation>
 <translation id="5701381305118179107">ಮಧ್ಯಕ್ಕೆ</translation>
 <translation id="570530837424789914">ನಿರ್ವಹಿಸಿ...</translation>
-<translation id="5706906618852913030">ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಬೇಕೆ?</translation>
 <translation id="5707154300732650394">ನಿಮ್ಮ ಪ್ರಯಾಣವನ್ನು ಪುನರಾರಂಭಿಸಿ</translation>
 <translation id="57094364128775171">ಸದೃಢವಾದ ಪಾಸ್‌ವರ್ಡ್ ಸೂಚಿಸಿ…</translation>
 <translation id="571403275720188526">(arm64)</translation>
@@ -2102,6 +2101,7 @@
 <translation id="6165508094623778733">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="6167577165590485365">ಕೊನೆಯ ಬಾರಿಗೆ ಪಡೆಯಲು ಪ್ರಯತ್ನಿಸಲಾಗಿದೆ:</translation>
 <translation id="6169916984152623906">ನೀವೀಗ ಖಾಸಗಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಬಹುದು. ಈ ಸಾಧನವನ್ನು ಬಳಸುವ ಬೇರೆ ಯಾರಿಗೂ ನಿಮ್ಮ ಚಟುವಟಿಕೆ ಕಾಣಿಸುವುದಿಲ್ಲ. ಆದರೂ, ಡೌನ್‌ಲೋಡ್‌ಗಳು ಮತ್ತು ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಉಳಿದಿರುತ್ತವೆ.</translation>
+<translation id="617256461084925519">Google Chrome ನಿಮ್ಮ ಪಾವತಿಯ ಮಾಹಿತಿಯನ್ನು ಸೇರಿಸುವ ಸಲುವಾಗಿ ಇದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ.</translation>
 <translation id="6177128806592000436">ಈ ಸೈಟ್‌ಗೆ ನಿಮ್ಮ ಸಂಪರ್ಕವು ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
 <translation id="6177531123306197852">ಎನ್ವಲಪ್ C2</translation>
 <translation id="6180316780098470077">ಮರುಪ್ರಯತ್ನದ ಮಧ್ಯಂತರ</translation>
@@ -2653,6 +2653,7 @@
 <translation id="7518003948725431193">ಈ ವೆಬ್ ವಿಳಾಸಕ್ಕಾಗಿ ಯಾವುದೇ ವೆಬ್ ಪುಟವು ಕಂಡುಬರಲಿಲ್ಲ: <ph name="URL" /></translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7521825010239864438">"<ph name="SECTION" />" ವಿಭಾಗವನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
+<translation id="752189128961566325">ನೀವು ಇದನ್ನು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಬಹುದು</translation>
 <translation id="7523408071729642236">ಉತ್ಪಾದನೆ</translation>
 <translation id="7526934274050461096">ಈ ಸೈಟ್‌ಗೆ ನಿಮ್ಮ ಸಂಪರ್ಕವು ಖಾಸಗಿಯಾಗಿಲ್ಲ.</translation>
 <translation id="7529884293139707752">ಹೋಮ್‌ಸ್ಕೂಲಿಂಗ್</translation>
@@ -2880,6 +2881,7 @@
 <translation id="8057711352706143257">"<ph name="SOFTWARE_NAME" />" ಅನ್ನು ಸರಿಯಾಗಿ ಕಾನ್ಫಿಗರ್ ಮಾಡಲಾಗಿಲ್ಲ. ಸಾಮಾನ್ಯವಾಗಿ ಸಮಸ್ಯೆಯನ್ನು ಪರಿಹರಿಸಲು "<ph name="SOFTWARE_NAME" />" ಅನ್ನು ಅನ್‌ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುತ್ತಿದೆ. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8058009102480785916">ಆಹಾರ ಉತ್ಪಾದನೆ</translation>
 <translation id="8058603697124206642">ಅಗತ್ಯವಿಲ್ಲ</translation>
+<translation id="8064892030280197386">ಇದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಿ, ಆಗ ಅದು ನಿಮ್ಮ ಪಾವತಿಯ ಮಾಹಿತಿಯನ್ನು ಭರ್ತಿಮಾಡಬಹುದು.</translation>
 <translation id="8066225060526005217">ಕುಕೀಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="8067872629359326442">ನೀವು ಈಗಷ್ಟೇ ವಂಚನೆ ಮಾಡುವ ಸೈಟ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿದ್ದೀರಿ. Chromium ಸಹಾಯ ಮಾಡಬಹುದು. ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಬದಲಿಸಲು ಮತ್ತು ನಿಮ್ಮ ಖಾತೆಗೆ ಅಪಾಯ ಉಂಟಾಗಿರಬಹುದು ಎಂದು Google ಗೆ ಸೂಚಿಸಲು, ಖಾತೆ ರಕ್ಷಿಸಿ ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="8070439594494267500">ಆ್ಯಪ್ ಐಕಾನ್</translation>

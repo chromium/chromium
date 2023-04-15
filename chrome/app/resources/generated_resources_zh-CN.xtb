@@ -389,7 +389,6 @@
 <translation id="1333965224356556482">不允许网站查看您所在的位置</translation>
 <translation id="1335282218035876586">您的 Chromebook 将不会再收到安全更新和软件更新。请升级您的 Chromebook 以获得最佳体验。</translation>
 <translation id="133535873114485416">首选输入模式</translation>
-<translation id="1335437153193710305">您可以选择要查看密码的个人资料</translation>
 <translation id="1335929031622236846">注册您的设备</translation>
 <translation id="1336902454946927954">您的安全密钥已被锁定，因为无法识别您的指纹。若要解锁，请输入 PIN 码。</translation>
 <translation id="1338631221631423366">正在配对…</translation>
@@ -3306,7 +3305,6 @@
 <translation id="383669374481694771">这是关于此设备及其使用情况（例如电池电量、系统与应用活动以及错误）的一般信息。我们会使用这些数据来改善 Android，部分汇总信息还会有助于改善 Google 应用，并会协助我们的合作伙伴（例如 Android 开发者）改善其应用和产品。</translation>
 <translation id="3838085852053358637">未能成功加载扩展程序</translation>
 <translation id="3838486795898716504">更多“<ph name="PAGE_TITLE" />”</translation>
-<translation id="3838487810283346084">将已保存的密码添加到 Google 密码管理工具</translation>
 <translation id="383891835335927981">未对任何网站设置缩放级别</translation>
 <translation id="3839509547554145593">启用鼠标滚屏加速</translation>
 <translation id="3839516600093027468">始终禁止 <ph name="HOST" /> 查看剪贴板</translation>
@@ -6942,7 +6940,7 @@
 <translation id="7123302939607518173">如果您认为与某项兴趣或某个网站相关的广告对您有用，可以添加该兴趣或网站。</translation>
 <translation id="7124013154139278147">为“上一项”操作分配开关</translation>
 <translation id="7124712201233930202">不符合贵组织的政策</translation>
-<translation id="7125029162161377569">Privacy Sandbox 试用计划推出后，网站既能减少使用您的信息，又能提供同样出色的浏览体验。这意味着您的隐私会受到更好的保护，而且跨网站跟踪也会减少。一旦新的功能可供试用，我们即会添加相应功能。</translation>
+<translation id="7125029162161377569">Privacy Sandbox 试用版推出后，网站既能减少使用您的信息，又能提供同样出色的浏览体验。这意味着您的隐私会受到更好的保护，而且跨网站跟踪也会减少。一旦新的功能可供试用，我们即会添加相应功能。</translation>
 <translation id="7125148293026877011">删除 Crostini</translation>
 <translation id="7127980134843952133">下载记录</translation>
 <translation id="7128151990937044829">当通知处于屏蔽状态时在地址栏中显示“已屏蔽”图标</translation>

@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Íme néhány további hasznos forrás:</translation>
 <translation id="1905710495812624430">Elérte az engedélyezett kísérletek maximális számát.</translation>
 <translation id="1908234395526491708">Hibás UDP-kérelmek.</translation>
+<translation id="1923388006036088459">Kiemelés színei</translation>
 <translation id="1947737735496445907">Sikeres nyomtatás</translation>
 <translation id="1951012854035635156">Segéd</translation>
 <translation id="1962550982027027473">Szükség van alapértelmezett APN-re</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">A letöltés sikeres</translation>
 <translation id="3969602104473960991">ChromeOS-jelszó módosítva</translation>
 <translation id="397105322502079400">Számítás…</translation>
+<translation id="3974175076798940554">Mostantól exkluzív Chromebook Plus-eszközök állnak rendelkezésre</translation>
 <translation id="39823212440917567">A(z) <ph name="NUMBER_OF_DAYS" /> napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> eszköze most már naprakész</translation>
 <translation id="4003384961948020559">Sikertelen – Megtelt a kimenet</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">Adjon hozzá egy fiókot a többfiókos bejelentkezéshez. Az összes bejelentkezett fiók elérhető a jelszó megadása nélkül, ezért ezt a funkciót csak megbízható fiókokkal használja.</translation>
 <translation id="8364946094152050673">Üres névszerverek</translation>
 <translation id="8372477600026034341">További gazdagépek</translation>
+<translation id="8373046809163484087">A háttérképhez illeszkedő színkészletek használata</translation>
 <translation id="8380114448424469341">Ablak dokkolása a képernyő <ph name="DIRECTION" /> oldali felén</translation>
 <translation id="8395584934117017006">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a vállalat felügyeli</translation>
 <translation id="8398927464629426868">Az eszköz jelenlegi töltésének vagy merülésének sebessége</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">Felhasználónév</translation>
 <translation id="8503836310948963452">Már csak néhány perc…</translation>
 <translation id="8508640263392900755">APN részletei</translation>
+<translation id="8522687886059337719">Mostantól új <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />háttérképekhez<ph name="END_LINK_WALLPAPER_SUBPAGE" /> és <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />képernyővédőhöz<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> férhet hozzá.</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Szolgáltatója előírhatja ennek a beállításnak a használatát a hálózathoz való csatlakozás érdekében. További információért forduljon a szolgáltatójához.</translation>

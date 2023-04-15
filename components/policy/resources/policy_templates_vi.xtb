@@ -534,15 +534,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 
       Chúng tôi đã xóa chính sách này trong phiên bản M94.</translation>
 <translation id="1507373253059695424">Luôn bật tính năng màn hình bảo vệ quyền riêng tư trên màn hình đăng nhập</translation>
-<translation id="150857982247452081">Cho phép bạn thiết lập danh sách các giao thức (và danh sách liên kết gồm các mẫu nguồn được phép cho mỗi giao thức) có thể chạy một ứng dụng bên ngoài mà không cần nhắc người dùng. Bạn không được thêm dấu phân cách ở phần cuối khi liệt kê giao thức, vì vậy, hãy liệt kê là "skype" thay cho "skype:" hoặc "skype://".
-
-      Nếu bạn đặt chính sách này, thì một giao thức sẽ chỉ được phép chạy một ứng dụng bên ngoài mà không cần nhắc theo chính sách khi giao thức đó được liệt kê, và nguồn của trang web đang cố chạy giao thức khớp với một trong các mẫu nguồn thuộc danh sách allowed_origins của giao thức đó. Nếu bạn đặt một trong hai điều kiện thành tắt, thì chính sách sẽ không bỏ qua lời nhắc chạy giao thức bên ngoài.
-
-      Nếu bạn không đặt chính sách này, thì không giao thức nào có thể chạy khi không có lời nhắc theo mặc định. Người dùng có thể chọn không nhận lời nhắc theo từng giao thức/từng trang web trừ trường hợp bạn đặt chính sách <ph name="EXTERNAL_PROTOCOL_DIALOG_SHOW_ALWAYS_OPEN_CHECKBOX_POLICY_NAME" /> thành Tắt. Chính sách này sẽ không ảnh hưởng đến các trường hợp miễn trừ theo từng giao thức/từng trang web do người dùng đặt.
-
-      Mẫu so khớp nguồn sẽ có định dạng giống với các mẫu của chính sách "<ph name="URL_BLOCKLIST_POLICY_NAME" />" nêu tại http://www.chromium.org/administrators/url-blocklist-filter-format.
-
-      Tuy nhiên, các mẫu so khớp nguồn của chính sách này không được chứa các thành phần "/path" hoặc "@query". Mọi mẫu chứa thành phần "/path" hoặc "@query" đều bị bỏ qua.</translation>
 <translation id="1508588104835702000">Tắt tính năng báo cáo trên đám mây qua trình duyệt được quản lý</translation>
 <translation id="1509377996969000672">Việc đặt chính sách này sẽ cung cấp các cấu hình máy in dành cho doanh nghiệp được kết nối với các thiết bị. Định dạng của chính sách khớp với định dạng của từ điển <ph name="NATIVE_PRINTERS_POLICY_NAME" />, có thêm trường "id" hoặc "guid" bắt buộc trên từng máy in để đưa vào danh sách cho phép hoặc danh sách cấm. Kích thước tệp không được vượt quá 5 MB và phải ở định dạng JSON. Một tệp có khoảng 21.000 máy in sẽ mã hóa dưới dạng tệp 5 MB. Hàm băm mật mã giúp xác minh tính toàn vẹn của tệp tải xuống. Tệp này được tải xuống, lưu vào bộ nhớ đệm và tải lại xuống khi URL hoặc hàm băm thay đổi. <ph name="PRODUCT_OS_NAME" /> tải tệp này xuống để định cấu hình máy in và cung cấp các máy in theo đúng <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />, và <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
@@ -7665,14 +7656,6 @@ Việc sử dụng <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> hoặc <ph n
 <translation id="802776363472387903">Hàm băm SHA-256 của hình ảnh <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Bật nhà cung cấp dịch vụ tìm kiếm mặc định và cho phép người dùng sửa đổi danh sách nhà cung cấp dịch vụ tìm kiếm</translation>
 <translation id="8029201909194194377">Thời lượng phiên tối đa được phép cho các kết nối truy cập từ xa</translation>
-<translation id="8032201191311129122">Chính sách này chặn việc sao chép dữ liệu vào khay nhớ tạm đối với các URL cụ thể.
-
-       Các danh sách URL <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> và <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> kiểm soát việc trang web nào được phép ghi vào khay nhớ tạm. Việc ghi dữ liệu vào khay nhớ tạm sẽ bị chặn nếu URL khớp với một mẫu trong "enable" và không khớp với một mẫu trong "disable". Bản sao sẽ không bị chặn nếu URL không khớp với bất kỳ mẫu nào.
-
-      Mẫu so khớp nguồn sẽ có định dạng giống với các mẫu của chính sách "<ph name="URL_BLOCKLIST_POLICY_NAME" />" được nêu tại http://www.chromium.org/administrators/url-blocklist-filter-format.
-
-      Trường <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> cho biết lượng dữ liệu tối thiểu tính bằng byte sẽ kích hoạt quá trình kiểm tra mẫu. Điều này có nghĩa là một URL bị chặn sẽ được phép ghi dữ liệu vào khay nhớ tạm nếu kích thước của dữ liệu được sao chép nhỏ hơn giá trị được chỉ định trong trường này. Giá trị mặc định là 100 byte nếu bạn không đặt trường này.
-      </translation>
 <translation id="8033908599068513676">URL của hình ảnh chương trình cơ sở sẽ tải xuống.</translation>
 <translation id="8035570672225663428">Bật mô hình sạc thích ứng để giữ quá trình sạc nhằm kéo dài thời lượng pin</translation>
 <translation id="8044493735196713914">Báo cáo chế độ khởi động thiết bị</translation>

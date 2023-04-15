@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Këtu janë disa burime të tjera të dobishme:</translation>
 <translation id="1905710495812624430">U kaluan përpjekjet maksimale të lejuara.</translation>
 <translation id="1908234395526491708">Dështimet e kërkesave UDP</translation>
+<translation id="1923388006036088459">Ngjyrat e theksimit</translation>
 <translation id="1947737735496445907">Printuar</translation>
 <translation id="1951012854035635156">Asistenti</translation>
 <translation id="1962550982027027473">Kërkohet një APN e parazgjedhur</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Shkarkimi përfundoi</translation>
 <translation id="3969602104473960991">Fjalëkalimi i ChromeOS u përditësua</translation>
 <translation id="397105322502079400">Po llogarit...</translation>
+<translation id="3974175076798940554">Tani ofrohen elemente ekskluzive të Chromebook Plus</translation>
 <translation id="39823212440917567">Printimet më të vjetra se <ph name="NUMBER_OF_DAYS" /> ditë do të hiqen</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> tani është përditësuar</translation>
 <translation id="4003384961948020559">Dështoi - Dalja është plot</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">Shto një llogari në identifikimin e shumëfishtë. Të gjitha llogaritë e identifikuara mund të qasen pa fjalëkalim, prandaj ky funksion duhet të përdoret vetëm me llogari të besuara.</translation>
 <translation id="8364946094152050673">Serverët DNS janë bosh</translation>
 <translation id="8372477600026034341">Pritësit e tjerë</translation>
+<translation id="8373046809163484087">Përdor paketat e ngjyrave që përputhen me imazhin tënd të sfondit</translation>
 <translation id="8380114448424469341">Dritarja e stacionit në gjysmën <ph name="DIRECTION" /> të ekranit</translation>
 <translation id="8395584934117017006">Kjo pajisje <ph name="DEVICE_TYPE" /> menaxhohet nga ndërmarrja</translation>
 <translation id="8398927464629426868">Shpejtësia me të cilën pajisja aktualisht po karikohet ose po shkarkohet</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">Emri i përdoruesit</translation>
 <translation id="8503836310948963452">Edhe vetëm pak minuta...</translation>
 <translation id="8508640263392900755">Detajet e APN-së</translation>
+<translation id="8522687886059337719">Tani ke qasje tek <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />imazhet e reja të sfondit<ph name="END_LINK_WALLPAPER_SUBPAGE" /> dhe te <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />mbrojtësit e rinj të ekranit<ph name="END_LINK_SCREENSAVER_SUBPAGE" /></translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Operatori celular mund të kërkojë këtë opsion për t'u lidhur me rrjetin e tij. Kontakto me operatorin celular për detaje.</translation>

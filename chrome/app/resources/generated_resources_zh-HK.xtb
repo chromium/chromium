@@ -391,7 +391,6 @@
 <translation id="1333965224356556482">不允許網站查看您的位置</translation>
 <translation id="1335282218035876586">Chromebook 不會再收到安全和軟件更新。請改用新 Chromebook，以獲得最佳使用體驗。</translation>
 <translation id="133535873114485416">偏好的輸入模式</translation>
-<translation id="1335437153193710305">您可選擇要查看密碼的個人檔案</translation>
 <translation id="1335929031622236846">註冊您的裝置</translation>
 <translation id="1336902454946927954">無法辨識您的指紋，因此安全密鑰已被鎖定。如要解鎖，請輸入您的 PIN。</translation>
 <translation id="1338631221631423366">正在配對…</translation>
@@ -3329,7 +3328,6 @@
 <translation id="383669374481694771">這個選項會提供此裝置的一般資料和使用情况 (例如電量、系統及應用程式活動和錯誤)。這些資料將會用來改善 Android。部分彙整資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改良應用程式和產品。</translation>
 <translation id="3838085852053358637">無法載入擴充程式</translation>
 <translation id="3838486795898716504">更多<ph name="PAGE_TITLE" /></translation>
-<translation id="3838487810283346084">將已儲存的密碼加入「Google 密碼管理工具」</translation>
 <translation id="383891835335927981">沒有已放大或縮小的網站</translation>
 <translation id="3839509547554145593">啟用滑鼠捲動加速功能</translation>
 <translation id="3839516600093027468">一律禁止 <ph name="HOST" /> 查看剪貼簿</translation>

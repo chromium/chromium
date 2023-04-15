@@ -534,15 +534,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 
       Essa política foi removida na versão M94.</translation>
 <translation id="1507373253059695424">Sempre ativar a tela de privacidade na tela de login</translation>
-<translation id="150857982247452081">Permite definir uma lista de protocolos e, para cada protocolo, uma lista associada de padrões de origem com permissão para inicializar um aplicativo externo sem notificar o usuário. O separador à direita não pode ser incluído ao listar o protocolo, então liste "skype" em vez de "skype:" ou "skype://".
-
-      Se esta política for definida, um protocolo só terá permissão para inicializar um aplicativo externo sem notificação se o protocolo estiver listado e a origem do site que tentou inicializar o protocolo corresponder a um dos padrões de origem na lista allowed_origins desse protocolo. Se alguma das condições for falsa, a solicitação de inicialização de protocolo externo não será omitida pela política.
-
-      Por padrão, se a política não for definida, nenhum protocolo poderá ser inicializado sem uma solicitação. Os usuários podem recusar as solicitações por site ou por protocolo, a menos que a política <ph name="EXTERNAL_PROTOCOL_DIALOG_SHOW_ALWAYS_OPEN_CHECKBOX_POLICY_NAME" /> esteja desativada. Esta política não afeta isenções por site ou por protocolo definidas pelo usuário.
-
-      Os padrões de correspondência de origem usam um formato semelhante aos da política <ph name="URL_BLOCKLIST_POLICY_NAME" />, que estão documentados em http://www.chromium.org/administrators/url-blocklist-filter-format (link em inglês).
-
-      Entretanto, os padrões de correspondência de origem para esta política não podem conter elementos "/path" ou "@query". Todos os padrões que contiverem um elemento "/path" ou "@query" serão ignorados.</translation>
 <translation id="1508588104835702000">Desativar os relatórios de nuvem do navegador gerenciado</translation>
 <translation id="1509377996969000672">A definição da política fornece configurações para impressoras corporativas vinculadas a dispositivos. O formato corresponde ao dicionário <ph name="NATIVE_PRINTERS_POLICY_NAME" />, com campos extras "id" ou "guid" obrigatórios para cada impressora para inclusão na lista de bloqueio ou de permissão. O arquivo não pode exceder 5 MB e precisa estar no formato JSON. Um arquivo contendo 21.000 impressoras é codificado como um arquivo de 5 MB. O hash criptográfico ajuda a verificar a integridade do download. O download do arquivo é feito com armazenamento em cache e é refeito quando o URL ou o hash mudam. O <ph name="PRODUCT_OS_NAME" /> faz o download do arquivo para as configurações de impressora e disponibiliza as impressoras de acordo com <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> e <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
@@ -7731,14 +7722,6 @@ também é seguro.</translation>
 <translation id="802776363472387903">Hash SHA-256 da imagem do <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Ativar o provedor de pesquisa padrão e permitir que os usuários modifiquem a lista de provedores de pesquisa</translation>
 <translation id="8029201909194194377">Duração máxima da seção permitida por conexões de acesso remoto</translation>
-<translation id="8032201191311129122">Esta política bloqueia a cópia para a área de transferência de dados em URLs específicas.
-
-      As listas de URL <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> e <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> controlam quais sites têm permissão para salvar na área de transferência. Uma cópia na área de transferência é bloqueada se a URL corresponde a um padrão na lista "enable" (ativar) e não corresponde a um padrão em "disable" (desativar). A cópia não é bloqueada se a URL não corresponde a nenhum padrão.
-
-      Os padrões de correspondência de origem usam um formato semelhante aos da política <ph name="URL_BLOCKLIST_POLICY_NAME" />, que estão documentados em http://www.chromium.org/administrators/url-blocklist-filter-format (link em inglês).
-
-      O <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica a quantidade mínima de dados em bytes que aciona a verificação de padrões. Isso significa que a cópia para a área de transferência de uma URL bloqueada é autorizada se o tamanho dos dados copiados for menor que o valor especificado nesse campo. Se o campo não for definido, o valor padrão será de 100 bytes.
-      </translation>
 <translation id="8033908599068513676">URL da imagem de firmware para download.</translation>
 <translation id="8035570672225663428">Permitir que o modelo de carregamento adaptável controle o processo de carregamento para prolongar a duração da bateria</translation>
 <translation id="8044493735196713914">Informar modo de inicialização do dispositivo</translation>

@@ -535,15 +535,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 
       Bu politika M94'te kaldırıldı.</translation>
 <translation id="1507373253059695424">Oturum açma ekranında gizlilik ekranını her zaman etkinleştir</translation>
-<translation id="150857982247452081">Protokol listesi ayarlamanıza ve ayarladığınız her protokol için izin verilen kaynak kalıplarının ilişkilendirilmiş bir listesini oluşturmanıza izin verir. Bu kalıplar kullanıcıya sormadan harici bir uygulama başlatabilir. Protokol listelenirken sondaki ayırıcı dahil edilmemelidir, o yüzden listeye "skype:" ya da "skype://" yerine doğrudan "skype" olarak ekleyin.
-
-      Bu politika ayarlanırsa protokol, listelendiği ve protokolü başlatmaya çalışan sitenin kaynağı protokolün izin_verilen_kaynaklar listesindeki kaynak kalıplarından biriyle eşleştiği takdirde politika tarafından sorulmadan yalnızca harici uygulamaları başlatma iznine sahip olur. İki koşul da yanlış ise harici protokol başlatma istemi politika tarafından atlanmaz.
-
-      Bu politika ayarlı değilse protokoller istem olmadan varsayılan halde başlayamaz. <ph name="EXTERNAL_PROTOCOL_DIALOG_SHOW_ALWAYS_OPEN_CHECKBOX_POLICY_NAME" /> politikası, devre dışı bırakılmadığı sürece kullanıcılar protokol/site bazında istemlerin kapsamı dışında kalmayı seçebilir. Bu politika, kullanıcıların ayarladığı protokol/site bazında istem muafiyetleri üzerinde etkili değildir.
-
-      Kaynakları eşleşen kalıplar, http://www.chromium.org/administrators/url-blocklist-filter-format adresinde bulabileceğiniz "<ph name="URL_BLOCKLIST_POLICY_NAME" />" politikasıyla benzer bir biçimi kullanır.
-
-      Fakat, bu politika için kaynakları eşleşen kalıplar "/path" ya da "@query" öğelerini içeremez. "/path" ya da "@query" öğelerini içeren kalıplar yok sayılacaktır.</translation>
 <translation id="1508588104835702000">Yönetilen tarayıcı bulut raporlamasını devre dışı bırak</translation>
 <translation id="1509377996969000672">Politika ayarlanırsa cihazlara bağlı kurumsal yazıcılar için yapılandırmalar sağlanır. Biçimi, <ph name="NATIVE_PRINTERS_POLICY_NAME" /> sözlüğü ile aynı olmakla birlikte izin verilenler veya engellenenler listelerine eklenecek her yazıcı için gerekli ek "id" veya "guid" alanlarını içerir. Dosya biçimi JSON olup boyutu 5 MB'tan büyük olamaz. Yaklaşık 21.000 yazıcı içeren bir dosya, 5 MB boyutunda olur. Şifreleme karma değeri, indirmenin bütünlüğünü doğrulamaya yardımcı olur. URL veya karma değer değiştiğinde dosya indirilir, önbelleğe alınır ve yeniden indirilir. <ph name="PRODUCT_OS_NAME" />, yazıcı yapılandırmalarına ait dosyayı indirerek <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> ve <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> ile birlikte yazıcıları kullanılabilir hale getirir.
 
@@ -7627,14 +7618,6 @@ yapmak da güvenli seçeneklerden biridir.</translation>
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> resminin SHA-256 karması.</translation>
 <translation id="8028814157747157754">Varsayılan arama sağlayıcısını etkinleştir ve kullanıcıların arama sağlayıcısı listesini değiştirmesine izin ver</translation>
 <translation id="8029201909194194377">Uzaktan erişim bağlantıları için izin verilen maksimum oturum süresi</translation>
-<translation id="8032201191311129122">Bu politika, belirli URL'lerdeki verilerin panoya kopyalanmasını engeller.
-
-      <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> ve <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> URL listeleri, hangi sitelerin panoya yazmasına izin verildiğini kontrol eder. URL, "etkinleştir" seçeneğindeki bir kalıpla eşleşiyor ancak "devre dışı bırak" seçeneğindeki bir kalıpla eşleşmiyorsa panoya yazma engellenir. URL hiçbir kalıpla eşleşmiyorsa kopyalama işlemi engellenmez.
-
-      Kaynakları eşleşen kalıplar, http://www.chromium.org/administrators/url-blocklist-filter-format adresinde bulabileceğiniz "<ph name="URL_BLOCKLIST_POLICY_NAME" />" politikasıyla benzer bir biçimi kullanır.
-
-      <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" />, kalıp kontrolünü tetikleyen bayt cinsinden minimum veri miktarını gösterir. Bu da kopyalanan verilerin boyutunun bu alanda belirtilen değerden küçük olması halinde, engellenen bir URL'den panoya yazmaya izin verileceği anlamına gelir. Alan ayarlanmadan bırakılırsa varsayılan değer 100 bayttır.
-      </translation>
 <translation id="8033908599068513676">İndirilecek donanım yazılımı görüntüsünün URL'si.</translation>
 <translation id="8035570672225663428">Uyarlanabilir şarj modelinin, pil ömrünü uzatmak için şarj sürecini geçici olarak durdurmasına izin ver</translation>
 <translation id="8044493735196713914">Rapor cihazı önyükleme modu</translation>

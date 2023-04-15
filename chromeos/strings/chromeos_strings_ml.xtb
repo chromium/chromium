@@ -517,6 +517,7 @@
 <translation id="5423849171846380976">സജീവമാക്കി</translation>
 <translation id="5430931332414098647">തൽക്ഷണ ടെതറിംഗ്</translation>
 <translation id="5431318178759467895">വര്‍ണ്ണം</translation>
+<translation id="5456936324019847994">പ്രവർത്തനക്ഷമമാക്കിയ ഇഷ്ടാനുസൃത APN-കളിലേക്കൊന്നും കണക്റ്റ് ചെയ്യാനാകുന്നില്ല. കൂടുതൽ വിവരങ്ങൾക്ക് നിങ്ങളുടെ മൊബൈൽ സേവനദാതാവിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="5457599981699367932">അതിഥിയായി ബ്രൗസ് ചെയ്യുക</translation>
 <translation id="54609108002486618">നിയന്ത്രിതം</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ശ്രമം ശേഷിക്കുന്നു}other{{0} ശ്രമങ്ങൾ ശേഷിക്കുന്നു}}</translation>
@@ -572,6 +573,7 @@
 <translation id="5931523347251946569">ഫയൽ കണ്ടെത്തിയില്ല</translation>
 <translation id="5939518447894949180">റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="594552776027197022">ക്രമരഹിതമായ കീ ജോടി സൃഷ്‌ടിക്കുക</translation>
+<translation id="5946538341867151940">നിങ്ങൾ ഇതുവരെ കണക്റ്റ് ചെയ്‌തിട്ടില്ല. നിങ്ങളുടെ മൊബൈൽ സേവനദാതാവ് ഒരു ഇഷ്‌ടാനുസൃത APN നിർദ്ദേശിക്കുന്നുവെങ്കിൽ, "+ പുതിയ APN" തിരഞ്ഞെടുത്ത് APN വിവരങ്ങൾ നൽകുക</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">ഡിഫോൾട്ട് വാൾപേപ്പർ</translation>
 <translation id="6017514345406065928">പച്ച</translation>

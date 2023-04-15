@@ -1919,7 +1919,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5695542892312572833">Usar o Windows Hello para verificar e concluir a compra?</translation>
 <translation id="5701381305118179107">Centralizar</translation>
 <translation id="570530837424789914">Gerenciar…</translation>
-<translation id="5706906618852913030">Salvar na conta?</translation>
 <translation id="5707154300732650394">Retomar a jornada</translation>
 <translation id="57094364128775171">Sugerir senha forte…</translation>
 <translation id="571403275720188526">(arm64)</translation>
@@ -3021,7 +3020,7 @@ Mais detalhes:
 <translation id="8398335999901363925">Formas de pagamento disponíveis para preenchimento com um toque abertas na altura máxima.</translation>
 <translation id="8398790343843005537">Encontrar seu smartphone</translation>
 <translation id="8405579342203358118">Gerencie quais informações são sincronizadas nas configurações do Chrome</translation>
-<translation id="8406071103346257942">Parar de usar o bloqueio de tela para preencher senhas</translation>
+<translation id="8406071103346257942">parar de usar o bloqueio de tela para preencher senhas</translation>
 <translation id="8409413588194360210">gerenciadores de pagamento</translation>
 <translation id="8412145213513410671">Falhas (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Você deve inserir a mesma senha duas vezes.</translation>

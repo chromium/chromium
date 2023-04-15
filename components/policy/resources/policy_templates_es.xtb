@@ -534,15 +534,6 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 
       Esta política se quitó en la versión M94.</translation>
 <translation id="1507373253059695424">Habilitar siempre la pantalla de privacidad en la pantalla de inicio de sesión</translation>
-<translation id="150857982247452081">Permite definir una lista de protocolos y una lista asociada de patrones de origen permitidos para cada uno de los protocolos, que pueden abrir una aplicación externa sin pedir permiso al usuario. No se debe incluir el separador del final al añadir el protocolo a la lista, así que añade "skype" en lugar de "skype:" o "skype://".
-
-      Si se define esta política, un protocolo solo podrá abrir una aplicación externa sin pedir permiso (por política) si está en la lista y si el origen del sitio que intenta iniciar el protocolo coincide con uno de los patrones de origen de la lista allowed_origins del protocolo. Si no se cumple alguna de estas condiciones, esta política no omitirá la solicitud para iniciar el protocolo externo.
-
-      Si no se define esta política, no se podrá iniciar ningún protocolo sin pedir permiso (de forma predeterminada). Los usuarios pueden rechazar las solicitudes por protocolo o por sitio, a menos que la política <ph name="EXTERNAL_PROTOCOL_DIALOG_SHOW_ALWAYS_OPEN_CHECKBOX_POLICY_NAME" /> se inhabilite. Esta política no tiene ningún efecto sobre las exenciones de solicitudes por protocolos o por sitios establecidas por el usuario.
-
-      Los patrones que coinciden con el origen tienen un formato similar a los de la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, tal y como se indica en la página http://www.chromium.org/administrators/url-blocklist-filter-format
-
-      Sin embargo, los patrones de esta política que coinciden con el origen no pueden contener los elementos /path ni @query. Se ignorarán todos los patrones que contengan un elemento /path o @query.</translation>
 <translation id="1508588104835702000">Inhabilitar los informes en la nube a través de un navegador gestionado</translation>
 <translation id="1509377996969000672">Si se establece esta política, proporciona opciones de configuración para impresoras de empresa vinculadas a dispositivos. Su formato es el mismo que el del diccionario <ph name="NATIVE_PRINTERS_POLICY_NAME" />, con un campo id o guid obligatorio por impresora para incluirla en una lista de permitidas o bloqueadas. El tamaño del archivo no debe exceder los 5 MB y debe estar en formato JSON. El tamaño de un archivo que contiene unas 21.000 impresoras es de 5 MB. El hash criptográfico ayuda a comprobar la integridad de la descarga. Si se cambia la URL o el hash, el archivo se descarga, se almacena en caché y se vuelve a descargar. <ph name="PRODUCT_OS_NAME" /> descarga el archivo con las configuraciones de las impresoras y estas están disponibles según lo especificado en las políticas <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> y <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
@@ -7628,14 +7619,6 @@ Usar <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> o <ph name="LACROS_SELECTI
 <translation id="802776363472387903">El hash SHA-256 de la imagen de <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Habilitar el proveedor de búsqueda predeterminado y permitir a los usuarios modificar la lista de proveedores de búsqueda</translation>
 <translation id="8029201909194194377">Duración máxima permitida de la sesión para conexiones de acceso remoto</translation>
-<translation id="8032201191311129122">Esta política impide copiar datos en el portapapeles en URLs específicas.
-
-      Las listas de URLs <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> y <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> controlan los sitios en los que se puede escribir en el portapapeles. Se bloquea la escritura en el portapapeles si la URL coincide con un patrón en la lista de URLs permitidas y no coincide con un patrón en la lista de bloqueadas. No se impide copiar si la URL no coincide con ningún patrón.
-
-      Los patrones que coinciden con el origen tienen un formato similar a los de la política <ph name="URL_BLOCKLIST_POLICY_NAME" />, tal y como se indica en la página http://www.chromium.org/administrators/url-blocklist-filter-format.
-
-      El campo <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la cantidad mínima de datos (en bytes) que activa la comprobación de patrones. Esto significa que la escritura en el portapapeles desde una URL bloqueada se permitiría si el tamaño de los datos copiados es inferior al valor especificado en este campo. El valor predeterminado es 100 bytes si el campo no se establece.
-      </translation>
 <translation id="8033908599068513676">URL de la imagen de firmware que se va a descargar.</translation>
 <translation id="8035570672225663428">Habilitar el modelo de Carga inteligente para suspender el proceso de carga y prolongar la duración de la batería</translation>
 <translation id="8044493735196713914">Notificar modo de inicio de dispositivo</translation>

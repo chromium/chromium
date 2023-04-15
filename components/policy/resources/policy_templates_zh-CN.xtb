@@ -531,15 +531,6 @@
 
       此政策已从 M94 中移除。</translation>
 <translation id="1507373253059695424">始终为登录屏幕启用隐私保护屏幕</translation>
-<translation id="150857982247452081">让您能够设置一个协议列表，并为每份协议设置一个关联列表，包含允许的来源格式，使协议无需提示用户就能启动外部应用。罗列协议时不应添加结尾分隔符，因此请罗列“skype”而非“skype:”或“skype://”。
-
-      如果您设置了此政策，那么仅当满足以下条件时，相应协议才可依照政策在不提示用户的情况下启动外部应用：该协议包含在列表中，而且尝试启动该协议的网站的来源与该协议 allowed_origins 列表中的来源格式之一匹配。如果相应协议不满足上述任一条件，系统将不会依照此政策跳过外部协议启动提示。
-
-      如果此政策未设置，那么在默认情况下，倘若系统不提示用户，任何协议都无法启动。用户可以针对个别协议/网站选择不接收提示，除非 <ph name="EXTERNAL_PROTOCOL_DIALOG_SHOW_ALWAYS_OPEN_CHECKBOX_POLICY_NAME" /> 政策设为“已停用”。对于用户针对个别协议/网站指定的不接收提示设置，此政策不会产生任何影响。
-
-      用于与来源进行匹配的网址格式和“<ph name="URL_BLOCKLIST_POLICY_NAME" />”政策中设置的网址格式类似，详见 http://www.chromium.org/administrators/url-blocklist-filter-format。
-
-      不过，此政策中用于与来源进行匹配的网址格式不能包含“/path”或“@query”元素。系统会忽略所有包含“/path”或“@query”元素的网址格式。</translation>
 <translation id="1508588104835702000">为受管理浏览器停用云报告功能</translation>
 <translation id="1509377996969000672">通过设置此政策，您可为绑定到设备的企业打印机提供配置。其格式与 <ph name="NATIVE_PRINTERS_POLICY_NAME" /> 字典一样，不过每台打印机都还对应一个额外的必填字段“id”或“guid”，以用于将相应打印机加入许可名单/拒绝名单。该文件不得超过 5MB，且必须采用 JSON 格式。一个包含大约 21000 台打印机的文件在编码后的大小是 5MB。相应的加密哈希值可帮助您验证下载内容的完整性。系统会下载、缓存该文件。当相应网址或哈希值发生变化时，系统会重新下载该文件。<ph name="PRODUCT_OS_NAME" />会下载该文件以获取打印机配置，并会根据 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />、<ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 和 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 向用户提供可用的打印机。
 
@@ -7510,14 +7501,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> 图片的 SHA-256 哈希值。</translation>
 <translation id="8028814157747157754">启用默认搜索服务提供商并允许用户修改搜索服务提供商列表</translation>
 <translation id="8029201909194194377">远程访问连接可达到的会话时长上限</translation>
-<translation id="8032201191311129122">此政策用于禁止特定网址向剪贴板中复制数据。
-
-      <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 网址列表用于控制允许哪些网站向剪贴板中写入内容。如果相应网址与“enable”中的格式相匹配，但不与“disable”中的格式相匹配，系统将会禁止该网址向剪贴板中写入内容。如果相应网址不与任何格式相匹配，系统将不会禁止该网址向剪贴板中复制内容。
-
-      用于与来源进行匹配的网址格式和“<ph name="URL_BLOCKLIST_POLICY_NAME" />”政策中设置的网址格式类似，详见 http://www.chromium.org/administrators/url-blocklist-filter-format。
-
-      <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> 用于指明会触发网址格式检查的最少数据量（以字节为单位）。这意味着，如果所复制数据的大小小于此字段中指定的值，系统将允许被禁网址向剪贴板中写入数据。如果该字段未设置，默认值为 100 字节。
-      </translation>
 <translation id="8033908599068513676">要下载的固件映像的网址。</translation>
 <translation id="8035570672225663428">启用“自适应充电”模式以暂缓充电进程，进而延长电池寿命</translation>
 <translation id="8044493735196713914">报告设备引导模式</translation>

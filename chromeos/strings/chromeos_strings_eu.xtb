@@ -123,6 +123,7 @@
 <translation id="1904932688895783618">Hona hemen beste baliabide lagungarri batzuk:</translation>
 <translation id="1905710495812624430">Saiakera-muga gainditu da.</translation>
 <translation id="1908234395526491708">UDP bidezko eskaeren hutsegiteak</translation>
+<translation id="1923388006036088459">Nabarmentzeko koloreak</translation>
 <translation id="1947737735496445907">Inprimatuta</translation>
 <translation id="1951012854035635156">Laguntzailea</translation>
 <translation id="1962550982027027473">APN lehenetsi bat behar da</translation>
@@ -332,6 +333,7 @@
 <translation id="3967822245660637423">Deskargatzen amaitu da</translation>
 <translation id="3969602104473960991">Eguneratu da Chrome OS-ko pasahitza</translation>
 <translation id="397105322502079400">Kalkulatzen…</translation>
+<translation id="3974175076798940554">Chromebook Plus-en baliabide esklusiboak eskuragai</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> egun baino gehiagoko inprimatze-lanak kendu egingo dira</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> eguneratuta dago</translation>
 <translation id="4003384961948020559">Hutsegitea - Irteera-erretilua beteta dago</translation>
@@ -845,6 +847,7 @@
 <translation id="8352772353338965963">Gehitu kontu bat saio-hasiera anitzean. Saioa hasita daukaten kontu guztiak pasahitzik gabe atzi daitezkeenez, kontu fidagarriekin soilik erabili behar da eginbide hori.</translation>
 <translation id="8364946094152050673">Izenen zerbitzariak hutsik daude</translation>
 <translation id="8372477600026034341">Ostalari gehigarriak</translation>
+<translation id="8373046809163484087">Erabili horma-paperarekin bat datozen kolore sortak</translation>
 <translation id="8380114448424469341">Ainguratu leihoa pantailaren <ph name="DIRECTION" /> erdian</translation>
 <translation id="8395584934117017006">Enpresa batek kudeatzen du <ph name="DEVICE_TYPE" /> gailua</translation>
 <translation id="8398927464629426868">Gailua zer abiaduratan kargatzen edo deskargatzen ari den</translation>
@@ -864,6 +867,7 @@
 <translation id="8503813439785031346">Erabiltzaile-izena</translation>
 <translation id="8503836310948963452">Minutu gutxi batzuk baino ez…</translation>
 <translation id="8508640263392900755">APNaren xehetasunak</translation>
+<translation id="8522687886059337719">Orain, <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />horma-paper<ph name="END_LINK_WALLPAPER_SUBPAGE" /> eta <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />pantaila-babesle<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> berriak erabil ditzakezu</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Baliteke zure operadoreak aukera hau eskatzea haren sarera konektatzeko. Horri buruzko xehetasunak lortzeko, jarri operadorearekin harremanetan.</translation>

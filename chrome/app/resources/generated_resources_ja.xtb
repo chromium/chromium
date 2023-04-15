@@ -388,7 +388,6 @@
 <translation id="1333965224356556482">サイトに位置情報へのアクセスを許可しない</translation>
 <translation id="1335282218035876586">この Chromebook は、セキュリティ アップデートとソフトウェア アップデートの提供が終了しました。快適にご利用いただくには、Chromebook をアップグレードしてください。</translation>
 <translation id="133535873114485416">優先する入力</translation>
-<translation id="1335437153193710305">パスワードを表示するプロフィールを選択できます</translation>
 <translation id="1335929031622236846">デバイスを登録する</translation>
 <translation id="1336902454946927954">指紋を認識できなかったため、セキュリティ キーがロックされています。ロックを解除するには PIN を入力してください。</translation>
 <translation id="1338631221631423366">ペア設定中...</translation>
@@ -3306,7 +3305,6 @@
 <translation id="383669374481694771">このデバイスと使用状況に関する一般的な情報（電池残量、システムやアプリのアクティビティ、エラーなど）です。このデータは、Android の機能向上に使用されます。また、統計情報の一部は、Google のアプリのほか、Android デベロッパーなどのパートナーが開発するアプリやサービスの品質改善にも役立てられます。</translation>
 <translation id="3838085852053358637">拡張機能を読み込めませんでした</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> をもっと見る</translation>
-<translation id="3838487810283346084">保存したパスワードを Google パスワード マネージャーに追加する</translation>
 <translation id="383891835335927981">拡大縮小値を設定したサイトはありません</translation>
 <translation id="3839509547554145593">マウスのスクロール アクセラレーションを有効にする</translation>
 <translation id="3839516600093027468"><ph name="HOST" /> によるクリップボードへのアクセスを常にブロックする</translation>

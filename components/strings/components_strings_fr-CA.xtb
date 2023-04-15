@@ -1793,6 +1793,7 @@
 <translation id="5344579389779391559">L'accès à cette page peut engendrer des frais</translation>
 <translation id="5347645913823149105">Bouton Personnaliser les polices dans Chrome, appuyez sur la touche Entrée pour personnaliser la taille des polices et les caractères dans Chrome</translation>
 <translation id="5355557959165512791">Vous ne pouvez pas consulter le site <ph name="SITE" /> pour le moment, car son certificat a été révoqué. Les erreurs réseau et les attaques sont généralement temporaires, ce qui signifie que cette page devrait fonctionner de nouveau plus tard.</translation>
+<translation id="5356345925629253198">Vous pouvez utiliser les adresses enregistrées avec tous les produits Google. Cette adresse sera enregistrée dans votre compte Google (<ph name="ACCOUNT" />).</translation>
 <translation id="5357848622083956825">Art visuel et design</translation>
 <translation id="536296301121032821">Échec de stockage des paramètres de la règle</translation>
 <translation id="5363309033720083897">Port série autorisé par votre administrateur</translation>
@@ -1918,7 +1919,6 @@
 <translation id="5695542892312572833">Utiliser Windows Hello pour vérifier et finaliser votre achat?</translation>
 <translation id="5701381305118179107">Centrer</translation>
 <translation id="570530837424789914">Gérer...</translation>
-<translation id="5706906618852913030">Enregistrer dans le compte?</translation>
 <translation id="5707154300732650394">Reprendre votre exploration</translation>
 <translation id="57094364128775171">Suggérer un mot de passe fort…</translation>
 <translation id="571403275720188526">(arm64)</translation>

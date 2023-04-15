@@ -353,6 +353,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3324193307694657476">2 adreso eil.</translation>
 <translation id="3328459813621383194">Neaktyvių skirtukų perkėlimas</translation>
 <translation id="3328801116991980348">Svetainės informacija</translation>
+<translation id="3344485292736684439">{count,plural, =1{Žymė išsaugota skiltyje „{title}“ jūsų paskyroje, {email}}one{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje, {email}}few{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje, {email}}many{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje, {email}}other{Žymės išsaugotos skiltyje „{title}“ jūsų paskyroje, {email}}}</translation>
 <translation id="3371831930909698441">Pasiekiamas vertimas. Parinktys pasiekiamos netoli ekrano apačios.</translation>
 <translation id="3377063233124932127">Dabar išsaugotos žymės, slaptažodžiai ir kt. yra viršuje.</translation>
 <translation id="3393920035788932672">Iššok. l. leidžiami</translation>
@@ -1032,6 +1033,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7840771868269352570">Pasirinkti elementai bus pašalinti.</translation>
 <translation id="7845466610722898">Rodyti skaitymo sąrašą</translation>
 <translation id="784551991304901159">Jei norite peržiūrėti turinį, meniu pasirinkite „Įjungti“</translation>
+<translation id="7846158885638438868">{count,plural, =1{Žymė išsaugota skiltyje „{title}“}one{Žymės išsaugotos skiltyje „{title}“}few{Žymės išsaugotos skiltyje „{title}“}many{Žymės išsaugotos skiltyje „{title}“}other{Žymės išsaugotos skiltyje „{title}“}}</translation>
 <translation id="7853202427316060426">Veikla</translation>
 <translation id="7856733331829174190">Nepavyko atsisiųsti</translation>
 <translation id="785938070103630874">Atidarykite slaptažodžius, mokėjimo metodus arba adresą ir kt.</translation>

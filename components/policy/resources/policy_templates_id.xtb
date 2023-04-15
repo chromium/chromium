@@ -537,15 +537,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
       Kebijakan ini dihapus di M94.</translation>
 <translation id="1507373253059695424">Selalu aktifkan layar privasi pada layar login</translation>
-<translation id="150857982247452081">Memungkinkan Anda menyetel daftar protokol, dan daftar terkait pola asal yang diizinkan untuk setiap protokol, yang dapat meluncurkan aplikasi eksternal tanpa meminta izin pengguna. Pemisah di akhir tidak boleh disertakan saat mencantumkan protokol, jadi cantumkan "skype" bukan "skype:" atau "skype://".
-
-      Jika kebijakan ini disetel, protokol hanya akan diizinkan oleh kebijakan untuk meluncurkan aplikasi eksternal tanpa meminta izin jika protokol tersebut tercantum, dan asal situs yang mencoba meluncurkan protokol tersebut cocok dengan pola asal dalam daftar allowed_origins protokol. Jika salah satu kondisinya tidak terpenuhi, permintaan izin peluncuran protokol eksternal tidak akan dihilangkan oleh kebijakan.
-
-      Jika kebijakan ini tidak disetel, secara default tidak ada protokol yang dapat diluncurkan tanpa meminta izin. Pengguna dapat memilih tidak dimintai izin per protokol/per situs kecuali jika kebijakan <ph name="EXTERNAL_PROTOCOL_DIALOG_SHOW_ALWAYS_OPEN_CHECKBOX_POLICY_NAME" /> disetel ke Nonaktif. Kebijakan ini tidak memengaruhi pengecualian permintaan izin per protokol/per situs yang disetel pengguna.
-
-      Pola yang cocok dengan asal akan menggunakan format serupa dengan kebijakan '<ph name="URL_BLOCKLIST_POLICY_NAME" />' yang didokumentasikan di http://www.chromium.org/administrators/url-blocklist-filter-format.
-
-      Namun, pola yang cocok dengan asal untuk kebijakan ini tidak boleh berisi elemen "/path" atau "@query". Semua pola yang berisi elemen "/path" atau "@query" akan diabaikan.</translation>
 <translation id="1508588104835702000">Nonaktifkan pelaporan cloud browser terkelola</translation>
 <translation id="1509377996969000672">Jika kebijakan disetel, konfigurasi untuk printer perusahaan yang terikat ke perangkat akan tersedia. Jika formatnya cocok dengan kamus <ph name="NATIVE_PRINTERS_POLICY_NAME" />, dengan tambahan kolom "id" atau "guid" yang diperlukan agar setiap printer dapat mengizinkan atau menolak daftar. Ukuran file tidak boleh lebih dari 5 MB dan dalam format JSON. File yang berisi sekitar 21.000 printer dienkode sebagai file 5 MB. Hash kriptografi membantu memverifikasi integritas download. File didownload, disimpan dalam cache, dan didownload ulang ketika URL atau hash berubah. <ph name="PRODUCT_OS_NAME" /> mendownload file untuk konfigurasi printer dan menyediakan printer beserta <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />, dan <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
@@ -7742,14 +7733,6 @@ juga aman.</translation>
 <translation id="802776363472387903">Hash SHA-256 gambar <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Aktifkan penyedia penelusuran default dan izinkan pengguna mengubah daftar penyedia penelusuran</translation>
 <translation id="8029201909194194377">Durasi sesi maksimum yang diizinkan untuk koneksi akses jarak jauh</translation>
-<translation id="8032201191311129122">Kebijakan ini memblokir penyalinan data ke papan klip pada URL tertentu.
-
-      Daftar URL <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> dan <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> mengontrol situs mana yang diizinkan untuk menulis ke papan klip. Penulisan di papan klip diblokir jika URL cocok dengan pola di daftar 'aktifkan' dan tidak cocok dengan pola di daftar 'nonaktifkan'. Penyalinan tidak diblokir jika URL tidak cocok dengan pola apa pun.
-
-      Pola yang cocok dengan asal akan menggunakan format serupa dengan kebijakan '<ph name="URL_BLOCKLIST_POLICY_NAME" />' yang didokumentasikan di http://www.chromium.org/administrators/url-blocklist-filter-format.
-
-      <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> menunjukkan jumlah minimum data dalam byte yang memicu pemeriksaan pola. Hal ini berarti bahwa penulisan di papan klip dari URL yang diblokir akan diizinkan jika ukuran data yang disalin lebih kecil dari nilai yang ditentukan dalam kolom ini. Nilai defaultnya adalah 100 byte jika kolom tidak disetel.
-      </translation>
 <translation id="8033908599068513676">URL image firmware untuk didownload.</translation>
 <translation id="8035570672225663428">Aktifkan model pengisian daya adaptif untuk menunda proses pengisian daya guna memperpanjang masa pakai baterai</translation>
 <translation id="8044493735196713914">Laporkan mode boot perangkat</translation>
