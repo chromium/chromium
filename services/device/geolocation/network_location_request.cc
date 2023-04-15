@@ -79,6 +79,15 @@ void RecordUmaAccessPoints(int count) {
                               count, min, max, buckets);
 }
 
+void RecordUmaRequestInterval(base::TimeDelta time_delta) {
+  const int kMin = 1;
+  const int kMax = 11;
+  const int kBuckets = 10;
+  UMA_HISTOGRAM_CUSTOM_COUNTS(
+      "Geolocation.NetworkLocationRequest.RequestInterval",
+      time_delta.InMinutes(), kMin, kMax, kBuckets);
+}
+
 // Local functions
 
 // Returns a URL for a request to the Google Maps geolocation API. If the
@@ -136,6 +145,10 @@ bool NetworkLocationRequest::MakeRequest(
     url_loader_.reset();
   }
   wifi_data_ = wifi_data;
+
+  if (!wifi_timestamp_.is_null()) {
+    RecordUmaRequestInterval(wifi_timestamp - wifi_timestamp_);
+  }
   wifi_timestamp_ = wifi_timestamp;
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
