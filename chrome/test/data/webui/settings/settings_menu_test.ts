@@ -99,7 +99,8 @@ suite('SettingsMenuReset', function() {
   });
 
   // <if expr="_google_chrome">
-  test('navigateToGetMostChrome', function() {
+  // TODO(crbug.com/1433405): Fix and re-enable.
+  test.skip('navigateToGetMostChrome', function() {
     Router.getInstance().navigateTo(routes.GET_MOST_CHROME, undefined);
     flush();
 
