@@ -465,6 +465,11 @@ bool NGGridLayoutTrackCollection::operator==(
     const NGGridLayoutTrackCollection& other) const {
   return gutter_size_ == other.gutter_size_ &&
          track_direction_ == other.track_direction_ &&
+         accumulated_gutter_size_delta_ ==
+             other.accumulated_gutter_size_delta_ &&
+         accumulated_start_extra_margin_ ==
+             other.accumulated_start_extra_margin_ &&
+         accumulated_end_extra_margin_ == other.accumulated_end_extra_margin_ &&
          baselines_.has_value() == other.baselines_.has_value() &&
          (!baselines_ || (baselines_->major == other.baselines_->major &&
                           baselines_->minor == other.baselines_->minor)) &&

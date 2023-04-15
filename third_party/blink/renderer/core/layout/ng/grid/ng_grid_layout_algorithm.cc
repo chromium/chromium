@@ -3007,19 +3007,6 @@ void AlignmentOffsetForOutOfFlow(
   }
 }
 
-inline LogicalSize SubtractMarginsFromAvailableSize(
-    const LogicalSize& available_size,
-    const NGBoxStrut& margins) {
-  return {(available_size.inline_size != kIndefiniteSize)
-              ? (available_size.inline_size - margins.InlineSum())
-                    .ClampNegativeToZero()
-              : kIndefiniteSize,
-          (available_size.block_size != kIndefiniteSize)
-              ? (available_size.block_size - margins.BlockSum())
-                    .ClampNegativeToZero()
-              : kIndefiniteSize};
-}
-
 }  // namespace
 
 NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpace(
@@ -3102,12 +3089,11 @@ NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpaceForLayout(
   LogicalSize fixed_available_size(kIndefiniteSize, kIndefiniteSize);
 
   if (grid_item.IsSubgrid()) {
-    const auto [fixed_inline_size, fixed_block_size] =
-        SubtractMarginsFromAvailableSize(
-            containing_grid_area_size,
-            ComputeMarginsFor(grid_item.node.Style(),
-                              containing_grid_area_size.inline_size,
-                              ConstraintSpace().GetWritingDirection()));
+    const auto [fixed_inline_size, fixed_block_size] = ShrinkLogicalSize(
+        containing_grid_area_size,
+        ComputeMarginsFor(grid_item.node.Style(),
+                          containing_grid_area_size.inline_size,
+                          ConstraintSpace().GetWritingDirection()));
 
     fixed_available_size = {
         grid_item.has_subgridded_columns ? fixed_inline_size : kIndefiniteSize,
@@ -3155,7 +3141,7 @@ NGGridLayoutAlgorithm::CreateConstraintSpaceForSubgridAlgorithm(
       ComputeGridItemAvailableSize(*subgrid_data, layout_data.Columns()),
       ComputeGridItemAvailableSize(*subgrid_data, layout_data.Rows()));
 
-  const auto fixed_available_size = SubtractMarginsFromAvailableSize(
+  const auto fixed_available_size = ShrinkLogicalSize(
       containing_grid_area_size,
       ComputeMarginsFor(subgrid_data->node.Style(),
                         containing_grid_area_size.inline_size,
