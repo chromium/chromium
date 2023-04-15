@@ -33,6 +33,8 @@
 #include "ppapi/shared_impl/proxy_lock.h"
 #endif  // BUILDFLAG(ENABLE_PPAPI)
 
+#include "base/record_replay.h"
+
 namespace content {
 
 namespace {
@@ -395,6 +397,11 @@ void PatchServiceManagerCalls() {
            : "advapi32.dll");
 
   is_patched = true;
+
+  // Skip patching when replaying, we aren't working with real DLLs and will crash
+  // if we try to patch them.
+  if (recordreplay::IsReplaying())
+    return;
 
   static base::NoDestructor<base::win::IATPatchFunction> patch_open_sc_manager;
   DWORD patched = patch_open_sc_manager->Patch(

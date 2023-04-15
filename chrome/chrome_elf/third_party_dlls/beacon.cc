@@ -64,6 +64,10 @@ bool LeaveSetupBeacon() {
 }
 
 bool ResetBeacon() {
+  // Lazy registry API initialization happens here when replaying, but has already
+  // happened when recording. Reset the initialization state for consistent behavior.
+  nt::RecordReplayResetRegApiInitialization();
+
   HANDLE key_handle = INVALID_HANDLE_VALUE;
 
   if (!nt::CreateRegKey(nt::HKCU,

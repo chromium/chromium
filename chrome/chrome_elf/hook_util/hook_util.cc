@@ -13,6 +13,23 @@
 #include "sandbox/win/src/sandbox_utils.h"
 #include "sandbox/win/src/service_resolver.h"
 
+static void* LookupRecordReplaySymbol(const char* name) {
+  HMODULE module = GetModuleHandleA("windows-recordreplay.dll");
+  void* fnptr = module ? (void*)GetProcAddress(module, name) : nullptr;
+  return fnptr ? fnptr : reinterpret_cast<void*>(1);
+}
+
+static bool RecordReplayIsReplaying() {
+  static void* fnptr;
+  if (!fnptr) {
+    fnptr = LookupRecordReplaySymbol("RecordReplayIsReplaying");
+  }
+  if (fnptr != reinterpret_cast<void*>(1)) {
+    return reinterpret_cast<bool(*)()>(fnptr)();
+  }
+  return false;
+}
+
 namespace {
 
 //------------------------------------------------------------------------------
@@ -258,6 +275,10 @@ DWORD IATHook::Hook(HMODULE module,
                     const char* imported_from_module,
                     const char* function_name,
                     void* new_function) {
+  // Hooks aren't necessary when replaying, and trying to apply them crashes.
+  if (RecordReplayIsReplaying())
+    return NO_ERROR;
+
   if ((module == 0 || module == INVALID_HANDLE_VALUE) ||
       imported_from_module == nullptr || function_name == nullptr ||
       new_function == nullptr)

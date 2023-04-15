@@ -20,6 +20,46 @@
 #include "base/win/current_module.h"
 #include "base/win/scoped_handle.h"
 
+static void* LookupRecordReplaySymbol(const char* name) {
+  HMODULE module = GetModuleHandleA("windows-recordreplay.dll");
+  void* fnptr = module ? (void*)GetProcAddress(module, name) : nullptr;
+  return fnptr ? fnptr : reinterpret_cast<void*>(1);
+}
+
+static void RecordReplayBeginPassThroughEvents() {
+  static void* fnptr;
+  if (!fnptr) {
+    fnptr = LookupRecordReplaySymbol("RecordReplayBeginPassThroughEvents");
+  }
+  if (fnptr != reinterpret_cast<void*>(1)) {
+    reinterpret_cast<void(*)()>(fnptr)();
+  }
+}
+
+static void RecordReplayEndPassThroughEvents() {
+  static void* fnptr;
+  if (!fnptr) {
+    fnptr = LookupRecordReplaySymbol("RecordReplayEndPassThroughEvents");
+  }
+  if (fnptr != reinterpret_cast<void*>(1)) {
+    reinterpret_cast<void(*)()>(fnptr)();
+  }
+}
+
+namespace {
+
+struct RecordReplayAutoPassThroughEvents {
+  RecordReplayAutoPassThroughEvents() {
+    RecordReplayBeginPassThroughEvents();
+  }
+
+  ~RecordReplayAutoPassThroughEvents() {
+    RecordReplayEndPassThroughEvents();
+  }
+};
+
+} // anonymous namespace
+
 extern "C" {
 __declspec(dllexport) void* GetHandleVerifier();
 
@@ -133,6 +173,10 @@ void ScopedHandleVerifier::ThreadSafeAssignOrCreateScopedHandleVerifier(
 
 // static
 void ScopedHandleVerifier::InstallVerifier() {
+  // Workaround for mismatches in this function when replaying. The verifier seems
+  // to get installed at different points due to different dll initialization behavior.
+  RecordReplayAutoPassThroughEvents pt;
+
 #if BUILDFLAG(SINGLE_MODULE_MODE_HANDLE_VERIFIER)
   // Component build has one Active Verifier per module.
   ThreadSafeAssignOrCreateScopedHandleVerifier(nullptr, true);
