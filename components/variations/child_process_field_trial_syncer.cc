@@ -11,6 +11,7 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "components/variations/variations_crash_keys.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 
@@ -52,7 +53,12 @@ void ChildProcessFieldTrialSyncer::Init() {
   variations::InitCrashKeys();
 
   // Listen for field trial activations to report them to the browser.
-  base::FieldTrialList::AddObserver(this);
+  // All trials (including low anonymity ones) are required so that the browser
+  // and child processes have a consistent view.
+  //
+  // See also TODO(crbug.com/1431156) at
+  // |FieldTrialSynchronizer::FieldTrialSynchronizer()|.
+  base::FieldTrialListIncludingLowAnonymity::AddObserver(this);
 
   // Some field trials may have been activated before this point. Notify the
   // browser of these activations now. To detect these, take the set difference
@@ -66,7 +72,8 @@ void ChildProcessFieldTrialSyncer::Init() {
   }
 
   base::FieldTrial::ActiveGroups current_active_trials;
-  base::FieldTrialList::GetActiveFieldTrialGroups(&current_active_trials);
+  base::FieldTrialListIncludingLowAnonymity::GetActiveFieldTrialGroups(
+      &current_active_trials);
   for (const auto& trial : current_active_trials) {
     if (!base::Contains(initially_active_trials_set, trial.trial_name))
       activated_callback_.Run(trial.trial_name);
